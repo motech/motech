@@ -31,8 +31,8 @@ describe("Bundle List Controller", function() {
         bundlesResponse = [ firstBundle, secondBundle ];
 
         $httpBackend = _$httpBackend_;
-        $httpBackend.expectGET('api/bundles').
-        respond(bundlesResponse);
+        $httpBackend.expectGET('../admin/api/settings/bundles/list').respond([]);
+        $httpBackend.expectGET('../admin/api/bundles').respond(bundlesResponse);
 
         scope = $rootScope.$new();
         ctrl = $controller(BundleListCtrl, {$scope: scope});

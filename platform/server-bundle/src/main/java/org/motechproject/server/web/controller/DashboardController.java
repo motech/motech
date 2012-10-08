@@ -17,6 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Collection;
+import java.util.Map;
+
+import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
+import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITH_SUBMENU;
 
 @Controller
 public class DashboardController {
@@ -39,8 +43,9 @@ public class DashboardController {
 
             mav.addObject("uptime", getUptime());
 
-            Collection<ModuleRegistrationData> modules = uiFrameworkService.getRegisteredModules();
-            mav.addObject("modules", modules);
+            Map<String, Collection<ModuleRegistrationData>> modules = uiFrameworkService.getRegisteredModules();
+            mav.addObject(MODULES_WITH_SUBMENU, modules.get(MODULES_WITH_SUBMENU));
+            mav.addObject(MODULES_WITHOUT_SUBMENU, modules.get(MODULES_WITHOUT_SUBMENU));
 
             if (moduleName != null) {
                 ModuleRegistrationData currentModule = uiFrameworkService.getModuleData(moduleName);

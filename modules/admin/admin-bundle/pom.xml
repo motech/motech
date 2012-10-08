@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-server-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -209,8 +209,7 @@
 
                     <jsTestSrcDir>${project.basedir}/src/test/resources/</jsTestSrcDir>
                     <specIncludes>
-                        <include>lib/angular.min.js</include>
-                        <include>lib/angular-mocks.js</include>
+                        <include>lib/*.js</include>
                         <include>spec/*.js</include>
                     </specIncludes>
                 </configuration>

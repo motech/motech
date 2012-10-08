@@ -2,8 +2,8 @@
 
     <div class="span6 well2">
         <div class="box-header"> {{msg('settings.upload')}}</div>
-        <div class="box-content inside mediumgrain-bg">
-            <form id="settingsFileForm" action="api/settings/platform/upload" method="post" enctype="multipart/form-data">
+        <div class="box-content inside">
+            <form class="form-inline" id="settingsFileForm" action="../admin/api/settings/platform/upload" method="post" enctype="multipart/form-data">
                 <fieldset>
                     <h5 class="settings-section">{{msg('platform.settings')}}</h5>
                     <span>
@@ -31,8 +31,8 @@
     </div>
     <div class="span6 well2">
         <div class="box-header"> {{msg('settings.location')}}</div>
-        <div class="box-content inside mediumgrain-bg">
-            <form id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
+        <div class="box-content inside">
+            <form class="form-inline" id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
                 <fieldset>
                     <span>
                         <input type="text" id="settingsLocation" name="settingsLocation" ng-model="location">
@@ -46,12 +46,12 @@
     </div>
 </div>
 <div class="clearfix"></div>
-<div class="well2 mediumgrain-bg">
+<div class="well2">
     <div ng-show="platformSettings.length > 0">
         <div class="box-header"> {{msg('settings.platform')}}</div>
-        <div class="box-content inside">
-            <div ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
-                <h3 class="settings-section">{{msg(pSettings.section)}}</h3>
+        <div class="box-content">
+            <div class="settings-form  lightblue-bg" ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
+                <h4 class="settings-section">{{msg(pSettings.section)}}</h4>
                 <br />
 
                 <form id="platformSettingsForm" class="form-horizontal inside">
@@ -63,7 +63,7 @@
                                 <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
                             </div>
                         </div>
-                        <div class="control-group inside">
+                        <div class="control-group settings-actions">
                             <div class="control-label span3"></div>
                             <div class="controls span2">
                                 <input type="submit" ng-click="saveSettings(pSettings)" value="{{msg('save')}}" class="btn"/>
@@ -72,15 +72,14 @@
                     </fieldset>
                 </form>
             </div>
-            <div class="control-group">
-                <form>
-                <div class="control-label span3"></div>
-                <div class="controls span2  inside">
-                    <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}" class="btn"/>
+            <form class="form-horizontal inside">
+                <div class="control-group settings-actions">
+                    <div class="control-label span3"></div>
+                    <div class="controls span2">
+                        <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}" class="btn"/>
+                    </div>
                 </div>
-                </form>
-            </div>
-            <div class="clearfix"></div>
+            </form>
         </div>
 
 
@@ -89,7 +88,7 @@
         <div class="box-content inside">
             <p>{{msg('settings.noSettingsMsg')}}</p>
 
-            <form id="noSettingsForm" class="form-horizontal inside">
+            <form id="noSettingsForm" class="form-horizontal lightblue-bg inside">
                 <fieldset>
                     <div class="control-group">
                         <label class="control-label" for="new.db.host">{{msg('label.db.host')}}</label>
@@ -119,7 +118,7 @@
                         </div>
                     </div>
 
-                    <div class="control-group inside">
+                    <div class="control-group settings-actions">
                         <div class="control-label"></div>
                         <div class="controls">
                             <input type="button" ng-click="saveNewSettings()" value="{{msg('submit')}}" class="btn"/>

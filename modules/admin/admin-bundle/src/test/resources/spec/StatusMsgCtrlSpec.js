@@ -32,7 +32,7 @@ describe("Status Message Controller", function() {
         response = [ infoMsg, errorMsg ];
 
         $httpBackend = _$httpBackend_;
-        $httpBackend.expectGET('api/messages').
+        $httpBackend.expectGET('../admin/api/messages').
         respond(response);
 
         scope = $rootScope.$new();

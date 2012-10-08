@@ -2,8 +2,8 @@
     <div id="commandLinks">
         <h3>{{msg('execute')}}: {{tree.name}}</h3>
     </div>
+    <div class="inside top-line"></div>
 
-    <hr>
     <div class="row-fluid">
         <div class="span12">
             <div class="row-fluid">
@@ -34,10 +34,11 @@
                     </div>
                     <span class="btn btn-info" ng-click="restart()" ><i class="icon-refresh icon-white i-middle"></i> Restart</span>
                     <div class="clearfix"></div>
-                    <hr>
-                    <p>
-                        <a href="#/trees" class="btn btn-primary">{{msg('main.back')}}</a>
-                    </p>
+                    <div class="inside top-line">
+                        <p>
+                            <a href="#/trees" class="btn btn-primary">{{msg('main.back')}}</a>
+                        </p>
+                    </div>
                 </div>
                 <div class="span8">
                     <h3>{{msg('execute.history')}}</h3>

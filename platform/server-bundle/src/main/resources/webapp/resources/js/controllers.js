@@ -1,11 +1,14 @@
 'use strict';
 
 function MasterCtrl($scope, $http, i18nService) {
-    var msgBundle = 'dashboard';
-    var msgPath = 'resources/messages/';
-
+    $scope.i18n = {};
     $scope.languages = [];
     $scope.userLang = null;
+
+    $http({method: 'GET', url: 'lang/locate'}).
+        success(function(data) {
+            $scope.i18n = data;
+        });
 
     $http({method: 'GET', url: 'lang/list'}).
         success(function(data) {
@@ -14,9 +17,13 @@ function MasterCtrl($scope, $http, i18nService) {
 
     $http({method: 'GET', url: 'lang'}).
         success(function(data) {
-            i18nService.init(data, msgBundle, msgPath);
-            i18nService.init(data, 'startup', msgPath);
-            i18nService.init(data, 'messages', '../demo/messages/');
+            var key, i;
+
+            for (key in $scope.i18n) {
+                for (i = 0; i < $scope.i18n[key].length; i += 1) {
+                    i18nService.init(data, key, $scope.i18n[key][i]);
+                }
+            }
             $scope.userLang = $scope.getLanguage(toLocale(data));
         });
 
@@ -24,9 +31,13 @@ function MasterCtrl($scope, $http, i18nService) {
         var locale = toLocale(lang);
 
         $http({ method: "POST", url: "lang", params: locale }).success(function() {
-            i18nService.init(lang, msgBundle, msgPath);
-            i18nService.init(lang, 'startup', msgPath);
-            i18nService.init(lang, 'messages', '../demo/messages/');
+            var key, i;
+
+            for (key in $scope.i18n) {
+                for (i = 0; i < $scope.i18n[key].length; i += 1) {
+                    i18nService.init(lang, key, $scope.i18n[key][i]);
+                }
+            }
             $scope.userLang = $scope.getLanguage(locale);
         });
     }
@@ -39,10 +50,24 @@ function MasterCtrl($scope, $http, i18nService) {
         $scope.moduleUrl = url;
     }
 
+    $scope.printDate = function(milis) {
+        var date = "";
+        if (milis) {
+            var date = new Date(milis);
+        }
+        return date;
+    }
+
     $scope.getLanguage = function(locale) {
        return {
            key: locale.toString() || "en",
            value: $scope.languages[locale.toString()] || $scope.languages[locale.withoutVariant()] || $scope.languages[locale.language] || "English"
        }
+    }
+
+    $scope.active = function(address) {
+        if (window.location.href.indexOf(address) != -1) {
+            return "active";
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
+function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
 
     var LOADING_STATE = 'LOADING';
 
@@ -18,6 +18,16 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
         }
 
         return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
+    }
+
+    $scope.bundlesWithSettings = [];
+    $http({method: 'GET', url: '../admin/api/settings/bundles/list'}).
+        success(function(data) {
+            $scope.bundlesWithSettings = data;
+        });
+
+    $scope.showSettings = function(bundle) {
+        return $.inArray(bundle.symbolicName, $scope.bundlesWithSettings) >= 0;
     }
 
     $scope.setOrder = function(prop) {
@@ -119,7 +129,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
 
                 bundle.$uninstall(function() {
                     // remove bundle from list
-                    $scope.bundles.remove(bundle);
+                    $scope.bundles.removeObject(bundle);
                 },
                 function() {
                     motechAlert('bundles.error.uninstall', 'error');
@@ -238,7 +248,7 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
     }
 
     $scope.remove = function(message) {
-        $scope.messages.remove(message);
+        $scope.messages.removeObject(message);
         if ($scope.ignoredMessages == undefined) {
             $scope.ignoredMessages = [];
         }
@@ -253,59 +263,6 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
             return jQuery.inArray(message._id, $scope.ignoredMessages) == -1; // not in ignored list
         });
         $scope.messages = msgs;
-    }
-}
-
-function MasterCtrl($scope, i18nService, $http) {
-    i18nService.init(jQuery.i18n.browserLang());
-
-    $scope.bundlesWithSettings = [];
-    $http({method: 'GET', url: 'api/settings/bundles/list'}).
-        success(function(data) {
-            $scope.bundlesWithSettings = data;
-        });
-
-
-    $scope.mappings = [];
-    $scope.getMappings = function() {
-        $http({method: 'GET', url: 'api/mappings'}).
-              success(function(data) {
-                  $scope.mappings = data;
-              });
-    }
-    $scope.getMappings();
-
-    $scope.showSettings = function(bundle) {
-        return $.inArray(bundle.symbolicName, $scope.bundlesWithSettings) >= 0;
-    }
-
-    $scope.msg = function(key) {
-        return i18nService.getMessage(key);
-    }
-
-    $scope.printDate = function(milis) {
-        var date = "";
-        if (milis) {
-            var date = new Date(milis);
-        }
-        return date;
-    }
-
-    $scope.languages = i18nService.languages;
-    $scope.userLang = null;
-    $http({method: 'GET', url: 'api/locale/lang/'}).
-        success(function(data) {
-            i18nService.init(data);
-            $scope.userLang = i18nService.getLanguage(toLocale(data));
-        });
-
-    $scope.setUserLang = function(lang) {
-        var locale = toLocale(lang);
-
-        $http({ method: "POST", url: "api/locale/lang/", params: locale }).success(function() {
-            i18nService.init(lang);
-            $scope.userLang = i18nService.getLanguage(locale);
-        });
     }
 }
 
@@ -353,14 +310,14 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
     }
 
     $scope.uploadFileLocation = function() {
-        $http({method: 'POST', url: 'api/settings/platform/location', params: {location: this.location}}).
+        $http({method: 'POST', url: '../admin/api/settings/platform/location', params: {location: this.location}}).
             success(alertHandler('settings.saved', 'success')).
             error(alertHandler('settings.error.location'));
     }
 
     $scope.saveAll = function() {
         blockUI();
-        $http.post('api/settings/platform/list', $scope.platformSettings).
+        $http.post('../admin/api/settings/platform/list', $scope.platformSettings).
             success(alertHandler('settings.saved', 'success')).
             error(alertHandler('settings.error.location'));
     }
@@ -373,7 +330,7 @@ function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
 function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http) {
     $scope.moduleSettings = ModuleSettings.query({ bundleId : $routeParams.bundleId });
 
-    $http.get('api/settings/' + $routeParams.bundleId + '/raw').success(function(data) {
+    $http.get('../admin/api/settings/' + $routeParams.bundleId + '/raw').success(function(data) {
         $scope.rawFiles = data;
     })
 
@@ -416,7 +373,7 @@ function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http)
 }
 
 function OperationsCtrl($scope, $http) {
-    $http({method: 'GET', url: 'api/mappings/graphite'}).
+    $http({method: 'GET', url: '../admin/api/mappings/graphite'}).
         success(function(data) {
             $scope.graphiteUrl = data;
             // prefix with http://

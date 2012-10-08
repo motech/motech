@@ -13,6 +13,7 @@
     <name>MoTeCH Platform Server Bundle</name>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
+        <jasmine.server.port>8234</jasmine.server.port>
     </properties>
     <dependencies>
         <!-- MOTECH dependencies -->
@@ -213,6 +214,7 @@
                             javax.servlet.jsp.jstl.core,
                             org.aopalliance.aop,
                             org.apache.activemq,
+                            org.apache.commons.vfs,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.springframework.aop,
@@ -249,6 +251,40 @@
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipTests>${maven.test.skip}</skipTests>
+                    <serverPort>${jasmine.server.port}</serverPort>
+
+                    <jsSrcDir>${project.basedir}/src/main/resources/webapp/resources</jsSrcDir>
+                    <sourceIncludes>
+                        <include>lib/angular/angular.min.js</include>
+                        <include>lib/angular/angular-resource.min.js</include>
+                        <include>lib/angular/angular-mocks.js</include>
+                        <include>lib/jquery/jquery-1.7.2.min.js</include>
+                        <include>lib/**/*.js</include>
+                        <include>js/util.js</include>
+                        <include>js/common.js</include>
+                        <include>js/*.js</include>
+                    </sourceIncludes>
+
+                    <jsTestSrcDir>${project.basedir}/src/test/resources/</jsTestSrcDir>
+                    <specIncludes>
+                        <include>lib/*.js</include>
+                        <include>spec/*.js</include>
+                    </specIncludes>
                 </configuration>
             </plugin>
         </plugins>

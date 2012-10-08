@@ -1,3 +1,38 @@
+.settings-actions {
+    background-color: #EDF5F9;
+    padding: 5px 0 0 5px;
+    margin: 0 -10px;
+}
+
+form.form-horizontal {
+    margin: 0;
+}
+
+.form-horizontal .control-group {
+    margin-bottom: 0;
+}
+
+.form-horizontal inside {
+    padding: 8px 10px 0
+}
+
+.settings-form  {
+    border-top: 1px solid #cccccc;
+    margin: 0;
+}
+
+h4.settings-section {
+    padding: 10px 0 0 10px;
+}
+
+.medium-gray {
+    background-color: #eeeeee;
+}
+
+.lightblue-2 {
+    background: #EDF5F9;
+}
+
 .well2 {
     margin-bottom: 20px;
     min-height: 20px;
@@ -92,6 +127,9 @@
 .table-content {
     border-radius:4px;
     padding: 0;
+    -webkit-box-shadow: 0 0 6px #bec9de;
+       -moz-box-shadow: 0 0 6px #bec9de;
+            box-shadow: 0 0 6px #bec9de;
 }
 
 .table-bundles {
@@ -141,6 +179,25 @@
 .table-bundles th {
     white-space: nowrap;
     cursor: pointer;
+}
+
+.table-lightblue {
+    border: 1px solid #D4E1F9;
+    background: #E4F1F9;
+}
+
+.table-lightblue  tbody tr:nth-child(2n+1) td, .table-lightblue tbody tr:nth-child(2n+1) th {
+    background-color: #F3FBFE;
+}
+
+.table-lightblue  tbody tr:hover td, .table-lightblue tbody tr:hover th, .table-lightblue tbody tr:hover td a {
+    background-color: #EDF5F9;
+    color: #005580;
+}
+
+.table-lightblue .table-bordered th, .table-bordered td {
+      border-top: 1px solid #D4E1F9;
+      border-left: 1px solid #D4E1F9;
 }
 
 .admin-title-text {

@@ -102,26 +102,20 @@
 
             <div id="side-nav" class="span2">
                 <ul class="nav nav-tabs nav-stacked">
-                    <li class="nav-header">{{msg('view')}}</li>
-                    <li><a >{{msg('metrics')}}</a></li>
-                    <li><a>{{msg('dbViewer')}}</a></li>
-                    <li><a>{{msg('batchTasks')}}</a></li>
-                    <li><a>{{msg('settings')}}</a></li>
-                    <li class="divider"></li>
-
-
-
-                    <li class="nav-header">{{msg('modules')}}</li>
-                    <c:forEach var="module" items="${modules}">
-                        <c:choose>
-                            <c:when test="${module.moduleName == currentModule.moduleName}">
-                                <li class='active'><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
-                            </c:when>
-                            <c:otherwise>
-                                <li><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
-                            </c:otherwise>
-                        </c:choose>
+                    <c:forEach var="module" items="${individuals}">
+                        <li class="nav-header">{{msg('${module.moduleName}')}}</li>
+                        <c:forEach var="entry" items="${module.subMenu}">
+                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value}')"><a href="?moduleName=${module.moduleName}${entry.value}">{{msg('${entry.key}')}}</a></li>
+                        </c:forEach>
+                        <li class="divider"></li>
                     </c:forEach>
+
+                    <c:if test="${not empty links}">
+                        <li class="nav-header">{{msg('modules')}}</li>
+                        <c:forEach var="module" items="${links}">
+                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
+                        </c:forEach>
+                    </c:if>
                 </ul>
             </div>
 

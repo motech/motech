@@ -14,6 +14,10 @@ body {
     background: #EEE url("../img/mediumgrain-bg.png") repeat 0 0;
 }
 
+.lightblue-bg {
+    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+}
+
 h1, h2, h3, h4, h5, h6 {
     color: #224477;
 }
@@ -230,12 +234,12 @@ select {
 
 .box-content {
     border-radius: 4px;
-    border: 1px solid #cccccc;
+    border: 1px solid #D4E1F9;
     padding:0 0 10px 0;
     background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
-    -webkit-box-shadow: 0 0 6px #e5e5e5;
-       -moz-box-shadow: 0 0 6px #e5e5e5;
-            box-shadow: 0 0 6px #e5e5e5;
+    -webkit-box-shadow: 0 0 6px #bec9de;
+       -moz-box-shadow: 0 0 6px #bec9de;
+            box-shadow: 0 0 6px #bec9de;
 }
 
 .inside {

@@ -8,15 +8,15 @@ describe("Utils", function() {
         var array = [ '1', 'two', '3' , '4', 'five'];
         var expected = [ '1', '3', '4', 'five' ];
 
-        array.remove('two');
+        array.removeObject('two');
         expect(array).toEqual(expected);
 
         expected = [ '3', '4', 'five' ];
-        array.remove('1');
+        array.removeObject('1');
         expect(array).toEqual(expected);
 
         expected = [ '3', '4'];
-        array.remove('five');
+        array.removeObject('five');
         expect(array).toEqual(expected);
     });
 });

@@ -1,11 +1,10 @@
-
 <div class="box-header">{{msg('bundles')}}</div>
-<div class="table-content mediumgrain-bg">
+<div class="table-content lightblue-2">
 
-<div class="inside row-fluid">
+<div class="row-fluid">
 
     <div class="span5">
-        <form class="form-inline control-group">
+        <form class="inside form-inline control-group">
             <label for="filter"><span><b>{{msg('filter')}}</b></span>
                 <input id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </label>
@@ -24,7 +23,7 @@
 </div>
 
 <div class="inside inline">
-    <form id="bundleUploadForm" action="api/bundles/upload" enctype="multipart/form-data" method="POST">
+    <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
         <div class="inline"><span><b>{{msg('bundles.upload')}} </b></span>
             <input type="file" id="bundleFile" name="bundleFile" placeholder="{{msg('bundles.file')}}" class="input-file"/>
             <span class="offset1">
@@ -40,7 +39,7 @@
     </form>
 </div>
 <div class="clearfix"></div>
-<table class="table table-bundles table-bordered table-striped mediumgrain-bg">
+<table class="table table-bundles table-bordered table-striped table-lightblue">
     <thead>
     <tr>
         <th ng-click="setOrder('bundleId')" ng-class="getSortClass('bundleId')">{{msg('bundles.id')}}</th>
@@ -56,7 +55,7 @@
         <td>{{bundle.bundleId}}</td>
         <td>
             <div ng-class="getIconClass(bundle)">
-                <img ng-src="api/bundles/{{bundle.bundleId}}/icon" class="icon"/>
+                <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="icon"/>
             </div>
         </td>
         <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name}} - {{bundle.symbolicName}}</a></td>
@@ -66,31 +65,31 @@
             <div id="commandLinks" ng-show="bundleStable(bundle)">
                 <span ng-hide="bundle.isActive()">
                     <a ng-click="startBundle(bundle)">
-                        <img src='img/trans.gif' alt="{{msg('bundles.start')}}" title="{{msg('bundles.start')}}"
+                        <img src='../admin/img/trans.gif' alt="{{msg('bundles.start')}}" title="{{msg('bundles.start')}}"
                             class="action action-start"/>
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">
                     <a ng-click="stopBundle(bundle)">
-                        <img src="img/trans.gif"  alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
+                        <img src="../admin/img/trans.gif"  alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
                             class="action action-stop"/>
                     </a>
                     <a ng-click="restartBundle(bundle)">
-                        <img src="img/trans.gif" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}"
+                        <img src="../admin/img/trans.gif" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}"
                             class="action action-restart"/>
                     </a>
                 </span>
                 <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
-                    <img src="img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
+                    <img src="../admin/img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
                          class="action action-settings"/>
                 </a>
                 <a ng-click="uninstallBundle(bundle)">
-                    <img src="img/trans.gif" alt="{{msg('bundles.uninstall')}}" title="{{msg('bundles.uninstall')}}"
+                    <img src="../admin/img/trans.gif" alt="{{msg('bundles.uninstall')}}" title="{{msg('bundles.uninstall')}}"
                          class="action action-remove"/>
                 </a>
             </div>
             <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
-                <img class="icon" src="img/load.gif" alt="loading"/>
+                <img class="icon" src="../admin/img/load.gif" alt="loading"/>
             </div>
         </td>
     </tr>

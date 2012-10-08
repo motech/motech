@@ -49,7 +49,7 @@ function captureTyping(callback) {
 }
 
 function blockUI() {
-    $.blockUI({message : '<h1><img src="img/bigloader.gif" alt="loading" /></h1>'});
+    $.blockUI({message : '<h1><img src="../admin/img/bigloader.gif" alt="loading" /></h1>'});
 }
 
 function unblockUI() {
