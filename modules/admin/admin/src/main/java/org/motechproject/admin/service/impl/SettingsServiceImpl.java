@@ -106,8 +106,14 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void savePlatformSettings(Settings settings) {
-        for (SettingsOption option : settings.getSettings()) {
-            platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
+        if ("activemq".equals(settings.getSection())) {
+            for (SettingsOption option : settings.getSettings()) {
+                platformSettingsService.setActiveMqSetting(option.getKey(), String.valueOf(option.getValue()));
+            }
+        } else {
+            for (SettingsOption option : settings.getSettings()) {
+                platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
+            }
         }
     }
 
@@ -120,23 +126,36 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void saveSettingsFile(MultipartFile configFile) {
+        Properties settings = loadMultipartFileIntoProperties(configFile);
+        platformSettingsService.savePlatformSettings(settings);
+    }
+
+    private Properties loadMultipartFileIntoProperties(MultipartFile configFile) {
         if (configFile == null) {
             throw new IllegalArgumentException("Config file cannot be null");
         }
 
         InputStream is = null;
+        Properties settings = new Properties();
         try {
             is = configFile.getInputStream();
-            Properties settings = new Properties();
+
             settings.load(is);
 
-            platformSettingsService.savePlatformSettings(settings);
         } catch (IOException e) {
             LOG.error("Unable to save config file", e);
             throw new MotechException("Error saving config file", e);
         } finally {
             IOUtils.closeQuietly(is);
         }
+
+        return settings;
+    }
+
+    @Override
+    public void saveActiveMqFile(MultipartFile activemqFile) {
+        Properties activemqSettings = loadMultipartFileIntoProperties(activemqFile);
+        platformSettingsService.saveActiveMqSettings(activemqSettings);
     }
 
     @Override

@@ -1,24 +1,32 @@
 package org.motechproject.server.config.settings;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.security.DigestInputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class ConfigFileSettings extends Properties implements MotechSettings {
+import org.motechproject.server.config.service.PlatformSettingsService;
+
+public class ConfigFileSettings implements MotechSettings {
 
     private byte[] md5checkSum;
     private URL fileURL;
+    private Properties motechSettings = new Properties();
+    private Properties activemq = new Properties();
 
     @Override
     public String getLanguage() {
-        return getProperty(LANGUAGE);
+        return motechSettings.getProperty(LANGUAGE);
     }
 
     @Override
     public String getStatusMsgTimeout() {
-        return getProperty(STATUS_MSG_TIMEOUT);
+        return motechSettings.getProperty(STATUS_MSG_TIMEOUT);
     }
 
     public byte[] getMd5checkSum() {
@@ -38,21 +46,24 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     }
 
     public synchronized void load(DigestInputStream inStream) throws IOException {
-        super.load(inStream);
-        md5checkSum = inStream.getMessageDigest().digest();
+        motechSettings.load(inStream);
+    }
+
+    public synchronized void loadActiveMq(InputStream is) throws IOException {
+        activemq.load(is);
     }
 
     @Override
     public Properties getCouchDBProperties() {
         Properties couchProperties = new Properties();
 
-        putPropertyIfNotNull(couchProperties, "host", getProperty(DB_HOST));
-        putPropertyIfNotNull(couchProperties, "port", getProperty(DB_PORT));
-        putPropertyIfNotNull(couchProperties, "username", getProperty(DB_USERNAME));
-        putPropertyIfNotNull(couchProperties, "password", getProperty(DB_PASSWORD));
-        putPropertyIfNotNull(couchProperties, "maxConnections", getProperty(DB_MAX_CONNECTIONS));
-        putPropertyIfNotNull(couchProperties, "connectionTimeout", getProperty(DB_CONNECTION_TIMEOUT));
-        putPropertyIfNotNull(couchProperties, "socketTimeout", getProperty(DB_SOCKET_TIMEOUT));
+        putPropertyIfNotNull(couchProperties, "host", motechSettings.getProperty(DB_HOST));
+        putPropertyIfNotNull(couchProperties, "port", motechSettings.getProperty(DB_PORT));
+        putPropertyIfNotNull(couchProperties, "username", motechSettings.getProperty(DB_USERNAME));
+        putPropertyIfNotNull(couchProperties, "password", motechSettings.getProperty(DB_PASSWORD));
+        putPropertyIfNotNull(couchProperties, "maxConnections", motechSettings.getProperty(DB_MAX_CONNECTIONS));
+        putPropertyIfNotNull(couchProperties, "connectionTimeout", motechSettings.getProperty(DB_CONNECTION_TIMEOUT));
+        putPropertyIfNotNull(couchProperties, "socketTimeout", motechSettings.getProperty(DB_SOCKET_TIMEOUT));
 
         return couchProperties;
     }
@@ -60,15 +71,7 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     @Override
     public Properties getActivemqProperties() {
         Properties activemqProperties = new Properties();
-
-        putPropertyIfNotNull(activemqProperties, "queue.for.events", getProperty(AMQ_QUEUE_EVENTS));
-        putPropertyIfNotNull(activemqProperties, "queue.for.scheduler", getProperty(AMQ_QUEUE_SCHEDULER));
-        putPropertyIfNotNull(activemqProperties, "broker.url", getProperty(AMQ_BROKER_URL));
-        putPropertyIfNotNull(activemqProperties, "maximumRedeliveries", getProperty(AMQ_MAX_REDELIVERIES));
-        putPropertyIfNotNull(activemqProperties, "redeliveryDelayInMillis", getProperty(AMQ_REDELIVERY_DELAY_IN_MILLIS));
-        putPropertyIfNotNull(activemqProperties, "concurrentConsumers", getProperty(AMQ_CONCURRENT_CONSUMERS));
-        putPropertyIfNotNull(activemqProperties, "maxConcurrentConsumers", getProperty(AMQ_MAX_CONCURRENT_CONSUMERS));
-
+        activemqProperties.putAll(activemq);
         return activemqProperties;
     }
 
@@ -76,10 +79,10 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     public Properties getQuartzProperties() {
         Properties quartzProperties = new Properties();
 
-        putPropertyIfNotNull(quartzProperties, "org.quartz.scheduler.instanceName", getProperty(QUARTZ_SCHEDULER_NAME));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.class", getProperty(QUARTZ_THREAD_POOL_CLASS));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.threadCount", getProperty(QUARTZ_THREAD_POOL_THREAD_COUNT));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.jobStore.class", getProperty(QUARTZ_JOB_STORE_CLASS));
+        putPropertyIfNotNull(quartzProperties, "org.quartz.scheduler.instanceName", motechSettings.getProperty(QUARTZ_SCHEDULER_NAME));
+        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.class", motechSettings.getProperty(QUARTZ_THREAD_POOL_CLASS));
+        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.threadCount", motechSettings.getProperty(QUARTZ_THREAD_POOL_THREAD_COUNT));
+        putPropertyIfNotNull(quartzProperties, "org.quartz.jobStore.class", motechSettings.getProperty(QUARTZ_JOB_STORE_CLASS));
 
         return quartzProperties;
     }
@@ -88,7 +91,7 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     public Properties getMetricsProperties() {
         Properties metricsProperties = new Properties();
 
-        putPropertyIfNotNull(metricsProperties, GRAPHITE_URL, getProperty(GRAPHITE_URL));
+        putPropertyIfNotNull(metricsProperties, GRAPHITE_URL, motechSettings.getProperty(GRAPHITE_URL));
 
         return metricsProperties;
     }
@@ -97,7 +100,7 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     public Properties getSchedulerProperties() {
         Properties schedulerProperties = new Properties();
 
-        putPropertyIfNotNull(schedulerProperties, SCHEDULER_URL, getProperty(SCHEDULER_URL));
+        putPropertyIfNotNull(schedulerProperties, SCHEDULER_URL, motechSettings.getProperty(SCHEDULER_URL));
 
         return schedulerProperties;
     }
@@ -106,5 +109,39 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
         if (value != null) {
             properties.put(key, value);
         }
+    }
+
+    public void setMd5checksum(byte[] digest) {
+        this.md5checkSum = Arrays.copyOf(digest, digest.length);
+    }
+
+    public void saveMotechSetting(String key, String value) {
+        motechSettings.put(key, value);
+    }
+
+    public void storeMotechSettings() throws FileNotFoundException, IOException {
+        File file = new File(getPath() + File.separator + PlatformSettingsService.SETTINGS_FILE_NAME);
+        motechSettings.store(new FileOutputStream(file), null);
+    }
+
+    public Properties getAll() {
+        Properties copy = new Properties();
+        copy.putAll(motechSettings);
+        copy.putAll(activemq);
+
+        return copy;
+    }
+
+    public void saveActiveMqSetting(String key, String value) {
+        activemq.put(key, value);
+    }
+
+    public Properties getMotechSettings() {
+        return motechSettings;
+    }
+
+    public void storeActiveMqSettings() throws FileNotFoundException, IOException {
+        File file = new File(getPath() + File.separator + PlatformSettingsService.ACTIVEMQ_FILE_NAME);
+        activemq.store(new FileOutputStream(file), null);
     }
 }

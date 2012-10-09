@@ -103,6 +103,29 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
+    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
+    public void saveActiveMqSettings(Properties settings) {
+        createConfigDir();
+
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), ACTIVEMQ_FILE_NAME));
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            settings.store(fos, null);
+            configFileMonitor.monitor();
+
+            SettingsRecord dbSettings = getDBSettings();
+            if (dbSettings == null) {
+                LOGGER.warn("activemq properties cannot be saved to database");
+                return;
+            }
+            dbSettings.setActivemqProperties(settings);
+            allSettings.addOrUpdateSettings(dbSettings);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     public void setPlatformSetting(final String key, final String value) {
         ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
@@ -113,15 +136,15 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             configFileSettings = configFileMonitor.getCurrentSettings();
         }
 
-        File configFile = new File(configFileSettings.getPath());
+        File configFile = new File(configFileSettings.getPath() + File.separator + SETTINGS_FILE_NAME);
 
         try {
             // save property to config file
             if (configFile.canWrite()) {
                 Properties couchDb = configFileSettings.getCouchDBProperties();
 
-                configFileSettings.put(key, value);
-                configFileSettings.store(new FileOutputStream(configFile), null);
+                configFileSettings.saveMotechSetting(key, value);
+                configFileSettings.storeMotechSettings();
 
                 if (!configFileSettings.getCouchDBProperties().equals(couchDb)) {
                     configureCouchDBManager();
@@ -137,7 +160,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
                     dbSettings.setStatusMsgTimeout(value);
                 } else {
-                    for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties(),
+                    for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
                             dbSettings.getMetricsProperties())) {
                         if (p.containsKey(key)) {
                             p.put(key, value);
@@ -151,6 +174,35 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             }
         } catch (Exception e) {
             LOGGER.error("Error: ", e);
+        }
+    }
+
+    @Override
+    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
+    public void setActiveMqSetting(String key, String value) {
+        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
+
+        if (configFileSettings == null) {
+            LOGGER.error("Cannot save active mq settings because motech settings file does not exist");
+            return;
+        }
+
+        File configFile = new File(configFileSettings.getPath() + File.separator + ACTIVEMQ_FILE_NAME);
+        try {
+            if (configFile.canWrite()) {
+                configFileSettings.saveActiveMqSetting(key, value);
+                configFileSettings.storeActiveMqSettings();
+            }
+
+            // save property to db
+            SettingsRecord dbSettings = getDBSettings();
+
+            if (dbSettings != null) {
+                dbSettings.getActivemqProperties().setProperty(key, value);
+                allSettings.addOrUpdateSettings(dbSettings);
+            }
+        } catch (Exception e) {
+            LOGGER.error("There was a problem updating an activemq setting");
         }
     }
 
@@ -183,7 +235,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         Properties export = new Properties();
 
         if (configFileSettings != null) {
-            export.putAll(configFileSettings);
+            export.putAll(configFileSettings.getAll());
         }
 
         if (dbSettings != null) {
@@ -195,8 +247,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
     public void addConfigLocation(final String location, final boolean save) throws Exception {
         configFileMonitor.changeConfigFileLocation(location, save);
     }
@@ -319,7 +370,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
     public void evictMotechSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached motech settings
@@ -351,4 +402,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         return allSettings == null ? null : allSettings.getSettings();
     }
+
+    @Override
+    @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")
+    public Properties getActiveMqProperties() {
+        return getPlatformSettings().getActivemqProperties();
+    }
+
 }

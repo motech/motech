@@ -78,6 +78,7 @@
                                     <directory>src/main/config</directory>
                                     <includes>
                                         <include>motech-settings.conf</include>
+                                        <include>activemq.properties</include>
                                     </includes>
                                 </resource>
                             </resources>

@@ -5,11 +5,24 @@
         <div class="box-content inside mediumgrain-bg">
             <form id="settingsFileForm" action="api/settings/platform/upload" method="post" enctype="multipart/form-data">
                 <fieldset>
+                    <h5 class="settings-section">{{msg('platform.settings')}}</h5>
                     <span>
                         <input type="file" id="settingsFile" name="settingsFile" class="input-file"/>
                     </span>
                     <span class="offset1">
                         <input class="btn" type="button" value="{{msg('submit')}}" ng-click="uploadSettings()"/>
+                    </span>
+                </fieldset>
+            </form>
+            <br />
+            <form id="activemqFileForm" action="api/settings/platform/activemq/upload" method="post" enctype="multipart/form-data">
+                <fieldset>
+                    <h5 class="settings-section">{{msg('activemq')}}</h5>
+                    <span>
+                        <input type="file" id="activemqFile" name="activemqFile" class="input-file"/>
+                    </span>
+                    <span class="offset1">
+                        <input class="btn" type="button" value="{{msg('submit')}}" ng-click="uploadActiveMqFile()"/>
                     </span>
                 </fieldset>
             </form>

@@ -87,7 +87,7 @@ public class PlatformSettingsServiceImplTest {
     @Test
     public void testExport() throws IOException {
         ConfigFileSettings configFileSettings = new ConfigFileSettings();
-        configFileSettings.put(MotechSettings.LANGUAGE, "en");
+        configFileSettings.saveMotechSetting(MotechSettings.LANGUAGE, "en");
         when(configFileMonitor.getCurrentSettings()).thenReturn(configFileSettings);
 
         Properties p = platformSettingsService.exportPlatformSettings();

@@ -343,6 +343,15 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
         });
     }
 
+    $scope.uploadActiveMqFile = function() {
+        $("#activemqFileForm").ajaxSubmit({
+            success : alertHandlerWithCallback('settings.saved', function () {
+                $scope.platformSettings = PlatformSettings.query();
+            }),
+            error : jFormErrorHandler
+        });
+    }
+
     $scope.uploadFileLocation = function() {
         $http({method: 'POST', url: 'api/settings/platform/location', params: {location: this.location}}).
             success(alertHandler('settings.saved', 'success')).
