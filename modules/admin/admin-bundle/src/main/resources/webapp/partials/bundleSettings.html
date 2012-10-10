@@ -1,11 +1,11 @@
-<div class="well2 medium-gray" xmlns="http://www.w3.org/1999/html">
+<div class="well2" xmlns="http://www.w3.org/1999/html">
     <div id="bundle-settings">
         <div class="box-header">
             {{module.name}} - {{msg('settings')}}
         </div>
-        <div class="box-content inside">
-            <div ng-repeat="mSettings in moduleSettings">
-            <h4>{{mSettings.section}}</h4>
+        <div class="box-content">
+            <div class="settings-form lightblue-bg" ng-repeat="mSettings in moduleSettings">
+            <h4 class="settings-section">{{mSettings.section}}</h4>
                 <form id="settingsForm" class="form-horizontal inside" action="api/settings/{{module.bundleId}}" method="post">
                     <fieldset>
                         <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="control-group">
@@ -19,8 +19,8 @@
                             <div class="control-label span4"></div>
                             <div class="controls span3">
                             <input type="hidden" name="section" value="{{mSettings.section}}" />
-                            <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
-                            <input type="button" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
+                            <input type="button" class="btn" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
+                            <input type="button" class="btn" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
                             </div>
                         </div>
 
@@ -28,15 +28,15 @@
                 </form>
             </div>
 
-            <div ng-repeat="rawFile in rawFiles">
+            <div class="inside" ng-repeat="rawFile in rawFiles">
                 <h4>{{rawFile}}</h4>
                 <div class="control-group">
                     <form id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw" method="post"
                           enctype="multipart/form-data">
                         <span class="span4"><input type="file" name="file" />
                         <input type="hidden" value="{{rawFile}}" name="filename" /></span>
-                        <span><input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/></span>
-                        <span><input type="button"  ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/></span>
+                        <span><input type="button" class="btn" ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/></span>
+                        <span><input type="button" class="btn" ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/></span>
                     </form>
                 </div>
             </div>

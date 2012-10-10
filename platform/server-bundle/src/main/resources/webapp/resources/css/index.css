@@ -145,6 +145,17 @@ h1, h2, h3, h4, h5, h6 {
     border-radius:6px;
 }
 
+.nav-tabs.nav-stacked li {
+    -webkit-box-shadow: 0 1px 3px #bec9de;
+       -moz-box-shadow: 0 1px 3px #bec9de;
+            box-shadow: 0 1px 3px #bec9de;
+}
+.nav-tabs.nav-stacked li.nav-header {
+    -webkit-box-shadow: 0 0 0 #bec9de;
+       -moz-box-shadow: 0 0 0 #bec9de;
+            box-shadow: 0 0 0 #bec9de;
+}
+
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover,
 .nav-tabs > li > a:hover,
