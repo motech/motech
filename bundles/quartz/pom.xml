@@ -3,12 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.motechproject</groupId>
-        <artifactId>motech</artifactId>
-        <version>0.13-SNAPSHOT</version>
-        <relativePath>../../</relativePath>
-    </parent>
     <groupId>org.quartz-scheduler</groupId>
     <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
     <version>2.1.5</version>
@@ -19,6 +13,19 @@
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
