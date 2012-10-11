@@ -1,8 +1,8 @@
-<div class="well2 medium-gray">
+<div class="well2">
     <div class="box-header">
         {{msg('operations')}}
     </div>
-    <div class="box-content inside medium-gray">
+    <div class="box-content inside">
         <div>
             <iframe ng-show="graphiteUrl" ng-src="{{graphiteUrl}}/composer" height="450px" width="100%"></iframe>
             <p ng-hide="graphiteUrl">{{msg('operations.notReg')}}</p>

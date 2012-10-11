@@ -63,7 +63,7 @@
                                 <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
                             </div>
                         </div>
-                        <div class="control-group settings-actions">
+                        <div class="control-group">
                             <div class="control-label span3"></div>
                             <div class="controls span2">
                                 <input type="submit" ng-click="saveSettings(pSettings)" value="{{msg('save')}}" class="btn"/>
@@ -73,7 +73,7 @@
                 </form>
             </div>
             <form class="form-horizontal inside">
-                <div class="control-group settings-actions">
+                <div class="control-group">
                     <div class="control-label span3"></div>
                     <div class="controls span2">
                         <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}" class="btn"/>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
 
-                    <div class="control-group settings-actions">
+                    <div class="control-group">
                         <div class="control-label"></div>
                         <div class="controls">
                             <input type="button" ng-click="saveNewSettings()" value="{{msg('submit')}}" class="btn"/>
