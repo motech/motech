@@ -14,10 +14,6 @@
         <level value="WARN"/>
     </logger>
 
-    <logger name="org.springframework">
-        <level value="INFO"/>
-    </logger>
-
     <root>
         <priority value="WARN"/>
         <appender-ref ref="CONSOLE"/>
