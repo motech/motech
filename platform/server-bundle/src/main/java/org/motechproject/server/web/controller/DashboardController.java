@@ -6,6 +6,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.motechproject.server.startup.MotechPlatformState;
 import org.motechproject.server.startup.StartupManager;
+import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Collection;
@@ -30,8 +32,11 @@ public class DashboardController {
     @Autowired
     private UIFrameworkService uiFrameworkService;
 
+    @Autowired
+    private LocaleSettings localeSettings;
+
     @RequestMapping({"/index", "/", "/home"})
-    public ModelAndView index(@RequestParam(required = false) String moduleName) {
+    public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
 
         ModelAndView mav;
 
@@ -53,6 +58,8 @@ public class DashboardController {
                     mav.addObject("currentModule", currentModule);
                 }
             }
+
+            mav.addObject("pageLang", localeSettings.getUserLocale(request));
         }
 
         return mav;

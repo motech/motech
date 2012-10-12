@@ -26,7 +26,7 @@ angular.module('localization', []).factory("i18nService", function () {
 
             jQuery.i18n.properties({
                 name: 'messages',
-                path: 'messages/',
+                path: 'bundles/',
                 mode: 'map',
                 callback: function () {
                     self.ready = true;

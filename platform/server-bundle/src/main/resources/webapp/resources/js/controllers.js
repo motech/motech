@@ -13,32 +13,19 @@ function MasterCtrl($scope, $http, i18nService) {
     $http({method: 'GET', url: 'lang/list'}).
         success(function(data) {
             $scope.languages = data;
-        });
 
-    $http({method: 'GET', url: 'lang'}).
-        success(function(data) {
-            var key, i;
-
-            for (key in $scope.i18n) {
-                for (i = 0; i < $scope.i18n[key].length; i += 1) {
-                    i18nService.init(data, key, $scope.i18n[key][i]);
-                }
-            }
-            $scope.userLang = $scope.getLanguage(toLocale(data));
+            $http({method: 'GET', url: 'lang'}).
+                success(function(data) {
+                    $scope.loadI18n(data);
+                    $scope.userLang = $scope.getLanguage(toLocale(data));
+                });
         });
 
     $scope.setUserLang = function(lang) {
         var locale = toLocale(lang);
 
         $http({ method: "POST", url: "lang", params: locale }).success(function() {
-            var key, i;
-
-            for (key in $scope.i18n) {
-                for (i = 0; i < $scope.i18n[key].length; i += 1) {
-                    i18nService.init(lang, key, $scope.i18n[key][i]);
-                }
-            }
-            $scope.userLang = $scope.getLanguage(locale);
+            window.location.reload();
         });
     }
 
@@ -91,6 +78,15 @@ function MasterCtrl($scope, $http, i18nService) {
             $(".minimize").removeClass("action-minimize-up");
             $(".minimize").addClass("action-minimize-down");
         };
+    }
 
+    $scope.loadI18n = function(lang) {
+        var key, i;
+
+        for (key in $scope.i18n) {
+            for (i = 0; i < $scope.i18n[key].length; i += 1) {
+                i18nService.init(lang, key, $scope.i18n[key][i]);
+            }
+        }
     }
 }

@@ -30,12 +30,12 @@ public class LocaleSettingsImpl implements LocaleSettings, BundleContextAware {
     private BundleContext bundleContext;
 
     @Override
-    public String getUserLanguage(final HttpServletRequest requst) {
-        return cookieLocaleResolver.resolveLocale(requst).getLanguage();
+    public Locale getUserLocale(final HttpServletRequest requst) {
+        return cookieLocaleResolver.resolveLocale(requst);
     }
 
     @Override
-    public void setUserLanguage(final HttpServletRequest request, final HttpServletResponse response, final Locale locale) {
+    public void setUserLocale(final HttpServletRequest request, final HttpServletResponse response, final Locale locale) {
         cookieLocaleResolver.setLocale(request, response, locale);
     }
 

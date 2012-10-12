@@ -9,10 +9,13 @@ import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -73,6 +76,50 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
                     FileUtils.copyURLToFile(jspUrl, destFile);
                     logger.debug("Loaded " + jspUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                }
+            }
+
+            //Search for *.properties files in bundle
+            loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/resources/messages");
+            loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/bundles");
+        }
+    }
+
+    private void loadBundleMessageFilesFromBundle(final Bundle bundle, final File destRoot, final String pathInBundle) throws Exception {
+        Enumeration<URL> messages = bundle.findEntries(pathInBundle, "*.properties", true);
+        if (messages != null) {
+            File msgDestDir = new File(destRoot, "/WEB-INF/classes/org/motechproject/resources/");
+            boolean exists = msgDestDir.exists();
+
+            if (!exists) {
+                exists = msgDestDir.mkdirs();
+            }
+
+            if (exists) {
+                while(messages.hasMoreElements()) {
+                    Properties p = new Properties();
+                    URL msgUrl = messages.nextElement();
+                    String fileName = msgUrl.getFile().substring(msgUrl.getFile().lastIndexOf('/') + 1);
+                    int underscore = fileName.indexOf("_");
+
+                    if (underscore != -1) {
+                        fileName = "messages" + fileName.substring(underscore);
+                    } else {
+                        fileName = "messages.properties";
+                    }
+
+                    File msgDestFile = new File(msgDestDir, fileName);
+
+                    if (msgDestFile.exists()) {
+                        p.load(new FileInputStream(msgDestFile));
+                    }
+
+                    p.load(new InputStreamReader(msgUrl.openStream()));
+                    logger.debug("Loaded " + msgUrl.getFile() + " from [" + bundle.getLocation() + "]");
+
+                    try (FileOutputStream output = new FileOutputStream(msgDestFile)) {
+                        p.store(output, null);
+                    }
                 }
             }
         }
