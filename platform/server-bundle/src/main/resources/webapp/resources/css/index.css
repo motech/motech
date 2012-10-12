@@ -46,6 +46,9 @@ h1, h2, h3, h4, h5, h6 {
     border-radius:0 0 4px 4px;
     border:1px solid #d4e1f9;
     position:absolute;
+    -webkit-box-shadow: 0 1px 3px #bec9de;
+       -moz-box-shadow: 0 1px 3px #bec9de;
+            box-shadow: 0 1px 3px #bec9de;
 }
 
 .top-menu .nav, .top-menu .navbar .nav > li > a {
@@ -124,7 +127,30 @@ h1, h2, h3, h4, h5, h6 {
     background: url("../img/navbar.jpg") repeat-x 0 0;
 }
 
-.navbar .nav > li > a {
+#minimize {
+    margin:0 0 0 40px;
+}
+
+.minimize {
+    width: 28px;
+    height: 25px;
+    background:url("../img/action-btn-sprite.png") no-repeat;
+}
+.action-minimize-up {
+    background-position: -248px 0;
+}
+.action-minimize-up:hover {
+    background-position: -248px -24px;
+}
+
+.action-minimize-down {
+    background-position: -279px 0;
+}
+.action-minimize-down:hover {
+    background-position: -279px -24px;
+}
+
+.navbar .nav > li > a, .navbar .brand {
     color: #c2eafe;
 }
 

@@ -85,12 +85,19 @@
 
     <div class="header-nav navbar">
         <div class="navbar-inner navbar-inner-bg">
+
+            <a id="brand" class="brand" style="display:none;" href="#">MOTECH</a>
             <ul class="nav" role="navigation">
+                <li class="divider-vertical"  style="display:none;" ></li>
                 <li class="current"><a  role="menu"  href=".">{{msg('home')}}</a></li>
                 <li><a>|</a></li>
                 <li><a role="menu">{{msg('motech')}} {{msg('project')}}</a></li>
                 <li><a>|</a></li>
                 <li><a role="menu">{{msg('community')}}</a></li>
+                <a id="minimize" ng-click="minimizeHeader()">
+                    <img src="resources/img/trans.gif" title="{{msg('minimizeLogo')}}"
+                        class="minimize action-minimize-up"/>
+                </a>
             </ul>
         </div>
     </div>

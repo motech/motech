@@ -70,4 +70,27 @@ function MasterCtrl($scope, $http, i18nService) {
             return "active";
         }
     }
+
+    $scope.minimizeHeader = function() {
+        var display = $(".dashboard-logo").css("display");
+        if (display == "none") {
+            $("body").css("background-position","0 0");
+            $(".divider-vertical,#brand").css("display","none");
+            $(".header-title,.dashboard-logo").css("display","block");
+            $(".minimize").attr("alt", $scope.msg('minimizeLogo'));
+            $(".minimize").attr("title", $scope.msg('minimizeLogo'));
+            $(".minimize").removeClass("action-minimize-down");
+            $(".minimize").addClass("action-minimize-up");
+        }
+        else {
+            $("body").css("background-position","0 -40px");
+            $(".divider-vertical,#brand").css("display","block");
+            $(".header-title,.dashboard-logo").css("display","none");
+            $(".minimize").attr("alt", $scope.msg('expandLogo'));
+            $(".minimize").attr("title", $scope.msg('expandLogo'));
+            $(".minimize").removeClass("action-minimize-up");
+            $(".minimize").addClass("action-minimize-down");
+        };
+
+    }
 }
