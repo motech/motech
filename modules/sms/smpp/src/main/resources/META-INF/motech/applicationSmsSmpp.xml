@@ -8,10 +8,18 @@
     <context:component-scan base-package="org.motechproject.sms.smpp"/>
     <context:annotation-config/>
 
-    <bean id="smsSmppSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+    <bean id="smsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:sms.properties</value>
+            </list>
+        </property>
+        <property name="moduleName" value="sms-smpp"/>
+    </bean>
+
+    <bean id="smsSmppSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="configFiles">
+            <list>
                 <value>classpath:smpp.properties</value>
             </list>
         </property>

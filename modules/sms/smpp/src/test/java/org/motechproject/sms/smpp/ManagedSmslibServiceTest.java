@@ -41,15 +41,14 @@ public class ManagedSmslibServiceTest {
     @Mock
     private EventRelay eventRelay;
 
-    private Properties smppProperties;
-    private Properties smsProperties;
-    private SettingsFacade settings;
+    private SettingsFacade smsSettings;
+    private SettingsFacade smppSettings;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
         mockServiceSettings();
-        smppProperties = new Properties() {{
+        Properties smppProperties = new Properties() {{
             setProperty(SmppProperties.HOST, "smppserver.com");
             setProperty(SmppProperties.PASSWORD, "wpsd");
             setProperty(SmppProperties.PORT, "8876");
@@ -57,11 +56,12 @@ public class ManagedSmslibServiceTest {
             setProperty(SmppProperties.DELIVERY_REPORTS, "true");
             setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
         }};
-        smsProperties = new Properties();
+        Properties smsProperties = new Properties();
 
-        settings = new SettingsFacade();
-        settings.saveConfigProperties("smpp.properties", smppProperties);
-        settings.saveConfigProperties("sms.properties", smsProperties);
+        smsSettings = new SettingsFacade();
+        smsSettings.saveConfigProperties("sms.properties", smsProperties);
+        smppSettings = new SettingsFacade();
+        smppSettings.saveConfigProperties("smpp.properties", smppProperties);
     }
 
     private void mockServiceSettings() throws Exception {
@@ -85,20 +85,20 @@ public class ManagedSmslibServiceTest {
     @Test
     public void shouldRegisterOutboundNotificationListener() {
         OutboundMessageNotification outboundMessageNotification = mock(OutboundMessageNotification.class);
-        new ManagedSmslibService(smslibService, outboundMessageNotification, null, settings);
+        new ManagedSmslibService(smslibService, outboundMessageNotification, null, smsSettings, smppSettings);
         verify(smslibService).setOutboundMessageNotification(outboundMessageNotification);
     }
 
     @Test
     public void shouldRegisterInboundMessagesListener() {
         InboundMessageNotification inboundMessageNotification = mock(InboundMessageNotification.class);
-        new ManagedSmslibService(smslibService, null, inboundMessageNotification, settings);
+        new ManagedSmslibService(smslibService, null, inboundMessageNotification, smsSettings, smppSettings);
         verify(smslibService).setInboundMessageNotification(inboundMessageNotification);
     }
 
     @Test
     public void shouldAddConfiguredJsmppGatewayDuringInitialization() throws GatewayException {
-        new ManagedSmslibService(smslibService, null, null, settings);
+        new ManagedSmslibService(smslibService, null, null, smsSettings, smppSettings);
 
         ArgumentCaptor<JSMPPGateway> jsmppGatewayCaptor = ArgumentCaptor.forClass(JSMPPGateway.class);
         verify(smslibService).addGateway(jsmppGatewayCaptor.capture());
@@ -113,36 +113,36 @@ public class ManagedSmslibServiceTest {
     @Test
     public void shouldConfigureRetryCountOnSmsLib() {
         Service actualSmslibService = Service.getInstance();
-        settings.setProperty("sms.properties", SmsProperties.MAX_RETRIES, "5");
+        smsSettings.setProperty("sms.properties", SmsProperties.MAX_RETRIES, "5");
 
-        new ManagedSmslibService(actualSmslibService, null, null, settings);
+        new ManagedSmslibService(actualSmslibService, null, null, smsSettings, smppSettings);
         assertEquals(5, actualSmslibService.getSettings().QUEUE_RETRIES);
     }
 
     @Test
     public void shouldConfigurePersistenceFilePathOnSmsLib() {
         Service actualSmslibService = Service.getInstance();
-        new ManagedSmslibService(actualSmslibService, null, null, settings);
+        new ManagedSmslibService(actualSmslibService, null, null, smsSettings, smppSettings);
         assertEquals(".", actualSmslibService.getSettings().QUEUE_DIRECTORY);
     }
 
     @Test
     public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
-        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, settings);
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, smsSettings, smppSettings);
         managedSmslibService.connect();
         verify(smslibService).startService();
     }
 
     @Test
     public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
-        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, settings);
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, smsSettings, smppSettings);
         managedSmslibService.disconnect();
         verify(smslibService).stopService();
     }
 
     @Test
     public void shouldScheduledSmsForDelivery() throws GatewayException, IOException, TimeoutException, InterruptedException {
-        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, settings);
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, smsSettings, smppSettings);
         List<String> recipients = Arrays.asList("recipient1", "recipient2");
         managedSmslibService.queueMessageAt(recipients, "message", new DateTime(2011, 11, 21, 13, 12, 0, 0));
 
@@ -156,7 +156,7 @@ public class ManagedSmslibServiceTest {
 
     @Test
     public void shouldNotScheduleSms() throws GatewayException, IOException, TimeoutException, InterruptedException {
-        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, settings);
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, null, null, smsSettings, smppSettings);
         List<String> recipients = Arrays.asList("recipient1", "recipient2");
         managedSmslibService.queueMessage(recipients, "message");
 

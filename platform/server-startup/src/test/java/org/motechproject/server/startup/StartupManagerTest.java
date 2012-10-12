@@ -1,5 +1,6 @@
 package org.motechproject.server.startup;
 
+import org.ektorp.CouchDbConnector;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -27,6 +28,9 @@ import static org.motechproject.server.startup.MotechPlatformState.NEED_CONFIG;
 public class StartupManagerTest {
 
     @Mock
+    private CouchDbConnector couchDbConnector;
+
+    @Mock
     CouchDbManager couchDbManager;
 
     @Mock
@@ -51,6 +55,7 @@ public class StartupManagerTest {
     @Before
     public void setUp() {
         initMocks(this);
+//        when(couchDbManager.getConnector("motech-platform-startup", true)).thenReturn(couchDbConnector);
     }
 
     @Test

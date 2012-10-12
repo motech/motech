@@ -12,6 +12,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -36,7 +37,7 @@ public class SmsServiceImplTest {
     @Mock
     private MotechSchedulerService schedulerService;
     @Mock
-    private Properties smsApiProperties;
+    private SettingsFacade settings;
 
     private SmsService smsService;
     private MessageSplitter messageSplitter;
@@ -45,12 +46,12 @@ public class SmsServiceImplTest {
     public void setup() {
         initMocks(this);
 
-        when(smsApiProperties.getProperty("sms.schedule.future.sms")).thenReturn("true");
-        when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("true");
-        when(smsApiProperties.getProperty("sms.max.message.size")).thenReturn("160");
+        when(settings.getProperty("sms.schedule.future.sms")).thenReturn("true");
+        when(settings.getProperty("sms.multi.recipient.supported")).thenReturn("true");
+        when(settings.getProperty("sms.max.message.size")).thenReturn("160");
 
         messageSplitter = new MessageSplitter();
-        smsService = new SmsServiceImpl(schedulerService, messageSplitter, smsApiProperties, eventRelay);
+        smsService = new SmsServiceImpl(schedulerService, messageSplitter, settings, eventRelay);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class SmsServiceImplTest {
 
     @Test
     public void shouldNotScheduleSendSmsEvent_WhenScheduleFutureSmsIsSetToBeFalse() {
-        when(smsApiProperties.getProperty("sms.schedule.future.sms")).thenReturn("false");
+        when(settings.getProperty("sms.schedule.future.sms")).thenReturn("false");
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
         smsService.sendSMS("123", "This is a test message", deliveryTime);
 
@@ -150,7 +151,7 @@ public class SmsServiceImplTest {
 
     @Test
     public void shouldNotSplitMessagesIfMaxMessageSizePropertyIsNotDefined() {
-        when(smsApiProperties.getProperty("sms.max.message.size")).thenReturn(null);
+        when(settings.getProperty("sms.max.message.size")).thenReturn(null);
 
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
         String text = "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.";
@@ -165,7 +166,7 @@ public class SmsServiceImplTest {
 
     @Test
     public void shouldRaiseMultipleSendSmsEvents_WhenMultiRecipientNotSupported() {
-        when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("false");
+        when(settings.getProperty("sms.multi.recipient.supported")).thenReturn("false");
         String message = "This is a test message";
 
         smsService.sendSMS(Arrays.asList("100", "200", "300"), message);

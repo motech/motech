@@ -1,8 +1,11 @@
 package org.motechproject.eventlogging.repository;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.motechproject.eventlogging.domain.MappingsJson;
 import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.util.List;
 import java.util.Map;
@@ -10,13 +13,25 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AllEventMappingsTest {
+
+    @Mock
+    private SettingsFacade settings;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        when(settings.getRawConfig(AllEventMappings.MAPPING_FILE_NAME)).
+            thenReturn(getClass().getClassLoader().getResourceAsStream(AllEventMappings.MAPPING_FILE_NAME));
+    }
 
     @Test
     public void shouldReadTheEventMappingsFileCorrectly() {
 
-        AllEventMappings allEventMappings = new AllEventMappings();
+        AllEventMappings allEventMappings = new AllEventMappings(settings);
 
         List<MappingsJson> allMappings = allEventMappings.getAllMappings();
 

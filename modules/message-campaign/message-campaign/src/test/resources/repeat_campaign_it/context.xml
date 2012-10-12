@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       ">
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <util:properties id="messageCampaignProperties" location="classpath:repeat_campaign_it/messageCampaign.properties"/>
+    <bean id="messageCampaignSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="message-campaign"/>
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:repeat_campaign_it/campaigns.json</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns">
+        <property name="messageCampaignsJsonFile" value="repeat_campaign_it/campaigns.json"/>
+    </bean>
 
 </beans>

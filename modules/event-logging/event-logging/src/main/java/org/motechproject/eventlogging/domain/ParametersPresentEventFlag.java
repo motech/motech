@@ -9,6 +9,9 @@ public class ParametersPresentEventFlag implements EventFlag {
 
     private Map<String, String> keyValuePairsPresent;
 
+    public ParametersPresentEventFlag() {
+    }
+
     public ParametersPresentEventFlag(Map<String, String> keyValuePairsPresent) {
         if (keyValuePairsPresent == null) {
             this.keyValuePairsPresent = Collections.<String, String> emptyMap();

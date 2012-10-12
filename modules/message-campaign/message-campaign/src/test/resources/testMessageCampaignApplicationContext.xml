@@ -9,4 +9,5 @@
         <constructor-arg value="test-motech-message-campaign"/>
         <constructor-arg value="couchdb.properties"/>
     </bean>
+
 </beans>

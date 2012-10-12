@@ -8,6 +8,7 @@ import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.utils.IOUtils;
 import org.motechproject.mobileforms.api.utils.TestUtilities;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AllMobileFormsTest {
     @Mock
     private IOUtils ioUtils;
+    @Mock
+    private SettingsFacade settings;
     private AllMobileForms allMobileForms;
     private List<Form> formsOfGroupOne;
     private List<Form> formsOfGroupTwo;
@@ -34,7 +37,8 @@ public class AllMobileFormsTest {
         when(ioUtils.getFileContent("ANCVisit-1.xml", "GroupNameI")).thenReturn("<form>DummyForm2</form>");
         when(ioUtils.getFileContent("ClientDeath-2.xml", "GroupNameII")).thenReturn("<form>DummyForm3</form>");
 
-        allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/forms-config.json"), new MotechJsonReader(), ioUtils);
+        when(settings.getRawConfig("forms-config.json")).thenReturn(getClass().getClassLoader().getResourceAsStream("forms-config.json"));
+        allMobileForms = new AllMobileForms(settings, new MotechJsonReader(), ioUtils);
 
         formsOfGroupOne = Arrays.asList(new Form("MForm-I", "ClientDeath-1.xml", "<form>DummyForm1</form>", "org.motechproject.mobileforms.api.domain.ClientDeathFormBean", "org.motechproject.mobileforms.api.validator.TestClientDeathFormValidator", "GroupNameI", null),
                 new Form("MForm-II", "ANCVisit-1.xml", "<form>DummyForm2</form>", "org.motechproject.mobileforms.api.domain.ANCVisitFormBean", "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator", "GroupNameI", Arrays.asList("MForm-I")));
@@ -45,7 +49,7 @@ public class AllMobileFormsTest {
 
     @Test
     public void shouldValidateForCyclicDependency() {
-        allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/forms-config-with-cyclic-dependency.json"), new MotechJsonReader(), ioUtils);
+        allMobileForms = new AllMobileForms(settings, new MotechJsonReader(), ioUtils);
     }
 
     @Test

@@ -3,6 +3,8 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
@@ -17,21 +19,27 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AllMessageCampaignsTest {
 
     private AllMessageCampaigns allMessageCampaigns;
 
+    @Mock
+    private SettingsFacade settings;
+
     @Before
     public void setup() {
-        Properties properties = new Properties();
-        properties.setProperty("messagecampaign.definition.file", "/simple-message-campaign.json");
-        allMessageCampaigns = new AllMessageCampaigns(properties);
+        initMocks(this);
+        when(settings.getRawConfig("message-campaigns.json")).thenReturn(
+            getClass().getClassLoader().getResourceAsStream("message-campaigns.json")
+        );
+        allMessageCampaigns = new AllMessageCampaigns(settings);
     }
 
     @Test

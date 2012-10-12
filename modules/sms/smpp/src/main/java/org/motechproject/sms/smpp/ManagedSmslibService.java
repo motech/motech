@@ -5,12 +5,12 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smslib.GatewayException;
 import org.smslib.OutboundMessage;
 import org.smslib.SMSLibException;
 import org.smslib.Service;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,8 @@ public class ManagedSmslibService {
     private static final String GATEWAY_ID = "smpp_gateway";
     private static final String QUEUE_PERSISTENCE_PATH = ".";
 
-    private SettingsFacade settings;
+    private SettingsFacade smsSettings;
+    private SettingsFacade smppSettings;
 
     private Service smslibService;
     private OutboundMessageNotification outboundMessageNotification;
@@ -35,12 +36,13 @@ public class ManagedSmslibService {
 
     @Autowired
     public ManagedSmslibService(Service smslibService, OutboundMessageNotification outboundMessageNotification,
-                                InboundMessageNotification inboundMessageNotification, SettingsFacade settings) {
+                                InboundMessageNotification inboundMessageNotification, @Qualifier("smsApiSettings") SettingsFacade smsSettings, @Qualifier("smsSmppSettings") SettingsFacade smppSettings) {
         this.smslibService = smslibService;
         this.outboundMessageNotification = outboundMessageNotification;
         this.inboundMessageNotification = inboundMessageNotification;
-        this.jsmppMapper = new JSMPPPropertiesMapper(settings.getProperties("smpp.properties"));
-        this.settings = settings;
+        this.smsSettings = smsSettings;
+        this.jsmppMapper = new JSMPPPropertiesMapper(smppSettings.asProperties());
+        this.smppSettings = smppSettings;
 
         configureSmsLib();
         registerGateway();
@@ -57,7 +59,7 @@ public class ManagedSmslibService {
     private void configureSmsLib() {
         log.info("Configure SMS Lib Service");
 
-        String maxRetriesProperty = settings.getProperty(SmsProperties.MAX_RETRIES);
+        String maxRetriesProperty = smsSettings.getProperty(SmsProperties.MAX_RETRIES);
 
         if (maxRetriesProperty != null) {
             smslibService.getSettings().QUEUE_RETRIES = Integer.parseInt(maxRetriesProperty);
@@ -68,20 +70,19 @@ public class ManagedSmslibService {
 
     private void registerGateway() {
         log.info("Register JSMPP gateway");
-
-        JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
+        try {
+            JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
                 jsmppMapper.getHost(),
                 jsmppMapper.getPort(),
                 jsmppMapper.getBindAttributes());
 
-        jsmppGateway.setSourceAddress(jsmppMapper.getSourceAddress());
-        jsmppGateway.setDestinationAddress(jsmppMapper.getDestinationAddress());
+            jsmppGateway.setSourceAddress(jsmppMapper.getSourceAddress());
+            jsmppGateway.setDestinationAddress(jsmppMapper.getDestinationAddress());
 
-        try {
             smslibService.addGateway(jsmppGateway);
-        } catch (GatewayException e) {
+        } catch (Exception e) {
             // This should never really happen as SmsLib service will always be in STOPPED state at this point.
-            log.error("Error: ", e);
+            log.warn("Smpp gateway connection failed", e);
         }
     }
 
@@ -120,7 +121,7 @@ public class ManagedSmslibService {
     private OutboundMessage getOutboundMessage(String message, String recipient) {
         OutboundMessage outboundMessage = new OutboundMessage();
         outboundMessage.setRecipient(recipient);
-        outboundMessage.setStatusReport(Boolean.valueOf(settings.getProperty(DELIVERY_REPORTS)));
+        outboundMessage.setStatusReport(Boolean.valueOf(smppSettings.getProperty(DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);
         return outboundMessage;
