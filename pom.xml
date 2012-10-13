@@ -257,7 +257,7 @@
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>
-        <!--<module>modules/openmrs/api-bundle</module>-->
+        <module>modules/openmrs/api-bundle</module>
         <module>modules/openmrs/atomfeed-bundle</module>
         <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
@@ -270,6 +270,7 @@
         <module>modules/sms/smpp-bundle</module>
         <module>modules/web-security/web-security-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
+        <module>utils/c3p0-fragment-bundle</module>
 
         <!-- Packaging modules -->
         <module>packaging/deb</module>

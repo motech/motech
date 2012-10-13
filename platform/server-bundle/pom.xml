@@ -60,8 +60,9 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>com.springsource.javax.servlet.jsp.jstl</artifactId>
-            <version>1.2.0.v20110728</version>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -215,7 +216,6 @@
                             org.motechproject.server.bundle.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            javax.servlet.jsp.jstl.core,
                             org.aopalliance.aop,
                             org.apache.activemq,
                             org.apache.commons.vfs,

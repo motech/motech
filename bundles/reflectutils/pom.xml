@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.azeckoski</groupId>
+    <artifactId>org.motechproject.org.azeckoski.reflectutils</artifactId>
+    <version>0.9.14</version>
+    <packaging>bundle</packaging>
+    <name>Reflection Utilities</name>
+    <description>
+        A set of reflection utilities and miscellaneous utilities related to
+        working with classes and their fields with no dependencies which is compatible
+        with java 1.5 and generics. The package was originally created by Aaron Zeckoski
+        for the Sakai Project and Generic DAO project but was repackaged to make it
+        distributable by request. It is used in the RSF framework
+        (http://www2.caret.cam.ac.uk/rsfwiki/) and the EntityBroker among other things.
+        Note about the BeanUtils provided dependency: BeanUtils is not required if you are
+        not using it in your project. Note about the Hibernate provided dependency:
+        Hibernate is not required if you are not using it in your project.
+    </description>
+
+    <properties>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>1motech-repo</id>
+            <name>1MOTECH Maven Repository</name>
+            <url>http://repo.springsource.org/libs-milestone/</url>
+        </repository>
+        <repository>
+            <id>motech-repo</id>
+            <name>MOTECH Maven Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/public</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.azeckoski</groupId>
+            <artifactId>reflectutils</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.azeckoski.reflectutils;version=${project.version},
+                            org.azeckoski.reflectutils.annotations;version=${project.version},
+                            org.azeckoski.reflectutils.beanutils;version=${project.version},
+                            org.azeckoski.reflectutils.converters;version=${project.version},
+                            org.azeckoski.reflectutils.converters.api;version=${project.version},
+                            org.azeckoski.reflectutils.exceptions;version=${project.version},
+                            org.azeckoski.reflectutils.map;version=${project.version},
+                            org.azeckoski.reflectutils.refmap;version=${project.version},
+                            org.azeckoski.reflectutils.transcoders;version=${project.version}
+                        </Export-Package>
+                        <Bundle-Vendor>Google Reflectutils Group</Bundle-Vendor>
+                        <Bundle-DocURL>http://code.google.com/p/reflectutils/</Bundle-DocURL>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Embed-Dependency>reflectutils;inline=true</Embed-Dependency>
+                        <Embed-Transitive>false</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -4,3 +4,4 @@ http\://www.springframework.org/schema/context=org.springframework.context.confi
 http\://www.springframework.org/schema/osgi=org.springframework.osgi.config.OsgiNamespaceHandler
 http\://www.springframework.org/schema/aop=org.springframework.aop.config.AopNamespaceHandler
 http\://www.springframework.org/schema/tx=org.springframework.transaction.config.TxNamespaceHandler
+http\://www.springframework.org/schema/jee=org.springframework.ejb.config.JeeNamespaceHandler

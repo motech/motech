@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.motechproject.c3p0-fragment
+Bundle-Version: 1.0
+Bundle-Name: c3p0-fragment
+Fragment-Host: com.springsource.com.mchange.v2.c3p0;bundle-version="[0.9.1,1.0)"
+Import-Package: com.mysql.jdbc;version="[5.1,6)"

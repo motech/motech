@@ -124,6 +124,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-openmrs-api-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-openmrs-ws-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -179,6 +185,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-web-security-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -248,7 +260,6 @@
             <artifactId>com.springsource.org.apache.commons.collections</artifactId>
             <version>3.2.1</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -261,7 +272,6 @@
             <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
             <version>1.2.2.osgi</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -310,7 +320,6 @@
             <artifactId>org.springframework.asm</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -347,7 +356,6 @@
             <artifactId>org.springframework.expression</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -396,7 +404,6 @@
             <artifactId>org.springframework.osgi.core</artifactId>
             <version>1.2.1</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
@@ -483,6 +490,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>com.springsource.javax.transaction</artifactId>
+            <version>1.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>com.springsource.javax.validation</artifactId>
             <version>1.0.0.GA</version>
@@ -530,6 +543,66 @@
             <version>0.0.0.20041111</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.mysql.jdbc</groupId>
+            <artifactId>com.springsource.com.mysql.jdbc</artifactId>
+            <version>5.1.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.javassist</groupId>
+            <artifactId>com.springsource.javassist</artifactId>
+            <version>3.3.0.ga</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>com.springsource.antlr</artifactId>
+            <version>2.7.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>com.springsource.org.apache.tools.ant</artifactId>
+            <version>1.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>com.springsource.org.hibernate</artifactId>
+            <version>3.3.2.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.javassist</groupId>
+            <artifactId>com.springsource.javassist</artifactId>
+            <version>3.9.0.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm.attrs</artifactId>
+            <version>1.5.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm</artifactId>
+            <version>1.5.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.azeckoski</groupId>
+            <artifactId>org.motechproject.org.azeckoski.reflectutils</artifactId>
+            <version>0.9.14</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>org.motechproject.org.simpleframework.xml</artifactId>
+            <version>1.6.2</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Converted dependencies -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -566,7 +639,6 @@
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
             <version>2.1.5</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.smslib</groupId>
@@ -596,6 +668,18 @@
             <groupId>com.mchange.c3p0</groupId>
             <artifactId>com.springsource.com.mchange.v2.c3p0</artifactId>
             <version>0.9.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.liquibase</groupId>
+            <artifactId>org.motechproject.org.openmrs.liquibase</artifactId>
+            <version>1.9.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>org.motechproject.com.ca.uhn.hapi</artifactId>
+            <version>0.5.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- Dependencies for Xstream -->
@@ -713,10 +797,24 @@
                                 <phase>pre-integration-test</phase>
                                 <configuration>
                                     <includeScope>provided</includeScope>
-                                    <excludeArtifactIds>motech-platform-server-bundle</excludeArtifactIds>
+                                    <excludeArtifactIds>motech-platform-server-bundle,motech-c3p0-fragment-bundle</excludeArtifactIds>
                                     <excludeTransitive>true</excludeTransitive>
                                     <outputDirectory>
                                         ${user.home}/.motech/bundles
+                                    </outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-fragment-bundles</id>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <includeArtifactIds>motech-c3p0-fragment-bundle</includeArtifactIds>
+                                    <excludeTransitive>true</excludeTransitive>
+                                    <outputDirectory>
+                                        ${user.home}/.motech/bundles/fragments
                                     </outputDirectory>
                                 </configuration>
                             </execution>

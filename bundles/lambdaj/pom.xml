@@ -84,7 +84,6 @@
                         <Export-Package>
                             ch.lambdaj;version=${project.version},
                             ch.lambdaj.collection;version=${project.version},
-                            ch.lambdaj.function;version=${project.version},
                             ch.lambdaj.function.aggregate;version=${project.version},
                             ch.lambdaj.function.argument;version=${project.version},
                             ch.lambdaj.function.closure;version=${project.version},

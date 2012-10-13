@@ -66,6 +66,9 @@ public class Activator implements BundleActivator {
             dispatcherServlet.setContextClass(OpenmrsApiApplicationContext.class);
             ClassLoader old = Thread.currentThread().getContextClassLoader();
             try {
+                // register the mysql driver
+                Class.forName("com.mysql.jdbc.Driver");
+
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
                 logger.debug("Servlet registered");

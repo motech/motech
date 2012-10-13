@@ -19,6 +19,7 @@
     <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
         <property name="internalBundleFolder" value="/WEB-INF/bundles"/>
         <property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles"/>
+        <property name="fragmentSubFolder" value="fragments"/>
         <property name="bundleLoaders">
             <list>
                 <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>

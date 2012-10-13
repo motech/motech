@@ -1,5 +1,7 @@
 package org.motechproject.server.osgi;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private String internalBundleFolder;
 
     private String externalBundleFolder;
+
+    private String fragmentSubFolder;
 
     @Autowired
     private Framework osgiFramework;
@@ -71,7 +76,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             for (Bundle bundle : bundles) {
                 String bundleSymbolicName = bundle.getSymbolicName();
-
                 if (!bundleSymbolicName.startsWith("org.motechproject.motech-")) {
                     startBundle(bundle);
                 }
@@ -181,7 +185,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             }
         }
 
-        bundle.start();
+        if (!isFragmentBundle(bundle)) {
+            bundle.start();
+        }
     }
 
     private void storeClassCloader(Bundle bundle) throws Exception {
@@ -201,7 +207,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     private List<URL> findBundles(ServletContext servletContext) throws Exception {
-        List<URL> list = findInternalBundles(servletContext);
+        List<URL> list = findFragmentBundles(); //start with fragment bundles
+        list.addAll(findInternalBundles(servletContext));
         list.addAll(findExternalBundles());
         return list;
     }
@@ -214,7 +221,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * @throws Exception
      */
     private List<URL> findInternalBundles(ServletContext servletContext) throws Exception {
-        List<URL> list = new ArrayList<URL>();
+        List<URL> list = new ArrayList<>();
         if (StringUtils.isNotBlank(internalBundleFolder)) {
             @SuppressWarnings("unchecked")
             Set<String> paths = servletContext.getResourcePaths(internalBundleFolder);
@@ -249,24 +256,49 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             }
 
             if (exists) {
-                File[] files = folder.listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File path) {
-                        return path.isFile() && path.getAbsolutePath().endsWith(".jar");
-                    }
-                });
-
-                for (File file : files) {
-                    URL url = file.toURI().toURL();
-
-                    if (url != null) {
-                        list.add(url);
-                    }
-                }
+                File[] files = folder.listFiles((FileFilter) new SuffixFileFilter(".jar"));
+                list.addAll(Arrays.asList(FileUtils.toURLs(files)));
             }
         }
 
         return list;
+    }
+
+    List<URL> findFragmentBundles() throws Exception {
+        List<URL> list = new ArrayList<>();
+        String fragmentDirName = buildFragmentDirName();
+        if (StringUtils.isNotBlank(fragmentDirName)) {
+            File fragmentDir = new File(fragmentDirName);
+            boolean exists = fragmentDir.exists();
+
+            if (!exists) {
+                exists = fragmentDir.mkdirs();
+            }
+
+            if (exists) {
+                File[] files = fragmentDir.listFiles((FileFilter) new SuffixFileFilter(".jar"));
+                list.addAll(Arrays.asList(FileUtils.toURLs(files)));
+            }
+        }
+        return list;
+    }
+
+    private String buildFragmentDirName() {
+        String result = null;
+        if (StringUtils.isNotBlank(externalBundleFolder)) {
+            StringBuilder sb = new StringBuilder(externalBundleFolder);
+            if (!externalBundleFolder.endsWith(File.separator)) {
+                sb.append(File.separatorChar);
+            }
+            sb.append(fragmentSubFolder);
+            result = sb.toString();
+        }
+
+        return result;
+    }
+
+    private boolean isFragmentBundle(Bundle bundle) {
+        return bundle.getHeaders().get("Fragment-Host") != null;
     }
 
     @Override
@@ -296,6 +328,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public String getExternalBundleFolder() {
         return externalBundleFolder;
+    }
+
+    public String getFragmentSubFolder() {
+        return fragmentSubFolder;
+    }
+
+    public void setFragmentSubFolder(String fragmentSubFolder) {
+        this.fragmentSubFolder = fragmentSubFolder;
     }
 
     public List<JarInformation> getBundledModules() {
