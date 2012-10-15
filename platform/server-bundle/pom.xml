@@ -278,7 +278,7 @@
                         <include>lib/angular/angular.min.js</include>
                         <include>lib/angular/angular-resource.min.js</include>
                         <include>lib/angular/angular-mocks.js</include>
-                        <include>lib/jquery/jquery-1.7.2.min.js</include>
+                        <include>lib/jquery/jquery-1.8.2.min.js</include>
                         <include>lib/**/*.js</include>
                         <include>js/util.js</include>
                         <include>js/common.js</include>
