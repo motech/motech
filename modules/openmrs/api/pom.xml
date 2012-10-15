@@ -215,7 +215,6 @@
                                     <sqlCommand>
                                         CREATE DATABASE openmrs_api_test DEFAULT CHARSET utf8;
                                         GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'localhost' IDENTIFIED BY 'password';
-                                        GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'%' IDENTIFIED BY 'password';
                                         FLUSH PRIVILEGES;
                                         USE openmrs_api_test;
                                     </sqlCommand>
