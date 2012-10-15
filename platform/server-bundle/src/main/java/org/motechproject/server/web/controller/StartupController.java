@@ -57,7 +57,7 @@ public class StartupController {
         } else {
 
             StartupForm startupSettings = new StartupForm();
-            startupSettings.setLanguage(localeSettings.getUserLanguage(request));
+            startupSettings.setLanguage(localeSettings.getUserLocale(request).getLanguage());
 
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);

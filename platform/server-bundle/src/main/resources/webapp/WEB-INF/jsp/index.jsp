@@ -1,6 +1,10 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:setLocale value="${pageLang}" />
+<fmt:setBundle basename="org.motechproject.resources.messages" var="bundle"/>
 
 <!DOCTYPE html>
 <html>
@@ -56,18 +60,18 @@
     <div class="header">
         <div class="container">
             <div class="dashboard-logo"></div>
-            <div class="header-title">{{msg('motechTitle')}}</div>
+            <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
             <div class="top-menu">
                 <div class="navbar">
                     <ul class="nav">
-                        <li><strong>Server up time: </strong>${uptime}</li>
+                        <li><strong><fmt:message key="server.time" bundle="${bundle}"/>: </strong>${uptime}</li>
                         <li>|</li>
-                        <li><a href=""><strong>{{msg('login')}} </strong></a></li>
+                        <li><a href=""><strong><fmt:message key="login" bundle="${bundle}"/> </strong></a></li>
                         <li>|</li>
                             <li class="dropdown" id="localization">
                                 <a class="menu-flag dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="flag flag-{{userLang.key}}" title="{{userLang.key}}" alt="{{userLang.key}}"></i>
-                                    {{userLang.value}}
+                                    <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
+                                    <span style="text-transform:capitalize;">${pageLang.getDisplayLanguage(pageLang)}</span>
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -89,13 +93,13 @@
             <a id="brand" class="brand" style="display:none;" href="#">MOTECH</a>
             <ul class="nav" role="navigation">
                 <li class="divider-vertical"  style="display:none;" ></li>
-                <li class="current"><a  role="menu"  href=".">{{msg('home')}}</a></li>
+                <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
                 <li><a>|</a></li>
-                <li><a role="menu">{{msg('motech')}} {{msg('project')}}</a></li>
+                <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
                 <li><a>|</a></li>
-                <li><a role="menu">{{msg('community')}}</a></li>
+                <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
                 <a id="minimize" ng-click="minimizeHeader()">
-                    <img src="resources/img/trans.gif" title="{{msg('minimizeLogo')}}"
+                    <img src="resources/img/trans.gif" title="<fmt:message key="minimizeLogo" bundle="${bundle}"/>"
                         class="minimize action-minimize-up"/>
                 </a>
             </ul>
@@ -110,15 +114,15 @@
             <div id="side-nav" class="span2">
                 <ul class="nav nav-tabs nav-stacked">
                     <c:forEach var="module" items="${individuals}">
-                        <li class="nav-header">{{msg('${module.moduleName}')}}</li>
+                        <li class="nav-header"><fmt:message key="${module.moduleName}" bundle="${bundle}"/></li>
                         <c:forEach var="entry" items="${module.subMenu}">
-                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value}')"><a href="?moduleName=${module.moduleName}${entry.value}">{{msg('${entry.key}')}}</a></li>
+                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value}')"><a href="?moduleName=${module.moduleName}${entry.value}"><fmt:message key="${entry.key}" bundle="${bundle}"/></a></li>
                         </c:forEach>
                         <li class="divider"></li>
                     </c:forEach>
 
                     <c:if test="${not empty links}">
-                        <li class="nav-header">{{msg('modules')}}</li>
+                        <li class="nav-header"><fmt:message key="modules" bundle="${bundle}"/></li>
                         <c:forEach var="module" items="${links}">
                             <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
                         </c:forEach>
@@ -131,7 +135,11 @@
                     <div>
                         <div id="module-content">
                             <script type="text/javascript">
+                                $.blockUI({
+                                    message : '<h3><img src="resources/img/bigloader.gif" alt="loading" /></h3>'
+                                });
                                 loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
+                                $.unblockUI();
                             </script>
                         </div>
                     </div>
@@ -143,6 +151,6 @@
 
 </div>
 
-<footer class="inside"><strong>{{msg('generatedAt')}}:</strong> <%= new java.util.Date() %></footer>
+<footer class="inside"><strong><fmt:message key="generatedAt" bundle="${bundle}"/>:</strong> <%= new java.util.Date() %></footer>
 </body>
 </html>

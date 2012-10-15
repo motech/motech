@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -96,14 +97,14 @@ public class StartupControllerTest {
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
         when(motechSettings.getSchedulerProperties()).thenReturn(properties);
 
-        when(localeSettings.getUserLanguage(httpServletRequest)).thenReturn("en");
+        when(localeSettings.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
         when(localeSettings.getAvailableLanguages()).thenReturn(map);
 
         ModelAndView result = startupController.startup(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
         verify(localeSettings).getAvailableLanguages();
-        verify(localeSettings).getUserLanguage(httpServletRequest);
+        verify(localeSettings).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
         assertEquals(3, result.getModelMap().size());

@@ -4,9 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -25,6 +30,12 @@ public class DashboardControllerTest {
     private UIFrameworkService uiFrameworkService;
 
     @Mock
+    private LocaleSettings localeSettings;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
+
+    @Mock
     private ModuleRegistrationData regData;
 
     @InjectMocks
@@ -33,11 +44,12 @@ public class DashboardControllerTest {
     @Before
     public void setUp() {
         initMocks(this);
+        when(localeSettings.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
     }
 
     @Test
     public void testDashboardNoModule() {
-        ModelAndView result = controller.index(null);
+        ModelAndView result = controller.index(null, httpServletRequest);
 
         assertEquals("index", result.getViewName());
         assertNotNull(result.getModelMap().get(UPTIME));
@@ -48,7 +60,7 @@ public class DashboardControllerTest {
     public void testDashboardWithModule() {
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
 
-        ModelAndView result = controller.index("demo");
+        ModelAndView result = controller.index("demo", httpServletRequest);
 
         assertEquals("index", result.getViewName());
         assertNotNull(result.getModelMap().get(UPTIME));

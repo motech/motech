@@ -119,7 +119,7 @@ public class Activator implements BundleActivator {
         regData.setUrl("../demo/");
         regData.addAngularModule("motech-demo");
 
-        regData.addI18N("messages", "../demo/messages/");
+        regData.addI18N("messages", "../demo/bundles/");
 
         InputStream is = null;
         StringWriter writer = new StringWriter();
