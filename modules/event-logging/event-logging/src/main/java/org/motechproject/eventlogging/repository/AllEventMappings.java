@@ -31,7 +31,7 @@ public class AllEventMappings {
         Type type = new TypeToken<List<MappingsJson>>() {
         }.getType();
 
-        InputStream is = getClass().getClassLoader().getResourceAsStream(MAPPING_FILE_NAME);
+        InputStream is = settings.getRawConfig(MAPPING_FILE_NAME);
 
         List<MappingsJson> mappings = (List<MappingsJson>) motechJsonReader.readFromStream(is, type);
 
