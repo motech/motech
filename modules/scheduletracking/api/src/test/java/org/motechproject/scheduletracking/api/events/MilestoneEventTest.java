@@ -71,7 +71,11 @@ public class MilestoneEventTest {
 
         assertEquals(externalId, parameters.get(EventDataKeys.EXTERNAL_ID));
         assertEquals(scheduleName, parameters.get(EventDataKeys.SCHEDULE_NAME));
-        assertEquals(milestoneAlert, parameters.get(EventDataKeys.MILESTONE_NAME));
+        assertEquals(milestoneAlert.getMilestoneName(), parameters.get(EventDataKeys.MILESTONE_NAME));
+        assertEquals(milestoneAlert.getEarliestDateTime(), parameters.get(EventDataKeys.EARLIEST_DATE_TIME));
+        assertEquals(milestoneAlert.getDueDateTime(), parameters.get(EventDataKeys.DUE_DATE_TIME));
+        assertEquals(milestoneAlert.getLateDateTime(), parameters.get(EventDataKeys.LATE_DATE_TIME));
+        assertEquals(milestoneAlert.getDefaultmentDateTime(), parameters.get(EventDataKeys.DEFAULTMENT_DATE_TIME));
         assertEquals(windowName, parameters.get(EventDataKeys.WINDOW_NAME));
 
         Map<String, String> eventData = (Map<String, String>) parameters.get(EventDataKeys.MILESTONE_DATA);

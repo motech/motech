@@ -46,7 +46,7 @@ public class MilestoneEvent {
      */
     public MilestoneEvent(MotechEvent motechEvent) {
         this.scheduleName = (String) motechEvent.getParameters().get(EventDataKeys.SCHEDULE_NAME);
-        this.milestoneAlert = (MilestoneAlert) motechEvent.getParameters().get(EventDataKeys.MILESTONE_NAME);
+        this.milestoneAlert = new MilestoneAlert((String)motechEvent.getParameters().get(EventDataKeys.MILESTONE_NAME), (DateTime) motechEvent.getParameters().get(EventDataKeys.EARLIEST_DATE_TIME), (DateTime) motechEvent.getParameters().get(EventDataKeys.DUE_DATE_TIME), (DateTime) motechEvent.getParameters().get(EventDataKeys.LATE_DATE_TIME), (DateTime) motechEvent.getParameters().get(EventDataKeys.DEFAULTMENT_DATE_TIME));
         this.windowName = (String) motechEvent.getParameters().get(EventDataKeys.WINDOW_NAME);
         this.externalId = (String) motechEvent.getParameters().get(EventDataKeys.EXTERNAL_ID);
         this.referenceDateTime = (DateTime) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
@@ -75,7 +75,11 @@ public class MilestoneEvent {
     public MotechEvent toMotechEvent() {
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put(EventDataKeys.WINDOW_NAME, windowName);
-        parameters.put(EventDataKeys.MILESTONE_NAME, milestoneAlert);
+        parameters.put(EventDataKeys.MILESTONE_NAME, milestoneAlert.getMilestoneName());
+        parameters.put(EventDataKeys.EARLIEST_DATE_TIME, milestoneAlert.getEarliestDateTime());
+        parameters.put(EventDataKeys.DUE_DATE_TIME, milestoneAlert.getDueDateTime());
+        parameters.put(EventDataKeys.LATE_DATE_TIME, milestoneAlert.getLateDateTime());
+        parameters.put(EventDataKeys.DEFAULTMENT_DATE_TIME, milestoneAlert.getDefaultmentDateTime());
         parameters.put(EventDataKeys.SCHEDULE_NAME, scheduleName);
         parameters.put(EventDataKeys.EXTERNAL_ID, externalId);
         parameters.put(EventDataKeys.REFERENCE_DATE, referenceDateTime);

@@ -28,7 +28,7 @@ public final class MilestoneAlert implements Serializable {
     private MilestoneAlert() {
     }
 
-    private MilestoneAlert(String milestoneName, DateTime earliestDateTime, DateTime dueDateTime, DateTime lateDateTime, DateTime defaultmentDateTime) {
+    public MilestoneAlert(String milestoneName, DateTime earliestDateTime, DateTime dueDateTime, DateTime lateDateTime, DateTime defaultmentDateTime) {
         this.milestoneName = milestoneName;
         this.earliestDateTime = earliestDateTime;
         this.dueDateTime = dueDateTime;
