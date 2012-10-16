@@ -3,20 +3,28 @@ package org.motechproject.commcare.domain;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A domain class that represents the information and properties of a user from
  * CommCareHQ.
  */
 public class CommcareUser {
+    @SerializedName("default_phone_number")
     private String defaultPhoneNumber;
     private String email;
+    @SerializedName("first_name")
     private String firstName;
     private String id;
+    @SerializedName("last_name")
     private String lastName;
+    @SerializedName("resource_ui")
     private String resourceUi;
     private String username;
     private List<String> groups;
+    @SerializedName("user_data")
     private Map<String, String> userData;
+    @SerializedName("phone_numbers")
     private List<String> phoneNumbers;
 
     public String getDefaultPhoneNumber() {
