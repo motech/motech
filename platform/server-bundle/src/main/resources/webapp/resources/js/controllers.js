@@ -19,6 +19,13 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
             } else {
                 return "expandLogo";
             }
+        },
+        backgroudUpDown : function() {
+            if (this.showDashboard) {
+                return "bodywrap-down";
+            } else {
+                return "bodywrap-up";
+            }
         }
     }
 

@@ -50,34 +50,26 @@
     <div ng-show="platformSettings.length > 0">
         <div class="box-header"> {{msg('settings.platform')}}</div>
         <div class="box-content">
-            <div class="settings-form  lightblue-bg" ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
+            <div class="settings-form lightblue-settings span6" ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
                 <h4 class="settings-section">{{msg(pSettings.section)}}</h4>
                 <br />
 
-                <form id="platformSettingsForm" class="form-horizontal inside">
+                <form id="platformSettingsForm" class="inside">
                     <fieldset>
                         <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="control-group">
-                            <label class="control-label span3" for="{{option.key}}">{{option.key}}</label>
-
-                            <div class="controls span2">
-                                <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
-                            </div>
+                            <label class="" for="{{option.key}}">{{option.key}}</label>
+                            <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
                         </div>
-                        <div class="control-group">
-                            <div class="control-label span3"></div>
-                            <div class="controls span2">
-                                <input type="submit" ng-click="saveSettings(pSettings)" value="{{msg('save')}}" class="btn"/>
-                            </div>
+                        <div>
+                            <input type="submit" ng-click="saveSettings(pSettings)" value="{{msg('save')}}" class="btn"/>
                         </div>
                     </fieldset>
                 </form>
             </div>
-            <form class="form-horizontal inside">
+            <div class="clearfix"></div>
+            <form class="form-horizontal inside settings-form">
                 <div class="control-group">
-                    <div class="control-label span3"></div>
-                    <div class="controls span2">
-                        <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}" class="btn"/>
-                    </div>
+                    <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}" class="btn"/>
                 </div>
             </form>
         </div>
@@ -88,41 +80,30 @@
         <div class="box-content inside">
             <p>{{msg('settings.noSettingsMsg')}}</p>
 
-            <form id="noSettingsForm" class="form-horizontal lightblue-bg inside">
+            <form id="noSettingsForm" class="lightblue-settings inside">
                 <fieldset>
                     <div class="control-group">
-                        <label class="control-label" for="new.db.host">{{msg('label.db.host')}}</label>
-                        <div class="controls">
-                            <input id="new.db.host" type="text" name="db.host"/>
-                        </div>
+                        <label for="new.db.host">{{msg('label.db.host')}}</label>
+                        <input id="new.db.host" type="text" name="db.host"/>
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label" for="new.db.port">{{msg('label.db.port')}}</label>
-                        <div class="controls">
-                            <input type="text" id="new.db.port" name="db.port"/>
-                        </div>
+                        <label for="new.db.port">{{msg('label.db.port')}}</label>
+                        <input type="text" id="new.db.port" name="db.port"/>
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label" for="new.db.user">{{msg('label.db.username')}}</label>
-                        <div class="controls">
-                            <input type="text" id="new.db.user" name="db.username"/>
-                        </div>
+                        <label for="new.db.user">{{msg('label.db.username')}}</label>
+                        <input type="text" id="new.db.user" name="db.username"/>
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label" for="new.db.password">{{msg('label.db.password')}}</label>
-                        <div class="controls">
-                            <input type="text" id="new.db.password" name="db.password"/>
-                        </div>
+                        <label for="new.db.password">{{msg('label.db.password')}}</label>
+                        <input type="text" id="new.db.password" name="db.password"/>
                     </div>
 
                     <div class="control-group">
-                        <div class="control-label"></div>
-                        <div class="controls">
-                            <input type="button" ng-click="saveNewSettings()" value="{{msg('submit')}}" class="btn"/>
-                        </div>
+                        <input type="button" ng-click="saveNewSettings()" value="{{msg('submit')}}" class="btn"/>
                     </div>
                 </fieldset>
             </form>

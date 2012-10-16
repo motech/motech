@@ -56,7 +56,7 @@
 
 <body ng-controller="MasterCtrl">
 
-<div class="bodywrap">
+<div ng-class="showDashboardLogo.backgroudUpDown()">
     <div class="header">
         <div class="container">
             <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
@@ -105,7 +105,7 @@
             </a>
         </div>
     </div>
-    </div>
+
     <div class="clearfix"></div>
 
     <div id="content" class="container-fluid">

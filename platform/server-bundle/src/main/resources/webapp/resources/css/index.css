@@ -1,4 +1,8 @@
-body {
+.bodywrap-up {
+    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -40px;
+}
+
+.bodywrap-down {
     background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 0;
 }
 

@@ -11,12 +11,23 @@ form.form-horizontal {
     margin: 0;
 }
 
-.box-content > div.settings-form:first-child   {
+.box-content > div.settings-form:first-child,
+.box-content > div.settings-form:nth-child(2) {
     border-top: none;
 }
 
 h4.settings-section {
     padding: 10px 0 0 10px;
+}
+
+.row-fluid .settings-form.span6 {
+    margin-left:0;
+    width: 49.99%;
+}
+
+.box-content.lightblue-settings, .lightblue-settings  {
+    background: #dbedf7 url("../../server/resources/img/frame-set-bg.jpg") repeat-x 0 0;
+    border-left:1px solid #D4E1F9;
 }
 
 .lightblue-2 {
