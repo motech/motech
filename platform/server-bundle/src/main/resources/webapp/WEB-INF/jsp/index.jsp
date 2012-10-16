@@ -59,8 +59,8 @@
 <div class="bodywrap">
     <div class="header">
         <div class="container">
-            <div class="dashboard-logo"></div>
-            <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
+            <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
+            <div class="header-title" ng-show="showDashboardLogo.showDashboard"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
             <div class="top-menu">
                 <div class="navbar">
                     <ul class="nav">
@@ -90,19 +90,19 @@
     <div class="header-nav navbar">
         <div class="navbar-inner navbar-inner-bg">
 
-            <a id="brand" class="brand" style="display:none;" href="#">MOTECH</a>
+            <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
             <ul class="nav" role="navigation">
-                <li class="divider-vertical"  style="display:none;" ></li>
+                <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
                 <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
                 <li><a>|</a></li>
                 <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
                 <li><a>|</a></li>
                 <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
-                <a id="minimize" ng-click="minimizeHeader()">
-                    <img src="resources/img/trans.gif" title="<fmt:message key="minimizeLogo" bundle="${bundle}"/>"
-                        class="minimize action-minimize-up"/>
-                </a>
             </ul>
+            <a id="minimize" ng-click="minimizeHeader()">
+                                <img src="resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}" alt="{{msg(showDashboardLogo.changeTitle())}}"
+                                    ng-class="showDashboardLogo.changeClass()"/>
+            </a>
         </div>
     </div>
     </div>
