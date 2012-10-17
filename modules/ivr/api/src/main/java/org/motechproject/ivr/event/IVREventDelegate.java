@@ -1,6 +1,6 @@
 package org.motechproject.ivr.event;
 
-import org.motechproject.decisiontree.server.domain.CallDetailRecord;
+import org.motechproject.ivr.model.CallDetailRecord;
 
 public interface IVREventDelegate {
 

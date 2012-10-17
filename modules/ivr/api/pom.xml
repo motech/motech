@@ -75,11 +75,6 @@
             <version>2.6</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-decisiontree-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
