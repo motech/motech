@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
-public class TestIVRService {
+public class IVRServiceIT {
 
     private static final String CALLBACK_URL = "http://localhost";
     @Autowired
