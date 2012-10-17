@@ -272,7 +272,7 @@
         <module>utils/http-agent/http-agent-bundle</module>
 
         <!-- Packaging modules -->
-        <module>modules/deb/deb</module>
+        <module>packaging/deb</module>
         <module>modules/rpm/rpm</module>
 
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
