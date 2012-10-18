@@ -32,9 +32,7 @@
                     {{msg('bundles.startOnInstall')}}
                 </label>
             </span>
-            <span>
-                <input type="button" value="{{msg('bundles.installOrUpdate')}}" ng-click="submitBundle()" class="btn"/>
-            </span>
+            <span ng-click="submitBundle()" class="btn">{{msg('bundles.installOrUpdate')}}</span>
         </div>
     </form>
 </div>

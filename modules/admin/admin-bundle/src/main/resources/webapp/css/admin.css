@@ -30,6 +30,12 @@ h4.settings-section {
     border-left:1px solid #D4E1F9;
 }
 
+.form-save {
+    background:#cce5f4;
+    margin: 0;
+    border-radius: 0 0 6px 6px;
+}
+
 .lightblue-2 {
     background: #EDF5F9;
 }

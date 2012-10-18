@@ -1,44 +1,46 @@
 <div class="well2" xmlns="http://www.w3.org/1999/html">
     <div id="bundle-settings">
-        <div class="box-header">
-            {{module.name}} - {{msg('settings')}}
-        </div>
-        <div class="box-content">
-            <div class="settings-form lightblue-bg" ng-repeat="mSettings in moduleSettings">
-            <h4 class="settings-section">{{mSettings.section}}</h4>
-                <form id="settingsForm" class="form-horizontal inside" action="api/settings/{{module.bundleId}}" method="post">
-                    <fieldset>
-                        <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="control-group">
-                            <label class="control-label span4" for="{{setting.key}}">{{setting.key}}</label>
-                            <div class="controls span2">
-                                <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <div class="control-label span4"></div>
-                            <div class="controls span3">
-                            <input type="hidden" name="section" value="{{mSettings.section}}" />
-                            <input type="button" class="btn" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
-                            <input type="button" class="btn" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
-                            </div>
-                        </div>
-
-                    </fieldset>
-                </form>
+        <div class="span6" ng-repeat="mSettings in moduleSettings">
+            <div class="box-header">
+                {{module.name}} - {{mSettings.section}}
             </div>
+            <div class="box-content clearfix">
+                <div class="settings-form lightblue-settings">
+                    <form id="settingsForm" class="inside form-vertical" action="api/settings/{{module.bundleId}}" method="post">
+                        <fieldset>
+                            <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="control-group">
+                                <label class="control-label" for="{{setting.key}}">{{setting.key}}</label>
+                                <div>
+                                    <input class="input-lxlarge" type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
+                                </div>
+                            </div>
 
-            <div class="inside" ng-repeat="rawFile in rawFiles">
-                <h4>{{rawFile}}</h4>
-                <div class="control-group">
-                    <form id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw" method="post"
-                          enctype="multipart/form-data">
-                        <span class="span4"><input type="file" name="file" />
-                        <input type="hidden" value="{{rawFile}}" name="filename" /></span>
-                        <span><input type="button" class="btn" ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/></span>
-                        <span><input type="button" class="btn" ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/></span>
+                            <div class="control-group">
+                                <div>
+                                <input type="hidden" name="section" value="{{mSettings.section}}" />
+                                <input type="button" class="btn" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
+                                <input type="button" class="btn" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
+                                </div>
+                            </div>
+                        </fieldset>
                     </form>
                 </div>
+            </div>
+        </div>
+
+        <div class="well2 span8" ng-repeat="rawFile in rawFiles">
+            <div class="box-header">{{module.name}} - {{rawFile}}</div>
+            <div class="box-content clearfix">
+                <form class="form-inline inside" id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw"
+                      method="post" enctype="multipart/form-data">
+                    <span><input type="file" name="file" />
+                        <input type="hidden" value="{{rawFile}}" name="filename" />
+                    </span>
+                    <span class="offset1">
+                        <span class="btn" ng-click="uploadRaw(rawFile)">{{msg('submit')}}</span>
+                        <span class="btn" ng-click="uploadRaw(rawFile, true)">{{msg('submitAndRestart')}}</span>
+                    </span>
+                </form>
             </div>
         </div>
     </div>
