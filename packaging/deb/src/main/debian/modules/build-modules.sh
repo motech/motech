@@ -12,7 +12,9 @@ export START_DIR=`pwd`
 
 export MOTECH_BASE
 export CONTENT_DIR
+export ARTIFACT_DIR
 export MOTECH_VERSION
+export BUILD_DIR
 
 cd $TMP_DIR
 

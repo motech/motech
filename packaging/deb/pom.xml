@@ -16,11 +16,55 @@
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-admin-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-demo-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <profiles>
         <profile>
             <id>DEB</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>copy-artifacts</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeScope>provided</includeScope>
+                                    <excludeTransitive>true</excludeTransitive>
+                                    <stripVersion>false</stripVersion>
+                                    <outputDirectory>
+                                        ${project.build.directory}/artifacts
+                                    </outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
