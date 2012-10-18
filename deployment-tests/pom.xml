@@ -661,17 +661,45 @@
                         <artifactId>maven-clean-plugin</artifactId>
                         <version>2.5</version>
                         <inherited>false</inherited>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${user.home}/.motech/bundles</directory>
-                                    <includes>
-                                        <include>**/*.jar</include>
-                                    </includes>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
-                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-bundles</id>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${user.home}/.motech/bundles</directory>
+                                            <includes>
+                                                <include>**/*.jar</include>
+                                            </includes>
+                                            <followSymlinks>false</followSymlinks>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                            <!-- Clean up config after run -->
+                            <execution>
+                                <id>clean-config</id>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${user.home}/.motech/config</directory>
+                                            <includes>
+                                                <include>**/**</include>
+                                            </includes>
+                                            <followSymlinks>false</followSymlinks>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -682,6 +710,7 @@
                                 <goals>
                                     <goal>copy-dependencies</goal>
                                 </goals>
+                                <phase>pre-integration-test</phase>
                                 <configuration>
                                     <includeScope>provided</includeScope>
                                     <excludeArtifactIds>motech-platform-server-bundle</excludeArtifactIds>
