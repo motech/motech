@@ -1,6 +1,0 @@
-{
-  "person": "personUuid",
-  "username": "theUsername",
-  "password": "",
-  "roles": ["roleUuid"]
-}

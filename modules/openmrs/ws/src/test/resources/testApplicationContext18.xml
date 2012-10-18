@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config />
-    <context:component-scan base-package="org.motechproject.openmrs" />
+    <context:component-scan base-package="org.motechproject.openmrs.ws" />
 
     <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"
         init-method="afterPropertiesSet">
         <property name="configFiles">
             <list>
-                <value>classpath:openmrs.properties</value>
+                <value>classpath:openmrs18.properties</value>
             </list>
         </property>
         <property name="moduleName" value="openmrs-ws" />
@@ -34,6 +35,4 @@
             </list>
         </property>
     </bean>
-
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 </beans>
