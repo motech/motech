@@ -11,4 +11,8 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:service id="cmsLiteServiceOsgi" auto-export="interfaces" ref="cmsLiteService"
+                  interface="org.motechproject.cmslite.api.service.CMSLiteService" >
+    </osgi:service>
+
 </beans>
