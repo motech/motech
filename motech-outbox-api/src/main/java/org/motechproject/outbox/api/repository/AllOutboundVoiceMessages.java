@@ -17,8 +17,8 @@ import java.util.*;
 
 @Repository
 @Views({
-        @View(name = "getMessagesWithTypeName", map = "function(doc) { if (doc.externalId && doc.voiceMessageType) { emit([doc.externalId, doc.status, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
-        @View(name = "getMessages", map = "function(doc) { if (doc.externalId) { emit([doc.externalId, doc.status, doc.expirationDate], doc._id); } }")
+        @View(name = "getMessagesWithTypeName", map = "function(doc) { if (doc.partyId && doc.voiceMessageType) { emit([doc.partyId, doc.status, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
+        @View(name = "getMessages", map = "function(doc) { if (doc.partyId) { emit([doc.partyId, doc.status, doc.expirationDate], doc._id); } }"),
 })
 public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
 

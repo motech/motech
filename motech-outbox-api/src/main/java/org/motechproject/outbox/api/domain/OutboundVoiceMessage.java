@@ -5,6 +5,7 @@ package org.motechproject.outbox.api.domain;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
 
@@ -14,10 +15,11 @@ import java.util.Map;
 /**
  * Holds the details of the outbound message which has to be placed in the partys' outbox.
  */
+@TypeDiscriminator(value = "doc.partyId")
 public class OutboundVoiceMessage extends MotechBaseDataObject {
     private static final long serialVersionUID = 3598927460690914607L;
 
-    @TypeDiscriminator
+    @JsonProperty("partyId")
     private String externalId;
     private VoiceMessageType voiceMessageType;
     private OutboundVoiceMessageStatus status;
@@ -26,6 +28,7 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
     private Date expirationDate;
     private long sequenceNumber;
 
+    @JsonProperty("partyId")
     public String getExternalId() {
         return externalId;
     }
@@ -35,6 +38,7 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
      *
      * @param externalId party's unique id
      */
+    @JsonProperty("partyId")
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
