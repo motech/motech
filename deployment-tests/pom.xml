@@ -688,6 +688,7 @@
                                 </goals>
                                 <phase>install</phase>
                                 <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
                                     <filesets>
                                         <fileset>
                                             <directory>${user.home}/.motech/config</directory>
