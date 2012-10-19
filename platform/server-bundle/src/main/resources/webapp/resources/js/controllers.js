@@ -1,6 +1,8 @@
 'use strict';
 
 function MasterCtrl($scope, $http, i18nService, $cookieStore) {
+    $scope.ready = false;
+
     $scope.i18n = {};
     $scope.languages = [];
     $scope.userLang = null;
@@ -22,9 +24,9 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
         },
         backgroudUpDown : function() {
             if (this.showDashboard) {
-                return "bodywrap-down";
+                return "body-down";
             } else {
-                return "bodywrap-up";
+                return "body-up";
             }
         }
     }
@@ -92,11 +94,23 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
     }
 
     $scope.loadI18n = function(lang) {
+        if (!$scope.i18n || $scope.i18n.length <= 0) {
+            $scope.ready = true;
+        }
+
         var key, i;
 
         for (key in $scope.i18n) {
-            for (i = 0; i < $scope.i18n[key].length; i += 1) {
-                i18nService.init(lang, key, $scope.i18n[key][i]);
+            for (i = 0; i < $scope.i18n[key].length; i++) {
+                var handler = undefined;
+                // last one
+                if (i == $scope.i18n[key].length-1) {
+                    handler = function() {
+                        $scope.ready = true;
+                        $scope.$digest();
+                    }
+                }
+                i18nService.init(lang, key, $scope.i18n[key][i], handler);
             }
         }
     }

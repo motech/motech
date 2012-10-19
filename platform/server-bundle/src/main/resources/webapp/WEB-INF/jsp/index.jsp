@@ -10,7 +10,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.css">
@@ -54,9 +53,9 @@
     </c:if>
 </head>
 
-<body ng-controller="MasterCtrl">
+<body ng-controller="MasterCtrl"  ng-class="showDashboardLogo.backgroudUpDown()">
 
-<div ng-class="showDashboardLogo.backgroudUpDown()">
+<div class="bodywrap">
     <div class="header">
         <div class="container">
             <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
@@ -133,13 +132,17 @@
             <div id="main-content" class="span10">
                 <c:if test="${! empty currentModule}">
                     <div>
-                        <div id="module-content">
+                        <div class="splash" ng-hide="ready">
+                            <div class="splash-logo"></div>
+                            <div class="clearfix"></div>
+                            <div class="splash-loader"><img src="resources/img/loader.gif" alt="loading" /></div>
+                            <div class="clearfix"></div>
+                            <div class="splash-msg"><fmt:message key="module.loading" bundle="${bundle}"/></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="module-content" ng-show="ready">
                             <script type="text/javascript">
-                                $.blockUI({
-                                    message : '<h3><img src="resources/img/bigloader.gif" alt="loading" /></h3>'
-                                });
                                 loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
-                                $.unblockUI();
                             </script>
                         </div>
                     </div>
