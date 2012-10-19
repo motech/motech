@@ -25,7 +25,7 @@ gzip --best $TMP_DIR/motech-demo/usr/share/doc/motech-demo/changelog*
 
 # Copy bundle
 mkdir -p $TMP_DIR/motech-demo/$BUNDLE_DIR
-cp $MOTECH_BASE/motech-demo-bundle/target/motech-demo-bundle-*.jar $TMP_DIR/motech-demo/$BUNDLE_DIR
+cp $ARTIFACT_DIR/motech-demo-bundle*.jar $TMP_DIR/motech-demo/$BUNDLE_DIR
 
 # Copy scripts
 cp $MODULE_DIR/../common/post* $TMP_DIR/motech-demo/DEBIAN
@@ -39,11 +39,11 @@ chmod 755 $TMP_DIR/motech-demo/DEBIAN/*
 echo "Building package"
 PACKAGE_NAME=motech-demo_$MOTECH_VERSION.deb
 fakeroot dpkg-deb --build motech-demo
-mv motech-demo.deb $DEST_DIR/$PACKAGE_NAME
+mv motech-demo.deb $BUILD_DIR/$PACKAGE_NAME
 
 # Check for problems
 echo "Checking package with lintian"
-lintian -i $DEST_DIR/$PACKAGE_NAME
+lintian -i $BUILD_DIR/$PACKAGE_NAME
 
 # Clean up
 rm -r $TMP_DIR/motech-demo

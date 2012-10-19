@@ -17,31 +17,37 @@ while getopts "v:b:d:" opt; do
 	case $opt in
 	v)
 		MOTECH_VERSION=$OPTARG
+		WARNAME=motech-platform-server-$MOTECH_VERSION.war
 	;;
 	b)
 		MOTECH_BASE=$OPTARG
 	;;
 	d)
-	    DEST_DIR=$OPTARG
+	    BUILD_DIR=$OPTARG
 	;;
+	s)
+	    CONTENT_DIR=$OPTARG/main/debian
+    ;;
 	esac
 done
 
-if [ -z $DEST_DIR ]; then
-    DEST_DIR=$MOTECH_BASE/motech-deb/target
+if [ -z $CONTENT_DIR ]; then
+    CONTENT_DIR=$MOTECH_BASE/packaging/deb/src/main/debian
 fi
 
-mkdir -p $DEST_DIR
+if [ -z $BUILD_DIR ]; then
+    BUILD_DIR=$MOTECH_BASE/packaging/deb/target
+fi
 
-CONTENT_DIR=$MOTECH_BASE/motech-deb/src/main/debian
+mkdir -p $BUILD_DIR
+
+ARTIFACT_DIR=$BUILD_DIR/artifacts
+CONFIG_DIR=$BUILD_DIR/
 
 MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
 MOTECH_BASE_PACKAGENAME="motech-base_$MOTECH_VERSION.deb"
 
-cd $MOTECH_BASE
-MOTECH_BASE=`pwd`
-
-MOTECH_WAR=$MOTECH_BASE/motech-platform-server/target/$WARNAME
+MOTECH_WAR=$ARTIFACT_DIR/$WARNAME
 
 echo "====================="
 echo "Building motech-base"
@@ -74,11 +80,11 @@ mv $WARNAME ./motech-base/var/lib/motech/webapps/ROOT.war
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
 
 #Copy config
-cp -r $MOTECH_BASE/motech-platform-server-config/src/main/config ./motech-base/usr/share/motech/.motech
+cp -r $CONFIG_DIR ./motech-base/usr/share/motech/.motech
 
 mkdir -p ./motech-base/usr/share/motech/.motech/bundles
 # Include motech-admin
-cp -r $MOTECH_BASE/motech-admin-bundle/target/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
@@ -94,11 +100,11 @@ chmod 755 ./motech-base/etc/init.d/motech
 echo "Building package"
 fakeroot dpkg-deb --build motech-base
 
-mv motech-base.deb $DEST_DIR/$MOTECH_BASE_PACKAGENAME
+mv motech-base.deb $BUILD_DIR/$MOTECH_BASE_PACKAGENAME
 
 # Check package for problems
 echo "Checking package with lintian"
-lintian -i $DEST_DIR/$MOTECH_BASE_PACKAGENAME
+lintian -i $BUILD_DIR/$MOTECH_BASE_PACKAGENAME
 
 echo "Done! Created $MOTECH_PACKAGENAME"
 
@@ -123,10 +129,10 @@ chmod 755 ./motech/DEBIAN/control
 echo "Building package"
 
 fakeroot dpkg-deb --build motech
-mv motech.deb $DEST_DIR/$MOTECH_PACKAGENAME
+mv motech.deb $BUILD_DIR/$MOTECH_PACKAGENAME
 
 echo "Checking package with lintian"
-lintian -i $DEST_DIR/$MOTECH_PACKAGENAME
+lintian -i $BUILD_DIR/$MOTECH_PACKAGENAME
 
 echo "Done! Created $MOTECH_PACKAGENAME"
 
@@ -137,7 +143,8 @@ rm -r $TMP_DIR
 # build modules
 export MOTECH_BASE
 export MOTECH_VERSION
-export DEST_DIR
+export BUILD_DIR
 export CONTENT_DIR
+export ARTIFACT_DIR
 
 $CONTENT_DIR/modules/build-modules.sh
