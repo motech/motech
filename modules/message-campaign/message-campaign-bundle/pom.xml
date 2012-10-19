@@ -130,6 +130,8 @@
                             org.springframework.context.config,
                             org.springframework.osgi.config,
                             org.springframework.scheduling.quartz,
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign</Embed-Dependency>
