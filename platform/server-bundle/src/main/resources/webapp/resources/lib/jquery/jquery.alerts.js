@@ -87,8 +87,7 @@
 			$("#popup_container").css({
 				position: pos,
 				zIndex: 99999,
-				padding: 0,
-				margin: 0
+				padding: 0
 			});
 			
 			$("#popup_title").text(title);

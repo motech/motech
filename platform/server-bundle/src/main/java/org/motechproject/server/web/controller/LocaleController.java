@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -57,11 +56,6 @@ public class LocaleController {
     @ResponseBody
     public Map<String, List<String>> getLangLocalisation() {
         Map<String, List<String>> i18n = new HashMap<>();
-
-        for (String s : Arrays.asList("dashboard", "startup")) {
-            i18n.put(s, new ArrayList<String>());
-            i18n.get(s).add("resources/messages/");
-        }
 
         Map<String, Collection<ModuleRegistrationData>> modules = uiFrameworkService.getRegisteredModules();
 

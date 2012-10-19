@@ -13,7 +13,7 @@ localizationModule.factory("i18nService", function() {
         path : '',
 
         getMessage : function(key) {
-            var msg = key;
+            var msg = '';
 
             if (this.ready == true) {
                 msg = jQuery.i18n.prop(key);
@@ -22,7 +22,7 @@ localizationModule.factory("i18nService", function() {
             return msg;
         },
 
-        init : function(lang, name, path) {
+        init : function(lang, name, path, handler) {
             this.ready = false;
             this.loading = true;
             this.name = name;
@@ -38,6 +38,9 @@ localizationModule.factory("i18nService", function() {
                 callback: function() {
                     self.ready = true;
                     self.loading = false;
+                    if (handler) {
+                        handler();
+                    }
                 }
             });
         },
