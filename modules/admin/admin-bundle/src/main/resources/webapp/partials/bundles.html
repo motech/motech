@@ -3,26 +3,26 @@
 
 <div class="row-fluid">
 
-    <div class="span5">
-        <form class="inside form-inline control-group">
+    <div class="span4 filter">
+        <form class="inside form-inline">
             <label for="filter"><span><b>{{msg('filter')}}</b></span>
                 <input id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </label>
         </form>
     </div>
 
-    <div class="span7">
-        <div class="inside inline">
-            <span><b>{{msg('bundles.statistics')}}</b></span>
+    <div class="span8 statistics">
+        <div class="inline">
+            <span><b>{{msg('bundles.statistics')}}:</b></span>
             <span><b>{{msg('bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
-            <span><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
-            <span><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
-            <span><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
+            <span class="param"><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
+            <span class="param"><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
+            <span class="param"><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
         </div>
     </div>
 </div>
 
-<div class="inside inline">
+<div class="inside inline top-line">
     <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
         <div class="inline"><span><b>{{msg('bundles.upload')}} </b></span>
             <input type="file" id="bundleFile" name="bundleFile" placeholder="{{msg('bundles.file')}}" class="input-file"/>

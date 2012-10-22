@@ -191,3 +191,45 @@ h4.settings-section {
       border-left: 1px solid #D4E1F9;
 }
 
+.table-bundles.table-bordered {
+    border-radius: 0 0 4px 4px;
+}
+
+/* ----- filter, statistics ----- */
+
+.statistics {
+    line-height: 24px;
+    padding: 10px 0;
+}
+.row-fluid .span8.statistics {
+    min-height: 24px;
+}
+
+.statistics span {
+    padding: 14px 10px;
+    margin: 0;
+}
+
+.statistics span.param {
+    border-left: 1px solid #D4E1F9;
+}
+
+.statistics span b {
+    margin: 0 5px;
+}
+
+.top-line {
+    border-top: 1px solid #D4E1F9;
+}
+
+.filter {
+    border-right: 1px solid #D4E1F9;
+}
+
+.filter form {
+    margin: 0;
+}
+
+.filter label {
+    margin-bottom: 0;
+}
