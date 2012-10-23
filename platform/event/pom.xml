@@ -4,14 +4,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.15-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-event</artifactId>
     <name>MOTECH Platform Event</name>
     <description>MOTECH Event</description>
-    <version>0.14-SNAPSHOT</version>
+    <version>0.15-SNAPSHOT</version>
     <properties>
         <powermock.version>1.4.11</powermock.version>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
