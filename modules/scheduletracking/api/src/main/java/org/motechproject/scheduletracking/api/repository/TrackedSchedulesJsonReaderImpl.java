@@ -1,12 +1,15 @@
 package org.motechproject.scheduletracking.api.repository;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang.CharEncoding;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +26,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
 
     @Override
     public List<ScheduleRecord> getAllSchedules(String definitionsDirectoryName) {
-        List<ScheduleRecord> scheduleRecords = new ArrayList<ScheduleRecord>();
+        List<ScheduleRecord> scheduleRecords = new ArrayList<>();
         Type type = new TypeToken<ScheduleRecord>() { } .getType();
 
         for (String filename : getAllFileNames(definitionsDirectoryName)) {
@@ -39,7 +42,15 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
     }
 
     private List<String> getAllFileNames(String definitionsDirectoryName) {
-        String schedulesDirectoryPath = getClass().getResource(definitionsDirectoryName).getPath();
+        String resourcePath = getClass().getResource(definitionsDirectoryName).getPath();
+        String schedulesDirectoryPath;
+
+        try {
+            schedulesDirectoryPath = URLDecoder.decode(resourcePath, CharEncoding.UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            schedulesDirectoryPath = resourcePath;
+        }
+
         File[] files = new File(schedulesDirectoryPath).listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String filename) {

@@ -1,6 +1,6 @@
 package org.motechproject.openmrs;
 
-
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openmrs.api.AdministrationService;
@@ -23,6 +23,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 public class Context {
@@ -53,7 +54,7 @@ public class Context {
                 resourceLoader.getResource("openmrs-data");
 
         if (resource != null) {
-            String path = resource.getURL().getPath();
+            String path = URLDecoder.decode(resource.getURL().getPath(), CharEncoding.UTF_8);
             logger.info(String.format("openmrs data folder is set to %s", path));
 
             Properties properties = new Properties();
