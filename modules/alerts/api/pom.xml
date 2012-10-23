@@ -3,14 +3,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.14</version>
+        <version>0.14.1-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-alerts-api</artifactId>
     <name>MOTECH Alerts API</name>
     <description>MOTECH Alerts API</description>
-    <version>0.14</version>
+    <version>0.14.1-SNAPSHOT</version>
     <properties>
         <roo.version>1.1.4.RELEASE</roo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
