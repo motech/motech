@@ -387,7 +387,6 @@
                                         CREATE DATABASE motech_openmrs_api DEFAULT CHARSET utf8;
                                         GRANT ALL ON motech_openmrs_api.* TO 'openmrs'@'localhost' IDENTIFIED BY
                                         'password';
-                                        GRANT ALL ON motech_openmrs_api.* TO 'openmrs'@'%' IDENTIFIED BY 'password';
                                         FLUSH PRIVILEGES;
                                         USE motech_openmrs_api;
                                     </sqlCommand>
