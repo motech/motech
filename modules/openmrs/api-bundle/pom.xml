@@ -245,7 +245,6 @@
                             org.springframework.transaction.annotation,
                             org.springframework.transaction.config,
                             org.springframework.transaction.interceptor,
-                            org.apache.xerces.xni.parser,
                             org.eclipse.core.runtime,
                             *
                         </Import-Package>

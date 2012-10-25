@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Ricky Wang
@@ -52,6 +54,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
+    private static final int THREADS_NUMBER = 10;
+
     /**
      * Initialize, install bundles and start non-MOTECH bundles and the OSGi framework
      */
@@ -74,16 +78,20 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             Bundle server = null;
 
+            ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
+
             for (Bundle bundle : bundles) {
                 String bundleSymbolicName = bundle.getSymbolicName();
                 if (!bundleSymbolicName.startsWith("org.motechproject.motech-")) {
-                    startBundle(bundle);
+                    bundleLoader.execute(new BundleStarter(bundle));
                 }
 
                 if (bundleSymbolicName.equalsIgnoreCase("org.motechproject.motech-platform-server-bundle")) {
                     server = bundle;
                 }
             }
+
+            waitForBundles(bundleLoader);
 
             if (server != null) {
                 startBundle(server);
@@ -97,21 +105,38 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
+    private void waitForBundles(ExecutorService bundleLoader) {
+        bundleLoader.shutdown();
+        while (!bundleLoader.isTerminated()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.warn("InterruptedException when waiting for bundle loader to finish...");
+            }
+            logger.debug("Waiting for bundle loader to finish...");
+        }
+    }
+
     /**
      * Start MOTECH bundles
      */
     public void startMotechBundles() {
+
+        ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
+
         for (Bundle bundle : bundles) {
             String bundleSymbolicName = bundle.getSymbolicName();
 
             if (bundleSymbolicName.startsWith("org.motechproject.motech-") && !bundleSymbolicName.contains("-platform-")) {
                 try {
-                    startBundle(bundle);
+                    bundleLoader.execute(new BundleStarter(bundle));
                 } catch (Exception e) {
                     logger.error("Failed to start Bundles", e);
                 }
             }
         }
+
+        waitForBundles(bundleLoader);
     }
 
     /**
@@ -355,5 +380,23 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
 
         return bundleInformationList;
+    }
+    
+    private class BundleStarter implements Runnable {
+
+        private Bundle bundle;
+        
+        BundleStarter(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        public void run() {
+            try {
+                startBundle(bundle);
+            } catch (Exception e) {
+                logger.error("Exception when starting bundle [" + bundle + "]", e);
+            }
+        }
     }
 }

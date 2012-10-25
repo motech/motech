@@ -55,7 +55,11 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
                     //build jar file
                     File tempJarFile = new File(tempDir, jarUrl.getFile());
-                    FileUtils.copyURLToFile(jarUrl, tempJarFile);
+                    // There is a problem with creating new directories when loading bundles asynchronously.
+                    // This is why this step must be synchronized.
+                    synchronized (JspBundleLoader.class) {
+                        FileUtils.copyURLToFile(jarUrl, tempJarFile);
+                    }
 
                     JarFile jarFile = new JarFile(tempJarFile);
                     searchForJspFilesInJarFile(jarFile, bundle.getBundleId());
