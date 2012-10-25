@@ -1,0 +1,16 @@
+<div class='custom_rule_fields' xmlns="http://www.w3.org/1999/html">
+    <label>{{ msg('new.custom.rule.expression.label') }}</label>
+    <input type="text" ng-model='rule.aggregationSchedule.rule' tooltip='#rule_tooltip_text'/>
+
+    <div ng-show='false' id='rule_tooltip_text'>
+        <div>Examples</div>
+        <div>
+            <p>Collect events for 30 minutes after first matching event is received.</p>
+            <code>firstEvent.timeStamp.isBefore(now.minusMinutes(30))</code>
+            <p>Collect events when it's 2 hours since a matching event was received.</p>
+            <code>lastEvent.timeStamp.isBefore(now.minusHours(2))</code>
+            <p>Collect every 10 events</p>
+            <code>events.size() > 10</code>
+        </div>
+    </div>
+</div>

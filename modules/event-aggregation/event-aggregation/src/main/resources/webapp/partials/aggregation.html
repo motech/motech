@@ -1,0 +1,26 @@
+<div>
+    <div class="span2">
+        <table class="table table-bordered">
+            <thead class="event_params_head">
+            <th>Key</th>
+            <th>Value</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="(key, value) in aggregation.events[0].aggregationParams" class="aggregation_param">
+                <td>
+                    <span>{{key}}</span>
+                </td>
+                <td>
+                    <span>{{value}}</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="span10">
+        <div ng-repeat="event in aggregation.events">
+            <div ng-include="'../event-aggregation/partials/event.html'" class="aggregated_event"/>
+        </div>
+    </div>
+</div>

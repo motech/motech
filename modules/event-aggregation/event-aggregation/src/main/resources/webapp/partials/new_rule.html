@@ -1,0 +1,60 @@
+<div ng-show="!editMode" class="box-header" xmlns="http://www.w3.org/1999/html">
+    {{ msg('create.aggregation.page.heading') }}
+</div>
+<div ng-show="editMode" class="box-header" xmlns="http://www.w3.org/1999/html">
+    {{ msg('edit.aggregation.page.heading') }}
+</div>
+
+<div class="tabbable" ng-controller="NewRulesController">
+
+    <ul ng-show="!editMode" class="nav nav-tabs">
+        <li ng-class="{active: scheduleType=='periodic'}">
+            <a href="#/rules/create/periodic">{{ msg('periodic.rule') }}</a>
+        </li>
+        <li ng-class="{active: scheduleType=='cron'}">
+            <a  href="#/rules/create/cron">{{ msg('cron.rule') }}</a>
+        </li>
+        <li ng-class="{active: scheduleType=='custom'}">
+            <a href="#/rules/create/custom">{{ msg('custom.rule') }}</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div ng-show="errors.length > 0" class="span4">
+            <div ng-include="'../event-aggregation/partials/form_errors.html'"/>
+        </div>
+
+        <form class="rule_form">
+            <div class="span12">
+                <label>{{ msg('new.rule.name.label') }}</label>
+                <input type="text" ng-model="rule.name" server-validate/>
+
+                <label>{{ msg('new.rule.description.label') }}</label>
+                <textarea ng-model="rule.description" />
+
+                <label>{{ msg('new.rule.subscribe.to.label') }}</label>
+                <input type="text" ng-model="rule.subscribedTo" />
+
+                <label>{{ msg('new.rule.fields.label') }}</label>
+                <input type="text" id='tagsinput' ng-model='rule.fields' />
+
+                <label>{{ msg('new.rule.publish.as.label') }}</label>
+                <input type="text" ng-model="rule.publishAs" />
+
+                <div ng-include="scheduleTypePartial"/>
+
+                <label class="checkbox">
+                    <input type="checkbox" ng-model='rule.state' ng-true-value='paused' ng-false-value='running' id='rule_state'/>
+                    {{ msg('new.rule.start.paused.heading') }}
+                </label>
+
+                <button ng-click="update(rule)">{{ msg('new.rule.save.label') }}</button>
+
+                <span ng-show="isSuccess" class="success_banner">
+                    &#x2713
+                </span>
+            </div>
+        </form>
+    </div>
+</div>

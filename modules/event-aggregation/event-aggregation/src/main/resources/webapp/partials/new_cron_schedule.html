@@ -1,0 +1,4 @@
+<label>{{ msg('new.cron.rule.cron.expression.label') }}</label>
+<input type='text' ng-model='rule.aggregationSchedule.cronExpression' cron-maker='#cron_container' ng-show='false'/>
+<div id='cron_container'></div>
+<br/>

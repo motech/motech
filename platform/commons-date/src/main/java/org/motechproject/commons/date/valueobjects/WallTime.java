@@ -1,7 +1,7 @@
 package org.motechproject.commons.date.valueobjects;
 
 import org.joda.time.Period;
-import org.motechproject.commons.date.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.io.Serializable;
 
@@ -10,7 +10,7 @@ public class WallTime implements Serializable {
     private Period period;
 
     public WallTime(String userReadableForm) {
-        period = new TimeIntervalParser().parse(userReadableForm);
+        period = new JodaFormatter().parsePeriod(userReadableForm);
     }
 
     @Override

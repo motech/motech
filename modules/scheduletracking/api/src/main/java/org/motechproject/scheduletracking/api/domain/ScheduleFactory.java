@@ -8,7 +8,7 @@ import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
-import org.motechproject.commons.date.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.JodaFormatter;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -87,9 +87,9 @@ public class ScheduleFactory {
 
     private Period getPeriodFromValue(List<String> readableValues, Locale locale) {
         ReadWritablePeriod period = new MutablePeriod();
-        final TimeIntervalParser timeIntervalParser = new TimeIntervalParser();
+        final JodaFormatter jodaFormatter = new JodaFormatter();
         for (String s : readableValues) {
-            period.add(timeIntervalParser.parse(s, locale));
+            period.add(jodaFormatter.parse(s, locale));
         }
         return period.toPeriod();
     }

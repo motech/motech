@@ -1,0 +1,33 @@
+<div class="event span12 row-fluid">
+    <div class="span1">
+        <table class="table table-bordered table-condensed">
+            <thead class="event_params_head">
+            <th>Key</th>
+            <th>Value</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="(key, value) in event.aggregationParams" class="aggregation_param">
+                <td>
+                    <span>{{key}}</span>
+                </td>
+                <td>
+                    <span>{{value}}</span>
+                </td>
+            </tr>
+            <tr ng-repeat="(key, value) in event.nonAggregationParams" class="non_aggregation_param">
+                <td>
+                    <span>{{key}}</span>
+                </td>
+                <td>
+                    <span>{{value}}</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="details span11 fill">
+        {{event.timeStamp | date:'medium'}}
+    </div>
+</div>
+

@@ -1,0 +1,12 @@
+<div class="box-header">
+    {{ msg('aggregation.execution.page.heading') }}<span ng-show="eventStatus == 'invalid'"> - {{msg('aggregation.errors.page.heading')}}</span>
+</div>
+
+<div ng-controller="AggregationsController">
+
+    <div ng-include="'../event-aggregation/partials/rule.html'"/>
+
+    <div ng-repeat="aggregation in aggregations" class="aggregation_container">
+        <div ng-include="'../event-aggregation/partials/aggregation.html'"/>
+    </div>
+</div>

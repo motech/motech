@@ -10,7 +10,7 @@ import org.motechproject.server.messagecampaign.domain.message.DayOfWeekCampaign
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatIntervalCampaignMessage;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.commons.date.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +69,7 @@ public class CampaignMessageRecord {
     }
 
     private CampaignMessage buildRepeatIntervalCampaignMessage() {
-        RepeatIntervalCampaignMessage message = new RepeatIntervalCampaignMessage(new TimeIntervalParser().parse(repeatInterval()));
+        RepeatIntervalCampaignMessage message = new RepeatIntervalCampaignMessage(new JodaFormatter().parsePeriod(repeatInterval()));
         message.name(name())
             .formats(formats())
             .languages(languages())
@@ -106,7 +106,7 @@ public class CampaignMessageRecord {
         message.formats(formats);
         message.languages(languages);
         message.messageKey(messageKey);
-        message.timeOffset(new TimeIntervalParser().parse(timeOffset));
+        message.timeOffset(new JodaFormatter().parsePeriod(timeOffset));
         message.setStartTime(Time.parseTime(startTime, ":"));
         return message;
     }

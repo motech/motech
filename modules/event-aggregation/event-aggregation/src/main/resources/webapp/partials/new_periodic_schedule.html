@@ -1,0 +1,12 @@
+<label>{{ msg('new.periodic.rule.repeat.interval.label') }}</label>
+<input type='text' id='repeat_every' ng-model='rule.aggregationSchedule.period' tooltip="#repeat_period_tooltip_text" />
+
+<div ng-show='false' id='repeat_period_tooltip_text'>
+    <div>{{ msg('new.periodic.rule.examples.label') }}</div>
+    <div>
+        30 minutes, 3 hours, 4 weeks etc.
+    </div>
+</div>
+
+<label>{{ msg('new.periodic.rule.start.time.label') }}</label>
+<input type='text' ng-model='rule.aggregationSchedule.startTimeInMillis' datetime-picker/>

@@ -1,0 +1,23 @@
+<a href="#/rules/{{rule.name}}/aggregations/valid" class="rule">
+    <table class="table table-bordered">
+        <tr>
+            <td width="5%" class="icon">
+                <img src="../event-aggregation/img/{{rule.aggregationSchedule.scheduleType.split('_')[0]}}.png" width="32px" height="32px" class="centered"/>
+            </td>
+            <td>
+                <h4>{{rule.name}} <small>{{rule.description}}</small></h4>
+                {{rule.subscribedTo}} &#x25B8; {{rule.publishAs}}</p>
+            </td>
+            <td width="5%">
+                <a href="#/rules/{{rule.name}}/aggregations/invalid">
+                    {{ msg('rule.view.error.events.label') }}
+                </a>
+            </td>
+            <td width="5%">
+                <a href="#/rules/{{rule.name}}/edit">
+                    {{ msg('rule.edit.label') }}
+                </a>
+            </td>
+        </tr>
+    </table>
+</a>

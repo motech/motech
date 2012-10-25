@@ -1,0 +1,67 @@
+.rule {
+    text-decoration: none !important;
+}
+
+.rule .icon {
+    text-align: center;
+}
+
+.rule td a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    text-decoration: none !important;
+}
+
+.event_params_head {
+    background-color: #c0c0c0;
+}
+
+.aggregation_container {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #bfbfbf;
+    overflow-y: auto;
+}
+
+.event .span1 {
+    width: auto;
+}
+
+.event .details {
+    width: auto;
+}
+
+.aggregation_param {
+    background-color: #F4F3EE;
+}
+
+.non_aggregation_param {
+    background-color: #E8D0A9;
+}
+
+.rule_form button {
+    margin-top: 14px;
+}
+
+.success_banner {
+    font-weight: 200;
+    margin-left: 8px;
+}
+
+.form_errors {
+    border: 2px solid red;
+    background-color: #ebcccc;
+    width: auto !important;
+    padding: 8px;
+}
+
+.custom_rule_fields .popover {
+    width: auto;
+}
+
+.custom_rule_fields .popover code {
+    display: block;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}

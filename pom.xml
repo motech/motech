@@ -551,6 +551,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+                <version>4.1.0.Final-r001</version>
+            </dependency>
             <!-- SLF4J -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -671,6 +676,12 @@
                 <version>1.1.0</version>
             </dependency>
             <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
                 <version>1.4.2</version>
@@ -739,6 +750,11 @@
                 <groupId>org.drools</groupId>
                 <artifactId>drools-api</artifactId>
                 <version>5.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mvel</groupId>
+                <artifactId>org.motechproject.org.mvel</artifactId>
+                <version>2.0beta1</version>
             </dependency>
             <dependency>
                 <groupId>org.smslib</groupId>
@@ -1089,6 +1105,7 @@
         <module>modules/decisiontree/core</module>
         <module>modules/decisiontree/server</module>
         <module>modules/demo/demo</module>
+        <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
@@ -1126,6 +1143,7 @@
         <module>modules/decisiontree/core-bundle</module>
         <module>modules/decisiontree/server-bundle</module>
         <module>modules/demo/demo-bundle</module>
+        <module>modules/event-aggregation/event-aggregation-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>
         <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>

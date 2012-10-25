@@ -13,7 +13,7 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.commons.date.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -114,7 +114,7 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithRelativeSchedule(OffsetCampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(new TimeIntervalParser().parse(timeOffset), message.timeOffset());
+        assertEquals(new JodaFormatter().parsePeriod(timeOffset), message.timeOffset());
     }
 
     private void assertMessageWithCronSchedule(CronBasedCampaignMessage message, String name, String[] formats, Object messageKey, String cron) {

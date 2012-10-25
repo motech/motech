@@ -1,0 +1,10 @@
+<div class="box-header">
+    {{msg('aggregation.rules.page.heading')}}
+</div>
+
+<div ng-controller="RulesController">
+
+    <div ng-repeat="rule in allRules">
+        <div ng-include="'../event-aggregation/partials/rule.html'" class="list_item"/>
+    </div>
+</div>
