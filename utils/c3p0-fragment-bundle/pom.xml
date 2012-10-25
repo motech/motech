@@ -14,7 +14,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-c3p0-fragment-bundle</artifactId>
     <version>0.15-SNAPSHOT</version>
-    <name>motech-c3p0-fragment-bundle</name>
+    <name>Motech c3p0 Fragment Bundle</name>
 
     <description>Fragment bundle used to import mysql driver class into the c3p0 bundle classloader</description>
 
