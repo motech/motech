@@ -56,7 +56,7 @@ TOMCAT7_GROUP=motech
 
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in $DEFAULT)
-JDK_DIRS="/usr/lib/jvm/java-7-openjdk /usr/lib/jvm/java-7-oracle /usr/lib/jvm/java-1.7.0-oracle /usr/lib/j2sdk1.7-oracle /usr/lib/j2sdk1.7-ibm /usr/lib/jvm/java-7-sun"
+JDK_DIRS="/usr/lib/jvm/default-java /usr/lib/jvm/java-7-openjdk /usr/lib/jvm/java-7-oracle /usr/lib/jvm/java-1.7.0-oracle /usr/lib/j2sdk1.7-oracle /usr/lib/j2sdk1.7-ibm /usr/lib/jvm/java-7-sun"
 
 # Look for the right JVM to use
 for jdir in $JDK_DIRS; do
