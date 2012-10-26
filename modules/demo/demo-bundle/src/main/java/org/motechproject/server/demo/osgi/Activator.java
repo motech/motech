@@ -3,6 +3,7 @@ package org.motechproject.server.demo.osgi;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
+import org.motechproject.server.ui.UiHttpContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

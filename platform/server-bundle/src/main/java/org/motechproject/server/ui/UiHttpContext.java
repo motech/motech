@@ -1,4 +1,4 @@
-package org.motechproject.admin.osgi;
+package org.motechproject.server.ui;
 
 import org.osgi.service.http.HttpContext;
 
