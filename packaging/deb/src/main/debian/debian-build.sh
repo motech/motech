@@ -42,6 +42,7 @@ fi
 mkdir -p $BUILD_DIR
 
 ARTIFACT_DIR=$BUILD_DIR/artifacts
+DEPENDENCY_DIR=$BUILD_DIR/dependencies
 CONFIG_DIR=$BUILD_DIR/
 
 MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
@@ -92,6 +93,8 @@ cp -r $CONFIG_DIR ./motech-base/usr/share/motech/.motech
 mkdir -p ./motech-base/usr/share/motech/.motech/bundles
 # Include motech-admin
 cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
+# Include dependencies
+cp -r $DEPENDENCY_DIR/* ./motech-base/usr/share/motech/.motech/bundles
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
