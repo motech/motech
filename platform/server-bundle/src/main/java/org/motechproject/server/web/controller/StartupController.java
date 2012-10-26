@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 
@@ -55,13 +56,15 @@ public class StartupController {
         if (startupManager.canLaunchBundles()) {
             view.setViewName("redirect:home");
         } else {
+            Locale userLocale = localeSettings.getUserLocale(request);
 
             StartupForm startupSettings = new StartupForm();
-            startupSettings.setLanguage(localeSettings.getUserLocale(request).getLanguage());
+            startupSettings.setLanguage(userLocale.getLanguage());
 
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);
             view.addObject("languages", localeSettings.getAvailableLanguages().keySet());
+            view.addObject("pageLang", userLocale);
         }
 
         return view;
