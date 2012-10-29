@@ -131,7 +131,7 @@ public class SettingsFacade {
     }
 
     public void setProperty(String filename, String key, String value) {
-        if (config.containsKey(filename)) {
+        if (!config.containsKey(filename)) {
             config.put(filename, new Properties());
         }
 
@@ -326,7 +326,7 @@ public class SettingsFacade {
         }
     }
 
-    protected String getSymbolicName() {
+    public String getSymbolicName() {
         if (symbolicName == null && moduleName != null) {
             symbolicName = constructSymbolicName();
         }

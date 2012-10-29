@@ -12,10 +12,10 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.parser.OpenRosaResponseParser;
 import org.motechproject.commcare.response.OpenRosaResponse;
+import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,19 +24,17 @@ import java.util.Properties;
 
 @Component
 public class CommCareAPIHttpClient {
-
-    private HttpClient commonsHttpClient;
-
-    private Properties commcareUserProperties;
+    private static final String COMMCARE_USER_API_FILE_NAME = "commcareUserApi.properties";
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private HttpClient commonsHttpClient;
+    private Properties commcareUserProperties;
+
     @Autowired
-    public CommCareAPIHttpClient(
-            HttpClient commonsHttpClient,
-            @Qualifier(value = "commcareUserApi") Properties commcareUserProperties) {
+    public CommCareAPIHttpClient(final HttpClient commonsHttpClient, final SettingsFacade settings) {
         this.commonsHttpClient = commonsHttpClient;
-        this.commcareUserProperties = commcareUserProperties;
+        this.commcareUserProperties = settings.getProperties(COMMCARE_USER_API_FILE_NAME);
     }
 
     public OpenRosaResponse caseUploadRequest(String caseXml)

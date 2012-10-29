@@ -5,6 +5,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -381,7 +382,17 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
         return bundleInformationList;
     }
-    
+
+    public void restart(String symbolicName) throws BundleException {
+        for(Bundle bundle : bundles) {
+            if (bundle.getSymbolicName().equalsIgnoreCase(symbolicName)) {
+                bundle.stop();
+                bundle.start();
+                break;
+            }
+        }
+    }
+
     private class BundleStarter implements Runnable {
 
         private Bundle bundle;
