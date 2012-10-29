@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-@Service
+@Service("platformSettingsService")
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
 

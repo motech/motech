@@ -36,7 +36,7 @@ public class SettingsFacade {
     private String moduleName;
     private String symbolicName;
 
-    @Autowired(required = false)
+    @Autowired
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
     }
@@ -185,7 +185,7 @@ public class SettingsFacade {
                     HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean();
                     httpClientFactoryBean.setProperties(couchDb);
                     httpClientFactoryBean.setTestConnectionAtStartup(true);
-
+                    httpClientFactoryBean.setCaching(false);
                     httpClientFactoryBean.afterPropertiesSet();
 
                     CouchDbInstance instance = new StdCouchDbInstance(httpClientFactoryBean.getObject());

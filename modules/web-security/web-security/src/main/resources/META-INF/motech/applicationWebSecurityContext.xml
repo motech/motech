@@ -5,7 +5,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:property-placeholder location="classpath*:motech-web-security.properties"/>
+    <!--<context:property-placeholder location="classpath*:motech-web-security.properties"/>
+        todo is this used? if yes use properties instead of placeholder -->
 
     <bean id="webSecuritySettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="web-security"/>

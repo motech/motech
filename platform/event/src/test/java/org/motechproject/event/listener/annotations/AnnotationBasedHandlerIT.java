@@ -6,6 +6,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.ServerEventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class AnnotationBasedHandlerIT {
 
     static boolean test = false;
+
 
     @Autowired
     ServerEventRelay eventRelay;

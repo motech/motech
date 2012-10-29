@@ -19,10 +19,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     private boolean cluster;
     private DateTime lastRun;
-    private byte[] configFileChecksum;
+    private byte[] configFileChecksum = new byte[0];
 
     private Properties couchDbProperties;
-    private Properties activemqProperties;
+    private Properties activemqProperties = new Properties();
     private Properties quartzProperties;
     private Properties metricsProperties;
     private Properties schedulerProperties;

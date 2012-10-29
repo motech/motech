@@ -6,8 +6,8 @@ import org.mockito.Mock;
 import org.openmrs.Concept;
 import org.openmrs.api.ConceptService;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.when;

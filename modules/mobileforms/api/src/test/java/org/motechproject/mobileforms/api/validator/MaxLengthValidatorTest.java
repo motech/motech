@@ -1,6 +1,5 @@
 package org.motechproject.mobileforms.api.validator;
 
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class MaxLengthValidatorTest {
 
     @Test
     public void shouldReturnErrorIfLengthValidatorIsAnnotatedOnNonStringOrOnNumericField() {
-        MatcherAssert.assertThat(lengthValidator.validate(new ArrayList(), "name", List.class, lengthAnnotation), Matchers.is(equalTo(new FormError("name", "Length validation cannot be applied to name as it is not a string or a number"))));
+        assertThat(lengthValidator.validate(new ArrayList(), "name", List.class, lengthAnnotation), Matchers.is(equalTo(new FormError("name", "Length validation cannot be applied to name as it is not a string or a number"))));
     }
 
 }

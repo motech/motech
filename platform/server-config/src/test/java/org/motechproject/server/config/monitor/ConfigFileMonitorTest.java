@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.event.OutboundEventGateway;
+import org.motechproject.event.listener.ServerEventRelay;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
@@ -28,7 +28,7 @@ public class ConfigFileMonitorTest {
     private static final String SETTINGS_FILE_NAME = "settings.properties";
 
     @Mock
-    OutboundEventGateway eventGateway;
+    ServerEventRelay serverEventRelay;
 
     @Mock
     ConfigLoader configLoader;
@@ -58,7 +58,7 @@ public class ConfigFileMonitorTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        configFileMonitor.setEventGateway(eventGateway);
+        configFileMonitor.setEventRelay(serverEventRelay);
         configFileMonitor.setConfigLoader(configLoader);
         configFileMonitor.setPlatformSettingsService(platformSettingsService);
         configFileMonitor.setSystemManager(systemManager);

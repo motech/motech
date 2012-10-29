@@ -17,7 +17,7 @@ import java.io.InputStream;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/META-INF/motech/applicationCmsLiteApi.xml")
+@ContextConfiguration("classpath*:/META-INF/motech/*.xml")
 public class BaseContentRepositoryIT {
     @Autowired
     AllStreamContents allStreamContents;

@@ -9,6 +9,7 @@ import org.springframework.validation.Validator;
 
 import java.util.Arrays;
 
+
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
 

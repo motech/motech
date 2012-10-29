@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/META-INF/motech/applicationContextAlert.xml"})
+@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
 public class AlertServiceLoadTest {
 
     @Autowired

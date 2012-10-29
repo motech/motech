@@ -24,7 +24,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:/META-INF/motech/applicationWebSecurityContext.xml")
+@ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
 public class MotechUserServiceTestIT extends SpringIntegrationTest {
 
     @Autowired

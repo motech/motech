@@ -5,9 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CampaignEnrollmentRecordMapperTest {
 

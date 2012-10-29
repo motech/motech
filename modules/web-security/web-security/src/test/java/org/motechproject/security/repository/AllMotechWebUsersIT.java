@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:META-INF/motech/applicationWebSecurityContext.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class AllMotechWebUsersIT {
 
     @Autowired

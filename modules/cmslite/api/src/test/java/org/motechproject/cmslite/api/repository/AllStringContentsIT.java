@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/META-INF/motech/applicationCmsLiteApi.xml")
+@ContextConfiguration("classpath*:/META-INF/motech/*.xml")
 public class AllStringContentsIT {
     @Autowired
     AllStringContents allStringContents;

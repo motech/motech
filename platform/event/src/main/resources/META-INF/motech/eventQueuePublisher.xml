@@ -9,7 +9,6 @@
             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
-    <import resource="activemqConnection.xml"/>
 
     <bean id="eventQueueTransformer" class="org.motechproject.event.MotechEventTransformer"/>
 

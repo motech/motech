@@ -7,9 +7,9 @@ import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.validator.annotations.RegEx;
 
 import static junit.framework.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 

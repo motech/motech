@@ -2,12 +2,12 @@ package org.motechproject.server.ui.impl;
 
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.WordUtils;
+import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.motechproject.server.ui.LocaleSettings;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 

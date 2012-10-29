@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/META-INF/motech/applicationCmsLiteApi.xml")
+@ContextConfiguration("classpath*:/META-INF/motech/*.xml")
 public class ResourceControllerIT {
 
     public static final String NAME = "background.wav";

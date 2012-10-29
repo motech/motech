@@ -1,5 +1,6 @@
 package org.motechproject.util;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
@@ -13,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.model.DayOfWeek.getDayOfWeek;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 public final class DateUtil {
 
@@ -146,7 +146,7 @@ public final class DateUtil {
     }
 
     public static DateTime nextApplicableWeekDayIncludingFromDate(DateTime fromDate, List<DayOfWeek> applicableDays) {
-        if (isEmpty(applicableDays)) {
+        if (CollectionUtils.isEmpty(applicableDays)) {
             throw new IllegalArgumentException("Applicable Days should not be empty");
         }
 

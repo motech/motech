@@ -5,16 +5,13 @@
              xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns:jms="http://www.springframework.org/schema/integration/jms"
              xmlns:context="http://www.springframework.org/schema/context"
-             xsi:schemaLocation="
-                 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                  http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
                  http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.event"/>
-
-    <beans:import resource="activemqConnection.xml" />
 
     <jms:message-driven-channel-adapter
             id="jmsin"
@@ -36,5 +33,6 @@
 
     <beans:bean id="metricsAgent" class="org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
     <beans:bean id="loggingAgent" class="org.motechproject.event.metrics.impl.LoggingAgentBackendImpl"/>
+
 
 </beans:beans>

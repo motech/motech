@@ -1,4 +1,4 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.event;
 
 import org.junit.Test;
 import org.motechproject.event.MotechEvent;

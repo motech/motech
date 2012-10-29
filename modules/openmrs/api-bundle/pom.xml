@@ -167,23 +167,23 @@
             <version>1.8.2</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>spring-beans</artifactId>
+                    <artifactId>org.springframework.beans</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-core</artifactId>
+                    <artifactId>org.springframework.core</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-context</artifactId>
+                    <artifactId>org.springframework.context</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-aop</artifactId>
+                    <artifactId>org.springframework.aop</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>spring-tx</artifactId>
+                    <artifactId>org.springframework.transaction</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
                 <exclusion>

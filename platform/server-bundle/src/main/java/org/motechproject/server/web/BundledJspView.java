@@ -1,7 +1,7 @@
 package org.motechproject.server.web;
 
+import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,12 +1,15 @@
 package org.motechproject.event.metrics;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.util.DateTimeSourceUtil;
 import org.motechproject.util.DateUtil;
-import org.powermock.api.mockito.PowerMockito;
+import org.motechproject.util.datetime.DateTimeSource;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -15,7 +18,6 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DateUtil.class)
@@ -68,7 +70,6 @@ public class MultipleMetricsAgentImplTest {
 
     @Test
     public void testMultipleStartTimerCalls() throws InterruptedException {
-        PowerMockito.mockStatic(DateUtil.class);
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
 
         MetricsAgentBackend agent = mock(MetricsAgentBackend.class);
@@ -77,13 +78,37 @@ public class MultipleMetricsAgentImplTest {
 
         DateTime date1 = new DateTime(2011, 1, 1, 10, 25, 30, 0);
         DateTime date2 = new DateTime(2011, 1, 1, 10, 25, 31, 0);
-        when(DateUtil.now()).thenReturn(date1);
+        DateTimeSourceUtil.setSourceInstance(new FixedDateTimeSource(date1));
         long startTime = metricsAgent.startTimer();
-        when(DateUtil.now()).thenReturn(date2);
+        DateTimeSourceUtil.setSourceInstance(new FixedDateTimeSource(date2));
         metricsAgent.stopTimer("test.metric", startTime);
 
         verify(agent).logTimedEvent(anyString(), argument.capture());
         assertEquals(1000, argument.getValue().longValue());
+    }
+
+    class FixedDateTimeSource implements DateTimeSource {
+
+        private DateTime dateTime;
+
+        FixedDateTimeSource(DateTime dateTime) {
+            this.dateTime = dateTime;
+        }
+
+        @Override
+        public DateTimeZone timeZone() {
+            return dateTime.getZone();
+        }
+
+        @Override
+        public DateTime now() {
+            return dateTime;
+        }
+
+        @Override
+        public LocalDate today() {
+            return dateTime.toLocalDate();
+        }
     }
 
     @Test

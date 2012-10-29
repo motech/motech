@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +56,8 @@ public class OsgiFrameworkServiceTestIT {
         assertNotNull(service.getClassLoaderBySymbolicName(expectedBundles.get(1)));
 
         service.stop();
-        assertEquals(Bundle.STOPPING, framework.getState());
+        framework.waitForStop(500);
+        assertTrue(Bundle.STOPPING == framework.getState() || Bundle.RESOLVED == framework.getState());
     }
 
     private WebApplicationContext getWebApplicationContext() {

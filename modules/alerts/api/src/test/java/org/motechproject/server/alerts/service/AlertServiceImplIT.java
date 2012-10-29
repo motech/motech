@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/META-INF/motech/applicationContextAlert.xml"})
+@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
 public class AlertServiceImplIT {
 
     @Autowired

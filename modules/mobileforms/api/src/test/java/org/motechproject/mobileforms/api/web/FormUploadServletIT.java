@@ -26,9 +26,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.doNothing;

@@ -46,7 +46,7 @@ public class MessageCampaignServiceFT {
     @Before
     public void setup() {
         JvmFakeTime.load();
-        System.startFakingTime();
+        //System.startFakingTime();
         scheduler = schedulerFactoryBean.getScheduler();
     }
 
