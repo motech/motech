@@ -18,12 +18,12 @@ import java.util.Dictionary;
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
     private static final String CONTEXT_CONFIG_LOCATION = "META-INF/motech/*.xml";
-    private static final String SERVLET_URL_MAPPING = "/cms";
     private static final String HEADER_CONTEXT_PATH = "Context-Path";
     private ServiceTracker tracker;
     private ServiceReference httpService;
 
     private static BundleContext bundleContext;
+    private String contextPath;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -69,7 +69,8 @@ public class Activator implements BundleActivator {
             ClassLoader old = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                service.registerServlet(getContextPath(), dispatcherServlet, null, null);
+                contextPath = getContextPath();
+                service.registerServlet(contextPath, dispatcherServlet, null, null);
                 logger.debug("Servlet registered");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,8 +96,10 @@ public class Activator implements BundleActivator {
     }
 
     private void serviceRemoved(HttpService service) {
-        service.unregister(SERVLET_URL_MAPPING);
-        logger.debug("Servlet unregistered");
+        if (contextPath != null) {
+            service.unregister(contextPath);
+            logger.debug("Servlet unregistered");
+        }
     }
 
     public static class CmsLiteApiApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
