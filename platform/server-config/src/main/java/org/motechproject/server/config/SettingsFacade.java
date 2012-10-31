@@ -36,7 +36,7 @@ public class SettingsFacade {
     private String moduleName;
     private String symbolicName;
 
-    @Autowired
+    @Autowired(required = false)
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
     }

@@ -46,19 +46,13 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <artifactId>org.springframework.web</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -79,7 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
+            <artifactId>org.motechproject.org.apache.activemq</artifactId>
             <version>5.4.2</version>
             <exclusions>
                 <exclusion>

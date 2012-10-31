@@ -96,7 +96,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
+            <artifactId>org.motechproject.org.apache.activemq</artifactId>
             <version>${activemq.version}</version>
             <exclusions>
                 <exclusion>

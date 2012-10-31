@@ -8,6 +8,7 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.appointments.api"/>
+    <context:component-scan base-package="org.motechproject.server.config"/>
 
     <bean id="appointmentsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="appointments-api"/>

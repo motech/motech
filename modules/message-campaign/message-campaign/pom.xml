@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <artifactId>org.motechproject.com.google.code.gson</artifactId>
             <version>1.7.1</version>
         </dependency>
         <dependency>
