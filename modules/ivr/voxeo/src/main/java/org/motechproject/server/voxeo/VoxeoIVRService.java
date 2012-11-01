@@ -4,7 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.motechproject.decisiontree.server.domain.CallDetailRecord;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
