@@ -10,5 +10,5 @@
     <import resource="classpath*:/META-INF/motech/eventQueuePublisher.xml"/>
     <import resource="classpath*:/META-INF/motech/eventQueueConsumer.xml"/>
     <osgi:service ref="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
-    <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistry"/>
+    <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 </beans>
