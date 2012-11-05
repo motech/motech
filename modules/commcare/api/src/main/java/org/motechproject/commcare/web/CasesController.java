@@ -30,12 +30,12 @@ public class CasesController {
     private static final String PARTIAL_DATA_EVENT = "partial";
 
     private EventRelay eventRelay;
-    private String caseEventStrategy;
+    private SettingsFacade settingsFacade;
 
     @Autowired
     public CasesController(final EventRelay eventRelay, final SettingsFacade settingsFacade) {
         this.eventRelay = eventRelay;
-        this.caseEventStrategy = settingsFacade.getProperty(CASE_EVENT_STRATEGY_KEY);
+        this.settingsFacade = settingsFacade;
     }
 
     private String getRequestBodyAsString(HttpServletRequest request) throws IOException {
@@ -80,7 +80,8 @@ public class CasesController {
         if (caseInstance != null) {
             CaseEvent caseEvent = new CaseEvent(caseInstance.getCaseId());
 
-            MotechEvent motechCaseEvent = null;
+            MotechEvent motechCaseEvent;
+            String caseEventStrategy = settingsFacade.getProperty(CASE_EVENT_STRATEGY_KEY);
 
             if (caseEventStrategy.equals(FULL_DATA_EVENT)) {
                 caseEvent = caseEvent.eventFromCase(caseInstance);

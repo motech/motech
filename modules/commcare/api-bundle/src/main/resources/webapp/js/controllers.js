@@ -6,10 +6,6 @@ function SettingsCtrl($scope, Settings) {
     $scope.settings = Settings.get();
     $scope.eventStrategyOptions = [ 'minimal', 'partial', 'full' ];
 
-    $scope.showEventStrategyOptions = function() {
-        return $scope.settings.commcareDomain && $scope.isUrl() && $scope.settings.username && $scope.settings.password;
-    }
-
     $scope.submit = function() {
         $scope.settings.$save(function() {
             motechAlert('settings.success.saved', 'main.saved');
@@ -40,16 +36,15 @@ function SettingsCtrl($scope, Settings) {
     }
 
     $scope.hasValue = function(prop) {
-        var has = true;
-
-        if (!$scope.settings.hasOwnProperty(prop) || $scope.settings[prop] == undefined) {
-            has = false;
-        }
-
-        return has;
+        return $scope.settings.hasOwnProperty(prop) && $scope.settings[prop] != undefined;
     }
 
     $scope.isUrl = function() {
-        return $scope.settings.commcareDomain != undefined && $scope.settings.commcareDomain.indexOf("http://")==0;
+        var urlregex = new RegExp("(((http|https)://)|(www\.))+(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(/[a-zA-Z0-9\&amp;%_\./-~-]*)?");
+        return $scope.hasValue('commcareDomain') && urlregex.test($scope.settings.commcareDomain);
+    }
+
+    $scope.hasAccountSettings = function() {
+        return $scope.hasValue('commcareDomain') && $scope.hasValue('username') && $scope.hasValue('password') && $scope.isUrl();
     }
 }

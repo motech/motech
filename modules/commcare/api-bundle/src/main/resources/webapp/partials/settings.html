@@ -26,12 +26,14 @@
                 <span ng-hide="hasValue('password')" class="help-inline">{{msg('settings.error.password')}}</span>
             </div>
         </div>
-        <legend ng-show="showEventStrategyOptions()">{{msg('settings.section.eventForwarding')}}</legend>
-        <div ng-show="showEventStrategyOptions()" ng-class="cssClass('eventStrategy')">
+        <legend>{{msg('settings.section.eventForwarding')}}</legend>
+        <div ng-class="cssClass('eventStrategy')">
             <label class="control-label">{{msg('settings.label.eventStrategy')}}</label>
 
             <div class="controls">
-                <select ng-model="settings.eventStrategy" ng-options="option for option in eventStrategyOptions" required></select>
+                <select ng-model="settings.eventStrategy" ng-options="option for option in eventStrategyOptions" required ng-disabled="!hasAccountSettings()">
+                    <option value="">-- {{msg('main.select')}} --</option>
+                </select>
                 <span ng-hide="hasValue('eventStrategy')" class="help-inline">{{msg('settings.error.eventStrategy')}}</span>
                 <span class="alert alert-success help-block">{{msg('settings.tooltip.eventStrategy')}}</span>
             </div>

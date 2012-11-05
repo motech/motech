@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Controller
 public class SettingsController {
@@ -35,10 +35,10 @@ public class SettingsController {
     @ResponseBody
     public SettingsDto getSettings() {
         SettingsDto dto = new SettingsDto();
-        dto.setCommcareDomain(settingsFacade.getProperty(COMMCARE_DOMAIN_KEY));
-        dto.setUsername(settingsFacade.getProperty(USERNAME_KEY));
-        dto.setPassword(settingsFacade.getProperty(PASSWORD_KEY));
-        dto.setEventStrategy(settingsFacade.getProperty(CASE_EVENT_STRATEGY_KEY));
+        dto.setCommcareDomain(getPropertyValue(COMMCARE_DOMAIN_KEY));
+        dto.setUsername(getPropertyValue(USERNAME_KEY));
+        dto.setPassword(getPropertyValue(PASSWORD_KEY));
+        dto.setEventStrategy(getPropertyValue(CASE_EVENT_STRATEGY_KEY));
 
         return dto;
     }
@@ -60,9 +60,14 @@ public class SettingsController {
         }
     }
 
+    private String getPropertyValue(final String propertyKey) {
+        String propertyValue = settingsFacade.getProperty(propertyKey);
+        return isNotBlank(propertyValue) ? propertyValue : null;
+    }
+
     private boolean isValid(SettingsDto settings) {
-        return isNotEmpty(settings.getCommcareDomain()) && isNotEmpty(settings.getUsername()) &&
-                isNotEmpty(settings.getPassword()) && isNotEmpty(settings.getEventStrategy()) &&
+        return isNotBlank(settings.getCommcareDomain()) && isNotBlank(settings.getUsername()) &&
+                isNotBlank(settings.getPassword()) && isNotBlank(settings.getEventStrategy()) &&
                 new UrlValidator().isValid(settings.getCommcareDomain().replace("localhost", "127.0.0.1"));
     }
 

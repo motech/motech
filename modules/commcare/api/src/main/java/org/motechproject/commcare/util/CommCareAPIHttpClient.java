@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 
 @Component
 public class CommCareAPIHttpClient {
@@ -29,12 +28,12 @@ public class CommCareAPIHttpClient {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private HttpClient commonsHttpClient;
-    private Properties commcareUserProperties;
+    private SettingsFacade settingsFacade;
 
     @Autowired
-    public CommCareAPIHttpClient(final HttpClient commonsHttpClient, final SettingsFacade settings) {
+    public CommCareAPIHttpClient(final HttpClient commonsHttpClient, final SettingsFacade settingsFacade) {
         this.commonsHttpClient = commonsHttpClient;
-        this.commcareUserProperties = settings.getProperties(COMMCARE_USER_API_FILE_NAME);
+        this.settingsFacade = settingsFacade;
     }
 
     public OpenRosaResponse caseUploadRequest(String caseXml)
@@ -162,14 +161,14 @@ public class CommCareAPIHttpClient {
     }
 
     private String getCommcareDomain() {
-        return commcareUserProperties.getProperty("commcareDomain");
+        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("commcareDomain");
     }
 
     private String getUsername() {
-        return commcareUserProperties.getProperty("username");
+        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("username");
     }
 
     private String getPassword() {
-        return commcareUserProperties.getProperty("password");
+        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("password");
     }
 }
