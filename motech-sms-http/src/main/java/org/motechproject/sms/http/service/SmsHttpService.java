@@ -54,7 +54,7 @@ public class SmsHttpService {
         }
 
         if (response == null || !response.toLowerCase().contains(template.getResponseSuccessCode().toLowerCase())) {
-            log.error(String.format("SMS delivery failed. Retrying...; Response: %s, Recipients: %s; message: %s", response, recipients, message));
+            log.error(String.format("SMS delivery failed. Response: %s, Recipients: %s; message: %s", response, recipients, message));
             throw new SmsDeliveryFailureException();
         }
 

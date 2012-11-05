@@ -38,7 +38,7 @@ public class SmsSendHandlerTest {
     }
 
     @Test
-    public void shouldSendSmsBasedOnEventDetails() throws SmsDeliveryFailureException {
+    public void shouldSendSmsBasedOnEventDetails() throws Exception {
         HashMap<String, Object> eventParameters = new HashMap<String, Object>();
         List<String> recipients = asList(new String[]{"recipient_1", "recipient_2"});
         String messageText = "message_text";
