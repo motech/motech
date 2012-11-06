@@ -108,14 +108,14 @@
             <version>4.1.2</version>
         </dependency>
         <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.1</version>
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
@@ -375,11 +375,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.gemini</groupId>
-            <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
-            <version>1.0.2.RELEASE</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>org.springframework.osgi.io</artifactId>
             <version>1.2.1</version>
@@ -517,7 +512,6 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <!-- Converted dependencies -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>org.motechproject.com.google.code.gson</artifactId>
@@ -610,13 +604,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.jboss.javassist</groupId>
-            <artifactId>com.springsource.javassist</artifactId>
-            <version>3.3.0.ga</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.objectweb.asm</groupId>
             <artifactId>com.springsource.org.objectweb.asm.attrs</artifactId>
             <version>1.5.3</version>
@@ -658,7 +645,6 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <!-- Dependencies for Xstream -->
         <dependency>
             <groupId>org.dom4j</groupId>
             <artifactId>com.springsource.org.dom4j</artifactId>
@@ -706,16 +692,6 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
-        <!-- server bundle -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -778,6 +754,85 @@
             <version>1.3.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>com.springsource.javax.ejb</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.rpc</groupId>
+            <artifactId>com.springsource.javax.xml.rpc</artifactId>
+            <version>1.1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
+            <version>2.5.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>com.springsource.javax.xml.soap</artifactId>
+            <version>1.3.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>com.springsource.javax.activation</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.objectweb.howl</groupId>
+            <artifactId>com.springsource.org.objectweb.howl</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>com.springsource.javax.annotation</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- server bundle -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-common-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>
@@ -794,7 +849,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>
-                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell,motech-platform-server-bundle
+                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell,motech-platform-common-api,motech-platform-event,motech-platform-server-bundle,motech-platform-server-config
                             </includeArtifactIds>
                             <stripVersion>true</stripVersion>
                             <outputDirectory>
@@ -811,7 +866,7 @@
                         <configuration>
                             <excludeArtifactIds>org.osgi.core,jstl,servlet-api,com.springsource.slf4j.api</excludeArtifactIds>
                             <includeArtifactIds>
-                                org.motechproject.org.ektorp,org.eclipse.gemini.blueprint.core,org.eclipse.gemini.blueprint.extender,org.eclipse.gemini.blueprint.io,com.springsource.org.apache.httpcomponents.httpcore,com.springsource.org.apache.httpcomponents.httpclient,org.motechproject.org.apache.activemq,asterisk-java,com.springsource.com.jcraft.jzlib,com.springsource.net.sf.cglib,com.springsource.antlr,com.springsource.org.aopalliance,com.springsource.org.apache.commons.beanutils,com.springsource.org.apache.commons.codec,com.springsource.org.apache.commons.collections,com.springsource.org.apache.commons.dbcp,com.springsource.org.apache.commons.digester,com.springsource.org.apache.commons.fileupload,com.springsource.org.apache.commons.httpclient,com.springsource.org.apache.commons.lang,com.springsource.org.apache.commons.logging,com.springsource.org.apache.commons.pool,com.springsource.org.apache.velocity,com.springsource.org.aspectj.runtime,com.springsource.org.aspectj.weaver,com.springsource.org.codehaus.commons.compiler,com.springsource.org.codehaus.janino,com.springsource.org.jdom,com.springsource.org.json,drools-api,kahadb,org.osgi.compendium,org.springframework.aop,org.springframework.asm,org.springframework.aspects,org.springframework.beans,org.springframework.context,org.springframework.context.support,org.springframework.core,org.springframework.expression,org.springframework.jdbc,org.springframework.jms,org.springframework.orm,org.springframework.osgi.core,org.springframework.osgi.extender,org.springframework.osgi.io,org.springframework.osgi.web,org.springframework.security.core,org.springframework.transaction,org.springframework.web,org.springframework.web.servlet,spring-integration-core,spring-integration-jms,com.springsource.org.objenesis,com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx,com.springsource.org.dom4j,org.motechproject.com.google.code.gson,org.motechproject.org.codehaus.jackson,org.motechproject.com.googlecode.jsmpp,org.motechproject.com.googlecode.lambdaj,org.motechproject.org.quartz-scheduler,org.motechproject.org.smslib,org.motechproject.com.bea.xml.stream,org.motechproject.com.thoughtworks.xstream,org.motechproject.net.sf.kxml,com.springsource.com.mchange.v2.c3p0,com.springsource.org.apache.commons.io,com.springsource.org.apache.oro,com.springsource.javax.validation,com.springsource.org.apache.commons.validator,com.springsource.org.apache.tools.ant,com.springsource.javassist,com.springsource.org.objectweb.asm,com.springsource.org.hibernate,com.springsource.javax.transaction,org.motechproject.org.joda.time,org.motechproject.com.ca.uhn.hapi,org.motechproject.org.openmrs.liquibase,org.motechproject.org.azeckoski.reflectutils,org.motechproject.org.simpleframework.xml,com.springsource.org.apache.commons.vfs
+                                com.springsource.javax.annotation,com.springsource.org.objectweb.howl,com.springsource.javax.activation,com.springsource.javax.xml.soap,com.springsource.javax.servlet,com.springsource.javax.xml.rpc,com.springsource.javax.ejb,org.motechproject.org.ektorp,org.eclipse.gemini.blueprint.core,org.eclipse.gemini.blueprint.extender,org.eclipse.gemini.blueprint.io,com.springsource.org.apache.httpcomponents.httpcore,com.springsource.org.apache.httpcomponents.httpclient,org.motechproject.org.apache.activemq,asterisk-java,com.springsource.com.jcraft.jzlib,com.springsource.net.sf.cglib,com.springsource.antlr,com.springsource.org.aopalliance,com.springsource.org.apache.commons.beanutils,com.springsource.org.apache.commons.codec,com.springsource.org.apache.commons.collections,com.springsource.org.apache.commons.dbcp,com.springsource.org.apache.commons.digester,com.springsource.org.apache.commons.fileupload,com.springsource.org.apache.commons.httpclient,com.springsource.org.apache.commons.lang,com.springsource.org.apache.commons.logging,com.springsource.org.apache.commons.pool,com.springsource.org.apache.velocity,com.springsource.org.aspectj.runtime,com.springsource.org.aspectj.weaver,com.springsource.org.codehaus.commons.compiler,com.springsource.org.codehaus.janino,com.springsource.org.jdom,com.springsource.org.json,drools-api,kahadb,org.osgi.compendium,org.springframework.aop,org.springframework.asm,org.springframework.aspects,org.springframework.beans,org.springframework.context,org.springframework.context.support,org.springframework.core,org.springframework.expression,org.springframework.jdbc,org.springframework.jms,org.springframework.orm,org.springframework.osgi.core,org.springframework.osgi.extender,org.springframework.osgi.io,org.springframework.osgi.web,org.springframework.security.core,org.springframework.transaction,org.springframework.web,org.springframework.web.servlet,spring-integration-core,spring-integration-jms,com.springsource.org.objenesis,com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx,com.springsource.org.dom4j,org.motechproject.com.google.code.gson,org.motechproject.org.codehaus.jackson,org.motechproject.com.googlecode.jsmpp,org.motechproject.com.googlecode.lambdaj,org.motechproject.org.quartz-scheduler,org.motechproject.org.smslib,org.motechproject.com.bea.xml.stream,org.motechproject.com.thoughtworks.xstream,org.motechproject.net.sf.kxml,com.springsource.com.mchange.v2.c3p0,com.springsource.org.apache.commons.io,com.springsource.org.apache.oro,com.springsource.javax.validation,com.springsource.org.apache.commons.validator,com.springsource.org.apache.tools.ant,com.springsource.javassist,com.springsource.org.objectweb.asm,com.springsource.org.hibernate,com.springsource.javax.transaction,joda-time,org.motechproject.com.ca.uhn.hapi,org.motechproject.org.openmrs.liquibase,org.motechproject.org.azeckoski.reflectutils,org.motechproject.org.simpleframework.xml,com.springsource.org.apache.commons.vfs
                             </includeArtifactIds>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <outputDirectory>

@@ -92,6 +92,16 @@
             <artifactId>jetty</artifactId>
             <version>6.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>com.springsource.org.hamcrest</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>com.springsource.org.hamcrest.core</artifactId>
+            <version>1.1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

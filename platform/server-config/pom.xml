@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
@@ -34,57 +35,7 @@
             <artifactId>com.springsource.org.apache.commons.vfs</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <!-- Spring DM -->
-        <dependency>
-            <groupId>org.eclipse.gemini</groupId>
-            <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
-            <version>1.0.2.RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.springframework.context</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.core</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.beans</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.context.support</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.aop</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.osgi</groupId>
-                    <artifactId>org.eclipse.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.osgi</groupId>
-                    <artifactId>org.eclipse.osgi.services</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-
-        <!-- OSGi IT -->
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>org.motechproject.osgi.it</artifactId>
-            <version>0.15-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
@@ -97,22 +48,26 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.server.config,
-                            org.motechproject.server.config.*,
+                            org.motechproject.server.config.db,
+                            org.motechproject.server.config.domain,
+                            org.motechproject.server.config.monitor,
+                            org.motechproject.server.config.service,
+                            org.motechproject.server.config.service.impl,
+                            org.motechproject.server.config.settings
                         </Export-Package>
                         <Import-Package>
-                            org.springframework.cache.support,
-                            org.springframework.cache.concurrent,
-                            org.springframework.cache.config,
-                            org.springframework.aop,
-                            org.springframework.aop.framework,
                             org.aopalliance.aop,
                             org.motechproject.event.listener,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.springframework.cache.concurrent,
+                            org.springframework.cache.config,
+                            org.springframework.cache.support,
                             *
                         </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
-
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>

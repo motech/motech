@@ -13,7 +13,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
 
     $scope.filterBundles = function(bundle) {
-        if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform-server") != -1) {
+        if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform") != -1) {
             return false;
         }
 

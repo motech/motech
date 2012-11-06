@@ -129,6 +129,7 @@
                             org.springframework.http.client,
                             org.springframework.http.converter,
                             org.springframework.osgi.config,
+                            org.springframework.web.servlet.config,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-openmrs-ws</Embed-Dependency>
