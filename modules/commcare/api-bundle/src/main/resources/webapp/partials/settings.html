@@ -1,13 +1,13 @@
-<div>
+<div class="commcare">
     <form id="commcareSettingsForm" name="commcareSettingsForm" class="form-horizontal" novalidate>
-        <legend>{{msg('settings.section.accountSettings')}}</legend>
+        <h3 class="control-group">{{msg('settings.section.accountSettings')}}</h3>
         <div ng-class="cssClass('commcareDomain')">
             <label class="control-label" for="commcareDomain">{{msg('settings.label.commcareDomain')}}</label>
 
             <div class="controls">
                 <input ng-model="settings.commcareDomain" type="text" id="commcareDomain" placeholder="{{msg('settings.label.commcareDomain')}}" required/>
-                <span ng-hide="hasValue('commcareDomain')" class="help-inline">{{msg('settings.error.commcareDomain')}}</span>
-                <span ng-hide="!hasValue('commcareDomain') || isUrl()" class="help-inline">{{msg('settings.warn.commcareDomain')}}</span>
+                <span ng-hide="hasValue('commcareDomain')" class="form-hint">{{msg('settings.error.commcareDomain')}}</span>
+                <span ng-hide="!hasValue('commcareDomain') || isUrl()" class="form-hint form-hint-info">{{msg('settings.warn.commcareDomain')}}</span>
             </div>
         </div>
         <div ng-class="cssClass('username')">
@@ -15,7 +15,7 @@
 
             <div class="controls">
                 <input ng-model="settings.username" type="text" id="username" placeholder="{{msg('settings.label.username')}}" required/>
-                <span ng-hide="hasValue('username')" class="help-inline">{{msg('settings.error.username')}}</span>
+                <span ng-hide="hasValue('username')" class="form-hint">{{msg('settings.error.username')}}</span>
             </div>
         </div>
         <div ng-class="cssClass('password')">
@@ -23,21 +23,23 @@
 
             <div class="controls">
                 <input ng-model="settings.password" type="password" id="password" placeholder="{{msg('settings.label.password')}}" required/>
-                <span ng-hide="hasValue('password')" class="help-inline">{{msg('settings.error.password')}}</span>
+                <span ng-hide="hasValue('password')" class="form-hint">{{msg('settings.error.password')}}</span>
             </div>
         </div>
-        <legend>{{msg('settings.section.eventForwarding')}}</legend>
+        <h3 class="control-group">{{msg('settings.section.eventForwarding')}}</h3>
         <div ng-class="cssClass('eventStrategy')">
-            <label class="control-label">{{msg('settings.label.eventStrategy')}}</label>
-
+            <label class="control-label">
+                {{msg('settings.label.eventStrategy')}}
+                <i class="icon icon-info-sign i-middle" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('settings.tooltip.eventStrategy')}}"></i>
+            </label>
             <div class="controls">
                 <select ng-model="settings.eventStrategy" ng-options="option for option in eventStrategyOptions" required ng-disabled="!hasAccountSettings()">
                     <option value="">-- {{msg('main.select')}} --</option>
                 </select>
-                <span ng-hide="hasValue('eventStrategy')" class="help-inline">{{msg('settings.error.eventStrategy')}}</span>
-                <span class="alert alert-success help-block">{{msg('settings.tooltip.eventStrategy')}}</span>
+                <span ng-hide="hasValue('eventStrategy')" class="form-hint">{{msg('settings.error.eventStrategy')}}</span>
             </div>
         </div>
+
         <div class="form-actions">
             <input ng-disabled="commcareSettingsForm.$invalid || !isUrl()" ng-click="submit()" type="button" value="{{msg('main.submit')}}" class="btn btn-primary"/>
             <input ng-disabled="commcareSettingsForm.$invalid || !isUrl()" ng-click="submitAndRestart()" type="button" value="{{msg('main.submitAndRestart')}}" class="btn"/>

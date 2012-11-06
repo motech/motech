@@ -1,0 +1,12 @@
+.commcare .form-actions {
+    background: none;
+    border-top: none;
+}
+
+.commcare .tooltip {
+    width: 400px;
+}
+.commcare .tooltip .tooltip-inner {
+    max-width: 400px;
+    font-size: 14px;
+}

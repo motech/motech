@@ -11,6 +11,10 @@ form.form-horizontal {
     margin: 0;
 }
 
+.settings-form form, form.form-inline {
+    margin: 0;
+}
+
 .box-content > div.settings-form:first-child,
 .box-content > div.settings-form:nth-child(2) {
     border-top: none;
