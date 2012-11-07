@@ -4,7 +4,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.15-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
 
     <properties>
         <packaging.type>pom</packaging.type>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
     <name>MOTECH Base RPM package</name>

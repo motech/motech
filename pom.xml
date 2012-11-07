@@ -264,7 +264,7 @@
 
         <!-- Packaging modules -->
         <module>packaging/deb</module>
-        <module>modules/rpm/rpm</module>
+        <module>packaging/rpm</module>
 
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
         <module>deployment-tests</module>

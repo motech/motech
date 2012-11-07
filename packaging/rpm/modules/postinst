@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Check if motech is running
-if [ -f /var/run/motech.pid ]; then
-    # Exit on non-zero exit code
-    set -e
-    # Restart the motech server
-    /etc/rc.d/init.d/motech restart
-fi
