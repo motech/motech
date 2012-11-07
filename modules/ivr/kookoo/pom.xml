@@ -114,5 +114,10 @@
             <artifactId>json</artifactId>
             <version>20080701</version>
         </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.2</version>
+        </dependency>
     </dependencies>
 </project>
