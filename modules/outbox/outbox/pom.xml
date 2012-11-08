@@ -16,74 +16,18 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.integration</groupId>
-            <artifactId>spring-integration-jms</artifactId>
-            <version>${spring.integration.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>org.motechproject.org.apache.activemq</artifactId>
-            <version>5.4.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-ivr-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
+            <artifactId>motech-ivr-api-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-outbox-api</artifactId>
             <version>${project.version}</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-scheduler</artifactId>
+            <artifactId>motech-scheduler-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
