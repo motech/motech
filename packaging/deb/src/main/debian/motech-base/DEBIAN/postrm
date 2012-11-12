@@ -6,17 +6,11 @@ set -e
 # Unregister motech service from rc.d
 update-rc.d -f motech remove 1>/dev/null
 
-# Remove the cache folder, if it still exists
-if [ -d /var/cache/motech ];then
-    rm -r /var/cache/motech
-fi
+rm -rf /var/cache/motech
+rm -rf /var/log/motech
+rm -rf /var/lib/motech
 
-# Remove the log folder, if it still exists
-if [ -d /var/log/motech ]; then
-    rm -r /var/log/motech
-fi
-
-# Remove the webapps folder, if it still exists
-if [ -d /var/lib/motech/webapps ]; then
-    rm -r /var/lib/motech/webapps
+# Delete the motech user, if he exists
+if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
+    userdel motech
 fi
