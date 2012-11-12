@@ -134,6 +134,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
+                            org.springframework.web.servlet.config,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-mobileforms-api;inline=true</Embed-Dependency>

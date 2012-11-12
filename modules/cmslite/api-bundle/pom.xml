@@ -44,6 +44,11 @@
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
+            <version>1.0.2.RELEASE</version>
+        </dependency>
         <!-- Test dependency -->
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -76,17 +81,19 @@
                         </Export-Package>
                         <Bundle-Activator>org.motechproject.cmslite.api.osgi.Activator</Bundle-Activator>
                         <Import-Package>
+                            javax.servlet.*;resolution:=optional,
                             org.ektorp.impl,
                             org.ektorp.spring,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            javax.servlet.*;resolution:=optional,
-                            org.springframework.cache.support,
-                            org.springframework.integration.jms.config,
-                            org.springframework.cache.config,
-                            org.springframework.integration.config.xml,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.osgi.framework;version="0.0.0",
+                            org.osgi.util.tracker;version="0.0.0",
+                            org.springframework.beans.factory.xml,
+                            org.springframework.cache.config,
+                            org.springframework.cache.support,
+                            org.springframework.context.config,
+                            org.springframework.integration.config.xml,
+                            org.springframework.integration.jms.config,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-cmslite-api;inline=true</Embed-Dependency>

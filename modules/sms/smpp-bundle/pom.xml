@@ -70,6 +70,11 @@
             <artifactId>org.motechproject.org.smslib</artifactId>
             <version>3.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
+            <version>1.0.2.RELEASE</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -94,6 +99,8 @@
                             org.motechproject.event,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config.service,
+                            org.osgi.framework;version="0.0.0",
+                            org.osgi.util.tracker;version="0.0.0",
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             *

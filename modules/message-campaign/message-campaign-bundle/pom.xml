@@ -119,6 +119,8 @@
                             org.motechproject.server.messagecampaign.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.motechproject.event,
@@ -130,8 +132,6 @@
                             org.springframework.context.config,
                             org.springframework.osgi.config,
                             org.springframework.scheduling.quartz,
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign</Embed-Dependency>

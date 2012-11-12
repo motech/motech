@@ -77,8 +77,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 bundles.add(bundle);
             }
 
-            Bundle server = null;
-
+            List<Bundle> motechInternalBundles = new ArrayList<>();
             ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
 
             for (Bundle bundle : bundles) {
@@ -87,15 +86,17 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                     bundleLoader.execute(new BundleStarter(bundle));
                 }
 
-                if (bundleSymbolicName.equalsIgnoreCase("org.motechproject.motech-platform-server-bundle")) {
-                    server = bundle;
+                if (bundleSymbolicName.startsWith("org.motechproject.motech-platform-")) {
+                    motechInternalBundles.add(bundle);
                 }
             }
 
             waitForBundles(bundleLoader);
 
-            if (server != null) {
-                startBundle(server);
+            if (!motechInternalBundles.isEmpty()) {
+                for (Bundle bundle : motechInternalBundles) {
+                    startBundle(bundle);
+                }
             }
 
             osgiFramework.start();

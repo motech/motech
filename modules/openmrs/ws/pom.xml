@@ -62,6 +62,11 @@
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
             <version>2.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <profiles>
