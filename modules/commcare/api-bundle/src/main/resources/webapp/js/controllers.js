@@ -28,8 +28,6 @@ function SettingsCtrl($scope, Settings) {
 
         if (!$scope.hasValue(prop)) {
             msg = msg.concat(' error');
-        } else if (prop == 'commcareDomain' && !$scope.isUrl()) {
-            msg = msg.concat(' warning');
         }
 
         return msg;
@@ -39,12 +37,7 @@ function SettingsCtrl($scope, Settings) {
         return $scope.settings.hasOwnProperty(prop) && $scope.settings[prop] != undefined;
     }
 
-    $scope.isUrl = function() {
-        var urlregex = new RegExp("(((http|https)://)|(www\.))+(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(/[a-zA-Z0-9\&amp;%_\./-~-]*)?");
-        return $scope.hasValue('commcareDomain') && urlregex.test($scope.settings.commcareDomain);
-    }
-
     $scope.hasAccountSettings = function() {
-        return $scope.hasValue('commcareDomain') && $scope.hasValue('username') && $scope.hasValue('password') && $scope.isUrl();
+        return $scope.hasValue('commcareBaseUrl') && $scope.hasValue('commcareDomain') && $scope.hasValue('username') && $scope.hasValue('password');
     }
 }

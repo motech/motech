@@ -1,10 +1,19 @@
 package org.motechproject.commcare.domain;
 
 public class SettingsDto {
+    private String commcareBaseUrl;
     private String commcareDomain;
     private String username;
     private String password;
     private String eventStrategy;
+
+    public String getCommcareBaseUrl() {
+        return commcareBaseUrl;
+    }
+
+    public void setCommcareBaseUrl(String commcareBaseUrl) {
+        this.commcareBaseUrl = commcareBaseUrl;
+    }
 
     public String getCommcareDomain() {
         return commcareDomain;

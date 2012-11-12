@@ -140,24 +140,29 @@ public class CommCareAPIHttpClient {
     }
 
     private String commcareUserUrl() {
-        return "https://www.commcarehq.org/a/" + getCommcareDomain()
-                + "/api/v0.1/user/?format=json";
+        return String.format("%s/%s/api/v0.1/user/?format=json", getCommcareBaseUrl(), getCommcareDomain());
     }
 
-
     private String commcareFormUrl(String formId) {
-        return "https://www.commcarehq.org/a/" + getCommcareDomain()
-                + "/api/v0.1/form/" + formId + "/?format=json";
+        return String.format("%s/%s/api/v0.1/form/%s/?format=json", getCommcareBaseUrl(), getCommcareDomain(), formId);
     }
 
     private String baseCommcareUrl() {
-        return "https://www.commcarehq.org/a/" + getCommcareDomain()
-                + "/cloudcare/api/cases/";
+        return String.format("%s/%s/cloudcare/api/cases/", getCommcareBaseUrl(), getCommcareDomain());
     }
 
     private String commcareCaseUploadUrl() {
-        return "https://www.commcarehq.org/a/" + getCommcareDomain()
-                + "/receiver/";
+        return String.format("%s/%s/receiver/", getCommcareBaseUrl(), getCommcareDomain());
+    }
+
+    private String getCommcareBaseUrl() {
+        String commcareBaseUrl = settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("commcareBaseUrl");
+
+        if (commcareBaseUrl.endsWith("/")) {
+            commcareBaseUrl = commcareBaseUrl.substring(0, commcareBaseUrl.length() - 1);
+        }
+
+        return commcareBaseUrl;
     }
 
     private String getCommcareDomain() {

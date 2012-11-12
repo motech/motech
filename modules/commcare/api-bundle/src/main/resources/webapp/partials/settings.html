@@ -1,13 +1,20 @@
 <div class="commcare">
     <form id="commcareSettingsForm" name="commcareSettingsForm" class="form-horizontal" novalidate>
         <h3 class="control-group">{{msg('settings.section.accountSettings')}}</h3>
+        <div ng-class="cssClass('commcareBaseUrl')">
+            <label class="control-label" for="commcareBaseUrl">{{msg('settings.label.commcareBaseUrl')}}</label>
+
+            <div class="controls">
+                <input ng-model="settings.commcareBaseUrl" type="text" id="commcareBaseUrl" placeholder="{{msg('settings.label.commcareBaseUrl')}}" required/>
+                <span ng-hide="hasValue('commcareBaseUrl')" class="form-hint">{{msg('settings.error.commcareBaseUrl')}}</span>
+            </div>
+        </div>
         <div ng-class="cssClass('commcareDomain')">
             <label class="control-label" for="commcareDomain">{{msg('settings.label.commcareDomain')}}</label>
 
             <div class="controls">
                 <input ng-model="settings.commcareDomain" type="text" id="commcareDomain" placeholder="{{msg('settings.label.commcareDomain')}}" required/>
                 <span ng-hide="hasValue('commcareDomain')" class="form-hint">{{msg('settings.error.commcareDomain')}}</span>
-                <span ng-hide="!hasValue('commcareDomain') || isUrl()" class="form-hint form-hint-info">{{msg('settings.warn.commcareDomain')}}</span>
             </div>
         </div>
         <div ng-class="cssClass('username')">
@@ -41,8 +48,8 @@
         </div>
 
         <div class="form-actions">
-            <input ng-disabled="commcareSettingsForm.$invalid || !isUrl()" ng-click="submit()" type="button" value="{{msg('main.submit')}}" class="btn btn-primary"/>
-            <input ng-disabled="commcareSettingsForm.$invalid || !isUrl()" ng-click="submitAndRestart()" type="button" value="{{msg('main.submitAndRestart')}}" class="btn"/>
+            <input ng-disabled="commcareSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('main.submit')}}" class="btn btn-primary"/>
+            <input ng-disabled="commcareSettingsForm.$invalid" ng-click="submitAndRestart()" type="button" value="{{msg('main.submitAndRestart')}}" class="btn"/>
         </div>
     </form>
 </div>

@@ -1,6 +1,5 @@
 package org.motechproject.commcare.web;
 
-import org.apache.commons.validator.UrlValidator;
 import org.motechproject.commcare.domain.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.osgi.OsgiListener;
@@ -19,6 +18,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Controller
 public class SettingsController {
+    private static final String COMMCARE_BASE_URL_KEY = "commcareBaseUrl";
     private static final String COMMCARE_DOMAIN_KEY = "commcareDomain";
     private static final String USERNAME_KEY = "username";
     private static final String PASSWORD_KEY = "password";
@@ -35,6 +35,7 @@ public class SettingsController {
     @ResponseBody
     public SettingsDto getSettings() {
         SettingsDto dto = new SettingsDto();
+        dto.setCommcareBaseUrl(getPropertyValue(COMMCARE_BASE_URL_KEY));
         dto.setCommcareDomain(getPropertyValue(COMMCARE_DOMAIN_KEY));
         dto.setUsername(getPropertyValue(USERNAME_KEY));
         dto.setPassword(getPropertyValue(PASSWORD_KEY));
@@ -47,6 +48,7 @@ public class SettingsController {
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public void saveSettings(@RequestBody SettingsDto settings, @RequestParam(required = false, defaultValue = "false") boolean restart) throws BundleException {
         if (isValid(settings)) {
+            settingsFacade.setProperty(COMMCARE_BASE_URL_KEY, settings.getCommcareBaseUrl());
             settingsFacade.setProperty(COMMCARE_DOMAIN_KEY, settings.getCommcareDomain());
             settingsFacade.setProperty(USERNAME_KEY, settings.getUsername());
             settingsFacade.setProperty(PASSWORD_KEY, settings.getPassword());
@@ -66,9 +68,9 @@ public class SettingsController {
     }
 
     private boolean isValid(SettingsDto settings) {
-        return isNotBlank(settings.getCommcareDomain()) && isNotBlank(settings.getUsername()) &&
-                isNotBlank(settings.getPassword()) && isNotBlank(settings.getEventStrategy()) &&
-                new UrlValidator().isValid(settings.getCommcareDomain().replace("localhost", "127.0.0.1"));
+        return isNotBlank(settings.getCommcareBaseUrl()) && isNotBlank(settings.getCommcareDomain()) &&
+                isNotBlank(settings.getUsername()) && isNotBlank(settings.getPassword()) &&
+                isNotBlank(settings.getEventStrategy());
     }
 
 }
