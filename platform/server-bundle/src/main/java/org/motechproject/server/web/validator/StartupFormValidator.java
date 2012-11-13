@@ -35,6 +35,11 @@ public class StartupFormValidator implements Validator {
                 errors.rejectValue(field, String.format("error.invalid.%s", field), null, null);
             }
         }
+        String password = errors.getFieldValue("adminPassword").toString();
+        String passwordConfirm = errors.getFieldValue("adminConfirmPassword").toString();
+        if (!password.equals(passwordConfirm)) {
+            errors.rejectValue("adminPassword", "error.invalid.password", null, null);
+        }
     }
 
 }

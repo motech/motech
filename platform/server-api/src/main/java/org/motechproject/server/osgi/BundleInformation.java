@@ -29,6 +29,9 @@ public class BundleInformation {
             }
             return UNKNOWN;
         }
+        public int getStateId() {
+            return stateId;
+        }
     }
 
     protected static final String BUNDLE_NAME = "Bundle-Name";
@@ -88,5 +91,9 @@ public class BundleInformation {
     @Override
     public int hashCode() {
         return Objects.hash(state, version, symbolicName, location, bundleId, name);
+    }
+
+    public boolean hasStatus(int status) {
+        return state.getStateId() == status ? true : false;
     }
 }

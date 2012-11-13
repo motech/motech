@@ -15,4 +15,8 @@ public interface AllMotechUsers {
     void update(MotechUser motechUser);
 
     void remove(MotechUser motechUser);
+
+    List<MotechUser> getUsers();
+
+    boolean checkUserAuthorisation(String userName, String password);
 }

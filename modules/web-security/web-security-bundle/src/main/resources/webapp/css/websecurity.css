@@ -1,0 +1,26 @@
+.table-header {
+    background: #d4e4ef;
+    border-color:#fff;
+}
+
+.table-role td:first-child, .table-role td .checkbox, .table-role td .checkbox input {
+    text-align: center;
+    float: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.table-role th {
+    text-align: center;
+}
+
+.table-role thead tr > th:first-child,
+.table-permission thead tr > th:first-child, .table-permission tbody tr > td:first-child  {
+    text-align: center;
+    width: 35px;
+}
+
+.table-role th:nth-child(2) {
+    text-align: left;
+    padding-left: 20px;
+}

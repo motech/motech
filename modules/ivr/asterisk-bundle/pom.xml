@@ -70,6 +70,7 @@
                             org.springframework.context.support,
                             org.springframework.web.servlet.mvc,
                             org.eclipse.gemini.blueprint.config,
+                            org.springframework.web.servlet.config,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-asterisk</Embed-Dependency>

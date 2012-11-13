@@ -39,10 +39,31 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.api</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.bridge</artifactId>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -62,16 +83,20 @@
                             org.motechproject.security.service
                         </Export-Package>
                         <Import-Package>
-                            !org.testng,
-                            !org.testng.annotations,
-                            org.ektorp.impl,
-                            org.ektorp.spring,
+                            org.aopalliance.aop,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.springframework.security.config,
+                            org.springframework.web.servlet.config,
+                            org.eclipse.gemini.blueprint.config,
+                            org.springframework.security.web,
+                            org.springframework.security.web.context,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-web-security;inline=true</Embed-Dependency>

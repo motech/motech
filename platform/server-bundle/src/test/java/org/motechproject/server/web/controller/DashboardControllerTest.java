@@ -10,14 +10,15 @@ import org.motechproject.server.ui.UIFrameworkService;
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -43,6 +44,15 @@ public class DashboardControllerTest {
     @Mock
     private MessageSource messageSource;
 
+    @Mock
+    Principal principal;
+
+    @Mock
+    HttpSession session;
+
+    @Mock
+    ServletContext servletContext;
+
     @InjectMocks
     private DashboardController controller = new DashboardController();
 
@@ -58,6 +68,12 @@ public class DashboardControllerTest {
         when(messageSource.getMessage("hours", null, en)).thenReturn("hours");
         when(messageSource.getMessage("minute", null, en)).thenReturn("minute");
         when(messageSource.getMessage("minutes", null, en)).thenReturn("minutes");
+        when(httpServletRequest.getUserPrincipal()).thenReturn(principal);
+        when(principal.getName()).thenReturn("admin");
+        when(httpServletRequest.getSession()).thenReturn(session);
+        when(session.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/");
+
     }
 
     @Test

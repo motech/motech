@@ -106,7 +106,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             }
 
             if (exists) {
-                while(messages.hasMoreElements()) {
+                while (messages.hasMoreElements()) {
                     Properties p = new Properties();
                     URL msgUrl = messages.nextElement();
                     String fileName = msgUrl.getFile().substring(msgUrl.getFile().lastIndexOf('/') + 1);

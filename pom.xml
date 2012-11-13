@@ -18,10 +18,12 @@
         <db.port>5984</db.port>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
+        <spring.security.version>3.1.0.RELEASE</spring.security.version>
         <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
         <activemq.version>5.4.2</activemq.version>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
+
         <scm.connection>scm:git:https://code.google.com/p/motech</scm.connection>
         <scm.developerConnection>scm:git:https://code.google.com/p/motech</scm.developerConnection>
         <scm.url>https://code.google.com/p/motech</scm.url>

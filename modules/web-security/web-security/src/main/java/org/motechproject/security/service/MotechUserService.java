@@ -1,75 +1,36 @@
 package org.motechproject.security.service;
 
-import org.motechproject.security.authentication.MotechPasswordEncoder;
-import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechUserCouchdbImpl;
-import org.motechproject.security.repository.AllMotechUsers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.motechproject.security.model.UserDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
 
-@Service
-public class MotechUserService {
+public interface MotechUserService {
 
-    @Autowired
-    private AllMotechUsers allMotechUsers;
 
-    @Autowired
-    private MotechPasswordEncoder passwordEncoder;
+    void register(String username, String password, String email, String externalId, List<String> roles);
 
-    public void register(String username, String password, String externalId, List<String> roles) {
-        this.register(username, password, externalId, roles, true);
-    }
+    @PreAuthorize("isFullyAuthenticated() and hasRole('addUser')")
+    void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive);
 
-    public void register(String username, String password, String externalId, List<String> roles, boolean isActive) {
-        if (isBlank(username) || isBlank(password)) {
-            throw new IllegalArgumentException("Username or password cannot be empty");
-        }
+    @PreAuthorize("isFullyAuthenticated() and hasRole('activateUser')")
+    void activateUser(String username);
 
-        String encodePassword = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, externalId, roles);
-        user.setActive(isActive);
-        allMotechUsers.add(user);
-    }
+    MotechUserProfile retrieveUserByCredentials(String username, String password);
 
-    public void activateUser(String username) {
-        MotechUser motechUser = allMotechUsers.findByUserName(username);
-        if (motechUser != null) {
-            motechUser.setActive(true);
-            allMotechUsers.update(motechUser);
-        }
-    }
+    MotechUserProfile changePassword(String username, String oldPassword, String newPassword);
 
-    public MotechUserProfile retrieveUserByCredentials(String username, String password) {
-        MotechUser user = allMotechUsers.findByUserName(username);
-        if (user != null && passwordEncoder.isPasswordValid(user.getPassword(), password)) {
-            return new MotechUserProfile(user);
-        }
-        return null;
-    }
+    boolean hasUser(String username);
 
-    public MotechUserProfile changePassword(String username, String oldPassword, String newPassword) {
-        MotechUser motechUser = allMotechUsers.findByUserName(username);
-        if (motechUser != null && passwordEncoder.isPasswordValid(motechUser.getPassword(), oldPassword)) {
-            motechUser.setPassword(passwordEncoder.encodePassword(newPassword));
-            allMotechUsers.update(motechUser);
-            return new MotechUserProfile(motechUser);
-        }
-        return null;
-    }
+    @PreAuthorize("isFullyAuthenticated() and hasRole('manageUser')")
+    List<MotechUserProfile> getUsers();
 
-    public void remove(String username) {
-        MotechUser motechUser = allMotechUsers.findByUserName(username);
-        if (motechUser != null) {
-            allMotechUsers.remove(motechUser);
-        }
-    }
+    @PreAuthorize("isFullyAuthenticated() and hasRole('editUser')")
+    UserDto getUser(String userName);
 
-    public boolean hasUser(String username) {
-        return allMotechUsers.findByUserName(username) != null;
-    }
+    void updateUser(UserDto user);
+
+    @PreAuthorize("isFullyAuthenticated() and hasRole('deleteUser')")
+    void deleteUser(UserDto user);
 }
-

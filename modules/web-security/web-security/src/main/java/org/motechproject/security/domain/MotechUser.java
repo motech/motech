@@ -1,7 +1,5 @@
 package org.motechproject.security.domain;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import java.util.List;
 
 public interface MotechUser {
@@ -12,13 +10,21 @@ public interface MotechUser {
 
     String getPassword();
 
-    List<String> getRoles();
+    String getEmail();
 
-    List<GrantedAuthority> getAuthorities();
+    List<String> getRoles();
 
     boolean isActive();
 
     void setActive(boolean active);
 
     void setPassword(String password);
+
+    void setEmail(String email);
+
+    void setUserName(String username);
+
+    void setRoles(List<String> roles);
+
+    void setExternalId(String externalId);
 }

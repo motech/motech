@@ -30,8 +30,6 @@
     <script src="resources/lib/angular/angular-bootstrap.js" type="text/javascript"></script>
     <script src="resources/lib/angular/angular-ui.min.js" type="text/javascript"></script>
 
-    <script src="resources/lib/bootstrap/bootstrap-modal.js"></script>
-    <script src="resources/lib/bootstrap/bootstrap-tabs.js"></script>
     <script src="resources/lib/bootstrap/bootstrap.min.js"></script>
 
     <script src="resources/js/util.js" type="text/javascript"></script>
@@ -59,51 +57,66 @@
 
 <div class="bodywrap">
     <div class="header">
-        <div class="container">
+        <div class="container-fluid">
             <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
             <div class="header-title" ng-show="showDashboardLogo.showDashboard"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
-            <div class="top-menu">
-                <div class="navbar">
-                    <ul class="nav">
-                        <li><strong><fmt:message key="server.time" bundle="${bundle}"/>: </strong>${uptime}</li>
-                        <li>|</li>
-                        <li><a href=""><strong><fmt:message key="login" bundle="${bundle}"/> </strong></a></li>
-                        <li>|</li>
-                            <li class="dropdown" id="localization">
-                                <a class="menu-flag dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
-                                    <span style="text-transform:capitalize;">${pageLang.getDisplayLanguage(pageLang)}</span>
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li ng-repeat="(key, value) in languages">
-                                        <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
-                                    </li>
-                                </ul>
-                            </li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
     <div class="clearfix"></div>
 
     <div class="header-nav navbar">
         <div class="navbar-inner navbar-inverse navbar-inner-bg">
+            <div class="container-fluid">
+                <a class="btn btn-navbar btn-blue" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
 
-            <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
-            <ul class="nav" role="navigation">
-                <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
-                <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
-                <li><a>|</a></li>
-                <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
-                <li><a>|</a></li>
-                <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
-            </ul>
-            <a id="minimize" ng-click="minimizeHeader()">
-                                <img src="resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}" alt="{{msg(showDashboardLogo.changeTitle())}}"
-                                    ng-class="showDashboardLogo.changeClass()"/>
-            </a>
+                <div class="nav-collapse">
+                    <ul class="nav" role="navigation">
+                        <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
+                        <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
+                        <li class="divider-vertical divider-vertical-sub"></li>
+                        <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
+                        <li class="divider-vertical divider-vertical-sub"></li>
+                        <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
+                    </ul>
+                    <a id="minimize" class="btn btn-mini btn-blue" ng-click="minimizeHeader()">
+                        <img src="resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}"
+                        alt="{{msg(showDashboardLogo.changeTitle())}}"
+                        ng-class="showDashboardLogo.changeClass()"/>
+                    </a>
+                    <ul class="nav pull-right menu-left">
+
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Logged in as <strong>${userName}</strong><strong class="caret"></strong></a>
+                            <ul id="localization" class="dropdown-menu" role="menu">
+                                <c:if test="${securityLaunch}">
+                                <li><a href="#" tabindex="-1"><i class="icon-user"></i> Profile</a></li>
+                                <li class="divider"></li>
+                                </c:if>
+                                <li class="dropdown-submenu pull-left">
+                                    <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
+                                        <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
+                                        <span class="text-capitalize">${pageLang.getDisplayLanguage(pageLang)}</span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="(key, value) in languages">
+                                            <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <c:if test="${securityLaunch}">
+                                <li class="divider"></li>
+                                <li><a href="${contextPath}/j_spring_security_logout" class=""><i class="icon-off"></i> Sign Out</a></li>
+                                </c:if>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -156,6 +169,9 @@
 
 </div>
 
-<footer class="inside"><strong><fmt:message key="generatedAt" bundle="${bundle}"/>:</strong> <%= new java.util.Date() %></footer>
+<footer class="inside">
+<strong><fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
+<strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}
+</footer>
 </body>
 </html>

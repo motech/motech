@@ -7,6 +7,9 @@ public class StartupForm {
     private String databaseUrl;
     private String queueUrl;
     private String schedulerUrl;
+    private String adminLogin;
+    private String adminPassword;
+    private String adminConfirmPassword;
 
     public String getLanguage() {
         return language;
@@ -46,5 +49,29 @@ public class StartupForm {
 
     public void setSchedulerUrl(final String schedulerUrl) {
         this.schedulerUrl = schedulerUrl;
+    }
+
+    public String getAdminLogin() {
+        return adminLogin;
+    }
+
+    public void setAdminLogin(String adminLogin) {
+        this.adminLogin = adminLogin;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAdminPassword(String adminPassword) {
+        this.adminPassword = adminPassword;
+    }
+
+    public String getAdminConfirmPassword() {
+        return adminConfirmPassword;
+    }
+
+    public void setAdminConfirmPassword(String adminConfirmPassword) {
+        this.adminConfirmPassword = adminConfirmPassword;
     }
 }

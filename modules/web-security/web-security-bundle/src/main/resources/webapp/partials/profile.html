@@ -1,0 +1,104 @@
+<div class="well2 span9">
+    <div class="box-header">{{msg('Profile')}}</div>
+    <div class="box-content clearfix">
+        <div class="well3">
+            <form class="form-horizontal">
+                <!------------------ user ------------------->
+                <div class="control-group">
+                    <h4>{{msg('user')}}</h4>
+                </div>
+                <div class="control-group">
+                    <div ng-class="cssClass('email')">
+                        <label class="control-label span3">{{msg('username')}}</label>
+                        <div class="controls span3">
+                            <input type="text" ng-model="user.email" required>
+                            <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div ng-class="cssClass('email')">
+                        <label class="control-label span3">{{msg('email')}}</label>
+                        <div class="controls span3">
+                            <input type="text" ng-model="user.email" required>
+                            <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span3"></label>
+                    <div class="controls span3">
+                        <input class="btn btn-primary" type="submit" value="{{msg('save')}}" ng-click=""/>
+                    </div>
+                </div>
+                <!------------------ user interface ------------------->
+                <div class="top-line"></div>
+                <div class="control-group ">
+                    <h4 class=" ">{{msg('User interface')}}</h4>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label span3">{{msg('change language')}}</label>
+                    <div class="controls span3">
+                        <div class="btn-group">
+                            <a class="btn menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
+                                <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
+                                <span style="text-transform:capitalize;">${pageLang.getDisplayLanguage(pageLang)}</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- ngRepeat: (key, value) in languages -->
+                                <li ng-repeat="(key, value) in languages">
+                                    <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!------------------ password ------------------->
+                <div class="top-line"></div>
+                <div class="control-group ">
+                    <h4 class=" ">{{msg('password')}}</h4>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span3">{{msg('old password')}}</label>
+                    <div class="controls span3">
+                        <input type="password" ng-model="user.password">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span3">{{msg('password')}}</label>
+                    <div class="controls span3">
+                        <input type="password" ng-model="user.password">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span3">{{msg('Confirm password')}}</label>
+                    <div class="controls span3">
+                        <input type="password" ng-model="user.password">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span3"></label>
+                    <div class="controls span3">
+                        <input class="btn btn-primary" type="button" value="{{msg('save')}}"  />
+                    </div>
+                </div>
+                <!------------------ save all ------------------->
+                <div class="top-line"></div>
+                <div class="control-group "></div>
+
+                <div class="control-group">
+                    <label class="control-label span3"></label>
+                    <div class="controls span3">
+                        <input class="btn btn-primary" type="button" value="{{msg('saveAll')}}"  />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+

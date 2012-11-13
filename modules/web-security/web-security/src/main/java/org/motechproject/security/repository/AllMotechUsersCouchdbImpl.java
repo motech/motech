@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -56,5 +57,16 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     @Override
     public void remove(MotechUser motechUser) {
         super.remove((MotechUserCouchdbImpl) motechUser);
+    }
+
+    @Override
+    public List<MotechUser> getUsers() {
+        return new ArrayList<MotechUser>(getAll());
+    }
+
+    @Override
+    public boolean checkUserAuthorisation(String userName, String password) {
+        MotechUser user = findByUserName(userName);
+        return password.equals(user.getPassword()) ? true : false;
     }
 }

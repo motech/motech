@@ -144,7 +144,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     private Bundle getBundle(String bundleSymbolicName) {
-        for(Bundle bundle:bundles){
+        for(Bundle bundle : bundles){
             final String symbolicName = bundle.getSymbolicName();
             if (symbolicName != null &&
                     symbolicName.equals(bundleSymbolicName)) {

@@ -31,6 +31,9 @@ public interface MotechSettings {
     String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
 
+    String ADMINLOGIN = "admin.login";
+    String ADMINPASSWORD = "admin.password";
+
     String getLanguage();
 
     String getStatusMsgTimeout();

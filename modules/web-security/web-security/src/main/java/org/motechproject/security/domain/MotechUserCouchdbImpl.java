@@ -1,13 +1,9 @@
 package org.motechproject.security.domain;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @TypeDiscriminator("doc.type == 'MotechUser'")
@@ -24,6 +20,9 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
     private String password;
 
     @JsonProperty
+    private String email;
+
+    @JsonProperty
     private List<String> roles;
 
     @JsonProperty
@@ -34,10 +33,11 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         this.setType(DOC_TYPE);
     }
 
-    public MotechUserCouchdbImpl(String userName, String password, String externalId, List<String> roles) {
+    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles) {
         super();
         this.userName = userName == null ? null : userName.toLowerCase();
         this.password = password;
+        this.email = email;
         this.externalId = externalId;
         this.roles = roles;
         this.active = true;
@@ -64,13 +64,24 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         return roles;
     }
 
-    @JsonIgnore
-    public List<GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (String role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        return authorities;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public boolean isActive() {
@@ -97,4 +108,5 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
     public int hashCode() {
         return userName.hashCode();
     }
+
 }

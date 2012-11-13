@@ -6,7 +6,7 @@
     <div class="span4 filter">
         <form class="inside form-inline">
             <label for="filter"><span><b>{{msg('filter')}}</b></span>
-                <input id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
+                <input class="search-query" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </label>
         </form>
     </div>
@@ -40,12 +40,20 @@
 <table class="table table-bundles table-bordered table-striped table-lightblue">
     <thead>
     <tr>
-        <th ng-click="setOrder('bundleId')" ng-class="getSortClass('bundleId')">{{msg('bundles.id')}}</th>
-        <th>{{msg('bundles.icon')}}</th>
-        <th ng-click="setOrder('name')" ng-class="getSortClass('name')">{{msg('bundles.name')}}</th>
-        <th ng-click="setOrder(versionOrder)" ng-class="getSortClass(versionOrder)">{{msg('bundles.version')}}</th>
-        <th ng-click="setOrder('state')" ng-class="getSortClass('state')">{{msg('bundles.state')}}</th>
-        <th>{{msg('bundles.actions')}}</th>
+        <th ng-click="setOrder('bundleId')">
+            <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingId')}}" title="{{msg('bundles.sortingId')}}"
+                 ng-class="getSortClass('bundleId')" class="sorting-no" />{{msg('bundles.id')}}</th>
+        <th><img src='../admin/img/trans.gif' class="sorting-no-img" />{{msg('bundles.icon')}}</th>
+        <th ng-click="setOrder('name')">
+            <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingName')}}" title="{{msg('bundles.sortingName')}}"
+                 ng-class="getSortClass('name')" class="sorting-no" />{{msg('bundles.name')}}</th>
+        <th ng-click="setOrder(versionOrder)">
+            <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingVersion')}}" title="{{msg('bundles.sortingVersion')}}"
+                 ng-class="getSortClass(versionOrder)" class="sorting-no" />{{msg('bundles.version')}}</th>
+        <th ng-click="setOrder('state')">
+            <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingState')}}" title="{{msg('bundles.sortingState')}}"
+                 ng-class="getSortClass('state')" class="sorting-no" />{{msg('bundles.state')}}</th>
+        <th><img src='../admin/img/trans.gif' class="sorting-no-img" />{{msg('bundles.actions')}}</th>
     </tr>
     </thead>
     <tbody>
