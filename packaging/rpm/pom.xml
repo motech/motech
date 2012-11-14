@@ -456,10 +456,10 @@
                                     <groupname>root</groupname>
                                     <sources>
                                         <source>
-                                            <location>${parent.relativePath}/LICENSE.txt</location>
+                                            <location>${project.parent.relativePath}/LICENSE.txt</location>
                                         </source>
                                         <source>
-                                            <location>${parent.relativePath}/README</location>
+                                            <location>${project.parent.relativePath}/README</location>
                                         </source>
                                     </sources>
                                 </mapping>
