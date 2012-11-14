@@ -18,7 +18,6 @@
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
     <dependencies>
-        <!-- MOTECH dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-openmrs-api</artifactId>
@@ -26,171 +25,8 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <!-- OSGI dependencies -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>com.springsource.javax.servlet</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>com.springsource.javax.transaction</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.web</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.core</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.beans</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.aop</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.aspects</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.transaction</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.core</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>com.springsource.org.aspectj.runtime</artifactId>
-            <version>1.6.8.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>com.springsource.antlr</artifactId>
-            <version>2.7.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
-            <version>2.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>com.springsource.org.hibernate</artifactId>
-            <version>3.2.6.ga</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.cglib</groupId>
-            <artifactId>com.springsource.net.sf.cglib</artifactId>
-            <version>2.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.ehcache</groupId>
-            <artifactId>com.springsource.net.sf.ehcache</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.io</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>ca.uhn.hapi</groupId>
-            <artifactId>org.motechproject.com.ca.uhn.hapi</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openmrs.liquibase</groupId>
-            <artifactId>org.motechproject.org.openmrs.liquibase</artifactId>
-            <version>1.9.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.azeckoski</groupId>
-            <artifactId>org.motechproject.org.azeckoski.reflectutils</artifactId>
-            <version>0.9.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.simpleframework</groupId>
-            <artifactId>org.motechproject.org.simpleframework.xml</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mysql.jdbc</groupId>
-            <artifactId>com.springsource.com.mysql.jdbc</artifactId>
-            <version>5.1.6</version>
-        </dependency>
-        <!-- Non-OSGI dependencies -->
-        <dependency>
-            <groupId>org.openmrs.api</groupId>
-            <artifactId>openmrs-api</artifactId>
-            <version>1.8.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.springframework.beans</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.core</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.context</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.aop</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.springframework.transaction</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-io</artifactId>
-                    <groupId>commons-io</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.openmrs.web</groupId>
@@ -293,25 +129,6 @@
                                     </includes>
                                 </resource>
                             </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-osgi-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>com.springsource.net.sf.cglib,com.springsource.net.sf.ehcache,com.springsource.com.mysql.jdbc</includeArtifactIds>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <outputDirectory>
-                                ${user.home}/.motech/bundles
-                            </outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
