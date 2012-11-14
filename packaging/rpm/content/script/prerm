@@ -13,21 +13,9 @@ if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
 fi
 
 #Remove symlinks
-if [ -L /usr/share/motech/logs ]; then
-    rm /usr/share/motech/logs
-fi
-if [ -L /usr/share/motech/temp ]; then
-    rm /usr/share/motech/temp
-fi
-if [ -L /usr/share/motech/work ]; then
-    rm /usr/share/motech/work
-fi
-if [ -L /usr/share/motech/webapps ]; then
-    rm /usr/share/motech/webapps
-fi
-if [ -L /usr/share/motech/.motech ]; then
-    rm /usr/share/motech/.motech
-fi
-if [ -L /usr/share/motech/felix-cache ]; then
-    rm /usr/share/motech/felix-cache
-fi
+rm -f /usr/share/motech/logs
+rm -f /usr/share/motech/temp
+rm -f /usr/share/motech/work
+rm -f /usr/share/motech/webapps
+rm -f /usr/share/motech/.motech
+rm -f /usr/share/motech/felix-cache
