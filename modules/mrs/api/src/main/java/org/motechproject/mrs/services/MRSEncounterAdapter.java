@@ -23,4 +23,6 @@ public interface MRSEncounterAdapter {
      * @return The latest MRSEncounter if found.
      */
     MRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType);
+
+    MRSEncounter getEncounterById(String id);
 }

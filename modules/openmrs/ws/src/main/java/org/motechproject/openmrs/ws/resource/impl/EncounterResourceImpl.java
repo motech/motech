@@ -73,4 +73,14 @@ public class EncounterResourceImpl implements EncounterResource {
         return result;
     }
 
+    @Override
+    public Encounter getEncounterById(String uuid) throws HttpException {
+        String responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/encounter/{uuid}?v=full",
+                uuid));
+        Map<Type, Object> adapters = new HashMap<Type, Object>();
+        adapters.put(ObservationValue.class, new ObservationValueDeserializer());
+        Encounter encounter = (Encounter) JsonUtils.readJsonWithAdapters(responseJson, Encounter.class, adapters);
+        return encounter;
+    }
+
 }

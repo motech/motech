@@ -176,4 +176,14 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
         }
         return mrsObservations;
     }
+
+    @Override
+    public MRSObservation getObservationById(String observationId) {
+        Obs obs = obsService.getObsByUuid(observationId);
+        if (obs == null) {
+            return null;
+        } else {
+            return convertOpenMRSToMRSObservation(obs);
+        }
+    }
 }

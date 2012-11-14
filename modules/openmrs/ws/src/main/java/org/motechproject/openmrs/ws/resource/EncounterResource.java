@@ -10,4 +10,6 @@ public interface EncounterResource {
 
     EncounterListResult queryForAllEncountersByPatientId(String id) throws HttpException;
 
+    Encounter getEncounterById(String uuid) throws HttpException;
+
 }
