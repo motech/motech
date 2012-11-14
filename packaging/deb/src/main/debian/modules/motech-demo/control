@@ -4,6 +4,6 @@ Section: web
 Priority: optional
 Architecture: all
 Depends: motech
-Maintainer: Paweł Gesek <pgesek@soldevelo.com>
+Maintainer: Grameen Foundation <motech-dev@googlegroups.com>
 Description: Demonstration module
  A demo module for motech, demonstartes usage of IVR Services.
