@@ -58,10 +58,10 @@ public abstract class BaseFormServlet extends HttpServlet {
     }
 
     protected void readParameters(DataInputStream dataInput) throws IOException {
-        String name = dataInput.readUTF();
-        String password = dataInput.readUTF();
-        String serializer = dataInput.readUTF();
-        String locale = dataInput.readUTF();
+        dataInput.readUTF(); // name
+        dataInput.readUTF(); // password
+        dataInput.readUTF(); // serializer
+        dataInput.readUTF(); // locale
     }
 
     @Override

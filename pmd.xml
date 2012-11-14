@@ -15,4 +15,6 @@
     </rule>
 
     <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable"/>
+
+    <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable"/>
 </ruleset>

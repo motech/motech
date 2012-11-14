@@ -131,9 +131,6 @@ public class IvrController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView mav = new ModelAndView();
-
-
         String sessionId = request.getParameter("session.id");
         String externalId = request.getParameter("externalId");
         String status = request.getParameter("status");

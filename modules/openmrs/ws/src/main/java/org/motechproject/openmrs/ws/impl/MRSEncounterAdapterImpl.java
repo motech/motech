@@ -146,8 +146,7 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         for (MRSObservation observation : originalObservations) {
             String conceptUuid = conceptAdapter.resolveConceptUuidFromConceptName(observation.getConceptName());
             if (CollectionUtils.isNotEmpty(observation.getDependantObservations())) {
-                Set<MRSObservation> updatedDependent = resolveConceptUuidForConceptNames(observation
-                        .getDependantObservations());
+                resolveConceptUuidForConceptNames(observation.getDependantObservations());
             }
             updatedObs.add(new MRSObservation(observation.getId(), observation.getDate(), conceptUuid, observation
                     .getValue()));
