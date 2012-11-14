@@ -3,8 +3,9 @@ Version: ${version}
 Section: web
 Priority: optional
 Architecture: all
+Installed-Size: 57000
 Depends: sysv-rc, curl, tomcat7-common
-Maintainer: Paweł Gesek <pgesek@soldevelo.com>
+Maintainer: Grameen Foundation <motech-dev@googlegroups.com>
 Description: Mobile Technology for Community Health
  MOTECH is a software system from Grameen Foundation that harnesses the 
  ubiquity of mobile phones to deliver and receive information from patients
