@@ -101,7 +101,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             osgiFramework.start();
             logger.info("OSGi framework started");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Failed to start OSGi framework", e);
             throw new RuntimeException(e);
         }
@@ -175,7 +175,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 osgiFramework.stop();
                 logger.info("OSGi framework stopped");
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error stopping OSGi framework", e);
             throw new RuntimeException(e);
         }
