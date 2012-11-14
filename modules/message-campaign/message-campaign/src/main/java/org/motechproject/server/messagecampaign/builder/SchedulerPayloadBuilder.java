@@ -3,12 +3,13 @@ package org.motechproject.server.messagecampaign.builder;
 import org.motechproject.server.messagecampaign.EventKeys;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SchedulerPayloadBuilder {
 
-    private HashMap<String, Object> params = new HashMap<String, Object>();
+    private Map<String, Object> params = new HashMap<String, Object>();
 
-    public HashMap<String, Object> payload() {
+    public Map<String, Object> payload() {
         return params;
     }
 

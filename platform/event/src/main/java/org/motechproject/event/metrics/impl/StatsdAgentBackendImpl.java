@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,7 +91,7 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
         send(stats);
     }
 
-    private boolean send(ArrayList<String> stats) {
+    private boolean send(List<String> stats) {
         if (socket == null) {
             return false;
         }

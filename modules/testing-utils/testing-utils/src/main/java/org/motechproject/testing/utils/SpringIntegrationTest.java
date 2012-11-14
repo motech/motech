@@ -16,7 +16,7 @@ public abstract class SpringIntegrationTest extends BaseUnitTest {
 
     private CouchDbConnector dbConnector;
 
-    private ArrayList<BulkDeleteDocument> toDelete;
+    private List<BulkDeleteDocument> toDelete;
 
     @Before
     public void before() {

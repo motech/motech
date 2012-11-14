@@ -7,7 +7,6 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class EnrollmentRecordMapper {
@@ -23,7 +22,7 @@ public class EnrollmentRecordMapper {
             .setReferenceDateTime(enrollment.getStartOfSchedule())
             .setEnrollmentDateTime(enrollment.getEnrolledOn())
             .setStatus(enrollment.getStatus().toString())
-            .setMetadata(cloneHashMap((HashMap<String, String>) enrollment.getMetadata()))
+            .setMetadata(new HashMap<>(enrollment.getMetadata()))
             .setEarliestStart(null)
             .setDueStart(null)
             .setLateStart(null)
@@ -46,14 +45,10 @@ public class EnrollmentRecordMapper {
             .setReferenceDateTime(enrollment.getStartOfSchedule())
             .setEnrollmentDateTime(enrollment.getEnrolledOn())
             .setStatus(enrollment.getStatus().toString())
-            .setMetadata(cloneHashMap((HashMap<String, String>) enrollment.getMetadata()))
+            .setMetadata(new HashMap<>(enrollment.getMetadata()))
             .setEarliestStart(earliestStart)
             .setDueStart(dueStart)
             .setLateStart(lateStart)
             .setMaxStart(maxStart);
-    }
-
-    private Map<String, String> cloneHashMap(HashMap<String, String> map) {
-        return (Map<String, String>) map.clone();
     }
 }

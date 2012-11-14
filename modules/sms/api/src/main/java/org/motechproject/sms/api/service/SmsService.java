@@ -2,7 +2,6 @@ package org.motechproject.sms.api.service;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.List;
 /**
  * \ingroup sms
@@ -50,5 +49,5 @@ public interface SmsService {
      * message - String containing the message text
      * delivery_time - org.joda.DateTime used to schedule the delivery of the message at the specified time
      */
-    void sendSMS(ArrayList<String> recipients, String message, DateTime deliveryTime);
+    void sendSMS(List<String> recipients, String message, DateTime deliveryTime);
 }

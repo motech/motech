@@ -188,11 +188,7 @@ public class Enrollment extends MotechBaseDataObject {
         startOfSchedule = enrollment.getStartOfSchedule();
         preferredAlertTime = enrollment.getPreferredAlertTime();
         status = enrollment.getStatus();
-        metadata = cloneHashMap((HashMap<String, String>) enrollment.getMetadata());
+        metadata = new HashMap<>(enrollment.getMetadata());
         return this;
-    }
-
-    private Map<String, String> cloneHashMap(HashMap<String, String> map) {
-        return (Map<String, String>) map.clone();
     }
 }

@@ -24,7 +24,7 @@ public enum EnrollmentUpdater {
 
     public abstract Enrollment update(Enrollment enrollment, Object newValue);
 
-    private static HashMap<UpdateCriterion, EnrollmentUpdater> updateCriterionMap = new HashMap<UpdateCriterion, EnrollmentUpdater>();
+    private static Map<UpdateCriterion, EnrollmentUpdater> updateCriterionMap = new HashMap<UpdateCriterion, EnrollmentUpdater>();
 
     static {
         updateCriterionMap.put(UpdateCriterion.Metadata, EnrollmentUpdater.metadataUpdater);

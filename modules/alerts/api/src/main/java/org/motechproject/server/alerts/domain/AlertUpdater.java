@@ -39,7 +39,7 @@ public enum AlertUpdater {
 
     public abstract Alert update(Alert alert, Object newValue);
 
-    private static HashMap<UpdateCriterion, AlertUpdater> updateCriterionMap = new HashMap<UpdateCriterion, AlertUpdater>();
+    private static Map<UpdateCriterion, AlertUpdater> updateCriterionMap = new HashMap<UpdateCriterion, AlertUpdater>();
 
     static {
         updateCriterionMap.put(UpdateCriterion.status, AlertUpdater.statusUpdater);

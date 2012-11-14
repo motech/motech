@@ -55,7 +55,7 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
         return enrollment.getDeliverTime() != null ? enrollment.getDeliverTime() : message.getStartTime();
     }
 
-    protected HashMap<String, Object> jobParams(String messageKey, CampaignEnrollment enrollment) {
+    protected Map<String, Object> jobParams(String messageKey, CampaignEnrollment enrollment) {
         Campaign campaign = allMessageCampaigns.get(enrollment.getCampaignName());
         return new SchedulerPayloadBuilder()
                 .withJobId(messageJobIdFor(messageKey, enrollment.getExternalId(), enrollment.getCampaignName()))

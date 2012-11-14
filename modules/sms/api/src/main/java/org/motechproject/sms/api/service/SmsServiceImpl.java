@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +59,7 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public void sendSMS(ArrayList<String> recipients, String message, DateTime deliveryTime) {
+    public void sendSMS(List<String> recipients, String message, DateTime deliveryTime) {
         scheduleOrRaiseSendSmsEvent(recipients, message, deliveryTime);
     }
 

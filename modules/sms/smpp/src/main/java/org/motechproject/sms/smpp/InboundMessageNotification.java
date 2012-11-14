@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
@@ -59,7 +60,7 @@ public class InboundMessageNotification implements IInboundMessageNotification {
         }
     }
 
-    private void relayEvent(HashMap<String, Object> data, String subject) {
+    private void relayEvent(Map<String, Object> data, String subject) {
         eventRelay.sendEventMessage(new MotechEvent(subject, data));
     }
 }

@@ -4,9 +4,10 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.api.EventKeys;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SchedulerPayloadBuilder {
-    private HashMap<String, Object> params = new HashMap<String, Object>();
+    private Map<String, Object> params = new HashMap<String, Object>();
 
     public SchedulerPayloadBuilder withJobId(String id) {
         params.put(MotechSchedulerService.JOB_ID_KEY, id);
@@ -23,7 +24,7 @@ public class SchedulerPayloadBuilder {
         return this;
     }
 
-    public HashMap<String, Object> payload() {
+    public Map<String, Object> payload() {
         return params;
     }
 }
