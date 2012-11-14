@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Exit on non-zero exit code
+set -e
+
 # Create the motech user group
 groupadd -f motech
 
