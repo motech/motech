@@ -33,10 +33,7 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.server.pillreminder.api,
-                            org.motechproject.server.pillreminder.api.builder,
                             org.motechproject.server.pillreminder.api.contract,
-                            org.motechproject.server.pillreminder.api.dao,
-                            org.motechproject.server.pillreminder.api.domain,
                             org.motechproject.server.pillreminder.api.service
                         </Export-Package>
                         <Bundle-Activator>
