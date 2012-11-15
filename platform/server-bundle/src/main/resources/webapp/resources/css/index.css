@@ -103,7 +103,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 0 10px 0;
     padding: 0 0 0 0;
     color: #fff;
-    line-height: 28px;
+    line-height: 20px;
     font-size: 16px;
     background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
     border-bottom:1px solid #ff9900;
@@ -125,10 +125,24 @@ h1, h2, h3, h4, h5, h6 {
     filter:none;
     border-radius:none;
     box-shadow:none;
+    border:none;
 }
 
 .navbar-inner-bg {
     background: url("../img/navbar.jpg") repeat-x 0 0;
+}
+
+.navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle {
+    background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
+    color: #ffffff;
+}
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
+    color: #ffffff;
 }
 
 #minimize {
