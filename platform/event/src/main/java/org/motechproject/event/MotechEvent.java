@@ -158,7 +158,7 @@ public class MotechEvent implements Serializable {
 
     public int getMessageRedeliveryCount() {
         Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
-        if (redeliverCount != null && redeliverCount instanceof Integer) {
+        if (redeliverCount instanceof Integer) {
             return ((Integer)redeliverCount).intValue();
         }
         return 0;

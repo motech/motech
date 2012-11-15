@@ -16,6 +16,8 @@
 
     <rule ref="rulesets/coupling.xml/LooseCoupling"/>
 
+    <rule ref="rulesets/design.xml/SimplifyConditional"/>
+
     <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable"/>
 
     <rule ref="rulesets/strings.xml/UseIndexOfChar"/>
