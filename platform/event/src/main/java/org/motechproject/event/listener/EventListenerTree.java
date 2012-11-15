@@ -66,7 +66,7 @@ public class EventListenerTree {
             throw new IllegalArgumentException("Cannot add listener for null subject");
         }
 
-        int asteriskLocation = subject.indexOf("*");
+        int asteriskLocation = subject.indexOf('*');
         if (asteriskLocation != -1 && (asteriskLocation + 1) != subject.length()) {
             throw new IllegalArgumentException("Wildcard must be last element of subject: " + subject);
         }

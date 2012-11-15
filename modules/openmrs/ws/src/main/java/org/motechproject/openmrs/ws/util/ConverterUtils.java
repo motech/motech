@@ -37,7 +37,7 @@ public final class ConverterUtils {
             // there is no explicit property for name attribute
             // the display attribute is formatted as: name = value
             String display = attr.getDisplay();
-            int index = display.indexOf("=");
+            int index = display.indexOf('=');
             String name = display.substring(0, index).trim();
 
             converted.addAttribute(new org.motechproject.mrs.model.Attribute(name, attr.getValue()));

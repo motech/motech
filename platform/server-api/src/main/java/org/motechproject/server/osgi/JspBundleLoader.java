@@ -104,7 +104,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                     Properties p = new Properties();
                     URL msgUrl = messages.nextElement();
                     String fileName = msgUrl.getFile().substring(msgUrl.getFile().lastIndexOf('/') + 1);
-                    int underscore = fileName.indexOf("_");
+                    int underscore = fileName.indexOf('_');
 
                     if (underscore != -1) {
                         fileName = "messages" + fileName.substring(underscore);
