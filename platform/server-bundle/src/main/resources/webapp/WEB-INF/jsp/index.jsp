@@ -89,7 +89,7 @@
     <div class="clearfix"></div>
 
     <div class="header-nav navbar">
-        <div class="navbar-inner navbar-inner-bg">
+        <div class="navbar-inner navbar-inverse navbar-inner-bg">
 
             <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
             <ul class="nav" role="navigation">
