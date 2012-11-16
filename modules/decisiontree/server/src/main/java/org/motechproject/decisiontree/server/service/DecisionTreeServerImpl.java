@@ -1,6 +1,7 @@
 package org.motechproject.decisiontree.server.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.EndOfCallEvent;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.TreeNodeLocator;

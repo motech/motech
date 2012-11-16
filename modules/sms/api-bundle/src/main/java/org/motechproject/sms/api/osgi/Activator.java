@@ -1,5 +1,6 @@
 package org.motechproject.sms.api.osgi;
 
+import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -7,12 +8,11 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    private static final String CONTEXT_CONFIG_LOCATION = "applicationSmsAPIBundle.xml";
+    private static final String CONTEXT_CONFIG_LOCATION = "META-INF/osgi/applicationSmsAPIBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/smsapi";
     private ServiceTracker tracker;
     private ServiceReference httpService;
@@ -51,7 +51,7 @@ public class Activator implements BundleActivator {
         }
     }
 
-    public static class SmsApiApplicationContext extends OsgiBundleXmlWebApplicationContext {
+    public static class SmsApiApplicationContext extends MotechOsgiWebApplicationContext {
 
         public SmsApiApplicationContext() {
             super();

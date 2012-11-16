@@ -42,9 +42,9 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.web</artifactId>
-            <version>1.2.1</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <version>2.6.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -62,9 +62,6 @@
                             org.motechproject.server.alerts.repository,
                             org.motechproject.server.alerts.service,
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.server.alerts.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
@@ -74,11 +71,9 @@
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.osgi.config,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-alerts-api</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-alerts-api;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

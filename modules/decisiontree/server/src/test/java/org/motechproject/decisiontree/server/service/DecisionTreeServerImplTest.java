@@ -3,6 +3,7 @@ package org.motechproject.decisiontree.server.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.EndOfCallEvent;
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.server.domain.FlowSessionRecord;

@@ -28,11 +28,6 @@
             <version>2.5.0</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.web</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>4.2.0</version>
@@ -62,9 +57,6 @@
                             org.motechproject.decisiontree.core.model,
                             org.motechproject.decisiontree.core.repository
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.decisiontree.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
@@ -76,8 +68,6 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
-                            org.springframework.osgi.config,
-                            org.springframework.osgi.context,
                             org.springframework.ui.velocity,
                             org.springframework.web.context.support,
                             org.springframework.web.servlet.config,
@@ -86,8 +76,7 @@
                             org.springframework.web.servlet.view.velocity,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-decisiontree-core</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-decisiontree-core;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

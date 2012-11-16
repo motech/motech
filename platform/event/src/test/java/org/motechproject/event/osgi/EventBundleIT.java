@@ -66,10 +66,10 @@ public class EventBundleIT extends BaseOsgiIT {
         EventRelay eventRelay = (EventRelay) bundleContext.getService(relayReference);
         assertNotNull(eventRelay);
         eventRelay.sendEventMessage(new MotechEvent(TestEventListnerOsgi.TEST_SUBJECT_OSGI));
-        synchronized (testEventListenerOsgi) {
-            testEventListenerOsgi.wait(2000);
-        }
         final List<String> receivedEvents = testEventListenerOsgi.getReceivedEvents();
+        synchronized (receivedEvents) {
+            receivedEvents.wait(2000);
+        }
         assertEquals(1, receivedEvents.size());
         assertEquals(TestEventListnerOsgi.TEST_SUBJECT_OSGI, receivedEvents.get(0));
     }

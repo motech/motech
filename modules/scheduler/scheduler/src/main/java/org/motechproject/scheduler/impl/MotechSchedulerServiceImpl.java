@@ -71,9 +71,6 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     private String repeatingTriggerMisfirePolicy;
     private Scheduler scheduler;
 
-    private MotechSchedulerServiceImpl() {
-    }
-
     @Autowired
     public MotechSchedulerServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
         this.schedulerFactoryBean = schedulerFactoryBean;

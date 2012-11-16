@@ -22,14 +22,26 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
             <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.web</artifactId>
-            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -60,9 +72,6 @@
                             org.motechproject.appointments.api,
                             org.motechproject.appointments.api.model
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.appointments.api.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
@@ -75,7 +84,6 @@
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.osgi.config,
                             org.springframework.scheduling.quartz,
                             *
                         </Import-Package>

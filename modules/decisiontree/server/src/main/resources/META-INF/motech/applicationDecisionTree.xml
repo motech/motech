@@ -3,8 +3,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.decisiontree.server"/>
@@ -23,10 +23,7 @@
         <constructor-arg value="couchdb.properties"/>
     </bean>
 
-    <bean id="treeEventProcessor" class="org.motechproject.decisiontree.server.service.TreeEventProcessor"/>
-
     <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
 </beans>

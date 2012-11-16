@@ -60,6 +60,6 @@
 
     <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 
 </beans>

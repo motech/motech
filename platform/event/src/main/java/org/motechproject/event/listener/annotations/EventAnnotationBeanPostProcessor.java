@@ -17,6 +17,8 @@ import java.util.Map;
 /**
  * Responsible for registering handlers based on annotations
  *
+ * Create a bean only when module has MotechEvent annotations.
+ *
  * @author yyonkov
  */
 @Component

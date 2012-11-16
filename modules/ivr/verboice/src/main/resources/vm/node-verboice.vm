@@ -33,7 +33,7 @@
                 #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName")
                 #set ($callerIdAttribute = "")
                 #if($prompt.callerId)
-                    #set ($callerIdAttribute = "callerId=""$prompt.callerId""")
+                    #set ($callerIdAttribute = 'callerId="' + ${prompt.callerId} + '"')
                 #end
                 <Dial $callerIdAttribute action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
             #end

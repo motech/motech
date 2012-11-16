@@ -23,14 +23,15 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
             <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.web</artifactId>
-            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -57,16 +58,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.eventlogging.osgi.Activator
-                        </Bundle-Activator>
                         <Export-Package>
                             org.motechproject.eventlogging.converter,
                             org.motechproject.eventlogging.domain,
                             org.motechproject.eventlogging.loggers,
                             org.motechproject.eventlogging.repository,
-                            org.motechproject.eventlogging.service,
-                            org.motechproject.eventlogging.osgi
+                            org.motechproject.eventlogging.service
                         </Export-Package>
                         <Import-Package>
                             org.ektorp.impl,
@@ -78,7 +75,6 @@
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.osgi.config,
                             *
                         </Import-Package>
                         <Private-Package>
@@ -86,8 +82,7 @@
                             org.motechproject.eventlogging.loggers.impl,
                             org.motechproject.eventlogging.service.impl
                         </Private-Package>
-                        <Embed-Dependency>motech-event-logging</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-event-logging;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

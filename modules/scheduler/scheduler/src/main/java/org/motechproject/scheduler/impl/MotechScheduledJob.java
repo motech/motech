@@ -53,13 +53,10 @@ public class MotechScheduledJob implements Job {
                 log.error("Can not execute job. Can not get Scheduler Context", e);
                 return;
             }
-
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
-
-            EventRelay eventRelay =
-                    (EventRelay) applicationContext.getBean(EventRelay.class);
-
+            EventRelay eventRelay = applicationContext.getBean(EventRelay.class);
             eventRelay.sendEventMessage(motechEvent);
+
         } catch (Exception e) {
             log.error("Job execution failed.", e);
         }

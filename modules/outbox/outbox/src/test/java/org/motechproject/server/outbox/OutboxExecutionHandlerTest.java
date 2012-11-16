@@ -12,9 +12,9 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 
 import java.util.Properties;
 
@@ -34,7 +34,7 @@ public class OutboxExecutionHandlerTest {
     Properties outboxProperties;
 
     @Mock
-    private MotechSchedulerGateway motechSchedulerGateway;
+    private MotechSchedulerService motechSchedulerService;
 
     @Before
     public void initMocks() {
@@ -83,7 +83,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.schedule(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+        verify(motechSchedulerService, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class OutboxExecutionHandlerTest {
 
         ArgumentCaptor<JobId> captor = ArgumentCaptor.forClass(JobId.class);
 
-        verify(motechSchedulerGateway).unscheduleJob(captor.capture());
+        verify(motechSchedulerService).unscheduleJob(captor.capture());
     }
 
     @Test
@@ -178,6 +178,6 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.unschedule(event);
 
-        verify(motechSchedulerGateway, times(0)).unscheduleJob(any(JobId.class));
+        verify(motechSchedulerService, times(0)).unscheduleJob(any(JobId.class));
     }
 }

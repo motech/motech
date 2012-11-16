@@ -4,6 +4,8 @@ package org.motechproject.decisiontree.server.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.decisiontree.core.DecisionTreeService;
+import org.motechproject.decisiontree.core.DecisionTreeServiceImpl;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.INodeOperation;

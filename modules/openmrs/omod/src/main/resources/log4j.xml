@@ -13,16 +13,16 @@
         </layout>
     </appender>
     <logger name="metrics">
-        <level value="WARN" />
+        <level value="INFO" />
     </logger>
     <logger name="org.motechproject">
-        <level value="WARN" />
+        <level value="INFO" />
     </logger>
     <logger name="org.motechproject.openmrs.omod">
         <level value="INFO" />
     </logger>
     <root>
-        <priority value="WARN" />
+        <priority value="INFO" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>

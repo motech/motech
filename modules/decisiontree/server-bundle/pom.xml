@@ -22,6 +22,47 @@
             <artifactId>motech-decisiontree-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>com.springsource.org.apache.velocity</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+            <version>1.9.7</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -32,13 +73,14 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-Path>tree</Context-Path>
                         <Export-Package>
                             org.motechproject.decisiontree.server.domain,
                             org.motechproject.decisiontree.server.repository,
                             org.motechproject.decisiontree.server.service
                         </Export-Package>
                         <Bundle-Activator>
-                            org.motechproject.decisiontree.osgi.Activator
+                            org.motechproject.osgi.web.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
@@ -55,11 +97,11 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
-                            org.springframework.osgi.config,
+                            org.eclipse.gemini.blueprint.config,
+                            org.motechproject.osgi.web,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-decisiontree-server,motech-decisiontree-core</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-decisiontree-server;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

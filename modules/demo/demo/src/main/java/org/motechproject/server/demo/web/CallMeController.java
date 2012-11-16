@@ -3,6 +3,7 @@ package org.motechproject.server.demo.web;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.demo.service.DemoEventHandler;
 import org.motechproject.server.demo.service.DemoService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Controller
-public class CallMeController {
+public class CallMeController implements InitializingBean{
 
     @Autowired
     @Qualifier("demoService")
@@ -115,8 +116,6 @@ public class CallMeController {
 
     public void setIvrServices(List<IVRService> ivrServices) {
         this.ivrServices = ivrServices;
-
-        demoEventHandler.setIvrService(ivrServices.isEmpty() ? null : ivrServices.get(0));
     }
 
     @RequestMapping(value = "/ivrservices", method = RequestMethod.GET)
@@ -125,7 +124,7 @@ public class CallMeController {
         List<ServiceContainer> serviceList = new ArrayList<ServiceContainer>();
 
         int index = 0;
-        for(IVRService service : ivrServices) {
+        for (IVRService service : ivrServices) {
             ServiceContainer serviceContainer = new ServiceContainer();
 
             int dot = service.toString().lastIndexOf('.');
@@ -150,5 +149,10 @@ public class CallMeController {
         demoEventHandler.setIvrService(service);
     }
 
+    public void afterPropertiesSet() {
+        if (!ivrServices.isEmpty()) {
+            demoEventHandler.setIvrService(ivrServices.get(0));
+        }
+    }
 }
 

@@ -6,9 +6,9 @@ import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class OutboxExecutionHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private MotechSchedulerGateway schedulerGateway;
+    private MotechSchedulerService motechSchedulerService;
 
     @Autowired
     private IVRService ivrService;
@@ -32,7 +32,7 @@ public class OutboxExecutionHandler {
     @Autowired
     private Properties outboxProperties;
 
-    @MotechListener(subjects = {EventKeys.EXECUTE_OUTBOX_SUBJECT })
+    @MotechListener(subjects = {EventKeys.EXECUTE_OUTBOX_SUBJECT})
     public void execute(MotechEvent event) {
 
         String externalID = EventKeys.getExternalID(event);
@@ -82,7 +82,7 @@ public class OutboxExecutionHandler {
         }
     }
 
-    @MotechListener(subjects = {EventKeys.SCHEDULE_EXECUTION_SUBJECT })
+    @MotechListener(subjects = {EventKeys.SCHEDULE_EXECUTION_SUBJECT})
     public void schedule(MotechEvent event) {
 
         Integer callHour = EventKeys.getCallHourKey(event);
@@ -116,10 +116,10 @@ public class OutboxExecutionHandler {
         MotechEvent reminderEvent = new MotechEvent(EventKeys.EXECUTE_OUTBOX_SUBJECT, event.getParameters());
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, String.format("0 %d %d * * ?", callMinute, callHour));
 
-        schedulerGateway.scheduleJob(cronSchedulableJob);
+        motechSchedulerService.scheduleJob(cronSchedulableJob);
     }
 
-    @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT })
+    @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT})
     public void unschedule(MotechEvent event) {
         if (EventKeys.getScheduleJobIdKey(event) == null) {
             logger.error(String.format("Can not handle Event: %s. The event is invalid - missing the %s parameter",
@@ -128,6 +128,6 @@ public class OutboxExecutionHandler {
             return;
         }
 
-        schedulerGateway.unscheduleJob(new CronJobId(event));
+        motechSchedulerService.unscheduleJob(new CronJobId(event));
     }
 }

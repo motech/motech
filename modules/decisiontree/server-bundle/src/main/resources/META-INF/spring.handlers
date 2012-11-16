@@ -1,1 +1,2 @@
-http\://www.springframework.org/schema/osgi=org.springframework.osgi.config.OsgiNamespaceHandler
+http\://www.springframework.org/schema/context=org.springframework.context.config.ContextNamespaceHandler
+http\://www.eclipse.org/gemini/blueprint/schema/blueprint=org.eclipse.gemini.blueprint.config.OsgiNamespaceHandler

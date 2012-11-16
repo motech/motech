@@ -1,7 +1,6 @@
 package org.motechproject.server.bundle;
 
-import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
-import org.motechproject.server.osgi.OsgiListener;
+import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.server.startup.StartupManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -10,11 +9,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
@@ -58,50 +53,10 @@ public class Activator implements BundleActivator {
         }
     }
 
-    public static class ServerApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
-
-        private ServletContext servletContext;
-        private ServletConfig servletConfig;
-        private String namespace;
-
+    public static class ServerApplicationContext extends MotechOsgiWebApplicationContext {
         public ServerApplicationContext() {
             super();
             setBundleContext(Activator.bundleContext);
-        }
-
-        @Override
-        public ServletContext getServletContext() {
-            return servletContext;
-        }
-
-        @Override
-        public void setServletContext(ServletContext servletContext) {
-            this.servletContext = servletContext;
-        }
-
-        @Override
-        public void setServletConfig(ServletConfig servletConfig) {
-            this.servletConfig = servletConfig;
-        }
-
-        @Override
-        public ServletConfig getServletConfig() {
-            return this.servletConfig;
-        }
-
-        @Override
-        public void setNamespace(String namespace) {
-            this.namespace = namespace;
-        }
-
-        @Override
-        public String getNamespace() {
-            return namespace;
-        }
-
-        @Override
-        public void setConfigLocation(String configLocation) {
-            this.setConfigLocations(new String[] {configLocation});
         }
     }
 
@@ -138,7 +93,7 @@ public class Activator implements BundleActivator {
 
         if (startupManager.canLaunchBundles()) {
             logger.info("Launching MOTECH bundles...");
-            OsgiListener.getOsgiService().startMotechBundles();
+            //OsgiListener.getOsgiService().startMotechBundles();
         }
     }
 }

@@ -16,11 +16,11 @@
     </appender>
 
     <logger name="org.motechproject.sms.smpp">
-        <level value="WARN" />
+        <level value="ERROR" />
     </logger>
 
     <root>
-        <priority value="WARN" />
+        <priority value="ERROR" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>

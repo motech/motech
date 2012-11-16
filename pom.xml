@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
     <version>0.15-SNAPSHOT</version>
@@ -17,7 +18,7 @@
         <db.port>5984</db.port>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
-        <spring.integration.version>2.1.1.RELEASE</spring.integration.version>
+        <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
         <activemq.version>5.4.2</activemq.version>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -87,75 +88,82 @@
                         <groupId>org.springframework</groupId>
                         <artifactId>org.springframework.context.support</artifactId>
                     </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.osgi</groupId>
-                <artifactId>org.springframework.osgi.core</artifactId>
-                <version>1.2.1</version>
-                <exclusions>
                     <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.aop</artifactId>
+                        <groupId>org.eclipse.osgi</groupId>
+                        <artifactId>org.eclipse.osgi</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.beans</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.context</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.context.support</artifactId>
+                        <groupId>org.eclipse.osgi</groupId>
+                        <artifactId>org.eclipse.osgi.services</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework.osgi</groupId>
-                <artifactId>org.springframework.osgi.web</artifactId>
-                <version>1.2.1</version>
+                <groupId>org.eclipse.gemini</groupId>
+                <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+                <version>1.0.2.RELEASE</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.web</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.beans</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.context</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>com.springsource.javax.servlet</artifactId>
+                        <groupId>org.eclipse.osgi</groupId>
+                        <artifactId>org.eclipse.osgi</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.lambdaj</groupId>
+                <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
+                <version>2.3.3</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>lambdaj</artifactId>
+                        <groupId>com.googlecode.lambdaj</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+                <version>2.1.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.context.support</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>com.springsource.slf4j.org.apache.commons.logging</artifactId>
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>com.springsource.slf4j.api</artifactId>
-            <version>1.6.1</version>
+            <groupId>com.googlecode.lambdaj</groupId>
+            <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -203,12 +211,41 @@
             <artifactId>org.motechproject.osgi.it</artifactId>
             <version>0.15-SNAPSHOT</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+            <version>1.0.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+            <version>1.0.2.RELEASE</version>
         </dependency>
         <!-- Uncomment with findbugs-maven-plugin -->
         <!--<dependency>-->
-            <!--<groupId>findbugs</groupId>-->
-            <!--<artifactId>annotations</artifactId>-->
-            <!--<version>1.0.0</version>-->
+        <!--<groupId>findbugs</groupId>-->
+        <!--<artifactId>annotations</artifactId>-->
+        <!--<version>1.0.0</version>-->
         <!--</dependency>-->
     </dependencies>
 
@@ -216,7 +253,7 @@
         <!-- Non-OSGI modules -->
         <module>platform/common-api</module>
         <module>platform/event</module>
-        <module>platform/scheduler</module>
+        <module>platform/osgi-web-util</module>
         <module>platform/server-api</module>
         <module>platform/server-config</module>
         <module>platform/server-startup</module>
@@ -440,6 +477,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
                 <executions>
                     <execution>
                         <id>list-dependencies</id>

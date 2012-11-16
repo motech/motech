@@ -1,5 +1,6 @@
 package org.motechproject.server.asterisk.osgi;
 
+import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -7,12 +8,11 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    private static final String CONTEXT_CONFIG_LOCATION = "applicationAsteriskBundle.xml";
+    private static final String CONTEXT_CONFIG_LOCATION = "META-INF/osgi/applicationAsteriskBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/asterisk";
     private ServiceTracker tracker;
     private ServiceReference httpService;
@@ -50,7 +50,7 @@ public class Activator implements BundleActivator {
         }
     }
 
-    public static class AsteriskApplicationContext extends OsgiBundleXmlWebApplicationContext {
+    public static class AsteriskApplicationContext extends MotechOsgiWebApplicationContext {
 
         public AsteriskApplicationContext() {
             super();

@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
-import org.motechproject.server.osgi.OsgiListener;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.StartupForm;
@@ -97,9 +96,9 @@ public class StartupController {
 
             if (startupManager.canLaunchBundles()) {
                 if (StringUtils.isNotBlank(start)) {
-                    OsgiListener.getOsgiService().startMotechBundles();
+                    //TODO : call start  OsgiListener.getOsgiService().startMotechBundles();
                 } else {
-                    OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME);
+                    //TODO OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME);
                 }
             }
         }

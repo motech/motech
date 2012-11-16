@@ -1,6 +1,0 @@
-http\://www.springframework.org/schema/p=org.springframework.beans.factory.xml.SimplePropertyNamespaceHandler
-http\://www.springframework.org/schema/util=org.springframework.beans.factory.xml.UtilNamespaceHandler
-http\://www.springframework.org/schema/context=org.springframework.context.config.ContextNamespaceHandler
-http\://www.springframework.org/schema/cache=org.springframework.cache.config.CacheNamespaceHandler
-http\://www.springframework.org/schema/integration/jms=org.springframework.integration.jms.config.JmsNamespaceHandler
-http\://www.springframework.org/schema/integration=org.springframework.integration.config.xml.IntegrationNamespaceHandler

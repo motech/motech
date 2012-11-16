@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <import resource="applicationAtomFeedAPI.xml" />
+    <import resource="/META-INF/motech/*.xml" />
 
     <osgi:service id="atomFeedServiceOsgi" auto-export="interfaces" ref="atomFeedService"
         interface="org.motechproject.openmrs.atomfeed.service.AtomFeedService" />
@@ -14,12 +14,13 @@
 
     <osgi:reference id="eventRelayOsgi" cardinality="1..1" interface="org.motechproject.event.listener.EventRelay" />
 
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
-        interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <bean id="atomFeedCouchDbConnector" factory-bean="platformSettingsServiceOsgi" factory-method="getCouchConnector">
-        <constructor-arg value="motech-openmrs-atomfeed" />
+    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <bean id="alertDbConnector" factory-bean="atomFeedSettings" factory-method="getConnector">
+        <constructor-arg value="motech-openmrs-atomfeed"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 </beans>

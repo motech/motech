@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
@@ -94,12 +95,47 @@
                     <groupId>org.openmrs.liquibase</groupId>
                     <artifactId>liquibase-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>cglib-nodep</artifactId>
+                    <groupId>cglib</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-oxm</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>com.springsource.slf4j.api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cglib</groupId>
+            <artifactId>com.springsource.net.sf.cglib</artifactId>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>com.springsource.org.hibernate</artifactId>
-            <version>3.2.6.ga</version>
+            <version>3.3.2.GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm</artifactId>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi</groupId>
@@ -145,6 +181,56 @@
             <groupId>org.aspectj</groupId>
             <artifactId>com.springsource.org.aspectj.runtime</artifactId>
             <version>1.6.8.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.transaction</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>com.springsource.antlr</artifactId>
+            <version>2.7.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.ehcache</groupId>
+            <artifactId>com.springsource.net.sf.ehcache</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.io</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.oxm</artifactId>
+            <version>${spring.version}</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -214,14 +300,16 @@
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
                                         CREATE DATABASE openmrs_api_test DEFAULT CHARSET utf8;
-                                        GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'localhost' IDENTIFIED BY 'password';
+                                        GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'localhost' IDENTIFIED BY
+                                        'password';
                                         FLUSH PRIVILEGES;
                                         USE openmrs_api_test;
                                     </sqlCommand>
                                     <srcFiles>
                                         <srcFile>${modules.root.dir}/sql/openmrs-1.8.sql</srcFile>
                                         <srcFile>${modules.root.dir}/sql/concept_cause_of_death.sql</srcFile>
-                                        <srcFile>${modules.root.dir}/sql/insert_email_person_attribute_type_table.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/insert_email_person_attribute_type_table.sql
+                                        </srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>

@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Igor (iopushnyev@2paths.com)
  */
 public final class MotechScheduler {
-    private static Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(MotechScheduler.class);
 
     private static final String SCHEDULE_TEST_INPUT_PARAM = "-t";
     private static final String UNSCHEDULE_TEST_INPUT_PARAM = "-c";

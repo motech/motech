@@ -30,5 +30,10 @@
             <artifactId>motech-scheduler-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

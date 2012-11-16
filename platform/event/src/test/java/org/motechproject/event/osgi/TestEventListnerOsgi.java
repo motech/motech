@@ -13,8 +13,10 @@ public class TestEventListnerOsgi {
 
     @MotechListener(subjects = TEST_SUBJECT_OSGI)
     public synchronized void testSubjectOsgiHandler(MotechEvent event) {
-        receivedEvents.add(event.getSubject());
-        this.notify();
+        synchronized (receivedEvents){
+            receivedEvents.add(event.getSubject());
+            this.notify();
+        }
     }
 
     public List<String> getReceivedEvents() {

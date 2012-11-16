@@ -1,6 +1,6 @@
 package org.motechproject.sms.smpp.osgi;
 
-import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
+import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -8,11 +8,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
@@ -79,50 +75,10 @@ public class Activator implements BundleActivator {
         logger.debug("Servlet unregistered");
     }
 
-    public static class SmsSmppApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext {
-
-        private ServletContext servletContext;
-        private ServletConfig servletConfig;
-        private String namespace;
-
+    public static class SmsSmppApplicationContext extends MotechOsgiWebApplicationContext{
         public SmsSmppApplicationContext() {
             super();
             setBundleContext(Activator.bundleContext);
-        }
-
-        @Override
-        public ServletContext getServletContext() {
-            return servletContext;
-        }
-
-        @Override
-        public void setServletContext(ServletContext servletContext) {
-            this.servletContext = servletContext;
-        }
-
-        @Override
-        public void setServletConfig(ServletConfig servletConfig) {
-            this.servletConfig = servletConfig;
-        }
-
-        @Override
-        public ServletConfig getServletConfig() {
-            return this.servletConfig;
-        }
-
-        @Override
-        public void setNamespace(String namespace) {
-            this.namespace = namespace;
-        }
-
-        @Override
-        public String getNamespace() {
-            return namespace;
-        }
-
-        @Override
-        public void setConfigLocation(String configLocation) {
-            this.setConfigLocations(new String[] {configLocation});
         }
     }
 }

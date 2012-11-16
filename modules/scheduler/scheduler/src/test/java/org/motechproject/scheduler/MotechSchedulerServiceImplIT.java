@@ -67,17 +67,17 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleJob(
-                new CronSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    "0 0 10 * * ?"
-                ));
+                    new CronSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            "0 0 10 * * ?"
+                    ));
 
             List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 10, 0, 0),
-                newDateTime(2020, 7, 16, 10, 0, 0),
-                newDateTime(2020, 7, 17, 10, 0, 0)),
-                first3FireTimes);
+                    newDateTime(2020, 7, 15, 10, 0, 0),
+                    newDateTime(2020, 7, 16, 10, 0, 0),
+                    newDateTime(2020, 7, 17, 10, 0, 0)),
+                    first3FireTimes);
         } finally {
             stopFakingTime();
         }
@@ -91,23 +91,23 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleJob(
-                new CronSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    "0 0 10 * * ?"
-                ));
+                    new CronSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            "0 0 10 * * ?"
+                    ));
 
             schedulerService.scheduleJob(
-                new CronSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    "0 0 14 * * ?"
-                ));
+                    new CronSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            "0 0 14 * * ?"
+                    ));
 
             List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 14, 0, 0),
-                newDateTime(2020, 7, 16, 14, 0, 0),
-                newDateTime(2020, 7, 17, 14, 0, 0)),
-                first3FireTimes);
+                    newDateTime(2020, 7, 15, 14, 0, 0),
+                    newDateTime(2020, 7, 16, 14, 0, 0),
+                    newDateTime(2020, 7, 17, 14, 0, 0)),
+                    first3FireTimes);
         } finally {
             stopFakingTime();
         }
@@ -121,19 +121,19 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleJob(
-                new CronSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    "0 0 10 * * ?"
-                ));
+                    new CronSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            "0 0 10 * * ?"
+                    ));
 
             schedulerService.rescheduleJob("test_event", "job_id", "0 0 14 * * ?");
 
             List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 14, 0, 0),
-                newDateTime(2020, 7, 16, 14, 0, 0),
-                newDateTime(2020, 7, 17, 14, 0, 0)),
-                first3FireTimes);
+                    newDateTime(2020, 7, 15, 14, 0, 0),
+                    newDateTime(2020, 7, 16, 14, 0, 0),
+                    newDateTime(2020, 7, 17, 14, 0, 0)),
+                    first3FireTimes);
         } finally {
             stopFakingTime();
         }
@@ -167,15 +167,15 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRunOnceJob(
-                new RunOnceSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDateTime(2020, 7, 15, 12, 0, 0).toDate()
-                ));
+                    new RunOnceSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDateTime(2020, 7, 15, 12, 0, 0).toDate()
+                    ));
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id-runonce");
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 12, 0, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 15, 12, 0, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -189,10 +189,10 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRunOnceJob(
-                new RunOnceSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDateTime(2020, 6, 15, 12, 0, 0).toDate()
-                ));
+                    new RunOnceSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDateTime(2020, 6, 15, 12, 0, 0).toDate()
+                    ));
         } finally {
             stopFakingTime();
         }
@@ -211,21 +211,21 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRepeatingJob(
-                new RepeatingSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                    null,
-                    2,
-                    (long) DateTimeConstants.MILLIS_PER_DAY,
-                    false)
-                );
+                    new RepeatingSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
+                            null,
+                            2,
+                            (long) DateTimeConstants.MILLIS_PER_DAY,
+                            false)
+            );
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 12, 0, 0),
-                newDateTime(2020, 7, 16, 12, 0, 0),
-                newDateTime(2020, 7, 17, 12, 0, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 15, 12, 0, 0),
+                    newDateTime(2020, 7, 16, 12, 0, 0),
+                    newDateTime(2020, 7, 17, 12, 0, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -239,20 +239,20 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRepeatingJob(
-                new RepeatingSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                    newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                    (long) DateTimeConstants.MILLIS_PER_DAY,
-                    false)
+                    new RepeatingSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
+                            newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                            (long) DateTimeConstants.MILLIS_PER_DAY,
+                            false)
             );
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 12, 0, 0),
-                newDateTime(2020, 7, 16, 12, 0, 0),
-                newDateTime(2020, 7, 17, 12, 0, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 15, 12, 0, 0),
+                    newDateTime(2020, 7, 16, 12, 0, 0),
+                    newDateTime(2020, 7, 17, 12, 0, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -266,20 +266,20 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRepeatingJob(
-                new RepeatingSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDateTime(2020, 7, 14, 12, 0, 0).toDate(),
-                    newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                    (long) DateTimeConstants.MILLIS_PER_DAY,
-                    true)
+                    new RepeatingSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDateTime(2020, 7, 14, 12, 0, 0).toDate(),
+                            newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                            (long) DateTimeConstants.MILLIS_PER_DAY,
+                            true)
             );
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 12, 0, 0),
-                newDateTime(2020, 7, 16, 12, 0, 0),
-                newDateTime(2020, 7, 17, 12, 0, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 15, 12, 0, 0),
+                    newDateTime(2020, 7, 16, 12, 0, 0),
+                    newDateTime(2020, 7, 17, 12, 0, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -295,12 +295,12 @@ public class MotechSchedulerServiceImplIT {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
         schedulerService.scheduleRepeatingJob(
-            new RepeatingSchedulableJob(
-                null,
-                newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                (long) DateTimeConstants.MILLIS_PER_DAY,
-                false)
+                new RepeatingSchedulableJob(
+                        null,
+                        newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
+                        newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                        (long) DateTimeConstants.MILLIS_PER_DAY,
+                        false)
         );
     }
 
@@ -309,12 +309,12 @@ public class MotechSchedulerServiceImplIT {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
         schedulerService.scheduleRepeatingJob(
-            new RepeatingSchedulableJob(
-                new MotechEvent("test_event", params),
-                null,
-                newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
-                (long) DateTimeConstants.MILLIS_PER_DAY,
-                false)
+                new RepeatingSchedulableJob(
+                        new MotechEvent("test_event", params),
+                        null,
+                        newDateTime(2020, 7, 18, 12, 0, 0).toDate(),
+                        (long) DateTimeConstants.MILLIS_PER_DAY,
+                        false)
         );
     }
 
@@ -326,21 +326,21 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleDayOfWeekJob(
-                new DayOfWeekSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDate(2020, 7, 10),   // friday
-                    newDate(2020, 7, 22),
-                    asList(DayOfWeek.Monday, DayOfWeek.Thursday),
-                    new Time(10, 10),
-                    false)
+                    new DayOfWeekSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDate(2020, 7, 10),   // friday
+                            newDate(2020, 7, 22),
+                            asList(DayOfWeek.Monday, DayOfWeek.Thursday),
+                            new Time(10, 10),
+                            false)
             );
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id");
             assertEquals(asList(
-                newDateTime(2020, 7, 13, 10, 10, 0),
-                newDateTime(2020, 7, 16, 10, 10, 0),
-                newDateTime(2020, 7, 20, 10, 10, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 13, 10, 10, 0),
+                    newDateTime(2020, 7, 16, 10, 10, 0),
+                    newDateTime(2020, 7, 20, 10, 10, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -354,20 +354,20 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleDayOfWeekJob(
-                new DayOfWeekSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    newDate(2020, 7, 10),   // friday
-                    newDate(2020, 7, 22),
-                    asList(DayOfWeek.Monday, DayOfWeek.Thursday),
-                    new Time(10, 10),
-                    true)
+                    new DayOfWeekSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            newDate(2020, 7, 10),   // friday
+                            newDate(2020, 7, 22),
+                            asList(DayOfWeek.Monday, DayOfWeek.Thursday),
+                            new Time(10, 10),
+                            true)
             );
 
             List<DateTime> fireTimes = getFireTimes("test_event-job_id");
             assertEquals(asList(
-                newDateTime(2020, 7, 16, 10, 10, 0),
-                newDateTime(2020, 7, 20, 10, 10, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 16, 10, 10, 0),
+                    newDateTime(2020, 7, 20, 10, 10, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -408,22 +408,21 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleJob(
-                new CronSchedulableJob(
-                    new MotechEvent("test_event", params),
-                    "0 0 12 * * ?"
-                ));
+                    new CronSchedulableJob(
+                            new MotechEvent("test_event", params),
+                            "0 0 12 * * ?"
+                    ));
 
             List<Date> eventTimes = schedulerService.getScheduledJobTimings("test_event", "job_id", newDateTime(2020, 7, 15, 12, 0, 0).toDate(), newDateTime(2020, 7, 17, 12, 0, 0).toDate());
             assertEquals(asList(
-                newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
-                newDateTime(2020, 7, 16, 12, 0, 0).toDate(),
-                newDateTime(2020, 7, 17, 12, 0, 0).toDate()),
-                eventTimes);
+                    newDateTime(2020, 7, 15, 12, 0, 0).toDate(),
+                    newDateTime(2020, 7, 16, 12, 0, 0).toDate(),
+                    newDateTime(2020, 7, 17, 12, 0, 0).toDate()),
+                    eventTimes);
         } finally {
             stopFakingTime();
         }
     }
-
 
 
     private List<DateTime> getFireTimes(String triggerKey) throws SchedulerException {

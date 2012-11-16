@@ -9,11 +9,14 @@
     </appender>
 
     <logger name="org.motechproject">
-        <level value="WARN"/>
+        <level value="ERROR"/>
+    </logger>
+    <logger name="org.springframework.web">
+        <level value="ERROR"/>
     </logger>
 
     <root>
-        <priority value="WARN"/>
+        <priority value="ERROR"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 

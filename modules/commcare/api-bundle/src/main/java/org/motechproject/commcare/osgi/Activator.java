@@ -32,6 +32,7 @@
 package org.motechproject.commcare.osgi;
 
 import org.apache.commons.io.IOUtils;
+import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
 import org.motechproject.server.ui.UiHttpContext;
@@ -42,7 +43,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
@@ -109,7 +109,7 @@ public class Activator implements BundleActivator {
         this.uiServiceTracker.close();
     }
 
-    public static class CommcareApiApplicationContext extends OsgiBundleXmlWebApplicationContext {
+    public static class CommcareApiApplicationContext extends MotechOsgiWebApplicationContext {
 
         public CommcareApiApplicationContext() {
             super();

@@ -147,7 +147,7 @@ public class StartupControllerTest {
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
         verify(startupManager).startup();
         verify(startupManager).canLaunchBundles();
-        verify(osgiFrameworkService).startBundle(anyString());
+        //verify(osgiFrameworkService).startBundle(anyString());       //TODO: Check if we can send an event instead of talking to web loader directly
 
         assertEquals("redirect:home", result.getViewName());
     }

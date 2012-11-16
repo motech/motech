@@ -42,6 +42,11 @@
             <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
             <version>1.0.2.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-osgi-web-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -59,7 +64,7 @@
                             org.motechproject.cmslite.api.service,
                             org.motechproject.cmslite.api.web
                         </Export-Package>
-                        <Bundle-Activator>org.motechproject.cmslite.api.osgi.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Import-Package>
                             javax.servlet.*;resolution:=optional,
                             org.ektorp.impl,

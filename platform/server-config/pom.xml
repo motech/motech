@@ -57,16 +57,41 @@
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
-                            org.motechproject.event.listener,
                             org.springframework.aop,
                             org.springframework.aop.framework,
-                            org.springframework.cache.concurrent,
+                            org.motechproject.event.listener,
                             org.springframework.cache.config,
+                            org.springframework.cache.concurrent,
                             org.springframework.cache.support,
+                            javax.annotation;version="1.0.0",
                             *
                         </Import-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
