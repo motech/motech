@@ -131,7 +131,7 @@
             <property name="allowInSwitchCase" value="false"/>
         </module>
         <module name="HideUtilityClassConstructor">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
         </module>
         <module name="MultipleVariableDeclarations">
             <property name="severity" value="error"/>
