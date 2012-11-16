@@ -132,4 +132,14 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
         }
         return openMrsEncounter;
     }
+
+    @Override
+    public MRSEncounter getEncounterById(String encounterId) {
+        Encounter encounter = encounterService.getEncounterByUuid(encounterId);
+        if (encounter == null) {
+            return null;
+        } else {
+            return openmrsToMrsEncounter(encounter);
+        }
+    }
 }

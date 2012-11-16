@@ -91,4 +91,14 @@ public class MRSObservationAdapterImpl implements MRSObservationAdapter {
 
         return observations.get(0);
     }
+
+    @Override
+    public MRSObservation getObservationById(String id) {
+        try {
+            Observation obs = obsResource.getObservationById(id);
+            return ConverterUtils.convertObservationToMrsObservation(obs);
+        } catch (HttpException e) {
+            return null;
+        }
+    }
 }

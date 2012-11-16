@@ -253,4 +253,16 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
 
         return mrsObs;
     }
+
+    @Override
+    public MRSEncounter getEncounterById(String id) {
+        try {
+            Encounter encounter = encounterResource.getEncounterById(id);
+            MRSPatient patient = patientAdapter.getPatient(encounter.getPatient().getUuid());
+            MRSPerson provider = personAdapter.getPerson(encounter.getProvider().getUuid());
+            return convertToMrsEncounter(encounter, provider, patient);
+        } catch (HttpException e) {
+            return null;
+        }
+    }
 }

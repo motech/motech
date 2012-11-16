@@ -25,4 +25,7 @@ public interface MRSObservationAdapter {
      */
     MRSObservation findObservation(String patientMotechId, String conceptName);
     List<MRSObservation> findObservations(String patientMotechId, String conceptName);
+
+
+    MRSObservation getObservationById(String id);
 }
