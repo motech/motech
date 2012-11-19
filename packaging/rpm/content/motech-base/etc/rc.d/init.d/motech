@@ -58,7 +58,7 @@ fi
 CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
 
 # Path to the tomcat launch script
-TOMCAT_SCRIPT="/usr/sbin/dtomcat7"
+TOMCAT_SCRIPT="/usr/sbin/tomcat"
 
 # Tomcat program name
 TOMCAT_PROG="${NAME}"
@@ -67,7 +67,7 @@ TOMCAT_PROG="${NAME}"
 TOMCAT_USER="${TOMCAT_USER:-tomcat}"
 
 # Define the tomcat log file
-TOMCAT_LOG="${TOMCAT_LOG:-/var/log/tomcat7/catalina.out}"
+TOMCAT_LOG="${TOMCAT_LOG:-/var/log/tomcat/catalina.out}"
 
 RETVAL="0"
 
@@ -108,7 +108,7 @@ function makeHomeDir() {
         echo "$CATALINA_HOME does not exist, creating"
         if [ ! -d "/usr/share/${NAME}" ]; then
             mkdir /usr/share/${NAME}
-            cp -pLR /usr/share/tomcat7/* /usr/share/${NAME}
+            cp -pLR /usr/share/tomcat/* /usr/share/${NAME}
         fi
         mkdir -p /var/log/${NAME} \
                  /var/cache/${NAME} \
@@ -117,8 +117,8 @@ function makeHomeDir() {
         ln -fs /var/tmp/${NAME} ${CATALINA_HOME}/temp
         cp -pLR /usr/share/${NAME}/bin $CATALINA_HOME
         cp -pLR /usr/share/${NAME}/conf $CATALINA_HOME
-        ln -fs /usr/share/java/tomcat7 ${CATALINA_HOME}/lib
-        ln -fs /usr/share/tomcat7/webapps ${CATALINA_HOME}/webapps
+        ln -fs /usr/share/java/tomcat ${CATALINA_HOME}/lib
+        ln -fs /usr/share/tomcat/webapps ${CATALINA_HOME}/webapps
         chown ${TOMCAT_USER}:${TOMCAT_USER} /var/log/${NAME}
     fi
 }
@@ -161,7 +161,7 @@ function start() {
     chown ${TOMCAT_USER}:${TOMCAT_USER} $CATALINA_PID
     touch $TOMCAT_LOG
     chown ${TOMCAT_USER}:${TOMCAT_USER} $TOMCAT_LOG
-    if [ "$CATALINA_HOME" != "/usr/share/tomcat7" ]; then
+    if [ "$CATALINA_HOME" != "/usr/share/tomcat" ]; then
         # Create a tomcat directory if it doesn't exist
         makeHomeDir
         # If CATALINA_HOME doesn't exist modify port number so that

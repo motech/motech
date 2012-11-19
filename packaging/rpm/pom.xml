@@ -241,11 +241,6 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>org.springframework.osgi.extender</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
             <version>1.2.1</version>
@@ -363,7 +358,7 @@
                             </defineStatements>
 
                             <requires>
-                                <require>tomcat7 &gt;= 7.0</require>
+                                <require>tomcat &gt;= 7.0</require>
                                 <require>jdk &gt;= 1.7</require>
                             </requires>
 
