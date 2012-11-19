@@ -93,6 +93,10 @@ cp -r $CONFIG_DIR ./motech-base/usr/share/motech/.motech
 mkdir -p ./motech-base/usr/share/motech/.motech/bundles
 # Include motech-admin
 cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-platform-common*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-platform-event*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-platform-server-config*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-osgi-web-util*.jar ./motech-base/usr/share/motech/.motech/bundles
 # Include dependencies
 cp -r $DEPENDENCY_DIR/* ./motech-base/usr/share/motech/.motech/bundles
 
