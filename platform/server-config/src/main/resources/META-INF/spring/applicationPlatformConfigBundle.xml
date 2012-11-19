@@ -10,4 +10,5 @@
     <osgi:reference id="serverEventRelay" interface="org.motechproject.event.listener.EventRelay"/>
     <osgi:service ref="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
     <osgi:service ref="configLoader" interface="org.motechproject.server.config.ConfigLoader"/>
+    <osgi:service ref="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>
 </beans>

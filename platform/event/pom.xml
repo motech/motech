@@ -83,6 +83,10 @@
                     <groupId>org.apache.activemq</groupId>
                     <artifactId>activemq-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>com.springsource.javax.annotation</artifactId>
+                    <groupId>javax.annotation</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -159,11 +163,6 @@
             <groupId>org.objectweb.howl</groupId>
             <artifactId>com.springsource.org.objectweb.howl</artifactId>
             <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>com.springsource.javax.annotation</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <!-- Test -->
         <dependency>

@@ -15,7 +15,7 @@ import java.util.jar.Manifest;
 public class ConfigBundleIT extends BaseOsgiIT {
     @Override
     protected String getPlatformName() {
-        return Platforms.EQUINOX;
+        return Platforms.FELIX;
     }
 
     public void testConfigBundle() throws Exception {

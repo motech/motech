@@ -11,6 +11,7 @@ import org.motechproject.cmslite.api.model.ContentNotFoundException;
 import org.motechproject.cmslite.api.model.StringContent;
 import org.motechproject.cmslite.api.service.CMSLiteService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
 
@@ -18,11 +19,15 @@ public class CMSLiteBundleIT extends BaseOsgiIT{
 
     @Override
     protected String getPlatformName() {
-        return Platforms.EQUINOX;
+        return Platforms.FELIX;
     }
 
 
     public void testCMSLiteService() throws InterruptedException, CMSLiteException, ContentNotFoundException, IOException {
+        assertNotNull(bundleContext.getServiceReference("org.motechproject.event.listener.EventListenerRegistryService"));
+        assertNotNull(bundleContext.getServiceReference("org.motechproject.server.config.SettingsFacade"));
+        assertNotNull(bundleContext.getServiceReference("org.motechproject.server.config.service.PlatformSettingsService"));
+        assertNotNull(bundleContext.getServiceReference("org.motechproject.cmslite.api.service.CMSLiteService"));
         final CMSLiteService cmsLiteService = (CMSLiteService)getApplicationContext().getBean("cmsLiteServiceRef");
         assertNotNull(cmsLiteService);
 
