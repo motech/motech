@@ -16,7 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TreeConverter {
+public final class TreeConverter {
+
+    private TreeConverter() {
+        // static utility class
+    }
+
     public static Tree convertToTree(final TreeRecord tree) throws Exception {
         tree.afterPropertiesSet();
 
