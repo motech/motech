@@ -1,0 +1,74 @@
+{
+  "displayName" : "Message Campaign",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${project.version}",
+  "description" : "The Message Campaign module is used to enroll users into campaigns. A campaign is a course of informational messages that are sent to the user on an assigned date or schedule. Campaign messages follow a clearly defined schedule and are automatically triggered by the scheduling system.",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "Send Message",
+      "subject" : "org.motechproject.server.messagecampaign.fired-campaign-message",
+      "eventParameters" : [
+        {
+          "eventKey" : "CampaignName",
+          "displayName" : "Campaign name"
+        },
+        {
+          "eventKey" :  "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
+          "eventKey" :  "MessageKey",
+          "displayName" : "Message key"
+        }
+      ]
+    },
+    {
+      "displayName" : "Campaign completed",
+      "subject" : "org.motechproject.server.messagecampaign.campaign-completed",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
+          "eventKey" : "CampaignName",
+          "displayName" : "Campaign name"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "Send Message",
+      "subject" : "org.motechproject.server.messagecampaign.fired-campaign-message",
+      "eventParameters" : [
+        {
+          "eventKey" : "CampaignName",
+          "displayName" : "Campaign name"
+        },
+        {
+          "eventKey" :  "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
+          "eventKey" :  "MessageKey",
+          "displayName" : "Message key"
+        }
+      ]
+    },
+    {
+      "displayName" : "Campaign completed",
+      "subject" : "org.motechproject.server.messagecampaign.campaign-completed",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
+          "eventKey" : "CampaignName",
+          "displayName" : "Campaign name"
+        }
+      ]
+    }
+  ]
+}
