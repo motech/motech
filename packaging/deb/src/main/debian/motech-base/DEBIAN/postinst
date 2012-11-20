@@ -3,19 +3,24 @@
 # Exit on non-zero exit code
 set -e
 
-# Create the motech user group
-groupadd -f motech
-
 # Create the motech user, if he doesn't exist
 if [ `grep -c motech: /etc/passwd` -eq 0 ]; then
-    useradd -r -c "Motech user" -d /usr/share/motech -g motech motech
+    useradd -r -c "Motech user" -d /usr/share/motech motech
 fi
 
 # Make motech the owner of relevant directories
-chown -R motech:motech /var/log/motech
-chown -R motech:motech /var/cache/motech
-chown -R motech:motech /var/lib/motech
-chown -R motech:motech /usr/share/motech/.motech
+if [ -d /var/log/motech ]; then
+    chown -R motech:motech /var/log/motech
+fi
+if [ -d /var/cache/motech ]; then
+    chown -R motech:motech /var/cache/motech
+fi
+if [ -d /var/lib/motech ]; then
+    chown -R motech:motech /var/lib/motech
+fi
+if [ -d /usr/share/motech/.motech ]; then
+    chown -R motech:motech /usr/share/motech/.motech
+fi
 
 # Register motech service with udpate-rc.d
 update-rc.d motech defaults 1>/dev/null

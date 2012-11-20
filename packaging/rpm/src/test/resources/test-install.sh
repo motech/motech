@@ -1,9 +1,7 @@
 #!/bin/bash
 
-YES="-y --force-yes"
-
 function purge_motech() {
-    $CHROOT apt-get purge motech-base $YES
+    $CHROOT yum remove motech-base -y
     $CHROOT rm -rf /var/log/motech
     $CHROOT rm -rf /var/cache/motech
     $CHROOT rm -rf /usr/share/motech
@@ -42,22 +40,21 @@ fi
 
 CHROOT="$MAKEROOT chroot $CHROOT_DIR"
 
-MOTECH_OWNED="/var/lib/motech /var/cache/motech /usr/share/motech/.motech"
-NON_MOTECH_OWNED="/var/lib/motech /var/cache/motech /usr/share/motech/.motech"
+NON_MOTECH_OWNED="/usr/share/motech"
+MOTECH_OWNED="/var/lib/motech/webapps /var/cache/motech /var/lib/motech/data/bundles"
 
 # Remove previous installation if any
 purge_motech
 
 # Install package
-cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
-$CHROOT dpkg -i /tmp/$BASE_PACKAGE
-$CHROOT apt-get install -f # install dependencies
+$MAKEROOT cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
+$CHROOT yum install /tmp/$BASE_PACKAGE -y
 $CHROOT service motech start
 
 # Make sure files/directories exist with correct permissions
 
 for dir in $MOTECH_OWNED; do
-    if [ `$CHROOT stat -c %U /var/lib/motech` != "motech" ]; then
+    if [ `$CHROOT stat -c %U $dir` != "motech" ]; then
         echo "$dir is not owned by motech" >&2
         purge_motech
         exit 1
@@ -68,7 +65,7 @@ for dir in $NON_MOTECH_OWNED; do
     $CHROOT file $dir # returns 1 if failed
     RET=$?
     if [ $RET -ne 0 ]; then
-        echo "$dir does not exist" >&2
+       echo "$dir does not exist" >&2
         purge_motech
         exit $RET
     fi
@@ -78,7 +75,7 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 | grep -i motech
+curl -L localhost:8080 --retry 10 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" >&2
@@ -92,9 +89,9 @@ $CHROOT service motech stop
 $CHROOT rm -rf /var/log/motech/*
 
 # Remove motech
-$CHROOT apt-get remove motech-base $YES
+$CHROOT yum remove motech-base -y
 
-for dir in $MOTECH_OWNED" "$NON_MOTECH_OWNED; do
+for dir in $MOTECH_OWNED; do
     $CHROOT file $dir # will return 0 if exists
     RET=$?
     if [ $RET -eq 0 ]; then

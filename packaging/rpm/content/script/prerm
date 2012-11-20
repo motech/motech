@@ -6,6 +6,13 @@ set -e
 # Unregister service
 chkconfig --del motech
 
+# Remove fragment dir if empty
+FRAGMENT_DIR=/usr/share/motech/.motech/bundles/fragments
+
+if [ -d $FRAGMENT_DIR ] && [ ! "$(ls -A $FRAGMENT_DIR)" ]; then
+    rm -rf $FRAGMENT_DIR
+fi
+
 # Delete the motech user, if he exists
 if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
     skill -KILL -u motech

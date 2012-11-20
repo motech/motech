@@ -10,10 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-base</artifactId>
-    <packaging>${packaging.type}</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <packaging.type>pom</packaging.type>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
@@ -29,6 +28,13 @@
     </description>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server</artifactId>
@@ -103,7 +109,7 @@
                                 </goals>
                                 <configuration>
                                     <includeScope>runtime</includeScope>
-                                    <excludeArtifactIds>motech-platform-server, motech-platform-server-bundle</excludeArtifactIds>
+                                    <excludeArtifactIds>motech-platform-server, motech-platform-server-bundle, commons-logging, log4j, slf4j-log4j12</excludeArtifactIds>
                                     <stripVersion>false</stripVersion>
                                     <excludeTransitive>false</excludeTransitive>
                                     <outputDirectory>
@@ -138,12 +144,17 @@
 
                             <requires>
                                 <require>tomcat &gt;= 7.0</require>
-                                <require>jdk &gt;= 1.7</require>
+                                <require>java >= 1.7</require>
                             </requires>
 
                             <mappings>
                                 <mapping>
                                     <directory>/var/log/motech</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
+                                </mapping>
+                                <mapping>
+                                    <directory>/var/cache/motech</directory>
                                     <username>motech</username>
                                     <groupname>motech</groupname>
                                 </mapping>
@@ -245,6 +256,61 @@
                                 <fileEncoding>utf-8</fileEncoding>
                             </postremoveScriptlet>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>RPMIT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <systemPropertyVariables>
+                                <buildDir>${project.build.directory}/rpm/motech-base/RPMS/noarch</buildDir>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Don't run RPM integration tests in the regular IT profile -->
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
