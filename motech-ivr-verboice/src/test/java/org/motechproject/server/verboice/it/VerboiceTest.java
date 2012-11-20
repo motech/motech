@@ -8,7 +8,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.web.servlet.DispatcherServlet;
 
-abstract public class VerboiceTest extends SpringIntegrationTest{
+abstract public class VerboiceTest extends SpringIntegrationTest {
 
     static private Server server;
     public static final String CONTEXT_PATH = "/motech";

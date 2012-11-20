@@ -135,7 +135,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "                        <Dial callerId=\"callerId\" action=\"http://url.com\">othernumber</Dial>\n" +
+                "                        <Dial callerId=\"callerId\" channel=\"sip_channel\" action=\"http://url.com\">othernumber</Dial>\n" +
                 "     </Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&motech_call_id=1";
@@ -179,6 +179,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         DialPrompt dialPrompt = new DialPrompt("othernumber");
         dialPrompt.setCallerId("callerId");
         dialPrompt.setAction("http://url.com");
+        dialPrompt.setChannel("sip_channel");
         tree.setRootNode(new Node().addPrompts(dialPrompt).setTransitions(transitions));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);

@@ -7,6 +7,7 @@ public class DialPrompt extends Prompt {
     private String phoneNumber;
     private String callerId;
     private String action;
+    private String channel;
 
     public String getAction() {
         return action;
@@ -39,6 +40,14 @@ public class DialPrompt extends Prompt {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +58,7 @@ public class DialPrompt extends Prompt {
 
         if (action != null ? !action.equals(that.action) : that.action != null) return false;
         if (callerId != null ? !callerId.equals(that.callerId) : that.callerId != null) return false;
+        if (channel != null ? !channel.equals(that.channel) : that.channel != null) return false;
         if (phoneNumber != null ? !phoneNumber.equals(that.phoneNumber) : that.phoneNumber != null) return false;
 
         return true;
@@ -60,6 +70,7 @@ public class DialPrompt extends Prompt {
         result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + (callerId != null ? callerId.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
+        result = 31 * result + (channel != null ? channel.hashCode() : 0);
         return result;
     }
 
@@ -69,6 +80,7 @@ public class DialPrompt extends Prompt {
                 "phoneNumber='" + phoneNumber + '\'' +
                 ", callerId='" + callerId + '\'' +
                 ", action='" + action + '\'' +
+                ", channel='" + channel + '\'' +
                 '}';
     }
 }

@@ -7,7 +7,7 @@
             <Say>$prompt.message</Say>
         #elseif ($prompt.class.simpleName == "DialPrompt")
             #set ($dial = true)
-            <Dial #if($!{prompt.callerId})callerId="$!{prompt.callerId}"#end #if($!{prompt.action})action="$!{prompt.action}"#end>$prompt.phoneNumber</Dial>
+            <Dial #if($!{prompt.callerId})callerId="$!{prompt.callerId}"#end #if($!{prompt.channel})channel="$!{prompt.channel}"#end #if($!{prompt.action})action="$!{prompt.action}"#end>$prompt.phoneNumber</Dial>
         #end
     #end
 
