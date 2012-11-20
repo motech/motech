@@ -18,6 +18,8 @@
 
     <rule ref="rulesets/design.xml/SimplifyConditional"/>
 
+    <rule ref="rulesets/migrating.xml/IntegerInstantiation"/>
+
     <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable"/>
 
     <rule ref="rulesets/strings.xml/UseIndexOfChar"/>

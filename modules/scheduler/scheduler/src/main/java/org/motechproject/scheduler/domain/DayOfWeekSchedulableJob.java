@@ -60,7 +60,7 @@ public final class DayOfWeekSchedulableJob implements Serializable {
     public List<Integer> getCronDays() {
         List<Integer> cronDays = new ArrayList<>();
         for (DayOfWeek day : days) {
-            cronDays.add(new Integer(day.getCronValue()));
+            cronDays.add(Integer.valueOf(day.getCronValue()));
         }
         return cronDays;
     }
