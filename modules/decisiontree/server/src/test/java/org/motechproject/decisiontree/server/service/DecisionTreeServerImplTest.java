@@ -56,6 +56,16 @@ public class DecisionTreeServerImplTest {
     }
 
     @Test
+    public void shouldRaiseEndOfCallEventForMissedCalls() {
+        FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
+        when(flowSessionService.getSession("123a")).thenReturn(flowSession);
+
+        decisionTreeServer.handleMissedCall(flowSession.getSessionId());
+        verify(flowSessionService).updateSession(flowSession);
+        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
+    }
+
+    @Test
     public void testingCallDetailRecordParams() {
         FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);

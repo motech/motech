@@ -69,12 +69,16 @@ public class KookooCallServiceImplTest {
         params.put("hero", "batman");
         params.put(IVRService.CALL_TYPE, "outbox");
 
-        ivrService.initiateCall(new CallRequest("1234567890", params, "http://localhost/tama/ivr/reply"));
+        CallRequest callRequest = new CallRequest("1234567890", params, "http://localhost/tama/ivr/reply");
+        callRequest.setStatusCallbackUrl("http://localhost/motech/kookoo/ivr/callstatus");
+        ivrService.initiateCall(callRequest);
 
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher(format("%s?api_key=%s&phone_no=%s&url=%s",
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher(format("%s?api_key=%s&phone_no=%s&motech_call_id=%s&callback_url=%s&url=%s",
             KOOKOO_OUTBOUND_URL,
             API_KEY,
             "1234567890",
+            callRequest.getCallId(),
+            callRequest.getStatusCallbackUrl() + "?motech_call_id=" + callRequest.getCallId(),
             "http://localhost/tama/ivr/reply?dataMap={\"external_id\":\"external_id\",\"hero\":\"batman\",\"is_outbound_call\":\"true\",\"call_type\":\"outbox\"}"
         ))));
     }

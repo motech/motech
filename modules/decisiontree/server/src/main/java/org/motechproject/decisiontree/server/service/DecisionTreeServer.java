@@ -14,6 +14,13 @@ public interface DecisionTreeServer {
      */
     ModelAndView getResponse(String flowSessionId, String phoneNumber, String provider, String tree, String transitionKey, String language);
 
+    /**
+     * Raises an EndOfCallEvent with the call detail record.
+     *
+     * @param flowSessionId FlowSession ID
+     */
+    void handleMissedCall(String flowSessionId);
+
     enum Error {
         TREE_OR_LANGUAGE_MISSING("Tree or language missing, please check IVR URL."),
         NULL_DESTINATION_NODE("No destination node."),

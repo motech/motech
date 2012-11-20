@@ -45,6 +45,8 @@ public class CallRequest implements Serializable {
 
     private String callId;
 
+    private String statusCallbackUrl;
+
     /**
      * Generate a call request for the IVR system
      *
@@ -152,5 +154,13 @@ public class CallRequest implements Serializable {
 
     public String getCallId() {
         return callId;
+    }
+
+    public String getStatusCallbackUrl() {
+        return statusCallbackUrl;
+    }
+
+    public void setStatusCallbackUrl(String statusCallbackUrl) {
+        this.statusCallbackUrl = statusCallbackUrl;
     }
 }

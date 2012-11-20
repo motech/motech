@@ -25,14 +25,16 @@ public class KookooCallServiceImpl implements IVRService {
     public static final String API_KEY = "kookoo.api.key";
     public static final String API_KEY_KEY = "api_key";
     public static final String URL_KEY = "url";
+    public static final String MOTECH_CALL_ID_KEY = "motech_call_id";
     public static final String PHONE_NUMBER_KEY = "phone_no";
     public static final String CUSTOM_DATA_KEY = "dataMap";
     public static final String IS_OUTBOUND_CALL = "is_outbound_call";
+    private static final String CALLBACK_URL_KEY = "callback_url";
 
     private SettingsFacade settings;
     private HttpClient commonsHttpClient;
-    private FlowSessionService flowSessionService;
 
+    private FlowSessionService flowSessionService;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
@@ -56,10 +58,15 @@ public class KookooCallServiceImpl implements IVRService {
             String applicationReplyUrl = format("%s?%s=%s",
                 callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
+            String statusCallbackUrl = format("%s?%s=%s",
+                    callRequest.getStatusCallbackUrl(), MOTECH_CALL_ID_KEY, callRequest.getCallId());
+
             getMethod = new GetMethod(settings.getProperty(OUTBOUND_URL));
             getMethod.setQueryString(new NameValuePair[]{
                 new NameValuePair(API_KEY_KEY, settings.getProperty(API_KEY)),
                 new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone()),
+                new NameValuePair(MOTECH_CALL_ID_KEY, callRequest.getCallId()),
+                new NameValuePair(CALLBACK_URL_KEY, statusCallbackUrl),
                 new NameValuePair(URL_KEY, applicationReplyUrl)
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));

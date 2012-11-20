@@ -8,11 +8,14 @@ import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,6 +69,23 @@ public class VerboiceIVRController {
         return view;
     }
 
+    @RequestMapping(value = "/ivr/callstatus", method = RequestMethod.POST)
+    public void handleMissedCall(HttpServletRequest request) {
+        String callStatus = request.getParameter("CallStatus");
+        List<String> missedCallStatuses = Arrays.asList("busy", "failed", "no-answer");
+        if (callStatus == null || callStatus.trim().isEmpty() || !missedCallStatuses.contains(callStatus)) {
+            return;
+        }
+        String motechCallId = request.getParameter("motech_call_id");
+        FlowSession session = flowSessionService.getSession(motechCallId);
+        if (session == null) {
+            throw new RuntimeException("No session found! [Session Id " + motechCallId + "]");
+        }
+        String callSid = request.getParameter("CallSid");
+        session = flowSessionService.updateSessionId(motechCallId, callSid);
+        decisionTreeServer.handleMissedCall(session.getSessionId());
+    }
+
     private FlowSession updateOutgoingCallSessionIdWithVerboiceSid(String callId, String verboiceCallId) {
         FlowSession flowSession = flowSessionService.getSession(callId);
         return flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
@@ -75,7 +95,7 @@ public class VerboiceIVRController {
         Map params = request.getParameterMap();
         Set<String> keys = params.keySet();
         for (String key : keys) {
-            if (!asList("CallSid", "AccountSid", "From",  "To", "CallStatus", "ApiVersion", "Direction", "ForwardedFrom", "CallerName", "FromCity", "FromState", "FromZip", "FromCountry", "ToCity", "ToState", "ToZip", "ToCountry", "ln").contains(key)) {
+            if (!asList("CallSid", "AccountSid", "From", "To", "CallStatus", "ApiVersion", "Direction", "ForwardedFrom", "CallerName", "FromCity", "FromState", "FromZip", "FromCountry", "ToCity", "ToState", "ToZip", "ToCountry", "ln").contains(key)) {
                 session.set(key, (Serializable) params.get(key));
             }
         }

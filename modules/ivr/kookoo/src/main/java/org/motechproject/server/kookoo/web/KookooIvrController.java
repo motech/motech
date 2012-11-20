@@ -8,6 +8,7 @@ import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +48,11 @@ public class KookooIvrController {
         String event = request.getParameter("event");
         if ("GotDTMF".equals(event)) {
             transitionKey = request.getParameter("data");
-        } else if("Hangup".equals(event)) {
+        } else if ("Hangup".equals(event)) {
             transitionKey = CallStatus.Hangup.toString();
-        } else if("Disconnect".equals(event)) {
+        } else if ("Disconnect".equals(event)) {
             transitionKey = CallStatus.Disconnect.toString();
-        } else if("Dial".equals(event)) {
+        } else if ("Dial".equals(event)) {
             transitionKey = getDialStatus(request);
         }
 
@@ -78,6 +79,23 @@ public class KookooIvrController {
         return "";
     }
 
+    @RequestMapping(value = "/ivr/callstatus", method = RequestMethod.POST)
+    public void handleMissedCall(HttpServletRequest request) {
+        String status = request.getParameter("status_details");
+        if (status == null || status.trim().isEmpty() || !status.equals("NoAnswer")) {
+            return;
+        }
+        String motechCallId = request.getParameter("motech_call_id");
+        FlowSession session = flowSessionService.getSession(motechCallId);
+        if (session == null) {
+            throw new RuntimeException("No session found! [Session Id " + motechCallId + "]");
+        }
+        String kookooSid = request.getParameter("sid");
+        session = flowSessionService.updateSessionId(motechCallId, kookooSid);
+        decisionTreeServer.handleMissedCall(session.getSessionId());
+    }
+
+
     private FlowSession setCustomParams(FlowSession session, HttpServletRequest request) {
         Map params = request.getParameterMap();
         Set<String> keys = params.keySet();
@@ -98,7 +116,7 @@ public class KookooIvrController {
         String status = request.getParameter("status");
         if ("answered".equals(status)) {
             return DialStatus.completed.toString();
-        } else if("not_answered".equals(status)) {
+        } else if ("not_answered".equals(status)) {
             return DialStatus.noAnswer.toString();
         }
         return status;

@@ -91,7 +91,7 @@ public class KookooIvrControllerTest {
     }
 
     @Test
-    public void shouldupdateSessionWithKookooSidForOutgoingCallback() {
+    public void shouldUpdateSessionWithKookooSidForOutgoingCallback() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("motech_call_id", "123a");
         request.setParameter("sid", "456b");
@@ -101,14 +101,13 @@ public class KookooIvrControllerTest {
 
         FlowSession flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.getSession("123a")).thenReturn(flowSession);
-        FlowSession newFlowSession = new FlowSessionRecord("123a", "1234567890");
+        FlowSession newFlowSession = new FlowSessionRecord("456b", "1234567890");
         when(flowSessionService.updateSessionId("123a", "456b")).thenReturn(newFlowSession);
 
         ModelAndView view = new ModelAndView();
         when(decisionTreeServer.getResponse("456b", "1234567890", "kookoo", "sometree", null, "en")).thenReturn(view);
 
         kookooIvrController.ivrCallback(request, new MockHttpServletResponse());
-
-        verify(flowSessionService).updateSessionId("123a", "456b");
+        verify(flowSessionService).updateSession(newFlowSession);
     }
 }

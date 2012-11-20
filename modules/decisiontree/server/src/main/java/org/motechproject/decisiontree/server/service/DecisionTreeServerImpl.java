@@ -78,6 +78,14 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
         return view;
     }
 
+    @Override
+    public void handleMissedCall(String flowSessionId) {
+        FlowSession session = flowSessionService.getSession(flowSessionId);
+        CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
+        flowSessionService.updateSession(session);
+        eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord));
+    }
+
     private ModelAndView getModelViewForNextNode(FlowSession session, String provider, String tree, String transitionKey) {
 
         if (CallStatus.Hangup.toString().equals(transitionKey) || CallStatus.Disconnect.toString().equals(transitionKey)) {
