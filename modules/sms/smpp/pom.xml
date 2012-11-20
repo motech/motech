@@ -25,19 +25,13 @@
         <dependency>
             <groupId>org.smslib</groupId>
             <artifactId>org.motechproject.org.smslib</artifactId>
-            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.jsmpp</groupId>
             <artifactId>org.motechproject.com.googlecode.jsmpp</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.lambdaj</groupId>
-            <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
-            <version>2.3.3</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

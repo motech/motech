@@ -23,24 +23,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.gemini</groupId>
-            <artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
-            <version>1.0.2.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -49,16 +33,8 @@
         </dependency>
         <!-- Bundle IT dependency -->
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>org.motechproject.osgi.it</artifactId>
-            <version>0.15-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.jetty</artifactId>
-            <version>2.0.4</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

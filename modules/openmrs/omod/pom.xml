@@ -104,19 +104,16 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.aop</artifactId>
             <scope>provided</scope>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.aspects</artifactId>
             <scope>provided</scope>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.transaction</artifactId>
             <scope>provided</scope>
-            <version>${spring.version}</version>
         </dependency>
         <!--TEST-->
         <dependency>
@@ -151,28 +148,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.4.9</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.4.9</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>com.springsource.org.hamcrest</artifactId>
-            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>com.springsource.org.hamcrest.core</artifactId>
-            <version>1.1.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

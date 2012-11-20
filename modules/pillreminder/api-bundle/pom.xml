@@ -30,75 +30,34 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.aopalliance</groupId>
             <artifactId>com.springsource.org.aopalliance</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.beans</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.context.support</artifactId>
-            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.jms</artifactId>
-            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
-            <version>2.6.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
-            <version>1.9.7</version>
         </dependency>
-        <!-- Non-OSGI dependencies -->
-        <!--<dependency>
-            <groupId>org.springframework.ws</groupId>
-            <artifactId>spring-oxm-tiger</artifactId>
-            <version>1.0-m2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
     </dependencies>
     <build>
         <plugins>

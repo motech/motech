@@ -60,23 +60,17 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
-            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>com.springsource.javax.transaction</artifactId>
-            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-        </dependency>
+
     </dependencies>
     <build>
         <plugins>

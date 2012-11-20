@@ -38,29 +38,16 @@
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-api</artifactId>
-            <version>5.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
-            <version>1.4.2</version>
         </dependency>
     </dependencies>
     <build>

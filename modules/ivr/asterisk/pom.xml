@@ -28,31 +28,15 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.asteriskjava</groupId>
             <artifactId>asterisk-java</artifactId>
-            <version>1.0.0.M3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
-            <version>1.4</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 </project>

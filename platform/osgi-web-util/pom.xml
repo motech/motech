@@ -24,17 +24,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-            <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
         </dependency>
     </dependencies>
 
