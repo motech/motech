@@ -118,7 +118,7 @@
                                 <fileset>
                                     <directory>${user.home}/.motech/config</directory>
                                     <includes>
-                                        <include>**/**</include>
+                                        <include>org.motechproject.motech-message-campaign-bundle/**</include>
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
