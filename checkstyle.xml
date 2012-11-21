@@ -31,7 +31,7 @@
             <property name="ignoreAbstractMethods" value="false"/>
         </module>
         <module name="ParameterAssignment">
-            <property name="severity" value="info"/>
+            <property name="severity" value="error"/>
         </module>
         <module name="DoubleCheckedLocking">
             <property name="severity" value="error"/>

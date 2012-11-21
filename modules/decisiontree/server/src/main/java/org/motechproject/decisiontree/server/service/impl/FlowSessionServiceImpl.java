@@ -23,10 +23,8 @@ public class FlowSessionServiceImpl implements FlowSessionService {
 
     @Override
     public FlowSession findOrCreate(String sessionId, String phoneNumber) {
-        if (StringUtils.isBlank(sessionId)) {
-            sessionId = UUID.randomUUID().toString();
-        }
-        return allFlowSessionRecords.findOrCreate(sessionId, phoneNumber);
+        String flowSessionId = (StringUtils.isBlank(sessionId)) ? UUID.randomUUID().toString() : sessionId;
+        return allFlowSessionRecords.findOrCreate(flowSessionId, phoneNumber);
     }
 
     @Override
