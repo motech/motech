@@ -1,7 +1,7 @@
 package org.motechproject.mobileforms.api.domain;
 
 import org.junit.Test;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.mobileforms.api.validator.TestFormBean;
 
 import java.util.Arrays;

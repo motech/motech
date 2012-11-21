@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-import static org.motechproject.util.DateUtil.setTimeZone;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 public class MilestoneFulfillment implements Serializable {
     private String milestoneName;

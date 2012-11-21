@@ -3,8 +3,8 @@ package org.motechproject.appointments.api.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
-import org.motechproject.model.ExtensibleDataObject;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.api.model.ExtensibleDataObject;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;

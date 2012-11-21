@@ -3,7 +3,7 @@ package org.motechproject.scheduletracking.api.events;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;
@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class MilestoneEventTest {
     private static final String MILESTONE_DATA_KEY = "key";

@@ -3,7 +3,7 @@ package org.motechproject.appointments.api.model;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;

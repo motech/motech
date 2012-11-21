@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import org.motechproject.commcare.domain.FormStubJson;
 import org.motechproject.commcare.events.constants.EventDataKeys;
 import org.motechproject.commcare.events.constants.EventSubjects;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.slf4j.Logger;

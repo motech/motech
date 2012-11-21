@@ -19,7 +19,7 @@ import org.motechproject.appointments.api.service.contract.ReminderConfiguration
 import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
 import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.service.contract.VisitsQuery;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.HashMap;
 import java.util.List;

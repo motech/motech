@@ -3,13 +3,13 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 public class EnrollmentRecordMapperTest {
 

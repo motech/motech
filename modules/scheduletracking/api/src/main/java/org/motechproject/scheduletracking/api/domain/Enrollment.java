@@ -4,8 +4,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.model.Time;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.model.Time;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
-import static org.motechproject.util.DateUtil.setTimeZone;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {

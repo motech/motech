@@ -32,7 +32,7 @@
 package org.motechproject.rules.domain;
 
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 public class Rule extends MotechBaseDataObject {
 

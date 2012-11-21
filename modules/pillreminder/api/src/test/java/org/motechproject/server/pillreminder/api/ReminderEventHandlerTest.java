@@ -9,7 +9,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
@@ -20,7 +20,7 @@ import org.motechproject.server.pillreminder.api.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
 import org.motechproject.server.pillreminder.api.domain.PillRegimen;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Map;
 

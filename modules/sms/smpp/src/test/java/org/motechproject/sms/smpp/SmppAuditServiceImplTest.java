@@ -9,7 +9,7 @@ import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 public class SmppAuditServiceImplTest {
 

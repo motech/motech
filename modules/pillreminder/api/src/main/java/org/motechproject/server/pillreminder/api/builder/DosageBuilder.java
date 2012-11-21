@@ -1,6 +1,6 @@
 package org.motechproject.server.pillreminder.api.builder;
 
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.pillreminder.api.contract.DosageRequest;
 import org.motechproject.server.pillreminder.api.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.api.domain.Dosage;

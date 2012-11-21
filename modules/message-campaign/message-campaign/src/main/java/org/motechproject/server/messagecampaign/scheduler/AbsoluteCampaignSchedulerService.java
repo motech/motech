@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 @Component
 public class AbsoluteCampaignSchedulerService extends CampaignSchedulerService<AbsoluteCampaignMessage, AbsoluteCampaign> {

@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.motechproject.util.datetime.DateTimeSource;
+import org.motechproject.commons.date.util.datetime.DateTimeSource;
 
 public class MockDateTimeSource implements DateTimeSource {
     private DateTime dateTime;

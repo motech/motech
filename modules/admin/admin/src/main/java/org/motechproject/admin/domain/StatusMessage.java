@@ -3,7 +3,7 @@ package org.motechproject.admin.domain;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.admin.messages.Level;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'StatusMessage'")
 public class StatusMessage extends MotechBaseDataObject {

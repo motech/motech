@@ -3,7 +3,7 @@ package org.motechproject.server.config.domain;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.util.Arrays;

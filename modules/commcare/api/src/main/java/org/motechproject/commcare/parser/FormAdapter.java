@@ -9,7 +9,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commcare.domain.CommcareForm;
 import org.motechproject.commcare.domain.FormValueElement;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

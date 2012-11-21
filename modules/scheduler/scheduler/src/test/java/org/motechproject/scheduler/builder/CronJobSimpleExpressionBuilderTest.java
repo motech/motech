@@ -3,8 +3,8 @@ package org.motechproject.scheduler.builder;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.DateUtil;
 import org.quartz.SimpleTrigger;
 
 import java.util.Date;

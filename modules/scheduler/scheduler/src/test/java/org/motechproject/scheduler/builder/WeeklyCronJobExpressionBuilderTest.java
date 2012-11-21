@@ -2,8 +2,8 @@ package org.motechproject.scheduler.builder;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.DayOfWeek;
+import org.motechproject.commons.date.model.Time;
 
 public class WeeklyCronJobExpressionBuilderTest {
     @Test

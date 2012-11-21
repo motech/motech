@@ -1,6 +1,6 @@
 package org.motechproject.mobileforms.api.utils;
 
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 
 import java.io.File;
 

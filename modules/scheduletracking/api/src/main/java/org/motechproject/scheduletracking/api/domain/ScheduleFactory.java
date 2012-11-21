@@ -8,7 +8,7 @@ import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

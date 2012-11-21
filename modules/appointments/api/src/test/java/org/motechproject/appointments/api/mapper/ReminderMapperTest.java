@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
 

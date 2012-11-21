@@ -5,7 +5,7 @@ import org.motechproject.commcare.domain.CommcareUser;
 import org.motechproject.commcare.domain.CommcareUsersJson;
 import org.motechproject.commcare.service.CommcareUserService;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

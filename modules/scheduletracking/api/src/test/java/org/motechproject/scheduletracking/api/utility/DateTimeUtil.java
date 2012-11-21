@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.utility;
 
 import org.joda.time.DateTime;
 
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 public final class DateTimeUtil {
     private DateTimeUtil() {

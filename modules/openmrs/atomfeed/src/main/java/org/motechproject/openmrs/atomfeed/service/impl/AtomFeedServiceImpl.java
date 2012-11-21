@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.openmrs.atomfeed.OpenMrsHttpClient;

@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.UNENROLLED;
-import static org.motechproject.util.StringUtil.isNullOrEmpty;
+import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 
 @Component
 public class EnrollmentService {

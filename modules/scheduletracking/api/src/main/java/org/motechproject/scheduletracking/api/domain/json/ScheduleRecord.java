@@ -3,7 +3,7 @@ package org.motechproject.scheduletracking.api.domain.json;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.motechproject.scheduletracking.api.events.constants.EventSubjects.DEFAULTMENT_CAPTURE;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 @Component
 public class EnrollmentDefaultmentService {

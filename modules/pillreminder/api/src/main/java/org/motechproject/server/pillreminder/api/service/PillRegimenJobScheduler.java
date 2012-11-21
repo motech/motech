@@ -2,7 +2,7 @@ package org.motechproject.server.pillreminder.api.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.builder.CronJobSimpleExpressionBuilder;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
@@ -10,7 +10,7 @@ import org.motechproject.server.pillreminder.api.EventKeys;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
 import org.motechproject.server.pillreminder.api.domain.PillRegimen;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

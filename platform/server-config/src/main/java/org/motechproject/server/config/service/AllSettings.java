@@ -1,7 +1,7 @@
 package org.motechproject.server.config.service;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.server.config.domain.SettingsRecord;
 
 import java.util.List;

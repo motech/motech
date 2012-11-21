@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class Schedule implements Serializable {
     private String name;

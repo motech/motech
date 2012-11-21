@@ -7,7 +7,7 @@ import org.motechproject.appointments.api.service.contract.VisitResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.inRange;
+import static org.motechproject.commons.date.util.DateUtil.inRange;
 
 public class DueDateInCriterion implements Criterion {
     private DateTime start;

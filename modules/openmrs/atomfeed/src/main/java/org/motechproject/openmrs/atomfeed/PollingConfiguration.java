@@ -2,7 +2,7 @@ package org.motechproject.openmrs.atomfeed;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.LocalTime;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.openmrs.atomfeed.events.EventSubjects;
 import org.motechproject.scheduler.MotechSchedulerService;

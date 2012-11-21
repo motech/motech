@@ -3,7 +3,7 @@ package org.motechproject.admin.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.admin.domain.AdminMapping;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 
 import java.util.List;
 

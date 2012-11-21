@@ -1,7 +1,7 @@
 package org.motechproject.cmslite.api.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.Map;
 

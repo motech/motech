@@ -1,13 +1,13 @@
 package org.motechproject.server.messagecampaign.builder;
 
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.LinkedList;
 

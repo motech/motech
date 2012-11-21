@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 @Component
 public class EnrollmentAlertService {

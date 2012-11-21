@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.DateTime;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;

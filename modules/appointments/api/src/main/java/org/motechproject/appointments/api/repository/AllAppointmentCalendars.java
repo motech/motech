@@ -10,7 +10,7 @@ import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.service.contract.VisitResponse;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;

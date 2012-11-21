@@ -2,9 +2,9 @@ package org.motechproject.server.pillreminder.api.domain;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.HashSet;
 

@@ -1,7 +1,7 @@
 package org.motechproject.admin.domain;
 
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'AdminMapping'")
 public class AdminMapping extends MotechBaseDataObject {

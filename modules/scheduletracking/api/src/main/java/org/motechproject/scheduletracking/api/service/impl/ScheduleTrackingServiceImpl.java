@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.LocalDate;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.text.MessageFormat.format;
-import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     private AllSchedules allSchedules;

@@ -1,7 +1,7 @@
 package org.motechproject.server.voxeo.dao;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

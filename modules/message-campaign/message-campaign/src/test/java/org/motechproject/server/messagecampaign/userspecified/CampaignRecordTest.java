@@ -10,8 +10,8 @@ import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.util.DateUtil;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 
 import java.util.List;
 

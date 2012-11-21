@@ -1,6 +1,6 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import java.util.List;
 

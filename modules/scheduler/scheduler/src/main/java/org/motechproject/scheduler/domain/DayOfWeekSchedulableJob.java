@@ -2,8 +2,8 @@ package org.motechproject.scheduler.domain;
 
 import org.joda.time.LocalDate;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.DayOfWeek;
+import org.motechproject.commons.date.model.Time;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package org.motechproject.admin.service.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.admin.bundles.BundleDirectoryManager;
 import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;

@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -26,7 +26,7 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,10 +47,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
-import static org.motechproject.util.DateUtil.newDate;
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.commons.date.util.DateUtil.newDate;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.today;
 
 public class ScheduleTrackingServiceImplTest {
     private ScheduleTrackingService scheduleTrackingService;

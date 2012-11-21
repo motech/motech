@@ -3,7 +3,7 @@ package org.motechproject.decisiontree.server.domain;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.decisiontree.core.CallDetail;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.setTimeZone;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 /**
  * Call Detail Record represents call events and data captured in a call along with call metrics.

@@ -2,13 +2,13 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.today;
 
 /**
  * \ingroup sts

@@ -1,7 +1,7 @@
 package org.motechproject.server.pillreminder.api.contract;
 
 import org.joda.time.LocalDate;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import java.util.List;
 

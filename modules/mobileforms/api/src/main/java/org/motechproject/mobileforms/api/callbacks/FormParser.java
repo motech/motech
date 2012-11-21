@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.fcitmuk.epihandy.DeserializationListenerAdapter;
 import org.fcitmuk.epihandy.FormData;
 import org.fcitmuk.epihandy.StudyData;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.parser.FormDataParser;

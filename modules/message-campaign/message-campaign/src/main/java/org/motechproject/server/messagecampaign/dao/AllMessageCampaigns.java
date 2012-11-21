@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.reflect.TypeToken;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;

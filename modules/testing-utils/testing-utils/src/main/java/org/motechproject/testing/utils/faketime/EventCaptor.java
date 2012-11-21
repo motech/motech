@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.junit.Assert.fail;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class EventCaptor implements EventListener {

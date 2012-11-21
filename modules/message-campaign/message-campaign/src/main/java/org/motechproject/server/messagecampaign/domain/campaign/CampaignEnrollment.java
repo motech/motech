@@ -4,8 +4,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
-import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.model.Time;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.model.Time;
 
 @TypeDiscriminator("doc.type === 'CampaignEnrollment'")
 public class CampaignEnrollment extends MotechBaseDataObject {

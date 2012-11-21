@@ -1,6 +1,6 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
-import org.motechproject.model.DayOfWeek;
+import org.motechproject.commons.date.model.DayOfWeek;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.motechproject.decisiontree.server.domain;
 
 import org.joda.time.DateTime;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 /**
  * Represents IVR event like DTMF key press, Dial

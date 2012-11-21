@@ -2,12 +2,12 @@ package org.motechproject.server.pillreminder.api.builder;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.pillreminder.api.contract.DosageRequest;
 import org.motechproject.server.pillreminder.api.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
 import org.motechproject.server.pillreminder.api.domain.Medicine;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Arrays;
 

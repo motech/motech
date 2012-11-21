@@ -9,7 +9,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

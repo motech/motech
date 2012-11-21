@@ -2,7 +2,7 @@ package org.motechproject.openmrs.atomfeed.repository;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 /**
  * Represents a time when the OpenMRS Atom Feed was last updated. There should

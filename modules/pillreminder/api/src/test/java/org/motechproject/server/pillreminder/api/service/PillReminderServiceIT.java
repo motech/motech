@@ -11,7 +11,7 @@ import org.motechproject.server.pillreminder.api.contract.DosageRequest;
 import org.motechproject.server.pillreminder.api.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.api.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.api.domain.PillRegimen;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;

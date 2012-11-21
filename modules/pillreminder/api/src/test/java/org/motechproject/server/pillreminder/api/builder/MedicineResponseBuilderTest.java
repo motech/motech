@@ -4,7 +4,7 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.server.pillreminder.api.contract.MedicineResponse;
 import org.motechproject.server.pillreminder.api.domain.Medicine;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import static org.junit.Assert.assertEquals;
 

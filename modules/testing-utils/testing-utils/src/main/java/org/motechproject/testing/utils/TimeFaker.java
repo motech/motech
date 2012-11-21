@@ -2,8 +2,8 @@ package org.motechproject.testing.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.util.DateTimeSourceUtil;
-import org.motechproject.util.datetime.DefaultDateTimeSource;
+import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.commons.date.util.datetime.DefaultDateTimeSource;
 
 public final class TimeFaker {
 

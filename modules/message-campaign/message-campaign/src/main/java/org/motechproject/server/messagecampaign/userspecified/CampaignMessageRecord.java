@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
-import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.DayOfWeek;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
@@ -9,14 +9,14 @@ import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaign
 import org.motechproject.server.messagecampaign.domain.message.DayOfWeekCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatIntervalCampaignMessage;
-import org.motechproject.util.DateUtil;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.motechproject.model.Time.parseTime;
+import static org.motechproject.commons.date.model.Time.parseTime;
 
 public class CampaignMessageRecord {
 

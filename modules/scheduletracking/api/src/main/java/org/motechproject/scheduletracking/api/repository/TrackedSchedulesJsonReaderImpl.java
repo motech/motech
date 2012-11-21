@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.repository;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.CharEncoding;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 
 import java.io.File;

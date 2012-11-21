@@ -3,7 +3,7 @@ package org.motechproject.mobileforms.api.repository;
 import ch.lambdaj.Lambda;
 import ch.lambdaj.function.convert.Converter;
 import com.google.gson.reflect.TypeToken;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.utils.IOUtils;

@@ -1,6 +1,6 @@
 package org.motechproject.mobileforms.api.domain;
 
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;

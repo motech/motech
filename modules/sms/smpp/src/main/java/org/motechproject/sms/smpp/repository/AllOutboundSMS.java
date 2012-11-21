@@ -3,7 +3,7 @@ package org.motechproject.sms.smpp.repository;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.smpp.OutboundSMS;
 import org.springframework.beans.factory.annotation.Autowired;

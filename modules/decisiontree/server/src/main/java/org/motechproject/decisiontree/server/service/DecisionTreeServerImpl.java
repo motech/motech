@@ -26,7 +26,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 @Service
 public class DecisionTreeServerImpl implements org.motechproject.decisiontree.server.service.DecisionTreeServer {

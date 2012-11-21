@@ -1,6 +1,6 @@
 package org.motechproject.openmrs;
 
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import static org.apache.commons.lang.RandomStringUtils.random;
 

@@ -13,7 +13,7 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 
 import java.util.Arrays;
 import java.util.Date;

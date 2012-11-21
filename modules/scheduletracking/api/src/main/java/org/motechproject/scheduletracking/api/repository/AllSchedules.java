@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;

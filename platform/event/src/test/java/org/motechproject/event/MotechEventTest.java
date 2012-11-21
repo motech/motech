@@ -1,7 +1,6 @@
 package org.motechproject.event;
 
 import org.junit.Test;
-import org.motechproject.event.MotechEvent;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +8,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.commons.date.util.DateUtil.newDate;
 
 /**
  * MotechEvent Tester.

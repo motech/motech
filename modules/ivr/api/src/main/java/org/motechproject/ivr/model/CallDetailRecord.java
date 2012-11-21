@@ -1,14 +1,14 @@
 package org.motechproject.ivr.model;
 
 import org.motechproject.ivr.event.CallEvent;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.setTimeZone;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 /**
 * Call Detail Record represents call events and data captured in a call along with call metrics.

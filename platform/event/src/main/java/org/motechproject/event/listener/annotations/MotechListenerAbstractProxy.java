@@ -1,6 +1,6 @@
 package org.motechproject.event.listener.annotations;
 
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.slf4j.LoggerFactory;

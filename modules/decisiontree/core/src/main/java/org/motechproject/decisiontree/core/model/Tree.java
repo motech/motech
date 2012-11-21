@@ -2,7 +2,7 @@ package org.motechproject.decisiontree.core.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 /**
  * Represents a decision tree.

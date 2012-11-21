@@ -1,6 +1,6 @@
 package org.motechproject.openmrs.atomfeed.service;
 
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.openmrs.atomfeed.events.EventDataKeys;
 import org.motechproject.openmrs.atomfeed.events.EventSubjects;
 

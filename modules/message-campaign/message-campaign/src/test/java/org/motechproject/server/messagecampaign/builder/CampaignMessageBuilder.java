@@ -1,11 +1,11 @@
 package org.motechproject.server.messagecampaign.builder;
 
 import org.joda.time.LocalDate;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 
 import java.util.Arrays;
 

@@ -4,7 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
 import org.joda.time.LocalDate;
-import org.motechproject.dao.MotechBaseRepository;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
 import org.motechproject.server.pillreminder.api.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;

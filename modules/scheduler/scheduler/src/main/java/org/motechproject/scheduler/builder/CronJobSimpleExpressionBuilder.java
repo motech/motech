@@ -1,6 +1,6 @@
 package org.motechproject.scheduler.builder;
 
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 public class CronJobSimpleExpressionBuilder {
 

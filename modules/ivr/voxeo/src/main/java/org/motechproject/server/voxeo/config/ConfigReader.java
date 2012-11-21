@@ -1,7 +1,7 @@
 package org.motechproject.server.voxeo.config;
 import com.google.gson.reflect.TypeToken;
-import org.motechproject.MotechException;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

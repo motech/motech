@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

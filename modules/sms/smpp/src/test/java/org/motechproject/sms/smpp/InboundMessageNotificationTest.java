@@ -11,7 +11,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.repository.AllInboundSMS;
 import org.motechproject.sms.smpp.repository.AllOutboundSMS;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 import org.smslib.AGateway;
 import org.smslib.InboundMessage;
 import org.smslib.StatusReportMessage;

@@ -10,7 +10,7 @@ import org.motechproject.commcare.gateway.CaseTaskXmlConverter;
 import org.motechproject.commcare.response.OpenRosaResponse;
 import org.motechproject.commcare.service.CommcareCaseService;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

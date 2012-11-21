@@ -8,7 +8,7 @@ import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.inRange;
+import static org.motechproject.commons.date.util.DateUtil.inRange;
 
 public class CompletedDuringCriterion implements Criterion {
     private DateTime start;

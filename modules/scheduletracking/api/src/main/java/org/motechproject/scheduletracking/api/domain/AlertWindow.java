@@ -2,16 +2,16 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.greaterThanOrEqualTo;
-import static org.motechproject.util.DateUtil.lessThan;
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.commons.date.util.DateUtil.greaterThanOrEqualTo;
+import static org.motechproject.commons.date.util.DateUtil.lessThan;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class AlertWindow {
     private DateTime enrolledOn;

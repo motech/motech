@@ -1,7 +1,7 @@
 package org.motechproject.openmrs.atomfeed;
 
 import org.apache.log4j.Logger;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;

@@ -2,7 +2,7 @@ package org.motechproject.event.metrics.impl;
 
 import org.motechproject.event.metrics.MetricsAgent;
 import org.motechproject.event.metrics.MetricsAgentBackend;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;

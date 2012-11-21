@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import java.util.Map;
 

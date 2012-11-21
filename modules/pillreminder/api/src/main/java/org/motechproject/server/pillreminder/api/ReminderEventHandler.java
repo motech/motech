@@ -1,7 +1,7 @@
 package org.motechproject.server.pillreminder.api;
 
 import org.joda.time.DateTime;
-import org.motechproject.MotechObject;
+import org.motechproject.commons.api.MotechObject;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;

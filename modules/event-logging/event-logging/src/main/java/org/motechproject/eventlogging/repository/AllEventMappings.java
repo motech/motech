@@ -1,7 +1,7 @@
 package org.motechproject.eventlogging.repository;
 
 import com.google.gson.reflect.TypeToken;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.eventlogging.domain.MappingsJson;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;

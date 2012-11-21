@@ -2,7 +2,7 @@ package org.motechproject.sms.http;
 
 
 import com.google.gson.reflect.TypeToken;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

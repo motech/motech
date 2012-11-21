@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
+            <artifactId>motech-platform-commons-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 public class EndOfWindowCriterionTest {

@@ -3,11 +3,10 @@ package org.motechproject.mobileforms.api.repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.utils.IOUtils;
-import org.motechproject.mobileforms.api.utils.TestUtilities;
 import org.motechproject.server.config.SettingsFacade;
 
 import java.util.Arrays;

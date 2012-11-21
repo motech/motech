@@ -5,9 +5,9 @@ import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.converters.DateConverter;
 import org.joda.time.DateTime;
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;

@@ -4,9 +4,9 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.After;
-import org.motechproject.util.DateTimeSourceUtil;
-import org.motechproject.util.datetime.DateTimeSource;
-import org.motechproject.util.datetime.DefaultDateTimeSource;
+import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.commons.date.util.datetime.DateTimeSource;
+import org.motechproject.commons.date.util.datetime.DefaultDateTimeSource;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

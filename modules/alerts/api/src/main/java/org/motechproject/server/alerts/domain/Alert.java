@@ -3,8 +3,8 @@ package org.motechproject.server.alerts.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.util.DateUtil;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.HashMap;
 import java.util.Map;

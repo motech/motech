@@ -1,7 +1,7 @@
 package org.motechproject.scheduler.builder;
 
 import org.junit.Test;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 
 import static junit.framework.Assert.assertEquals;
 

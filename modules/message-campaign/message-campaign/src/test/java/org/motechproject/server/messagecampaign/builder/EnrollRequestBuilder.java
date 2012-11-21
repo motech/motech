@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign.builder;
 
 import org.joda.time.LocalDate;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 public class EnrollRequestBuilder {

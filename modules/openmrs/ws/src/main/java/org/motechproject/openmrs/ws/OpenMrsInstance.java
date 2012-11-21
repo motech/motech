@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 import javax.annotation.PostConstruct;
 
-import org.motechproject.MotechException;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

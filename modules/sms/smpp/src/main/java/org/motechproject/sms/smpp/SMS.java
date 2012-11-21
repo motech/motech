@@ -3,9 +3,9 @@ package org.motechproject.sms.smpp;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
-import static org.motechproject.util.DateUtil.setTimeZone;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 public abstract class SMS extends MotechBaseDataObject {
     @JsonProperty

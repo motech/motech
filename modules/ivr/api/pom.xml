@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -7,7 +7,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.DayOfWeekCampaig
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatIntervalCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
-import org.motechproject.util.TimeIntervalParser;
+import org.motechproject.commons.date.util.TimeIntervalParser;
 
 import java.util.ArrayList;
 import java.util.List;

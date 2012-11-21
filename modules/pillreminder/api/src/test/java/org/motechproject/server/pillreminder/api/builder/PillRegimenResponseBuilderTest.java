@@ -1,7 +1,7 @@
 package org.motechproject.server.pillreminder.api.builder;
 
 import org.junit.Test;
-import org.motechproject.model.Time;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.server.pillreminder.api.contract.PillRegimenResponse;
 import org.motechproject.server.pillreminder.api.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
