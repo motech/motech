@@ -160,11 +160,11 @@ public class SettingsFacade {
 
     public CouchDbConnector getConnector(String dbName, final String couchDbFileName) throws FileNotFoundException {
         CouchDbConnector connector = null;
-        dbName = getDbPrefix() + dbName;
+        String finalDbName = getDbPrefix() + dbName;
 
         if (platformSettingsService != null) {
             try {
-                connector = platformSettingsService.getCouchConnector(dbName);
+                connector = platformSettingsService.getCouchConnector(finalDbName);
             } catch (Exception e) {
                 connector = null;
             }
@@ -190,7 +190,7 @@ public class SettingsFacade {
                     httpClientFactoryBean.afterPropertiesSet();
 
                     CouchDbInstance instance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
-                    connector = instance.createConnector(dbName, true);
+                    connector = instance.createConnector(finalDbName, true);
                 } catch (Exception e) {
                     throw new MotechException("Error during creation CouchDbConnector", e);
                 } finally {
