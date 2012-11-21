@@ -51,7 +51,7 @@ purge_motech
 # Install package
 cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
 $CHROOT dpkg -i /tmp/$BASE_PACKAGE
-$CHROOT apt-get install -f # install dependencies
+$CHROOT apt-get install -f $YES # install dependencies
 $CHROOT service motech start
 
 # Make sure files/directories exist with correct permissions
