@@ -32,6 +32,8 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         } else {
             individuals.put(moduleName, module);
         }
+
+        LOG.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
     }
 
     @Override
@@ -43,6 +45,8 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         if (individuals.containsKey(moduleName)) {
             individuals.remove(moduleName);
         }
+
+        LOG.debug(String.format("Module %s unregistered from UI framework", moduleName));
     }
 
     @Override

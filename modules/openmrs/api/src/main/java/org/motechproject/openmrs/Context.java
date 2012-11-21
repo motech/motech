@@ -31,20 +31,16 @@ public class Context {
     private String url;
     private String user;
     private String password;
-    private String openmrsUser;
-    private String openmrsPassword;
     private String dataDir;
     private static final String ENABLE_HIBERNATE_SECOND_LEVEL_CACHE = "hibernate.cache.use_second_level_cache";
 
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public Context(String url, String user, String password, String openmrsUser, String openmrsPassword, String dataDir) {
+    public Context(String url, String user, String password, String dataDir) {
         this.url = url;
         this.user = user;
         this.password = password;
-        this.openmrsUser = openmrsUser;
-        this.openmrsPassword = openmrsPassword;
         this.dataDir = dataDir;
     }
 

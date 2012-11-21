@@ -25,7 +25,6 @@ public class HttpClientEventListener {
     Logger logger = Logger.getLogger(HttpClientEventListener.class);
 
     private RestTemplate restTemplate;
-    private SettingsFacade settings;
 
     @Autowired
     public HttpClientEventListener(RestTemplate restTemplate, @Qualifier("httpAgentSettings") SettingsFacade settings) {

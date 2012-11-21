@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
-import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +25,9 @@ import static java.util.Arrays.asList;
 public class VerboiceIVRController {
 
     @Autowired
-    private VerboiceIVRService verboiceIVRService;
-    @Autowired
     private FlowSessionService flowSessionService;
     @Autowired
-    DecisionTreeServer decisionTreeServer;
+    private DecisionTreeServer decisionTreeServer;
 
     public VerboiceIVRController() {
     }

@@ -40,8 +40,6 @@
         <constructor-arg value="jdbc:mysql://${openmrs.host}:3306/${openmrs.database}?autoReconnect=true"/>
         <constructor-arg value="${openmrs.db.username}"/>
         <constructor-arg value="${openmrs.db.password}"/>
-        <constructor-arg value="${openmrs.admin.username}"/>
-        <constructor-arg value="${openmrs.admin.password}"/>
         <constructor-arg value="${openmrs.data.dir}"/>
     </bean>
 

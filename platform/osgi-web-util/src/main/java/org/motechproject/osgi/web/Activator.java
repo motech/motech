@@ -21,6 +21,8 @@ public class Activator implements BundleActivator {
         if (httpServiceReference != null) {
             tracker.register((HttpService) context.getService(httpServiceReference));
         }
+        logger.debug(String.format("Started bundle: [%d] %s", context.getBundle().getBundleId(),
+                context.getBundle().getSymbolicName()));
     }
 
     public void stop(BundleContext context) throws Exception {

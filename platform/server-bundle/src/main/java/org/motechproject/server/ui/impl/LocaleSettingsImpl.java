@@ -5,8 +5,6 @@ import org.apache.commons.lang.WordUtils;
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.motechproject.server.ui.LocaleSettings;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -20,7 +18,6 @@ import java.util.TreeMap;
 
 @Service
 public class LocaleSettingsImpl implements LocaleSettings, BundleContextAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocaleSettings.class);
     private static final String I18N_RESOURCES_PATH = "webapp/resources/messages/";
 
     @Autowired

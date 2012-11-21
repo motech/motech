@@ -34,11 +34,8 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     @Autowired
     private AllOutboundSMS allOutboundSMS;
 
-    private SettingsFacade settings;
-
     @Autowired
     public OutboundMessageNotification(EventRelay eventRelay, @Qualifier("smsApiSettings") SettingsFacade settings) {
-        this.settings = settings;
         this.eventRelay = eventRelay;
         String maxRetriesAsString = settings.getProperty(SmsProperties.MAX_RETRIES);
         this.maxRetries = maxRetriesAsString != null? Integer.parseInt(maxRetriesAsString) : 0;

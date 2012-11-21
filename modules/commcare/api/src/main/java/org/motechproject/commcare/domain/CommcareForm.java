@@ -65,4 +65,12 @@ public class CommcareForm {
     public void setVersion(String version) {
         this.version = version;
     }
+
+    public FormValueElement getCaseElement() {
+        return caseElement;
+    }
+
+    public void setCaseElement(FormValueElement caseElement) {
+        this.caseElement = caseElement;
+    }
 }

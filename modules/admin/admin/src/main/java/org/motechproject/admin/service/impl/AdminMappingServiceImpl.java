@@ -23,7 +23,6 @@ import java.util.Properties;
 public class AdminMappingServiceImpl implements AdminMappingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdminMappingServiceImpl.class);
-    private static final String GRAPHITE = "graphite";
 
     @Autowired
     private PlatformSettingsService platformSettingsService;

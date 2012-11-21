@@ -33,7 +33,7 @@ import java.util.Properties;
 public class StartupController {
     private static final String START_PARAM = "START";
 
-    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin-bundle";
+    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin-bundle"; // NOPMD - unused, until todos in submitForm() are done
 
     private StartupManager startupManager = StartupManager.getInstance();
 
