@@ -59,7 +59,7 @@ public abstract class BasePkgTest {
     protected int runScript(String scriptName, String... attrs) throws IOException, InterruptedException {
         installScript(scriptName);
 
-        String[] arguments = (String[]) ArrayUtils.addAll(new String[] { "sudo", script, "-d", chrootDir, "-b", buildDir,
+        String[] arguments = (String[]) ArrayUtils.addAll(new String[] { script, "-d", chrootDir, "-b", buildDir,
                                                                         "-e", errorFile }, attrs);
 
         ProcessBuilder pb = new ProcessBuilder(arguments)
