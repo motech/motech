@@ -10,7 +10,7 @@ function purge_motech() {
     $CHROOT rm -f /etc/init.d/motech
 }
 
-while getopts "d:b:" opt; do
+while getopts "d:b:e:" opt; do
 	case $opt in
 	d)
         CHROOT_DIR=$OPTARG
@@ -18,18 +18,26 @@ while getopts "d:b:" opt; do
 	b)
 	    BUILD_DIR=$OPTARG
 	;;
+    e)
+	    ERROR_LOG=$OPTARG
+	;;
+    esac
     esac
 done
 
+if [ -z $ERROR_LOG ]; then
+    ERROR_LOG=$BUILD_DIR/err.log
+fi
+
 if [ -z $CHROOT_DIR ]; then
-    echo "Chroot dir not defined" >&2
+    echo "Chroot dir not defined" > $ERROR_LOG
     exit 1
 fi
 
 BASE_PACKAGE=`ls $BUILD_DIR | grep motech-base`
 
 if [ ! -f $BUILD_DIR/$BASE_PACKAGE ]; then
-    echo "Base package does not exist: $BASE_PACKAGE" >&2
+    echo "Base package does not exist: $BASE_PACKAGE" > $ERROR_LOG
     exit 1
 fi
 
@@ -55,7 +63,7 @@ $CHROOT service motech start
 
 for dir in $MOTECH_OWNED; do
     if [ `$CHROOT stat -c %U $dir` != "motech" ]; then
-        echo "$dir is not owned by motech" >&2
+        echo "$dir is not owned by motech" > $ERROR_LOG
         purge_motech
         exit 1
     fi
@@ -65,7 +73,7 @@ for dir in $NON_MOTECH_OWNED; do
     $CHROOT file $dir # returns 1 if failed
     RET=$?
     if [ $RET -ne 0 ]; then
-       echo "$dir does not exist" >&2
+       echo "$dir does not exist" > $ERROR_LOG
         purge_motech
         exit $RET
     fi
@@ -75,10 +83,10 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 --retry 10 | grep -i motech
+curl -L localhost:8080 --retry 15 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
-    echo "Failed getting motech page" >&2
+    echo "Failed getting motech page" > $ERROR_LOG
     purge_motech
     exit $RET
 fi
@@ -95,7 +103,7 @@ for dir in $MOTECH_OWNED; do
     $CHROOT file $dir # will return 0 if exists
     RET=$?
     if [ $RET -eq 0 ]; then
-        echo "$dir still exists after uninstall" >&2
+        echo "$dir still exists after uninstall" > $ERROR_LOG
         purge_motech
         exit 1
     fi

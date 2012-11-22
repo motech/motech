@@ -15,10 +15,13 @@ import java.io.OutputStream;
 
 public abstract class BasePkgTest {
 
+    private static final String ERROR_FILENAME = "err.log";
+
     protected String script;
     protected String chrootDir;
     protected String tmpDir = "/tmp";
     protected String buildDir;
+    protected String errorFile;
 
     @Before
     public void setUp() {
@@ -39,6 +42,7 @@ public abstract class BasePkgTest {
         }
 
         script = tmpDir + File.separatorChar + "motech-osi-it.sh";
+        errorFile = buildDir + File.separatorChar + ERROR_FILENAME;
     }
 
     protected void installScript(String name) throws IOException {
@@ -55,7 +59,8 @@ public abstract class BasePkgTest {
     protected int runScript(String scriptName, String... attrs) throws IOException, InterruptedException {
         installScript(scriptName);
 
-        String[] arguments = (String[]) ArrayUtils.addAll(new String[] {script, "-d", chrootDir, "-b", buildDir}, attrs);
+        String[] arguments = (String[]) ArrayUtils.addAll(new String[] { "sudo", script, "-d", chrootDir, "-b", buildDir,
+                                                                        "-e", errorFile }, attrs);
 
         ProcessBuilder pb = new ProcessBuilder(arguments)
                                 .redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -64,6 +69,11 @@ public abstract class BasePkgTest {
         proc.waitFor();
 
         return proc.exitValue();
+    }
+
+    protected String readErrors() throws IOException {
+        File errors = new File(errorFile);
+        return (errors.exists()) ? FileUtils.readFileToString(errors) : "";
     }
 
     @After
