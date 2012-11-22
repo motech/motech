@@ -59,10 +59,7 @@ public class VxmlOutboxController extends MultiActionController {
     @RequestMapping(value = "/vxml/outboxMessage")
     public ModelAndView outboxMessage(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate appointment reminder VXML");
-
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-
+        setResponseHeaders(response);
 
         //Interim implementation. Party ID will be obtained from the Authentication context
         //String externalId = "1";
@@ -113,7 +110,6 @@ public class VxmlOutboxController extends MultiActionController {
         }
 
         if (voiceMessage == null) {
-
             logger.info("There are no more messages in the outbox of the external ID: " + externalId);
             mav.setViewName(NO_MESSAGE_TEMPLATE_NAME);
             mav.addObject("externalId", externalId);
@@ -132,23 +128,17 @@ public class VxmlOutboxController extends MultiActionController {
         logger.debug(voiceMessage.toString());
 
         String templateName = voiceMessageType.getTemplateName();
-        if (templateName == null) {
-            templateName = voiceMessageType.getVoiceMessageTypeName();
-        }
-
-        mav.setViewName(templateName);
+        mav.setViewName((templateName == null) ? voiceMessageType.getVoiceMessageTypeName() : templateName);
         mav.addObject("message", voiceMessage);
 
         return mav;
-
     }
 
     @RequestMapping(value = "/vxml/messageMenu")
     public ModelAndView messageMenu(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generating the message menu VXML...");
 
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+        setResponseHeaders(response);
 
         ModelAndView mav = new ModelAndView();
 
@@ -213,8 +203,7 @@ public class VxmlOutboxController extends MultiActionController {
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Saving messageL...");
 
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+        setResponseHeaders(response);
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -279,8 +268,7 @@ public class VxmlOutboxController extends MultiActionController {
     public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Removing saved message message...");
 
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+        setResponseHeaders(response);
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -339,8 +327,7 @@ public class VxmlOutboxController extends MultiActionController {
     public ModelAndView savedMessage(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate VXML for the next saved in the outbox message");
 
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
+        setResponseHeaders(response);
 
         //Interim implementation. Party ID will be obtained from the Authentication context
         //String externalId = "1";
@@ -402,4 +389,8 @@ public class VxmlOutboxController extends MultiActionController {
 
     }
 
+    private void setResponseHeaders(HttpServletResponse response) {
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+    }
 }
