@@ -154,7 +154,7 @@
 
                             <requires>
                                 <require>tomcat &gt;= 7.0</require>
-                                <require>java &gt;= 1.7</require>
+                                <require>java >= 1.7</require>
                             </requires>
 
                             <mappings>
