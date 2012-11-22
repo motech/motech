@@ -24,6 +24,8 @@
 
     <rule ref="rulesets/design.xml/SimplifyConditional"/>
 
+    <rule ref="rulesets/logging-java.xml/AvoidPrintStackTrace"/>
+
     <rule ref="rulesets/migrating.xml/IntegerInstantiation"/>
 
     <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable"/>

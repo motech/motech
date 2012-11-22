@@ -1,8 +1,13 @@
 package org.motechproject.testing.utils.faketime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
 
 public abstract class JvmFakeTime {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JvmFakeTime.class);
 
     public static void load() {
         try {
@@ -10,7 +15,7 @@ public abstract class JvmFakeTime {
             m.setAccessible(true);
             m.invoke(null, System.class, "jvmfaketime", false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 }

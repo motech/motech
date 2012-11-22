@@ -239,7 +239,7 @@ public class IvrController extends MultiActionController {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 }
