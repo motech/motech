@@ -261,7 +261,6 @@
                                 <phase>pre-integration-test</phase>
                                 <configuration>
                                     <includeScope>runtime</includeScope>
-                                    <excludeArtifactIds>motech-platform-server-bundle</excludeArtifactIds>
                                     <excludeTransitive>false</excludeTransitive>
                                     <outputDirectory>
                                         ${user.home}/.motech/bundles
