@@ -71,8 +71,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
     public List<CaseInfo> getAllCases() {
         String response = commcareHttpClient.casesRequest(null);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
-        return cases;
+        return generateCasesFromCaseResponse(caseResponses);
     }
 
     @Override
@@ -81,8 +80,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         queryParams[0] = new NameValuePair("properties/case_type", type);
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
-        return cases;
+        return generateCasesFromCaseResponse(caseResponses);
     }
 
     @Override
@@ -91,8 +89,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         queryParams[0] = new NameValuePair("user_id", userId);
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
-        return cases;
+        return generateCasesFromCaseResponse(caseResponses);
     }
 
     @Override
@@ -102,8 +99,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         queryParams[1] = new NameValuePair("properties/case_type=", type);
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
-        return cases;
+        return generateCasesFromCaseResponse(caseResponses);
     }
 
     private List<CaseResponseJson> parseCasesFromResponse(String response) {

@@ -25,8 +25,7 @@ public class ConceptResourceImpl implements ConceptResource {
     public ConceptListResult queryForConceptsByName(String name) throws HttpException {
         String responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/concept?q={conceptName}",
                 name));
-        ConceptListResult results = (ConceptListResult) JsonUtils.readJson(responseJson, ConceptListResult.class);
-        return results;
+        return (ConceptListResult) JsonUtils.readJson(responseJson, ConceptListResult.class);
     }
 
 }

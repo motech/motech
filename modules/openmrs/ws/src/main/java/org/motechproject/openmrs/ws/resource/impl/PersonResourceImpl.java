@@ -41,8 +41,7 @@ public class PersonResourceImpl implements PersonResource {
     public Person getPersonById(String uuid) throws HttpException {
         String responseJson = null;
         responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/person/{uuid}?v=full", uuid));
-        Person person = (Person) JsonUtils.readJson(responseJson, Person.class);
-        return person;
+        return (Person) JsonUtils.readJson(responseJson, Person.class);
     }
 
     @Override
@@ -51,8 +50,7 @@ public class PersonResourceImpl implements PersonResource {
         String responseJson = null;
         responseJson = restClient.postForJson(openmrsInstance.toInstancePath("/person"), requestJson);
 
-        Person saved = (Person) JsonUtils.readJson(responseJson, Person.class);
-        return saved;
+        return (Person) JsonUtils.readJson(responseJson, Person.class);
     }
 
     @Override

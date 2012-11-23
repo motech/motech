@@ -176,8 +176,7 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
     }
 
     private Node getCurrentNode(FlowSession session) {
-        Node node = session.getCurrentNode();
-        return node;
+        return session.getCurrentNode();
     }
 
     private void validateNode(Node node) {

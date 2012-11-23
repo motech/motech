@@ -61,8 +61,7 @@ public class TreeNodeLocator {
     }
 
     private Node rootNode(FlowSession session, ITransition rootTransition) {
-        Node destinationNode = rootTransition.getDestinationNode(null, session);
-        return destinationNode;
+        return rootTransition.getDestinationNode(null, session);
     }
 
     private ITransition rootTransition(Tree tree) {

@@ -55,9 +55,7 @@ public class EncounterResourceImpl implements EncounterResource {
         String requestJson = gson.toJson(encounter);
 
         String responseJson = restClient.postForJson(openmrsInstance.toInstancePath("/encounter"), requestJson);
-        Encounter response = (Encounter) JsonUtils.readJson(responseJson, Encounter.class);
-        return response;
-
+        return (Encounter) JsonUtils.readJson(responseJson, Encounter.class);
     }
 
     @Override
@@ -79,8 +77,7 @@ public class EncounterResourceImpl implements EncounterResource {
                 uuid));
         Map<Type, Object> adapters = new HashMap<Type, Object>();
         adapters.put(ObservationValue.class, new ObservationValueDeserializer());
-        Encounter encounter = (Encounter) JsonUtils.readJsonWithAdapters(responseJson, Encounter.class, adapters);
-        return encounter;
+        return (Encounter) JsonUtils.readJsonWithAdapters(responseJson, Encounter.class, adapters);
     }
 
 }

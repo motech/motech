@@ -58,8 +58,7 @@ public class ObservationResourceImpl implements ObservationResource {
     public Observation getObservationById(String id) throws HttpException {
         Map<Type, Object> adapters = getObsAdapters();
         String responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/obs/{uuid}?v=full", id));
-        Observation obs = (Observation) JsonUtils.readJsonWithAdapters(responseJson, Observation.class, adapters);
-        return obs;
+        return (Observation) JsonUtils.readJsonWithAdapters(responseJson, Observation.class, adapters);
     }
 
     private Map<Type, Object> getObsAdapters() {

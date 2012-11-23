@@ -28,24 +28,21 @@ public class LocationResourceImpl implements LocationResource {
     @Override
     public LocationListResult getAllLocations() throws HttpException {
         String json = restClient.getJson(openmrsInstance.toInstancePath("/location?v=full"));
-        LocationListResult result = (LocationListResult) JsonUtils.readJson(json, LocationListResult.class);
-        return result;
+        return (LocationListResult) JsonUtils.readJson(json, LocationListResult.class);
     }
 
     @Override
     public LocationListResult queryForLocationByName(String locationName) throws HttpException {
         String json = restClient.getJson(openmrsInstance.toInstancePathWithParams("/location?q={name}&v=full",
                 locationName));
-        LocationListResult result = (LocationListResult) JsonUtils.readJson(json, LocationListResult.class);
-        return result;
+        return (LocationListResult) JsonUtils.readJson(json, LocationListResult.class);
 
     }
 
     @Override
     public Location getLocationById(String uuid) throws HttpException {
         String json = restClient.getJson(openmrsInstance.toInstancePathWithParams("/location/{uuid}", uuid));
-        Location location = (Location) JsonUtils.readJson(json, Location.class);
-        return location;
+        return (Location) JsonUtils.readJson(json, Location.class);
     }
 
     @Override

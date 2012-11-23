@@ -33,9 +33,7 @@ public class UserResourceImpl implements UserResource {
     @Override
     public UserListResult getAllUsers() throws HttpException {
         String responseJson = restClient.getJson(openmrsInstance.toInstancePath("/user?v=full"));
-        UserListResult result = (UserListResult) JsonUtils.readJson(responseJson, UserListResult.class);
-
-        return result;
+        return (UserListResult) JsonUtils.readJson(responseJson, UserListResult.class);
     }
 
     @Override
@@ -43,8 +41,7 @@ public class UserResourceImpl implements UserResource {
         String responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/user?q={username}&v=full",
                 username));
 
-        UserListResult results = (UserListResult) JsonUtils.readJson(responseJson, UserListResult.class);
-        return results;
+        return (UserListResult) JsonUtils.readJson(responseJson, UserListResult.class);
     }
 
     @Override
@@ -52,8 +49,7 @@ public class UserResourceImpl implements UserResource {
         Gson gson = getGsonWithAdapters();
         String responseJson = restClient.postForJson(openmrsInstance.toInstancePath("/user"), gson.toJson(user));
 
-        User saved = (User) JsonUtils.readJson(responseJson, User.class);
-        return saved;
+        return (User) JsonUtils.readJson(responseJson, User.class);
     }
 
     private Gson getGsonWithAdapters() {
@@ -65,8 +61,7 @@ public class UserResourceImpl implements UserResource {
     @Override
     public RoleListResult getAllRoles() throws HttpException {
         String responseJson = restClient.getJson(openmrsInstance.toInstancePath("/role?v=full"));
-        RoleListResult result = (RoleListResult) JsonUtils.readJson(responseJson, RoleListResult.class);
-        return result;
+        return (RoleListResult) JsonUtils.readJson(responseJson, RoleListResult.class);
     }
 
     @Override
