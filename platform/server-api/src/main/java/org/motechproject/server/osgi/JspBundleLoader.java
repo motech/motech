@@ -62,7 +62,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                     }
 
                     JarFile jarFile = new JarFile(tempJarFile);
-                    searchForJspFilesInJarFile(jarFile, bundle.getBundleId());
+                    searchForJspFilesInJarFile(jarFile);
 
                     tempJarFile.delete();
                 }
@@ -129,7 +129,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         }
     }
 
-    private void searchForJspFilesInJarFile(JarFile jarFile, long bundleId) throws Exception {
+    private void searchForJspFilesInJarFile(JarFile jarFile) throws Exception {
         Enumeration filesInJar = jarFile.entries();
         while (filesInJar.hasMoreElements()) {
             JarEntry jarEntry = (JarEntry) filesInJar.nextElement();

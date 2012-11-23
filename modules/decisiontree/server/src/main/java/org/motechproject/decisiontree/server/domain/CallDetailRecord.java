@@ -36,6 +36,7 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
     private String errorMessage;
     private String phoneNumber;
     private String callId;
+    private Integer duration;
 
     private CallDirection callDirection;
     private List<CallEvent> callEvents = new ArrayList<CallEvent>();
@@ -65,6 +66,7 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
         this.endDate = endDate != null? newDateTime(endDate) : null;
         this.answerDate = answerDate;
         this.disposition = disposition;
+        this.duration = duration;
     }
 
     /**
@@ -196,6 +198,14 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
     public CallDetailRecord setCallId(String callId) {
         this.callId = callId;
         return this;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     /**
