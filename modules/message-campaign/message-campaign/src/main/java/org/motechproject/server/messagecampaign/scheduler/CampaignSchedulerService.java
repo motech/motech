@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, CAMPAIGN extends Campaign<MESSAGE>> {
+public abstract class CampaignSchedulerService<M extends CampaignMessage, C extends Campaign<M>> {
 
     private MotechSchedulerService schedulerService;
     private AllMessageCampaigns allMessageCampaigns;
@@ -29,8 +29,8 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
     }
 
     public void start(CampaignEnrollment enrollment) {
-        CAMPAIGN campaign = (CAMPAIGN) allMessageCampaigns.get(enrollment.getCampaignName());
-        for (MESSAGE message : campaign.getMessages()) {
+        C campaign = (C) allMessageCampaigns.get(enrollment.getCampaignName());
+        for (M message : campaign.getMessages()) {
             scheduleMessageJob(enrollment, message);
         }
     }
@@ -39,8 +39,8 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
 
     public Map<String, List<DateTime>> getCampaignTimings(DateTime startDate, DateTime endDate, CampaignEnrollment enrollment) {
         Map<String, List<DateTime>> messageTimingsMap = new HashMap<>();
-        CAMPAIGN campaign = (CAMPAIGN) allMessageCampaigns.get(enrollment.getCampaignName());
-        for (MESSAGE message : campaign.getMessages()) {
+        C campaign = (C) allMessageCampaigns.get(enrollment.getCampaignName());
+        for (M message : campaign.getMessages()) {
             String externalJobIdPrefix = messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName());
             List<DateTime> dates = convertToDateTimeList(schedulerService.getScheduledJobTimingsWithPrefix(EventKeys.SEND_MESSAGE, externalJobIdPrefix, startDate.toDate(), endDate.toDate()));
 
