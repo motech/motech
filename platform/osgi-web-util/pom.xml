@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-osgi-web-util</artifactId>
+    <artifactId>motech-platform-osgi-web-util</artifactId>
     <name>MOTECH OSGI Web util</name>
     <description>MOTECH Osgi Web Util</description>
     <version>0.15-SNAPSHOT</version>

@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-web-util</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->

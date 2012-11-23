@@ -6,9 +6,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <import resource="classpath*:/META-INF/motech/activemqConnection.xml"/>
-    <import resource="classpath*:/META-INF/motech/eventQueuePublisher.xml"/>
-    <import resource="classpath*:/META-INF/motech/eventQueueConsumer.xml"/>
+    <import resource="classpath:/META-INF/motech/activemqConnection.xml"/>
+    <import resource="classpath:/META-INF/motech/eventQueuePublisher.xml"/>
+    <import resource="classpath:/META-INF/motech/eventQueueConsumer.xml"/>
     <osgi:service ref="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
     <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 </beans>

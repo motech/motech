@@ -110,6 +110,7 @@
                             org.motechproject.event.metrics.impl
                         </Export-Package>
                         <Import-Package>
+                            org.apache.activemq.command,
                             org.aopalliance.aop,
                             org.apache.activemq,
                             org.springframework.aop,

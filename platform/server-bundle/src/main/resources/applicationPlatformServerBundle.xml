@@ -42,8 +42,6 @@
         <property name="cookieMaxAge" value="100000"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
-
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
                   interface="org.motechproject.server.ui.UIFrameworkService"/>
 

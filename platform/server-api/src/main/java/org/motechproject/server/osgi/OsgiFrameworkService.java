@@ -108,7 +108,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             osgiFramework.getBundleContext().addFrameworkListener(new FrameworkListener() {
                 @Override
                 public void frameworkEvent(FrameworkEvent event) {
-                    if (event.getType() == FrameworkEvent.STARTED) {
+                        if (event.getType() == FrameworkEvent.STARTED) {
                         startMotechBundles();
                     }
                 }

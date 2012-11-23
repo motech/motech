@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
-import org.motechproject.server.osgi.OsgiFrameworkService;
-import org.motechproject.server.osgi.OsgiListener;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.StartupForm;
@@ -37,7 +35,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({StartupManager.class, OsgiListener.class})
+@PrepareForTest({StartupManager.class})
 public class StartupControllerTest {
     private static final String SUGGESTIONS_KEY = "suggestions";
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
@@ -65,18 +63,13 @@ public class StartupControllerTest {
     @Mock
     private ConfigFileSettings motechSettings;
 
-    @Mock
-    private OsgiFrameworkService osgiFrameworkService;
-
     @Before
     public void setUp() {
         PowerMockito.mockStatic(StartupManager.class);
-        PowerMockito.mockStatic(OsgiListener.class);
 
         initMocks(this);
 
         when(StartupManager.getInstance()).thenReturn(startupManager);
-        when(OsgiListener.getOsgiService()).thenReturn(osgiFrameworkService);
     }
 
     @Test
@@ -147,7 +140,6 @@ public class StartupControllerTest {
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
         verify(startupManager).startup();
         verify(startupManager).canLaunchBundles();
-        //verify(osgiFrameworkService).startBundle(anyString());       //TODO: Check if we can send an event instead of talking to web loader directly
 
         assertEquals("redirect:home", result.getViewName());
     }

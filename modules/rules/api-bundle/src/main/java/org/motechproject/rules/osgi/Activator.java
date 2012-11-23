@@ -1,6 +1,7 @@
 package org.motechproject.rules.osgi;
 
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -24,6 +25,8 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         bundleContext = context;
 
+
+
         this.tracker = new ServiceTracker(context,
                 HttpService.class.getName(), null) {
 
@@ -41,6 +44,8 @@ public class Activator implements BundleActivator {
             }
         };
         this.tracker.open();
+
+        new RuleBundleLoader(bundleContext, Bundle.STARTING, null).open();
     }
 
     public void stop(BundleContext context) throws Exception {

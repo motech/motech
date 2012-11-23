@@ -97,6 +97,7 @@ public class StartupController {
             if (startupManager.canLaunchBundles()) {
                 if (StringUtils.isNotBlank(start)) {
                     //TODO : call start  OsgiListener.getOsgiService().startMotechBundles();
+                    //TODO: Check if we can send an event instead of talking to web loader directly
                 } else {
                     //TODO OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME);
                 }

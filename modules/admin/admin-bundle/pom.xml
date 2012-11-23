@@ -7,7 +7,7 @@
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-admin-bundle</artifactId>
     <name>MOTECH Admin Bundle</name>
     <packaging>bundle</packaging>
@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-osgi-web-util</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->

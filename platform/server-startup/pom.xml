@@ -21,6 +21,10 @@
             <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>org.motechproject.org.apache.activemq</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

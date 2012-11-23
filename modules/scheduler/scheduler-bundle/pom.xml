@@ -51,7 +51,7 @@
                             javax.sql;resolution:=optional,
                             javax.xml.bind;resolution:=optional,
                             javax.xml.namespace;resolution:=optional,
-                            org.quartz,
+                            org.quartz;version="0",
                             commonj.*;resolution:=optional,
                             freemarker.*;resolution:=optional,
                             net.sf.jasperreports.*;resolution:=optional,

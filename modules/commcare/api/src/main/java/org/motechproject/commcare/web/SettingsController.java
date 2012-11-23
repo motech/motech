@@ -2,7 +2,6 @@ package org.motechproject.commcare.web;
 
 import org.motechproject.commcare.domain.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.osgi.OsgiListener;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,7 +54,7 @@ public class SettingsController {
             settingsFacade.setProperty(CASE_EVENT_STRATEGY_KEY, settings.getEventStrategy());
 
             if (restart) {
-                OsgiListener.getOsgiService().restart(settingsFacade.getSymbolicName());
+                //OsgiListener.getOsgiService().restart(settingsFacade.getSymbolicName());
             }
         } else {
             throw new IllegalArgumentException("Settings are not valid");

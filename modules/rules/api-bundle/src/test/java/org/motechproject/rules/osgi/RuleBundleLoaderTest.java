@@ -5,6 +5,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.rules.service.KnowledgeBaseManager;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +31,7 @@ public class RuleBundleLoaderTest {
         String ruleFolder = "/rules";
         String ruleFile = "test.drl";
         String bundleSymbolicName = "test.bundle";
-        RuleBundleLoader loader = new RuleBundleLoader();
+        RuleBundleLoader loader = new RuleBundleLoader(mock(BundleContext.class), Bundle.STARTING, null);
 
         ArrayList<URL> urls = new ArrayList<URL>();
         urls.add(this.getClass().getResource(ruleFolder + "/" + ruleFile));
@@ -38,7 +40,6 @@ public class RuleBundleLoaderTest {
         when(bundle.getSymbolicName()).thenReturn(bundleSymbolicName);
 
         KnowledgeBaseManager kbm = mock(KnowledgeBaseManager.class);
-
         doAnswer(new Answer() {
             public Object answer(InvocationOnMock invocation) throws IOException {
                 Object[] args = invocation.getArguments();
@@ -51,6 +52,7 @@ public class RuleBundleLoaderTest {
                 .when(kbm).addOrUpdateRule(eq(ruleFile), eq(bundleSymbolicName), any(InputStream.class));
 
         loader.setKnowledgeBaseManager(kbm);
-        loader.loadBundle(bundle);
+        BundleEvent bundleEvent = new BundleEvent(Bundle.STARTING, mock(Bundle.class));
+        loader.addingBundle(bundle, bundleEvent);
     }
 }

@@ -6,11 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.motechproject.commcare.domain.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.osgi.OsgiFrameworkService;
-import org.motechproject.server.osgi.OsgiListener;
 import org.osgi.framework.BundleException;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({OsgiListener.class})
 public class SettingsControllerTest {
     private static final String COMMCARE_BASE_URL_KEY = "commcareBaseUrl";
     private static final String CASE_EVENT_STRATEGY_KEY = "case.events.send.with.all.data";
@@ -35,9 +30,6 @@ public class SettingsControllerTest {
 
     @Mock
     private SettingsFacade settingsFacade;
-
-    @Mock
-    private OsgiFrameworkService osgiFrameworkService;
 
     private SettingsController controller;
 
@@ -83,9 +75,6 @@ public class SettingsControllerTest {
 
     @Test
     public void testSaveSettingsWithRestart() throws BundleException {
-        PowerMockito.mockStatic(OsgiListener.class);
-        when(OsgiListener.getOsgiService()).thenReturn(osgiFrameworkService);
-
         SettingsDto dto = new SettingsDto();
         dto.setCommcareBaseUrl(COMMCARE_BASE_URL_VALUE);
         dto.setCommcareDomain(COMMCARE_DOMAIN_KEY);
@@ -96,7 +85,6 @@ public class SettingsControllerTest {
         controller.saveSettings(dto, true);
 
         verify(settingsFacade, times(5)).setProperty(anyString(), anyString());
-        verify(osgiFrameworkService).restart(anyString());
     }
 
     @Test(expected = IllegalArgumentException.class)
