@@ -22,7 +22,6 @@ while getopts "d:b:e:" opt; do
 	    ERROR_LOG=$OPTARG
 	;;
     esac
-    esac
 done
 
 if [ -z $ERROR_LOG ]; then
@@ -87,6 +86,7 @@ curl -L localhost:8080 --retry 15 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" > $ERROR_LOG
+    cat $CHROOT_DIR/var/log/motech/catalina.out >> $ERROR_LOG
     purge_motech
     exit $RET
 fi
