@@ -943,7 +943,7 @@
             <dependency>
                 <groupId>org.motechproject</groupId>
                 <artifactId>org.motechproject.osgi.it</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.2.RELEASE</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
