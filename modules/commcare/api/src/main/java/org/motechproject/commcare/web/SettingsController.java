@@ -46,7 +46,7 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public void saveSettings(@RequestBody SettingsDto settings, @RequestParam(required = false, defaultValue = "false") boolean restart) throws BundleException {
-        if (isValid(settings)) {
+        if (settings.isValid()) {
             settingsFacade.setProperty(COMMCARE_BASE_URL_KEY, settings.getCommcareBaseUrl());
             settingsFacade.setProperty(COMMCARE_DOMAIN_KEY, settings.getCommcareDomain());
             settingsFacade.setProperty(USERNAME_KEY, settings.getUsername());
@@ -64,12 +64,6 @@ public class SettingsController {
     private String getPropertyValue(final String propertyKey) {
         String propertyValue = settingsFacade.getProperty(propertyKey);
         return isNotBlank(propertyValue) ? propertyValue : null;
-    }
-
-    private boolean isValid(SettingsDto settings) {
-        return isNotBlank(settings.getCommcareBaseUrl()) && isNotBlank(settings.getCommcareDomain()) &&
-                isNotBlank(settings.getUsername()) && isNotBlank(settings.getPassword()) &&
-                isNotBlank(settings.getEventStrategy());
     }
 
 }
