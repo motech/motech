@@ -157,6 +157,11 @@
                 <artifactId>com.springsource.javax.annotation</artifactId>
                 <version>1.0.0</version>
             </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>com.springsource.javax.mail</artifactId>
+                <version>1.4.5</version>
+            </dependency>
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework</groupId>
