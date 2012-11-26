@@ -30,6 +30,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-c3p0-fragment-bundle</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
@@ -95,6 +96,25 @@
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-osgi-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <outputDirectory>
+                                ${user.home}/.motech/bundles
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>

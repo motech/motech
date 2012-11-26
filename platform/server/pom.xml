@@ -64,7 +64,7 @@
             <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Core bundles needed at runtime-->
+        <!-- Core bundles needed at runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-event</artifactId>
@@ -80,25 +80,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Admin -->
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-admin-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-demo-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -134,9 +115,7 @@
                         </goals>
                         <configuration>
                             <excludeArtifactIds>org.osgi.core,jstl,servlet-api,org.apache.felix.framework,org.apache.felix.http.proxy</excludeArtifactIds>
-                            <includeScope>runtime</includeScope>
                             <includeScope>provided</includeScope>
-                            <includeScope>compile</includeScope>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <outputDirectory>
                                 ${user.home}/.motech/bundles
@@ -210,7 +189,7 @@
                                 <fileset>
                                     <directory>${user.home}/.motech/config</directory>
                                     <includes>
-                                        <include>**/**</include>
+                                        <include>org.*/**</include>
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
