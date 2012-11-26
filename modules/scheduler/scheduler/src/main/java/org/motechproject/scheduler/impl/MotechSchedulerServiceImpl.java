@@ -95,7 +95,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         } catch (Exception e) {
             String errorMessage = format("Can not schedule job %s; invalid Cron expression: %s", jobId, cronSchedulableJob.getCronExpression());
             logError(errorMessage);
-            throw new MotechSchedulerException(errorMessage);
+            throw new MotechSchedulerException(errorMessage, e);
         }
 
         cronSchedule = setMisfirePolicyForCronTrigger(cronSchedule, cronTriggerMisfirePolicy);
@@ -114,7 +114,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         } catch (SchedulerException e) {
             String errorMessage = format("Schedule or reschedule the job: %s.\n%s", jobId, e.getMessage());
             logError(errorMessage, e);
-            throw new MotechSchedulerException(errorMessage);
+            throw new MotechSchedulerException(errorMessage, e);
         }
         if (existingTrigger != null) {
             unscheduleJob(jobId.value());
@@ -182,7 +182,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             String errorMessage = "Can not update the job: " + jobId +
                     ".\n Can not get a trigger associated with that job " + e.getMessage();
             logError(errorMessage, e);
-            throw new MotechSchedulerException(errorMessage);
+            throw new MotechSchedulerException(errorMessage, e);
         }
 
         try {
@@ -245,7 +245,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     private void handleException(String errorMessage, Exception e) {
         logError(errorMessage, e);
-        throw new MotechSchedulerException(errorMessage);
+        throw new MotechSchedulerException(errorMessage, e);
     }
 
     @Override

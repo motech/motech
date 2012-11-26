@@ -25,9 +25,9 @@ public class OpenRosaResponseParser {
         try {
             parser.parse(inputSource);
         } catch (IOException ex) {
-            throw new CaseParserException("Could not parse: IOException");
+            throw new CaseParserException(ex, "Could not parse: IOException");
         } catch (SAXException ex) {
-            throw new CaseParserException("Could not parse: SAXException");
+            throw new CaseParserException(ex, "Could not parse: SAXException");
         }
 
         Document document = parser.getDocument();

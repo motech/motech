@@ -23,6 +23,7 @@
     <rule ref="rulesets/coupling.xml/LooseCoupling"/>
 
     <rule ref="rulesets/design.xml/SimplifyConditional"/>
+    <rule ref="rulesets/design.xml/PreserveStackTrace"/>
 
     <rule ref="rulesets/logging-java.xml/AvoidPrintStackTrace"/>
 

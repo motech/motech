@@ -72,7 +72,7 @@ public class MRSObservationAdapterImpl implements MRSObservationAdapter {
         } catch (HttpException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 LOGGER.warn("No Observation found with uuid: " + mrsObservation.getId());
-                throw new ObservationNotFoundException(mrsObservation.getId());
+                throw new ObservationNotFoundException(mrsObservation.getId(), e);
             }
 
             LOGGER.error("Could not void observation with uuid: " + mrsObservation.getId());

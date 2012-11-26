@@ -58,7 +58,7 @@ public class IVRServiceAsteriskImpl implements IVRService {
             } catch (EncoderException e) {
                 String errorMessage = "Invalid Voice XML URL: " + getVxmlUrl();
                 log.error(errorMessage);
-                throw new IllegalArgumentException(errorMessage);
+                throw new IllegalArgumentException(errorMessage, e);
             }
 
             String data = agiUrl + encodedVxmlUrl;

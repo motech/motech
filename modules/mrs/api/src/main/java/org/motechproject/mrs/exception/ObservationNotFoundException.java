@@ -10,4 +10,8 @@ public class ObservationNotFoundException extends Exception {
     public ObservationNotFoundException(String message) {
         super(message);
     }
+
+    public ObservationNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

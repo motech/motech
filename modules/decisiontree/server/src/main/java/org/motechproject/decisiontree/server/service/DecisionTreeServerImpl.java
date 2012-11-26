@@ -202,7 +202,7 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
-                throw new DecisionTreeException(Error.INVALID_TRANSITION_KEY, format("Invalid transition key [%s] for node [%s]", key, node));
+                throw new DecisionTreeException(Error.INVALID_TRANSITION_KEY, format("Invalid transition key [%s] for node [%s]", key, node), e);
             }
             ITransition transition = transitionEntry.getValue();
             if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
@@ -286,6 +286,11 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
 
         public DecisionTreeException(Error subject, String description) {
             super(description);
+            this.subject = subject;
+        }
+
+        public DecisionTreeException(Error subject, String description, Throwable cause) {
+            super(description, cause);
             this.subject = subject;
         }
     }

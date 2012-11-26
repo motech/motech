@@ -79,7 +79,7 @@ public class PollingConfiguration {
         try {
             hour = Integer.parseInt(hourMinutes[0]);
         } catch (NumberFormatException e) {
-            throw new MotechException("The hour value for daily polling configuration must be a number");
+            throw new MotechException("The hour value for daily polling configuration must be a number", e);
         }
 
         if (hour < 0 || hour > LAST_HOUR_IN_DAY) {
@@ -89,7 +89,7 @@ public class PollingConfiguration {
         try {
             minute = Integer.parseInt(hourMinutes[1]);
         } catch (NumberFormatException e) {
-            throw new MotechException("The minute value for daily polling configuration must be a number");
+            throw new MotechException("The minute value for daily polling configuration must be a number", e);
         }
 
         if (minute < 0 || minute > LAST_MINUTE_IN_HOUR) {
@@ -129,7 +129,7 @@ public class PollingConfiguration {
                 interval = Integer.parseInt(pollingInterval.substring(0, pollingInterval.length() - 1));
             } catch (NumberFormatException e) {
                 throw new MotechException(
-                        "The interval value for the interval polling configuration must be a number, e.g. 1m");
+                        "The interval value for the interval polling configuration must be a number, e.g. 1m", e);
             }
         } else if (pollingInterval.endsWith("h")) {
             // hours
@@ -138,7 +138,7 @@ public class PollingConfiguration {
                 interval = Integer.parseInt(pollingInterval.substring(0, pollingInterval.length() - 1));
             } catch (NumberFormatException e) {
                 throw new MotechException(
-                        "The interval value for the interval polling configuration must be a number, e.g 1h");
+                        "The interval value for the interval polling configuration must be a number, e.g 1h", e);
             }
         } else {
             throw new MotechException(

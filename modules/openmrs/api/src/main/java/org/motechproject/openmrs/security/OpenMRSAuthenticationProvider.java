@@ -13,7 +13,7 @@ public class OpenMRSAuthenticationProvider extends MRSAuthenticationProvider {
         try {
             return OpenMRSSession.login(userName, (String) authentication.getCredentials());
         } catch (ContextAuthenticationException e) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException(e);
         }
     }
 }

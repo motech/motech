@@ -49,7 +49,7 @@ public class OpenMrsInstance {
         try {
             return new URI(openmrsUrl + path);
         } catch (URISyntaxException e) {
-            throw new MotechException("Bad URI");
+            throw new MotechException("Bad URI", e);
         }
     }
 

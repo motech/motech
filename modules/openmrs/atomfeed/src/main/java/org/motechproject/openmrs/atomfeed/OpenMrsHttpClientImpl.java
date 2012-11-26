@@ -55,7 +55,7 @@ public class OpenMrsHttpClientImpl implements OpenMrsHttpClient {
             }
         } catch (IOException e) {
             LOGGER.error("Motech OpenMRS Atom Feed module could not communicate with the OpenMRS");
-            throw new MotechException(e.getMessage());
+            throw new MotechException(e.getMessage(), e);
         }
     }
 

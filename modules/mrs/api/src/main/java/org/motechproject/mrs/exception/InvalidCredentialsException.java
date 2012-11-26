@@ -10,7 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  * Thrown when Invalid Credentials are provided during login into MRS system
  */
 public class InvalidCredentialsException extends BadCredentialsException {
-    public InvalidCredentialsException() {
-        super("Invalid username or password supplied.");
+    public InvalidCredentialsException(Throwable cause) {
+        super("Invalid username or password supplied.", cause);
     }
 }

@@ -221,7 +221,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         try {
             userByUsername = userService.getUserByUsername(userId);
         } catch (APIException e) {
-            throw new UsernameNotFoundException("User was not found");
+            throw new UsernameNotFoundException("User was not found", e);
         }
 
         String newPassword = new Password(PASSWORD_LENGTH).create();
