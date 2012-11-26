@@ -1,11 +1,16 @@
 package org.motechproject.server.osgi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JarInformationHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(JarInformationHandler.class);
+
     public static final String JAR_FILE_EXTENSION = ".jar";
                                             
     private String path;
@@ -43,7 +48,7 @@ public class JarInformationHandler {
             try {
                 getJarList().add(new JarInformation(file));
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
     }

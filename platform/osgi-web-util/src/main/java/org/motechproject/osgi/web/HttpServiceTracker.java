@@ -64,7 +64,7 @@ class HttpServiceTracker extends ServiceTracker {
                     service.registerServlet(contextPath, dispatcherServlet, null, null);
                     logger.debug("Servlet registered");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }

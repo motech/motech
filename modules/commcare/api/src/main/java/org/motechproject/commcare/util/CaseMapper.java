@@ -3,19 +3,15 @@ package org.motechproject.commcare.util;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
 import org.motechproject.commcare.domain.CaseXml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * Created by IntelliJ IDEA.
- * User: pchandra
- * Date: 3/24/12
- * Time: 10:48 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CaseMapper<T> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CaseMapper.class);
 
     private Class<T> clazz;
 
@@ -31,7 +27,7 @@ public class CaseMapper<T> {
             BeanUtils.copyProperties(instance, ccCase);
             BeanUtils.populate(instance, ccCase.getFieldValues());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
         return instance;
@@ -53,7 +49,7 @@ public class CaseMapper<T> {
             ccCase.setFieldValues(valueMap);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
         return ccCase;

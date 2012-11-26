@@ -9,6 +9,8 @@ import org.motechproject.commcare.parser.CaseParser;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,8 @@ import java.io.IOException;
  */
 @Controller
 public class CasesController {
+    private static final Logger LOG = LoggerFactory.getLogger(CasesController.class);
+
     private static final String CASE_EVENT_STRATEGY_KEY = "case.events.send.with.all.data";
     private static final String FULL_DATA_EVENT = "full";
     private static final String PARTIAL_DATA_EVENT = "partial";
@@ -62,7 +66,7 @@ public class CasesController {
         try {
             caseXml = getRequestBodyAsString(request);
         } catch (IOException e1) {
-            e1.printStackTrace();
+            LOG.error(e1.getMessage(), e1);
         }
         CaseParser<CaseXml> parser = new CaseParser<>(CaseXml.class, caseXml);
 

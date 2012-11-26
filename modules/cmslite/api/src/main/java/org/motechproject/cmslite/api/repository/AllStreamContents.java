@@ -1,5 +1,6 @@
 package org.motechproject.cmslite.api.repository;
 
+import org.apache.commons.io.IOUtils;
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.util.List;
 
 @Repository
@@ -56,12 +56,8 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         } catch (Exception e) {
             throw new CMSLiteException(e.getMessage(), e);
         } finally {
-            try {
-                closeInputStream(content);
-                closeInputStream(streamContentFromDB);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            closeInputStream(content);
+            closeInputStream(streamContentFromDB);
         }
     }
 
@@ -69,9 +65,9 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         return content.getChecksum().equals(streamContentFromDB.getChecksum());
     }
 
-    private void closeInputStream(StreamContent content) throws IOException {
+    private void closeInputStream(StreamContent content) {
         if (content != null) {
-            content.getInputStream().close();
+            IOUtils.closeQuietly(content.getInputStream());
         }
     }
 

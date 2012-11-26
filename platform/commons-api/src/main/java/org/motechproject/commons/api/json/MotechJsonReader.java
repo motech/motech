@@ -9,6 +9,8 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonPrimitive;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MotechJsonReader {
+    private static final Logger LOG = LoggerFactory.getLogger(MotechJsonReader.class);
+
     private static Map<Type, Object> standardTypeAdapters = new HashMap<Type, Object>();
 
     static {
@@ -73,7 +77,7 @@ public class MotechJsonReader {
             try {
                 date = format.parse(asJsonPrimitive.getAsString());
             } catch (ParseException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
             return date;
         }
