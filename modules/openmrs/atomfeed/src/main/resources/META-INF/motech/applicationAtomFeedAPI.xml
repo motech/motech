@@ -28,5 +28,10 @@
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
     </bean>
 
+    <bean id="atomFeedCouchDbConnector" factory-bean="atomfeedSettings" factory-method="getConnector">
+        <constructor-arg value="motech-openmrs-atomfeed"/>
+        <constructor-arg value="couchdb.properties"/>
+    </bean>
+
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 </beans>
