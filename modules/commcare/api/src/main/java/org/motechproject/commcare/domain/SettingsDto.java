@@ -1,5 +1,7 @@
 package org.motechproject.commcare.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 public class SettingsDto {
     private String commcareBaseUrl;
     private String commcareDomain;
@@ -45,6 +47,30 @@ public class SettingsDto {
 
     public void setEventStrategy(final String eventStrategy) {
         this.eventStrategy = eventStrategy;
+    }
+
+    public boolean isValid() {
+        if (StringUtils.isBlank(commcareBaseUrl)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(commcareDomain)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(username)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(password)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(eventStrategy)) {
+            return false;
+        }
+
+        return true;
     }
 
 }

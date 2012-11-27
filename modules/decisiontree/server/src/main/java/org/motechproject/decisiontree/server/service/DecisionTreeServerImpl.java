@@ -154,7 +154,15 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
     }
 
     private boolean isEmptyNode(Node node) {
-        return node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty() && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
+        return node == null || hasNoActionableItems(node);
+    }
+
+    private boolean hasNoActionableItems(Node node) {
+        return node.getPrompts().isEmpty() && hasNoActions(node) && node.getTransitions().isEmpty();
+    }
+
+    private boolean hasNoActions(Node node) {
+        return node.getActionsAfter().isEmpty() && node.getActionsBefore().isEmpty();
     }
 
     private void executeOperations(String transitionKey, FlowSession session, Node node) {

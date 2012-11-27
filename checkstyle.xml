@@ -256,5 +256,8 @@
         <module name="ClassTypeParameterName">
             <property name="format" value="^[A-Z]$"/>
         </module>
+        <module name="BooleanExpressionComplexity">
+            <property name="severity" value="error"/>
+        </module>
     </module>
 </module>
