@@ -1,6 +1,7 @@
 package org.motechproject.server.kookoo.osgi;
 
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.motechproject.osgi.web.ServletRegistrationException;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -15,12 +16,11 @@ public class Activator implements BundleActivator {
     private static final String CONTEXT_CONFIG_LOCATION = "META-INF/osgi/ivrKookooOsgiContext.xml";
     private static final String SERVLET_URL_MAPPING = "/kookoo";
     private ServiceTracker tracker;
-    private ServiceReference httpService;
 
     private static BundleContext bundleContext = null;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         bundleContext = context;
 
         this.tracker = new ServiceTracker(context,
@@ -42,12 +42,8 @@ public class Activator implements BundleActivator {
         this.tracker.open();
     }
 
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.tracker.close();
-        if (httpService != null) {
-            HttpService service = (HttpService) context.getService(httpService);
-            serviceRemoved(service);
-        }
     }
 
     public static class KookooApplicationContext extends MotechOsgiWebApplicationContext {
@@ -73,7 +69,7 @@ public class Activator implements BundleActivator {
                 Thread.currentThread().setContextClassLoader(old);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletRegistrationException(e);
         }
 
     }

@@ -1,4 +1,4 @@
-package org.motechproject.sms.http;
+package org.motechproject.sms.api;
 
 public class SmsDeliveryFailureException extends Exception {
 

@@ -1,5 +1,6 @@
 package org.motechproject.server.demo.model;
 
+import org.motechproject.commons.api.MotechException;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.List;
@@ -61,9 +62,9 @@ public class NodeRecord implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (getMessage() == null || getMessage().trim().isEmpty()) {
-            throw new Exception("Message content is required");
+            throw new MotechException("Message content is required");
         }
     }
 

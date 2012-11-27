@@ -99,8 +99,7 @@ public class SettingsServiceImpl implements SettingsService {
         try {
             platformSettingsService.saveBundleProperties(symbolicName, settings.getSection(), props);
         } catch (IOException e) {
-            LOG.error("Error while saving bundle settings", e);
-            throw new RuntimeException(e);
+            throw new MotechException("Error while saving bundle settings", e);
         }
     }
 
@@ -159,7 +158,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void addSettingsPath(String path) throws Exception {
+    public void addSettingsPath(String path) throws IOException {
         platformSettingsService.addConfigLocation(path, true);
     }
 

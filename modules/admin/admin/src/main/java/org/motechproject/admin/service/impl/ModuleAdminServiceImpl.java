@@ -10,6 +10,7 @@ import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.server.osgi.BundleInformation;
 import org.motechproject.server.osgi.BundleLoader;
+import org.motechproject.server.osgi.BundleLoadingException;
 import org.motechproject.server.osgi.JarInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -183,7 +184,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         return bundle;
     }
 
-    private void runBundleLoaders(Bundle bundle) throws Exception {
+    private void runBundleLoaders(Bundle bundle) throws BundleLoadingException {
         for (BundleLoader loader : bundleLoaders) {
             loader.loadBundle(bundle);
         }

@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,7 +39,7 @@ public class CallMeController implements InitializingBean{
     private List<IVRService> ivrServices;
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
-    public void home(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void home(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -82,7 +83,7 @@ public class CallMeController implements InitializingBean{
     }
 
     @RequestMapping(value = "/home", method = RequestMethod.POST)
-    public void homeSubmitForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void homeSubmitForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -98,7 +99,7 @@ public class CallMeController implements InitializingBean{
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/scheduleCall", method = RequestMethod.GET)
-    public void scheduleCall(@RequestParam String phone, @RequestParam String callDelay) throws Exception {
+    public void scheduleCall(@RequestParam String phone, @RequestParam String callDelay)  {
         int delay = Integer.parseInt(callDelay);
 
         Calendar now = Calendar.getInstance();
@@ -110,7 +111,7 @@ public class CallMeController implements InitializingBean{
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/initiateCall", method = RequestMethod.GET)
-    public void initiateCall(@RequestParam String phone) throws Exception {
+    public void initiateCall(@RequestParam String phone) {
         demoService.initiatePhoneCall(phone);
     }
 

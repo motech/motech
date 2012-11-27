@@ -2,6 +2,7 @@ package org.motechproject.sms.http;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.sms.api.SmsDeliveryFailureException;
 import org.motechproject.sms.api.SmsEventHandler;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;

@@ -22,7 +22,7 @@ public interface SettingsService {
 
     void saveActiveMqFile(MultipartFile activemqFile);
 
-    void addSettingsPath(String path) throws Exception;
+    void addSettingsPath(String path) throws IOException;
 
     List<String> retrieveRegisteredBundleNames();
 

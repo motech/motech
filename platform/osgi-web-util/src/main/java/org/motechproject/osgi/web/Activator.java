@@ -14,7 +14,7 @@ public class Activator implements BundleActivator {
     private HttpServiceTracker tracker;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.tracker = new HttpServiceTracker(context);
         this.tracker.open();
         final ServiceReference httpServiceReference = context.getServiceReference(HttpService.class.getName());
@@ -25,7 +25,7 @@ public class Activator implements BundleActivator {
                 context.getBundle().getSymbolicName()));
     }
 
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.tracker.close();
         tracker.unregister();
     }

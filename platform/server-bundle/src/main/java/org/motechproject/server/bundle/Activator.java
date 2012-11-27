@@ -1,6 +1,7 @@
 package org.motechproject.server.bundle;
 
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.motechproject.osgi.web.ServletRegistrationException;
 import org.motechproject.server.startup.StartupManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -22,7 +23,7 @@ public class Activator implements BundleActivator {
     private static BundleContext bundleContext;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         bundleContext = context;
 
         this.tracker = new ServiceTracker(context,
@@ -44,7 +45,7 @@ public class Activator implements BundleActivator {
         this.tracker.open();
     }
 
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.tracker.close();
 
         if (httpService != null) {
@@ -76,7 +77,7 @@ public class Activator implements BundleActivator {
             }
             startMotech();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletRegistrationException(e);
         }
     }
 

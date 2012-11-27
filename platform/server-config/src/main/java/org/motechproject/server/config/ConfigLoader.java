@@ -1,6 +1,7 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.FileUtils;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.slf4j.Logger;
@@ -97,11 +98,7 @@ public class ConfigLoader {
         Resource defaultSettings = resourceLoader.getResource("classpath:default-settings.conf");
         Resource defaultActivemq = resourceLoader.getResource("classpath:default-activemq.properties");
         if (defaultSettings != null) {
-            try {
-                configFileSettings = loadSettingsFromStream(defaultSettings, defaultActivemq);
-            } catch (IOException e) {
-                LOGGER.error("Error loading default config " + defaultSettings.getFilename(), e);
-            }
+            configFileSettings = loadSettingsFromStream(defaultSettings, defaultActivemq);
         }
 
         return configFileSettings;
@@ -117,7 +114,7 @@ public class ConfigLoader {
         FileUtils.writeStringToFile(configLocationsFile, sb.toString());
     }
 
-    public static ConfigFileSettings loadSettingsFromStream(Resource motechSettings, Resource activemq) throws IOException {
+    public static ConfigFileSettings loadSettingsFromStream(Resource motechSettings, Resource activemq) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
 
@@ -130,12 +127,10 @@ public class ConfigLoader {
                 configFileSettings.setMd5checksum(digest.digest());
                 return configFileSettings; // startup loaded
             } catch (IOException e) {
-                LOGGER.error("Error loading configuration", e);
-                throw new RuntimeException(e);
+                throw new MotechException("Error loading configuration", e);
             }
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("MD5 algorithm not available", e);
-            throw new RuntimeException(e);
+            throw new MotechException("MD5 algorithm not available", e);
         }
     }
 

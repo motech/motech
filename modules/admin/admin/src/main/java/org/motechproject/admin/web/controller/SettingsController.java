@@ -94,7 +94,7 @@ public class SettingsController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
-    public void uploadSettingsLocation(@RequestParam(required = true) String location) throws Exception {
+    public void uploadSettingsLocation(@RequestParam(required = true) String location) throws IOException {
         settingsService.addSettingsPath(location);
         statusMessageService.ok("{settings.saved.location}");
     }

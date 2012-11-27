@@ -5,6 +5,7 @@ import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.core.model.DialStatus;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
+import org.motechproject.ivr.service.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +89,7 @@ public class KookooIvrController {
         String motechCallId = request.getParameter("motech_call_id");
         FlowSession session = flowSessionService.getSession(motechCallId);
         if (session == null) {
-            throw new RuntimeException("No session found! [Session Id " + motechCallId + "]");
+            throw new SessionNotFoundException("No session found! [Session Id " + motechCallId + "]");
         }
         String kookooSid = request.getParameter("sid");
         session = flowSessionService.updateSessionId(motechCallId, kookooSid);

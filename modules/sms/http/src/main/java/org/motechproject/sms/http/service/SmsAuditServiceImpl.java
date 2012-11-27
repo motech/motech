@@ -10,21 +10,21 @@ public class SmsAuditServiceImpl implements SmsAuditService {
 
     @Override
     public List<SMSRecord> allOutboundMessagesBetween(DateTime from, DateTime to) {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public List<SMSRecord> allOutboundMessagesBetween(String phoneNumber, DateTime from, DateTime to) {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public List<SMSRecord> allInboundMessagesBetween(DateTime from, DateTime to) {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public List<SMSRecord> allInboundMessagesBetween(String phoneNumber, DateTime from, DateTime to) {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

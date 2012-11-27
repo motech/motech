@@ -4,7 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.sms.http.SmsDeliveryFailureException;
+import org.motechproject.sms.api.SmsDeliveryFailureException;
 import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.service.SmsHttpService;
 import org.springframework.beans.factory.annotation.Autowired;

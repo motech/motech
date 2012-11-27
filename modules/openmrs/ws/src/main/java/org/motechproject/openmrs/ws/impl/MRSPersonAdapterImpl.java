@@ -91,7 +91,7 @@ public class MRSPersonAdapterImpl {
 
             if (result.getResults().size() == 0) {
                 LOGGER.error("No attribute found with name: " + name);
-                throw new MRSException(new RuntimeException("No attribute with name: " + name + " found in OpenMRS"));
+                throw new MRSException("No attribute with name: " + name + " found in OpenMRS");
             } else if (result.getResults().size() > 1) {
                 LOGGER.warn("Found more than 1 attribute with name: " + name);
             }

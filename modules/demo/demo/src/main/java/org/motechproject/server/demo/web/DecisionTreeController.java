@@ -5,6 +5,7 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.DecisionTreeService;
+import org.motechproject.server.demo.ex.NodeNotFoundException;
 import org.motechproject.server.demo.model.TreeRecord;
 import org.motechproject.server.demo.service.TreeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +45,13 @@ public class DecisionTreeController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/trees/create", method = RequestMethod.POST)
-    public void saveTree(@RequestBody TreeRecord treeRecord) throws Exception {
+    public void saveTree(@RequestBody TreeRecord treeRecord) throws NodeNotFoundException {
         decisionTreeService.saveDecisionTree(TreeConverter.convertToTree(treeRecord));
     }
 
     @RequestMapping(value = "/trees/cycle", method = RequestMethod.POST)
     @ResponseBody
-    public boolean findTreeCycle(@RequestBody TreeRecord treeRecord) throws Exception {
+    public boolean findTreeCycle(@RequestBody TreeRecord treeRecord) throws NodeNotFoundException {
         return treeRecord.isCyclic();
     }
 

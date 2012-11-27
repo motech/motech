@@ -11,8 +11,8 @@ public interface BundleLoader {
 
     /**
      * @param bundle
-     * @throws Exception
+     * @throws BundleLoadingException
      */
-    void loadBundle(Bundle bundle) throws Exception;
+    void loadBundle(Bundle bundle) throws BundleLoadingException;
 
 }

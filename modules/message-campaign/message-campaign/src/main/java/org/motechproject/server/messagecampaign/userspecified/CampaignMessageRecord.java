@@ -47,7 +47,7 @@ public class CampaignMessageRecord {
         if (type == CampaignType.CRON) {
             return buildCron();
         }
-        throw new RuntimeException("Unknown campaign type");
+        throw new UnknownCampaignTypeException("Unknown campaign type");
     }
 
     private CampaignMessage buildDayOfWeekCampaignMessage() {

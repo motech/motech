@@ -1,11 +1,13 @@
 package org.motechproject.rules.service;
 
+import org.motechproject.commons.api.MotechException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +32,9 @@ public class FilesystemRuleLoader {
     /**
      * Load rule files from the internal and external rule folders
      *
-     * @throws Exception
+     * @throws UnsupportedEncodingException
      */
-    public void load() throws Exception {
+    public void load() throws UnsupportedEncodingException {
         List<File> ruleFiles = new ArrayList<File>();
         if (internalRuleFolder != null) {
             File[] internalRuleFiles = new File(URLDecoder.decode(getClass().getResource(internalRuleFolder).getFile(), "UTF-8")).listFiles();
@@ -58,9 +60,9 @@ public class FilesystemRuleLoader {
             if (file.getName().toLowerCase().endsWith(".drl")) {
                 try {
                     knowledgeBaseManager.addOrUpdateRule(file, classLoaders.toArray(new ClassLoader[classLoaders.size()]));
+                    logger.debug("Loaded rules from " + file.getAbsolutePath());
                 } catch (IOException e) {
-                    logger.error("Failed to load the rule file [" + file.getName() + "]", e);
-                    throw new RuntimeException(e);
+                    throw new MotechException("Failed to load the rule file [" + file.getName() + "]", e);
                 }
             }
         }

@@ -225,7 +225,7 @@ public class SettingsFacade {
             try {
                 platformSettingsService.saveBundleProperties(getSymbolicName(), filename, properties);
             } catch (IOException e) {
-                throw new RuntimeException("Can't save settings " + filename, e);
+                throw new MotechException("Can't save settings " + filename, e);
             }
         }
     }
