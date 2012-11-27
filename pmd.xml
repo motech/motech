@@ -32,6 +32,7 @@
 
     <rule ref="rulesets/strings.xml/UseIndexOfChar"/>
 
+    <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter"/>
     <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable"/>
     <rule ref="rulesets/unusedcode.xml/UnusedPrivateField"/>
 </ruleset>
