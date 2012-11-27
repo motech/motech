@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.15</version>
+        <version>0.15.1-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-server-bundle</artifactId>
-    <version>0.15</version>
+    <version>0.15.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MoTeCH Platform Server Bundle</name>
     <properties>
