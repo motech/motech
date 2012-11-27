@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.15-SNAPSHOT</version>
+        <version>0.16-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduler</artifactId>
-    <version>0.15-SNAPSHOT</version>
+    <version>0.16-SNAPSHOT</version>
     <name>MOTECH Scheduler</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
@@ -65,8 +64,7 @@
                     <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                     <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                     <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <manifestEntries>
                                 <Main-Class>org.motechproject.scheduler.impl.MotechScheduler</Main-Class>
                             </manifestEntries>

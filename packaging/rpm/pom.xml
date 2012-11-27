@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.15-SNAPSHOT</version>
+        <version>0.16-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -17,7 +17,7 @@
     </properties>
 
     <name>MOTECH Base RPM package</name>
-    <version>0.15-SNAPSHOT</version>
+    <version>0.16-SNAPSHOT</version>
     <organization>
         <name>Grameen Foundation</name>
         <url>http://grameenfoundation.org/</url>
@@ -154,7 +154,7 @@
 
                             <requires>
                                 <require>tomcat &gt;= 7.0</require>
-                                <require>java >= 1.7</require>
+                                <require>java &gt;= 1.7</require>
                             </requires>
 
                             <mappings>

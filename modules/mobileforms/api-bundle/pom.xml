@@ -4,14 +4,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.15-SNAPSHOT</version>
+        <version>0.16-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-mobileforms-api-bundle</artifactId>
     <name>MOTECH Mobile Forms API Bundle</name>
     <description>MOTECH Mobile Forms API</description>
-    <version>0.15-SNAPSHOT</version>
+    <version>0.16-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
