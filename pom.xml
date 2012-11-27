@@ -4,7 +4,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>0.15-SNAPSHOT</version>
+    <version>0.15</version>
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
@@ -1504,6 +1504,6 @@
         <connection>${scm.connection}</connection>
         <developerConnection>${scm.developerConnection}</developerConnection>
         <url>${scm.url}</url>
-        <tag>0.15.X</tag>
+        <tag>motech-0.15</tag>
     </scm>
 </project>
