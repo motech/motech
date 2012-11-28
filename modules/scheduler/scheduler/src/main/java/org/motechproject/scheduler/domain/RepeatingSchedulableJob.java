@@ -23,7 +23,7 @@ public class RepeatingSchedulableJob implements Serializable {
     public RepeatingSchedulableJob() {
         endTime = null;
         ignorePastFiresAtStart = false;
-        useOriginalFireTimeAfterMisfire = false;
+        useOriginalFireTimeAfterMisfire = true;
     }
 
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
@@ -33,6 +33,7 @@ public class RepeatingSchedulableJob implements Serializable {
         this.repeatCount = repeatCount;
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
+        this.useOriginalFireTimeAfterMisfire = true;
     }
 
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
