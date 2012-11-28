@@ -20,12 +20,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/testSchedulerApplicationContext.xml")
@@ -35,7 +37,6 @@ public class SpringQuartzIT {
     private SchedulerFactoryBean schedulerFactoryBean;
 
     String groupName = "group1";
-
 
     @Test
     public void scheduleUnscheduleTest() throws SchedulerException {
@@ -80,6 +81,11 @@ public class SpringQuartzIT {
         triggerNames = extractTriggerNames(triggerKeys);
         assertEquals(0, triggerNames.size());
 
+    }
+
+    @Test
+    public void shouldWaitForJobsToCompleteBeforeShutdown() {
+        assertTrue((Boolean) getField(schedulerFactoryBean, "waitForJobsToCompleteOnShutdown"));
     }
 
     private List<String> extractJobNames(List<JobKey> jobKeys) {

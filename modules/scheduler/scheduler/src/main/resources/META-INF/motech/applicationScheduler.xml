@@ -13,6 +13,7 @@
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
     <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="waitForJobsToCompleteOnShutdown" value="${waitForJobsToCompleteOnShutdown:true}"/>
         <property name="configLocation" value="classpath:quartz.properties"/>
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
