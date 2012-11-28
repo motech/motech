@@ -44,8 +44,7 @@ public class MRSConceptAdapterImpl {
 
         if (results.getResults().isEmpty()) {
             LOGGER.error("Could not find a concept with name: " + conceptName);
-            throw new MRSException(new RuntimeException(
-                    "Can't create an encounter because no concept was found with name: " + conceptName));
+            throw new MRSException("Can't create an encounter because no concept was found with name: " + conceptName);
         }
 
         Concept concept = results.getResults().get(0);

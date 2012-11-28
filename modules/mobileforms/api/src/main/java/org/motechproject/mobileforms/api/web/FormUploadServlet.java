@@ -63,11 +63,17 @@ public class FormUploadServlet extends BaseFormServlet {
         }
     }
 
-    private List<Study> extractBeans(DataInputStream dataInput) throws Exception {
+    private List<Study> extractBeans(DataInputStream dataInput) throws SerializerException {
         EpihandyXformSerializer serializer = serializer();
         FormParser formParser = createFormProcessor();
         serializer.addDeserializationListener(formParser);
-        serializer.deserializeStudiesWithEvents(dataInput, getMobileFormsService().getFormIdMap());
+
+        try {
+            serializer.deserializeStudiesWithEvents(dataInput, getMobileFormsService().getFormIdMap());
+        } catch (Exception e) {
+            throw new SerializerException(e);
+        }
+
         return formParser.getStudies();
     }
 

@@ -7,6 +7,7 @@ import org.motechproject.decisiontree.core.model.Prompt;
 import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
+import org.motechproject.server.demo.ex.NodeNotFoundException;
 import org.motechproject.server.demo.model.NodeRecord;
 import org.motechproject.server.demo.model.TransitionRecord;
 import org.motechproject.server.demo.model.TreeRecord;
@@ -22,7 +23,7 @@ public final class TreeConverter {
         // static utility class
     }
 
-    public static Tree convertToTree(final TreeRecord tree) throws Exception {
+    public static Tree convertToTree(final TreeRecord tree) throws NodeNotFoundException {
         tree.afterPropertiesSet();
 
         Map<Long, Node> convertedNodes = new HashMap<>(tree.getNodes().size());
@@ -61,7 +62,7 @@ public final class TreeConverter {
                 String name = String.format("pressed%s", transition.getKey());
 
                 if (destinationNode == null) {
-                    throw new Exception(String.format("Cant found node with ID: %d for transition: %s", node.getId(), transition));
+                    throw new NodeNotFoundException(node.getId(), transition);
                 }
 
                 transitions[i][0] = transition.getKey();

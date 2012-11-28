@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
+import org.motechproject.ivr.service.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +77,7 @@ public class VerboiceIVRController {
         String motechCallId = request.getParameter("motech_call_id");
         FlowSession session = flowSessionService.getSession(motechCallId);
         if (session == null) {
-            throw new RuntimeException("No session found! [Session Id " + motechCallId + "]");
+            throw new SessionNotFoundException("No session found! [Session Id " + motechCallId + "]");
         }
         String callSid = request.getParameter("CallSid");
         session = flowSessionService.updateSessionId(motechCallId, callSid);

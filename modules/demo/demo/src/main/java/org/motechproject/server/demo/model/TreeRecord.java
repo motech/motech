@@ -1,5 +1,7 @@
 package org.motechproject.server.demo.model;
 
+import org.motechproject.commons.api.MotechException;
+import org.motechproject.server.demo.ex.NodeNotFoundException;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class TreeRecord implements InitializingBean {
         this.nodes = nodes;
     }
 
-    public boolean isCyclic() throws Exception {
+    public boolean isCyclic() throws NodeNotFoundException {
         NodeRecord startNode = nodes.get(0);
         boolean cyclic = false;
         List<Long> visited = new ArrayList<>();
@@ -54,7 +56,7 @@ public class TreeRecord implements InitializingBean {
         return cyclic;
     }
 
-    private boolean findCycle(Long nextId, List<Long> visited) throws Exception {
+    private boolean findCycle(Long nextId, List<Long> visited) throws NodeNotFoundException {
         boolean found = false;
 
         if (visited.contains(nextId)) {
@@ -66,7 +68,7 @@ public class TreeRecord implements InitializingBean {
             NodeRecord node = findNode(nextId);
 
             if (node == null) {
-                throw new Exception(String.format("Not found node with id: %d", nextId));
+                throw new NodeNotFoundException(nextId);
             }
 
             if (node.getTransitions() != null) {
@@ -97,13 +99,13 @@ public class TreeRecord implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (getName() == null || getName().trim().isEmpty()) {
-            throw new Exception("Tree name is required");
+            throw new MotechException("Tree name is required");
         }
 
         if (getNodes() == null || getNodes().size() == 0) {
-            throw new Exception("Tree nodes is required");
+            throw new MotechException("Tree nodes is required");
         }
     }
 

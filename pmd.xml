@@ -31,6 +31,8 @@
     <rule ref="rulesets/migrating.xml/IntegerInstantiation"/>
 
     <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable"/>
+    <rule ref="rulesets/strictexception.xml/AvoidThrowingRawExceptionTypes"/>
+    <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException"/>
 
     <rule ref="rulesets/strings.xml/UseIndexOfChar"/>
 

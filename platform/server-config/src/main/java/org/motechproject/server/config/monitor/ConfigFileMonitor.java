@@ -6,6 +6,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.ConfigLoader;
@@ -50,7 +51,7 @@ public class ConfigFileMonitor implements FileListener {
     }
 
     @PostConstruct
-    public void monitor() throws Exception {
+    public void monitor() throws FileSystemException {
         afterPropertiesSet();
         LOGGER.debug("Reading config file.");
         ConfigFileSettings configFileSettings = configLoader.loadConfig();
@@ -83,7 +84,7 @@ public class ConfigFileMonitor implements FileListener {
         return currentSettings;
     }
 
-    public void changeConfigFileLocation(final String location, final boolean save) throws Exception {
+    public void changeConfigFileLocation(final String location, final boolean save) throws FileSystemException {
         if (location.startsWith("/")) {
             configLoader.addConfigLocation(String.format("file:%s", location));
         } else {
@@ -104,11 +105,11 @@ public class ConfigFileMonitor implements FileListener {
     }
 
     @Override
-    public void fileCreated(FileChangeEvent fileChangeEvent) throws Exception {
+    public void fileCreated(FileChangeEvent fileChangeEvent) {
     }
 
     @Override
-    public void fileDeleted(FileChangeEvent fileChangeEvent) throws Exception {
+    public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         LOGGER.error("Config file was deleted...");
 
         if (currentSettings != null) {
@@ -120,7 +121,7 @@ public class ConfigFileMonitor implements FileListener {
     }
 
     @Override
-    public void fileChanged(FileChangeEvent fileChangeEvent) throws Exception {
+    public void fileChanged(FileChangeEvent fileChangeEvent) {
         LOGGER.warn("Config file was changed...");
 
         currentSettings = configLoader.loadConfig();
@@ -128,17 +129,17 @@ public class ConfigFileMonitor implements FileListener {
         sendEventMessage(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws FileSystemException {
         if (eventRelay == null) {
-            throw new Exception("eventRelay property is required.");
+            throw new MotechException("eventRelay property is required.");
         }
 
         if (configLoader == null) {
-            throw new Exception("configLoader property is required.");
+            throw new MotechException("configLoader property is required.");
         }
 
         if (platformSettingsService == null) {
-            throw new Exception("platformSettingsService property is required.");
+            throw new MotechException("platformSettingsService property is required.");
         }
 
         if (systemManager == null) {

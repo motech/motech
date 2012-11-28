@@ -29,7 +29,7 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
     }
 
     @Override
-    public HttpClient getObject() throws Exception {
+    public HttpClient getObject() {
         if (httpClient == null) {
             initializeHttpClient();
         }

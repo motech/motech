@@ -3,6 +3,7 @@ package org.motechproject.server.osgi;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.gemini.blueprint.OsgiException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -20,6 +21,7 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,7 +120,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             logger.info("OSGi framework started");
         } catch (Exception e) {
             logger.error("Failed to start OSGi framework", e);
-            throw new RuntimeException(e);
+            throw new OsgiException(e);
         }
     }
 
@@ -128,7 +130,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return null != mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
     }
 
-    private void startPlatformCoreBundles() throws Exception {
+    private void startPlatformCoreBundles() throws ClassNotFoundException, BundleLoadingException, BundleException {
         String [] platformBundles = {"org.motechproject.motech-platform-event",
                              "org.motechproject.motech-platform-server-config",
                              "org.motechproject.motech-platform-server-bundle"};
@@ -223,7 +225,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             }
         } catch (Exception e) {
             logger.error("Error stopping OSGi framework", e);
-            throw new RuntimeException(e);
+            throw new OsgiException(e);
         }
     }
 
@@ -246,7 +248,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return bundleClassLoaderLookup;
     }
 
-    private void startBundle(Bundle bundle) throws Exception {
+    private void startBundle(Bundle bundle) throws BundleLoadingException, BundleException, ClassNotFoundException {
         logger.debug("Starting bundle [" + bundle + "]");
 
         storeClassCloader(bundle);
@@ -263,7 +265,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
-    private void storeClassCloader(Bundle bundle) throws Exception {
+    private void storeClassCloader(Bundle bundle) throws ClassNotFoundException {
         String key = bundle.getSymbolicName();
         String activator = (String) bundle.getHeaders().get(BUNDLE_ACTIVATOR_HEADER);
         if (activator != null) {
@@ -279,7 +281,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
-    private List<URL> findBundles(ServletContext servletContext) throws Exception {
+    private List<URL> findBundles(ServletContext servletContext) throws IOException{
         List<URL> list = findFragmentBundles(); //start with fragment bundles
         list.addAll(findInternalBundles(servletContext));
         list.addAll(findExternalBundles());
@@ -291,9 +293,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      *
      * @param servletContext
      * @return
-     * @throws Exception
+     * @throws MalformedURLException
      */
-    private List<URL> findInternalBundles(ServletContext servletContext) throws Exception {
+    private List<URL> findInternalBundles(ServletContext servletContext) throws MalformedURLException {
         List<URL> list = new ArrayList<>();
         if (StringUtils.isNotBlank(internalBundleFolder)) {
             @SuppressWarnings("unchecked")
@@ -316,9 +318,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * Find external/optional bundles
      *
      * @return
-     * @throws Exception
+     * @throws java.io.IOException
      */
-    private List<URL> findExternalBundles() throws Exception {
+    private List<URL> findExternalBundles() throws IOException {
         List<URL> list = new ArrayList<>();
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             File folder = new File(externalBundleFolder);
@@ -337,7 +339,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return list;
     }
 
-    List<URL> findFragmentBundles() throws Exception {
+    List<URL> findFragmentBundles() throws IOException {
         List<URL> list = new ArrayList<>();
         String fragmentDirName = buildFragmentDirName();
         if (StringUtils.isNotBlank(fragmentDirName)) {

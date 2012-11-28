@@ -22,7 +22,7 @@ public class SmsSendHandler implements SmsEventHandler {
 
     @Override
     @MotechListener(subjects = EventSubjects.SEND_SMS)
-    public void handle(MotechEvent event) throws Exception {
+    public void handle(MotechEvent event) {
         List<String> recipients = (List<String>) event.getParameters().get(EventDataKeys.RECIPIENTS);
         String text = (String) event.getParameters().get(EventDataKeys.MESSAGE);
         DateTime deliveryTime = (DateTime) event.getParameters().get(EventDataKeys.DELIVERY_TIME);

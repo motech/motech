@@ -69,7 +69,7 @@ class HttpServiceTracker extends ServiceTracker {
                     Thread.currentThread().setContextClassLoader(old);
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new ServletRegistrationException(e);
             }
         }
     }

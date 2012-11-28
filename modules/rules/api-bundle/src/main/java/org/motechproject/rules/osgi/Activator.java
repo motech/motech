@@ -1,6 +1,7 @@
 package org.motechproject.rules.osgi;
 
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
+import org.motechproject.osgi.web.ServletRegistrationException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -17,12 +18,11 @@ public class Activator implements BundleActivator {
     private static final String CONTEXT_CONFIG_LOCATION = "META-INF/osgi/applicationRulesBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/rules";
     private ServiceTracker tracker;
-    private ServiceReference httpService;
 
     private static BundleContext bundleContext;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         bundleContext = context;
 
 
@@ -48,12 +48,8 @@ public class Activator implements BundleActivator {
         new RuleBundleLoader(bundleContext, Bundle.STARTING, null).open();
     }
 
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.tracker.close();
-        if (httpService != null) {
-            HttpService service = (HttpService) context.getService(httpService);
-            serviceRemoved(service);
-        }
     }
 
     public static class RulesApplicationContext extends MotechOsgiWebApplicationContext {
@@ -79,7 +75,7 @@ public class Activator implements BundleActivator {
                 Thread.currentThread().setContextClassLoader(old);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletRegistrationException(e);
         }
     }
 

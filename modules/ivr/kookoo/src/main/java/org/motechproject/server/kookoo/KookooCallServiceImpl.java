@@ -4,6 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.json.JSONObject;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.CallRequest;
@@ -72,7 +73,7 @@ public class KookooCallServiceImpl implements IVRService {
             log.info(String.format("Dialing %s", getMethod.getURI()));
             commonsHttpClient.executeMethod(getMethod);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MotechException("Error initiating call", e);
         } finally {
             if(getMethod != null ) {
                 getMethod.releaseConnection();

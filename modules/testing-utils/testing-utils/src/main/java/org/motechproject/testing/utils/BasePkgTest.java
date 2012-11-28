@@ -6,6 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.motechproject.commons.api.MotechException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,12 +29,12 @@ public abstract class BasePkgTest {
         // read passed properties
         buildDir = System.getProperty("buildDir");
         if (StringUtils.isBlank(buildDir)) {
-            throw new RuntimeException("Build directory not defined");
+            throw new MotechException("Build directory not defined");
         }
 
         chrootDir = System.getProperty("chrootDir");
         if (StringUtils.isBlank(chrootDir)) {
-            throw new RuntimeException("Chroot dir needs to be scpecified. Run with -DchrootDir=");
+            throw new MotechException("Chroot dir needs to be scpecified. Run with -DchrootDir=");
         }
 
         tmpDir = System.getProperty("tmpDir");

@@ -1,5 +1,6 @@
 package org.motechproject.server.demo.model;
 
+import org.motechproject.commons.api.MotechException;
 import org.springframework.beans.factory.InitializingBean;
 
 public class TransitionRecord implements InitializingBean {
@@ -32,13 +33,13 @@ public class TransitionRecord implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (getKey() == null || getKey().trim().isEmpty()) {
-            throw new Exception("Transition key is required");
+            throw new MotechException("Transition key is required");
         }
 
         if (getNode() == null) {
-            throw new Exception("Transition node id is required");
+            throw new MotechException("Transition node id is required");
         }
     }
 

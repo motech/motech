@@ -3,6 +3,7 @@ package org.motechproject.server.config.service.impl;
 import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -98,7 +99,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
             configFileMonitor.monitor();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MotechException("Error while saving motech settings", e);
         }
     }
 
@@ -121,7 +122,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             dbSettings.setActivemqProperties(settings);
             allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MotechException("Error while saving activemq settings", e);
         }
     }
 
@@ -248,12 +249,13 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
-    public void addConfigLocation(final String location, final boolean save) throws Exception {
+    public void addConfigLocation(final String location, final boolean save) throws IOException {
         configFileMonitor.changeConfigFileLocation(location, save);
     }
 
     @Override
-    public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException {
+    public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties)
+            throws IOException {
         File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
         setUpDirsForFile(file);
 

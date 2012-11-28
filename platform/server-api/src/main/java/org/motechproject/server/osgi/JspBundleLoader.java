@@ -11,8 +11,10 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -36,60 +38,64 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadBundle(Bundle bundle) throws Exception {
+    public void loadBundle(Bundle bundle) throws BundleLoadingException {
         //we want to build and unpack jar files in application temporary directory
         //if we found jsp file then we will copy it to destination directory
         File tempRoot = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
         File destRoot =  new File(servletContext.getRealPath("/"));
+        try {
+            if (tempRoot != null && destRoot != null) {
+                tempDir = new File(tempRoot, String.valueOf(bundle.getBundleId()));
+                destDir = new File(destRoot, String.valueOf(bundle.getBundleId()));
 
-        if (tempRoot != null && destRoot != null) {
-            tempDir = new File(tempRoot, String.valueOf(bundle.getBundleId()));
-            destDir = new File(destRoot, String.valueOf(bundle.getBundleId()));
+                //search for jars in bundle
+                Enumeration<URL> jars = bundle.findEntries("/", "*.jar", true);
+                if (jars != null) {
+                    while (jars.hasMoreElements()) {
 
-            //search for jars in bundle
-            Enumeration<URL> jars = bundle.findEntries("/", "*.jar", true);
-            if (jars != null) {
-                while (jars.hasMoreElements()) {
+                        URL jarUrl = jars.nextElement();
 
-                    URL jarUrl = jars.nextElement();
+                        //build jar file
+                        File tempJarFile = new File(tempDir, jarUrl.getFile());
+                        // There is a problem with creating new directories when loading bundles asynchronously.
+                        // This is why this step must be synchronized.
+                        synchronized (JspBundleLoader.class) {
+                            FileUtils.copyURLToFile(jarUrl, tempJarFile);
+                        }
 
-                    //build jar file
-                    File tempJarFile = new File(tempDir, jarUrl.getFile());
-                    // There is a problem with creating new directories when loading bundles asynchronously.
-                    // This is why this step must be synchronized.
-                    synchronized (JspBundleLoader.class) {
-                        FileUtils.copyURLToFile(jarUrl, tempJarFile);
+                        JarFile jarFile = new JarFile(tempJarFile);
+                        searchForJspFilesInJarFile(jarFile);
+
+                        tempJarFile.delete();
                     }
-
-                    JarFile jarFile = new JarFile(tempJarFile);
-                    searchForJspFilesInJarFile(jarFile);
-
-                    tempJarFile.delete();
                 }
-            }
 
-            tempDir.delete();
+                tempDir.delete();
 
-            //Search for *.jsp files in bundle
-            Enumeration<URL> jsps = bundle.findEntries("/webapp", "*.jsp", true);
-            if (jsps != null) {
-                while (jsps.hasMoreElements()) {
-                    URL jspUrl = jsps.nextElement();
+                //Search for *.jsp files in bundle
+                Enumeration<URL> jsps = bundle.findEntries("/webapp", "*.jsp", true);
+                if (jsps != null) {
+                    while (jsps.hasMoreElements()) {
+                        URL jspUrl = jsps.nextElement();
 
-                    File destFile = new File(destDir, jspUrl.getFile());
+                        File destFile = new File(destDir, jspUrl.getFile());
 
-                    FileUtils.copyURLToFile(jspUrl, destFile);
-                    logger.debug("Loaded " + jspUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                        FileUtils.copyURLToFile(jspUrl, destFile);
+                        logger.debug("Loaded " + jspUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                    }
                 }
-            }
 
-            //Search for *.properties files in bundle
-            loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/resources/messages");
-            loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/bundles");
+                //Search for *.properties files in bundle
+                loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/resources/messages");
+                loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/bundles");
+            }
+        } catch (Exception e) {
+            throw new BundleLoadingException(e);
         }
     }
 
-    private void loadBundleMessageFilesFromBundle(final Bundle bundle, final File destRoot, final String pathInBundle) throws Exception {
+    private void loadBundleMessageFilesFromBundle(final Bundle bundle, final File destRoot, final String pathInBundle)
+        throws IOException {
         Enumeration<URL> messages = bundle.findEntries(pathInBundle, "*.properties", true);
         if (messages != null) {
             File msgDestDir = new File(destRoot, "/WEB-INF/classes/org/motechproject/resources/");
@@ -129,7 +135,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         }
     }
 
-    private void searchForJspFilesInJarFile(JarFile jarFile) throws Exception {
+    private void searchForJspFilesInJarFile(JarFile jarFile) throws IOException, MalformedURLException {
         Enumeration filesInJar = jarFile.entries();
         while (filesInJar.hasMoreElements()) {
             JarEntry jarEntry = (JarEntry) filesInJar.nextElement();
@@ -148,7 +154,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                             tempJspFile.delete();
                         }
                     } finally {
-                        input.close();
+                        IOUtils.closeQuietly(input);
                     }
                 }
             }
@@ -157,7 +163,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
     //read jsp file from jar and write to temporary file
     //because we cannot use FileOutputStream on web application dir
-    private File saveJspToTempFile(InputStream input) throws Exception {
+    private File saveJspToTempFile(InputStream input) throws IOException {
         File tempJspFile = null;
 
         if (tempDir != null && tempDir.isDirectory()) {
@@ -171,6 +177,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                 output.close();
             }
         }
-            return tempJspFile;
+
+        return tempJspFile;
     }
 }

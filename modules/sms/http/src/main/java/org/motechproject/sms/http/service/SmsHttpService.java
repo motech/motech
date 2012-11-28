@@ -5,7 +5,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.sms.http.SmsDeliveryFailureException;
+import org.motechproject.sms.api.SmsDeliveryFailureException;
 import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.template.Authentication;
 import org.motechproject.sms.http.template.SmsHttpTemplate;

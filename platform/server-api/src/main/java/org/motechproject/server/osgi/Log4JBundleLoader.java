@@ -33,25 +33,29 @@ public class Log4JBundleLoader implements BundleLoader {
     private String log4jConf = "log4j.xml";
 
     @Override
-    public void loadBundle(Bundle bundle) throws Exception {
+    public void loadBundle(Bundle bundle) throws BundleLoadingException {
         URL log4jUrl = bundle.getResource(log4jConf);
-        if (log4jUrl != null) {
-            URLConnection conn = log4jUrl.openConnection();
-            InputStream log4jStream = conn.getInputStream();
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            db.setEntityResolver(new EntityResolver() {
+        try {
+            if (log4jUrl != null) {
+                URLConnection conn = log4jUrl.openConnection();
+                InputStream log4jStream = conn.getInputStream();
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                db.setEntityResolver(new EntityResolver() {
 
-                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                    return new InputSource(new StringReader(""));
-                }
-            });
+                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                        return new InputSource(new StringReader(""));
+                    }
+                });
 
-            Document log4jDoc = db.parse(log4jStream);
-            DOMConfigurator.configure(log4jDoc.getDocumentElement());
+                Document log4jDoc = db.parse(log4jStream);
+                DOMConfigurator.configure(log4jDoc.getDocumentElement());
 
-            log4jStream.close();
-            logger.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
+                log4jStream.close();
+                logger.debug("Added log4j configuration for [" + bundle.getLocation() + "]");
+            }
+        } catch (Exception e) {
+            throw new BundleLoadingException(e);
         }
     }
 
