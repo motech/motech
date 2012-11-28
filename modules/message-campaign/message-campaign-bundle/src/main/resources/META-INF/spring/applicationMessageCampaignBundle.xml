@@ -20,4 +20,11 @@
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
+    <osgi:reference id="channelServiceOsgi" cardinality="0..1" interface="org.motechproject.tasks.service.ChannelService"/>
+
+    <bean class="org.motechproject.tasks.util.ChannelRegister">
+        <constructor-arg value="classpath:task-channel.json"/>
+    </bean>
+
 </beans>

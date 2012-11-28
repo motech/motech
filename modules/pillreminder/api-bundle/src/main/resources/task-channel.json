@@ -1,0 +1,45 @@
+{
+  "displayName" : "Pill Reminder",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${project.version}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "Event subject",
+      "subject" : "org.motechproject.server.pillreminder.pill-reminder",
+      "eventParameters" : [
+        {
+          "eventKey" : "times-reminders-sent",
+          "displayName" : "Times sent"
+        },
+        {
+          "eventKey" :  "times-reminders-to-be-sent",
+          "displayName" : "Total times to send"
+        },
+        {
+          "eventKey" :  "retry-interval",
+          "displayName" : "Retry interval"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "Event subject scheduler",
+      "subject" : "org.motechproject.server.pillreminder.scheduler-reminder",
+      "eventParameters" : [
+        {
+          "eventKey" : "times-reminders-sent",
+          "displayName" : "Times sent"
+        },
+        {
+          "eventKey" :  "times-reminders-to-be-sent",
+          "displayName" : "Total times to send"
+        },
+        {
+          "eventKey" :  "retry-interval",
+          "displayName" : "Retry interval"
+        }
+      ]
+    }
+  ]
+}

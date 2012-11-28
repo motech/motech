@@ -20,9 +20,15 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:reference id="channelServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.tasks.service.ChannelService"/>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
         <property name="eventListenerRegistry" ref="eventListenerRegistryServiceOsgi"/>
+    </bean>
+
+    <bean class="org.motechproject.tasks.util.ChannelRegister">
+        <constructor-arg value="classpath:task-channel.json"/>
     </bean>
 
     <!-- todo expose relevant services here -->
