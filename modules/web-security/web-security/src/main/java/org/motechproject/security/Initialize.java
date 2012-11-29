@@ -24,8 +24,8 @@ import java.util.Properties;
 
 
 public class Initialize {
-
     private static Logger logger = LoggerFactory.getLogger(Initialize.class);
+    private static final String WEB_SECURITY = "websecurity";
 
     @Autowired
     private MotechUserService motechUserService;
@@ -39,12 +39,12 @@ public class Initialize {
     @Autowired
     public void initialize(@Qualifier("webSecurityDbConnector") CouchDbConnector db) throws IOException {
         //initialize startup permission for admin user
-        MotechPermission addUserPerrmision = new MotechPermissionCouchdbImpl("addUser", "websecurity");
-        MotechPermission editUserPermission = new MotechPermissionCouchdbImpl("editUser", "websecurity");
-        MotechPermission deleteUserPermission = new MotechPermissionCouchdbImpl("deleteUser", "websecurity");
-        MotechPermission manageUserPerrmision = new MotechPermissionCouchdbImpl("manageUser", "websecurity");
-        MotechPermission activeUserPerrmision = new MotechPermissionCouchdbImpl("activateUser", "websecurity");
-        MotechPermission manageRolePermission = new MotechPermissionCouchdbImpl("manageRole", "websecurity");
+        MotechPermission addUserPerrmision = new MotechPermissionCouchdbImpl("addUser", WEB_SECURITY);
+        MotechPermission editUserPermission = new MotechPermissionCouchdbImpl("editUser", WEB_SECURITY);
+        MotechPermission deleteUserPermission = new MotechPermissionCouchdbImpl("deleteUser", WEB_SECURITY);
+        MotechPermission manageUserPerrmision = new MotechPermissionCouchdbImpl("manageUser", WEB_SECURITY);
+        MotechPermission activeUserPerrmision = new MotechPermissionCouchdbImpl("activateUser", WEB_SECURITY);
+        MotechPermission manageRolePermission = new MotechPermissionCouchdbImpl("manageRole", WEB_SECURITY);
 
         //initialize startup role
         MotechRole adminUser = new MotechRoleCouchdbImpl("Admin User", Arrays.asList(addUserPerrmision.getPermissionName(), editUserPermission.getPermissionName(), deleteUserPermission.getPermissionName(), manageUserPerrmision.getPermissionName(), activeUserPerrmision.getPermissionName(), manageRolePermission.getPermissionName()));

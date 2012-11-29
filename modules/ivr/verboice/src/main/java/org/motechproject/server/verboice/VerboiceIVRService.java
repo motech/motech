@@ -23,8 +23,8 @@ import static java.lang.String.format;
  */
 @Component
 public class VerboiceIVRService implements IVRService {
-
     private static Logger log = LoggerFactory.getLogger(VerboiceIVRService.class);
+    private static final String CALLBACK_URL = "callback_url";
 
     private SettingsFacade settings;
     private HttpClient commonsHttpClient;
@@ -57,7 +57,7 @@ public class VerboiceIVRService implements IVRService {
     private void initSession(CallRequest callRequest) {
         FlowSession flowSession = flowSessionService.findOrCreate(callRequest.getCallId(), callRequest.getPhone());
         for (String key : callRequest.getPayload().keySet()) {
-            if (!"callback_url".equals(key)) {
+            if (!CALLBACK_URL.equals(key)) {
                 flowSession.set(key, callRequest.getPayload().get(key));
             }
         }
@@ -66,8 +66,8 @@ public class VerboiceIVRService implements IVRService {
 
     private String outgoingCallUri(CallRequest callRequest) {
         String callbackUrlParameter = "";
-        if (callRequest.getPayload() != null && !callRequest.getPayload().isEmpty() && callRequest.getPayload().containsKey("callback_url")) {
-            callbackUrlParameter = "&" + "callback_url" + "=" + callRequest.getPayload().get("callback_url");
+        if (callRequest.getPayload() != null && !callRequest.getPayload().isEmpty() && callRequest.getPayload().containsKey(CALLBACK_URL)) {
+            callbackUrlParameter = "&" + CALLBACK_URL + "=" + callRequest.getPayload().get(CALLBACK_URL);
         }
         return format(
             "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s",

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.lang.String.format;
+
 /**
  *
  */
@@ -37,22 +39,19 @@ public class OutboxExecutionHandler {
 
         String externalID = EventKeys.getExternalID(event);
         if (externalID == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.EXTERNAL_ID_KEY + " parameter");
+            logError(event, EventKeys.EXTERNAL_ID_KEY);
             return;
         }
 
         String phoneNumber = EventKeys.getPhoneNumberKey(event);
         if (phoneNumber == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.PHONE_NUMBER_KEY + " parameter");
+            logError(event, EventKeys.PHONE_NUMBER_KEY);
             return;
         }
 
         String language = EventKeys.getLanguageKey(event);
         if (language == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.LANGUAGE_KEY + " parameter");
+            logError(event, EventKeys.LANGUAGE_KEY);
             return;
         }
 
@@ -78,7 +77,7 @@ public class OutboxExecutionHandler {
 
             ivrService.initiateCall(callRequest);
         } catch (CallInitiationException e) {
-            logger.warn("Unable to initiate call to externalId=" + externalID + " e: " + e.getMessage());
+            logger.warn(format("Unable to initiate call to externalId=%s e: %s", externalID, e.getMessage()));
         }
     }
 
@@ -87,34 +86,30 @@ public class OutboxExecutionHandler {
 
         Integer callHour = EventKeys.getCallHourKey(event);
         if (callHour == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.CALL_HOUR_KEY + " parameter");
+            logError(event, EventKeys.CALL_HOUR_KEY);
             return;
         }
 
         Integer callMinute = EventKeys.getCallMinuteKey(event);
         if (callMinute == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.CALL_MINUTE_KEY + " parameter");
+            logError(event, EventKeys.CALL_MINUTE_KEY);
             return;
         }
 
         String externalID = EventKeys.getExternalID(event);
         if (externalID == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.EXTERNAL_ID_KEY + " parameter");
+            logError(event, EventKeys.EXTERNAL_ID_KEY);
             return;
         }
 
         String phoneNumber = EventKeys.getPhoneNumberKey(event);
         if (phoneNumber == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.PHONE_NUMBER_KEY + " parameter");
+            logError(event, EventKeys.PHONE_NUMBER_KEY);
             return;
         }
 
         MotechEvent reminderEvent = new MotechEvent(EventKeys.EXECUTE_OUTBOX_SUBJECT, event.getParameters());
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, String.format("0 %d %d * * ?", callMinute, callHour));
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, format("0 %d %d * * ?", callMinute, callHour));
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
     }
@@ -122,12 +117,14 @@ public class OutboxExecutionHandler {
     @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT})
     public void unschedule(MotechEvent event) {
         if (EventKeys.getScheduleJobIdKey(event) == null) {
-            logger.error(String.format("Can not handle Event: %s. The event is invalid - missing the %s parameter",
-                    event.getSubject(), EventKeys.SCHEDULE_JOB_ID_KEY));
-
+            logError(event, EventKeys.SCHEDULE_JOB_ID_KEY);
             return;
         }
 
         motechSchedulerService.unscheduleJob(new CronJobId(event));
+    }
+
+    private void logError(MotechEvent event, String externalIdKey) {
+        logger.error(format("Can not handle Event: %s. The event is invalid - missing the %s parameter", event.getSubject(), externalIdKey));
     }
 }

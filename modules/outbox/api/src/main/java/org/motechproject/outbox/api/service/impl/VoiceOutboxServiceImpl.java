@@ -22,10 +22,10 @@ import java.util.Calendar;
 import java.util.List;
 
 public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxService {
-
     private final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
-    private int numDaysKeepSavedMessages;
+    private static final String OUTBOUND_VOICE_MESSAGE_ID = "OutboundVoiceMessageId";
 
+    private int numDaysKeepSavedMessages;
     private int maxNumberOfPendingMessages = Integer.MAX_VALUE;
 
     @Autowired
@@ -71,14 +71,14 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId) {
-        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        assertArgumentNotEmpty(OUTBOUND_VOICE_MESSAGE_ID, outboundVoiceMessageId);
         logInfo("Get message by ID: %s", outboundVoiceMessageId);
         return allOutboundVoiceMessages.get(outboundVoiceMessageId);
     }
 
     @Override
     public void removeMessage(String outboundVoiceMessageId) {
-        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        assertArgumentNotEmpty(OUTBOUND_VOICE_MESSAGE_ID, outboundVoiceMessageId);
         logInfo("Remove message ID: %s", outboundVoiceMessageId);
         OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
         allOutboundVoiceMessages.safeRemove(outboundVoiceMessage);
@@ -86,7 +86,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status) {
-        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        assertArgumentNotEmpty(OUTBOUND_VOICE_MESSAGE_ID, outboundVoiceMessageId);
         logInfo("Set status: %s to the message ID: %s", status, outboundVoiceMessageId);
         OutboundVoiceMessage outboundVoiceMessage = allOutboundVoiceMessages.get(outboundVoiceMessageId);
         outboundVoiceMessage.setStatus(status);
@@ -95,7 +95,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public void saveMessage(String outboundVoiceMessageId) {
-        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        assertArgumentNotEmpty(OUTBOUND_VOICE_MESSAGE_ID, outboundVoiceMessageId);
         logInfo("Save in the outbox message ID: %s", outboundVoiceMessageId);
 
         OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);

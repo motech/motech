@@ -34,6 +34,7 @@
     <rule ref="rulesets/strictexception.xml/AvoidThrowingRawExceptionTypes"/>
     <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException"/>
 
+    <rule ref="rulesets/strings.xml/AvoidDuplicateLiterals"/>
     <rule ref="rulesets/strings.xml/UseIndexOfChar"/>
 
     <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter"/>

@@ -36,6 +36,7 @@ import java.util.Properties;
 @Service("platformSettingsService")
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
+    private static final String USER_HOME = "user.home";
 
     private AllSettings allSettings;
 
@@ -78,7 +79,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void savePlatformSettings(Properties settings) {
         createConfigDir();
 
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE_NAME));
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME), SETTINGS_FILE_NAME));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
@@ -108,7 +109,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void saveActiveMqSettings(Properties settings) {
         createConfigDir();
 
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), ACTIVEMQ_FILE_NAME));
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME), ACTIVEMQ_FILE_NAME));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
@@ -264,7 +265,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public List<String> retrieveRegisteredBundleNames() {
-        File configDir = new File(String.format(String.format("%s/.motech/config", System.getProperty("user.home"))));
+        File configDir = new File(String.format(String.format("%s/.motech/config", System.getProperty(USER_HOME))));
         File[] dirs = configDir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
@@ -284,7 +285,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException {
-        File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty("user.home"), bundleSymbolicName, fileName));
+        File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty(USER_HOME), bundleSymbolicName, fileName));
 
         if (!file.exists()) {
             return null;
@@ -379,11 +380,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     private String getConfigDir(String bundleSymbolicName) {
-        return String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName);
+        return String.format("%s/.motech/config/%s/", System.getProperty(USER_HOME), bundleSymbolicName);
     }
 
     private void createConfigDir() {
-        File dir = new File(String.format("%s/.motech/config", System.getProperty("user.home")));
+        File dir = new File(String.format("%s/.motech/config", System.getProperty(USER_HOME)));
         if (!dir.exists()) {
             dir.mkdirs();
         }

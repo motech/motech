@@ -38,12 +38,11 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
     }
 
     @View(name = "by_dueDate", map = "function(doc) { \n" +
-            "if(doc.type === 'AppointmentCalendar') {\n" +
-            "for(var i=0;i<doc.visits.length;i++)\n" +
-            "{\n" +
-            "emit(doc.visits[i].appointment.dueDate,{\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
-            "}\n" +
-            "}\n" +
+            "  if(doc.type === 'AppointmentCalendar') {\n" +
+            "    for(var i=0;i<doc.visits.length;i++) {\n" +
+            "      emit(doc.visits[i].appointment.dueDate,{\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
+            "    }\n" +
+            "  }\n" +
             "}")
     public List<VisitResponse> findVisitsWithDueDateInRange(DateTime start, DateTime end) {
         ViewQuery query = createQuery("by_dueDate").startKey(start).endKey(end);
@@ -52,14 +51,13 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
     }
 
     @View(name = "by_missed_visits", map = "function(doc) { \n" +
-            "if(doc.type === 'AppointmentCalendar') {\n" +
-            "for(var i=0;i<doc.visits.length;i++)\n" +
-            "{\n" +
-            "if(doc.visits[i].visitDate == null) {\n" +
-            "emit(doc._id,{\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
-            "}\n" +
-            "}\n" +
-            "}\n" +
+            "  if(doc.type === 'AppointmentCalendar') {\n" +
+            "    for(var i=0;i<doc.visits.length;i++) {\n" +
+            "      if(doc.visits[i].visitDate == null) {\n" +
+            "        emit(doc._id,{\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
             "}")
     public List<VisitResponse> findMissedVisits() {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("by_missed_visits"), VisitQueryResult.class);
@@ -73,8 +71,7 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "          emit([prop, doc.visits[i].data[prop]], {\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
             "    }\n" +
             "  }\n" +
-            "}\n"
-    )
+            "}\n")
     public List<VisitResponse> findByMetadataProperty(String property, String value) {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("by_property").key(ComplexKey.of(property, value)).includeDocs(false), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
