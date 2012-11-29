@@ -2,6 +2,7 @@ package org.motechproject.sms.smpp;
 
 import org.joda.time.DateTime;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,10 @@ import static org.motechproject.sms.smpp.constants.SmppProperties.DELIVERY_REPOR
 
 @Component
 public class ManagedSmslibService {
+
     private final Logger log = LoggerFactory.getLogger(ManagedSmslibService.class);
+
     private static final String GATEWAY_ID = "smpp_gateway";
-    private static final String QUEUE_PERSISTENCE_PATH = ".";
 
     private SettingsFacade smsSettings;
     private SettingsFacade smppSettings;
@@ -65,7 +67,7 @@ public class ManagedSmslibService {
             smslibService.getSettings().QUEUE_RETRIES = Integer.parseInt(maxRetriesProperty);
         }
 
-        smslibService.getSettings().QUEUE_DIRECTORY = QUEUE_PERSISTENCE_PATH;
+        smslibService.getSettings().QUEUE_DIRECTORY = smppSettings.getProperty(SmppProperties.QUEUE_DIRECTORY);
     }
 
     private void registerGateway() {

@@ -52,6 +52,10 @@ public final class SmppProperties {
      * Destination Numbering plan indicator
      */
     public static final String DESTINATION_NPI = "dest_npi";
+    /**
+     * Directory for queue manager to persist outbound messages
+     */
+    public static final String QUEUE_DIRECTORY = "queue_directory";
 
     private SmppProperties() {
     }

@@ -55,6 +55,7 @@ public class ManagedSmslibServiceTest {
             setProperty(SmppProperties.SYSTEM_ID, "pavel");
             setProperty(SmppProperties.DELIVERY_REPORTS, "true");
             setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
+            setProperty(SmppProperties.QUEUE_DIRECTORY, "/foo/bar");
         }};
         Properties smsProperties = new Properties();
 
@@ -123,7 +124,7 @@ public class ManagedSmslibServiceTest {
     public void shouldConfigurePersistenceFilePathOnSmsLib() {
         Service actualSmslibService = Service.getInstance();
         new ManagedSmslibService(actualSmslibService, null, null, smsSettings, smppSettings);
-        assertEquals(".", actualSmslibService.getSettings().QUEUE_DIRECTORY);
+        assertEquals("/foo/bar", actualSmslibService.getSettings().QUEUE_DIRECTORY);
     }
 
     @Test
