@@ -8,6 +8,10 @@
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 
+    <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
+        <constructor-arg value="classpath:task-channel.json"/>
+    </bean>
+
     <osgi:service id="messageCampaignServiceOsgi" auto-export="interfaces" ref="messageCampaignService"
                   interface="org.motechproject.server.messagecampaign.service.MessageCampaignService" />
 
@@ -21,10 +25,8 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="channelServiceOsgi" cardinality="0..1" interface="org.motechproject.tasks.service.ChannelService"/>
-
-    <bean class="org.motechproject.tasks.util.ChannelRegister">
-        <constructor-arg value="classpath:task-channel.json"/>
-    </bean>
+    <osgi:reference id="channelServiceOsgi" cardinality="0..1" interface="org.motechproject.tasks.service.ChannelService">
+        <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered"/>
+    </osgi:reference>
 
 </beans>
