@@ -7,6 +7,10 @@
 
     <import resource="classpath*:META-INF/motech/applicationPillReminderAPI.xml"/>
 
+    <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
+        <constructor-arg value="classpath:task-channel.json"/>
+    </bean>
+
     <osgi:service id="pillReminderServiceImplOsgi" auto-export="interfaces" ref="pillReminderServiceImpl"
                   interface="org.motechproject.server.pillreminder.api.service.PillReminderService"/>
 
@@ -20,15 +24,12 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="channelServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.tasks.service.ChannelService"/>
+    <osgi:reference id="channelServiceOsgi" cardinality="0..1" interface="org.motechproject.tasks.service.ChannelService">
+        <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered"/>
+    </osgi:reference>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
         <property name="eventListenerRegistry" ref="eventListenerRegistryServiceOsgi"/>
-    </bean>
-
-    <bean class="org.motechproject.tasks.util.ChannelRegister">
-        <constructor-arg value="classpath:task-channel.json"/>
     </bean>
 
     <!-- todo expose relevant services here -->
