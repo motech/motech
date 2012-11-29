@@ -32,7 +32,7 @@ public abstract class BasePkgTest {
             throw new MotechException("Build directory not defined");
         }
 
-        chrootDir = System.getProperty("chrootDir");
+        chrootDir = System.getProperty(getChrootDirProp());
         if (StringUtils.isBlank(chrootDir)) {
             throw new MotechException("Chroot dir needs to be scpecified. Run with -DchrootDir=");
         }
@@ -81,4 +81,6 @@ public abstract class BasePkgTest {
     public void cleanUp() {
         FileUtils.deleteQuietly(new File(script));
     }
+
+    public abstract String getChrootDirProp();
 }

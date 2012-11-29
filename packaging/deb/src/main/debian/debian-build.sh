@@ -2,7 +2,6 @@
 
 # Usage debian_build.sh [-v version] [-b motech_trunk_directory] [-d destination_directory]
 
-MOTECH_VERSION=0.12-SNAPSHOT
 TMP_DIR=/tmp/motech-debian-build-$$
 WARNAME=motech-platform-server.war
 CURRENT_DIR=`pwd`
@@ -37,6 +36,11 @@ fi
 
 if [ -z $BUILD_DIR ]; then
     BUILD_DIR=$MOTECH_BASE/packaging/deb/target
+fi
+
+if [ -z $MOTECH_VERSION ]; then
+    echo "Version not specified"
+    exit 1
 fi
 
 mkdir -p $BUILD_DIR
@@ -96,6 +100,7 @@ cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.mot
 cp -r $ARTIFACT_DIR/motech-platform-common*.jar ./motech-base/usr/share/motech/.motech/bundles
 cp -r $ARTIFACT_DIR/motech-platform-event*.jar ./motech-base/usr/share/motech/.motech/bundles
 cp -r $ARTIFACT_DIR/motech-platform-server-config*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-platform-server-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
 cp -r $ARTIFACT_DIR/motech-platform-osgi-web-util*.jar ./motech-base/usr/share/motech/.motech/bundles
 # Include dependencies
 cp -r $DEPENDENCY_DIR/* ./motech-base/usr/share/motech/.motech/bundles

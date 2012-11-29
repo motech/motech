@@ -72,7 +72,7 @@ for dir in $NON_MOTECH_OWNED; do
     $CHROOT file $dir # returns 1 if failed
     RET=$?
     if [ $RET -ne 0 ]; then
-       echo "$dir does not exist" > $ERROR_LOG
+        echo "$dir does not exist" > $ERROR_LOG
         purge_motech
         exit $RET
     fi
@@ -82,7 +82,7 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 --retry 15 | grep -i motech
+curl -L localhost:8080 --retry 5 --connect-timeout 30 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" > $ERROR_LOG

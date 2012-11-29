@@ -30,4 +30,9 @@ public class DebIT extends BasePkgTest {
         }
         assertEquals("Non-zero exit code returned", 0, retVal);
     }
+
+    @Override
+    public String getChrootDirProp() {
+        return "debChrootDir";
+    }
 }

@@ -21,4 +21,9 @@ public class RpmIT extends BasePkgTest {
         }
         assertEquals("Script returned a non-zero exit code", 0, retVal);
     }
+
+    @Override
+    public String getChrootDirProp() {
+        return "rpmChrootDir";
+    }
 }

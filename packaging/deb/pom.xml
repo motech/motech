@@ -75,6 +75,22 @@
             <artifactId>motech-platform-server-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.bridge</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.shell</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -111,6 +127,7 @@
                                 <configuration>
                                     <includeScope>runtime</includeScope>
                                     <excludeGroupIds>org.motechproject</excludeGroupIds>
+                                    <excludeArtifactIds>commons-logging</excludeArtifactIds>
                                     <excludeTransitive>false</excludeTransitive>
                                     <stripVersion>false</stripVersion>
                                     <outputDirectory>
