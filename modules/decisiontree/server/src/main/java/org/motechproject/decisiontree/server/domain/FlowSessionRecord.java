@@ -29,9 +29,9 @@ public class FlowSessionRecord extends MotechBaseDataObject implements FlowSessi
     }
 
     public FlowSessionRecord(String sessionId, String phoneNumber) {
-        setCallDetailRecord(new CallDetailRecord(sessionId, phoneNumber));
-        setSessionId(sessionId);
-        data = new HashMap();
+        this.callDetailRecord = new CallDetailRecord(sessionId, phoneNumber);
+        this.callDetailRecord.setCallId(sessionId);
+        data = new HashMap<>();
     }
 
     @Override

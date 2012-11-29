@@ -106,7 +106,7 @@ public class TaskTriggerHandler {
         }
     }
 
-    public void registerHandlerFor(final String subject) {
+    public final void registerHandlerFor(final String subject) {
         Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handler");
         EventListener proxy = new MotechListenerEventProxy(SERVICE_NAME, this, method);
 
