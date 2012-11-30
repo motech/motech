@@ -49,7 +49,7 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
     public CallDetailRecord(String callId, String phoneNumber) {
         this.callId = callId;
         this.phoneNumber = phoneNumber;
-        setStartDate(now());
+        this.startDate = now();
     }
 
     /**

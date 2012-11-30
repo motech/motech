@@ -38,7 +38,7 @@ public class AllMobileForms {
         this(settings, new MotechJsonReader(), new IOUtils());
     }
 
-    public void initialize() {
+    public final void initialize() {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromStream(
             settings.getRawConfig(FORMS_CONFIG_FILE),
             new TypeToken<List<FormGroup>>() { } .getType()

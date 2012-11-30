@@ -28,7 +28,7 @@ public class JarInformation {
         readManifestInformation(file);
     }
 
-    public void readManifestInformation(File file) throws IOException {
+    private void readManifestInformation(File file) throws IOException {
         if (file.isDirectory()) {
             readManifestFromDirectory(file);
         } else {

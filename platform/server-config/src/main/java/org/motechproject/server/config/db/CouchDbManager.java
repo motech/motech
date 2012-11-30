@@ -41,7 +41,7 @@ public class CouchDbManager {
         return couchDbConnectors.get(dbName);
     }
 
-    public void configureDb(Properties couchDbProperties) throws DbConnectionException {
+    public final void configureDb(Properties couchDbProperties) throws DbConnectionException {
         httpClientFactoryBean.setProperties(couchDbProperties);
         httpClientFactoryBean.setTestConnectionAtStartup(true);
         httpClientFactoryBean.setCaching(false);
