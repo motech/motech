@@ -85,7 +85,7 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 --retry 15 | grep -i motech
+curl -L localhost:8080 --retry 5 --connect-timeout 30 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" > $ERROR_LOG
