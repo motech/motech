@@ -1,5 +1,7 @@
 package org.motechproject.security.repository;
 
+import ch.lambdaj.Lambda;
+import org.hamcrest.beans.HasPropertyWithValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
@@ -35,7 +40,9 @@ public class AllMotechRoleIT {
         allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per3", "per4")));
 
         MotechRole motechRole = allMotechRoles.findByRoleName(roleName);
-        assertEquals(1, ((AllMotechRolesCouchdbImpl) allMotechRoles).getAll().size());
+        final List<MotechRoleCouchdbImpl> allRoles = ((AllMotechRolesCouchdbImpl) allMotechRoles).getAll();
+        final int numberOfRoles = Lambda.select(allRoles, HasPropertyWithValue.hasProperty("roleName", equalTo(roleName))).size();
+        assertEquals(1, numberOfRoles);
         assertEquals("per1", motechRole.getPermissionNames().get(0));
         assertEquals("per2", motechRole.getPermissionNames().get(1));
     }

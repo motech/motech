@@ -1,5 +1,7 @@
 package org.motechproject.security.repository;
 
+import ch.lambdaj.Lambda;
+import org.hamcrest.beans.HasPropertyWithValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.hamcrest.Matchers.equalTo;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +58,9 @@ public class AllMotechWebUsersIT {
         allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword1", "", "id2", asList("ADMIN")));
 
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-        assertEquals(1, ((AllMotechUsersCouchdbImpl) allMotechUsers).getAll().size());
+        final List<MotechUserCouchdbImpl> allWebUsers = ((AllMotechUsersCouchdbImpl) allMotechUsers).getAll();
+        final int numberOfUsersWithSameUserName = Lambda.select(allWebUsers, HasPropertyWithValue.hasProperty("userName", equalTo(userName))).size();
+        assertEquals(1, numberOfUsersWithSameUserName);
         assertEquals("testpassword", motechUser.getPassword());
         assertEquals("id", motechUser.getExternalId());
     }
