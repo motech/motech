@@ -233,16 +233,8 @@ public class EventListenerTree {
     private Set<EventListener> getAllListeners() {
         Set<EventListener> ret = new HashSet<EventListener>();
 
-        if (listeners == null) {
-            listeners = new HashSet<EventListener>();
-        }
-
-        if (wildcardListeners == null) {
-            wildcardListeners = new HashSet<EventListener>();
-        }
-
-        ret.addAll(listeners);
-        ret.addAll(wildcardListeners);
+        ret.addAll(getListeners());
+        ret.addAll(getWildcardListeners());
 
         return ret;
     }

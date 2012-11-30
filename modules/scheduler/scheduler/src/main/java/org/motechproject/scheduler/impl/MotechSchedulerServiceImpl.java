@@ -543,18 +543,6 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
     }
 
-    private List<Date> computeFireTimesForTrigger(String name, String group, Date startDate, Date endDate)
-            throws SchedulerException {
-        Trigger trigger;
-        List<Date> messageTimings;
-
-        trigger = scheduler.getTrigger(triggerKey(name, group));
-        messageTimings = TriggerUtils.computeFireTimesBetween(
-                (OperableTrigger) trigger, new BaseCalendar(), startDate, endDate);
-
-        return messageTimings;
-    }
-
     /*
      * Assumes that the externalJobId is non-repeating in nature. Thus the fetch is for jobId.value() and not
      * jobId.repeatingId()

@@ -31,7 +31,7 @@ public class EventLoggingServiceManagerImpl implements EventLoggingServiceManage
     private CouchEventLoggingService couchEventLoggingService;
 
     @PostConstruct
-    private void registerDefaultService() {
+    public void registerDefaultService() {
         registerEventLoggingService(couchEventLoggingService);
     }
 

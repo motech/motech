@@ -21,7 +21,7 @@ public class LoginAsAdminAdvice {
     private String password;
 
     @Pointcut("@annotation(org.motechproject.openmrs.advice.LoginAsAdmin)")
-    private void loginAsAdmin() {
+    public void loginAsAdmin() {
     }
 
     @Around("loginAsAdmin()")
