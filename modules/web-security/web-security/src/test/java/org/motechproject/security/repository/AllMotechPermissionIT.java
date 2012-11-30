@@ -3,6 +3,7 @@ package org.motechproject.security.repository;
 import ch.lambdaj.Lambda;
 import org.hamcrest.beans.HasPropertyWithValue;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechPermission;
@@ -43,8 +44,8 @@ public class AllMotechPermissionIT {
         assertEquals("test1", motechPermission.getBundleName());
     }
 
-    @After
-    public void tearDown() {
+    @Before
+    public void setUp() {
         ((AllMotechPermissionsCouchdbImpl) allMotechPermissions).removeAll();
     }
 

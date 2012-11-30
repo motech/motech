@@ -80,8 +80,8 @@ public class AllMotechWebUsersIT {
         assertNull(null, allMotechUsers.findByUserName(null));
     }
 
-    @After
-    public void tearDown() {
+    @Before
+    public void setUp() {
         ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.security.repository;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.domain.MotechRole;
@@ -59,8 +60,8 @@ public class AllMotechRoleIT {
         assertEquals(null, allMotechRoles.findByRoleName("roleToRemove"));
     }
 
-    @After
-    public void tearDown() {
+    @Before
+    public void setUp() {
         ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
     }
 
