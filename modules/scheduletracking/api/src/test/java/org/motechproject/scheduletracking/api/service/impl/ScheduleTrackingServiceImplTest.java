@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -8,6 +7,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -15,10 +15,10 @@ import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
-import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
@@ -26,7 +26,7 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
-import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.server.config.service.PlatformSettingsService;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,21 +38,23 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.commons.date.util.DateUtil.today;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 
 public class ScheduleTrackingServiceImplTest {
+
     private ScheduleTrackingService scheduleTrackingService;
 
     @Mock
@@ -67,13 +69,18 @@ public class ScheduleTrackingServiceImplTest {
     private EnrollmentsQueryService enrollmentsQueryService;
     @Mock
     private EnrollmentRecordMapper enrollmentRecordMapper;
+    @Mock
+    private PlatformSettingsService platformSettingsService;
+
+    private ScheduleFactory scheduleFactory;
 
     public static final Map<String, String> EMPTY_METADATA_LIST = new HashMap<String, String>();
 
     @Before
     public void setUp() {
         initMocks(this);
-        scheduleTrackingService = new ScheduleTrackingServiceImpl(allSchedules, allEnrollments, enrollmentService, enrollmentsQueryService, enrollmentRecordMapper);
+        scheduleFactory = new ScheduleFactory();
+        scheduleTrackingService = new ScheduleTrackingServiceImpl(allSchedules, allEnrollments, enrollmentService, enrollmentsQueryService, enrollmentRecordMapper, platformSettingsService, scheduleFactory);
     }
 
     @Test
@@ -461,15 +468,21 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test
     public void shouldSaveGivenSchedulesInDb() throws IOException, URISyntaxException {
-        File file = new File(getClass().getResource("/schedules/simple-schedule.json").toURI());
-        String scheduleJson = FileUtils.readFileToString(file);
+        String scheduleJson = readFileToString(new File(getClass().getResource("/schedules/simple-schedule.json").toURI()));
 
         scheduleTrackingService.add(scheduleJson);
 
-        ArgumentCaptor<ScheduleRecord> scheduleRecordArgumentCaptor = ArgumentCaptor.forClass(ScheduleRecord.class);
-        verify(allSchedules).add(scheduleRecordArgumentCaptor.capture());
+        ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
+        verify(allSchedules).addOrUpdate(scheduleCaptor.capture());
 
-        ScheduleRecord scheduleRecord = scheduleRecordArgumentCaptor.getValue();
-        assertEquals("IPTI Schedule", scheduleRecord.name());
+        Schedule schedule = scheduleCaptor.getValue();
+        assertEquals("IPTI Schedule", schedule.getName());
+    }
+
+    @Test
+    public void shouldDeleteScheduleFromDb() throws IOException, URISyntaxException {
+        scheduleTrackingService.remove("IPTI Schedule");
+
+        verify(allSchedules).remove("IPTI Schedule");
     }
 }

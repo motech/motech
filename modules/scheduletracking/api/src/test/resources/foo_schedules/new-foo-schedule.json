@@ -1,0 +1,14 @@
+{
+    "name":"foo",
+    "milestones":[
+        {
+            "name":"IPTI0",
+            "scheduleWindows":{
+                "earliest":["1 Weeks"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":[""]
+            }
+        }
+    ]
+}

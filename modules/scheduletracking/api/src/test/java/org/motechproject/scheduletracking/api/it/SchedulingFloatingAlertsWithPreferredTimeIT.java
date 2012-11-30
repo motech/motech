@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.it;
 
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -30,10 +29,11 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.motechproject.testing.utils.TimeFaker.fakeNow;
-import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -152,8 +152,7 @@ public class SchedulingFloatingAlertsWithPreferredTimeIT {
     }
 
     private void addSchedule(String filename) throws URISyntaxException, IOException {
-        File file = new File(getClass().getResource(filename).toURI());
-        String scheduleJson = FileUtils.readFileToString(file);
+        String scheduleJson = readFileToString(new File(getClass().getResource(filename).toURI()));
         scheduleTrackingService.add(scheduleJson);
     }
 
