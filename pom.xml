@@ -20,7 +20,7 @@
         <spring.version>3.1.0.RELEASE</spring.version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
         <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
-        <activemq.version>5.4.2</activemq.version>
+        <activemq.version>5.4.2-r001</activemq.version>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
 
@@ -499,7 +499,7 @@
             <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>org.motechproject.org.apache.activemq</artifactId>
-                <version>5.4.2</version>
+                <version>${activemq.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.activemq</groupId>
@@ -522,7 +522,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>motech-c3p0-fragment-bundle</artifactId>
-                <version>${project.version}</version>
+                <version>0.16-r001</version>
             </dependency>
             <!-- Others -->
             <dependency>
@@ -1047,15 +1047,12 @@
         <module>modules/sms/smpp-bundle</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>modules/web-security/web-security-bundle</module>
-        <module>utils/c3p0-fragment-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
 
         <!-- Packaging modules -->
         <module>packaging/deb</module>
         <module>packaging/rpm</module>
 
-        <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
-        <module>deployment-tests</module>
     </modules>
 
     <build>

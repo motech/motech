@@ -2,16 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
+        <artifactId>motech</artifactId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-server</artifactId>
     <packaging>war</packaging>
     <name>MOTECH Platform Server</name>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
+        <tomcat.port>9090</tomcat.port>
+        <tomcat.shutdown.port>9005</tomcat.shutdown.port>
     </properties>
     <dependencies>
         <dependency>
@@ -34,9 +37,27 @@
             <artifactId>org.springframework.web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.5</version>
         </dependency>
         <!-- Felix bundles needed at runtime -->
         <dependency>
@@ -50,6 +71,12 @@
             <artifactId>org.apache.felix.scr</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.servlet</artifactId>
+                    <groupId>org.apache.felix</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -82,31 +109,26 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-admin-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-demo-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--<execution>
-                        <id>copy-bundles</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>
-                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell,motech-platform-server-bundle
-                            </includeArtifactIds>
-                            <stripVersion>true</stripVersion>
-                            <outputDirectory>
-                                ${project.build.directory}/bundles
-                            </outputDirectory>
-                        </configuration>
-                    </execution>-->
-
                     <execution>
                         <id>copy-osgi-dependencies</id>
                         <goals>
@@ -115,6 +137,7 @@
                         <configuration>
                             <excludeArtifactIds>org.osgi.core,jstl,servlet-api,org.apache.felix.framework,org.apache.felix.http.proxy</excludeArtifactIds>
                             <includeScope>provided</includeScope>
+                            <includeScope>compile</includeScope>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <outputDirectory>
                                 ${user.home}/.motech/bundles
@@ -135,12 +158,6 @@
                         </manifest>
                     </archive>
                     <webResources>
-                       <!-- <resource>
-                            <directory>
-                                ${project.build.directory}/bundles
-                            </directory>
-                            <targetPath>WEB-INF/bundles</targetPath>
-                        </resource>-->
                         <resource>
                             <directory>.</directory>
                             <targetPath>META-INF</targetPath>
@@ -175,20 +192,20 @@
                             </filesets>
                         </configuration>
                     </execution>
-                    <!-- Clean up config after run -->
                     <execution>
                         <id>clean-config</id>
                         <goals>
                             <goal>clean</goal>
                         </goals>
-                        <phase>install</phase>
+                        <phase>clean</phase>
                         <configuration>
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
                                     <directory>${user.home}/.motech/config</directory>
                                     <includes>
-                                        <include>org.*/**</include>
+                                        <include>org.*/*.properties</include>
+                                        <include>org.*/*.json</include>
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
@@ -199,4 +216,188 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-alerts-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-appointments-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-cmslite-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-commcare-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-decisiontree-server-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-ivr-asterisk-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-ivr-kookoo-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-ivr-verboice-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-ivr-voxeo-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-message-campaign-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-mobileforms-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-mrs-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-openmrs-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-openmrs-atomfeed-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-openmrs-ws-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-outbox-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-pillreminder-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-scheduletracking-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-sms-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-sms-http-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-sms-smpp-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-web-security-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-event-logging-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-rules-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.googlecode.t7mp</groupId>
+                        <artifactId>maven-t7-plugin</artifactId>
+                        <version>0.9.10.M5</version>
+                        <configuration>
+                            <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
+                            <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
+                            <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
+                            <tomcatSetAwait>false</tomcatSetAwait>
+                            <tomcatVersion>7.0.27</tomcatVersion>
+                            <lookInside>false</lookInside>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>tomcat-start</id>
+                                <goals>
+                                    <goal>run-forked</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                            </execution>
+                            <execution>
+                                <id>tomcat-stop</id>
+                                <goals>
+                                    <goal>stop-forked</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

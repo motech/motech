@@ -21,3 +21,5 @@ felix-cache/
 activemq-data/
 tools/SMPPSim/
 *.tmp
+platform/server/src/main/webapp/WEB-INF/classes/
+platform/server/src/main/webapp/[0-9]*/

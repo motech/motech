@@ -131,14 +131,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     private void startPlatformCoreBundles() throws ClassNotFoundException, BundleLoadingException, BundleException {
-        String [] platformBundles = {"org.motechproject.motech-platform-event",
-                             "org.motechproject.motech-platform-server-config",
-                             "org.motechproject.motech-platform-server-bundle"};
-
-        for (String bundleName :platformBundles) {
-            final Bundle bundle = getBundle(bundleName);
-            if (bundle!=null) {
-                startBundle(bundle);
+        for (Bundle bundle : bundles){
+            final String symbolicName = bundle.getSymbolicName();
+            if (symbolicName != null && symbolicName.startsWith("org.motechproject.motech-platform-")) {
+                startBundle(symbolicName);
             }
         }
     }
