@@ -2,7 +2,6 @@ package org.motechproject.security.repository;
 
 import ch.lambdaj.Lambda;
 import org.hamcrest.beans.HasPropertyWithValue;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +28,15 @@ import static org.hamcrest.Matchers.equalTo;
 public class AllMotechWebUsersIT {
 
     @Autowired
-    AllMotechUsers allMotechUsers;
+    private AllMotechUsers allMotechUsers;
 
     @Autowired
-    MotechPasswordEncoder passwordEncoder;
+    private MotechPasswordEncoder passwordEncoder;
 
     @Test
     public void findByUserName() {
-        MotechUser motechUser = new MotechUserCouchdbImpl("testuser", "testpassword", "", "id", asList("ADMIN"));
+        MotechUser motechUser = new MotechUserCouchdbImpl("testuser", "testpassword", "", "id", asList("ADMIN"), "");
         allMotechUsers.add(motechUser);
-
         MotechUser testUser = allMotechUsers.findByUserName("testuser");
         assertEquals("testuser", testUser.getUserName());
     }
@@ -46,17 +44,15 @@ public class AllMotechWebUsersIT {
     @Test
     public void findByUserNameShouldBeCaseInsensitive() {
         String userName = "TestUser";
-        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword", "", "id", asList("ADMIN")));
-
+        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword", "", "id", asList("ADMIN"), ""));
         assertNotNull(allMotechUsers.findByUserName("TESTUSER"));
     }
 
     @Test
     public void shouldNotCreateNewAccountIfUserAlreadyExists() {
         String userName = "username";
-        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword", "", "id", asList("ADMIN")));
-        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword1", "", "id2", asList("ADMIN")));
-
+        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword", "","id", asList("ADMIN"), ""));
+        allMotechUsers.add(new MotechUserCouchdbImpl(userName, "testpassword1", "","id2", asList("ADMIN"), ""));
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
         final List<MotechUserCouchdbImpl> allWebUsers = ((AllMotechUsersCouchdbImpl) allMotechUsers).getAll();
         final int numberOfUsersWithSameUserName = Lambda.select(allWebUsers, HasPropertyWithValue.hasProperty("userName", equalTo(userName))).size();
@@ -67,15 +63,14 @@ public class AllMotechWebUsersIT {
 
     @Test
     public void shouldListWebUsersByRole() {
-        MotechUser provider1 = new MotechUserCouchdbImpl("provider1", "testpassword", "", "id1", asList("PROVIDER"));
-        MotechUser provider2 = new MotechUserCouchdbImpl("provider2", "testpassword", "", "id2", asList("PROVIDER"));
-        MotechUser cmfAdmin = new MotechUserCouchdbImpl("cmfadmin", "testpassword", "", "id3", asList("CMFADMIN"));
-        MotechUser itAdmin = new MotechUserCouchdbImpl("itadmin", "testpassword", "", "id4", asList("ITADMIN"));
+        MotechUser provider1 = new MotechUserCouchdbImpl("provider1", "testpassword", "","id1", asList("PROVIDER"), "");
+        MotechUser provider2 = new MotechUserCouchdbImpl("provider2", "testpassword", "","id2", asList("PROVIDER"), "");
+        MotechUser cmfAdmin = new MotechUserCouchdbImpl("cmfadmin", "testpassword", "","id3", asList("CMFADMIN"), "");
+        MotechUser itAdmin = new MotechUserCouchdbImpl("itadmin", "testpassword", "","id4", asList("ITADMIN"), "");
         allMotechUsers.add(provider1);
         allMotechUsers.add(provider2);
         allMotechUsers.add(cmfAdmin);
         allMotechUsers.add(itAdmin);
-
         List<? extends MotechUser> providers = allMotechUsers.findByRole("PROVIDER");
         assertEquals(asList("id1", "id2"), extract(providers, on(MotechUser.class).getExternalId()));
     }
@@ -89,4 +84,5 @@ public class AllMotechWebUsersIT {
     public void setUp() {
         ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
     }
+
 }

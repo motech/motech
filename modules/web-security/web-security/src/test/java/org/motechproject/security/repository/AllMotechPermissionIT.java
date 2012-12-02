@@ -2,7 +2,6 @@ package org.motechproject.security.repository;
 
 import ch.lambdaj.Lambda;
 import org.hamcrest.beans.HasPropertyWithValue;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class AllMotechPermissionIT {
 
     @Autowired
-    AllMotechPermissions allMotechPermissions;
+    private AllMotechPermissions allMotechPermissions;
 
     @Test
     public void findByPermissionName() {

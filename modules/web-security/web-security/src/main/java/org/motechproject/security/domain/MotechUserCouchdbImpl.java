@@ -28,12 +28,15 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
     @JsonProperty
     private boolean active;
 
+    @JsonProperty
+    private String openId;
+
     public MotechUserCouchdbImpl() {
         super();
         this.setType(DOC_TYPE);
     }
 
-    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles) {
+    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles, String openId) {
         super();
         this.userName = userName == null ? null : userName.toLowerCase();
         this.password = password;
@@ -41,6 +44,7 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         this.externalId = externalId;
         this.roles = roles;
         this.active = true;
+        this.openId = openId;
         this.setType(DOC_TYPE);
     }
 
@@ -90,6 +94,14 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     @Override

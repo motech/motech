@@ -7,7 +7,8 @@ function UserCtrl($scope, Roles, Users, $http) {
            password: "",
            email: "",
            roles: [],
-           active: true
+           active: true,
+           openId: ""
        }
        $scope.confirmPassword="";
        $scope.propertyUserName="";
@@ -29,6 +30,13 @@ function UserCtrl($scope, Roles, Users, $http) {
 
        $scope.generatePassword = function() {
 
+       }
+
+       $scope.loginMode = function() {
+           $http.get('../websecurity/api/users/loginmode').
+               success(function(data){
+                   return data=="openid" ? false : true;
+               })
        }
 
        $scope.activeRole = function(roleName) {
@@ -73,7 +81,7 @@ function UserCtrl($scope, Roles, Users, $http) {
            $http.post('../websecurity/api/users/getuser', user.userName).success(function(data) {
                    $scope.user = data;
                    $scope.user.password='';
-                   $scope.confirmPassword='';
+                   $scope.confirmPassword="";
            });
            $scope.showUsersView=!$scope.editUserView;
            $scope.editUserView=!$scope.editUserView;
@@ -105,9 +113,9 @@ function UserCtrl($scope, Roles, Users, $http) {
                 password: "",
                 email: "",
                 roles: [],
-                active: true
+                active: true,
+                openId: ""
             }
-             $scope.confirmPassword="";
        }
 
        $scope.hasValue = function(prop) {

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -54,6 +55,7 @@ public final class StartupManager {
         return platformState;
     }
 
+    @PostConstruct
     public void startup() {
         if (configFileSettings != null) {
             configFileSettings = null;

@@ -63,6 +63,10 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -115,6 +119,7 @@
                             org.springframework.web.servlet.i18n,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.view,
+                            org.springframework.security.crypto.bcrypt,
                             *
                         </Import-Package>
                         <Embed-Dependency>

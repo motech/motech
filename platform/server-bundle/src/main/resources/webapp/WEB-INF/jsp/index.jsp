@@ -94,7 +94,7 @@
                             <a class="dropdown-toggle" href="#" data-toggle="dropdown">Logged in as <strong>${userName}</strong><strong class="caret"></strong></a>
                             <ul id="localization" class="dropdown-menu" role="menu">
                                 <c:if test="${securityLaunch}">
-                                <li><a href="#" tabindex="-1"><i class="icon-user"></i> Profile</a></li>
+                                <li><a href="" tabindex="-1"><i class="icon-user"></i> Profile</a></li>
                                 <li class="divider"></li>
                                 </c:if>
                                 <li class="dropdown-submenu pull-left">

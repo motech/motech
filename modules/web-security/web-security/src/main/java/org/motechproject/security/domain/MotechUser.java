@@ -27,4 +27,8 @@ public interface MotechUser {
     void setRoles(List<String> roles);
 
     void setExternalId(String externalId);
+
+    String getOpenId();
+
+    void setOpenId(String openId);
 }

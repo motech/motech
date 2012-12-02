@@ -10,6 +10,8 @@ public class StartupForm {
     private String adminLogin;
     private String adminPassword;
     private String adminConfirmPassword;
+    private String adminEmail;
+    private String loginMode;
 
     public String getLanguage() {
         return language;
@@ -73,5 +75,21 @@ public class StartupForm {
 
     public void setAdminConfirmPassword(String adminConfirmPassword) {
         this.adminConfirmPassword = adminConfirmPassword;
+    }
+
+    public String getAdminEmail() {
+        return adminEmail;
+    }
+
+    public void setAdminEmail(String adminEmail) {
+        this.adminEmail = adminEmail;
+    }
+
+    public String getLoginMode() {
+        return loginMode;
+    }
+
+    public void setLoginMode(String loginMode) {
+        this.loginMode = loginMode;
     }
 }

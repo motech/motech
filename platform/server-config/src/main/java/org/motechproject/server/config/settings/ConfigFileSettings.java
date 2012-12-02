@@ -29,6 +29,11 @@ public class ConfigFileSettings implements MotechSettings {
         return motechSettings.getProperty(STATUS_MSG_TIMEOUT);
     }
 
+    @Override
+    public String getLoginMode() {
+        return motechSettings.getProperty(LOGINMODE);
+    }
+
     public byte[] getMd5checkSum() {
         return Arrays.copyOf(md5checkSum, md5checkSum.length);
     }

@@ -1,5 +1,6 @@
 package org.motechproject.server.web.validator;
 
+import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
+    private EmailValidator emailValidator;
 
     public StartupFormValidator() {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
@@ -35,11 +37,18 @@ public class StartupFormValidator implements Validator {
                 errors.rejectValue(field, String.format("error.invalid.%s", field), null, null);
             }
         }
-        String password = errors.getFieldValue("adminPassword").toString();
-        String passwordConfirm = errors.getFieldValue("adminConfirmPassword").toString();
-        if (!password.equals(passwordConfirm)) {
-            errors.rejectValue("adminPassword", "error.invalid.password", null, null);
+        if (errors.getFieldValue("loginMode").toString().equals("repository")) {
+            String password = errors.getFieldValue("adminPassword").toString();
+            String passwordConfirm = errors.getFieldValue("adminConfirmPassword").toString();
+            String adminEmail = errors.getFieldValue("adminEmail").toString();
+            if (!password.equals(passwordConfirm)) {
+                errors.rejectValue("adminPassword", "error.invalid.password", null, null);
+            }
+            if (!emailValidator.isValid(adminEmail)) {
+                errors.rejectValue(adminEmail, "error.invalid.email.format", null, null);
+            }
         }
+
     }
 
 }

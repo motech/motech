@@ -24,7 +24,7 @@
                 <tbody>
                 <tr ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
                     <td><a>{{user.userName}}</a></td>
-                    <td><span ng-repeat="role in user.roles">{{role}}, </span></td>
+                    <td><span ng-repeat="role in user.roles">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
                 </tr>
                 </tbody>
             </table>
@@ -44,12 +44,6 @@
     <div class="box-header">{{msg('security.userRegistration')}}</div>
     <div class="box-content clearfix">
         <div class="well3">
-            <div class="">
-                <ul>
-                    <li ng-show="successfulMessage.length>0">{{msg(successfulMessage)}}</li>
-                    <li ng-show="failureMessage.length>0">{{msg(failureMessage)}}</li>
-                </ul>
-            </div>
             <form id="createUserForm" name="createUserForm" class="form-horizontal inside" novalidate>
                 <div class="control-group">
                     <h4>{{msg('user')}}</h4>
@@ -68,8 +62,9 @@
                     <div ng-class="cssClass('email')">
                     <label class="control-label">{{msg('email')}}</label>
                     <div class="controls">
-                        <input type="text" ng-model="user.email" required>
-                        <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
+                        <input id="email" name="email" type="email" ng-model="user.email" required>
+                        <span ng-show="createUserForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
+                        <span ng-show="createUserForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
                     </div>
                     </div>
                 </div>
@@ -129,12 +124,6 @@
     <div class="box-header">{{msg('security.administeringUsers')}}</div>
     <div class="box-content clearfix">
         <div class="well3">
-            <div class="">
-                <ul>
-                    <li ng-show="successfulMessage.length>0">{{msg(successfulMessage)}}</li>
-                    <li ng-show="failureMessage.length>0">{{msg(failureMessage)}}</li>
-                </ul>
-            </div>
             <form id="editUserForm" name="editUserForm" class="form-horizontal inside" novalidate>
                 <div class="control-group">
                     <h4>{{msg('user')}}: {{user.userName}}</h4>
@@ -143,8 +132,9 @@
                     <div ng-class="cssClass('email')">
                         <label class="control-label">{{msg('email')}}</label>
                         <div class="controls">
-                            <input type="text" ng-model="user.email" required>
-                            <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
+                            <input name="email" type="email" ng-model="user.email" required>
+                            <span ng-show="editUserForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
+                            <span ng-show="editUserForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
                         </div>
                     </div>
                 </div>
