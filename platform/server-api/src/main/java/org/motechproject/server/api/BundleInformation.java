@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.api;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;

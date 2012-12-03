@@ -2,7 +2,7 @@ package org.motechproject.admin.bundles;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.motechproject.server.osgi.BundleInformation;
+import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

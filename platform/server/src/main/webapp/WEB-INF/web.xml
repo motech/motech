@@ -19,7 +19,7 @@
 
     <!-- Osgi -->
     <listener>
-        <listener-class>org.motechproject.server.osgi.OsgiListener</listener-class>
+        <listener-class>org.motechproject.server.impl.OsgiListener</listener-class>
     </listener>
 
     <listener>

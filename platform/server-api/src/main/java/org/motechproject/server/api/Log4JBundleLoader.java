@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.api;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.osgi.framework.Bundle;

@@ -1,7 +1,9 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.server.api.BundleLoader;
+import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

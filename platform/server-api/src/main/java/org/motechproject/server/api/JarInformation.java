@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.api;
 
 import java.io.File;
 import java.io.FileInputStream;

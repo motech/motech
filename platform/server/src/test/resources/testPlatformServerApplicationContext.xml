@@ -4,16 +4,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="classpath*:META-INF/motech/*.xml"/>
+    <import resource="classpath:META-INF/motech/applicationPlatformServer.xml"/>
 
     <!-- overwrite osgiFrameworkService definition -->
-    <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
+    <bean id="osgiFrameworkService" class="org.motechproject.server.impl.OsgiFrameworkService">
         <property name="internalBundleFolder" value="/WEB-INF/bundles"/>
         <property name="externalBundleFolder" value=""/>
         <!-- we do not use external bundles during tests -->
         <property name="bundleLoaders">
             <list>
-                <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
+                <bean id="log4jBundleLoader" class="org.motechproject.server.api.Log4JBundleLoader"/>
             </list>
         </property>
     </bean>
