@@ -93,7 +93,7 @@ public class ManagedSmslibService {
         try {
             smslibService.startService();
         } catch (SMSLibException | IOException | InterruptedException e) {
-            log.error("Error: ", e);
+            log.error(e.getMessage());
         }
     }
 
