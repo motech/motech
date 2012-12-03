@@ -11,6 +11,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
@@ -20,6 +21,7 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -48,12 +50,17 @@ public class AllEnrollmentsIT {
     private AllSchedules allSchedules;
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;
+    @Autowired
+    private ScheduleFactory scheduleFactory;
+    @Autowired
+    private PlatformSettingsService platformSettingsService;
 
     @Before
     public void setUp() {
         TrackedSchedulesJsonReader schedulesJsonReader = new TrackedSchedulesJsonReaderImpl();
         for (ScheduleRecord scheduleRecord : schedulesJsonReader.getAllSchedules("/schedules")) {
-            allSchedules.add(scheduleRecord);
+            Schedule schedule = scheduleFactory.build(scheduleRecord, platformSettingsService.getPlatformLocale());
+            allSchedules.add(schedule);
         }
 
         allEnrollments.removeAll();

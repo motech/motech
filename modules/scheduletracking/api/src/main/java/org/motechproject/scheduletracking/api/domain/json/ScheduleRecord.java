@@ -2,14 +2,11 @@ package org.motechproject.scheduletracking.api.domain.json;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@TypeDiscriminator("doc.type === 'ScheduleRecord'")
-public class ScheduleRecord extends MotechBaseDataObject {
+public class ScheduleRecord {
 
     @JsonProperty
     private String name;

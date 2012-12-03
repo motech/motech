@@ -1,5 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
@@ -13,9 +15,16 @@ import java.util.Map;
 import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class Milestone implements Serializable {
+
+    @JsonProperty
     private String name;
-    private Map<String, String> data = new HashMap<String, String>();
-    private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
+    @JsonProperty
+    private Map<String, String> data = new HashMap<>();
+    @JsonProperty
+    private List<MilestoneWindow> windows = new ArrayList<>();
+
+    private Milestone() {
+    }
 
     public Milestone(String name, Period earliest, Period due, Period late, Period max) {
         this.name = name;
@@ -29,10 +38,12 @@ public class Milestone implements Serializable {
         windows.add(new MilestoneWindow(WindowName.max, max));
     }
 
+    @JsonIgnore
     public List<MilestoneWindow> getMilestoneWindows() {
         return windows;
     }
 
+    @JsonIgnore
     public MilestoneWindow getMilestoneWindow(WindowName windowName) {
         for (MilestoneWindow window : windows) {
             if (window.getName().equals(windowName)) {
@@ -42,14 +53,17 @@ public class Milestone implements Serializable {
         return null;
     }
 
+    @JsonIgnore
     public String getName() {
         return name;
     }
 
+    @JsonIgnore
     public void setData(Map<String, String> data) {
         this.data = data;
     }
 
+    @JsonIgnore
     public Map<String, String> getData() {
         return data;
     }
@@ -58,6 +72,7 @@ public class Milestone implements Serializable {
         getMilestoneWindow(windowName).addAlerts(alertList);
     }
 
+    @JsonIgnore
     public List<Alert> getAlerts() {
         List<Alert> alerts = new ArrayList<Alert>();
         for (MilestoneWindow window : windows) {
@@ -66,10 +81,12 @@ public class Milestone implements Serializable {
         return alerts;
     }
 
+    @JsonIgnore
     public Period getMaximumDuration() {
         return getWindowEnd(WindowName.max);
     }
 
+    @JsonIgnore
     public Period getWindowStart(WindowName windowName) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
@@ -81,6 +98,7 @@ public class Milestone implements Serializable {
         return period.toPeriod();
     }
 
+    @JsonIgnore
     public Period getWindowEnd(WindowName windowName) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
@@ -92,6 +110,7 @@ public class Milestone implements Serializable {
         return period.toPeriod();
     }
 
+    @JsonIgnore
     public Period getWindowDuration(WindowName windowName) {
         return getWindowEnd(windowName).minus(getWindowStart(windowName));
     }

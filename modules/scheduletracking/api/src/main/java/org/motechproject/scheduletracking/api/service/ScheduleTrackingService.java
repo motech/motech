@@ -94,4 +94,11 @@ public interface ScheduleTrackingService {
     Schedule getScheduleByName(String scheduleName);
 
     List<Schedule> getAllSchedules();
+
+    /**
+     * Removes the specified schedule from the database.
+     *
+     * @param scheduleName : name of the schedule to remove
+     */
+    void remove(String scheduleName);
 }
