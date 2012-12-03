@@ -73,6 +73,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-Path>server</Context-Path>
+                        <Context-File>applicationPlatformServerBundle.xml</Context-File>
                         <Export-Package>
                             <!-- server-startup -->
                             org.motechproject.server.startup,
