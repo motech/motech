@@ -58,12 +58,8 @@ public class StartupIT {
             final String symbolicName = bundles.getJSONObject(i).getString("symbolicName");
             final String status = bundles.getJSONObject(i).getString("state");
 
-            if (symbolicName.startsWith("org.motechproject.motech-platform")) {
-                assertEquals(symbolicName + " not active after server startup.", "ACTIVE", status);
-            } else if (symbolicName.startsWith("org.motechproject.motech")) {
-                assertTrue(symbolicName + " not active after server startup.[" + status + "]",
-                        "ACTIVE".equals(status) || "STARTING".equals(status));
-
+            if (symbolicName.startsWith("org.motechproject.motech")) {
+                assertTrue(symbolicName + " not active after server startup.[" + status + "]", "ACTIVE".equals(status));
             }
         }
     }
@@ -80,7 +76,8 @@ public class StartupIT {
 
     private JSONArray getBundleStatusFromServer(DefaultHttpClient httpClient) throws IOException, JSONException {
         JSONArray bundles;
-        login(httpClient); //remove this once we fix web authentication issue, currently till security modules started in osgi env there is not authentication for admin console.
+        login(httpClient); /* BugCard #208 remove this once we fix web authentication issue, currently
+         till security modules started in osgi env there is not authentication for admin console. */
         String response = httpClient.execute(new HttpGet("http://localhost:9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
         System.out.println(response);
         bundles = (JSONArray) new JSONArray(response);
