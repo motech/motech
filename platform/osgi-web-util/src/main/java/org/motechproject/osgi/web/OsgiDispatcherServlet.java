@@ -4,6 +4,8 @@ import org.osgi.framework.BundleContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.servlet.ServletException;
+
 public class OsgiDispatcherServlet extends DispatcherServlet {
     private BundleContext bundleContext;
 
@@ -18,5 +20,10 @@ public class OsgiDispatcherServlet extends DispatcherServlet {
             wc.setBundleContext(bundleContext);
         }
         super.postProcessWebApplicationContext(wac);
+    }
+
+    @Override
+    protected void initFrameworkServlet() throws ServletException {
+        getServletContext().log("Initialized servlet for " + bundleContext.getBundle().toString());
     }
 }

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.util.Dictionary;
+import java.util.Map;
 
 class HttpServiceTracker extends ServiceTracker {
     private static Logger logger = LoggerFactory.getLogger(ServiceTracker.class);
@@ -17,9 +17,11 @@ class HttpServiceTracker extends ServiceTracker {
 
     private ServiceReference httpServiceRef;
     private String contextPath;
+    private Map<String, String> resourceMapping;
 
-    public HttpServiceTracker(BundleContext context) {
+    public HttpServiceTracker(BundleContext context, Map<String, String> resourceMapping) {
         super(context, HttpService.class.getName(), null);
+        this.resourceMapping = resourceMapping;
     }
 
     @Override
@@ -54,14 +56,19 @@ class HttpServiceTracker extends ServiceTracker {
         if (contextPath == null) {
             try {
                 DispatcherServlet dispatcherServlet = new OsgiDispatcherServlet(context);
+                contextPath = getContextPath(context);
                 dispatcherServlet.setContextClass(MotechOsgiWebApplicationContext.class);
-                dispatcherServlet.setContextConfigLocation(Activator.CONTEXT_CONFIG_LOCATION);
+                dispatcherServlet.setContextConfigLocation(getContextLocation());
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                    contextPath = getContextPath(context);
                     service.unregister(contextPath);
                     service.registerServlet(contextPath, dispatcherServlet, null, null);
+                    if (resourceMapping!=null) {
+                        for (String key : resourceMapping.keySet()){
+                            service.registerResources(key, resourceMapping.get(key),null);
+                        }
+                    }
                     logger.debug("Servlet registered");
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -74,12 +81,25 @@ class HttpServiceTracker extends ServiceTracker {
         }
     }
 
+    private String getContextLocation() {
+        final String contextLocation = getHeaderValue("Context-File");
+        return contextLocation != null ? contextLocation : Activator.DEFAULT_CONTEXT_CONFIG_LOCATION;
+    }
+
     private String getContextPath(BundleContext bundleContext) {
-        final Dictionary headers = bundleContext.getBundle().getHeaders();
-        if (headers != null && headers.get(HEADER_CONTEXT_PATH) != null) {
-            return addRootPath((String) headers.get(HEADER_CONTEXT_PATH));
+        final String path = getHeaderValue(HEADER_CONTEXT_PATH);
+        if (path != null) {
+            return addRootPath(path);
+        } else {
+            return addRootPath(bundleContext.getBundle().getSymbolicName());
         }
-        return addRootPath(bundleContext.getBundle().getSymbolicName());
+    }
+
+    private String getHeaderValue(String headerContextPath) {
+        if (context.getBundle().getHeaders() == null) {
+            return null;
+        }
+        return (String) context.getBundle().getHeaders().get(headerContextPath);
     }
 
     private String addRootPath(String path) {

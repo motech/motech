@@ -7,15 +7,17 @@ import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    public static final String CONTEXT_CONFIG_LOCATION = "META-INF/osgi/*.xml";
+    public static final String DEFAULT_CONTEXT_CONFIG_LOCATION = "META-INF/osgi/*.xml";
 
     private HttpServiceTracker tracker;
 
     @Override
     public void start(BundleContext context) {
-        this.tracker = new HttpServiceTracker(context);
+        this.tracker = new HttpServiceTracker(context, resourceMappings());
         this.tracker.open();
         final ServiceReference httpServiceReference = context.getServiceReference(HttpService.class.getName());
         if (httpServiceReference != null) {
@@ -30,5 +32,7 @@ public class Activator implements BundleActivator {
         tracker.unregister();
     }
 
-
+    protected Map<String, String> resourceMappings() {
+        return null;
+    }
 }
