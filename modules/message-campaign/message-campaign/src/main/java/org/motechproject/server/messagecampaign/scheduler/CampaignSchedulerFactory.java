@@ -41,7 +41,7 @@ public class CampaignSchedulerFactory {
     private AllMessageCampaigns allMessageCampaigns;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         campaignSchedulerServices.put(AbsoluteCampaign.class, absoluteCampaignSchedulerService);
         campaignSchedulerServices.put(OffsetCampaign.class, offsetCampaignSchedulerService);
         campaignSchedulerServices.put(CronBasedCampaign.class, cronBasedCampaignSchedulerService);

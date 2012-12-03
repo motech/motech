@@ -125,7 +125,7 @@ public class Node implements Serializable {
      * @param prompts
      * @return
      */
-    private Node setPrompts(List<Prompt> prompts) {
+    public Node setPrompts(List<Prompt> prompts) {
         this.prompts.addAll(prompts);
         return this;
     }

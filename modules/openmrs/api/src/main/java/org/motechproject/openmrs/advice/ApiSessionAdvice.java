@@ -16,7 +16,7 @@ public class ApiSessionAdvice {
     private OpenMRSSession session;
 
     @Pointcut("@annotation(org.motechproject.openmrs.advice.ApiSession)")
-    private void openmrsSession() {
+    public void openmrsSession() {
     }
 
     @Around("openmrsSession()")
