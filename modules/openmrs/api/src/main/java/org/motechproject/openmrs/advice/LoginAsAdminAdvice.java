@@ -25,7 +25,7 @@ public class LoginAsAdminAdvice {
     }
 
     @Around("loginAsAdmin()")
-    public Object loginAsAdminAndInvoke(ProceedingJoinPoint pjp) throws Throwable {
+    public Object loginAsAdminAndInvoke(ProceedingJoinPoint pjp) throws Throwable { // NO CHECKSTYLE inner method throws Throwable
         SecurityContext securityContext = SecurityContextHolder.getContext();
         try {
             securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(OpenMRSSession.login(userName, password), password));

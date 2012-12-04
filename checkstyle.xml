@@ -2,6 +2,9 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
     <module name="SuppressionCommentFilter"/>
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="NO CHECKSTYLE (\w+)"/>
+    </module>
     <module name="NewlineAtEndOfFile">
         <property name="severity" value="info"/>
         <property name="lineSeparator" value="system"/>
@@ -257,6 +260,9 @@
             <property name="format" value="^[A-Z]$"/>
         </module>
         <module name="BooleanExpressionComplexity">
+            <property name="severity" value="error"/>
+        </module>
+        <module name="IllegalThrows">
             <property name="severity" value="error"/>
         </module>
     </module>

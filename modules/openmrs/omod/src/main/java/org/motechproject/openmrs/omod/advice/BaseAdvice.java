@@ -20,7 +20,7 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
     private OmodPublisher publisher = new OmodPublisher();
 
     @Override
-    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
+    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) {
         String methodName = method.getName();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(ADVICE_EVENT_METHOD_INVOKED, methodName);

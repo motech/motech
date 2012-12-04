@@ -20,7 +20,7 @@ public class ApiSessionAdvice {
     }
 
     @Around("openmrsSession()")
-    public Object authorize(ProceedingJoinPoint pjp) throws Throwable {
+    public Object authorize(ProceedingJoinPoint pjp) throws Throwable { // NO CHECKSTYLE inner method throws Throwable
         try {
             session.open();
             session.authenticate();
