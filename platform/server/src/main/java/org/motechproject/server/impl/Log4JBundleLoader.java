@@ -1,6 +1,8 @@
-package org.motechproject.server.api;
+package org.motechproject.server.impl;
 
 import org.apache.log4j.xml.DOMConfigurator;
+import org.motechproject.server.api.BundleLoader;
+import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

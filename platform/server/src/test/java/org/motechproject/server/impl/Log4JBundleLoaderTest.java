@@ -1,8 +1,7 @@
-package org.motechproject.server.api;
+package org.motechproject.server.impl;
 
 import org.apache.log4j.LogManager;
 import org.junit.Test;
-import org.motechproject.server.api.Log4JBundleLoader;
 import org.osgi.framework.Bundle;
 
 import static org.junit.Assert.assertNotNull;
