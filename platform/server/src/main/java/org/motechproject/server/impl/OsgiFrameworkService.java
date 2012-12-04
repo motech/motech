@@ -1,9 +1,14 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.OsgiException;
+import org.motechproject.server.api.BundleInformation;
+import org.motechproject.server.api.BundleLoader;
+import org.motechproject.server.api.BundleLoadingException;
+import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.api.JarInformationHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;

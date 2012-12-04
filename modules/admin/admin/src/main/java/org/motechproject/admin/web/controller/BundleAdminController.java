@@ -5,7 +5,7 @@ import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
-import org.motechproject.server.osgi.BundleInformation;
+import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

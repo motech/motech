@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

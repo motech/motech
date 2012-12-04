@@ -35,7 +35,7 @@ public class StartupIT {
         httpClient.setCookieStore(new BasicCookieStore());
         login(httpClient);
         JSONArray bundles = null;
-        int retryCount = 3;
+        int retryCount = 5;
         do {
             try {
                 bundles = getBundleStatusFromServer(httpClient);
@@ -48,9 +48,9 @@ public class StartupIT {
                 }
             }
             Thread.sleep(30 * 1000L);   //wait before next retry
-        } while (bundles == null && --retryCount > 0);
+        } while (--retryCount > 0);
 
-        if (retryCount == 0 && bundles == null) {
+        if (retryCount == 0) {
             fail("Failed to start bundles (TIMEOUT)");
         }
 
@@ -80,7 +80,9 @@ public class StartupIT {
 
     private JSONArray getBundleStatusFromServer(DefaultHttpClient httpClient) throws IOException, JSONException {
         JSONArray bundles;
+        login(httpClient); //remove this once we fix web authentication issue, currently till security modules started in osgi env there is not authentication for admin console.
         String response = httpClient.execute(new HttpGet("http://localhost:9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
+        System.out.println(response);
         bundles = (JSONArray) new JSONArray(response);
         return bundles;
     }

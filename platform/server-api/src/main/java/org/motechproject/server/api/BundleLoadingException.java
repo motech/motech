@@ -1,4 +1,4 @@
-package org.motechproject.server.osgi;
+package org.motechproject.server.api;
 
 public class BundleLoadingException extends Exception {
 
