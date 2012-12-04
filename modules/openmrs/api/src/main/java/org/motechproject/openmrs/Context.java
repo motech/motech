@@ -13,6 +13,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsConstants;
@@ -21,6 +22,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -63,6 +65,11 @@ public class Context {
 
             logger.info(String.format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
         }
+    }
+
+    @PreDestroy
+    public void cleanUp() {
+        ModuleUtil.shutdown();
     }
 
     public PatientService getPatientService() {
