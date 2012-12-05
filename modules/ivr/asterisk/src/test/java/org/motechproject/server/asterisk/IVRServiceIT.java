@@ -14,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
-
 
 /**
  * IVR Service Unit Tests
@@ -28,6 +27,7 @@ import static org.mockito.Mockito.mock;
 public class IVRServiceIT {
 
     private static final String CALLBACK_URL = "http://localhost";
+
     @Autowired
     private IVRServiceAsteriskImpl ivrService;
 
@@ -47,7 +47,6 @@ public class IVRServiceIT {
                         Mockito.anyString(),
                         anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
-
     }
 
     @Test(expected = CallInitiationException.class)
@@ -74,7 +73,6 @@ public class IVRServiceIT {
                         Mockito.anyString(),
                         anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
-
     }
 
     @Test(expected = CallInitiationException.class)
@@ -101,7 +99,6 @@ public class IVRServiceIT {
                         Mockito.anyString(),
                         anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
-
     }
 
 
@@ -112,7 +109,6 @@ public class IVRServiceIT {
         ivrService.setAsteriskServer(asteriskServerMock);
 
         ivrService.initiateCall(null);
-
     }
 
     @Test
@@ -129,8 +125,5 @@ public class IVRServiceIT {
         AsteriskServer asteriskServer = ivrService.getAsteriskServer();
 
         assertNotNull(asteriskServer);
-
     }
-
-
 }

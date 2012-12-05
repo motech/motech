@@ -708,8 +708,8 @@
             </dependency>
             <dependency>
                 <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>20080701</version>
+                <artifactId>org.motechproject.org.json</artifactId>
+                <version>20080701-r001</version>
             </dependency>
             <dependency>
                 <groupId>org.motechproject.mforms</groupId>

@@ -1,20 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
     <version>0.16-SNAPSHOT</version>
+
     <name>MOTECH IVR Kookoo</name>
     <description>new kookoo module based on vm templates to return responses</description>
+
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
+
     <dependencies>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-decisiontree-server-bundle</artifactId>
@@ -39,9 +46,9 @@
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20080701</version>
+            <artifactId>org.motechproject.org.json</artifactId>
         </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -61,5 +68,6 @@
             <groupId>org.custommonkey.xmlunit</groupId>
             <artifactId>com.springsource.org.custommonkey.xmlunit</artifactId>
         </dependency>
+
     </dependencies>
 </project>

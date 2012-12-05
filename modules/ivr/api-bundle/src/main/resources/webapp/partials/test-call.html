@@ -1,0 +1,29 @@
+<div ng-controller='TestCallController'>
+
+    <h6 class='text-error' ng-show='providers.length == 0'>
+        {{ msg('no.providers.message') }}
+    </h6>
+
+    <form ng-submit='makeCall(call)'>
+
+        <label>{{ msg('number.label') }}</label>
+        <input type='text' ng-model='call.phoneNumber' required />
+
+        <label>{{ msg('provider.label') }}</label>
+        <select ng-model='call.provider' ng-options='provider.name as provider.name for provider in providers' required>
+            <option value=''></option>
+        </select>
+        </br>
+
+        <input type='submit' class='btn' value='Dial'/>
+
+        <span ng-show='dialed == true' class='text-info'>
+            &nbsp;&nbsp;{{ msg('dial.success.message') }}
+        </span>
+        <span ng-show='dialed == false' class='text-error'>
+            &nbsp;&nbsp;{{ msg('dial.failed.message') }}
+        </span>
+
+    </form>
+
+</div>

@@ -3,7 +3,6 @@ package org.motechproject.server.kookoo;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.json.JSONObject;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
@@ -54,13 +53,14 @@ public class KookooCallServiceImpl implements IVRService {
         initSession(callRequest);
         try {
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
-            JSONObject json = new JSONObject(callRequest.getPayload());
 
-            String applicationReplyUrl = format("%s?%s=%s",
-                callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
+            String callBackUrl = callRequest.getCallBackUrl();
+            if (callBackUrl == null) {
+                callBackUrl = settings.getProperty("application.url");
+            }
 
             String statusCallbackUrl = format("%s?%s=%s",
-                    callRequest.getStatusCallbackUrl(), MOTECH_CALL_ID_KEY, callRequest.getCallId());
+                callRequest.getStatusCallbackUrl(), MOTECH_CALL_ID_KEY, callRequest.getCallId());
 
             getMethod = new GetMethod(settings.getProperty(OUTBOUND_URL));
             getMethod.setQueryString(new NameValuePair[]{
@@ -68,14 +68,14 @@ public class KookooCallServiceImpl implements IVRService {
                 new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone()),
                 new NameValuePair(MOTECH_CALL_ID_KEY, callRequest.getCallId()),
                 new NameValuePair(CALLBACK_URL_KEY, statusCallbackUrl),
-                new NameValuePair(URL_KEY, applicationReplyUrl)
+                new NameValuePair(URL_KEY, callBackUrl)
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
             commonsHttpClient.executeMethod(getMethod);
         } catch (IOException e) {
             throw new MotechException("Error initiating call", e);
         } finally {
-            if(getMethod != null ) {
+            if (getMethod != null) {
                 getMethod.releaseConnection();
             }
         }

@@ -57,10 +57,6 @@ public class CallRequest implements Serializable {
         if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
         }
-
-        if (callBackUrl == null) {
-            throw new IllegalArgumentException("callBackUrl can not be null");
-        }
         this.callId = UUID.randomUUID().toString();
         this.phone = phone;
         this.timeOut = timeOut;
@@ -78,9 +74,6 @@ public class CallRequest implements Serializable {
         if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
         }
-        if (callBackUrl == null) {
-            throw new IllegalArgumentException("callBackUrl can not be null");
-        }
         this.callId = UUID.randomUUID().toString();
         this.phone = phone;
         this.timeOut = 0;
@@ -88,7 +81,6 @@ public class CallRequest implements Serializable {
         if (params != null) {
             this.payload.putAll(params);
         }
-
         this.callBackUrl = callBackUrl;
     }
 

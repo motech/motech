@@ -29,10 +29,4 @@ public class TestInitiateCallData {
 
         CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void TestConstructorNullVxmlUrl() {
-        String phone = "1001";
-        CallRequest callRequest = new CallRequest(phone, Integer.MAX_VALUE, null);
-    }
 }

@@ -1,17 +1,24 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
-    <artifactId>motech-ivr-api</artifactId>
+
     <name>MOTECH IVR API</name>
+
+    <artifactId>motech-ivr-api</artifactId>
     <version>0.16-SNAPSHOT</version>
+
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -37,9 +44,15 @@
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -52,6 +65,8 @@
                     </archive>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
 </project>

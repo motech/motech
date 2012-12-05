@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
+            <artifactId>org.motechproject.org.json</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
