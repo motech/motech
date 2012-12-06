@@ -1,8 +1,12 @@
 package org.motechproject.security.web.controllers;
 
+import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserProfile;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.settings.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -20,6 +24,9 @@ public class UserController {
     @Autowired
     private MotechUserService motechUserService;
 
+    @Autowired
+    private PlatformSettingsService settingsService;
+
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
     public void saveUser(@RequestBody UserDto user) {
@@ -29,7 +36,16 @@ public class UserController {
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
     public List<MotechUserProfile> getUsers() {
-        return motechUserService.getUsers();
+        List<MotechUserProfile> users;
+        String loginMode = settingsService.getPlatformSettings().getLoginMode();
+
+        if (StringUtils.equalsIgnoreCase(loginMode, AuthenticationMode.OPEN_ID)) {
+            users = motechUserService.getOpenIdUsers();
+        } else {
+            users = motechUserService.getUsers();
+        }
+
+        return users;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -50,5 +66,11 @@ public class UserController {
         motechUserService.deleteUser(user);
     }
 
+    @RequestMapping(value = "/users/loginmode", method = RequestMethod.GET)
+    @ResponseBody
+    public String loginMode() {
+        MotechSettings settings = settingsService.getPlatformSettings();
+        return settings.getLoginMode().toLowerCase();
+    }
 
 }

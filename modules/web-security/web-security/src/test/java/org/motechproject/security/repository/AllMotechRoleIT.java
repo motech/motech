@@ -2,7 +2,6 @@ package org.motechproject.security.repository;
 
 import ch.lambdaj.Lambda;
 import org.hamcrest.beans.HasPropertyWithValue;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,7 +22,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class AllMotechRoleIT {
 
     @Autowired
-    AllMotechRoles allMotechRoles;
+    private AllMotechRoles allMotechRoles;
 
     @Test
     public void findByUserName() {

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:security="http://www.springframework.org/schema/security"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <security:global-method-security pre-post-annotations="enabled"/>
+
+    <bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
+        <security:filter-chain-map request-matcher="ant">
+            <security:filter-chain pattern="/**/*.xml" filters="
+                 securityContextPersistenceFilter,
+                 userAuthenticationProcessingFilter,
+                 openIdAuthenticationProcessingFilter"/>
+            <security:filter-chain pattern="/**" filters="
+                 securityContextPersistenceFilter,
+                 userAuthenticationProcessingFilter,
+                 openIdAuthenticationProcessingFilter"/>
+        </security:filter-chain-map>
+    </bean>
+
+    <security:http pattern="/**/*.css*" security="none" />
+    <security:http pattern="/**/*.gif" security="none" />
+    <security:http pattern="/**/*.jpg" security="none" />
+    <security:http pattern="/**/*.js" security="none" />
+    <security:http pattern="/**/*.html" security="none" />
+    <security:http pattern="/**/*.properties" security="none" />
+    <security:http pattern="/**/login*" security="none" />
+    <security:http pattern="/**/lang*" security="none" />
+    <security:http pattern="/**/list*" security="none" />
+    <security:http pattern="/**/locate*" security="none" />
+
+    <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+
+    <bean id="loginFormAuthentication" class="org.motechproject.security.authentication.MotechLoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/module/server/login" />
+    </bean>
+
+    <security:http auto-config="false" entry-point-ref="loginFormAuthentication" use-expressions="true">
+        <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter" />
+        <security:custom-filter position="OPENID_FILTER" ref="openIdAuthenticationProcessingFilter"/>
+        <security:intercept-url pattern="/**" access="isFullyAuthenticated()"/>
+        <security:logout logout-success-url="/module/server/login" />
+    </security:http>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="motechAuthenticationProvider"/>
+        <security:authentication-provider ref="motechOpenIdAuthenticationProvider"/>
+    </security:authentication-manager>
+
+    <bean id="userAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+        <property name="filterProcessesUrl" value="/j_spring_security_check"/>
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler" />
+        <property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+    </bean>
+
+
+
+    <bean id="openIdAuthenticationProcessingFilter" class="org.springframework.security.openid.OpenIDAuthenticationFilter">
+        <property name="filterProcessesUrl" value="/j_spring_openid_security_check"/>
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler" />
+        <property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+        <property name="consumer">
+            <bean class="org.springframework.security.openid.OpenID4JavaConsumer">
+                <constructor-arg index="0">
+                    <bean class="org.openid4java.consumer.ConsumerManager"/>
+                </constructor-arg>
+                <constructor-arg index="1">
+                    <list value-type="org.springframework.security.openid.OpenIDAttribute">
+                        <bean class="org.springframework.security.openid.OpenIDAttribute">
+                            <constructor-arg index="0" value="aeEmail"/>
+                            <constructor-arg index="1" value="http://openid.net/schema/contact/internet/email"/>
+                            <property name="required" value="true"/>
+                            <property name="count" value="1"/>
+                        </bean>
+                        <bean class="org.springframework.security.openid.OpenIDAttribute">
+                            <constructor-arg index="0" value="axEmail"/>
+                            <constructor-arg index="1" value="http://axschema.org/contact/email"/>
+                            <property name="required" value="true"/>
+                            <property name="count" value="1"/>
+                        </bean>
+                        <bean class="org.springframework.security.openid.OpenIDAttribute">
+                            <constructor-arg index="0" value="aeGuid"/>
+                            <constructor-arg index="1" value="http://openid.net/schema/person/guid" />
+                            <property name="required" value="true"/>
+                            <property name="count" value="1"/>
+                        </bean>
+                        <bean class="org.springframework.security.openid.OpenIDAttribute">
+                            <constructor-arg index="0" value="aeAlias"/>
+                            <constructor-arg index="1" value="http://openid.net/schema/namePerson/friendly" />
+                            <property name="required" value="true"/>
+                            <property name="count" value="1"/>
+                        </bean>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+
+    <bean id="motechAuthenticationProvider" class="org.motechproject.security.authentication.MotechAuthenticationProvider"/>
+
+    <bean id="motechOpenIdAuthenticationProvider" class="org.springframework.security.openid.OpenIDAuthenticationProvider">
+        <property name="authenticationUserDetailsService" ref="motechUserDetailsService"/>
+    </bean>
+
+    <bean id="motechUserDetailsService" class="org.motechproject.security.authentication.MotechOpenIdUserDetailsService" />
+
+    <bean id="loginSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+        <property name="defaultTargetUrl" value="/module/server/home"  />
+    </bean>
+
+    <bean id="loginMappingFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/module/server/login?error=true" />
+    </bean>
+
+</beans>

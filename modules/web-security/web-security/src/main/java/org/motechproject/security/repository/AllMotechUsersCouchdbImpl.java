@@ -34,6 +34,14 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     }
 
     @Override
+    @View(name = "by_openId", map = "function(doc) { if (doc.type ==='MotechUser') { emit(doc.openId, doc._id); }}")
+    public MotechUser findUserByOpenId(String openId) {
+        if (openId == null) { return null; }
+        ViewQuery viewQuery = createQuery("by_openId").key(openId).includeDocs(true);
+        return singleResult(db.queryView(viewQuery, MotechUserCouchdbImpl.class));
+    }
+
+    @Override
     @View(name = "find_by_role", map = "function(doc) {if (doc.type ==='MotechUser') {for(i in doc.roles) {emit(doc.roles[i], [doc._id]);}}}")
     public List<? extends MotechUser> findByRole(String role) {
         if (role == null) { return null; }
@@ -50,6 +58,12 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     }
 
     @Override
+    public void addOpenIdUser(MotechUser user) {
+        if (findUserByOpenId(user.getOpenId()) != null) { return; }
+        super.add((MotechUserCouchdbImpl) user);
+    }
+
+    @Override
     public void update(MotechUser motechUser) {
         super.update((MotechUserCouchdbImpl) motechUser);
     }
@@ -61,12 +75,31 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
 
     @Override
     public List<MotechUser> getUsers() {
-        return new ArrayList<MotechUser>(getAll());
+        List<MotechUser> users = new ArrayList<MotechUser>(getAll());
+        List<MotechUser> noOpenIdUsers =new ArrayList<MotechUser>();
+        for (MotechUser user : users) {
+             if (user.getOpenId().isEmpty()) {
+                 noOpenIdUsers.add(user);
+             }
+        }
+        return noOpenIdUsers;
     }
 
     @Override
     public boolean checkUserAuthorisation(String userName, String password) {
         MotechUser user = findByUserName(userName);
         return password.equals(user.getPassword()) ? true : false;
+    }
+
+    @Override
+    public List<MotechUser> getOpenIdUsers() {
+        List<MotechUser> users = new ArrayList<MotechUser>(getAll());
+        List<MotechUser> openIdUsers =new ArrayList<MotechUser>();
+        for (MotechUser user : users) {
+            if (!user.getOpenId().isEmpty()) {
+                openIdUsers.add(user);
+            }
+        }
+        return openIdUsers;
     }
 }

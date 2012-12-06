@@ -75,7 +75,8 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-
+                <c:if test="${loginMode=='repository'}">
+                <c:if test="${empty error}">
                 <div id="login" class="well2 margin-center margin-before4 spn4">
                     <div class="box-header"><fmt:message key="security.signInUser" bundle="${bundle}"/></div>
                     <div class="box-content clearfix">
@@ -88,13 +89,13 @@
                                     <h4><fmt:message key="motechId" bundle="${bundle}"/></h4>
                                 </div>
                                 <div class="control-group">
-                                    <input type="text" name="j_username"/>
+                                    <input type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
-                                    <input type="password" name="j_password"/>
+                                    <input type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
-                                    <input class="btn btn-primary" value="Sign in" type="submit"/>
+                                    <input class="btn btn-primary" value="<fmt:message key="signin" bundle="${bundle}"/>" type="submit"/>
                                 </div>
                                 <div class="control-group">
                                 <!--<a href="#"><fmt:message key="security.signInQuestions" bundle="${bundle}"/></a>-->
@@ -104,6 +105,134 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
+                </c:if>
+                <c:if test="${error=='true'}">
+                <div class="well2 margin-center spn10">
+                    <div class="box-header"><fmt:message key="security.signInUnsuccessful" bundle="${bundle}"/></div>
+                    <div class="box-content clearfix">
+                        <div class="row-fluid">
+                            <div class="span6 inside">
+                                <div class="well3">
+                                    <div class="control-group">
+                                        <h5><fmt:message key="security.didnotRecognizeMsg" bundle="${bundle}"/></h5>
+                                    </div>
+                                    <div class="control-group">
+                                        <h5><fmt:message key="security.thinkForgotMsg" bundle="${bundle}"/></h5>
+                                    </div>
+                                    <div class="control-group">
+                                        <h5><fmt:message key="security.donotRememberMsg1" bundle="${bundle}"/>
+                                            <button class="btn btn-mini btn-link"><fmt:message key="clickHere" bundle="${bundle}"/></button> <fmt:message key="security.donotRememberMsg2" bundle="${bundle}"/></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span6">
+                                <div class="well3"><div class="left-divider">
+                                    <form class="inside" action="${contextPath}/j_spring_security_check" method="POST">
+                                        <div class="control-group">
+                                            <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/></h4>
+                                        </div>
+                                        <div class="control-group">
+                                            <h4><fmt:message key="motechId" bundle="${bundle}"/></h4>
+                                        </div>
+                                        <div class="control-group">
+                                            <input type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>">
+                                        </div>
+                                        <div class="control-group">
+                                            <input type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>">
+                                        </div>
+                                        <div class="control-group">
+                                            <input class="btn btn-primary" type="submit" value="<fmt:message key="signin" bundle="${bundle}"/>"/>
+                                        </div>
+                                    </form>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </c:if>
+                <c:if test="${reset=='true'}">
+                    <div class="well2 margin-center spn4">
+                        <div class="box-header"><fmt:message key="security.resetInstructions" bundle="${bundle}"/></div>
+                        <div class="box-content">
+                            <form class="inside">
+                                <div class="well3">
+                                    <div class="control-group">
+                                        <h4><fmt:message key="security.enterEmailQuestions" bundle="${bundle}"/></h4>
+                                    </div>
+                                    <div class="control-group">
+                                        <p><fmt:message key="security.enterEmailMsg" bundle="${bundle}"/></p>
+                                    </div>
+                                    <div class="control-group">
+                                        <label><fmt:message key="security.enterEmail" bundle="${bundle}"/></label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="control-group">
+                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="security.sendReset" bundle="${bundle}"/>"/>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    </c:if>
+                    <c:if test="${reset=='true'}">
+                    <div class="well2 margin-center spn4">
+                        <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
+                        <div class="box-content">
+                            <div class="well3">
+                                <form class="inside">
+                                    <div class="control-group">
+                                        <h4><fmt:message key="password" bundle="${bundle}"/></h4>
+                                    </div>
+                                    <div class="control-group">
+                                        <label><fmt:message key="password" bundle="${bundle}"/></label>
+                                        <input type="password">
+                                    </div>
+                                    <div class="control-group">
+                                        <label><fmt:message key="confirmPassword" bundle="${bundle}"/></label>
+                                        <input type="password">
+                                    </div>
+                                    <div class="control-group">
+                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="changePassword" bundle="${bundle}"/>"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    </c:if>
+                </c:if>
+                <c:if test="${loginMode=='openId'}">
+                    <div class="well2 margin-center spn5">
+                        <div class="box-header"><fmt:message key="security.openIdConsumer" bundle="${bundle}"/></div>
+                        <div class="box-content">
+                            <div class="well3">
+                                <form class="inside" action="${contextPath}/j_spring_openid_security_check" method="POST">
+                                    <div class="control-group">
+                                        <h4><fmt:message key="signin" bundle="${bundle}"/></h4>
+                                    </div>
+                                    <div class="control-group">
+                                    <input name="openid_identifier" type="text"/>
+                                    </div>
+                                    <div class="control-group">
+                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="signin" bundle="${bundle}"/>"/>
+                                    </div>
+                                </form>
+                                <c:forEach var="openIdProvider" items="${openIdProviders}">
+                                    <form class="inside" action="${contextPath}/j_spring_openid_security_check" method="POST">
+                                       <p>For ${openIdProvider.providerName} users:</p>
+                                       <input name="openid_identifier" type="hidden" value="${openIdProvider.providerUrl}"/>
+
+                                       <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
+                                       <input type="submit" value="${msg} ${openIdProvider.providerName}"/>
+                                    </form>
+                                </c:forEach>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </c:if>
+
             </div>
         </div>
     </div>

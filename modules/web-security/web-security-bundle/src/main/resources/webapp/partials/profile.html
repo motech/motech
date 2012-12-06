@@ -5,30 +5,22 @@
             <form class="form-horizontal">
                 <!------------------ user ------------------->
                 <div class="control-group">
-                    <h4>{{msg('user')}}</h4>
+                    <h4>{{msg('user')}}: {{user.userName}}</h4>
                 </div>
                 <div class="control-group">
                     <div ng-class="cssClass('email')">
-                        <label class="control-label span3">{{msg('username')}}</label>
-                        <div class="controls span3">
-                            <input type="text" ng-model="user.email" required>
-                            <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div ng-class="cssClass('email')">
-                        <label class="control-label span3">{{msg('email')}}</label>
-                        <div class="controls span3">
-                            <input type="text" ng-model="user.email" required>
-                            <span ng-hide="hasValue('email')" class="form-hint">{{msg('emailRequired')}}</span>
+                        <label class="control-label">{{msg('email')}}</label>
+                        <div class="controls">
+                            <input name="email" type="email" ng-model="user.email" required>
+                            <span ng-show="editUserForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
+                            <span ng-show="editUserForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label span3"></label>
                     <div class="controls span3">
-                        <input class="btn btn-primary" type="submit" value="{{msg('save')}}" ng-click=""/>
+                        <input class="btn btn-primary" type="submit" value="{{msg('save')}}" ng-click="saveUserDetails()"/>
                     </div>
                 </div>
                 <!------------------ user interface ------------------->
@@ -42,8 +34,7 @@
                     <div class="controls span3">
                         <div class="btn-group">
                             <a class="btn menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
-                                <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
-                                <span style="text-transform:capitalize;">${pageLang.getDisplayLanguage(pageLang)}</span>
+                                <span style="text-transform:capitalize;">{{msg('changeLanguage')}}</span>
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">

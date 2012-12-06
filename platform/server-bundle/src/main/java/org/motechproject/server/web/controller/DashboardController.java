@@ -44,7 +44,7 @@ public class DashboardController {
     @RequestMapping({"/index", "/", "/home" })
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
 
-        ModelAndView mav;
+        ModelAndView mav = null;
 
         // check if this is the first run
         if (startupManager.getPlatformState() == MotechPlatformState.NEED_CONFIG) {
@@ -105,4 +105,5 @@ public class DashboardController {
 
         return formatter.print(uptime.normalizedStandard());
     }
+
 }

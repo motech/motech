@@ -32,19 +32,23 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+           <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
-            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -59,6 +63,42 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.proxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.openid</artifactId>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -92,11 +132,19 @@
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.security.config,
-                            org.springframework.web.servlet.config,
                             org.eclipse.gemini.blueprint.config,
+                            org.springframework.security.core,
+                            org.springframework.security.config,
                             org.springframework.security.web,
                             org.springframework.security.web.context,
+                            org.springframework.security.web.authentication,
+                            org.springframework.security.web.authentication.preauth,
+                            org.springframework.web.servlet.config,
+                            org.springframework.web.servlet.mvc,
+                            org.springframework.web.servlet.support,
+                            org.springframework.web.servlet.view,
+                            org.springframework.security.openid,
+                            org.openid4java.consumer,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-web-security;inline=true</Embed-Dependency>
@@ -139,6 +187,24 @@
                                     <directory>target</directory>
                                     <includes>
                                         <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-config</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/config</directory>
+                                    <includes>
+                                        <include>openIdProviders</include>
                                     </includes>
                                 </resource>
                             </resources>

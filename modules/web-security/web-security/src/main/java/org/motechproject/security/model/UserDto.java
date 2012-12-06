@@ -18,6 +18,8 @@ public class UserDto {
 
     private boolean active;
 
+    private String openId;
+
     public UserDto() {
     }
 
@@ -28,6 +30,7 @@ public class UserDto {
         this.email = motechUser.getEmail();
         this.roles = motechUser.getRoles();
         this.active = motechUser.isActive();
+        this.openId = motechUser.getOpenId();
     }
 
     public String getExternalId() {
@@ -76,5 +79,13 @@ public class UserDto {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 }

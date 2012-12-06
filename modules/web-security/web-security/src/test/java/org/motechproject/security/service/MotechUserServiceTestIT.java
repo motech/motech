@@ -3,13 +3,11 @@ package org.motechproject.security.service;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechRoleCouchdbImpl;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechRolesCouchdbImpl;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -34,30 +32,28 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
+@ContextConfiguration(locations ={ "classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
 public class MotechUserServiceTestIT extends SpringIntegrationTest {
 
     @Autowired
-    AllMotechRoles allMotechRoles;
+    private AllMotechRoles allMotechRoles;
 
     @Autowired
-    MotechUserService motechUserService;
+    private MotechUserService motechUserService;
 
     @Autowired
-    AllMotechUsers allMotechUsers;
+    private AllMotechUsers allMotechUsers;
 
     @Autowired
     @Qualifier("webSecurityDbConnector")
-    CouchDbConnector connector;
-
-    @Autowired
-    private MotechPasswordEncoder passwordEncoder;
+    private CouchDbConnector connector;
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private MotechPasswordEncoder passwordEncoder;
 
     @Before
     public void onStartUp(){
@@ -73,19 +69,16 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
     public void testRegister() {
         motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"));
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-
         assertNotNull(motechUser);
-
         assertTrue(motechUser.getRoles().contains("IT_ADMIN"));
         assertTrue(motechUser.getRoles().contains("DB_ADMIN"));
     }
 
     @Test
     public void shouldActivateUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false);
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false, "");
         motechUserService.activateUser("userName");
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-
         assertTrue(motechUser.isActive());
     }
 
@@ -96,8 +89,7 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfUserNameIsEmptyForRegisterWithActiveInfo() {
-        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), true);
-
+        motechUserService.register("", "password", "ext_id", "", new ArrayList<String>(), true, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -112,10 +104,9 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
 
     @Test
     public void shouldNotActivateInvalidUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false);
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false, "");
         motechUserService.activateUser("userName1");
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-
         assertFalse(motechUser.isActive());
     }
 
@@ -123,15 +114,13 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
     public void shouldCreateActiveUserByDefault() {
         motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"));
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-
         assertTrue(motechUser.isActive());
     }
 
     @Test
     public void shouldCreateInActiveUser() {
-        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false);
+        motechUserService.register("userName", "password", "1234", "", asList("IT_ADMIN", "DB_ADMIN"), false, "");
         MotechUser motechUser = allMotechUsers.findByUserName("userName");
-
         assertFalse(motechUser.isActive());
     }
 
@@ -178,6 +167,7 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
         ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
         ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
         super.tearDown();
+
     }
 
     @Override

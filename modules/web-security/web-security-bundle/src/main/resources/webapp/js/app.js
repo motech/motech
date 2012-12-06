@@ -24,7 +24,7 @@ directive('roleNameValidate', function(){
                         names.push(scope.roleList[i].roleName);
                     }
                     if(scope.addOrEdit == "edit"){
-                        names.removeObject(scope.originalName)
+                        names.removeObject(scope.role.originalRoleName)
                     }
                     if(names.indexOf(viewValue)===-1) {
                         scope.pwdNameValidate=true;

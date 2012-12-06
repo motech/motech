@@ -23,18 +23,25 @@ public class MotechUserServiceImpl implements MotechUserService {
     private MotechPasswordEncoder passwordEncoder;
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles) {
-        this.register(username, password, email, externalId, roles, true);
+    public void registerAdminUser(String username, String password, String email, List<String> roles, boolean isActive) {
+        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, password, email, "", roles, "");
+        user.setActive(isActive);
+        allMotechUsers.add(user);
     }
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive) {
+    public void register(String username, String password, String email, String externalId, List<String> roles) {
+        this.register(username, password, email, externalId, roles, true, "");
+    }
+
+    @Override
+    public void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive, String openId) {
         if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
 
         String encodePassword = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles);
+        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles, openId);
         user.setActive(isActive);
         allMotechUsers.add(user);
     }
@@ -86,6 +93,15 @@ public class MotechUserServiceImpl implements MotechUserService {
     public UserDto getUser(String userName) {
         MotechUser user = allMotechUsers.findByUserName(userName);
         return new UserDto(user);
+    }
+
+    @Override
+    public List<MotechUserProfile> getOpenIdUsers() {
+        List<MotechUserProfile> users = new ArrayList<>();
+        for (MotechUser user : allMotechUsers.getOpenIdUsers()) {
+            users.add(new MotechUserProfile(user));
+        }
+        return users;
     }
 
     @Override
