@@ -8,4 +8,12 @@ public class SmsDeliveryFailureException extends Exception {
 
     public SmsDeliveryFailureException() {
     }
+
+    public SmsDeliveryFailureException(String message) {
+        super(message);
+    }
+
+    public SmsDeliveryFailureException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

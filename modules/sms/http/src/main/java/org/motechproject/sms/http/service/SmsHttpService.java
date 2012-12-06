@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,12 +35,16 @@ public class SmsHttpService {
         this.commonsHttpClient = commonsHttpClient;
     }
 
+    public void sendSMS(String recipient, String message) throws SmsDeliveryFailureException {
+        sendSms(Arrays.asList(recipient), message);
+    }
+
     public void sendSms(List<String> recipients, String message) throws SmsDeliveryFailureException {
         if (CollectionUtils.isEmpty(recipients) || StringUtils.isEmpty(message)) {
             throw new IllegalArgumentException("Recipients or Message should not be empty");
         }
 
-        String response;
+        String response = null;
         HttpMethod httpMethod = null;
         try {
             httpMethod = template.generateRequestFor(recipients, message);
@@ -49,7 +54,7 @@ public class SmsHttpService {
             log.info("HTTP Status:" + status + "|Response:" + response);
         } catch (Exception e) {
             log.error("SMSDeliveryFailure due to : ", e);
-            throw new SmsDeliveryFailureException(e);
+            throw new SmsDeliveryFailureException(response, e);
         } finally {
             if (httpMethod != null) {
                 httpMethod.releaseConnection();
@@ -58,7 +63,7 @@ public class SmsHttpService {
 
         if (response == null || !response.toLowerCase().contains(template.getResponseSuccessCode().toLowerCase())) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
-            throw new SmsDeliveryFailureException();
+            throw new SmsDeliveryFailureException(response);
         }
 
         log.debug("SMS with message %s sent successfully to %s:", message, StringUtils.join(recipients.iterator(), ","));

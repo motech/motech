@@ -10,7 +10,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.Map;
 
-class HttpServiceTracker extends ServiceTracker {
+public  class HttpServiceTracker extends ServiceTracker {
     private static Logger logger = LoggerFactory.getLogger(ServiceTracker.class);
 
     public static final String HEADER_CONTEXT_PATH = "Context-Path";
