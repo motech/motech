@@ -15,13 +15,7 @@ import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
 
-public class CMSLiteBundleIT extends BaseOsgiIT{
-
-    @Override
-    protected String getPlatformName() {
-        return Platforms.FELIX;
-    }
-
+public class CMSLiteBundleIT extends BaseOsgiIT {
 
     public void testCMSLiteService() throws InterruptedException, CMSLiteException, ContentNotFoundException, IOException {
         assertNotNull(bundleContext.getServiceReference("org.motechproject.event.listener.EventListenerRegistryService"));

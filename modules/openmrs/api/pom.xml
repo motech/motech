@@ -40,6 +40,8 @@
         <dependency>
             <groupId>org.objectweb.asm</groupId>
             <artifactId>com.springsource.org.objectweb.asm</artifactId>
+            <!-- Parent version is not supported -->
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi</groupId>

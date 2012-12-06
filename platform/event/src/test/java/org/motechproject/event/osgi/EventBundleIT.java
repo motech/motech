@@ -1,7 +1,6 @@
 package org.motechproject.event.osgi;
 
 
-import org.eclipse.gemini.blueprint.test.platform.Platforms;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
@@ -17,10 +16,6 @@ import java.util.List;
 import java.util.jar.Manifest;
 
 public class EventBundleIT extends BaseOsgiIT {
-    @Override
-    protected String getPlatformName() {
-        return Platforms.FELIX;
-    }
 
     public void testEventListener() throws Exception {
         final String subject = "OSGi IT - 001";

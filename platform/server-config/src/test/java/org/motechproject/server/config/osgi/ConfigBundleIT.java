@@ -13,10 +13,6 @@ import org.osgi.framework.ServiceReference;
 import java.util.jar.Manifest;
 
 public class ConfigBundleIT extends BaseOsgiIT {
-    @Override
-    protected String getPlatformName() {
-        return Platforms.FELIX;
-    }
 
     public void testConfigBundle() throws Exception {
         ServiceReference settingsReference = bundleContext.getServiceReference(PlatformSettingsService.class.getName());

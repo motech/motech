@@ -7,9 +7,4 @@ public class ServerBundleOsgiIt extends BaseOsgiIT{
     public void testStartServer() {
         System.out.print("test");
     }
-
-    @Override
-    protected String getPlatformName() {
-        return Platforms.EQUINOX;
-    }
 }

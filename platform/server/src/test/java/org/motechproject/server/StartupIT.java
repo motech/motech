@@ -76,7 +76,6 @@ public class StartupIT {
         login(httpClient); /* BugCard #208 remove this once we fix web authentication issue, currently
          till security modules started in osgi env there is not authentication for admin console. */
         String response = httpClient.execute(new HttpGet("http://localhost:9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
-        System.out.println(response);
         bundles = (JSONArray) new JSONArray(response);
         return bundles;
     }

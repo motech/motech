@@ -52,9 +52,4 @@ public class SchedulerBundleIT extends BaseOsgiIT {
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testSchedulerBundleContext.xml"};
     }
-
-    @Override
-    protected String getPlatformName() {
-        return Platforms.FELIX;
-    }
 }

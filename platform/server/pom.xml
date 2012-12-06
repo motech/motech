@@ -121,6 +121,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <!-- Different versions of same dependency are not copied. -->
+            <groupId>org.objectweb.asm</groupId>
+            <artifactId>com.springsource.org.objectweb.asm</artifactId>
+            <version>1.5.3</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>
@@ -139,6 +145,7 @@
                             <includeScope>provided</includeScope>
                             <includeScope>compile</includeScope>
                             <overWriteIfNewer>true</overWriteIfNewer>
+                            <overWriteReleases>false</overWriteReleases>
                             <outputDirectory>
                                 ${user.home}/.motech/bundles
                             </outputDirectory>
