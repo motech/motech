@@ -56,7 +56,10 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
     private MotechPasswordEncoder passwordEncoder;
 
     @Before
-    public void onStartUp(){
+    public void onStartUp() {
+        ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
+        ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
+        // authorize
         allMotechRoles.add(new MotechRoleCouchdbImpl("IT_ADMIN", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole")));
         motechUserService.register("admin", "admin", "1234", "", asList("IT_ADMIN"));
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
@@ -167,7 +170,6 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
         ((AllMotechUsersCouchdbImpl) allMotechUsers).removeAll();
         ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
         super.tearDown();
-
     }
 
     @Override
