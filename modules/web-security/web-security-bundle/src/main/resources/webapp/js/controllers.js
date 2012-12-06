@@ -276,3 +276,53 @@ function RoleCtrl($scope, Roles, Permissions, $http) {
               return $scope.role.permissionNames.indexOf(permissionName)===-1 ? false : true;
         }
 }
+
+function ProfileCtrl($scope, Users, $http, $routeParams) {
+    if ($routeParams.username !== undefined) {
+        $http.post('../websecurity/api/users/getuser', $routeParams.username).
+            success(function(data) {
+                $scope.userName = data.userName;
+                $scope.email = data.email;
+            });
+    }
+
+    $scope.cssPassword = function() {
+        var msg = 'control-group';
+
+        if ($scope.hasValue('newPassword') && $scope.newPassword !== $scope.confirmPassword) {
+            msg = msg.concat(' error');
+        }
+
+        return msg;
+    }
+
+    $scope.cssClass = function (prop) {
+        var msg = 'control-group';
+
+        if (!$scope.hasValue(prop)) {
+             msg = msg.concat(' error');
+        }
+
+        return msg;
+    }
+
+    $scope.hasValue = function(prop) {
+        return $scope.hasOwnProperty(prop) && $scope[prop] != '' && $scope[prop] != undefined;
+    }
+
+    $scope.changeEmail = function () {
+        $http.post('../websecurity/api/users/' + $scope.userName + '/change/email', $scope.email).
+            success(alertHandler('security.update.email.saved', 'security.update')).
+            error(alertHandler('security.update.email.error', 'main.error'));
+    }
+
+    $scope.changePassword = function () {
+        $http.post('../websecurity/api/users/' + $scope.userName + '/change/password', [$scope.oldPassword, $scope.newPassword]).
+            success(function () {
+                motechAlert('security.update.userPass.saved', 'security.update');
+                delete $scope.user.oldPassword;
+                delete $scope.user.newPassword;
+                delete $scope.confirmPassword;
+            }).error(alertHandler('security.update.userPass.error', 'main.error'));
+    }
+}

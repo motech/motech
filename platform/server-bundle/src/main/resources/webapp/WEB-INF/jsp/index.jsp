@@ -91,10 +91,16 @@
                     <ul class="nav pull-right menu-left">
 
                         <li class="dropdown">
-                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Logged in as <strong>${userName}</strong><strong class="caret"></strong></a>
+                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                <fmt:message key="loggedAs" bundle="${bundle}"/> <strong>${userName}</strong><strong class="caret"></strong>
+                            </a>
                             <ul id="localization" class="dropdown-menu" role="menu">
                                 <c:if test="${securityLaunch}">
-                                <li><a href="" tabindex="-1"><i class="icon-user"></i> Profile</a></li>
+                                <li>
+                                    <a href="home?moduleName=websecurity#/profile/${userName}" tabindex="-1">
+                                        <i class="icon-user"></i> <fmt:message key="profile" bundle="${bundle}"/>
+                                    </a>
+                                </li>
                                 <li class="divider"></li>
                                 </c:if>
                                 <li class="dropdown-submenu pull-left">
@@ -110,7 +116,11 @@
                                 </li>
                                 <c:if test="${securityLaunch}">
                                 <li class="divider"></li>
-                                <li><a href="${contextPath}/j_spring_security_logout" class=""><i class="icon-off"></i> Sign Out</a></li>
+                                <li>
+                                    <a href="${contextPath}/j_spring_security_logout" class="">
+                                        <i class="icon-off"></i> <fmt:message key="signOut" bundle="${bundle}"/>
+                                    </a>
+                                </li>
                                 </c:if>
                             </ul>
                         </li>

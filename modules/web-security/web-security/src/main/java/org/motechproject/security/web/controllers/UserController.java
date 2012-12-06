@@ -10,6 +10,7 @@ import org.motechproject.server.config.settings.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -71,6 +72,25 @@ public class UserController {
     public String loginMode() {
         MotechSettings settings = settingsService.getPlatformSettings();
         return settings.getLoginMode().toLowerCase();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/users/{userName}/change/email", method = RequestMethod.POST)
+    public void changeEmail(@PathVariable String userName, @RequestBody String email) {
+        UserDto dto = motechUserService.getUser(userName);
+        dto.setEmail(email);
+
+        motechUserService.updateUser(dto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/users/{userName}/change/password", method = RequestMethod.POST)
+    public void changePassword(@PathVariable String userName, @RequestBody String[] password) {
+        if (password.length == 2) {
+            if (motechUserService.changePassword(userName, password[0], password[1]) == null) {
+                throw new IllegalArgumentException("User password and given password are not equal");
+            }
+        }
     }
 
 }
