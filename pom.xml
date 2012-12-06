@@ -1079,6 +1079,8 @@
         <module>platform/server-config</module>
         <module>platform/server-startup</module>
         <module>platform/server</module>
+        <module>platform/web-security/web-security</module>
+        <module>platform/web-security/web-security-bundle</module>
         <module>modules/admin/admin</module>
         <module>modules/alerts/api</module>
         <module>modules/appointments/api</module>
@@ -1111,7 +1113,7 @@
         <module>modules/sms/smpp</module>
         <module>modules/tasks/tasks</module>
         <module>modules/testing-utils/testing-utils</module>
-        <module>modules/web-security/web-security</module>
+
         <module>utils/http-agent/http-agent</module>
 
         <!-- OSGI modules -->
@@ -1145,7 +1147,6 @@
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
         <module>modules/tasks/tasks-bundle</module>
-        <module>modules/web-security/web-security-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
 
         <!-- Packaging modules -->

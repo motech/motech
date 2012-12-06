@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-web-security-bundle</artifactId>
+    <artifactId>motech-platform-web-security-bundle</artifactId>
     <name>MOTECH Web Security Bundle</name>
     <description>MOTECH Web Security</description>
     <version>0.16-SNAPSHOT</version>
@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-web-security</artifactId>
+            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -134,7 +134,7 @@
                             org.openid4java.consumer,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-web-security;inline=true</Embed-Dependency>
+                        <Embed-Dependency>motech-platform-web-security;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
