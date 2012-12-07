@@ -31,9 +31,8 @@ public interface MotechSettings {
     String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
 
-    String ADMINLOGIN = "admin.login";
-    String ADMINPASSWORD = "admin.password";
-    String ADMINEMAIL="admin.email";
+    String PROVIDER_NAME="provider.name";
+    String PROVIDER_URL="provider.url";
     String LOGINMODE ="login.mode";
 
     String getLanguage();
@@ -41,6 +40,10 @@ public interface MotechSettings {
     String getStatusMsgTimeout();
 
     String getLoginMode();
+
+    String getProviderName();
+
+    String getProviderUrl();
 
     Properties getCouchDBProperties();
 

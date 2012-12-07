@@ -13,7 +13,10 @@ import java.util.Arrays;
 
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
-    private EmailValidator emailValidator;
+
+    private final static String ERROR_REQUIRED = "error.required.%s";
+    private final static String PROVIDER_NAME = "providerName";
+    private final static String PROVIDER_URL = "providerUrl";
 
     public StartupFormValidator() {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
@@ -27,7 +30,7 @@ public class StartupFormValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         for (String field : Arrays.asList("language", "databaseUrl", "queueUrl")) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format("error.required.%s", field));
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
         }
 
         for (String field : Arrays.asList("databaseUrl", "queueUrl")) {
@@ -41,11 +44,22 @@ public class StartupFormValidator implements Validator {
             String password = errors.getFieldValue("adminPassword").toString();
             String passwordConfirm = errors.getFieldValue("adminConfirmPassword").toString();
             String adminEmail = errors.getFieldValue("adminEmail").toString();
-            if (!password.equals(passwordConfirm)) {
+            for (String field : Arrays.asList("adminLogin", "adminPassword", "adminConfirmPassword")) {
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
+            }
+            if (errors.getFieldErrorCount(password) == 0 && errors.getFieldErrorCount(passwordConfirm) == 0 && !password.equals(passwordConfirm)) {
                 errors.rejectValue("adminPassword", "error.invalid.password", null, null);
             }
-            if (!emailValidator.isValid(adminEmail)) {
-                errors.rejectValue(adminEmail, "error.invalid.email.format", null, null);
+            if (!EmailValidator.getInstance().isValid(adminEmail)) {
+                errors.rejectValue("adminEmail", "error.invalid.email", null, null);
+            }
+        }
+        if (errors.getFieldValue("loginMode").toString().equals("openid")) {
+            String providerUrl = errors.getFieldValue(PROVIDER_URL).toString();
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_NAME, String.format(ERROR_REQUIRED, PROVIDER_NAME));
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_URL, String.format(ERROR_REQUIRED, PROVIDER_URL));
+            if (errors.getFieldErrorCount(PROVIDER_URL) == 0 && !urlValidator.isValid(providerUrl)) {
+                errors.rejectValue(PROVIDER_URL, String.format("error.invalid.%s", PROVIDER_URL), null, null);
             }
         }
 

@@ -1,0 +1,10 @@
+{
+    "type":"MotechUser",
+    "userName":"motech",
+    "externalId":"",
+    "password":"$2a$10$bpiIpFGO/TVM4pDBCluKh.T45mpPSjHyWD.iOl68/e7uwd1L9DIB.",
+    "email":"motech@motech.com",
+    "roles":["Admin User"],
+    "active":true,
+    "openId":""
+}

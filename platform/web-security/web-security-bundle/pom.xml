@@ -107,7 +107,12 @@
                             org.motechproject.security.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.security.service
+                            org.motechproject.security.service,
+                            org.motechproject.security.authentication,
+                            org.motechproject.security.domain,
+                            org.motechproject.security.model,
+                            org.motechproject.security.repository,
+                            org.motechproject.security.web.controllers
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
@@ -174,24 +179,6 @@
                                     <directory>target</directory>
                                     <includes>
                                         <include>*.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-config</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${user.home}/.motech/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/config</directory>
-                                    <includes>
-                                        <include>openIdProviders</include>
                                     </includes>
                                 </resource>
                             </resources>

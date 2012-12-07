@@ -10,7 +10,6 @@ import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -79,21 +78,20 @@ public class StartupController {
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());
             view.addObject("languages", localeSettings.getAvailableLanguages().keySet());
+            view.addObject("loginMode", form.getLoginMode());
             view.addObject("errors", getErrors(result));
 
             view.setViewName("startup");
         } else {
-            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
             ConfigFileSettings settings = startupManager.getLoadedConfig();
             settings.saveMotechSetting(MotechSettings.LANGUAGE, form.getLanguage());
             settings.saveMotechSetting(MotechSettings.SCHEDULER_URL, form.getSchedulerUrl());
             settings.saveMotechSetting(MotechSettings.DB_HOST, form.getDatabaseHost());
             settings.saveMotechSetting(MotechSettings.DB_PORT, form.getDatabasePort());
-            settings.saveMotechSetting(MotechSettings.ADMINLOGIN, form.getAdminLogin());
-            settings.saveMotechSetting(MotechSettings.ADMINPASSWORD, bcrypt.encode(form.getAdminPassword()));
-            settings.saveMotechSetting(MotechSettings.ADMINEMAIL, form.getAdminEmail());
             settings.saveMotechSetting(MotechSettings.LOGINMODE, form.getLoginMode());
             settings.saveActiveMqSetting(MotechSettings.AMQ_BROKER_URL, form.getQueueUrl());
+            settings.saveMotechSetting(MotechSettings.PROVIDER_NAME, form.getProviderName());
+            settings.saveMotechSetting(MotechSettings.PROVIDER_URL, form.getProviderUrl());
 
             platformSettingsService.savePlatformSettings(settings.getMotechSettings());
             platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());

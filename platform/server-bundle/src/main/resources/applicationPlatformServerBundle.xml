@@ -45,6 +45,8 @@
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
                   interface="org.motechproject.server.ui.UIFrameworkService"/>
 
+    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+                    interface="org.motechproject.event.listener.EventRelay" />
     <osgi:reference id="configLoader" interface="org.motechproject.server.config.ConfigLoader" />
     <osgi:reference id="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 </beans>

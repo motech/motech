@@ -117,6 +117,6 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
     }
 
     $scope.loginMode = function(mode) {
-        return $scope.securityMode = (mode == "repository") ? true : false;
+        return $scope.securityMode = mode;
     }
 }

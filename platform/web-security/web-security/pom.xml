@@ -75,6 +75,46 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution><execution>
+                    <id>create web-security database</id>
+                    <phase>post-integration-test</phase>
+                    <configuration>
+                        <target>
+                            <exec executable="curl">
+                                <arg value="-X" />
+                                <arg value="PUT" />
+                                <arg value="http://${db.server}:${db.port}/motech-web-security"/>
+                            </exec>
+                        </target>
+                    </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+                    <execution>
+                        <id>create admin user</id>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <!--
+                                    Default login and password
+                                    login: motech
+                                    password: motech
+                                -->
+                                <exec executable="curl">
+                                    <arg value="-X" />
+                                    <arg value="POST" />
+                                    <arg value="http://${db.server}:${db.port}/motech-web-security" />
+                                    <arg value="-d"/>
+                                    <arg value="@src/main/resources/adminUser.json"/>
+                                    <arg value="-H"/>
+                                    <arg value="Content-Type: application/json"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

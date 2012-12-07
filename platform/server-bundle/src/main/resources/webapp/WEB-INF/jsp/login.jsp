@@ -202,31 +202,17 @@
                     </div>
                     </c:if>
                 </c:if>
-                <c:if test="${loginMode=='openId'}">
+                <c:if test="${loginMode=='openid'}">
                     <div class="well2 margin-center spn5">
                         <div class="box-header"><fmt:message key="security.openIdConsumer" bundle="${bundle}"/></div>
                         <div class="box-content">
                             <div class="well3">
                                 <form class="inside" action="${contextPath}j_spring_openid_security_check" method="POST">
-                                    <div class="control-group">
-                                        <h4><fmt:message key="signin" bundle="${bundle}"/></h4>
-                                    </div>
-                                    <div class="control-group">
-                                    <input name="openid_identifier" type="text"/>
-                                    </div>
-                                    <div class="control-group">
-                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="signin" bundle="${bundle}"/>"/>
-                                    </div>
+                                   <p>For ${openIdProviderName} users:</p>
+                                   <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
+                                   <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
+                                   <input type="submit" value="${msg} ${openIdProviderName}"/>
                                 </form>
-                                <c:forEach var="openIdProvider" items="${openIdProviders}">
-                                    <form class="inside" action="${contextPath}j_spring_openid_security_check" method="POST">
-                                       <p>For ${openIdProvider.providerName} users:</p>
-                                       <input name="openid_identifier" type="hidden" value="${openIdProvider.providerUrl}"/>
-
-                                       <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
-                                       <input type="submit" value="${msg} ${openIdProvider.providerName}"/>
-                                    </form>
-                                </c:forEach>
                             </div>
                             <div class="clearfix"></div>
                         </div>

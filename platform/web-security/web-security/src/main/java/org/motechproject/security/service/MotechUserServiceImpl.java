@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-@Service
+@Service("motechUserService")
 public class MotechUserServiceImpl implements MotechUserService {
 
     @Autowired
@@ -21,13 +21,6 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Autowired
     private MotechPasswordEncoder passwordEncoder;
-
-    @Override
-    public void registerAdminUser(String username, String password, String email, List<String> roles, boolean isActive) {
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, password, email, "", roles, "");
-        user.setActive(isActive);
-        allMotechUsers.add(user);
-    }
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles) {

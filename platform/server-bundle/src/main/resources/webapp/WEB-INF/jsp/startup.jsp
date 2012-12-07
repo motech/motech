@@ -118,34 +118,46 @@
                     </div>
                     <div class="control-group">
                          <label class="control-label"><fmt:message key="select.loginMode" bundle="${bundle}"/></label>
-                         <div class="controls">
-                                 <input type="radio" value="repository" name="loginMode" ng-click="loginMode('repository')"/><span><fmt:message key="repository" bundle="${bundle}"/></span>
-                                 <input type="radio" value="openId" name="loginMode" ng-click="loginMode('openId')"/><span><fmt:message key="openId" bundle="${bundle}"/></span>
+                         <div class="controls" ng-init="loginMode('${loginMode}')">
+                                 <input type="radio" value="repository" name="loginMode" ng-click="loginMode('repository')" <c:if test="${loginMode == 'repository'}">checked</c:if>/><span><fmt:message key="repository" bundle="${bundle}"/></span>
+                                 <input type="radio" value="openid" name="loginMode" ng-click="loginMode('openid')" <c:if test="${loginMode == 'openid'}">checked</c:if> /><span><fmt:message key="openId" bundle="${bundle}"/></span>
                          </div>
                      </div>
-                    <div ng-show="securityMode" class="control-group">
+                    <div ng-show="securityMode=='repository'" class="control-group">
                         <label class="control-label"><fmt:message key="enter.adminLogin" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-large" name="adminLogin" value="${startupSettings.adminLogin}"/>
                         </div>
                     </div>
-                    <div ng-show="securityMode" class="control-group">
+                    <div ng-show="securityMode=='repository'" class="control-group">
                         <label class="control-label"><fmt:message key="enter.adminPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-large" name="adminPassword" value="${startupSettings.adminPassword}"/>
                         </div>
                     </div>
-                    <div ng-show="securityMode" class="control-group">
+                    <div ng-show="securityMode=='repository'" class="control-group">
                         <label class="control-label"><fmt:message key="enter.adminComfirmPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-large" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
                         </div>
                     </div>
-                     <div ng-show="securityMode" class="control-group">
+                     <div ng-show="securityMode=='repository'" class="control-group">
                         <label class="control-label"><fmt:message key="enter.adminEmail" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="email" class="input-large" name="adminEmail" value="${startupSettings.adminEmail}"/>
                         </div>
+                     </div>
+                     <div ng-show="securityMode=='openid'" class="control-group">
+                         <label class="control-label"><fmt:message key="enter.providerName" bundle="${bundle}"/></label>
+                         <div class="controls">
+                             <input type="text" class="input-large" name="providerName" value="${startupSettings.providerName}"/>
+                         </div>
+                     </div>
+                     <div ng-show="securityMode=='openid'" class="control-group">
+                          <label class="control-label"><fmt:message key="enter.providerUrl" bundle="${bundle}"/></label>
+                          <div class="controls">
+                              <input type="text" class="input-large" name="providerUrl" value="${startupSettings.providerUrl}"/>
+                          </div>
                      </div>
                     <div class="control-group">
                         <div class="controls">

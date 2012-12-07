@@ -34,6 +34,16 @@ public class ConfigFileSettings implements MotechSettings {
         return motechSettings.getProperty(LOGINMODE);
     }
 
+    @Override
+    public String getProviderName() {
+        return motechSettings.getProperty(PROVIDER_NAME);
+    }
+
+    @Override
+    public String getProviderUrl() {
+        return motechSettings.getProperty(PROVIDER_URL);
+    }
+
     public byte[] getMd5checkSum() {
         return Arrays.copyOf(md5checkSum, md5checkSum.length);
     }

@@ -135,6 +135,8 @@ public class StartupControllerTest {
         startupForm.setAdminPassword("motech");
         startupForm.setAdminConfirmPassword("motech");
         startupForm.setLoginMode("repository");
+        startupForm.setProviderName("Provider");
+        startupForm.setProviderUrl("test_provider_url");
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
