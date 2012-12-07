@@ -637,7 +637,7 @@
             <dependency>
                 <groupId>com.googlecode.lambdaj</groupId>
                 <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
-                <version>2.3.3</version>
+                <version>2.3.3-r001</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>lambdaj</artifactId>
