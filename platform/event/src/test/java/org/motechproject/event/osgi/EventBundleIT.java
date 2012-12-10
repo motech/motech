@@ -70,17 +70,10 @@ public class EventBundleIT extends BaseOsgiIT {
     }
 
     @Override
-    protected Manifest getManifest() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("org.motechproject.event").append(",")
-                .append("org.motechproject.event.listener").append(",")
-                .append("org.motechproject.event.listener.annotations");
-
-
-        Manifest mf = super.getManifest();    //TODO : PULL THIS UP TO MOTECH BASE OSGI IT.
-        String imports = (String) mf.getMainAttributes().getValue(Constants.IMPORT_PACKAGE);
-        mf.getMainAttributes().putValue(Constants.IMPORT_PACKAGE, builder.append(",").append(imports).toString());
-        return mf;
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.event",
+                "org.motechproject.event.listener",
+                "org.motechproject.event.listener.annotations");
     }
 
     @Override

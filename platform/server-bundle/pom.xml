@@ -67,6 +67,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>org.springframework.security.core</artifactId>
         </dependency>
+        <!-- Bundle IT dependency -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.http.jetty</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -80,17 +85,13 @@
                         <Context-Path>server</Context-Path>
                         <Context-File>applicationPlatformServerBundle.xml</Context-File>
                         <Export-Package>
-                            <!-- server-startup -->
                             org.motechproject.server.startup,
-                            <!-- Embedded -->
                             org.motechproject.server.ui,
                             org.motechproject.server.ui.ex,
-                            org.motechproject.server.ui.impl,
                             org.motechproject.server.web,
                             org.motechproject.server.web.controller,
                             org.motechproject.server.web.form,
-                            org.motechproject.server.web.validator,
-                            org.motechproject.server.bundle
+                            org.motechproject.server.web.validator
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.bundle.Activator
