@@ -32,9 +32,9 @@ public class LoginController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(final HttpServletRequest request) {
         ModelAndView view = new ModelAndView("login");
-        if (StringUtils.isNotBlank(request.getSession().getServletContext().getContextPath())) {
-            view.addObject("contextPath", request.getSession().getServletContext().getContextPath().substring(1));
-        } else {
+        if (StringUtils.isNotBlank(request.getSession().getServletContext().getContextPath()) && !"/".equals(request.getSession().getServletContext().getContextPath())) {
+            view.addObject("contextPath", request.getSession().getServletContext().getContextPath().substring(1) + "/");
+        } else if (StringUtils.isBlank(request.getSession().getServletContext().getContextPath()) || "/".equals(request.getSession().getServletContext().getContextPath())) {
             view.addObject("contextPath", "");
         }
         view.addObject("loginMode", getLoginMode());

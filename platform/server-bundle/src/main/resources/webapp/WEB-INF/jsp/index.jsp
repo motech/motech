@@ -117,7 +117,7 @@
                                 <c:if test="${securityLaunch}">
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="${contextPath}/j_spring_security_logout" class="">
+                                    <a href="${contextPath}j_spring_security_logout" class="">
                                         <i class="icon-off"></i> <fmt:message key="signOut" bundle="${bundle}"/>
                                     </a>
                                 </li>

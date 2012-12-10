@@ -81,7 +81,7 @@
                     <div class="box-header"><fmt:message key="security.signInUser" bundle="${bundle}"/></div>
                     <div class="box-content clearfix">
                         <div class="well3">
-                            <form action="${contextPath}/j_spring_security_check" method="POST" class="inside">
+                            <form action="${contextPath}j_spring_security_check" method="POST" class="inside">
                                 <div class="control-group">
                                     <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/></h4>
                                 </div>
@@ -127,7 +127,7 @@
                             </div>
                             <div class="span6">
                                 <div class="well3"><div class="left-divider">
-                                    <form class="inside" action="${contextPath}/j_spring_security_check" method="POST">
+                                    <form class="inside" action="${contextPath}j_spring_security_check" method="POST">
                                         <div class="control-group">
                                             <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/></h4>
                                         </div>
@@ -207,7 +207,7 @@
                         <div class="box-header"><fmt:message key="security.openIdConsumer" bundle="${bundle}"/></div>
                         <div class="box-content">
                             <div class="well3">
-                                <form class="inside" action="${contextPath}/j_spring_openid_security_check" method="POST">
+                                <form class="inside" action="${contextPath}j_spring_openid_security_check" method="POST">
                                     <div class="control-group">
                                         <h4><fmt:message key="signin" bundle="${bundle}"/></h4>
                                     </div>
@@ -219,7 +219,7 @@
                                     </div>
                                 </form>
                                 <c:forEach var="openIdProvider" items="${openIdProviders}">
-                                    <form class="inside" action="${contextPath}/j_spring_openid_security_check" method="POST">
+                                    <form class="inside" action="${contextPath}j_spring_openid_security_check" method="POST">
                                        <p>For ${openIdProvider.providerName} users:</p>
                                        <input name="openid_identifier" type="hidden" value="${openIdProvider.providerUrl}"/>
 
