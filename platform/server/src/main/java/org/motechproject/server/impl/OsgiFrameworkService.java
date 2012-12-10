@@ -12,8 +12,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.launch.Framework;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
@@ -40,10 +41,15 @@ import java.util.concurrent.Executors;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import static org.apache.commons.lang.StringUtils.startsWith;
+
 /**
  * @author Ricky Wang
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
+    private static final String PLATFORM_BUNDLES = "platform";
+    private static final String MODULE_BUNDLES = "module";
+    private static final String THIRD_PARTY_BUNDLES = "3party";
 
     private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
 
@@ -60,7 +66,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private List<BundleLoader> bundleLoaders;
 
-    private List<Bundle> bundles = new ArrayList<>();
+    private Map<String, List<Bundle>> bundles = new HashMap<>();
 
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
 
@@ -69,7 +75,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private static final int THREADS_NUMBER = 10;
 
     /**
-     * Initialize, install bundles and start non-MOTECH bundles and the OSGi framework
+     * Initialize, install and start bundles and the OSGi framework
      */
     public void start() {
         try {
@@ -84,42 +90,27 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             installAllBundles(servletContext, bundleContext);
 
-            startThirdPartyBundles();
+            startBundles(THIRD_PARTY_BUNDLES);
 
             registerBundleLoaderExecutor();
 
-            startPlatformCoreBundles();
+            startBundles(PLATFORM_BUNDLES);
 
-            osgiFramework.getBundleContext().addFrameworkListener(new FrameworkListener() {
+            bundleContext.addServiceListener(new ServiceListener() {
                 @Override
-                public void frameworkEvent(FrameworkEvent event) {
-                    if (event.getType() == FrameworkEvent.STARTED) {
-                        startMotechBundles();
+                public void serviceChanged(ServiceEvent event) {
+                    if (event.getType() == ServiceEvent.REGISTERED) {
+                        startBundles(MODULE_BUNDLES);
                     }
                 }
-            });
+            }, String.format("(&(%s=org.apache.felix.http.api.ExtHttpService))", Constants.OBJECTCLASS));
 
             osgiFramework.start();
             logger.info("OSGi framework started");
-        } catch (BundleException | BundleLoadingException | IOException e) {
+        } catch (BundleException | BundleLoadingException | IOException | InvalidSyntaxException e) {
             logger.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
-    }
-
-    private void startThirdPartyBundles() {
-        ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
-
-        for (Bundle bundle : bundles) {
-            String bundleSymbolicName = bundle.getSymbolicName();
-            if (bundleSymbolicName != null && !bundleSymbolicName.startsWith("org.motechproject.motech-")) {
-                bundleLoader.execute(new BundleStarter(bundle));
-            } else {
-                logger.info("Skipping loading bundle :" + bundle.getLocation());
-            }
-        }
-
-        waitForBundles(bundleLoader);
     }
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
@@ -130,20 +121,33 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             }
             logger.info("Installing bundle [" + url + "]");
             try {
-                Bundle bundle = bundleContext.installBundle(url.toExternalForm());
-                bundles.add(bundle);
+                addBundle(bundleContext.installBundle(url.toExternalForm()));
             } catch (BundleException e) {
                 throw new BundleLoadingException("Failed to install bundle from " + url, e);
             }
         }
     }
 
-    private void startPlatformCoreBundles() {
-        for (Bundle bundle : bundles) {
-            final String symbolicName = bundle.getSymbolicName();
-            if (symbolicName != null && symbolicName.startsWith("org.motechproject.motech-platform-")) {
-                startBundle(symbolicName);
+    private void addBundle(Bundle bundle) {
+        String symbolicName = bundle.getSymbolicName();
+        String key = null;
+
+        if (isFragmentBundle(bundle) || !startsWith(symbolicName, "org.motechproject.motech-")) {
+            key = THIRD_PARTY_BUNDLES;
+        } else if (startsWith(symbolicName, "org.motechproject.motech-platform-")) {
+            key = PLATFORM_BUNDLES;
+        } else if (startsWith(symbolicName, "org.motechproject.motech-")) {
+            key = MODULE_BUNDLES;
+        }
+
+        if (key != null) {
+            if (!bundles.containsKey(key)) {
+                bundles.put(key, new ArrayList<Bundle>());
             }
+
+            bundles.get(key).add(bundle);
+        } else {
+            logger.error(String.format("Cant add bundle: %s", symbolicName));
         }
     }
 
@@ -186,48 +190,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return null != mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
     }
 
-    /**
-     * Start MOTECH bundles
-     */
-    private void startMotechBundles() {
-        ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
+    private void startBundles(String key) {
+        if (bundles.containsKey(key) && !bundles.get(key).isEmpty()) {
+            ExecutorService bundleLoader = Executors.newFixedThreadPool(THREADS_NUMBER);
 
-        for (Bundle bundle : bundles) {
-            String bundleSymbolicName = bundle.getSymbolicName();
-
-            if (bundleSymbolicName != null && bundleSymbolicName.startsWith("org.motechproject.motech-")
-                    && !bundleSymbolicName.contains("-platform-")) {
-                try {
-                    bundleLoader.execute(new BundleStarter(bundle));
-                } catch (Exception e) {
-                    logger.error("Failed to start Bundles", e);
-                }
+            for (Bundle bundle : bundles.get(key)) {
+                bundleLoader.execute(new BundleStarter(bundle));
             }
-        }
-        waitForBundles(bundleLoader);
-    }
 
-    /**
-     * Find first bundle with given name and start it
-     *
-     * @param bundleSymbolicName symbolic name of the bundle you want to launch
-     * @return true if bundle was found and launched, otherwise false
-     */
-    public boolean startBundle(final String bundleSymbolicName) {
-        boolean found = false;
-        try {
-            for (Bundle bundle : bundles) {
-                if (bundle.getSymbolicName().equals(bundleSymbolicName)) {
-                    startBundle(bundle);
-                    found = true;
-                    break; // found bundle
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Failed to start Bundle", e);
-            found = false;
+            waitForBundles(bundleLoader);
         }
-        return found;
     }
 
     private void startBundle(Bundle bundle) throws BundleLoadingException, BundleException, ClassNotFoundException {

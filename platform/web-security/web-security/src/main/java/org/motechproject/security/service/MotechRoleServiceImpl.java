@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("motechRoleService")
 public class MotechRoleServiceImpl implements MotechRoleService {
 
     @Autowired
@@ -33,7 +33,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     @Override
     public RoleDto getRole(String roleName) {
         MotechRole motechRole = allMotechRoles.findByRoleName(roleName);
-        return new RoleDto(motechRole);
+        return motechRole != null ? new RoleDto(motechRole) : null;
     }
 
     @Override

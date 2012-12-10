@@ -13,11 +13,17 @@ public class RoleDto {
     private List<String> permissionNames;
 
     public RoleDto() {
+        this(null, null);
     }
 
     public RoleDto(MotechRole motechRole) {
-        this.roleName = motechRole.getRoleName();
-        this.permissionNames = motechRole.getPermissionNames();
+        this(motechRole.getRoleName(), motechRole.getPermissionNames());
+    }
+
+    public RoleDto(String roleName, List<String> permissionNames) {
+        this.roleName = roleName;
+        this.permissionNames = permissionNames;
+        this.originalRoleName = roleName;
     }
 
     public String getRoleName() {

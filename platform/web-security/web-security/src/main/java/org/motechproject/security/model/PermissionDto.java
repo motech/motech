@@ -9,11 +9,16 @@ public class PermissionDto {
     private String bundleName;
 
     public PermissionDto() {
+        this(null, null);
     }
 
     public PermissionDto(MotechPermission motechPermission) {
-        this.permissionName = motechPermission.getPermissionName();
-        this.bundleName = motechPermission.getBundleName();
+        this(motechPermission.getPermissionName(), motechPermission.getBundleName());
+    }
+
+    public PermissionDto(String permissionName, String bundleName) {
+        this.permissionName = permissionName;
+        this.bundleName = bundleName;
     }
 
     public String getPermissionName() {

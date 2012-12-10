@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.felix.http.api.ExtHttpService;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.ServletRegistrationException;
+import org.motechproject.security.filter.MotechDelegatingFilterProxy;
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
 import org.motechproject.server.ui.UiHttpContext;
@@ -16,20 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Properties;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
     private static final String CONTEXT_CONFIG_LOCATION = "applicationWebSecurityBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/websecurity/api";
     private static final String RESOURCE_URL_MAPPING = "/websecurity";
-    private static final String ADMIN_MODE_FILE = "admin-mode.conf";
 
     private ServiceTracker httpServiceTracker;
     private ServiceTracker uiServiceTracker;
@@ -96,28 +92,21 @@ public class Activator implements BundleActivator {
     private void serviceAdded(ExtHttpService service) {
         try {
             DispatcherServlet dispatcherServlet = new DispatcherServlet();
-            boolean adminMode = isAdminMode();
-
-            if (adminMode) {
-                dispatcherServlet.setContextConfigLocation("adminMode.xml");
-            } else {
-                dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
-            }
-
+            dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
             dispatcherServlet.setContextClass(WebSecurityApplicationContext.class);
             ClassLoader old = Thread.currentThread().getContextClassLoader();
+
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 UiHttpContext httpContext = new UiHttpContext(service.createDefaultHttpContext());
 
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
                 service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
-                if (!adminMode) {
-                    filter = new DelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
-                    service.registerFilter(filter, "/.*", null, 0, httpContext);
-                }
-
                 logger.debug("Servlet registered");
+
+                filter = new MotechDelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
+                service.registerFilter(filter, "/.*", null, 0, httpContext);
+                logger.debug("Filter registered");
             } finally {
                 Thread.currentThread().setContextClassLoader(old);
             }
@@ -128,8 +117,10 @@ public class Activator implements BundleActivator {
 
     private void serviceRemoved(ExtHttpService service) {
         service.unregister(SERVLET_URL_MAPPING);
-        service.unregisterFilter(filter);
         logger.debug("Servlet unregistered");
+
+        service.unregisterFilter(filter);
+        logger.debug("Filter unregistered");
     }
 
     private void serviceAdded(UIFrameworkService service) {
@@ -165,24 +156,4 @@ public class Activator implements BundleActivator {
         logger.debug("Web Security unregistered from ui framework");
     }
 
-    private boolean isAdminMode() {
-        Properties adminDetails = new Properties();
-        boolean isAdminMode = false;
-
-        File adminMode = new File(String.format("%s/.motech/%s", System.getProperty("user.home"), ADMIN_MODE_FILE));
-
-        if (adminMode.exists()) {
-            try (InputStream in = new FileInputStream(adminMode)) {
-                adminDetails.load(new InputStreamReader(in));
-
-                String am = adminDetails.getProperty("admin.mode");
-                isAdminMode = Boolean.valueOf(am);
-
-                adminMode.delete();
-            } catch (IOException e) {
-                logger.debug("Cannot admin mode read file", e);
-            }
-        }
-        return isAdminMode;
-    }
 }

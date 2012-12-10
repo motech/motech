@@ -8,4 +8,6 @@ import java.util.List;
 public interface MotechPermissionService {
 
     List<PermissionDto> getPermissions();
+
+    void addPermission(PermissionDto permission);
 }

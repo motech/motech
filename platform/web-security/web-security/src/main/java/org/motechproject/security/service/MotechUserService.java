@@ -10,10 +10,10 @@ public interface MotechUserService {
 
     void register(String username, String password, String email, String externalId, List<String> roles);
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('addUser')")
+    @PreAuthorize("hasRole('addUser')")
     void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive, String openId);
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('activateUser')")
+    @PreAuthorize("hasRole('activateUser')")
     void activateUser(String username);
 
     MotechUserProfile retrieveUserByCredentials(String username, String password);
@@ -22,17 +22,17 @@ public interface MotechUserService {
 
     boolean hasUser(String username);
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('manageUser')")
+    @PreAuthorize("hasRole('manageUser')")
     List<MotechUserProfile> getUsers();
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('editUser')")
+    @PreAuthorize("hasRole('editUser')")
     UserDto getUser(String userName);
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('manageUser')")
+    @PreAuthorize("hasRole('manageUser')")
     List<MotechUserProfile> getOpenIdUsers();
 
     void updateUser(UserDto user);
 
-    @PreAuthorize("isFullyAuthenticated() and hasRole('deleteUser')")
+    @PreAuthorize("hasRole('deleteUser')")
     void deleteUser(UserDto user);
 }
