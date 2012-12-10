@@ -87,11 +87,4 @@ public class EventBundleIT extends BaseOsgiIT {
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testEventBundleContext.xml"};
     }
-
-    @Override
-    protected String[] getTestFrameworkBundlesNames() {
-        List<String> bundles = new ArrayList<>(Arrays.asList(super.getTestFrameworkBundlesNames()));
-        bundles.add("org.apache.geronimo.specs,geronimo-j2ee-management_1.1_spec,1.0.1");
-        return bundles.toArray(new String[bundles.size()]);
-    }
 }
