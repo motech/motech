@@ -14,15 +14,6 @@ function SettingsCtrl($scope, Settings) {
         });
     }
 
-    $scope.submitAndRestart = function() {
-        $scope.settings.$save({restart: true}, function () {
-            var loc = new String(window.location), indexOf = loc.indexOf('?');
-            window.location = loc.substring(0, indexOf);
-        }, function() {
-            motechAlert('settings.error.saved', 'main.error');
-        });
-    }
-
     $scope.cssClass = function(prop) {
         var msg = 'control-group';
 
