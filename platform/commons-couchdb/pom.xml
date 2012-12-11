@@ -9,7 +9,9 @@
         <relativePath>../../</relativePath>
     </parent>
 
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-commons-couchdb</artifactId>
+    <version>0.16-SNAPSHOT</version>
     <name>MOTECH Platform Commons Couchdb</name>
     <packaging>bundle</packaging>
 
