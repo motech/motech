@@ -95,7 +95,7 @@ public class MessageCampaignServiceImplTest {
 
     @Test
     public void shouldCallCampaignSchedulerToStart() {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "campaign-name", null, null);
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "campaign-name", null, null, null);
 
         AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
         when(allMessageCampaigns.get("campaign-name")).thenReturn(absoluteCampaign);

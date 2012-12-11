@@ -13,6 +13,7 @@ public class CampaignRequest {
     private String campaignName;
     private Time startTime;
     private LocalDate referenceDate;
+    private Time referenceTime;
 
     public CampaignRequest() {
     }
@@ -22,12 +23,14 @@ public class CampaignRequest {
      * @param externalId - a client defined id to identify the enrollment
      * @param campaignName - the campaign into which the entity should be enrolled
      * @param referenceDate - the date the campaign has started for this enrollment. it can be in the past resulting in a delayed enrollment.
+     * @param referenceTime - time to raise alert when repeat interval is less than a day
      * @param startTime - time of the day at which the alert must be raised. This overrides the campaign's deliverTime.
      */
-    public CampaignRequest(String externalId, String campaignName, LocalDate referenceDate, Time startTime) {
+    public CampaignRequest(String externalId, String campaignName, LocalDate referenceDate, Time referenceTime, Time startTime) {
         this.externalId = externalId;
         this.campaignName = campaignName;
         this.referenceDate = referenceDate;
+        this.referenceTime = referenceTime;
         this.startTime = startTime;
     }
 
@@ -61,6 +64,14 @@ public class CampaignRequest {
 
     public void setReferenceDate(LocalDate referenceDate) {
         this.referenceDate = referenceDate;
+    }
+
+    public Time referenceTime() {
+        return referenceTime;
+    }
+
+    public void setReferenceTime(Time referenceTime) {
+        this.referenceTime = referenceTime;
     }
 
     @Override

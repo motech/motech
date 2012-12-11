@@ -20,6 +20,8 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     private LocalDate referenceDate;
     @JsonProperty
     private Time deliverTime;
+    @JsonProperty
+    private Time referenceTime;
 
     private CampaignEnrollment() {
     }
@@ -68,6 +70,25 @@ public class CampaignEnrollment extends MotechBaseDataObject {
 
     public CampaignEnrollment setDeliverTime(Time deliverTime) {
         this.deliverTime = deliverTime;
+        return this;
+    }
+
+    public CampaignEnrollment setDeliverTime(int hour, int minute) {
+        this.deliverTime = new Time(hour, minute);
+        return this;
+    }
+
+    public Time getReferenceTime() {
+        return referenceTime;
+    }
+
+    public CampaignEnrollment setReferenceTime(int hour, int minute) {
+        this.referenceTime = new Time(hour, minute);
+        return this;
+    }
+
+    public CampaignEnrollment setReferenceTime(Time referenceTime) {
+        this.referenceTime = referenceTime;
         return this;
     }
 

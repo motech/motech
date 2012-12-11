@@ -6,6 +6,13 @@ public class OffsetCampaignMessage extends CampaignMessage {
 
     private Period timeOffset;
 
+    public OffsetCampaignMessage() {
+    }
+
+    public OffsetCampaignMessage(Period timeOffset) {
+        this.timeOffset = timeOffset;
+    }
+
     public Period timeOffset() {
         return timeOffset;
     }

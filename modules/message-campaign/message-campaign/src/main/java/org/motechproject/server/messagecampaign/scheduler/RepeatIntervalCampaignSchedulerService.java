@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.DateTime;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -17,6 +18,8 @@ import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 @Component
 public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerService<RepeatIntervalCampaignMessage, RepeatIntervalCampaign> {
+
+    private static final int MILLIS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
     @Autowired
     public RepeatIntervalCampaignSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
@@ -38,6 +41,15 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
             .setIgnorePastFiresAtStart(true)
             .setUseOriginalFireTimeAfterMisfire(true);
         getSchedulerService().safeScheduleRepeatingJob(job);
+    }
+
+    @Override
+    protected Time deliverTimeFor(CampaignEnrollment enrollment, CampaignMessage message) {
+        RepeatIntervalCampaignMessage repeatIntervalCampaignMessage = (RepeatIntervalCampaignMessage) message;
+        if (repeatIntervalCampaignMessage.getRepeatIntervalInMillis() < MILLIS_IN_A_DAY) {
+            return enrollment.getReferenceTime();
+        }
+        return enrollment.getDeliverTime() != null ? enrollment.getDeliverTime() : message.getStartTime();
     }
 
     @Override

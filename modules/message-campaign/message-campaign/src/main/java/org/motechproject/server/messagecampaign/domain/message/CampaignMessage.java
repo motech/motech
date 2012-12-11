@@ -55,4 +55,9 @@ public class CampaignMessage {
         this.startTime = startTime;
         return this;
     }
+
+    public CampaignMessage setStartTime(int hour, int minute) {
+        this.startTime = new Time(hour, minute);
+        return this;
+    }
 }

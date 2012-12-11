@@ -61,7 +61,7 @@ public class MessageCampaignServiceFT {
         EventCaptor listener = new EventCaptor("listener1", scheduler);
         eventListenerRegistry.registerListener(listener, EventKeys.SEND_MESSAGE);
 
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "weekly_campaign", new LocalDate(2012, 10, 1), null);
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "weekly_campaign", new LocalDate(2012, 10, 1), null, null);
         messageCampaignService.startFor(campaignRequest);
 
         listener.assertEventRaisedAt(asList(

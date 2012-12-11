@@ -56,7 +56,7 @@ public class RepeatCampaignSchedulingIT {
 
     @Test
     public void shouldScheduleAllMessagesOfCampaignAtMessageStartTime() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), null);
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), null, null);
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
@@ -75,7 +75,7 @@ public class RepeatCampaignSchedulingIT {
 
     @Test
     public void shouldScheduleWeeklyMessagesAtUserSpecifiedTime() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), new Time(15, 20));
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), null, new Time(15, 20));
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
@@ -89,7 +89,7 @@ public class RepeatCampaignSchedulingIT {
     public void shouldNotScheduleMessagesInPastForDelayedEnrollment() throws SchedulerException {
         try {
             fakeToday(new LocalDate(2020, 7, 15));
-            CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), null);
+            CampaignRequest campaignRequest = new CampaignRequest("entity_1", "WeeklyCampaign", new LocalDate(2020, 7, 10), null, null);
             messageCampaignService.startFor(campaignRequest);
             List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
             assertEquals(asList(
@@ -102,15 +102,15 @@ public class RepeatCampaignSchedulingIT {
     }
 
     @Test
-    public void shouldScheduleMessagesEvery12Hours() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "HourlyCampaign", new LocalDate(2020, 7, 10), null);
+    public void shouldScheduleMessagesEvery12HoursUsingReferenceTime() throws SchedulerException {
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "HourlyCampaign", new LocalDate(2020, 7, 10), new Time(4, 30), null);
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.HourlyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 10, 30, 0),
-            newDateTime(2020, 7, 10, 22, 30, 0),
-            newDateTime(2020, 7, 11, 10, 30, 0),
-            newDateTime(2020, 7, 11, 22, 30, 0)),
+            newDateTime(2020, 7, 10, 4, 30, 0),
+            newDateTime(2020, 7, 10, 16, 30, 0),
+            newDateTime(2020, 7, 11, 4, 30, 0),
+            newDateTime(2020, 7, 11, 16, 30, 0)),
             fireTimes);
     }
 

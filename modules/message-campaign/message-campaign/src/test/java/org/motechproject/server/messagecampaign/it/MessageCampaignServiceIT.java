@@ -37,7 +37,7 @@ public class MessageCampaignServiceIT {
 
     @Test
     public void shouldUnscheduleMessageJobsWhenCampaignIsStopped() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "PREGNANCY", new LocalDate(2020, 7, 10), null);
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "PREGNANCY", new LocalDate(2020, 7, 10), null, null);
 
         TriggerKey triggerKey = triggerKey("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.PREGNANCY.entity_1.PREGNANCY", "default");
 

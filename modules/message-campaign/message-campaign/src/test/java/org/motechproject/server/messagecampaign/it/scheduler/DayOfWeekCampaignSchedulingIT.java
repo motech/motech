@@ -56,7 +56,7 @@ public class DayOfWeekCampaignSchedulingIT {
 
     @Test
     public void shouldScheduleMessageAtItsStartTime() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), null); // Friday
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), null, null); // Friday
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
         assertEquals(asList(
@@ -69,7 +69,7 @@ public class DayOfWeekCampaignSchedulingIT {
 
     @Test
     public void shouldScheduleMessageAtUserPreferredTime() throws SchedulerException {
-        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), new Time(8, 20)); // Friday
+        CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), null, new Time(8, 20)); // Friday
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
         assertEquals(asList(
@@ -84,7 +84,7 @@ public class DayOfWeekCampaignSchedulingIT {
     public void shouldNotScheduleMessagesInThePastForDelayedEnrollment() throws SchedulerException {
         try {
             fakeToday(new LocalDate(2020, 7, 15));
-            CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), null); // Friday
+            CampaignRequest campaignRequest = new CampaignRequest("entity_1", "DayOfWeekCampaign", new LocalDate(2020, 7, 10), null, null); // Friday
             messageCampaignService.startFor(campaignRequest);
             List<DateTime> fireTimes = getFireTimes("org.motechproject.server.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
             assertEquals(asList(

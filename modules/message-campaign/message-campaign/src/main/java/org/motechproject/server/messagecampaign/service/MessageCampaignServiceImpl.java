@@ -31,7 +31,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     }
 
     public void startFor(CampaignRequest request) {
-        CampaignEnrollment enrollment = new CampaignEnrollment(request.externalId(), request.campaignName()).setReferenceDate(request.referenceDate()).setDeliverTime(request.deliverTime());
+        CampaignEnrollment enrollment = new CampaignEnrollment(request.externalId(), request.campaignName()).setReferenceDate(request.referenceDate()).setReferenceTime(request.referenceTime()).setDeliverTime(request.deliverTime());
         campaignEnrollmentService.register(enrollment);
         CampaignSchedulerService campaignScheduler = campaignSchedulerFactory.getCampaignScheduler(request.campaignName());
         campaignScheduler.start(enrollment);
