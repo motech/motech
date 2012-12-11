@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -45,7 +44,7 @@ public class SettingsController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
-    public void saveSettings(@RequestBody SettingsDto settings, @RequestParam(required = false, defaultValue = "false") boolean restart) throws BundleException {
+    public void saveSettings(@RequestBody SettingsDto settings) throws BundleException {
         if (settings.isValid()) {
             settingsFacade.setProperty(COMMCARE_BASE_URL_KEY, settings.getCommcareBaseUrl());
             settingsFacade.setProperty(COMMCARE_DOMAIN_KEY, settings.getCommcareDomain());
@@ -53,9 +52,6 @@ public class SettingsController {
             settingsFacade.setProperty(PASSWORD_KEY, settings.getPassword());
             settingsFacade.setProperty(CASE_EVENT_STRATEGY_KEY, settings.getEventStrategy());
 
-            if (restart) {
-                //OsgiListener.getOsgiService().restart(settingsFacade.getSymbolicName());
-            }
         } else {
             throw new IllegalArgumentException("Settings are not valid");
         }

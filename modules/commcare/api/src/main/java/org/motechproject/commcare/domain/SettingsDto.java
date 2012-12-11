@@ -1,6 +1,7 @@
 package org.motechproject.commcare.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class SettingsDto {
     private String commcareBaseUrl;
@@ -49,6 +50,7 @@ public class SettingsDto {
         this.eventStrategy = eventStrategy;
     }
 
+    @JsonIgnore
     public boolean isValid() {
         if (StringUtils.isBlank(commcareBaseUrl)) {
             return false;

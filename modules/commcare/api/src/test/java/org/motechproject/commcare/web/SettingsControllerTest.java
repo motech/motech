@@ -68,21 +68,7 @@ public class SettingsControllerTest {
         dto.setPassword(PASSWORD_KEY);
         dto.setEventStrategy(EVENT_STRATEGY_VALUE);
 
-        controller.saveSettings(dto, false);
-
-        verify(settingsFacade, times(5)).setProperty(anyString(), anyString());
-    }
-
-    @Test
-    public void testSaveSettingsWithRestart() throws BundleException {
-        SettingsDto dto = new SettingsDto();
-        dto.setCommcareBaseUrl(COMMCARE_BASE_URL_VALUE);
-        dto.setCommcareDomain(COMMCARE_DOMAIN_KEY);
-        dto.setUsername(USERNAME_KEY);
-        dto.setPassword(PASSWORD_KEY);
-        dto.setEventStrategy(EVENT_STRATEGY_VALUE);
-
-        controller.saveSettings(dto, true);
+        controller.saveSettings(dto);
 
         verify(settingsFacade, times(5)).setProperty(anyString(), anyString());
     }
@@ -95,7 +81,7 @@ public class SettingsControllerTest {
         dto.setPassword(PASSWORD_KEY);
         dto.setEventStrategy(EVENT_STRATEGY_VALUE);
 
-        controller.saveSettings(dto, false);
+        controller.saveSettings(dto);
 
         verify(settingsFacade, never()).setProperty(anyString(), anyString());
     }
