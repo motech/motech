@@ -99,7 +99,7 @@
 				maxWidth: $("#popup_container").outerWidth()
 			});
 			
-			$.alerts._reposition();
+			//$.alerts._reposition();
 			$.alerts._maintainPosition(true);
 			
 			switch( type ) {
