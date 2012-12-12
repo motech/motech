@@ -64,6 +64,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>applicationSmsHttpBundle.xml</Context-File>
+                        <Context-Path>smshttp/api</Context-Path>
                         <Export-Package>
                             org.motechproject.sms.http,
                             org.motechproject.sms.http.service

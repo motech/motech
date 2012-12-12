@@ -2,58 +2,44 @@ package org.motechproject.sms.http.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.server.ui.ModuleRegistrationData;
-import org.motechproject.server.ui.UIFrameworkService;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.http.HttpService;
-import org.osgi.util.tracker.ServiceTracker;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Activator implements BundleActivator {
-    private static final String CONTEXT_CONFIG_LOCATION = "applicationSmsHttpBundle.xml";
-    private static final String SERVLET_URL_MAPPING = "/smshttp/api";
-    private static final String MODULE_NAME = "smshttp";
+public class Activator extends org.motechproject.osgi.web.Activator {
+
     private static final String RESOURCE_URL_MAPPING = "/smshttp";
-    private ServiceTracker httpServiceTracker;
 
-    private static BundleContext bundleContext;
     private UIServiceTracker uiServiceTracker;
 
     @Override
     public void start(BundleContext context) {
-        bundleContext = context;
-
-        this.httpServiceTracker = new HttpServiceTracker(context, HttpService.class.getName(), null,
-                new ServletDefinition(CONTEXT_CONFIG_LOCATION, SERVLET_URL_MAPPING, SmsHttpApplicationContext.class, RESOURCE_URL_MAPPING));
-        this.uiServiceTracker = new UIServiceTracker(context, UIFrameworkService.class.getName(), null,moduleRegistrationData());
-
-        this.httpServiceTracker.open();
+        super.start(context);
+        this.uiServiceTracker = new UIServiceTracker(context, moduleRegistrationData());
         this.uiServiceTracker.open();
     }
 
     public void stop(BundleContext context) {
-        this.httpServiceTracker.close();
+        super.stop(context);
         this.uiServiceTracker.close();
     }
 
-    public static class SmsHttpApplicationContext extends MotechOsgiWebApplicationContext {
 
-        public SmsHttpApplicationContext() {
-            super();
-            setBundleContext(Activator.bundleContext);
-        }
-
+    protected Map<String, String> resourceMappings() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(RESOURCE_URL_MAPPING, "/webapp");
+        return map;
     }
 
     private ModuleRegistrationData moduleRegistrationData() {
         ModuleRegistrationData regData = new ModuleRegistrationData();
-        regData.setModuleName(MODULE_NAME);
-        regData.setUrl("../smshttp/");
+        regData.setModuleName("smshttp");
+        regData.setUrl("../smshttp/index.html");
         regData.addAngularModule("motech-smshttp");
 
         regData.addI18N("messages", "../smshttp/bundles/");

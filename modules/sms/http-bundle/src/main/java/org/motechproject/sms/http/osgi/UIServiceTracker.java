@@ -5,7 +5,6 @@ import org.motechproject.server.ui.UIFrameworkService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +16,8 @@ class UIServiceTracker extends ServiceTracker {
 
     private ModuleRegistrationData moduleRegistrationData;
 
-    public UIServiceTracker(BundleContext context, String serviceClassName, ServiceTrackerCustomizer customizer, ModuleRegistrationData moduleRegistrationData) {
-        super(context, serviceClassName, customizer);
+    public UIServiceTracker(BundleContext context, ModuleRegistrationData moduleRegistrationData) {
+        super(context, UIFrameworkService.class.getName(), null);
         this.moduleRegistrationData = moduleRegistrationData;
     }
 
