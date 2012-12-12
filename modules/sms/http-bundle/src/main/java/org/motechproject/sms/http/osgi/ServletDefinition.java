@@ -3,13 +3,13 @@ package org.motechproject.sms.http.osgi;
 class ServletDefinition {
     private String contextConfigLocation;
     private String servletUrlMapping;
-    private Class<Activator.SmsHttpApplicationContext> smsHttpApplicationContextClass;
+    private Class<Activator.SmsHttpApplicationContext> applicationContextClass;
     private String resourceUrlMapping;
 
-    ServletDefinition(String contextConfigLocation, String servletUrlMapping, Class smsHttpApplicationContextClass, String resourceUrlMapping) {
+    ServletDefinition(String contextConfigLocation, String servletUrlMapping, Class applicationContextClass, String resourceUrlMapping) {
         this.contextConfigLocation = contextConfigLocation;
         this.servletUrlMapping = servletUrlMapping;
-        this.smsHttpApplicationContextClass = smsHttpApplicationContextClass;
+        this.applicationContextClass = applicationContextClass;
         this.resourceUrlMapping = resourceUrlMapping;
     }
 
@@ -22,7 +22,7 @@ class ServletDefinition {
     }
 
     public Class getApplicationContextClass() {
-        return smsHttpApplicationContextClass;
+        return applicationContextClass;
     }
 
     public String getResourceUrlMapping() {

@@ -2,6 +2,7 @@ package org.motechproject.sms.http.web;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.motechproject.sms.http.domain.SMSRequest;
 
 import static org.junit.Assert.assertThat;
 

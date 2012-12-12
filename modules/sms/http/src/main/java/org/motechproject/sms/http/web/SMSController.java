@@ -1,6 +1,7 @@
 package org.motechproject.sms.http.web;
 
 import org.motechproject.sms.api.SmsDeliveryFailureException;
+import org.motechproject.sms.http.domain.SMSRequest;
 import org.motechproject.sms.http.service.SmsHttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

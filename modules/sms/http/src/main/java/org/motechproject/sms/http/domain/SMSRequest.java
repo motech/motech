@@ -1,4 +1,4 @@
-package org.motechproject.sms.http.web;
+package org.motechproject.sms.http.domain;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 

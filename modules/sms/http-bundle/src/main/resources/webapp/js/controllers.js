@@ -8,16 +8,20 @@ function SmsController($scope, $http) {
         $scope.smsDeliveryResult = "";
     };
 
+    function setDeliveryStatus(status){
+       $scope.smsDeliveryResult = status;
+    };
+
     $scope.sms = {};
 
     $scope.sendSMS = function () {
-        resetDeliveryStatus();
+        setDeliveryStatus($scope.msg('sms.sending'));
         $http.post('../smshttp/api/outbound', $scope.sms).success(
             function (data, status, headers, config) {
-                $scope.smsDeliveryResult = $scope.msg('sms.sent');
+                setDeliveryStatus($scope.msg('sms.sent'));
             }
         ).error(function (data, status, headers, config) {
-                $scope.smsDeliveryResult = $scope.msg('sms.failed') + " - " +status;
+                setDeliveryStatus($scope.msg('sms.failed') + " - " +status);
             });
     };
 
