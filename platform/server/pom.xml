@@ -117,18 +117,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-admin-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-demo-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <!-- Different versions of same dependency are not copied. -->
             <groupId>org.objectweb.asm</groupId>
             <artifactId>com.springsource.org.objectweb.asm</artifactId>
@@ -234,6 +222,18 @@
         <profile>
             <id>IT</id>
             <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-admin-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-demo-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>motech-alerts-api-bundle</artifactId>
@@ -369,6 +369,12 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>motech-event-logging-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-event-aggregation-bundle</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>
