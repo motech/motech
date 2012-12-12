@@ -121,7 +121,7 @@
                                     </div>
                                     <div class="control-group">
                                         <h5><fmt:message key="security.donotRememberMsg1" bundle="${bundle}"/>
-                                            <button class="btn btn-mini btn-link"><fmt:message key="clickHere" bundle="${bundle}"/></button> <fmt:message key="security.donotRememberMsg2" bundle="${bundle}"/></h5>
+                                            <a href="../../module/websecurity/api/forgot"><fmt:message key="clickHere" bundle="${bundle}"/></a> <fmt:message key="security.donotRememberMsg2" bundle="${bundle}"/></h5>
                                     </div>
                                 </div>
                             </div>
@@ -150,57 +150,6 @@
                     </div>
                 </div>
                 </c:if>
-                <c:if test="${reset=='true'}">
-                    <div class="well2 margin-center spn4">
-                        <div class="box-header"><fmt:message key="security.resetInstructions" bundle="${bundle}"/></div>
-                        <div class="box-content">
-                            <form class="inside">
-                                <div class="well3">
-                                    <div class="control-group">
-                                        <h4><fmt:message key="security.enterEmailQuestions" bundle="${bundle}"/></h4>
-                                    </div>
-                                    <div class="control-group">
-                                        <p><fmt:message key="security.enterEmailMsg" bundle="${bundle}"/></p>
-                                    </div>
-                                    <div class="control-group">
-                                        <label><fmt:message key="security.enterEmail" bundle="${bundle}"/></label>
-                                        <input type="text">
-                                    </div>
-                                    <div class="control-group">
-                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="security.sendReset" bundle="${bundle}"/>"/>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                    </c:if>
-                    <c:if test="${reset=='true'}">
-                    <div class="well2 margin-center spn4">
-                        <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
-                        <div class="box-content">
-                            <div class="well3">
-                                <form class="inside">
-                                    <div class="control-group">
-                                        <h4><fmt:message key="password" bundle="${bundle}"/></h4>
-                                    </div>
-                                    <div class="control-group">
-                                        <label><fmt:message key="password" bundle="${bundle}"/></label>
-                                        <input type="password">
-                                    </div>
-                                    <div class="control-group">
-                                        <label><fmt:message key="confirmPassword" bundle="${bundle}"/></label>
-                                        <input type="password">
-                                    </div>
-                                    <div class="control-group">
-                                        <input class="btn btn-primary" type="submit" value="<fmt:message key="changePassword" bundle="${bundle}"/>"/>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                    </c:if>
                 </c:if>
                 <c:if test="${loginMode=='openid'}">
                     <div class="well2 margin-center spn5">

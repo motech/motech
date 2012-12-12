@@ -19,6 +19,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private String loginMode;
     private String providerName;
     private String providerUrl;
+    private String serverUrl;
 
     private boolean cluster;
     private DateTime lastRun;
@@ -72,6 +73,11 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public String getProviderUrl() {
         return providerUrl;
+    }
+
+    @Override
+    public String getServerUrl() {
+        return serverUrl;
     }
 
     public Properties getSchedulerProperties() {
@@ -134,6 +140,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         this.lastRun = lastRun;
     }
 
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
     public byte[] getConfigFileChecksum() {
         return Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
@@ -152,6 +162,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setLoginMode(settings.getLoginMode());
         setProviderName(settings.getProviderName());
         setProviderUrl(settings.getProviderUrl());
+        setServerUrl(settings.getServerUrl());
     }
 
     public void updateFromProperties(final Properties props) {
@@ -184,6 +195,8 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     break;
                 case MotechSettings.PROVIDER_URL:
                     setProviderUrl(value);
+                case MotechSettings.SERVER_URL:
+                    setServerUrl(value);
                     break;
                 default:
                     for (Properties p : Arrays.asList(getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {

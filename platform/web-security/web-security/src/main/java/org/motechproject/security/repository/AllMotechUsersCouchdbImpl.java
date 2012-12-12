@@ -42,6 +42,16 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     }
 
     @Override
+    @View(name = "by_email", map = "function(doc) { if (doc.type ==='MotechUser') { emit(doc.email, doc._id); }}")
+    public MotechUser findUserByEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        ViewQuery viewQuery = createQuery("by_email").key(email).includeDocs(true);
+        return singleResult(db.queryView(viewQuery, MotechUserCouchdbImpl.class));
+    }
+
+    @Override
     @View(name = "find_by_role", map = "function(doc) {if (doc.type ==='MotechUser') {for(i in doc.roles) {emit(doc.roles[i], [doc._id]);}}}")
     public List<? extends MotechUser> findByRole(String role) {
         if (role == null) { return null; }

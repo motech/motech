@@ -121,6 +121,7 @@
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.server.web,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,

@@ -68,6 +68,8 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(languageOption);
             SettingsOption msgOption = ParamParser.parseParam(MotechSettings.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
             miscOptions.add(msgOption);
+            SettingsOption serverUrlOption = ParamParser.parseParam(MotechSettings.SERVER_URL, motechSettings.getServerUrl());
+            miscOptions.add(serverUrlOption);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);

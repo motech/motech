@@ -10,6 +10,8 @@ public interface AllMotechUsers {
 
     MotechUser findUserByOpenId(String openId);
 
+    MotechUser findUserByEmail(String email);
+
     List<? extends MotechUser> findByRole(String role);
 
     void add(MotechUser user);
