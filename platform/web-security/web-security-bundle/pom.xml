@@ -107,11 +107,12 @@
                             org.motechproject.security.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.security.service,
+                            org.motechproject.security.annotations,
                             org.motechproject.security.authentication,
                             org.motechproject.security.domain,
                             org.motechproject.security.model,
                             org.motechproject.security.repository,
+                            org.motechproject.security.service,
                             org.motechproject.security.web.controllers
                         </Export-Package>
                         <Import-Package>

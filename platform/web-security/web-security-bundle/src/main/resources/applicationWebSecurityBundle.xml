@@ -11,4 +11,10 @@
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
+    <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService"
+                  interface="org.motechproject.security.service.MotechPermissionService"/>
+
+    <osgi:service id="motechRoleServiceOsgi" ref="motechRoleService"
+                  interface="org.motechproject.security.service.MotechRoleService"/>
+
 </beans>

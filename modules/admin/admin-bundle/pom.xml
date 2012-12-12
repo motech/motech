@@ -75,12 +75,17 @@
                             org.motechproject.admin.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.aopalliance.aop,
                             org.apache.commons.fileupload,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.ektorp.support,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
+                            org.motechproject.security.annotations,
+                            org.motechproject.security.service,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
@@ -91,6 +96,7 @@
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
                             org.eclipse.gemini.blueprint.config,
+                            org.springframework.security.config,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-admin</Embed-Dependency>
