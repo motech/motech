@@ -61,7 +61,7 @@
         <td>{{bundle.bundleId}}</td>
         <td>
             <div ng-class="getIconClass(bundle)">
-                <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="icon"/>
+                <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
             </div>
         </td>
         <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name}} - {{bundle.symbolicName}}</a></td>
@@ -95,7 +95,7 @@
                 </a>
             </div>
             <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
-                <img class="icon" src="../admin/img/load.gif" alt="loading"/>
+                <img class="small-icon" src="../admin/img/load.gif" alt="loading"/>
             </div>
         </td>
     </tr>

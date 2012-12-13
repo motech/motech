@@ -64,6 +64,10 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
         return i18nService.getMessage(key);
     };
 
+    $scope.msg = function(key, value) {
+        return i18nService.getMessage(key, value);
+    };
+
     $scope.setModuleUrl = function(url) {
         $scope.moduleUrl = url;
     }
@@ -108,7 +112,10 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
                 if (i == $scope.i18n[key].length-1) {
                     handler = function() {
                         $scope.ready = true;
-                        $scope.$digest();
+
+                        if (!$scope.$$phase) {
+                            $scope.$digest();
+                        }
                     }
                 }
                 i18nService.init(lang, key, $scope.i18n[key][i], handler);

@@ -26,6 +26,18 @@
     background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
 }
 
+.icon.icon-red {
+    background-image: url("../img/glyphicons-halflings-red.png");
+}
+
+.icon.icon-blue {
+    background-image: url("../img/glyphicons-halflings-blue.png");
+}
+
+.icon.icon-green {
+    background-image: url("../img/glyphicons-halflings-green.png");
+}
+
 h1, h2, h3, h4, h5, h6 {
     color: #224477;
 }
@@ -108,7 +120,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0;
     color: #fff;
     line-height: 20px;
-    font-size: 14px;
+    font-size: 15px;
     background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
     border-bottom:1px solid #ff9900;
 }
@@ -155,11 +167,15 @@ form.inside {
     background-color: #224477;
 }
 
- .nav-collapse .nav > li > a.no-hover:hover {
+.nav-collapse .nav > li > a.no-hover:hover {
     background: #224477 url("../img/navbar.jpg") repeat-x 0 0;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075);
     color: #c2eafe;
+}
+
+.navbar .nav > li.current > a {
+    color: #ffffff;
 }
 
 .navbar .btn.btn-blue {
@@ -181,7 +197,7 @@ form.inside {
     background-color: #4E688D;
     border-right: 1px solid #224477;
     height: 20px;
-    margin: 10px 9px;
+    margin: 10px 0;
 }
 
 .navbar .nav li.dropdown.open > .dropdown-toggle,
@@ -272,6 +288,7 @@ form.inside {
 }
 
 .tab-content {
+    overflow:visible;
     padding: 10px 10px 20px 10px;
     margin-bottom: 30px;
 }
@@ -315,9 +332,6 @@ hr {
     color:#ff0000;
 }
 
-.i-middle {
-}
-
 select {
     background:#ffffff;
 }
@@ -330,6 +344,10 @@ select {
     padding:5px 10px;
     color: #c2eafe;
     background: #001e4f url("../img/head-bg.jpg") repeat-x left top;
+}
+
+.btn-in-header {
+    margin: -5px -10px;
 }
 
 .inbox-header {
@@ -672,6 +690,7 @@ footer {
     display: block;
     width: 100%;
     opacity: 0.8;
+    z-index: 990;
 }
 
 .input-lxlarge {

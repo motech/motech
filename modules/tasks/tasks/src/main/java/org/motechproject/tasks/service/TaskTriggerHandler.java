@@ -66,6 +66,10 @@ public class TaskTriggerHandler {
         List<Task> tasks = taskService.findTasksForTrigger(trigger);
 
         for (Task t : tasks) {
+            if (!t.isEnabled()) {
+                continue;
+            }
+
             TaskEvent action;
 
             try {

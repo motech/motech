@@ -1,0 +1,152 @@
+<!------------------------  Create Task  ------------------------>
+<div ng-hide="task._id" class="box-header">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+<div ng-show="task._id" class="box-header">{{msg('section.editTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+<div class="box-content">
+    <h3 class="pagination-centered" ng-hide="task.trigger && task.action">{{msg('section.selectEvents')}}</h3>
+    <div class="section-input">
+        <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedTrigger)}}">
+            <ul class="trigger droppable" droppable>
+                <li class="task-panel dragged" ng-show="draggedTrigger" draggable double-click>
+                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}&moduleVersion={{draggedTrigger.version}}" class="panel-img"/></div>
+                    <span>{{draggedTrigger.display}}</span>
+                    <div class="popover left" ng-hide="selectedTrigger">
+                        <div class="arrow"></div>
+                        <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectTrigger')}}</h3>
+                        <div class="content-task popover-content">
+                            <ul>
+                                <li ng-repeat="t in draggedTrigger.events">
+                                    <a ng-click="selectTaskEvent('trigger', t)">{{t.displayName}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <span class="instructions" ng-hide="draggedTrigger">{{msg('info.dragTrigger')}}</span>
+        </div>
+        <div class="to imgArrow"><img src="../tasks/img/arrow.png"/></div>
+
+        <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedAction)}}">
+            <ul class="action droppable" droppable>
+                <li class="task-panel dragged" ng-show="draggedAction" draggable double-click>
+                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}&moduleVersion={{draggedAction.version}}" class="panel-img"/></div>
+                    <span>{{draggedAction.display}}</span>
+                    <div class="popover right" ng-hide="selectedAction">
+                        <div class="arrow"></div>
+                        <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectAction')}}</h3>
+                        <div class="content-task popover-content">
+                            <ul>
+                                <li ng-repeat="a in draggedAction.events">
+                                    <a ng-click="selectTaskEvent('action', a)">{{a.displayName}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <span class="instructions" ng-hide="draggedAction">{{msg('info.dragAction')}}</span>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="clearfix"></div><div class="margin-before4"></div>
+    <div class="section-source" ng-hide="task.trigger && task.action">
+        <h3 class="pagination-centered">{{msg('help.dragChannelFromListBelow')}}</h3>
+        <div data-left-arrow="true" class="left-arrow">
+            <img src="../tasks/img/larrow.png" ng-click="currentPage = currentPage - 1" ng-hide="currentPage == 0"/>
+        </div>
+        <ul class="task-selector droppable" style="position: relative;" droppable>
+            <li class="task-panel draggable" ng-repeat="channel in channels | filterPagination:currentPage*pageSize | limitTo:pageSize" draggable data-channel-name="{{channel.displayName}}" data-module-name="{{channel.moduleName}}" data-module-version="{{channel.moduleVersion}}">
+                <div task-popover rel="popover">
+                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" /></div>
+                    <span>{{channel.displayName}}</span>
+                    <div class="content-task" style="display:none;">
+                        <div class="popover-titles">{{msg('tooltip.availableTriggers')}}</div>
+                        <ul>
+                            <li ng-repeat="trigger in channel.triggerTaskEvents">{{trigger.displayName}}</li>
+                        </ul>
+                        <div class="popover-titles">{{msg('tooltip.availableActions')}}</div>
+                        <ul>
+                            <li ng-repeat="action in channel.actionTaskEvents">{{action.displayName}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div data-right-arrow="true" class="right-arrow">
+            <img src="../tasks/img/rarrow.png" ng-click="currentPage = currentPage + 1" ng-hide="currentPage &gt;= channels.length/pageSize - 1"/>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <!------------------------  Build Task  ------------------------>
+    <div ng-show="task.trigger && task.action">
+        <div class="well2 container-fluid margin-center margin-before">
+            <h3 ng-hide="task._id" class="pagination-centered">{{msg('section.buildAction')}}</h3>
+            <h3 ng-show="task._id" class="pagination-centered">{{msg('section.editAction')}}</h3>
+            <div class="row-fluid">
+                <div class="box-divider">
+                    <div class="span6">
+                        <form class="inside form-horizontal">
+                            <div class="control-group">
+                                <h4>{{selectedTrigger.displayName}}</h4>
+                                <p>{{msg('info.dragFieldBuildAction')}}</p>
+                            </div>
+                            <div class="control-group move-element">
+                                <span class="badge badge-info triggerField" draggable ng-repeat="i in selectedTrigger.eventParameters" data-index="{{$index}}" data-type="{{i.type}}">{{i.displayName}}</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="center-divider"></div>
+                    <div class="span6">
+                        <form name="form" class="inside">
+                            <div class="control-group">
+                                <h4>{{selectedAction.displayName}}</h4>
+                            </div>
+                            <div class="control-group" ng-show="selectedAction.description">
+                                <label>{{selectedAction.description}}</label>
+                            </div>
+                            <div class="control-group" ng-repeat="i in selectedAction.eventParameters">
+                                <label>{{i.displayName}}</label>
+                                <textarea ui-if="i.type == 'TEXTAREA'" rows="5" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
+                                <input ui-if="i.type == 'NUMBER'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
+                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"/>
+                            </div>
+                        </form>
+                    </div>
+                     <div class="clearfix"></div>
+                </div>
+                <div class="accordion" id="accordion2">
+                    <!------------------------  Description  ------------------------->
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle inbox-header" data-toggle="collapse" data-parent="#accordion2" href="#collapse22">
+                                <i class="icon-chevron-right"></i> {{msg('section.taskDescription')}}
+                            </a>
+                        </div>
+                        <div id="collapse22" class="accordion-body collapse in">
+                            <div class="accordion-inner">
+                                <div class="pagination-centered">
+                                    <p>{{msg('info.taskDescription')}}</p>
+                                    <textarea class="span6" cols="3" ng-model="task.description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!------------------------  Save  ------------------------>
+                <div class="control-group inside">
+                    <h4 class="pagination-centered">{{msg('section.save')}}</h4>
+                    <div class="">
+                        <p class="pagination-centered">{{msg('info.save')}}</p>
+                        <div class="control-group pagination-centered inside">
+                            <a ng-click="save(true)" class="btn btn-primary"> {{msg('button.saveAndEnabled')}}</a>
+                            <a ng-click="save(false)" class="btn btn-success"> {{msg('button.save')}}</a>
+                            <a href="#/task/" class="btn"> {{msg('button.cancel')}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

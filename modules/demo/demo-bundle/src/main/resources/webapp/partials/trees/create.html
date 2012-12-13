@@ -33,7 +33,7 @@
 
             <div ng-repeat="node in tree.nodes" class="control-group message-group">
                 <div ng-show="node.id != 0" class="message-header">
-                    <a ng-click="removeNode(node)" class="btn btn-danger pull-right"><i class="icon-remove icon-white i-middle"></i> </a>
+                    <a ng-click="removeNode(node)" class="btn btn-danger pull-right"><i class="icon-remove icon-white"></i></a>
                 </div>
                 <div ng-show="node.id != 0" class="control-group">
                     <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span class="required-field">*</span></label>
@@ -66,7 +66,7 @@
                             <span class="event-label" ng-hide="node.actionsBefore.length == 0">{{msg('trees.create.node.actions.before')}}</span>
                             <div class="event-label-group" ng-repeat="before in node.actionsBefore">
                                 <span class="event-label1">{{msg('trees.create.node.actions.add.eventId')}}: </span><span class="event-label2">{{before}}</span>
-                                <span class="event-label3"><a ng-click="removeAction(node, before, true)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a></span>
+                                <span class="event-label3"><a ng-click="removeAction(node, before, true)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a></span>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                             <span class="event-label" ng-hide="node.actionsAfter.length == 0">{{msg('trees.create.node.actions.after')}}</span>
                             <div class="event-label-group" ng-repeat="after in node.actionsAfter">
                                 <span class="event-label1">{{msg('trees.create.node.actions.add.eventId')}}: </span><span class="event-label2">{{after}}</span>
-                                <span class="event-label3"><a ng-click="removeAction(node, after, false)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a></span>
+                                <span class="event-label3"><a ng-click="removeAction(node, after, false)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a></span>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
 
                 <div ng-show="findTransitions(node, true).length != 0" class="control-group">
                     <div class="controls">
-                        <a ng-click="addTransition(node)" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.transition.add')}}</a>
+                        <a ng-click="addTransition(node)" class="btn btn-inverse"><i class="icon-plus icon-white"></i> {{msg('trees.create.node.transition.add')}}</a>
                     </div>
                 </div>
 
@@ -93,18 +93,18 @@
                             <label for="{{transition.key}}">{{msg('trees.create.node.transition.key')}}<span class="required-field">*</span></label>
                             <input type="text" ng-model="transition.key" id="{{transition.key}}" name="{{transition.name}}" required class="input-small"/>
                             <select ng-model="transition.node" ng-options="t.name for t in findTransitions(node, false)" required></select>
-                            <a ng-click="removeTransition(node, transition)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a>
+                            <a ng-click="removeTransition(node, transition)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a>
                             <div class="form-hint" ng-show="getValidationError(node.id, 'transition', transition.id)">{{getValidationError(node.id, 'transition', transition.id)}}</div>
                         </div>
                     </div>
                 </div>
                 <div class="form-actions" ng-show="node.id == 0">
-                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.add')}}</a>
+                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white"></i> {{msg('trees.create.node.add')}}</a>
                 </div>
             </div>
 
             <div class="form-actions" ng-show="tree.nodes.length > 1">
-                <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.add')}}</a>
+                <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white"></i> {{msg('trees.create.node.add')}}</a>
             </div>
 
             <div class="form-actions">

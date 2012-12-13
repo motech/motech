@@ -3,10 +3,10 @@ package org.motechproject.admin.service.impl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.bundles.BundleDirectoryManager;
-import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.server.api.BundleIcon;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
@@ -27,12 +27,13 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
+
 @Service
 public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModuleAdminServiceImpl.class);
 
-    private static final String[] ICON_LOCATIONS = new String[] {"icon.gif", "icon.jpg", "icon.png"};
     private static final String DEFAULT_ICON = "/bundle_icon.png";
 
     @Autowired

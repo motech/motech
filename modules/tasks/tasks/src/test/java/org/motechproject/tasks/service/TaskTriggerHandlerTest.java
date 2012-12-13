@@ -10,6 +10,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.domain.EventParamType;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Level;
 import org.motechproject.tasks.domain.Task;
@@ -238,7 +239,7 @@ public class TaskTriggerHandlerTest {
 
         List<EventParameter> actionEventParameters = new ArrayList<>();
         actionEventParameters.add(new EventParameter("Phone", "phone"));
-        actionEventParameters.add(new EventParameter("Message", "message"));
+        actionEventParameters.add(new EventParameter("Message", "message", EventParamType.TEXTAREA));
 
         actionEvent = new TaskEvent();
         actionEvent.setSubject(ACTION_SUBJECT);

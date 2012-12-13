@@ -7,12 +7,13 @@ import java.util.Map;
 
 @TypeDiscriminator("doc.type == 'Task'")
 public class Task extends MotechBaseDataObject {
-    private boolean enabled;
     private Map<String, String> actionInputFields;
     private Map<String, String> additionalData;
     private Map<String, String> filter;
     private String action;
+    private String description;
     private String trigger;
+    private boolean enabled;
 
     public Task() {
         this(null, null, null);
@@ -79,6 +80,14 @@ public class Task extends MotechBaseDataObject {
         this.filter = filter;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -115,6 +124,10 @@ public class Task extends MotechBaseDataObject {
             return false;
         }
 
+        if (description != null ? !description.equals(task.description) : task.description != null) {
+            return false;
+        }
+
         return true;
     }
 
@@ -126,13 +139,14 @@ public class Task extends MotechBaseDataObject {
         result = 31 * result + (filter != null ? filter.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
         result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
 
         return result;
     }
 
     @Override
     public String toString() {
-        return String.format("Task{trigger='%s', action='%s', actionInputFields=%s, enabled=%s, additionalData=%s, filter=%s}",
-                trigger, action, actionInputFields, enabled, additionalData, filter);
+        return String.format("Task{actionInputFields=%s, additionalData=%s, filter=%s, action='%s', description='%s', trigger='%s', enabled=%s}",
+                actionInputFields, additionalData, filter, action, description, trigger, enabled);
     }
 }

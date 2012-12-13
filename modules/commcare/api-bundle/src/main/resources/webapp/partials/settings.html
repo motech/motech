@@ -37,7 +37,7 @@
         <div ng-class="cssClass('eventStrategy')">
             <label class="control-label">
                 {{msg('settings.label.eventStrategy')}}
-                <i class="icon icon-info-sign i-middle" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('settings.tooltip.eventStrategy')}}"></i>
+                <i class="icon-info-sign" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('settings.tooltip.eventStrategy')}}"></i>
             </label>
             <div class="controls">
                 <select ng-model="settings.eventStrategy" ng-options="option for option in eventStrategyOptions" required ng-disabled="!hasAccountSettings()">

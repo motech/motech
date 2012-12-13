@@ -18,4 +18,8 @@ public interface TaskService {
     List<Task> findTasksForTrigger(final TaskEvent trigger);
 
     TaskEvent findTrigger(String subject) throws TriggerNotFoundException;
+
+    Task getTask(String taskId);
+
+    void deleteTask(String taskId);
 }

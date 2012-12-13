@@ -1,8 +1,9 @@
-package org.motechproject.admin.bundles;
+package org.motechproject.server.api;
 
 import java.util.Arrays;
 
 public class BundleIcon {
+    public static final String[] ICON_LOCATIONS = new String[] {"icon.gif", "icon.jpg", "icon.png"};
 
     private byte[] icon;
     private String mime;

@@ -124,4 +124,20 @@ public class TaskServiceImpl implements TaskService {
         return trigger;
     }
 
+    @Override
+    public Task getTask(String taskId) {
+        return allTasks.get(taskId);
+    }
+
+    @Override
+    public void deleteTask(String taskId) {
+        Task t = getTask(taskId);
+
+        if (t == null) {
+            throw new IllegalArgumentException(String.format("Not found task with ID: %s", taskId));
+        }
+
+        allTasks.remove(t);
+    }
+
 }

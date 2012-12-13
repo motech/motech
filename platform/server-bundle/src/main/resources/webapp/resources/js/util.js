@@ -27,6 +27,23 @@ if (typeof String.prototype.endsWith != 'function') {
   };
 }
 
+String.prototype.format = function() {
+  var args = arguments;
+  return this.replace(/{(\d+)}/g, function(match, number) {
+    return typeof args[number] != 'undefined'
+      ? args[number]
+      : match
+    ;
+  });
+};
+
+String.prototype.insert = function (index, string) {
+  if (index > 0)
+    return this.substring(0, index) + string + this.substring(index, this.length);
+  else
+    return string + this;
+};
+
 function arraysEqual(arr1, arr2) {
     if(arr1.length !== arr2.length)
         return false;

@@ -1,7 +1,7 @@
 {
   "displayName" : "Message Campaign",
   "moduleName" : "${project.artifactId}",
-  "moduleVersion" : "${project.version}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
   "description" : "The Message Campaign module is used to enroll users into campaigns. A campaign is a course of informational messages that are sent to the user on an assigned date or schedule. Campaign messages follow a clearly defined schedule and are automatically triggered by the scheduling system.",
   "triggerTaskEvents" : [
     {

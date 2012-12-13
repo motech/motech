@@ -1,0 +1,86 @@
+<!------------------------  Tasks  ------------------------------------->
+<div class="row-fluid">
+    <a href="#/task/new" type="button" class="btn btn-success pull-right margin-before"><i class="icon icon-plus icon-white"></i> {{msg('task.new')}}</a>
+    <h3>{{msg('header.tasks')}}</h3>
+</div>
+
+<div class="clearfix"></div><div class="margin-after top-line"></div>
+
+<div class="row-fluid">
+    <div class="margin-before margin-after">
+        <h4 ng-show="activeTasks.length != 0">{{msg('header.activeTasks')}}</h4>
+        <div ng-repeat="item in activeTasks">
+            <div class="task-content clearfix">
+                <div class="task-header">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</div>
+                <div class="task-bar">
+                    <ul class="task-nav">
+                        <li class="task-panel">
+                            <div><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.trigger, 'moduleName')}}&moduleVersion={{get(item.task.trigger, 'moduleVersion')}}" class="panel-img"/></div>
+                            <span>{{get(item.task.trigger, 'displayName')}}</span>
+                        </li>
+                        <li>
+                            <div><img src="../tasks/img/arrow.png" class="imgArrow"/></div>
+                        </li>
+                        <li class="task-panel">
+                            <div><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}" class="panel-img"/></div>
+                            <span>{{get(item.task.action, 'displayName')}}</span>
+                        </li>
+                    </ul>
+                    <ul class="task-list">
+                        <li class="info"><i class="icon icon-share icon-blue"></i> {{msg('info.executedTimes', item.success.length)}}</li>
+                        <li class="error" ng-hide="item.error.length == 0"><i class="icon icon-exclamation-sign icon-red"></i> {{msg('info.errorsLastDays', item.error.length)}}</li>
+                        <li class="success" ng-show="item.error.length == 0"><i class="icon icon-ok-sign icon-green"></i> {{msg('info.errorsLastDays', item.error.length)}}</li>
+                        <li ng-show="item.task.description"><i class="icon-chevron-right"></i> {{item.task.description}}</li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="task-footer">
+                    <div class="button-task"><a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit"></i> {{msg('button.edit')}}</div></a></div>
+                    <div class="button-task"><a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash"></i> {{msg('button.delete')}}</div></a></div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="margin-after"></div>
+        </div>
+
+        <h4 class="margin-before3" ng-show="pausedTasks.length != 0">{{msg('header.pausedTasks')}}</h4>
+        <div ng-repeat="item in pausedTasks">
+            <div class="task-content clearfix">
+                <div class="task-header">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</div>
+                <div class="task-bar">
+                    <ul class="task-nav">
+                        <li class="task-panel">
+                            <div><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.trigger, 'moduleName')}}&moduleVersion={{get(item.task.trigger, 'moduleVersion')}}" class="panel-img"/></div>
+                            <span>{{get(item.task.trigger, 'displayName')}}</span>
+                        </li>
+                        <li>
+                            <div><img src="../tasks/img/arrow.png" class="imgArrow"/></div>
+                        </li>
+                        <li class="task-panel">
+                            <div><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}" class="panel-img"/></div>
+                            <span>{{get(item.task.action, 'displayName')}}</span>
+                        </li>
+                    </ul>
+                    <ul class="task-list">
+                        <li class="info"><i class="icon icon-share icon-blue"></i> {{msg('info.executedTimes', item.success.length)}}</li>
+                        <li class="error" ng-hide="item.error.length == 0"><i class="icon icon-exclamation-sign icon-red"></i> {{msg('info.errorsLastDays', item.error.length)}}</li>
+                        <li class="success" ng-show="item.error.length == 0"><i class="icon icon-ok-sign icon-green"></i> {{msg('info.errorsLastDays', item.error.length)}}</li>
+                        <li ng-show="item.task.description"><i class="icon-chevron-right"></i> {{item.task.description}}</li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="task-footer">
+                    <div class="button-task"><a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit"></i> {{msg('button.edit')}}</div></a></div>
+                    <div class="button-task"><a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash"></i> {{msg('button.delete')}}</div></a></div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="margin-after"></div>
+        </div>
+    </div>
+</div>
+

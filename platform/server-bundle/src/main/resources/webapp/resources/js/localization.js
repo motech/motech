@@ -12,11 +12,11 @@ localizationModule.factory("i18nService", function() {
         name : '',
         path : '',
 
-        getMessage : function(key) {
+        getMessage : function(key, value) {
             var msg = '';
 
             if (this.ready == true) {
-                msg = jQuery.i18n.prop(key);
+                msg = jQuery.i18n.prop(key, value);
             }
 
             return msg;

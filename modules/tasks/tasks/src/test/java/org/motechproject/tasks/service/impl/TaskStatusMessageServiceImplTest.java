@@ -20,6 +20,8 @@ import static org.motechproject.tasks.domain.Level.SUCCESS;
 import static org.motechproject.tasks.domain.Level.WARNING;
 
 public class TaskStatusMessageServiceImplTest {
+    private static final String TASK_ID = "12345";
+
     @Mock
     AllTaskStatusMessages allTaskStatusMessages;
 
@@ -34,23 +36,10 @@ public class TaskStatusMessageServiceImplTest {
 
     @Test
     public void test_errorsFromLastRun() {
+        when(allTaskStatusMessages.byTaskId(TASK_ID)).thenReturn(getTaskStatusMessages());
+
         Task t = new Task();
-        t.setId("12345");
-
-        List<TaskStatusMessage> messages = new ArrayList<>();
-        messages.add(createError(t));
-        messages.add(createError(t));
-        messages.add(createSuccess(t));
-        messages.add(createError(t));
-        messages.add(createError(t));
-        messages.add(createWarning(t));
-        messages.add(createSuccess(t));
-        messages.add(createError(t));
-        messages.add(createError(t));
-        messages.add(createError(t));
-        messages.add(createError(t));
-
-        when(allTaskStatusMessages.byTaskId(t.getId())).thenReturn(messages);
+        t.setId(TASK_ID);
 
         List<TaskStatusMessage> errors = messageService.errorsFromLastRun(t);
 
@@ -59,20 +48,69 @@ public class TaskStatusMessageServiceImplTest {
 
         for (TaskStatusMessage error : errors) {
             assertEquals(ERROR.getValue(), error.getMessage());
-            assertEquals(t.getId(), error.getTask());
+            assertEquals(TASK_ID, error.getTask());
             assertEquals(ERROR, error.getLevel());
         }
     }
 
-    private TaskStatusMessage createError(final Task t) {
-        return new TaskStatusMessage(ERROR.getValue(), t.getId(), ERROR);
+    @Test
+    public void test_getSuccessMessages() {
+        when(allTaskStatusMessages.byTaskId(TASK_ID)).thenReturn(getTaskStatusMessages());
+
+        List<TaskStatusMessage> successes = messageService.getSuccessMessages(TASK_ID);
+
+        assertNotNull(successes);
+        assertEquals(2, successes.size());
+
+        for (TaskStatusMessage error : successes) {
+            assertEquals(SUCCESS.getValue(), error.getMessage());
+            assertEquals(TASK_ID, error.getTask());
+            assertEquals(SUCCESS, error.getLevel());
+        }
     }
 
-    private TaskStatusMessage createSuccess(final Task t) {
-        return new TaskStatusMessage(SUCCESS.getValue(), t.getId(), SUCCESS);
+    @Test
+    public void test_getErrorMessages() {
+        when(allTaskStatusMessages.byTaskId(TASK_ID)).thenReturn(getTaskStatusMessages());
+
+        List<TaskStatusMessage> errors = messageService.getErrorMessages(TASK_ID);
+
+        assertNotNull(errors);
+        assertEquals(8, errors.size());
+
+        for (TaskStatusMessage error : errors) {
+            assertEquals(ERROR.getValue(), error.getMessage());
+            assertEquals(TASK_ID, error.getTask());
+            assertEquals(ERROR, error.getLevel());
+        }
     }
 
-    private TaskStatusMessage createWarning(final Task t) {
-        return new TaskStatusMessage(WARNING.getValue(), t.getId(), WARNING);
+    private List<TaskStatusMessage> getTaskStatusMessages() {
+        List<TaskStatusMessage> messages = new ArrayList<>();
+        messages.add(createError());
+        messages.add(createError());
+        messages.add(createSuccess());
+        messages.add(createError());
+        messages.add(createError());
+        messages.add(createWarning());
+        messages.add(createSuccess());
+        messages.add(createError());
+        messages.add(createError());
+        messages.add(createError());
+        messages.add(createError());
+
+        return messages;
+    }
+
+    private TaskStatusMessage createError() {
+        return new TaskStatusMessage(ERROR.getValue(), TASK_ID, ERROR);
+    }
+
+    private TaskStatusMessage createSuccess() {
+        return new TaskStatusMessage(SUCCESS.getValue(), TASK_ID, SUCCESS);
+    }
+
+    private TaskStatusMessage createWarning() {
+        return new TaskStatusMessage(WARNING.getValue(), TASK_ID, WARNING);
     }
 }

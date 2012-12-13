@@ -52,4 +52,39 @@ public class TaskStatusMessageServiceImpl implements TaskStatusMessageService {
 
         return result;
     }
+
+    @Override
+    public List<TaskStatusMessage> getSuccessMessages(String taskId) {
+        List<TaskStatusMessage> messages = allTaskStatusMessages.byTaskId(taskId);
+        List<TaskStatusMessage> result = new ArrayList<>(messages.size());
+
+        for (TaskStatusMessage msg : messages) {
+            if (msg.getLevel() == Level.SUCCESS) {
+                result.add(msg);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<TaskStatusMessage> getErrorMessages(String taskId) {
+        List<TaskStatusMessage> messages = allTaskStatusMessages.byTaskId(taskId);
+        List<TaskStatusMessage> result = new ArrayList<>(messages.size());
+
+        for (TaskStatusMessage msg : messages) {
+            if (msg.getLevel() == Level.ERROR) {
+                result.add(msg);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void deleteMessages(String taskId) {
+        for (TaskStatusMessage msg : allTaskStatusMessages.byTaskId(taskId)) {
+            allTaskStatusMessages.remove(msg);
+        }
+    }
 }

@@ -1,8 +1,8 @@
 <div>
     <h3>{{msg('trees')}}</h3>
     <p class="outside-tb">
-        <a href="#/trees/create" class="btn btn-primary"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create')}}</a>
-        <a ng-click="createExample()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.example')}}</a>
+        <a href="#/trees/create" class="btn btn-primary"><i class="icon-plus icon-white"></i> {{msg('trees.create')}}</a>
+        <a ng-click="createExample()" class="btn btn-inverse"><i class="icon-plus icon-white"></i> {{msg('trees.create.example')}}</a>
     </p>
     <div ng-hide="trees.length == 0">
         <table class="table table-bordered table-striped table-hover table-demo">
@@ -19,8 +19,8 @@
                 <td>{{tree.description}}</td>
                 <td>
                     <div id="commandLinks">
-                        <a href="#/trees/{{tree._id}}/execute" class="btn btn-info"><i class="icon-play icon-white i-middle"></i> {{msg('execute')}}</a>
-                        <a ng-click="removeTree(tree)" class="btn btn-danger"><i class="icon-remove icon-white i-middle"></i> {{msg('trees.list.remove')}}</a>
+                        <a href="#/trees/{{tree._id}}/execute" class="btn btn-info"><i class="icon-play icon-white"></i> {{msg('execute')}}</a>
+                        <a ng-click="removeTree(tree)" class="btn btn-danger"><i class="icon-remove icon-white"></i> {{msg('trees.list.remove')}}</a>
                     </div>
                 </td>
             </tr>

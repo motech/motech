@@ -1,7 +1,7 @@
 package org.motechproject.admin.service;
 
-import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
+import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.security.access.prepost.PreAuthorize;

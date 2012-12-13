@@ -1,23 +1,34 @@
 {
   "displayName" : "Pill Reminder",
   "moduleName" : "${project.artifactId}",
-  "moduleVersion" : "${project.version}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
   "triggerTaskEvents" : [
     {
       "displayName" : "Event subject",
       "subject" : "org.motechproject.server.pillreminder.pill-reminder",
       "eventParameters" : [
         {
+          "eventKey" : "DosageID",
+          "displayName" : "Dosage ID"
+        },
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
           "eventKey" : "times-reminders-sent",
-          "displayName" : "Times sent"
+          "displayName" : "Times sent",
+          "type": "NUMBER"
         },
         {
           "eventKey" :  "times-reminders-to-be-sent",
-          "displayName" : "Total times to send"
+          "displayName" : "Total times to send",
+          "type": "NUMBER"
         },
         {
           "eventKey" :  "retry-interval",
-          "displayName" : "Retry interval"
+          "displayName" : "Retry interval",
+          "type": "NUMBER"
         }
       ]
     }
@@ -28,16 +39,27 @@
       "subject" : "org.motechproject.server.pillreminder.scheduler-reminder",
       "eventParameters" : [
         {
+          "eventKey" : "DosageID",
+          "displayName" : "Dosage ID"
+        },
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "External ID"
+        },
+        {
           "eventKey" : "times-reminders-sent",
-          "displayName" : "Times sent"
+          "displayName" : "Times sent",
+          "type": "NUMBER"
         },
         {
           "eventKey" :  "times-reminders-to-be-sent",
-          "displayName" : "Total times to send"
+          "displayName" : "Total times to send",
+          "type": "NUMBER"
         },
         {
           "eventKey" :  "retry-interval",
-          "displayName" : "Retry interval"
+          "displayName" : "Retry interval",
+          "type": "NUMBER"
         }
       ]
     }
