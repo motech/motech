@@ -15,6 +15,18 @@ Array.prototype.removeObject = function (element) {
     }
 };
 
+if (typeof String.prototype.startsWith != 'function') {
+  String.prototype.startsWith = function (str){
+    return this.slice(0, str.length) == str;
+  };
+}
+
+if (typeof String.prototype.endsWith != 'function') {
+  String.prototype.endsWith = function (str){
+    return this.slice(-str.length) == str;
+  };
+}
+
 function arraysEqual(arr1, arr2) {
     if(arr1.length !== arr2.length)
         return false;

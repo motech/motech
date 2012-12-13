@@ -6,6 +6,7 @@ import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.ex.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,11 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
 
     @Override
     public void add(MotechUser user) {
-        if (findByUserName(user.getUserName()) != null) { return; }
+        if (findByUserName(user.getUserName()) != null) {
+            return;
+        } else if (findUserByEmail(user.getEmail()) != null) {
+            throw new EmailExistsException("User with email " + user.getEmail() + " already exists");
+        }
 
         super.add((MotechUserCouchdbImpl) user);
     }
@@ -75,6 +80,13 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
 
     @Override
     public void update(MotechUser motechUser) {
+        String email = motechUser.getEmail();
+        MotechUser otherWithSameEmail = findUserByEmail(email);
+
+        if (otherWithSameEmail != null && !otherWithSameEmail.getUserName().equals(motechUser.getUserName())) {
+            throw new EmailExistsException("User with email " + email + " already exists");
+        }
+
         super.update((MotechUserCouchdbImpl) motechUser);
     }
 

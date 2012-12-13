@@ -1,6 +1,7 @@
 package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserProfile;
@@ -10,6 +11,7 @@ import org.motechproject.server.config.settings.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 @Controller
@@ -93,4 +98,12 @@ public class UserController {
         }
     }
 
+    @ExceptionHandler(EmailExistsException.class)
+    public void handleEmailExistsException(EmailExistsException exception, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        try (Writer writer = response.getWriter()) {
+            writer.write("key:emailTaken");
+        }
+    }
 }

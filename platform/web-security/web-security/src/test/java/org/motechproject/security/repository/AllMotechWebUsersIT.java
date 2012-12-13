@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.ex.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,16 +64,22 @@ public class AllMotechWebUsersIT {
 
     @Test
     public void shouldListWebUsersByRole() {
-        MotechUser provider1 = new MotechUserCouchdbImpl("provider1", "testpassword", "","id1", asList("PROVIDER"), "");
-        MotechUser provider2 = new MotechUserCouchdbImpl("provider2", "testpassword", "","id2", asList("PROVIDER"), "");
-        MotechUser cmfAdmin = new MotechUserCouchdbImpl("cmfadmin", "testpassword", "","id3", asList("CMFADMIN"), "");
-        MotechUser itAdmin = new MotechUserCouchdbImpl("itadmin", "testpassword", "","id4", asList("ITADMIN"), "");
+        MotechUser provider1 = new MotechUserCouchdbImpl("provider1", "testpassword", "email1@example.com","id1", asList("PROVIDER"), "");
+        MotechUser provider2 = new MotechUserCouchdbImpl("provider2", "testpassword", "email12@example.com","id2", asList("PROVIDER"), "");
+        MotechUser cmfAdmin = new MotechUserCouchdbImpl("cmfadmin", "testpassword", "email13@example.com","id3", asList("CMFADMIN"), "");
+        MotechUser itAdmin = new MotechUserCouchdbImpl("itadmin", "testpassword", "email4@example.com","id4", asList("ITADMIN"), "");
         allMotechUsers.add(provider1);
         allMotechUsers.add(provider2);
         allMotechUsers.add(cmfAdmin);
         allMotechUsers.add(itAdmin);
         List<? extends MotechUser> providers = allMotechUsers.findByRole("PROVIDER");
         assertEquals(asList("id1", "id2"), extract(providers, on(MotechUser.class).getExternalId()));
+    }
+
+    @Test(expected = EmailExistsException.class)
+    public void shouldNotAllowDuplicateEmails() {
+        allMotechUsers.add(new MotechUserCouchdbImpl("user1", "testpassword", "email1@example.com","id", asList("ADMIN"), ""));
+        allMotechUsers.add(new MotechUserCouchdbImpl("user2", "testpassword1", "email1@example.com","id2", asList("ADMIN"), ""));
     }
 
     @Test

@@ -5,10 +5,20 @@ var jFormErrorHandler = function(response) {
     jAlert(response.status + ": " + response.statusText);
 }
 
-var angularErrorHandler = function(response) {
-    // TODO : better error handling
-    unblockUI();
-    motechAlert("error");
+var angularHandler = function(title, defaultMsg) {
+    return function(response) {
+        unblockUI();
+
+        var msg = "error";
+
+        if (response && response.startsWith('key:') && !response.endsWith('key')) {
+            msg = response.split(':')[1];
+        } else if (defaultMsg) {
+            msg = defaultMsg;
+        }
+
+        motechAlert(msg, title);
+    }
 }
 
 var alertHandler = function(msg, title) {

@@ -1,12 +1,11 @@
 package org.motechproject.security.web.controllers;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.security.password.InvalidTokenException;
+import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.web.form.ResetForm;
 import org.springframework.validation.BindingResult;
