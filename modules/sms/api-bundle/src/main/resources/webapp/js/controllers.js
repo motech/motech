@@ -16,7 +16,7 @@ function SmsController($scope, $http) {
 
     $scope.sendSMS = function () {
         setDeliveryStatus($scope.msg('sms.sending'));
-        $http.post('../smshttp/api/outbound', $scope.sms).success(
+        $http.post('../smsapi/outbound', $scope.sms).success(
             function (data, status, headers, config) {
                 setDeliveryStatus($scope.msg('sms.sent'));
             }

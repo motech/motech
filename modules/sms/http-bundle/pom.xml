@@ -71,7 +71,7 @@
                             org.motechproject.sms.http.service
                         </Export-Package>
                         <Bundle-Activator>
-                            org.motechproject.sms.http.osgi.Activator
+                            org.motechproject.osgi.web.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,

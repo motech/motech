@@ -1,8 +1,8 @@
-package org.motechproject.sms.http.web;
+package org.motechproject.sms.api.web;
 
+import org.motechproject.sms.api.SMSRequest;
 import org.motechproject.sms.api.SmsDeliveryFailureException;
-import org.motechproject.sms.http.domain.SMSRequest;
-import org.motechproject.sms.http.service.SmsHttpService;
+import org.motechproject.sms.api.service.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 /*
-relative to smshttp/api
+relative to smsapi
 */
 
 @Controller
@@ -22,18 +22,18 @@ public class SMSController {
 
     private static Logger log = LoggerFactory.getLogger(SMSController.class);
 
-    private SmsHttpService smsHttpService;
+    private SmsService smsService;
 
     @Autowired
-    public SMSController(SmsHttpService smsHttpService) {
-        this.smsHttpService = smsHttpService;
+    public SMSController(SmsService smsService) {
+        this.smsService = smsService;
     }
 
     @RequestMapping(value = "/outbound", headers = "Content-Type=application/json")
     public ResponseEntity<String> send(@RequestBody final SMSRequest smsRequest) throws SmsDeliveryFailureException {
         log.info(String.format("Sending message : %s to recipients %s", smsRequest.getMessage(), smsRequest.getRecipient()));
         if (smsRequest.isValid()) {
-            smsHttpService.sendSMS(smsRequest.getRecipient(), smsRequest.getMessage());
+            smsService.sendSMS(smsRequest.getRecipient(), smsRequest.getMessage());
             log.info(String.format("Sent message : %s to recipients %s", smsRequest.getMessage(), smsRequest.getRecipient()));
             return new ResponseEntity<>(HttpStatus.OK);
         }
