@@ -161,6 +161,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                     dbSettings.setLanguage(value);
                 } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
                     dbSettings.setStatusMsgTimeout(value);
+                } else if (MotechSettings.SERVER_URL.equals(key)) {
+                    dbSettings.setServerUrl(value);
                 } else {
                     for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
                             dbSettings.getMetricsProperties())) {

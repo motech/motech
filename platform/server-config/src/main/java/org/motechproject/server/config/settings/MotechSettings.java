@@ -30,6 +30,7 @@ public interface MotechSettings {
 
     String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
+    String SERVER_URL = "server.url";
 
     String PROVIDER_NAME="provider.name";
     String PROVIDER_URL="provider.url";
@@ -44,6 +45,8 @@ public interface MotechSettings {
     String getProviderName();
 
     String getProviderUrl();
+
+    String getServerUrl();
 
     Properties getCouchDBProperties();
 

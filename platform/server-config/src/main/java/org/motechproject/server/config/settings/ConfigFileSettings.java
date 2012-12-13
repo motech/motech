@@ -44,6 +44,11 @@ public class ConfigFileSettings implements MotechSettings {
         return motechSettings.getProperty(PROVIDER_URL);
     }
 
+    @Override
+    public String getServerUrl() {
+        return motechSettings.getProperty(SERVER_URL);
+    }
+
     public byte[] getMd5checkSum() {
         return Arrays.copyOf(md5checkSum, md5checkSum.length);
     }

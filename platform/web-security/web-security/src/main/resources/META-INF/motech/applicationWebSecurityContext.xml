@@ -7,9 +7,6 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <!--<context:property-placeholder location="classpath*:motech-web-security.properties"/>
-        todo is this used? if yes use properties instead of placeholder -->
-
     <bean id="webSecuritySettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="web-security"/>
     </bean>
@@ -22,6 +19,25 @@
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean class="org.motechproject.security.Initialize"/>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="localhost"/>
+        <property name="port" value="25"/>
+    </bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.motechproject.security.email.BundleResourceLoader
+            </value>
+        </property>
+    </bean>
+
+    <bean id="cookieLocaleResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="userLang"/>
+        <property name="cookieMaxAge" value="100000"/>
+    </bean>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.security"/>

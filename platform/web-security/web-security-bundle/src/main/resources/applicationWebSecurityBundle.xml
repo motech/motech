@@ -17,4 +17,9 @@
     <osgi:service id="motechRoleServiceOsgi" ref="motechRoleService"
                   interface="org.motechproject.security.service.MotechRoleService"/>
 
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.motechproject.server.web.BundledJspView"/>
+        <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>
