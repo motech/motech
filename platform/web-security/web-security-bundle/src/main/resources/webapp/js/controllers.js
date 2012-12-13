@@ -63,7 +63,7 @@ function UserCtrl($scope, Roles, Users, $http) {
                     $scope.showUsersView=!$scope.addUserView;
                     $scope.addUserView=!$scope.addUserView;
                 }).
-                error(function(){motechAlert('security.create.user.error', 'main.error');});
+                error(angularHandler('main.error', 'security.create.user.error'));
        }
 
 
@@ -93,7 +93,7 @@ function UserCtrl($scope, Roles, Users, $http) {
                    $scope.userList = Users.query();
                    $scope.showUsersView=!$scope.editUserView;
                    $scope.editUserView=!$scope.editUserView;
-               }).error(function(){motechAlert('security.update.user.error', 'main.error');});
+               }).error(angularHandler('main.error', 'security.update.user.error'));
        }
 
        $scope.deleteUser = function() {
@@ -313,7 +313,7 @@ function ProfileCtrl($scope, Users, $http, $routeParams) {
     $scope.changeEmail = function () {
         $http.post('../websecurity/api/users/' + $scope.userName + '/change/email', $scope.email).
             success(alertHandler('security.update.email.saved', 'security.update')).
-            error(alertHandler('security.update.email.error', 'main.error'));
+            error(angularHandler('main.error', 'security.update.email.error'));
     }
 
     $scope.changePassword = function () {

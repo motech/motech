@@ -1,4 +1,4 @@
-package org.motechproject.security.password;
+package org.motechproject.security.ex;
 
 public class InvalidTokenException extends Exception {
 

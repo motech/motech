@@ -61,7 +61,7 @@ public class MotechUserServiceTestIT extends SpringIntegrationTest {
         ((AllMotechRolesCouchdbImpl) allMotechRoles).removeAll();
         // authorize
         allMotechRoles.add(new MotechRoleCouchdbImpl("IT_ADMIN", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole")));
-        motechUserService.register("admin", "admin", "1234", "", asList("IT_ADMIN"));
+        motechUserService.register("admin", "admin", "admin@mail.com", "", asList("IT_ADMIN"));
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("admin", "admin");
         Authentication auth = authenticationManager.authenticate(authRequest);
         SecurityContext context = SecurityContextHolder.getContext();

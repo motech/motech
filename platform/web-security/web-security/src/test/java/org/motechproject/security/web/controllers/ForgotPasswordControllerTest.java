@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.security.password.UserNotFoundException;
+import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;

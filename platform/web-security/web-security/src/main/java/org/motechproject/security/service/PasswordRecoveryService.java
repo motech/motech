@@ -1,7 +1,7 @@
 package org.motechproject.security.service;
 
-import org.motechproject.security.password.InvalidTokenException;
-import org.motechproject.security.password.UserNotFoundException;
+import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.ex.UserNotFoundException;
 
 public interface PasswordRecoveryService {
 

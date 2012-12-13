@@ -1,6 +1,6 @@
 package org.motechproject.security.web.controllers;
 
-import org.motechproject.security.password.InvalidTokenException;
+import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.motechproject.security.web.form.ResetForm;
 import org.motechproject.security.web.validator.ResetFormValidator;
