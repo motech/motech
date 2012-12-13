@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.core.FlowSession;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.lang.String.format;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -64,12 +66,7 @@ public class KookooCallServiceImplTest {
         FlowSession flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate(anyString(), anyString())).thenReturn(flowSession);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("external_id", "external_id");
-        params.put("hero", "batman");
-        params.put(IVRService.CALL_TYPE, "outbox");
-
-        CallRequest callRequest = new CallRequest("1234567890", params, "http://localhost/tama/ivr/reply");
+        CallRequest callRequest = new CallRequest("1234567890", null, "http://localhost/tama/ivr/reply");
         callRequest.setStatusCallbackUrl("http://localhost/motech/kookoo/ivr/callstatus");
         ivrService.initiateCall(callRequest);
 
@@ -79,13 +76,16 @@ public class KookooCallServiceImplTest {
             "1234567890",
             callRequest.getCallId(),
             callRequest.getStatusCallbackUrl() + "?motech_call_id=" + callRequest.getCallId(),
-            "http://localhost/tama/ivr/reply?dataMap={\"external_id\":\"external_id\",\"hero\":\"batman\",\"is_outbound_call\":\"true\",\"call_type\":\"outbox\"}"
+            "http://localhost/tama/ivr/reply"
         ))));
     }
 
     @Test
     public void shouldCreateSessionForOutgoingCall() throws IOException {
-        CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
+        Map<String, String> params = new HashMap<>();
+        params.put("hero", "batman");
+
+        CallRequest callRequest = new CallRequest("1234567890", params, "foobar");
 
         FlowSession flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate(callRequest.getCallId(), "1234567890")).thenReturn(flowSession);
@@ -93,6 +93,10 @@ public class KookooCallServiceImplTest {
         ivrService.initiateCall(callRequest);
 
         verify(flowSessionService).findOrCreate(callRequest.getCallId(), "1234567890");
+
+        ArgumentCaptor<FlowSession> sessionCaptor = ArgumentCaptor.forClass(FlowSession.class);
+        verify(flowSessionService).updateSession(sessionCaptor.capture());
+        assertEquals("batman", flowSession.get("hero"));
     }
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
