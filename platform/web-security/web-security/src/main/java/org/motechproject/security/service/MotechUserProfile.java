@@ -2,9 +2,10 @@ package org.motechproject.security.service;
 
 import org.motechproject.security.domain.MotechUser;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MotechUserProfile {
+public class MotechUserProfile implements Serializable {
 
     private MotechUser user;
 
