@@ -35,4 +35,6 @@ public interface MotechUserService {
 
     @PreAuthorize("hasRole('deleteUser')")
     void deleteUser(UserDto user);
+
+    void sendLoginInformation(String userName, String password);
 }

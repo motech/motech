@@ -1,6 +1,7 @@
 package org.motechproject.security.email;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class EmailSenderImpl implements EmailSender {
     private static final String ONE_TIME_TOKEN_TEMPLATE = "/mail/oneTimeTokenMail.vm";
     private static final String RECOVERY_SUBJECT = "Motech Password Recovery";
     private static final String ONE_TIME_TOKEN_SUBJECT = "Motech One Time Token For Admin User";
+    private static final String LOGIN_INFORMATION_TEMPLATE = "/mail/loginInfo.vm";
+    private static final String LOGIN_INFORMATION_SUBJECT = "Motech Login Information";
 
     @Autowired
     private JavaMailSender mailSender;
@@ -72,7 +75,39 @@ public class EmailSenderImpl implements EmailSender {
         mailSender.send(preparator);
     }
 
-    private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
+    public void sendLoginInfo(final MotechUser user,final String password) {
+        MimeMessagePreparator preparator = new MimeMessagePreparator() {
+            @Override
+            public void prepare(MimeMessage mimeMessage) throws MessagingException {
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+                message.setTo(user.getEmail());
+                message.setFrom("noreply@motechsuite.org");
+                message.setSubject(LOGIN_INFORMATION_SUBJECT);
+
+                Map<String, Object> model = loginInformationParams(user, password);
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, LOGIN_INFORMATION_TEMPLATE, model);
+
+                // send as html
+                message.setText(text, true);
+            }
+        };
+        mailSender.send(preparator);
+    }
+
+
+    private Map<String, Object> loginInformationParams(MotechUser user, String password) {
+        Map<String, Object> params = new HashMap<>();
+
+        String link = settingsService.getPlatformSettings().getServerUrl();
+
+        params.put("link", link);
+        params.put("user", user.getUserName());
+        params.put("password", password);
+
+        return params;
+    }
+
+     private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
         Map<String, Object> params = new HashMap<>();
 
         String link = joinUrls(settingsService.getPlatformSettings().getServerUrl(),

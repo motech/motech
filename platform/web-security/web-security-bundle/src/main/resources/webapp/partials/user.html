@@ -52,7 +52,7 @@
                     <div ng-class="cssClass('userName')">
                     <label class="control-label">{{msg('userName')}}</label>
                     <div class="controls">
-                        <input type="text" ng-model="user.userName" placeholder="{{msg('userName')}}" user-name-validate required>
+                        <input type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('userName')}}" user-name-validate required>
                         <span ng-hide="pwdNameValidate" class="form-hint">{{msg('userExist')}}</span>
                         <span ng-hide="hasValue('userName')" class="form-hint">{{msg('userNameRequired')}}</span>
                     </div>
@@ -68,22 +68,29 @@
                     </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-show="!user.generatePassword" class="control-group">
                     <div ng-class="cssClass('password')">
                     <label class="control-label">{{msg('password')}}</label>
                     <div class="controls">
-                        <input type="password" ng-model="user.password" required>
+                        <input ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
                         <span ng-hide="hasValue('password')" class="form-hint">{{msg('passwordRequired')}}</span>
-                        <!--<span class="help-inline"><a class="btn btn-small"  ng-click="generatePassword()">{{msg('generate')}}</a></span>-->
                     </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-show="!user.generatePassword" class="control-group">
                     <div ng-class="cssPassword()">
                         <label class="control-label">{{msg('confirmPassword')}}</label>
                         <div class="controls">
-                            <input type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
+                            <input ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
                             <span ng-show="createUserForm.confirmPassword.$error.equal" class="form-hint">{{msg('samePassword')}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div>
+                        <label class="control-label">{{msg('generatePassword')}}</label>
+                        <div class="controls">
+                            <input type="checkbox" name="generatePassword" ng-model="user.generatePassword">
                         </div>
                     </div>
                 </div>
@@ -110,7 +117,7 @@
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <input ng-disabled="createUserForm.$invalid" class="btn btn-primary" type="button" value="{{msg('save')}}" ng-click="saveUser()"/>
+                        <input ng-disabled="isFormValid()" class="btn btn-primary" type="button" value="{{msg('save')}}" ng-click="saveUser()"/>
                         <input class="btn" type="button" value="{{msg('cancel')}}" ng-click="cancelAddUser()"/>
                     </div>
                 </div>

@@ -20,6 +20,8 @@ public class UserDto {
 
     private String openId;
 
+    private boolean generatePassword;
+
     public UserDto() {
     }
 
@@ -31,6 +33,7 @@ public class UserDto {
         this.roles = motechUser.getRoles();
         this.active = motechUser.isActive();
         this.openId = motechUser.getOpenId();
+        this.generatePassword = false;
     }
 
     public String getExternalId() {
@@ -87,5 +90,13 @@ public class UserDto {
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public boolean isGeneratePassword() {
+        return generatePassword;
+    }
+
+    public void setGeneratePassword(boolean generatePassword) {
+        this.generatePassword = generatePassword;
     }
 }

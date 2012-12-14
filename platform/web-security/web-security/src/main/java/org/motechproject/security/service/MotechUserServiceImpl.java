@@ -3,6 +3,7 @@ package org.motechproject.security.service;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Autowired
     private MotechPasswordEncoder passwordEncoder;
+
+    @Autowired
+    EmailSender emailSender;
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles) {
@@ -112,6 +116,12 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void deleteUser(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         allMotechUsers.remove(motechUser);
+    }
+
+    @Override
+    public void sendLoginInformation(String userName, String password) {
+        MotechUser user = allMotechUsers.findByUserName(userName);
+        emailSender.sendLoginInfo(user, password);
     }
 }
 

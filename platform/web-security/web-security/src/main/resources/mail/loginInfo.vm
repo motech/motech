@@ -1,0 +1,15 @@
+<html>
+<body>
+
+<strong>Hello $user</strong>
+
+    <p>Administrator added your account to MOTECH</p>
+
+    <p>If you want login go to page: <a href="$link">$link</a></p>
+    <p>and use this login and password information.</p>
+
+    <p>Login: $user</p>
+    <p>Password: $password</p>
+
+</body>
+</html>

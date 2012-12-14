@@ -8,7 +8,8 @@ function UserCtrl($scope, Roles, Users, $http) {
            email: "",
            roles: [],
            active: true,
-           openId: ""
+           openId: "",
+           generatePassword:false
        }
        $scope.confirmPassword="";
        $scope.propertyUserName="";
@@ -22,15 +23,23 @@ function UserCtrl($scope, Roles, Users, $http) {
        $scope.selectedItem='';
        $scope.deleteU=false;
 
+       $scope.isFormValid = function() {
+           if($scope.user.generatePassword) {
+                if($scope.createUserForm.userName.$valid && $scope.createUserForm.email.$valid) {
+                    return false;
+                } else {
+                    return true;
+                }
+           } else {
+                return $scope.createUserForm.$isValid;
+           }
+       }
+
        $scope.roleList = Roles.query();
 
        $scope.userList = Users.query();
 
        $scope.selectedRole = -1;
-
-       $scope.generatePassword = function() {
-
-       }
 
        $scope.loginMode = function() {
            $http.get('../websecurity/api/users/loginmode').
@@ -114,7 +123,8 @@ function UserCtrl($scope, Roles, Users, $http) {
                 email: "",
                 roles: [],
                 active: true,
-                openId: ""
+                openId: "",
+                generatePassword:false
             }
        }
 

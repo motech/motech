@@ -1,5 +1,6 @@
 package org.motechproject.security.web.controllers;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.helper.AuthenticationMode;
@@ -13,11 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,6 +27,8 @@ import java.util.List;
 
 @Controller
 public class UserController {
+
+    private static final int PASSWORD_LENGTH = 10;
 
     @Autowired
     private MotechUserService motechUserService;
@@ -36,7 +39,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
     public void saveUser(@RequestBody UserDto user) {
-        motechUserService.register(user.getUserName(), user.getPassword(), user.getEmail(), "", user.getRoles());
+        String password = user.isGeneratePassword() ? RandomStringUtils.randomAlphanumeric(PASSWORD_LENGTH) : user.getPassword();
+        motechUserService.register(user.getUserName(), password, user.getEmail(), "", user.getRoles());
+        motechUserService.sendLoginInformation(user.getUserName(), password);
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
