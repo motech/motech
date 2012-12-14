@@ -48,7 +48,7 @@
 <body ng-controller="MasterCtrl" class="body-startup">
 <div class="bodywrap">
     <div class="startup" ng-show="ready">
-        <div class="startup-logo"><img src="resources/img/motech-logo.jpg" alt="motech-logo" /></div>
+        <a href="."><div class="startup-logo"><img src="resources/img/motech-logo.jpg" alt="motech-logo" /></div></a>
         <div class="startup-title ng-binding">Mobile Technology for Community Health</div>
         <div class="clearfix"></div>
         <div class="startup-strip">

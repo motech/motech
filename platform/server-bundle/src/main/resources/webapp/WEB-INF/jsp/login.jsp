@@ -55,7 +55,7 @@
 <div class="bodywrap">
     <div class="header">
         <div class="container">
-            <div class="dashboard-logo"></div>
+            <a href="."><div class="dashboard-logo"></div></a>
             <div class="nav-collapse">
                 <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
             </div>
@@ -77,28 +77,23 @@
             <div id="main-content">
                 <c:if test="${loginMode=='repository'}">
                 <c:if test="${empty error}">
-                <div id="login" class="well2 margin-center margin-before4 spn4">
+                <div id="login" class="well2 margin-center margin-before2 spnw5">
                     <div class="box-header"><fmt:message key="security.signInUser" bundle="${bundle}"/></div>
                     <div class="box-content clearfix">
                         <div class="well3">
                             <form action="${contextPath}j_spring_security_check" method="POST" class="inside">
                                 <div class="control-group">
-                                    <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/></h4>
+                                    <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="motechId" bundle="${bundle}"/></h4>
+                                </div>
+                                <div class="control-group margin-before2">
+                                    <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
-                                    <h4><fmt:message key="motechId" bundle="${bundle}"/></h4>
-                                </div>
-                                <div class="control-group">
-                                    <input type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>"/>
-                                </div>
-                                <div class="control-group">
-                                    <input type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>"/>
+                                    <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
                                     <input class="btn btn-primary" value="<fmt:message key="signin" bundle="${bundle}"/>" type="submit"/>
-                                </div>
-                                <div class="control-group">
-                                <!--<a href="#"><fmt:message key="security.signInQuestions" bundle="${bundle}"/></a>-->
+                                    <span class="pull-right margin-before05"><a href="../../module/websecurity/api/forgot">&nbsp;<fmt:message key="security.signInQuestions" bundle="${bundle}"/></a></span>
                                 </div>
                             </form>
                         </div>
@@ -107,17 +102,14 @@
                 </div>
                 </c:if>
                 <c:if test="${error=='true'}">
-                <div class="well2 margin-center spn10">
+                <div class="well2 margin-center spn9">
                     <div class="box-header"><fmt:message key="security.signInUnsuccessful" bundle="${bundle}"/></div>
                     <div class="box-content clearfix">
                         <div class="row-fluid">
                             <div class="span6 inside">
                                 <div class="well3">
-                                    <div class="control-group">
-                                        <h5><fmt:message key="security.didnotRecognizeMsg" bundle="${bundle}"/></h5>
-                                    </div>
-                                    <div class="control-group">
-                                        <h5><fmt:message key="security.thinkForgotMsg" bundle="${bundle}"/></h5>
+                                    <div class="control-group margin-before4">
+                                        <h5 class="login-error"><fmt:message key="security.didnotRecognizeMsg" bundle="${bundle}"/></h5>
                                     </div>
                                     <div class="control-group">
                                         <h5><fmt:message key="security.donotRememberMsg1" bundle="${bundle}"/>
@@ -129,16 +121,13 @@
                                 <div class="well3"><div class="left-divider">
                                     <form class="inside" action="${contextPath}j_spring_security_check" method="POST">
                                         <div class="control-group">
-                                            <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/></h4>
+                                            <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/><fmt:message key="motechId" bundle="${bundle}"/></h4>
+                                        </div>
+                                        <div class="control-group margin-before2"">
+                                            <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>">
                                         </div>
                                         <div class="control-group">
-                                            <h4><fmt:message key="motechId" bundle="${bundle}"/></h4>
-                                        </div>
-                                        <div class="control-group">
-                                            <input type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>">
-                                        </div>
-                                        <div class="control-group">
-                                            <input type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>">
+                                            <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>">
                                         </div>
                                         <div class="control-group">
                                             <input class="btn btn-primary" type="submit" value="<fmt:message key="signin" bundle="${bundle}"/>"/>
@@ -152,15 +141,19 @@
                 </c:if>
                 </c:if>
                 <c:if test="${loginMode=='openid'}">
-                    <div class="well2 margin-center spn5">
+                    <div class="well2 margin-center margin-before2 spn6">
                         <div class="box-header"><fmt:message key="security.openIdConsumer" bundle="${bundle}"/></div>
                         <div class="box-content">
                             <div class="well3">
-                                <form class="inside" action="${contextPath}j_spring_openid_security_check" method="POST">
-                                   <p>For ${openIdProviderName} users:</p>
-                                   <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
-                                   <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
-                                   <input type="submit" value="${msg} ${openIdProviderName}"/>
+                                <form class="inside form-horizontal" action="${contextPath}j_spring_openid_security_check" method="POST">
+                                   <div class="control-group open-id">
+                                        <p class="control-label">For ${openIdProviderName} users:</p>
+                                        <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
+                                        <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
+                                        <div class="controls">
+                                             <input class="btn btn-primary" type="submit" value="${msg} ${openIdProviderName}"/>
+                                        </div>
+                                   </div>
                                 </form>
                             </div>
                             <div class="clearfix"></div>

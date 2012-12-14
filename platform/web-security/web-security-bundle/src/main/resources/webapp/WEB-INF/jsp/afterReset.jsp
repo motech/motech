@@ -23,7 +23,7 @@
         <div class="bodywrap">
             <div class="header">
                 <div class="container">
-                    <div class="dashboard-logo"></div>
+                    <a href="."><div class="dashboard-logo"></div></a>
                     <div class="nav-collapse">
                         <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
                     </div>
@@ -39,13 +39,13 @@
                 </div>
             </div>
 
-            <div class="well2 margin-center spn4">
+            <div class="well2 margin-center spnw5">
                 <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
                 <div class="box-content">
                     <div class="well3">
                         <c:choose>
                             <c:when test="${not empty errors}">
-                                <div class="alert alert-error">
+                                <div class="login-error">
                                 <c:forEach var="error" items="${errors}">
                                     <fmt:message key="${error}" bundle="${bundle}"/><br/>
                                 </c:forEach>

@@ -22,7 +22,7 @@
 <div class="bodywrap">
     <div class="header">
         <div class="container">
-            <div class="dashboard-logo"></div>
+            <a href="."><div class="dashboard-logo"></div></a>
             <div class="nav-collapse">
                 <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
             </div>
@@ -42,10 +42,10 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <div class="well2 margin-center spn4">
+                <div class="well2 margin-center spnw5">
                 <div class="box-header"><fmt:message key="security.forgotPassword" bundle="${bundle}"/></div>
 
-                <div class="box-content">
+                <div class="box-content well3">
                     <c:choose>
                         <c:when test="${error == null}">
                             <div class="control-group">
@@ -53,9 +53,14 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <div class="alert alert-error">
+                            <div class="login-error">
                                 <h4><fmt:message key="security.tokenSendError" bundle="${bundle}"/></h4>
+                            </div>
+                            <div class="control-group login-error">
                                 <p><fmt:message key="${error}" bundle="${bundle}"/></p>
+                            </div>
+                            <div class="control-group login-error">      <a ></a>
+                                <a href="."><input type="button" class="btn btn-primary" value="<fmt:message key="security.back" bundle="${bundle}"/>" /></a>
                             </div>
                         </c:otherwise>
                     </c:choose>

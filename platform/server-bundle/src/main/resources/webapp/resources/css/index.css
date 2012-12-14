@@ -604,6 +604,29 @@ select {
 
 }
 
+/*----- login ------*/
+
+.spnw5 {
+    width: 330px;
+}
+
+.margin-before05 {
+    margin-top: 5px;
+}
+
+.login-error {
+    color: #fa0328;
+}
+
+.open-id p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #224477;
+}
+
+.open-id.control-group {
+    margin-bottom: 0;
+}
 
 /*----- common ------*/
 

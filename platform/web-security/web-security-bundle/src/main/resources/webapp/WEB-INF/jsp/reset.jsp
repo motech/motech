@@ -23,7 +23,7 @@
         <div class="bodywrap">
             <div class="header">
                 <div class="container">
-                    <div class="dashboard-logo"></div>
+                    <a href="."><div class="dashboard-logo"></div></a>
                     <div class="nav-collapse">
                         <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
                     </div>
@@ -38,38 +38,45 @@
                     </div>
                 </div>
             </div>
+            <div class="clearfix"></div>
+            <div id="content" class="container">
+                <div class="row-fluid">
+                    <div id="main-content">
+                        <div class="well2 margin-center spnw5">
+                            <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
+                            <div class="box-content">
+                                <div class="well3">
+                                    <c:if test="${not empty errors}">
+                                        <div class="login-error">
+                                        <c:forEach var="error" items="${errors}">
+                                            <fmt:message key="${error}" bundle="${bundle}"/><br/>
+                                        </c:forEach>
+                                        </div>
+                                    </c:if>
+                                    <form method="post" action="reset">
+                                        <input type="hidden" id="token" name="token" value="${token}" />
 
-            <div class="well2 margin-center spn4">
-                <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
-                <div class="box-content">
-                    <div class="well3">
-                        <c:if test="${not empty errors}">
-                            <div class="alert alert-error">
-                            <c:forEach var="error" items="${errors}">
-                                <fmt:message key="${error}" bundle="${bundle}"/><br/>
-                            </c:forEach>
+                                        <div class="control-group">
+                                            <h4><fmt:message key="security.enterNewPassword" bundle="${bundle}"/></h4>
+                                        </div>
+                                        <div class="control-group">
+                                            <label><fmt:message key="password" bundle="${bundle}"/></label>
+                                            <input class="span12" type="password" id="password" name="password">
+                                        </div>
+                                        <div class="control-group">
+                                            <label><fmt:message key="confirmPassword" bundle="${bundle}"/></label>
+                                            <input class="span12" type="password" id="passwordConfirmation" name="passwordConfirmation" />
+                                        </div>
+                                        <div class="control-group">
+                                            <input class="btn btn-primary" type="submit" value="<fmt:message key="changePassword" bundle="${bundle}"/>"/>
+                                            <input class="btn" type="button" value="<fmt:message key="cancel" bundle="${bundle}"/>"/>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="clearfix"></div>
                             </div>
-                        </c:if>
-                        <form class="inside" method="post" action="reset">
-                            <input type="hidden" id="token" name="token" value="${token}" />
-
-                            <div class="control-group">
-                                <h4><fmt:message key="password" bundle="${bundle}"/></h4>
-                            </div>
-                            <div class="control-group">
-                                <label><fmt:message key="password" bundle="${bundle}"/></label>
-                                <input type="password" id="password" name="password">
-                            </div>
-                            <div class="control-group">
-                                <label><fmt:message key="confirmPassword" bundle="${bundle}"/></label>
-                                <input type="password" id="passwordConfirmation" name="passwordConfirmation" />
-                            </div>
-                            <div class="control-group">
-                                <input class="btn btn-primary" type="submit" value="<fmt:message key="changePassword" bundle="${bundle}"/>"/>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>

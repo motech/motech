@@ -77,7 +77,7 @@
 <div class="bodywrap">
     <div class="header">
         <div class="container-fluid">
-            <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
+            <a href="."><div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div></a>
             <div class="header-title" ng-show="showDashboardLogo.showDashboard"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
         </div>
     </div>
