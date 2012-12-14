@@ -1,0 +1,13 @@
+<html>
+<body>
+
+<strong>Hello $user</strong>
+
+    <p>Someone has opened a one time token request for your account. If it was you, click the following link to
+    login.</p>
+
+    <p><a href="$link">$link</a><p>
+
+    <p> If you did not one time token please ignore this message.</p>
+</body>
+</html>
