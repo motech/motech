@@ -164,6 +164,8 @@
                                 </form>
                             </div>
                             <div class="clearfix"></div>
+                            <fmt:message key="oneTimeToken" bundle="${bundle}"/> <a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a>
+
                         </div>
                     </div>
                 </c:if>

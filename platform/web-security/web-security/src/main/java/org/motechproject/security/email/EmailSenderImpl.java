@@ -19,7 +19,9 @@ import java.util.Map;
 public class EmailSenderImpl implements EmailSender {
 
     private static final String RESET_MAIL_TEMPLATE = "/mail/resetMail.vm";
+    private static final String ONE_TIME_TOKEN_TEMPLATE = "/mail/oneTimeTokenMail.vm";
     private static final String RECOVERY_SUBJECT = "Motech Password Recovery";
+    private static final String ONE_TIME_TOKEN_SUBJECT = "Motech One Time Token For Admin User";
 
     @Autowired
     private JavaMailSender mailSender;
@@ -40,7 +42,7 @@ public class EmailSenderImpl implements EmailSender {
                 message.setFrom("noreply@motechsuite.org");
                 message.setSubject(RECOVERY_SUBJECT);
 
-                Map<String, Object> model = templateParams(recovery);
+                Map<String, Object> model = templateParams(recovery, "reset");
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);
 
                 // send as html
@@ -50,11 +52,31 @@ public class EmailSenderImpl implements EmailSender {
         mailSender.send(preparator);
     }
 
-    private Map<String, Object> templateParams(PasswordRecovery recovery) {
+    @Override
+    public void sendOneTimeToken(final PasswordRecovery recovery) {
+        MimeMessagePreparator preparator = new MimeMessagePreparator() {
+            @Override
+            public void prepare(MimeMessage mimeMessage) throws MessagingException {
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+                message.setTo(recovery.getEmail());
+                message.setFrom("noreply@motechsuite.org");
+                message.setSubject(ONE_TIME_TOKEN_SUBJECT);
+
+                Map<String, Object> model = templateParams(recovery, "onetimetoken");
+                String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, ONE_TIME_TOKEN_TEMPLATE, model);
+
+                // send as html
+                message.setText(text, true);
+            }
+        };
+        mailSender.send(preparator);
+    }
+
+    private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
         Map<String, Object> params = new HashMap<>();
 
         String link = joinUrls(settingsService.getPlatformSettings().getServerUrl(),
-                "/module/websecurity/api/reset?token=") + recovery.getToken();
+                "/module/websecurity/api/"+flag+"?token=") + recovery.getToken();
 
         params.put("link", link);
         params.put("user", recovery.getUsername());

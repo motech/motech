@@ -9,14 +9,28 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.ex.InvalidTokenException;
+import org.motechproject.security.ex.UserNotFoundException;
+import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
-import org.motechproject.security.ex.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.openid.OpenIDAttribute;
+import org.springframework.security.openid.OpenIDAuthenticationProvider;
+import org.springframework.security.openid.OpenIDAuthenticationStatus;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,6 +53,11 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     @Autowired
     private MotechPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private OpenIDAuthenticationProvider authenticationManager;
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
     @Override
     public void cleanUpExpiredRecoveries() {
         List<PasswordRecovery> expiredRecoveries = allPasswordRecoveries.getExpired();
@@ -52,6 +71,50 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     public boolean validateToken(String token) {
         PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
         return validateRecovery(recovery);
+    }
+
+    @Override
+    public void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+        MotechUser user = allMotechUsers.findUserByEmail(email);
+
+        if (user == null) {
+            throw new UserNotFoundException("User with email not found: " + email);
+        }
+        List<String> roles = user.getRoles();
+        boolean isAdminUser = false;
+        for (String role : roles) {
+            if (role.toLowerCase().contains("admin")) {
+                isAdminUser = true;
+            }
+        }
+        if (!isAdminUser) {
+              throw new NonAdminUserException("You are not admin User: " + user.getUserName());
+        }
+        String token = RandomStringUtils.randomAlphanumeric(TOKEN_LENGTH);
+        DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
+
+        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
+                token, expirationDate);
+
+        emailSender.sendOneTimeToken(recovery);
+
+        LOG.info("Created a one time token for user " + user.getUserName());
+    }
+
+    @Override
+    public void validateTokenAndLoginUser(String token, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PasswordRecovery recovery = allPasswordRecoveries.findForToken(token);
+        if (validateRecovery(recovery)) {
+            MotechUser user = allMotechUsers.findUserByEmail(recovery.getEmail());
+            OpenIDAuthenticationToken openIDToken = new OpenIDAuthenticationToken(OpenIDAuthenticationStatus.SUCCESS, user.getOpenId(), "one time login ", new ArrayList<OpenIDAttribute>());
+            Authentication authentication = authenticationManager.authenticate(openIDToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            request.getSession(true).setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+            allPasswordRecoveries.remove(recovery);
+            redirectStrategy.sendRedirect(request, response, "/server/home");
+        } else {
+            redirectStrategy.sendRedirect(request, response, "/server/login");
+        }
     }
 
     @Override

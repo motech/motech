@@ -32,9 +32,11 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
         if (user == null) {
             List<String> roles = new ArrayList<String>();
             if (allMotechUsers.getOpenIdUsers().isEmpty()) {
-                roles.add("Admin User");
+                for (MotechRole role : allMotechRoles.getRoles()) {
+                    roles.add(role.getRoleName());
+                }
             }
-            user = new MotechUserCouchdbImpl(getAttribute(token.getAttributes(), "Email"), "", "", "", roles, token.getName());
+            user = new MotechUserCouchdbImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName());
             allMotechUsers.addOpenIdUser(user);
         }
 

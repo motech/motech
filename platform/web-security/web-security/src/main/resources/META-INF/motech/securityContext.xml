@@ -29,6 +29,7 @@
     <security:http pattern="/**/login*" security="none" />
     <security:http pattern="/**/forgot*" security="none" />
     <security:http pattern="/**/reset*" security="none" />
+    <security:http pattern="/**/onetimetoken*" security="none" />
     <security:http pattern="/**/lang*" security="none" />
     <security:http pattern="/**/list*" security="none" />
     <security:http pattern="/**/locate*" security="none" />

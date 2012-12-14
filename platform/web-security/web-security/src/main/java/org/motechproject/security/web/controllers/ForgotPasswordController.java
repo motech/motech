@@ -1,5 +1,6 @@
 package org.motechproject.security.web.controllers;
 
+import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.slf4j.Logger;
@@ -46,6 +47,36 @@ public class ForgotPasswordController {
             recoveryService.passwordRecoveryRequest(email);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
+            LOG.debug("Request for a nonexistent email" ,e);
+        } catch (Exception e) {
+            mav.addObject(ERROR, "security.forgot.errorSending");
+            LOG.error("Error processing recovery", e);
+        }
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/forgotOpenId", method = RequestMethod.GET)
+    public ModelAndView forgotOpenIdGet(HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("forgotOpenId");
+
+        mav.addObject(PAGE_LANG, cookieLocaleResolver.resolveLocale(request));
+
+        return mav;
+    }
+
+    @RequestMapping(value = "/forgotOpenId", method = RequestMethod.POST)
+    public ModelAndView forgotOpenIdPost(@RequestParam String email, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("forgotProcessed");
+        mav.addObject(PAGE_LANG, cookieLocaleResolver.resolveLocale(request));
+
+        try {
+            recoveryService.oneTimeTokenOpenId(email);
+        } catch (UserNotFoundException e) {
+            mav.addObject(ERROR, "security.forgot.noSuchUser");
+            LOG.debug("Request for a nonexistent email" ,e);
+        } catch (NonAdminUserException e) {
+            mav.addObject(ERROR, "security.forgot.nonAdminUser");
             LOG.debug("Request for a nonexistent email" ,e);
         } catch (Exception e) {
             mav.addObject(ERROR, "security.forgot.errorSending");
