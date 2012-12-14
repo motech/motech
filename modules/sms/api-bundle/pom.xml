@@ -41,6 +41,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -51,6 +57,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>META-INF/osgi/applicationSmsAPIBundle.xml</Context-File>
+                        <Context-Path>smsapi</Context-Path>
                         <Export-Package>
                             org.motechproject.sms.api,
                             org.motechproject.sms.api.constants,

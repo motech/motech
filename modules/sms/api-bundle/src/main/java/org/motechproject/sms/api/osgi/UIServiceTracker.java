@@ -1,4 +1,4 @@
-package org.motechproject.sms.http.osgi;
+package org.motechproject.sms.api.osgi;
 
 import org.motechproject.server.ui.ModuleRegistrationData;
 import org.motechproject.server.ui.UIFrameworkService;
@@ -7,8 +7,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.lang.String.format;
 
 class UIServiceTracker extends ServiceTracker {
 
@@ -36,12 +34,12 @@ class UIServiceTracker extends ServiceTracker {
 
     private void serviceAdded(UIFrameworkService service) {
         service.registerModule(moduleRegistrationData);
-        logger.debug(format("%s registered in UI framework", moduleRegistrationData.getModuleName()));
+        logger.debug(String.format("%s registered in UI framework", moduleRegistrationData.getModuleName()));
     }
 
 
     private void serviceRemoved(UIFrameworkService service) {
         service.unregisterModule(moduleRegistrationData.getModuleName());
-        logger.debug(format("%s unregistered from ui framework", moduleRegistrationData.getModuleName()));
+        logger.debug(String.format("%s unregistered from ui framework", moduleRegistrationData.getModuleName()));
     }
 }
