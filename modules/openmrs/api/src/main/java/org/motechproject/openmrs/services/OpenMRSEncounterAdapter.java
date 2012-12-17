@@ -142,4 +142,26 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
             return openmrsToMrsEncounter(encounter);
         }
     }
+
+    @Override
+    public List<MRSEncounter> getEncountersByEncounterType(String motechId, String encounterType) {
+        final List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier(motechId);
+        final ArrayList<Encounter> encountersByType = new ArrayList<Encounter>();
+        for (Encounter encounter : encounters) {
+            if (encounterType.equals(encounter.getEncounterType().getName())) {
+                encountersByType.add(encounter);
+            }
+        }
+        if (encountersByType.isEmpty()) {
+            return null;
+        }
+        
+        ArrayList<MRSEncounter> mrsEncounters = new ArrayList<MRSEncounter>();
+        
+        for (Encounter encounter : encountersByType) {
+            mrsEncounters.add(openmrsToMrsEncounter(encounter));
+        }
+        
+        return mrsEncounters;
+    }
 }
