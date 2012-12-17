@@ -23,7 +23,7 @@
 <div class="bodywrap">
     <div class="header">
         <div class="container">
-            <div class="dashboard-logo"></div>
+            <a href="."><div class="dashboard-logo"></div></a>
             <div class="nav-collapse">
                 <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
             </div>
@@ -43,7 +43,7 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <div class="well2 margin-center spn4">
+                <div class="well2 margin-center spn5">
                     <div class="box-header"><fmt:message key="security.oneTimeToken" bundle="${bundle}"/></div>
                     <div class="box-content">
                         <form class="inside" method="post">
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="control-group">
                                     <label><fmt:message key="security.enterEmail" bundle="${bundle}"/></label>
-                                    <input type="email" id="email" name="email">
+                                    <input class="span12" type="email" id="email" name="email">
                                 </div>
                                 <div class="control-group">
                                     <input class="btn btn-primary" type="submit" value="<fmt:message key="security.sendOneTimeToken" bundle="${bundle}"/>"/>

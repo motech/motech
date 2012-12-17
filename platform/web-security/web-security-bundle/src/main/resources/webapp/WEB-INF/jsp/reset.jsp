@@ -42,7 +42,7 @@
             <div id="content" class="container">
                 <div class="row-fluid">
                     <div id="main-content">
-                        <div class="well2 margin-center spnw5">
+                        <div class="well2 margin-center margin-before2 spnw5">
                             <div class="box-header"><fmt:message key="security.resetYourPassword" bundle="${bundle}"/></div>
                             <div class="box-content">
                                 <div class="well3">

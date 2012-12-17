@@ -43,7 +43,7 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <div class="well2 margin-center spn6">
+                <div class="well2 margin-center margin-before2 spn6">
                     <div class="box-header"><fmt:message key="security.resetInstructions" bundle="${bundle}"/></div>
                     <div class="box-content">
                         <form class="inside" method="post">
