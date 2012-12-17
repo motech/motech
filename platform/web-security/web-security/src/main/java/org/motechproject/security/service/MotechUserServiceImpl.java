@@ -3,13 +3,24 @@ package org.motechproject.security.service;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.helper.SecurityHelper;
+import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
+import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -25,6 +36,12 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Autowired
     EmailSender emailSender;
+
+    @Autowired
+    private SessionHandler sessionHandler;
+
+    @Autowired
+    private AllMotechRoles allMotechRoles;
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles) {
@@ -110,6 +127,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         }
         motechUser.setRoles(user.getRoles());
         allMotechUsers.update(motechUser);
+        refreshUserContextIfActive(motechUser.getUserName());
     }
 
     @Override
@@ -122,6 +140,32 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void sendLoginInformation(String userName, String password) {
         MotechUser user = allMotechUsers.findByUserName(userName);
         emailSender.sendLoginInfo(user, password);
+    }
+
+    private void refreshUserContextIfActive(String userName) {
+        MotechUser user = allMotechUsers.findByUserName(userName);
+        Collection<HttpSession> sessions = sessionHandler.getAllSessions();
+
+        for (HttpSession session : sessions) {
+            SecurityContext context = (SecurityContext)session.getAttribute("SPRING_SECURITY_CONTEXT");
+            Authentication authentication = context.getAuthentication();
+            AbstractAuthenticationToken token = null;
+            User userInSession = (User)authentication.getPrincipal();
+            if (userInSession.getUsername().equals(userName)) {
+                if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                    UsernamePasswordAuthenticationToken oldToken = (UsernamePasswordAuthenticationToken) authentication;
+                    token = new UsernamePasswordAuthenticationToken(oldToken.getPrincipal(),
+                        oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
+
+                } else if (authentication instanceof OpenIDAuthenticationToken){
+                    OpenIDAuthenticationToken oldToken = (OpenIDAuthenticationToken) authentication;
+                    token = new OpenIDAuthenticationToken(oldToken.getPrincipal(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles),
+                            user.getOpenId(), oldToken.getAttributes());
+                }
+                context.setAuthentication(token);
+            }
+        }
+
     }
 }
 

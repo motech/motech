@@ -41,10 +41,10 @@
     </bean>
 
     <security:http auto-config="false" entry-point-ref="loginFormAuthentication" use-expressions="true">
+        <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
         <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter" />
         <security:custom-filter position="OPENID_FILTER" ref="openIdAuthenticationProcessingFilter"/>
         <security:intercept-url pattern="/**" access="isFullyAuthenticated()"/>
-        <security:logout logout-success-url="/module/server/login" />
     </security:http>
 
     <security:authentication-manager alias="authenticationManager">
@@ -52,14 +52,23 @@
         <security:authentication-provider ref="motechOpenIdAuthenticationProvider"/>
     </security:authentication-manager>
 
+    <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg value="/module/server/login" />
+        <constructor-arg>
+            <list>
+                <bean class="org.motechproject.security.authentication.MotechLogoutSuccessHandler"/>
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/j_spring_security_logout"/>
+    </bean>
+
     <bean id="userAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
         <property name="filterProcessesUrl" value="/j_spring_security_check"/>
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="authenticationFailureHandler" ref="loginMappingFailureHandler" />
         <property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
     </bean>
-
-
 
     <bean id="openIdAuthenticationProcessingFilter" class="org.springframework.security.openid.OpenIDAuthenticationFilter">
         <property name="filterProcessesUrl" value="/j_spring_openid_security_check"/>
@@ -112,7 +121,7 @@
 
     <bean id="motechUserDetailsService" class="org.motechproject.security.authentication.MotechOpenIdUserDetailsService" />
 
-    <bean id="loginSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+    <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler" >
         <property name="defaultTargetUrl" value="/module/server/home"  />
     </bean>
 

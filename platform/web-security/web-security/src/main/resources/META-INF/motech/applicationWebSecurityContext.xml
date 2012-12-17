@@ -19,6 +19,7 @@
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean class="org.motechproject.security.Initialize"/>
+    <bean class="org.motechproject.security.helper.SessionHandler"/>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="localhost"/>

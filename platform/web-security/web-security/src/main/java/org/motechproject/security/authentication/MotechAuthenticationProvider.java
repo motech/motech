@@ -1,8 +1,8 @@
 package org.motechproject.security.authentication;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.service.MotechUserProfile;
@@ -10,14 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
@@ -57,18 +52,8 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new BadCredentialsException(USER_NOT_ACTIVATED);
         } else {
             authentication.setDetails(new MotechUserProfile(user));
-            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, getAuthorities(user.getRoles()));
+            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
         }
     }
 
-    private List<GrantedAuthority> getAuthorities(List<String> roles) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (String role : roles) {
-            MotechRole motechRole = allMotechRoles.findByRoleName(role);
-            for (String permission : motechRole.getPermissionNames()) {
-                authorities.add(new SimpleGrantedAuthority(permission));
-            }
-        }
-        return authorities;
-    }
 }

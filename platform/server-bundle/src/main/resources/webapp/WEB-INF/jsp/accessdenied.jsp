@@ -37,7 +37,7 @@
     <script src="resources/js/localization.js"></script>
     <script src="resources/js/app.js"></script>
     <script src="resources/js/controllers.js"></script>
-
+    <script src="resources/js/directives.js"></script>
     <script src="resources/js/dashboard.js"></script>
 
     <c:if test="${! empty currentModule}">

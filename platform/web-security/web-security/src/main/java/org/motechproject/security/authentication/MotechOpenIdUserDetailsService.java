@@ -3,11 +3,10 @@ package org.motechproject.security.authentication;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,18 +39,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
             allMotechUsers.addOpenIdUser(user);
         }
 
-        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, getAuthorities(user.getRoles()));
-    }
-
-    private List<GrantedAuthority> getAuthorities(List<String> roles) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (String role : roles) {
-            MotechRole motechRole = allMotechRoles.findByRoleName(role);
-            for (String permission : motechRole.getPermissionNames()) {
-                authorities.add(new SimpleGrantedAuthority(permission));
-            }
-        }
-        return authorities;
+        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
     }
 
     private String getAttribute(List<OpenIDAttribute> attributes, String attributeName) {
