@@ -27,10 +27,10 @@ public class FileEventLogger extends EventLogger {
     }
 
     public FileEventLogger(List<LoggableEvent> loggableEvents, List<File> loggingFiles,
-            DefaultFileToLogConverter eventConverter) {
-        this.loggableEvents = loggableEvents;
+                           DefaultFileToLogConverter eventConverter) {
+        addLoggableEvents(loggableEvents);
         if (loggingFiles == null) {
-            this.loggingFiles = Collections.<File> emptyList();
+            this.loggingFiles = Collections.emptyList();
         } else {
             this.loggingFiles = loggingFiles;
         }
@@ -39,7 +39,7 @@ public class FileEventLogger extends EventLogger {
 
     @Override
     public void log(MotechEvent eventToLog) {
-        for (LoggableEvent loggableEvent : loggableEvents) {
+        for (LoggableEvent loggableEvent : getLoggableEvents()) {
             if (loggableEvent.isLoggableEvent(eventToLog)) {
                 if (eventConverter != null) {
                     String logString = eventConverter.convertToLog(eventToLog);
@@ -70,7 +70,7 @@ public class FileEventLogger extends EventLogger {
     private synchronized void writeToFile(String eventToLog, File fileToLogTo) {
 
         try (FileWriter fileStream = new FileWriter(fileToLogTo, true);
-                BufferedWriter fileWriter = new BufferedWriter(fileStream)) {
+             BufferedWriter fileWriter = new BufferedWriter(fileStream)) {
             fileWriter.write((eventToLog));
             fileWriter.newLine();
             fileWriter.flush();

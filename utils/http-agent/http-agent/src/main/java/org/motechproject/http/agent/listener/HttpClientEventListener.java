@@ -22,7 +22,7 @@ public class HttpClientEventListener {
     public static final String HTTP_CONNECT_TIMEOUT = "http.connect.timeout";
     public static final String HTTP_READ_TIMEOUT = "http.read.timeout";
 
-    Logger logger = Logger.getLogger(HttpClientEventListener.class);
+    private Logger logger = Logger.getLogger(HttpClientEventListener.class);
 
     private RestTemplate restTemplate;
 

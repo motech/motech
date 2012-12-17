@@ -10,7 +10,7 @@ import java.util.List;
 public class TreeRecord implements InitializingBean {
     private String name;
     private String description;
-    List<NodeRecord> nodes;
+    private List<NodeRecord> nodes;
 
     public String getName() {
         return name;

@@ -108,7 +108,7 @@
             <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_IF,LITERAL_FOR,LITERAL_WHILE"/>
         </module>
         <module name="VisibilityModifier">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="packageAllowed" value="false"/>
             <property name="protectedAllowed" value="false"/>
             <property name="publicMemberPattern" value="^serialVersionUID$"/>

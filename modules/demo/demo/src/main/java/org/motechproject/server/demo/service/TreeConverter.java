@@ -92,7 +92,7 @@ public final class TreeConverter {
         Long nodeId = 0L;
         Long count = 1L;
 
-        while(!nodes.isEmpty()) {
+        while (!nodes.isEmpty()) {
             Node next = nodes.get(nodeId);
 
             NodeRecord converted = convertToNodeRecord(next, nodeId);

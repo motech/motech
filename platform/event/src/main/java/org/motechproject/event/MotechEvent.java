@@ -20,7 +20,7 @@ public class MotechEvent implements Serializable {
 
     private UUID id;
     private String subject;
-    protected Map<String, Object> parameters;
+    private Map<String, Object> parameters;
     private Date endTime;
     private boolean isLastEvent;
 
@@ -171,4 +171,6 @@ public class MotechEvent implements Serializable {
         }
         this.getParameters().put(MotechEvent.PARAM_REDELIVERY_COUNT, ((Integer)redeliverCount).intValue()+1);
     }
+
+
 }

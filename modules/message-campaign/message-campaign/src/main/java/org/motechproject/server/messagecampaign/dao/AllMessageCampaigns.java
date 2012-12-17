@@ -24,7 +24,7 @@ public class AllMessageCampaigns {
 
     private SettingsFacade settings;
     private MotechJsonReader motechJsonReader;
-    public String messageCampaignsJsonFile = "message-campaigns.json";
+    private String messageCampaignsJsonFile = "message-campaigns.json";
     private static List<Campaign> campaigns = new ArrayList<Campaign>();
 
     public AllMessageCampaigns(@Qualifier("messageCampaignSettings") SettingsFacade settings, MotechJsonReader motechJsonReader) {

@@ -12,7 +12,7 @@ public class EndOfCallEvent extends MotechEvent {
     }
 
     public CallDetail getCallDetail() {
-        return (CallDetail) parameters.get(EventKeys.CALL_DETAIL_RECORD_PARAM);
+        return (CallDetail) getParameters().get(EventKeys.CALL_DETAIL_RECORD_PARAM);
     }
 
     private static Map<String, Object> getPayload(CallDetail callDetail) {

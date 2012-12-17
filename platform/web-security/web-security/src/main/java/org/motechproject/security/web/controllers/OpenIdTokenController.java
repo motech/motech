@@ -19,7 +19,7 @@ public class OpenIdTokenController {
     private static final Logger LOG = LoggerFactory.getLogger(OpenIdTokenController.class);
 
     @Autowired
-    PasswordRecoveryService recoveryService;
+    private PasswordRecoveryService recoveryService;
 
     @RequestMapping(value = "/onetimetoken", method = RequestMethod.GET)
     public void resetView(@RequestParam String token, HttpServletRequest request, HttpServletResponse response) {

@@ -31,7 +31,7 @@ public class AdminMappingServiceImpl implements AdminMappingService {
     private AllAdminMappings allAdminMappings;
 
     @Autowired
-    BundleContext bundleContext;
+    private BundleContext bundleContext;
 
     @Override
     public void registerMapping(String bundleName, String url) {

@@ -24,7 +24,7 @@ public class CouchEventLogger extends EventLogger {
 
     @Override
     public void log(MotechEvent eventToLog) {
-        for (LoggableEvent loggableEvent : loggableEvents) {
+        for (LoggableEvent loggableEvent : getLoggableEvents()) {
             if (loggableEvent.isLoggableEvent(eventToLog)) {
                 if (eventConverter != null) {
                     CouchEventLog couchLog;
