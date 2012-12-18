@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>motech</artifactId>
+        <groupId>org.motechproject</groupId>
+        <version>0.16-SNAPSHOT</version>
+        <relativePath>../../../../</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.motechproject</groupId>
+    <artifactId>motech-mrs-couchdb</artifactId>
+    <name>MOTECH MRS CouchDB</name>
+    <description>MOTECH MRS CouchDB Implementation</description>
+    <version>0.16-SNAPSHOT</version>
+    <properties>
+        <modules.root.dir>${basedir}/../../../..</modules.root.dir>
+    </properties>
+    <dependencies>
+        <dependency>
+            <artifactId>motech-platform-server-config</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>quartz</groupId>
+                    <artifactId>quartz</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
