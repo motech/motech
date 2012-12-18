@@ -72,7 +72,14 @@ function UserCtrl($scope, Roles, Users, $http) {
                     $scope.showUsersView=!$scope.addUserView;
                     $scope.addUserView=!$scope.addUserView;
                 }).
-                error(angularHandler('main.error', 'security.create.user.error'));
+                error(function(response) {
+                    angularHandler('main.error', 'security.create.user.error', response);
+                    if (response && response.startsWith('key:sendEmailException')) {
+                        $scope.userList = Users.query();
+                        $scope.showUsersView=!$scope.addUserView;
+                        $scope.addUserView=!$scope.addUserView;
+                    }
+                });
        }
 
 

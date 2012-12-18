@@ -21,6 +21,20 @@ var angularHandler = function(title, defaultMsg) {
     }
 }
 
+var angularHandler = function(title, defaultMsg, response) {
+        unblockUI();
+
+        var msg = "error";
+
+        if (response && response.startsWith('key:') && !response.endsWith('key')) {
+            msg = response.split(':')[1];
+        } else if (defaultMsg) {
+            msg = defaultMsg;
+        }
+
+        motechAlert(msg, title);
+}
+
 var alertHandler = function(msg, title) {
     return function() {
         unblockUI();

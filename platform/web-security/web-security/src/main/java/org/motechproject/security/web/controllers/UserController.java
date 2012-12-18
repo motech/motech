@@ -11,6 +11,7 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,4 +112,14 @@ public class UserController {
             writer.write("key:emailTaken");
         }
     }
+
+    @ExceptionHandler(MailSendException.class)
+    public void handleMailSendException(MailSendException exception, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        try (Writer writer = response.getWriter()) {
+            writer.write("key:sendEmailException");
+        }
+    }
+
 }
