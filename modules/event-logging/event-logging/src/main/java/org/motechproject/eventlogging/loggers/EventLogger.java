@@ -12,7 +12,7 @@ import java.util.List;
  */
 public abstract class EventLogger {
 
-    protected List<LoggableEvent> loggableEvents = new ArrayList<LoggableEvent>();
+    private List<LoggableEvent> loggableEvents = new ArrayList<LoggableEvent>();
 
     public void addLoggableEvents(List<LoggableEvent> loggableEvents) {
         this.loggableEvents.addAll(loggableEvents);

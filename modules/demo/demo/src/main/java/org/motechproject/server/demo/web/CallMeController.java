@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Controller
-public class CallMeController implements InitializingBean{
+public class CallMeController implements InitializingBean {
 
     @Autowired
     @Qualifier("demoService")
@@ -99,7 +99,7 @@ public class CallMeController implements InitializingBean{
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/scheduleCall", method = RequestMethod.GET)
-    public void scheduleCall(@RequestParam String phone, @RequestParam String callDelay)  {
+    public void scheduleCall(@RequestParam String phone, @RequestParam String callDelay) {
         int delay = Integer.parseInt(callDelay);
 
         Calendar now = Calendar.getInstance();

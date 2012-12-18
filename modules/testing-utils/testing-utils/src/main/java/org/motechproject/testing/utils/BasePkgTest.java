@@ -18,11 +18,11 @@ public abstract class BasePkgTest {
 
     private static final String ERROR_FILENAME = "err.log";
 
-    protected String script;
-    protected String chrootDir;
-    protected String tmpDir = "/tmp";
-    protected String buildDir;
-    protected String errorFile;
+    private String script;
+    private String chrootDir;
+    private String tmpDir = "/tmp";
+    private String buildDir;
+    private String errorFile;
 
     @Before
     public void setUp() {

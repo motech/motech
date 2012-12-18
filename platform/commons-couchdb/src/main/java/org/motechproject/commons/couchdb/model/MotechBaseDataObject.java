@@ -1,12 +1,10 @@
 package org.motechproject.commons.couchdb.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.CouchDbDocument;
 
 public abstract class MotechBaseDataObject extends CouchDbDocument {
 
-    @JsonProperty
-    protected String type;
+    private String type;
 
     protected MotechBaseDataObject() {
         this.type = this.getClass().getSimpleName();

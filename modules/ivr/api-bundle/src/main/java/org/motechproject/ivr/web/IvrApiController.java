@@ -1,7 +1,7 @@
 package org.motechproject.ivr.web;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import org.motechproject.ivr.domain.Call;
+import org.motechproject.ivr.domain.Provider;
 import org.motechproject.ivr.osgi.AllIvrBundles;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
@@ -39,28 +39,3 @@ public class IvrApiController {
     }
 }
 
-final class Provider {
-    @JsonProperty
-    String name;
-
-    Provider(String name) {
-        this.name = name;
-    }
-}
-
-final class Call {
-    @JsonProperty
-    String phoneNumber;
-    @JsonProperty
-    String provider;
-
-    @JsonIgnore
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    @JsonIgnore
-    public String getProvider() {
-        return provider;
-    }
-}
