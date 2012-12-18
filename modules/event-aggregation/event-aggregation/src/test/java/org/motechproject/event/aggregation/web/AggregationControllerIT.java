@@ -57,7 +57,7 @@ public class AggregationControllerIT {
 
     @Test
     public void shouldReturnAllAggregationsForARuleAsJson() throws Exception {
-        allAggregationRules.addOrReplace(aggregationRuleMapper.toRecord(new AggregationRuleRequest("my_aggregation", "", "subscribedEvent", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent", AggregationState.Running)));
+        allAggregationRules.addOrReplace(aggregationRuleMapper.toRecord(new AggregationRuleRequest("my_aggregation", "", "subscribedEvent", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent", AggregationState.Running)));
 
         Map<String, Object> aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
@@ -81,7 +81,7 @@ public class AggregationControllerIT {
 
     @Test
     public void shouldReturnErrorEventAggregationsForAGivenRuleAsJson() throws Exception {
-        allAggregationRules.addOrReplace(aggregationRuleMapper.toRecord(new AggregationRuleRequest("my_aggregation", "", "subscribedEvent", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent", AggregationState.Running)));
+        allAggregationRules.addOrReplace(aggregationRuleMapper.toRecord(new AggregationRuleRequest("my_aggregation", "", "subscribedEvent", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent", AggregationState.Running)));
 
         Map<String, Object> aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");

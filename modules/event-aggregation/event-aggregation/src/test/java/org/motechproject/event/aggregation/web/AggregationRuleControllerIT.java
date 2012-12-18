@@ -60,7 +60,7 @@ public class AggregationRuleControllerIT {
     @Test
     public void shouldReturnAllRulesAsJson() throws Exception {
         List<AggregationRuleRecord> rules = asList(
-            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent1", AggregationState.Running)),
+            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running)),
             aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation2", "", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest(""), "publishEvent2", AggregationState.Running))
         );
         allAggregationRules.addOrReplace(rules.get(0));
@@ -75,7 +75,7 @@ public class AggregationRuleControllerIT {
     @Test
     public void shouldReturnASingleRuleByNameAsJson() throws Exception {
         List<AggregationRuleRequest> rules = asList(
-            new AggregationRuleRequest("aggregation1", "eve", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent1", AggregationState.Running),
+            new AggregationRuleRequest("aggregation1", "eve", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running),
             new AggregationRuleRequest("aggregation2", "eve", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest("true"), "publishEvent2", AggregationState.Running)
         );
         allAggregationRules.addOrReplace(aggregationRuleMapper.toRecord(rules.get(0)));
@@ -89,7 +89,7 @@ public class AggregationRuleControllerIT {
 
     @Test
     public void shouldCreateARule() throws Exception {
-        AggregationRuleRequest ruleRequest = new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent1", AggregationState.Running);
+        AggregationRuleRequest ruleRequest = new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running);
 
         mockAggregationRuleController.perform(
             put("/rules")
@@ -104,13 +104,13 @@ public class AggregationRuleControllerIT {
     @Test
     public void shouldReplaceAnExistingRule() throws Exception {
         List<AggregationRuleRecord> rules = asList(
-            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent1", AggregationState.Running)),
+            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running)),
             aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation2", "", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest(""), "publishEvent2", AggregationState.Running))
         );
         allAggregationRules.addOrReplace(rules.get(0));
         allAggregationRules.addOrReplace(rules.get(1));
 
-        AggregationRuleRequest updatedRule = new AggregationRuleRequest("aggregation1", "", "subscribedEvent3", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent3", AggregationState.Running);
+        AggregationRuleRequest updatedRule = new AggregationRuleRequest("aggregation1", "", "subscribedEvent3", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent3", AggregationState.Running);
 
         mockAggregationRuleController.perform(
             put("/rules")
@@ -163,7 +163,7 @@ public class AggregationRuleControllerIT {
     @Test
     public void shouldDeleteAnExistingRule() throws Exception {
         List<AggregationRuleRecord> rules = asList(
-            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * *"), "publishEvent1", AggregationState.Running)),
+            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running)),
             aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation2", "", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest(""), "publishEvent2", AggregationState.Running))
         );
         allAggregationRules.addOrReplace(rules.get(0));
