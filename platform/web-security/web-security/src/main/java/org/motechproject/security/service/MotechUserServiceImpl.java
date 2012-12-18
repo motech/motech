@@ -3,9 +3,9 @@ package org.motechproject.security.service;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.helper.SessionHandler;
-import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -35,7 +35,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     private MotechPasswordEncoder passwordEncoder;
 
     @Autowired
-    EmailSender emailSender;
+    private EmailSender emailSender;
 
     @Autowired
     private SessionHandler sessionHandler;
@@ -100,7 +100,7 @@ public class MotechUserServiceImpl implements MotechUserService {
         for (MotechUser user : allMotechUsers.getUsers()) {
             users.add(new MotechUserProfile(user));
         }
-         return users;
+        return users;
     }
 
     @Override
@@ -147,17 +147,17 @@ public class MotechUserServiceImpl implements MotechUserService {
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
 
         for (HttpSession session : sessions) {
-            SecurityContext context = (SecurityContext)session.getAttribute("SPRING_SECURITY_CONTEXT");
+            SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
             Authentication authentication = context.getAuthentication();
             AbstractAuthenticationToken token = null;
-            User userInSession = (User)authentication.getPrincipal();
+            User userInSession = (User) authentication.getPrincipal();
             if (userInSession.getUsername().equals(userName)) {
                 if (authentication instanceof UsernamePasswordAuthenticationToken) {
                     UsernamePasswordAuthenticationToken oldToken = (UsernamePasswordAuthenticationToken) authentication;
                     token = new UsernamePasswordAuthenticationToken(oldToken.getPrincipal(),
-                        oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
+                            oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
 
-                } else if (authentication instanceof OpenIDAuthenticationToken){
+                } else if (authentication instanceof OpenIDAuthenticationToken) {
                     OpenIDAuthenticationToken oldToken = (OpenIDAuthenticationToken) authentication;
                     token = new OpenIDAuthenticationToken(oldToken.getPrincipal(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles),
                             user.getOpenId(), oldToken.getAttributes());

@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 public class MotechLogoutSuccessHandler implements LogoutHandler {
 
     @Autowired
-    SessionHandler sessionHandler;
+    private SessionHandler sessionHandler;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication) {
+                       Authentication authentication) {
         sessionHandler.removeSession(request);
     }
 
