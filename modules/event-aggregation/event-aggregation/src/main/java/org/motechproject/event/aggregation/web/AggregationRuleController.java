@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.aggregation.service.AggregationRule;
+import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
 import org.motechproject.org.hibernate.validator.ValidatorFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class AggregationRuleController {
 
     private AllAggregationRules allAggregationRules;
     private Validator validator;
+
+    @Autowired
+    private EventAggregationService aggregationService;
 
     @Autowired
     public AggregationRuleController(AllAggregationRules allAggregationRules) {
@@ -69,7 +73,7 @@ public class AggregationRuleController {
         if (violations != null && violations.size() > 0) {
             throw new BadRequestException(violations);
         } else {
-            allAggregationRules.addOrReplace(new AggregationRuleMapper().toRecord(aggregationRule));
+            aggregationService.createRule(aggregationRule);
         }
     }
 
