@@ -1,7 +1,6 @@
 package org.motechproject.couch.mrs.model;
 
 import java.io.Serializable;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 

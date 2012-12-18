@@ -5,7 +5,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.16-SNAPSHOT</version>
-        <relativePath>../../../../</relativePath>
+        <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
@@ -14,7 +14,7 @@
     <description>MOTECH MRS CouchDB Implementation</description>
     <version>0.16-SNAPSHOT</version>
     <properties>
-        <modules.root.dir>${basedir}/../../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
     <dependencies>
         <dependency>

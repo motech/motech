@@ -1115,7 +1115,7 @@
         <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api</module>
         <module>modules/mrs/api</module>
-        <module>modules/mrs/couchdb/mrs-couchdb</module>
+        <module>modules/couchmrs/mrs-couchdb</module>
         <module>modules/openmrs/api</module>
         <module>modules/openmrs/atomfeed</module>
         <module>modules/openmrs/omod</module>
@@ -1154,7 +1154,7 @@
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>
-        <module>modules/mrs/couchdb/mrs-couchdb-bundle</module>
+        <module>modules/couchmrs/mrs-couchdb-bundle</module>
         <module>modules/openmrs/api-bundle</module>
         <module>modules/openmrs/atomfeed-bundle</module>
         <module>modules/openmrs/ws-bundle</module>
