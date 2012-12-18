@@ -1,3 +1,9 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 .body-up {
     background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 -40px;
 }
@@ -42,9 +48,32 @@ h1, h2, h3, h4, h5, h6 {
     color: #224477;
 }
 
+.bodywrap {
+    min-height: 100%;
+    position: relative;
+}
+
 .header {
     display:block;
     margin:auto;
+}
+
+#content {
+    padding-bottom: 31px;
+}
+
+#footer {
+    width: 100%;
+    height: 22px;
+    padding: 5px 0;
+    border-top: 1px solid #D4E1F9;
+    background: #e4f1f9;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: block;
+    opacity: 0.8;
+    z-index: 990;
 }
 
 .dashboard-logo {
@@ -54,50 +83,6 @@ h1, h2, h3, h4, h5, h6 {
     float:left;
     margin: 0 5px 0 0;
     background: #fff url("../img/motech-logo.jpg") no-repeat;
-}
-
-.top-menu {
-    width:auto;
-    height:24px;
-    display:block;
-    float:right;
-    margin: 0 0 0 55%;
-    background:#e4f1f9;
-    border-radius:0 0 4px 4px;
-    border:1px solid #d4e1f9;
-    position:absolute;
-    -webkit-box-shadow: 0 1px 3px #bec9de;
-       -moz-box-shadow: 0 1px 3px #bec9de;
-            box-shadow: 0 1px 3px #bec9de;
-}
-
-.top-menu .nav, .top-menu .navbar .nav > li > a {
-    color: #224477;
-    text-decoration:none;
-    padding:0;
-    text-shadow:none;
-    cursor:pointer;
-}
-
-.top-menu .nav a:hover, .top-menu .navbar .nav > li > a:hover {
-    text-decoration:none;
-    color: #000;
-}
-
-.top-menu .navbar .nav > li {
-    margin:2px 0 0 10px;
-}
-
-.top-menu .navbar .nav li.dropdown .caret {
-    border-top-color: #224477;
-    border-bottom-color: #224477;
-    opacity: 0.75;
-    filter: alpha(opacity=75);
-}
-
-.top-menu .navbar .nav li.dropdown:hover .caret {
-    border-top-color: #000;
-    border-bottom-color: #000;
 }
 
 .header-title {
@@ -705,17 +690,6 @@ select {
 .pagination-condensed a {
     line-height: 24px;
     padding: 0 8px;
-}
-
-footer {
-    border-top: 1px solid #D4E1F9;
-    background: #e4f1f9;
-    position: fixed;
-    bottom: 0;
-    display: block;
-    width: 100%;
-    opacity: 0.8;
-    z-index: 990;
 }
 
 .input-lxlarge {

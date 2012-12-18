@@ -196,11 +196,13 @@
         </div>
     </div>
 
-</div>
+    <div id="footer">
+        <span class="inside">
+            <strong><fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
+            <strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}
+        </span>
+    </div>
 
-<footer class="inside">
-<strong><fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
-<strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}
-</footer>
+</div>
 </body>
 </html>
