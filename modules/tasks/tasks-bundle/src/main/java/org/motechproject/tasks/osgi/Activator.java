@@ -74,6 +74,11 @@ public class Activator implements BundleActivator {
             }
         };
         this.uiServiceTracker.open();
+
+        ServiceReference httpServiceReference = context.getServiceReference(HttpService.class.getName());
+        if (httpServiceReference != null) {
+            serviceAdded((HttpService) context.getService(httpServiceReference));
+        }
     }
 
     public void stop(BundleContext context) {
@@ -101,6 +106,8 @@ public class Activator implements BundleActivator {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 UiHttpContext httpContext = new UiHttpContext(service.createDefaultHttpContext());
 
+                serviceRemoved(service);
+
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, httpContext);
                 service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
                 logger.debug("Servlet registered");
@@ -114,6 +121,7 @@ public class Activator implements BundleActivator {
 
     private void serviceRemoved(HttpService service) {
         service.unregister(SERVLET_URL_MAPPING);
+        service.unregister(RESOURCE_URL_MAPPING);
         logger.debug("Servlet unregistered");
     }
 

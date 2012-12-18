@@ -1,0 +1,37 @@
+{
+  "displayName" : "test",
+  "moduleName" : "test",
+  "moduleVersion" : "0.15",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "Trigger 1",
+      "subject" : "TRIGGER_1",
+      "eventParameters" : [
+        {
+          "eventKey" : "key_1",
+          "displayName" : "Key 1"
+        },
+        {
+          "eventKey" :  "key_2",
+          "displayName" : "Key 2"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "Action 1",
+      "subject" : "Action_1",
+      "eventParameters" : [
+        {
+          "eventKey" : "key_1",
+          "displayName" : "Key 1"
+        },
+        {
+          "eventKey" :  "key_2",
+          "displayName" : "Key 2"
+        }
+      ]
+    }
+  ]
+}
