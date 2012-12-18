@@ -1,5 +1,7 @@
 package org.motechproject.event.aggregation.model.schedule;
 
+import java.io.Serializable;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.motechproject.event.aggregation.service.AggregationSchedule;
@@ -10,7 +12,7 @@ import org.motechproject.event.aggregation.service.AggregationSchedule;
     @JsonSubTypes.Type(value = CronBasedAggregationRecord.class, name = "cron"),
     @JsonSubTypes.Type(value = CustomAggregationRecord.class, name = "custom")
 })
-public abstract class AggregationScheduleRecord implements AggregationSchedule {
+public abstract class AggregationScheduleRecord implements AggregationSchedule, Serializable {
 
     protected AggregationScheduleRecord() {
     }
