@@ -1,0 +1,115 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>
+  <packaging>bundle</packaging>
+  <properties>
+      <motech.version>0.16-SNAPSHOT</motech.version>
+  </properties>
+    <dependencies>
+        <!-- to configure your module properties -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <!-- to send/receive motech events -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <!-- to access motech's couchdb datastore -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <!-- to schedule jobs on motech -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <!-- to build your ui on motech's server console -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>org.motechproject.org.junit</artifactId>
+            <version>4.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <!-- remember to use java7 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+            <!-- build a OSGI bundle  -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>
+                            ${groupId}.${artifactId}.osgi.Activator
+                        </Bundle-Activator>
+                        <Import-Package>
+                            org.motechproject.server.config,
+                            org.motechproject.server.config.service,
+                            org.motechproject.event.listener.annotations,
+                            org.motechproject.server.ui,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <!-- copy your bundle to ~/.motech/bundles from where the server can access it -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+</project>

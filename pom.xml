@@ -1168,6 +1168,7 @@
         <module>modules/sms/smpp-bundle</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
+        <module>utils/archetypes/maven-archetype-motech-module</module>
 
         <!-- Packaging modules -->
         <module>packaging/deb</module>

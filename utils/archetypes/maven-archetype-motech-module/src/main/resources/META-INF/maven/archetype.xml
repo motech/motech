@@ -1,0 +1,29 @@
+<archetype xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd
+http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 ">
+
+    <id>maven-archetype-motech-module</id>
+    <sources>
+        <source>src/main/java/listener/AnEventListener.java</source>
+        <source>src/main/java/osgi/Activator.java</source>
+        <source>src/main/java/web/YourWebController.java</source>
+    </sources>
+    <resources>
+        <resource>README.txt</resource>
+        <resource>src/main/resources/appContext.xml</resource>
+        <resource>src/main/resources/header.html</resource>
+        <resource>src/main/resources/webapp/index.html</resource>
+        <resource>src/main/resources/webapp/js/app.js</resource>
+        <resource>src/main/resources/webapp/js/controllers.js</resource>
+        <resource>src/main/resources/webapp/js/directives.js</resource>
+        <resource>src/main/resources/webapp/js/services.js</resource>
+        <resource>src/main/resources/webapp/css/base.css</resource>
+        <resource>src/main/resources/webapp/bundles/messages.properties</resource>
+        <resource>src/main/resources/webapp/partials/welcome.html</resource>
+    </resources>
+
+    <testSources>
+        <source>src/test/java/web/YourWebControllerTest.java</source>
+    </testSources>
+</archetype>
