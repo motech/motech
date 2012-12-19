@@ -1,8 +1,8 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.TaskStatusMessageService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ import static org.motechproject.tasks.util.TaskUtil.getSubject;
 @Controller
 public class TaskController {
     private TaskService taskService;
-    private TaskStatusMessageService messageService;
+    private TaskActivityService activityService;
     private TaskTriggerHandler triggerHandler;
 
     @Autowired
-    public TaskController(TaskService taskService, TaskStatusMessageService messageService, TaskTriggerHandler triggerHandler) {
+    public TaskController(TaskService taskService, TaskActivityService activityService, TaskTriggerHandler triggerHandler) {
         this.taskService = taskService;
-        this.messageService = messageService;
+        this.activityService = activityService;
         this.triggerHandler = triggerHandler;
     }
 
@@ -43,17 +43,27 @@ public class TaskController {
         return taskService.getTask(taskId);
     }
 
+    @RequestMapping(value = "/task/{taskId}", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void saveTask(@RequestBody Task task) {
+        if (task.getId() != null) {
+            taskService.save(task);
+        }
+    }
+
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void deleteTask(@PathVariable String taskId) {
         taskService.deleteTask(taskId);
-        messageService.deleteMessages(taskId);
+        activityService.deleteActivitiesForTask(taskId);
     }
 
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
+        String subject = getSubject(task.getTrigger());
+
         taskService.save(task);
-        triggerHandler.registerHandlerFor(getSubject(task.getTrigger()));
+        triggerHandler.registerHandlerFor(subject);
     }
 }

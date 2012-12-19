@@ -4,7 +4,7 @@ import org.codehaus.jackson.annotate.JsonValue;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-public enum Level {
+public enum TaskActivityType {
     ERROR("ERROR"),
     WARNING("WARNING"),
     SUCCESS("SUCCESS");
@@ -16,17 +16,17 @@ public enum Level {
         return value;
     }
 
-    private Level(String value) {
+    private TaskActivityType(String value) {
         this.value = value;
     }
 
-    public static Level fromString(String string) {
-        Level result = null;
+    public static TaskActivityType fromString(String string) {
+        TaskActivityType result = null;
 
         if (isNotBlank(string)) {
-            for (Level level : Level.values()) {
-                if (level.getValue().equalsIgnoreCase(string)) {
-                    result = level;
+            for (TaskActivityType type : TaskActivityType.values()) {
+                if (type.getValue().equalsIgnoreCase(string)) {
+                    result = type;
                     break;
                 }
             }

@@ -27,7 +27,7 @@ public class AllTasksIT extends SpringIntegrationTest {
     private CouchDbConnector couchDbConnector;
 
     @Test
-    public void test_addOrUpdate() {
+    public void shouldAddAndUpdateTask() {
         Task expected = new Task("test:test:15:SEND", "test:test:14:RECEIVE", new HashMap<String, String>());
 
         allTasks.addOrUpdate(expected);

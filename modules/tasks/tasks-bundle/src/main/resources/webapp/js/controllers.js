@@ -3,26 +3,55 @@
 /* Controllers */
 
 function DashboardCtrl($scope, Tasks, Activities) {
+    var RECENT_TASK_COUNT = 7;
+
     $scope.activeTasks = [];
     $scope.pausedTasks = [];
+    $scope.activities = [];
 
     var tasks = Tasks.query(function () {
-        var item, task, i;
+        var activities = Activities.query(function () {
+            var item, i, j;
 
-        for (i = 0; i < tasks.length; i += 1) {
-            task = tasks[i];
-            item = {
-                task: task,
-                success: Activities.query({taskId: task._id, type: 'success'}),
-                error: Activities.query({taskId: task._id, type: 'error'})
+            for (i = 0; i < tasks.length; i += 1) {
+                item = {
+                    task: tasks[i],
+                    success: 0,
+                    error: 0
+                };
+
+                for (j = 0; j < activities.length; j += 1) {
+                    if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
+                        item.success += 1;
+                    }
+
+                    if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
+                        item.error += 1;
+                    }
+                }
+
+                if (item.task.enabled) {
+                    $scope.activeTasks.push(item);
+                } else {
+                    $scope.pausedTasks.push(item);
+                }
             }
 
-            if (task.enabled) {
-                $scope.activeTasks.push(item);
-            } else {
-                $scope.pausedTasks.push(item);
+            for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
+                for (j = 0 ; j < tasks.length; j += 1) {
+                    if (activities[i].task === tasks[j]._id) {
+                        $scope.activities.push({
+                            task: activities[i].task,
+                            trigger: tasks[j].trigger,
+                            action: tasks[j].action,
+                            date: activities[i].date,
+                            type: activities[i].activityType
+                        });
+                        break;
+                    }
+                }
             }
-        }
+        });
     });
 
     $scope.get = function (taskEvent, prop) {
@@ -38,6 +67,20 @@ function DashboardCtrl($scope, Tasks, Activities) {
 
         return taskEvent.split(':')[index];
     };
+
+    $scope.enableTask = function (item, enabled) {
+        item.task.enabled = enabled;
+
+        item.task.$save(function () {
+            if (item.task.enabled) {
+                $scope.pausedTasks.removeObject(item);
+                $scope.activeTasks.push(item);
+            } else {
+                $scope.activeTasks.removeObject(item);
+                $scope.pausedTasks.push(item);
+            }
+        });
+    }
 
     $scope.deleteTask = function (item) {
         var enabled = item.task.enabled;

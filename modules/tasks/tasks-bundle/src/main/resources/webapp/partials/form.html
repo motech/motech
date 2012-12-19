@@ -3,51 +3,53 @@
 <div ng-show="task._id" class="box-header">{{msg('section.editTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div class="box-content">
     <h3 class="pagination-centered" ng-hide="task.trigger && task.action">{{msg('section.selectEvents')}}</h3>
-    <div class="section-input">
-        <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedTrigger)}}">
-            <ul class="trigger droppable" droppable>
-                <li class="task-panel dragged" ng-show="draggedTrigger" draggable double-click>
-                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}&moduleVersion={{draggedTrigger.version}}" class="panel-img"/></div>
-                    <span>{{draggedTrigger.display}}</span>
-                    <div class="popover left" ng-hide="selectedTrigger">
-                        <div class="arrow"></div>
-                        <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectTrigger')}}</h3>
-                        <div class="content-task popover-content">
-                            <ul>
-                                <li ng-repeat="t in draggedTrigger.events">
-                                    <a ng-click="selectTaskEvent('trigger', t)">{{t.displayName}}</a>
-                                </li>
-                            </ul>
+    <div class="bg-section-input stripes-bg">
+        <div class="section-input">
+            <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedTrigger)}}">
+                <ul class="trigger droppable" droppable>
+                    <li class="task-panel dragged" ng-show="draggedTrigger" draggable double-click>
+                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}&moduleVersion={{draggedTrigger.version}}" class="panel-img"/></div>
+                        <span>{{draggedTrigger.display}}</span>
+                        <div class="popover left" ng-hide="selectedTrigger">
+                            <div class="arrow"></div>
+                            <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectTrigger')}}</h3>
+                            <div class="content-task popover-content">
+                                <ul>
+                                    <li ng-repeat="t in draggedTrigger.events">
+                                        <a ng-click="selectTaskEvent('trigger', t)">{{t.displayName}}</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
-            <span class="instructions" ng-hide="draggedTrigger">{{msg('info.dragTrigger')}}</span>
-        </div>
-        <div class="to imgArrow"><img src="../tasks/img/arrow.png"/></div>
+                    </li>
+                </ul>
+                <span class="instructions" ng-hide="draggedTrigger">{{msg('info.dragTrigger')}}</span>
+            </div>
+            <div class="to imgArrow"><img src="../tasks/img/arrow.png"/></div>
 
-        <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedAction)}}">
-            <ul class="action droppable" droppable>
-                <li class="task-panel dragged" ng-show="draggedAction" draggable double-click>
-                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}&moduleVersion={{draggedAction.version}}" class="panel-img"/></div>
-                    <span>{{draggedAction.display}}</span>
-                    <div class="popover right" ng-hide="selectedAction">
-                        <div class="arrow"></div>
-                        <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectAction')}}</h3>
-                        <div class="content-task popover-content">
-                            <ul>
-                                <li ng-repeat="a in draggedAction.events">
-                                    <a ng-click="selectTaskEvent('action', a)">{{a.displayName}}</a>
-                                </li>
-                            </ul>
+            <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedAction)}}">
+                <ul class="action droppable" droppable>
+                    <li class="task-panel dragged" ng-show="draggedAction" draggable double-click>
+                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}&moduleVersion={{draggedAction.version}}" class="panel-img"/></div>
+                        <span>{{draggedAction.display}}</span>
+                        <div class="popover right" ng-hide="selectedAction">
+                            <div class="arrow"></div>
+                            <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectAction')}}</h3>
+                            <div class="content-task popover-content">
+                                <ul>
+                                    <li ng-repeat="a in draggedAction.events">
+                                        <a ng-click="selectTaskEvent('action', a)">{{a.displayName}}</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
-            <span class="instructions" ng-hide="draggedAction">{{msg('info.dragAction')}}</span>
+                    </li>
+                </ul>
+                <span class="instructions" ng-hide="draggedAction">{{msg('info.dragAction')}}</span>
 
+            </div>
+            <div class="clearfix"></div>
         </div>
-        <div class="clearfix"></div>
     </div>
     <div class="clearfix"></div><div class="margin-before4"></div>
     <div class="section-source" ng-hide="task.trigger && task.action">
@@ -137,11 +139,18 @@
                 <!------------------------  Save  ------------------------>
                 <div class="control-group inside">
                     <h4 class="pagination-centered">{{msg('section.save')}}</h4>
-                    <div class="">
-                        <p class="pagination-centered">{{msg('info.save')}}</p>
+                    <div ng-hide="task._id">
+                        <p class="pagination-centered">{{msg('info.addSave')}}</p>
                         <div class="control-group pagination-centered inside">
                             <a ng-click="save(true)" class="btn btn-primary"> {{msg('button.saveAndEnabled')}}</a>
                             <a ng-click="save(false)" class="btn btn-success"> {{msg('button.save')}}</a>
+                            <a href="#/task/" class="btn"> {{msg('button.cancel')}}</a>
+                        </div>
+                    </div>
+                    <div ng-show="task._id">
+                        <p class="pagination-centered">{{msg('info.editSave')}}</p>
+                        <div class="control-group pagination-centered inside">
+                            <a ng-click="save(task.enabled)" class="btn btn-success"> {{msg('button.save')}}</a>
                             <a href="#/task/" class="btn"> {{msg('button.cancel')}}</a>
                         </div>
                     </div>

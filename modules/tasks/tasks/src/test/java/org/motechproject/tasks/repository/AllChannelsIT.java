@@ -33,7 +33,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
     private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
     @Test
-    public void test_addOrUpdate() {
+    public void shouldAddAndUpdateChannels() {
         List<Channel> channels = loadChannels();
 
         allChannels.addOrUpdate(channels.get(0));
@@ -49,7 +49,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void test_byChannelInfo() throws Exception {
+    public void shouldFindChannelByChannelInfo() throws Exception {
         List<Channel> channels = loadChannels();
 
         allChannels.addOrUpdate(channels.get(0));
