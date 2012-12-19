@@ -64,7 +64,7 @@
                 <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
             </div>
         </td>
-        <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name}} - {{bundle.symbolicName}}</a></td>
+        <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a></td>
         <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
         <td><span ng-show="bundleStable(bundle)">{{msg('bundle.state.' + bundle.state.toLowerCase())}}</span></td>
         <td>

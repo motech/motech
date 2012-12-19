@@ -13,4 +13,8 @@ angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageSe
           when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
           when('/operations', {templateUrl: '../admin/partials/operations.html', controller: OperationsCtrl}).
           otherwise({redirectTo: '/bundles'});
-}]);
+}]).filter('moduleName', function () {
+    return function (input) {
+        return input.replace(/(motech\s|\sapi|\sbundle)/ig, '');
+    }
+});

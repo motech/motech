@@ -162,9 +162,17 @@ h4.settings-section {
     text-align: left;
 }
 
-.table-bundles thead tr > th:first-child{
+.table-bundles thead tr > th:first-child, .table-bundles thead tr > th:nth-child(2){
     text-align: center;
     width: 35px;
+}
+
+.table-bundles thead tr > th:nth-child(4){
+    width: 150px;
+}
+
+.table-bundles thead tr > th:nth-child(5){
+    width: 100px;
 }
 
 .table-bundles tbody tr > td:nth-child(3){
