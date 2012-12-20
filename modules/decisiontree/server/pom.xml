@@ -41,7 +41,7 @@
                 <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>drop DB =&gt; trees</id>
+                        <id>drop DB trees</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
