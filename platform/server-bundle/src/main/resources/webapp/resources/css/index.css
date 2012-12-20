@@ -32,6 +32,10 @@ html, body {
     background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
 }
 
+.stripes-bg {
+    background: url("../img/bg2.png") repeat;
+}
+
 .icon.icon-red {
     background-image: url("../img/glyphicons-halflings-red.png");
 }

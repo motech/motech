@@ -37,14 +37,17 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Autowired
     public ChannelServiceImpl(final AllChannels allChannels) {
+        this(allChannels, new MotechJsonReader());
+    }
+
+    public ChannelServiceImpl(AllChannels allChannels, MotechJsonReader motechJsonReader) {
         this.allChannels = allChannels;
-        this.motechJsonReader = new MotechJsonReader();
+        this.motechJsonReader = motechJsonReader;
     }
 
     @Override
     public void registerChannel(final InputStream stream) {
-        Type type = new TypeToken<Channel>() {
-        }.getType();
+        Type type = new TypeToken<Channel>() { }.getType();
         Channel channel = (Channel) motechJsonReader.readFromStream(stream, type);
         LOG.debug("Read channel definition from json file.");
 
@@ -67,9 +70,9 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public BundleIcon getChannelIcon(String symbolicName, String version) {
+    public BundleIcon getChannelIcon(String moduleName, String version) {
         BundleIcon bundleIcon = null;
-        Bundle bundle = getModule(symbolicName, version);
+        Bundle bundle = getModule(moduleName, version);
 
         for (String iconLocation : ICON_LOCATIONS) {
             URL iconURL = bundle.getResource(iconLocation);

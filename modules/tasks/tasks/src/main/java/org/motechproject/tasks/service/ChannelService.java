@@ -14,6 +14,6 @@ public interface ChannelService {
 
     Channel getChannel(String displayName, String moduleName, String moduleVersion);
 
-    BundleIcon getChannelIcon(String symbolicName, String version);
+    BundleIcon getChannelIcon(String moduleName, String version);
 
 }

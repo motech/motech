@@ -15,6 +15,10 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
         start = +start;
         return input.slice(start);
     }
+}).filter('fromNow', function () {
+    return function(date) {
+        return moment(date).fromNow();
+    };
 }).directive('doubleClick', function () {
     return {
         restrict: 'A',

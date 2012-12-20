@@ -41,7 +41,7 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_save_illegalTrigger() {
+    public void shouldNotSaveTaskWithIllegalTrigger() {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
@@ -53,7 +53,7 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_save_illegalAction() {
+    public void shouldNotSaveTaskWithIllegalAction() {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
@@ -65,7 +65,7 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void test_save_nullActionInputFields() {
+    public void shouldNotSaveTaskWithNullActionInputFields() {
         Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", null);
 
         taskService.save(t);
@@ -74,7 +74,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void test_save_emptyActionInputFields() {
+    public void shouldSaveTaskWithEmptyActionInputFields() {
         Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", new HashMap<String, String>());
 
         taskService.save(t);
@@ -84,7 +84,7 @@ public class TaskServiceImplTest {
 
 
     @Test
-    public void test_save() {
+    public void shouldSaveTask() {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
@@ -96,7 +96,7 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = ActionNotFoundException.class)
-    public void test_getActionEventFor_actionNotFound() throws ActionNotFoundException {
+    public void shouldThrowExceptionWhenActionNotFound() throws ActionNotFoundException {
         String trigger = "Test 1:test-1:0.15:SEND";
         String action = "Test 3:test-3:0.15:RECEIVE";
         Map<String, String> map = new HashMap<>();
@@ -111,7 +111,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void test_getActionEventFor() throws ActionNotFoundException {
+    public void shouldFindActionForGivenTask() throws ActionNotFoundException {
         String trigger = "Test 1:test-1:0.15:SEND";
         String action = "Test 3:test-3:0.15:RECEIVE";
         Map<String, String> map = new HashMap<>();
@@ -135,7 +135,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void test_findTasksForTrigger() {
+    public void shouldFindTasksForGivenTrigger() {
         String trigger = "Test 1:test-1:0.15:SEND";
         String action = "Test 3:test-3:0.15:RECEIVE";
         Map<String, String> map = new HashMap<>();
@@ -158,7 +158,7 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = TriggerNotFoundException.class)
-    public void test_findTrigger_triggerNotFound() throws TriggerNotFoundException {
+    public void shouldThrowExceptionWhenTriggerNotFound() throws TriggerNotFoundException {
         TaskEvent triggerEvent = new TaskEvent();
         triggerEvent.setSubject("RECEIVE");
 
@@ -171,7 +171,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void test_findTrigger() throws TriggerNotFoundException {
+    public void shouldFindTriggerForGivenSubject() throws TriggerNotFoundException {
         TaskEvent triggerEvent = new TaskEvent();
         triggerEvent.setSubject("RECEIVE");
 
@@ -183,6 +183,28 @@ public class TaskServiceImplTest {
         TaskEvent actual = taskService.findTrigger("RECEIVE");
 
         assertEquals(triggerEvent, actual);
+    }
+
+    @Test
+    public void shouldDeleteTask() {
+        Task expected = new Task();
+        expected.setId("12345");
+
+        when(allTasks.get(expected.getId())).thenReturn(expected);
+
+        taskService.deleteTask(expected.getId());
+
+        verify(allTasks).get(expected.getId());
+        verify(allTasks).remove(expected);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenTaskNotFound() {
+        String taskId = "12345";
+
+        when(allTasks.get(taskId)).thenReturn(null);
+
+        taskService.deleteTask(taskId);
     }
 
 }

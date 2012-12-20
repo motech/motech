@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +34,17 @@ public class TaskTriggerHandler {
     private static final Logger LOG = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
     private TaskService taskService;
-    private TaskStatusMessageService statusMessageService;
+    private TaskActivityService activityService;
     private EventListenerRegistryService registryService;
     private EventRelay eventRelay;
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public TaskTriggerHandler(final TaskService taskService, final TaskStatusMessageService statusMessageService,
+    public TaskTriggerHandler(final TaskService taskService, final TaskActivityService activityService,
                               final EventListenerRegistryService registryService, final EventRelay eventRelay,
                               final SettingsFacade settingsFacade) {
         this.taskService = taskService;
-        this.statusMessageService = statusMessageService;
+        this.activityService = activityService;
         this.registryService = registryService;
         this.eventRelay = eventRelay;
         this.settingsFacade = settingsFacade;
@@ -105,7 +104,7 @@ public class TaskTriggerHandler {
 
             if (send) {
                 eventRelay.sendEventMessage(new MotechEvent(subject, parameters));
-                statusMessageService.addSuccess(t);
+                activityService.addSuccess(t);
             }
         }
     }
@@ -124,28 +123,23 @@ public class TaskTriggerHandler {
 
     private void registerHandler() {
         List<Task> tasks = taskService.getAllTasks();
-        List<String> subjects = new ArrayList<>();
 
         for (Task t : tasks) {
-            subjects.add(getSubject(t.getTrigger()));
-        }
-
-        for (String subject : subjects) {
-            registerHandlerFor(subject);
+            registerHandlerFor(getSubject(t.getTrigger()));
         }
     }
 
     private void registerError(final Task task, final String message) {
-        statusMessageService.addError(task, message);
+        activityService.addError(task, message);
         LOG.error(message);
 
-        int errorRunsCount = statusMessageService.errorsFromLastRun(task).size();
+        int errorRunsCount = activityService.errorsFromLastRun(task).size();
         int possibleErrorRun = Integer.valueOf(settingsFacade.getProperty(TASK_POSSIBLE_ERRORS_KEY));
 
         if (errorRunsCount >= possibleErrorRun) {
             task.setEnabled(false);
             taskService.save(task);
-            statusMessageService.addWarning(task);
+            activityService.addWarning(task);
         }
     }
 

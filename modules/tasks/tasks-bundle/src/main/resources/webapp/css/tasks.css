@@ -113,7 +113,7 @@
 
 .button-task {
     height: 40px;
-    width: 50%;
+    width: 33.333%;
     margin-left: -1px;
     border-left: 1px solid #eee;
     border-radius: 4px;
@@ -181,6 +181,7 @@
 .table-recent-activity {
     margin-bottom: 0;
     vertical-align: middle;
+    margin-top: -1px;
 }
 
 .table-recent-activity tbody td {
@@ -259,6 +260,11 @@
      width: 65px;
 }
 
+.bg-section-input {
+    margin: 0;
+    padding: 10px;
+}
+
 .panel-input .task-panel .popover.left {
     top: 5.5px;
     left: -235px;
@@ -279,19 +285,25 @@
     list-style-type: square;
     color: #224477;
     text-align: left;
+    margin-top: 5px;
 }
 
 .popover .popover-titles {
     color: #224477;
     background-color: #F7F7F7;
     border-bottom: 1px solid #EBEBEB;
-    border-radius: 5px 5px 0 0;
+    border-radius: 0;
     font-size: 14px;
     text-align: left;
     font-weight: normal;
     line-height: 18px;
-    margin: -1px -10px 5px -10px;
+    margin: 5px -10px 5px -10px;
     padding: 12px 14px 8px 14px;
+}
+
+.popover .popover-content p .popover-titles:first-child {
+    margin-top: -1px;
+    border-radius: 5px 5px 0 0;
 }
 
 .section-source .popover .popover-content, .section-input .popover .popover-content {

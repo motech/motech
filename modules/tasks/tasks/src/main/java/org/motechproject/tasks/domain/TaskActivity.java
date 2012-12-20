@@ -4,22 +4,22 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
-@TypeDiscriminator("doc.type == 'TaskStatusMessage'")
-public class TaskStatusMessage extends MotechBaseDataObject {
+@TypeDiscriminator("doc.type == 'TaskActivity'")
+public class TaskActivity extends MotechBaseDataObject {
     private String message;
     private String task;
     private DateTime date;
-    private Level level;
+    private TaskActivityType activityType;
 
-    public TaskStatusMessage() {
+    public TaskActivity() {
         this(null, null, null);
     }
 
-    public TaskStatusMessage(String message, String task, Level level) {
+    public TaskActivity(String message, String task, TaskActivityType activityType) {
         this.message = message;
         this.task = task;
         this.date = DateTime.now();
-        this.level = level;
+        this.activityType = activityType;
     }
 
     public String getMessage() {
@@ -46,12 +46,12 @@ public class TaskStatusMessage extends MotechBaseDataObject {
         this.date = date;
     }
 
-    public Level getLevel() {
-        return level;
+    public TaskActivityType getActivityType() {
+        return activityType;
     }
 
-    public void setLevel(final Level level) {
-        this.level = level;
+    public void setActivityType(final TaskActivityType activityType) {
+        this.activityType = activityType;
     }
 
     @Override
@@ -64,13 +64,13 @@ public class TaskStatusMessage extends MotechBaseDataObject {
             return false;
         }
 
-        TaskStatusMessage that = (TaskStatusMessage) o;
+        TaskActivity that = (TaskActivity) o;
 
         if (date != null ? !date.equals(that.date) : that.date != null) {
             return false;
         }
 
-        if (level != that.level) {
+        if (activityType != that.activityType) {
             return false;
         }
 
@@ -90,14 +90,14 @@ public class TaskStatusMessage extends MotechBaseDataObject {
         int result = message != null ? message.hashCode() : 0;
         result = 31 * result + (task != null ? task.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (level != null ? level.hashCode() : 0);
+        result = 31 * result + (activityType != null ? activityType.hashCode() : 0);
 
         return result;
     }
 
     @Override
     public String toString() {
-        return String.format("TaskStatusMessage{message='%s', task='%s', date=%s, level=%s}",
-                message, task, date, level);
+        return String.format("TaskActivity{message='%s', task='%s', date=%s, activityType=%s}",
+                message, task, date, activityType);
     }
 }
