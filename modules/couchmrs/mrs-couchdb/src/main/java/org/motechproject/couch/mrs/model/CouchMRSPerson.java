@@ -11,6 +11,8 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
+
 @TypeDiscriminator("doc.type === 'MRSPerson'")
 public class CouchMRSPerson extends MotechBaseDataObject {
 
@@ -59,7 +61,7 @@ public class CouchMRSPerson extends MotechBaseDataObject {
     }
 
     public DateTime getDateOfBirth() {
-        return dateOfBirth;
+        return setTimeZone(dateOfBirth);
     }
 
     public CouchMRSPerson setDateOfBirth(DateTime dateOfBirth) {
@@ -154,11 +156,7 @@ public class CouchMRSPerson extends MotechBaseDataObject {
             return dobNull;
         }
         if (!dobNull) {
-            if (!(dateOfBirth.getDayOfMonth() == other.dateOfBirth.getDayOfMonth())
-                    && dateOfBirth.getMonthOfYear() == other.dateOfBirth.getMonthOfYear()
-                    && dateOfBirth.getYear() == other.dateOfBirth.getYear()) {
-                return false;
-            }
+            return getDateOfBirth().equals(other.getDateOfBirth());
         }
         if (!ObjectUtils.equals(gender, other.gender)) {
             return false;
