@@ -110,12 +110,14 @@ public class TaskTriggerHandler {
     }
 
     public final void registerHandlerFor(final String subject) {
-        Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handler");
-        EventListener proxy = new MotechListenerEventProxy(SERVICE_NAME, this, method);
+        Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handler", MotechEvent.class);
 
         try {
-            registryService.registerListener(proxy, subject);
-            LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
+            if (method != null) {
+                EventListener proxy = new MotechListenerEventProxy(SERVICE_NAME, this, method);
+                registryService.registerListener(proxy, subject);
+                LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
+            }
         } catch (Exception e) {
             LOG.error(String.format("Cant register TaskTriggerHandler for subject: %s", subject), e);
         }
