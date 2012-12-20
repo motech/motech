@@ -60,6 +60,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-Path>/event-aggregation/api</Context-Path>
+                        <Context-File>META-INF/osgi/applicationEventAggregationBundle.xml</Context-File>
                         <Export-Package>
                             org.motechproject.event.aggregation.model.schedule
                         </Export-Package>

@@ -8,10 +8,10 @@
 
     <import resource="classpath*:META-INF/motech/applicationEventAggregation.xml" />
 
-    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay" cardinality="0..1" />
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" cardinality="0..1" />
 
-    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+    <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="schedulerServiceOsgi" interface="org.motechproject.scheduler.MotechSchedulerService" cardinality="0..1" />
+    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" cardinality="0..1" />
 
 </beans>
