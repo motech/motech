@@ -7,7 +7,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.16-SNAPSHOT</version>
+        <version>0.16</version>
         <relativePath>../../../</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-api-bundle</artifactId>
-    <version>0.16-SNAPSHOT</version>
+    <version>0.16</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -31,12 +31,12 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-bundle</artifactId>
-            <version>0.16-SNAPSHOT</version>
+            <version>0.16</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>0.16-SNAPSHOT</version>
+            <version>0.16</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
