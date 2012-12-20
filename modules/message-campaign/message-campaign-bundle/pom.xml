@@ -90,8 +90,7 @@
                             org.springframework.scheduling.quartz,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-message-campaign</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-message-campaign;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

@@ -53,15 +53,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-Path>tree</Context-Path>
                         <Export-Package>
                             org.motechproject.decisiontree.server.domain,
                             org.motechproject.decisiontree.server.repository,
                             org.motechproject.decisiontree.server.service
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
@@ -78,7 +74,6 @@
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.eclipse.gemini.blueprint.config,
-                            org.motechproject.osgi.web,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-decisiontree-server;inline=true</Embed-Dependency>
