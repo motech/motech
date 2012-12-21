@@ -73,4 +73,12 @@ public interface KookooCallDetailRecordsService {
      * @param callDetailRecordID: current call detail record
      */
     void setCallRecordAsNotAnswered(String callDetailRecordID);
+
+    /**
+     * Update call record as not Failed.
+     * This error can be kookoo's internal error, error while queueing up etc
+     * @param callDetailRecordID: current call detail record
+     * @param errorMessage: errorMessage
+     */
+    void setCallRecordAsFailed(String callDetailRecordID, String errorMessage);
 }

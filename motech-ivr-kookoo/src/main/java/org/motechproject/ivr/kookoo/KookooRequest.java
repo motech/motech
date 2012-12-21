@@ -1,11 +1,12 @@
 package org.motechproject.ivr.kookoo;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.event.IVREvent;
+import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.service.IVRService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class KookooRequest {
     private static final int LENGTH_OF_PHONE_NUMBER = 10;
-    private Logger log = Logger.getLogger(KookooRequest.class);
+    private Logger log = LoggerFactory.getLogger(KookooRequest.class);
 
     private static final String POUND_SYMBOL = "#";
     private String sid;

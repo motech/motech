@@ -99,6 +99,15 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     }
 
     @Override
+    public void setCallRecordAsFailed(String kookooCallDetailRecordID, String errorMessage) {
+        KookooCallDetailRecord kookooCallDetailRecord = get(kookooCallDetailRecordID);
+        CallDetailRecord record = kookooCallDetailRecord.getCallDetailRecord();
+        record.setDisposition(CallDetailRecord.Disposition.FAILED);
+        record.setErrorMessage(errorMessage);
+        allKooKooCallDetailRecords.update(kookooCallDetailRecord);
+    }
+
+    @Override
     public void close(String callDetailRecordId, String externalId, CallEvent callEvent) {
         KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, callEvent);
         kookooCallDetailRecord.close();

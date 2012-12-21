@@ -119,7 +119,22 @@ public class KookooCallDetailRecordsServiceImplTest {
 
         assertEquals(CallDetailRecord.Disposition.NO_ANSWER, callDetailRecord.getDisposition());
         verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
+    }
 
+    @Test
+    public void shouldSetAsFailed_WhenCallFailed() {
+        String vendorCallId = "callId";
+        String callDetailRecordId = "callDetailRecordId";
+        CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.UNKNOWN);
+        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
+        when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
+
+        kookooCallDetailRecordsService.setCallRecordAsFailed(callDetailRecordId, "Some error message");
+
+        assertEquals(CallDetailRecord.Disposition.FAILED, callDetailRecord.getDisposition());
+        assertEquals("Some error message", callDetailRecord.getErrorMessage());
+
+        verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
     }
 
     @Test
