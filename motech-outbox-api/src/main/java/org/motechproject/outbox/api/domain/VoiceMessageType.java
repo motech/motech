@@ -8,6 +8,7 @@ public class VoiceMessageType {
     private String templateName;
     private boolean canBeSaved;
     private boolean canBeReplayed;
+    private String priority;
 
     /**
      * Identifies the type of the message.
@@ -90,5 +91,13 @@ public class VoiceMessageType {
                 ", canBeSaved=" + canBeSaved +
                 ", canBeReplayed=" + canBeReplayed +
                 '}';
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }
