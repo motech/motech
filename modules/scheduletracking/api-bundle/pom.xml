@@ -77,23 +77,8 @@
                             org.motechproject.scheduletracking.api.domain
                         </Export-Package>
                         <Import-Package>
-                            net.sf.cglib.asm,
-                            net.sf.cglib.asm.util,
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.transform.impl,
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.motechproject.event,
                             org.motechproject.event.listener.annotations,
-                            org.motechproject.scheduler,
-                            org.motechproject.scheduler.domain,
                             org.motechproject.server.config,
-                            org.quartz,
-                            org.quartz.simpl,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.scheduling.quartz,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-scheduletracking-api;inline=true</Embed-Dependency>
