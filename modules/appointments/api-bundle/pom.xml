@@ -28,7 +28,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-scheduler</artifactId>
+            <artifactId>motech-scheduler-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->
@@ -52,21 +57,14 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.appointments.api,
-                            org.motechproject.appointments.api.model
+                            org.motechproject.appointments.api.model,
+                            org.motechproject.appointments.api.service,
+                            org.motechproject.appointments.api.service.contract
                         </Export-Package>
                         <Import-Package>
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.motechproject.event,
                             org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
-                            org.motechproject.scheduler,
-                            org.motechproject.scheduler.domain,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.scheduling.quartz,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-appointments-api;inline=true</Embed-Dependency>

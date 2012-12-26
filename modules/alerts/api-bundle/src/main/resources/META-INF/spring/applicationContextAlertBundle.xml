@@ -11,4 +11,5 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:service ref="alertServiceImpl" interface="org.motechproject.server.alerts.contract.AlertService" />
 </beans>

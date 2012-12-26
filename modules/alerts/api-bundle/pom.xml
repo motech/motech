@@ -22,6 +22,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
@@ -50,14 +60,10 @@
                             org.motechproject.server.alerts.service,
                         </Export-Package>
                         <Import-Package>
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-alerts-api;inline=true</Embed-Dependency>
