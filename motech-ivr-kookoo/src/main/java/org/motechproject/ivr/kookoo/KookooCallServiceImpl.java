@@ -75,7 +75,7 @@ public class KookooCallServiceImpl implements IVRService {
 
             log.info(String.format("Dialing %s", getMethod.getURI()));
             httpClient.executeMethod(getMethod);
-            markAsFailedOnFailure(kooKooCallDetailRecordId, getMethod);
+            markAsFailedOnFailure(callRequest.getPhone(), kooKooCallDetailRecordId, getMethod);
         } catch (IOException e) {
             log.error("Dialing Failed for phone number : " + callRequest.getPhone());
             throw new RuntimeException(e);
@@ -87,9 +87,10 @@ public class KookooCallServiceImpl implements IVRService {
 
     }
 
-    private void markAsFailedOnFailure(String kooKooCallDetailRecordId, GetMethod getMethod) {
+    private void markAsFailedOnFailure(String phoneNumber, String kooKooCallDetailRecordId, GetMethod getMethod) {
         try {
             String response = getMethod.getResponseBodyAsString();
+            log.info("Response for Phonenumber: " + phoneNumber + " from Kookoo : " + response);
             if(responseParser.isError(response)) {
                 kookooCallDetailRecordsService.setCallRecordAsFailed(kooKooCallDetailRecordId, responseParser.getMessage(response));
             }
