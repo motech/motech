@@ -13,6 +13,7 @@ maven-eclipse.xml
 *.iws
 *.class
 *.log
+Motech.log*
 debug.txt
 out/
 Error_log/
