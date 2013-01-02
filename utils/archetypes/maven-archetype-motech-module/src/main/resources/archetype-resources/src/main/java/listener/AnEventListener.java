@@ -1,4 +1,4 @@
-package ${groupId}.${artifactId}.listener;
+package ${groupId}.listener;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -16,10 +16,10 @@ import java.util.Map;
 public class AnEventListener {
 
     @Autowired
-    SettingsFacade settings;
+    private SettingsFacade settings;
 
     @Autowired
-    MotechSchedulerService schedulerService;
+    private MotechSchedulerService schedulerService;
 
     @MotechListener(subjects = "some_event")
     public void handle(MotechEvent event) {
