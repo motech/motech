@@ -10,8 +10,8 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.EventParamType;
 import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskEvent;
@@ -34,6 +34,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.domain.EventParamType.NUMBER;
+import static org.motechproject.tasks.domain.EventParamType.TEXTAREA;
+import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
+import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
+import static org.motechproject.tasks.domain.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.OperatorType.EXIST;
+import static org.motechproject.tasks.domain.OperatorType.GT;
+import static org.motechproject.tasks.domain.OperatorType.LT;
+import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 
 public class TaskTriggerHandlerTest {
@@ -151,7 +160,6 @@ public class TaskTriggerHandlerTest {
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
         when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
-
         task.getActionInputFields().put("message", null);
 
         assertTrue(task.isEnabled());
@@ -216,12 +224,30 @@ public class TaskTriggerHandlerTest {
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEvent.getParameters().get("message"));
     }
 
+    @Test
+    public void shouldPassFiltersCriteria() throws Exception {
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        addFilters();
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+
+        handler.handler(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(eventRelay).sendEventMessage(captor.capture());
+        verify(taskActivityService).addSuccess(task);
+    }
+
     private MotechEvent createEvent() {
         Map<String, Object> param = new HashMap<>(4);
         param.put("externalId", 123456789);
         param.put("startDate", new LocalDate(2012, 11, 20));
         param.put("endDate", new LocalDate(2012, 11, 29));
         param.put("facilityId", 987654321);
+        param.put("eventName", "Event");
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
     }
@@ -240,7 +266,7 @@ public class TaskTriggerHandlerTest {
 
         task = new Task(trigger, action, actionInputFields);
         task.setId("taskId1");
-
+        task.setFilters(new ArrayList<Filter>());
         tasks.add(task);
 
         List<EventParameter> triggerEventParameters = new ArrayList<>();
@@ -248,14 +274,15 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("StartDate", "startDate"));
         triggerEventParameters.add(new EventParameter("EndDate", "endDate"));
         triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
+        triggerEventParameters.add(new EventParameter("EventName", "eventName"));
 
         triggerEvent = new TaskEvent();
         triggerEvent.setSubject(TRIGGER_SUBJECT);
         triggerEvent.setEventParameters(triggerEventParameters);
 
         List<EventParameter> actionEventParameters = new ArrayList<>();
-        actionEventParameters.add(new EventParameter("Phone", "phone"));
-        actionEventParameters.add(new EventParameter("Message", "message", EventParamType.TEXTAREA));
+        actionEventParameters.add(new EventParameter("Phone", "phone", NUMBER));
+        actionEventParameters.add(new EventParameter("Message", "message", TEXTAREA));
 
         actionEvent = new TaskEvent();
         actionEvent.setSubject(ACTION_SUBJECT);
@@ -268,5 +295,21 @@ public class TaskTriggerHandlerTest {
         messages.add(new TaskActivity("Error3", task.getId(), ERROR));
         messages.add(new TaskActivity("Error4", task.getId(), ERROR));
         messages.add(new TaskActivity("Error5", task.getId(), ERROR));
+    }
+
+    private void addFilters() {
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, CONTAINS.getValue(), "ven"));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EXIST.getValue(), ""));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "Event"));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "Ev"));
+        filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "nt"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, GT.getValue(), "19"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, LT.getValue(), "1234567891"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EQUALS.getValue(), "123456789"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EXIST.getValue(), ""));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, GT.getValue(), "1234567891"));
+
+        task.setFilters(filters);
     }
 }

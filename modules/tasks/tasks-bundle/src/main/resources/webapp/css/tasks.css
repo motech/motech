@@ -1,3 +1,18 @@
+.validation-area.error input,
+.validation-area.error select,
+.validation-area.error textarea {
+    border-color: #B94A48;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+
+.validation-area.error .checkbox,
+.validation-area.error .radio,
+.validation-area.error input,
+.validation-area.error select,
+.validation-area.error textarea {
+    color: #B94A48;
+}
+
 #accordion1 .accordion-group, #accordion2 .accordion-group {
     border: none;
 }
@@ -113,7 +128,7 @@
 
 .button-task {
     height: 40px;
-    width: 33.333%;
+    width: 25%;
     margin-left: -1px;
     border-left: 1px solid #eee;
     border-radius: 4px;
@@ -206,6 +221,14 @@
 
 .table-recent-activity-task tbody td {
     vertical-align: middle;
+}
+
+.table-recent-activity-task tbody td:first-child {
+    width: 35px;
+}
+
+.table-recent-activity-task tbody td:last-child {
+    width: 250px;
 }
 
 .section-input {

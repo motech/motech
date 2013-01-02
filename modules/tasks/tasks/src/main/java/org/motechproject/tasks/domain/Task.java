@@ -3,13 +3,14 @@ package org.motechproject.tasks.domain;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import java.util.List;
 import java.util.Map;
 
 @TypeDiscriminator("doc.type == 'Task'")
 public class Task extends MotechBaseDataObject {
     private Map<String, String> actionInputFields;
     private Map<String, String> additionalData;
-    private Map<String, String> filter;
+    private List<Filter> filters;
     private String action;
     private String description;
     private String trigger;
@@ -23,11 +24,11 @@ public class Task extends MotechBaseDataObject {
         this(true, actionInputFields, null, null, action, trigger);
     }
 
-    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, String> additionalData, Map<String, String> filter, String action, String trigger) {
+    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, String> additionalData, List<Filter> filters, String action, String trigger) {
         this.enabled = enabled;
         this.actionInputFields = actionInputFields;
         this.additionalData = additionalData;
-        this.filter = filter;
+        this.filters = filters;
         this.action = action;
         this.trigger = trigger;
     }
@@ -72,12 +73,12 @@ public class Task extends MotechBaseDataObject {
         this.additionalData = additionalData;
     }
 
-    public Map<String, String> getFilter() {
-        return filter;
+    public List<Filter> getFilters() {
+        return filters;
     }
 
-    public void setFilter(final Map<String, String> filter) {
-        this.filter = filter;
+    public void setFilters(final List<Filter> filters) {
+        this.filters = filters;
     }
 
     public String getDescription() {
@@ -116,7 +117,7 @@ public class Task extends MotechBaseDataObject {
             return false;
         }
 
-        if (filter != null ? !filter.equals(task.filter) : task.filter != null) {
+        if (filters != null ? !filters.equals(task.filters) : task.filters != null) {
             return false;
         }
 
@@ -136,7 +137,7 @@ public class Task extends MotechBaseDataObject {
         int result = (enabled ? 1 : 0);
         result = 31 * result + (actionInputFields != null ? actionInputFields.hashCode() : 0);
         result = 31 * result + (additionalData != null ? additionalData.hashCode() : 0);
-        result = 31 * result + (filter != null ? filter.hashCode() : 0);
+        result = 31 * result + (filters != null ? filters.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
         result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
@@ -146,7 +147,7 @@ public class Task extends MotechBaseDataObject {
 
     @Override
     public String toString() {
-        return String.format("Task{actionInputFields=%s, additionalData=%s, filter=%s, action='%s', description='%s', trigger='%s', enabled=%s}",
-                actionInputFields, additionalData, filter, action, description, trigger, enabled);
+        return String.format("Task{actionInputFields=%s, additionalData=%s, filters=%s, action='%s', description='%s', trigger='%s', enabled=%s}",
+                actionInputFields, additionalData, filters, action, description, trigger, enabled);
     }
 }

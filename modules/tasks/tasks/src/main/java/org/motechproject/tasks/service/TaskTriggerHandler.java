@@ -7,7 +7,10 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.domain.EventParamType;
 import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +92,9 @@ public class TaskTriggerHandler {
             List<EventParameter> actionEventParameters = action.getEventParameters();
             Map<String, Object> parameters = new HashMap<>(actionEventParameters.size());
             boolean send = true;
-
+            if (!t.getFilters().isEmpty()) {
+                send = checkFilters(t, triggerEvent.getParameters());
+            }
             for (EventParameter param : actionEventParameters) {
                 String key = param.getEventKey();
                 String value = replaceAll(t.getActionInputFields().get(key), trigger.getEventParameters(), triggerEvent);
@@ -160,4 +166,61 @@ public class TaskTriggerHandler {
         return replaced;
     }
 
+    private boolean checkFilters(Task task, Map<String, Object> triggerParameter) {
+        boolean filterCheck = false;
+        for (Filter filter : task.getFilters()) {
+            if (triggerParameter.containsKey(filter.getEventParameter().getEventKey())) {
+                EventParamType type = filter.getEventParameter().getType();
+                if (type.equals(EventParamType.TEXTAREA) || type.equals(EventParamType.UNICODE)) {
+                    filterCheck = checkFilterForString(filter, (String) triggerParameter.get(filter.getEventParameter().getEventKey()));
+                } else if (type.equals(EventParamType.NUMBER)) {
+                    filterCheck = checkFilterForNumber(filter, new BigDecimal(triggerParameter.get(filter.getEventParameter().getEventKey()).toString()));
+                }
+                if (!filter.isNavigationOperator()) {
+                    filterCheck = !filterCheck;
+                }
+            }
+            if (!filterCheck) {
+                break;
+            }
+        }
+        return filterCheck;
+    }
+
+    private boolean checkFilterForString(Filter filter, String param) {
+        String expression = filter.getExpression();
+
+        switch (OperatorType.fromString(filter.getOperator())) {
+            case EQUALS:
+                return param.equals(expression);
+            case CONTAINS:
+                return param.contains(expression);
+            case EXIST:
+                return true;
+            case STARTSWITH:
+                return param.startsWith(expression);
+            case ENDSWITH:
+                return param.endsWith(expression);
+            default:
+                return false;
+        }
+    }
+
+    private boolean checkFilterForNumber(Filter filter, BigDecimal param) {
+        if (OperatorType.fromString(filter.getOperator()) == OperatorType.EXIST) {
+            return true;
+        }
+
+        int compare = param.compareTo(new BigDecimal(filter.getExpression()));
+        switch (OperatorType.fromString(filter.getOperator())) {
+            case EQUALS:
+                return compare == 0;
+            case GT:
+                return compare == 1;
+            case LT:
+                return compare == -1;
+            default:
+                return false;
+        }
+    }
 }

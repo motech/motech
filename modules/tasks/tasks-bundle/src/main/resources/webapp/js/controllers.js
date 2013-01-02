@@ -103,6 +103,9 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
     $scope.currentPage = 0;
     $scope.pageSize = 10;
     $scope.task = {};
+    $scope.filters = [];
+    $scope.navigationOperators = [{key:'info.filter.is',value:'true'}, {key:'info.filter.isNot',value:'false'}];
+
     $scope.channels = Channels.query(function (){
         if ($routeParams.taskId != undefined) {
             $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
@@ -130,6 +133,24 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
 
                 for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
                     $scope.selectedAction.eventParameters[i].value = $scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey];
+                }
+
+                $scope.filters = [];
+                if ($scope.task.filters) {
+                    for (i = 0; i<$scope.task.filters.length; i += 1) {
+                        for (var j = 0; j <  $scope.selectedTrigger.eventParameters.length; j+=1) {
+                            if ( $scope.selectedTrigger.eventParameters[j].displayName==$scope.task.filters[i].eventParameter.displayName) {
+                                $scope.task.filters[i].eventParameter=$scope.selectedTrigger.eventParameters[j];
+                                break;
+                            }
+                        }
+                        if ($scope.task.filters[i].navigationOperator) {
+                            $scope.task.filters[i].navigationOperator = $scope.navigationOperators[0];
+                        } else {
+                            $scope.task.filters[i].navigationOperator = $scope.navigationOperators[1];
+                        }
+                        $scope.filters.push($scope.task.filters[i]);
+                    }
                 }
             });
         }
@@ -198,6 +219,15 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         $scope.task.actionInputFields = {};
         $scope.task.enabled = enabled;
 
+        $scope.task.filters = [];
+        if ($scope.filters.length!=0) {
+            for (i = 0; i < $scope.filters.length; i += 1) {
+                value = $scope.filters[i];
+                value.navigationOperator = $scope.filters[i].navigationOperator.value;
+                $scope.task.filters.push(value)
+            }
+        }
+
         for (i = 0; i < action.eventParameters.length; i += 1) {
             eventKey = action.eventParameters[i].eventKey;
             value = action.eventParameters[i].value || '';
@@ -226,4 +256,53 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
             });
     };
 
+    $scope.operators = function(event) {
+        var operator = ['exist'];
+        if (event && (event.type==='UNICODE' || event.type==='TEXTAREA')) {
+            operator.push("equals");
+            operator.push("contains");
+            operator.push("startsWith");
+            operator.push("endsWith");
+        } else if (event && event.type==='NUMBER') {
+            operator.push("gt");
+            operator.push("lt");
+            operator.push("equal");
+        }
+        return operator;
+    }
+
+    $scope.addFilter = function() {
+        $scope.filters.push({})
+    }
+
+    $scope.setEventParameter = function(eventParameter, filterParameter) {
+
+        return filterParameter;
+    }
+
+    $scope.validateForm = function() {
+        if ($scope.filterForm.$invalid && $scope.filters.length != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.isDisabled = function(prop) {
+        if(!prop) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.cssClass = function(prop) {
+            var msg = 'validation-area';
+
+            if (!prop) {
+                msg = msg.concat(' error');
+            }
+
+            return msg;
+        }
 }

@@ -23,7 +23,7 @@ public class AllTasks extends MotechBaseRepository<Task> {
             existing.setAdditionalData(task.getAdditionalData());
             existing.setDescription(task.getDescription());
             existing.setEnabled(task.isEnabled());
-            existing.setFilter(task.getFilter());
+            existing.setFilters(task.getFilters());
             existing.setTrigger(task.getTrigger());
 
             update(existing);
