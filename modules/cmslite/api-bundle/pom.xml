@@ -30,11 +30,6 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Bundle IT dependency -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.jetty</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
