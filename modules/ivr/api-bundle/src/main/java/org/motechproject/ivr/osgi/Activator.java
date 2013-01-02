@@ -2,11 +2,11 @@ package org.motechproject.ivr.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.ServletRegistrationException;
-import org.motechproject.server.ui.ModuleRegistrationData;
-import org.motechproject.server.ui.UIFrameworkService;
-import org.motechproject.server.ui.UiHttpContext;
+import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.UiHttpContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

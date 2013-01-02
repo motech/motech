@@ -1,6 +1,7 @@
-package org.motechproject.server.web;
+package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
+import org.motechproject.osgi.web.exception.RenderException;
 import org.osgi.framework.BundleContext;
 import org.springframework.web.servlet.view.JstlView;
 

@@ -4,8 +4,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.motechproject.server.ui.ModuleRegistrationData;
-import org.motechproject.server.ui.UIFrameworkService;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 

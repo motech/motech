@@ -1,8 +1,8 @@
 package org.motechproject.event.aggregation.osgi;
 
 import org.apache.commons.io.IOUtils;
-import org.motechproject.server.ui.ModuleRegistrationData;
-import org.motechproject.server.ui.UIFrameworkService;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

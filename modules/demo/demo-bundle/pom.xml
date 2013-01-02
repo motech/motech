@@ -24,12 +24,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -67,8 +61,7 @@
                         <Import-Package>
                             org.motechproject.decisiontree.core.model,
                             org.motechproject.event.listener.annotations,
-                            org.motechproject.server.ui,
-                            org.motechproject.server.web,
+                            org.motechproject.osgi.web,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,

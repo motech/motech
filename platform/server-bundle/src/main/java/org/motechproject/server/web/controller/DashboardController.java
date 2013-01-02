@@ -8,8 +8,8 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import org.motechproject.server.startup.MotechPlatformState;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
-import org.motechproject.server.ui.ModuleRegistrationData;
-import org.motechproject.server.ui.UIFrameworkService;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
-import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITH_SUBMENU;
+import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
+import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 
 @Controller
 public class DashboardController {

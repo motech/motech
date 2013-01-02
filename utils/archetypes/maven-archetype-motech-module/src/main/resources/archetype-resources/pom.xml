@@ -36,7 +36,7 @@
         <!-- to build your ui on motech's server console -->
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
         </dependency>
 

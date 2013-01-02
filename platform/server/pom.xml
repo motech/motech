@@ -51,6 +51,10 @@
             <artifactId>com.springsource.org.apache.commons.io</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.digester</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
             <scope>provided</scope>
@@ -99,12 +103,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-config</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

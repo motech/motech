@@ -1,6 +1,8 @@
 package org.motechproject.server.ui;
 
 import org.junit.Test;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.motechproject.server.ui.impl.UIFrameworkServiceImpl;
 
@@ -9,8 +11,8 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
-import static org.motechproject.server.ui.UIFrameworkService.MODULES_WITH_SUBMENU;
+import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
+import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 
 public class UIFrameworkServiceTest {
 

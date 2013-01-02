@@ -1,4 +1,4 @@
-package org.motechproject.server.web;
+package org.motechproject.osgi.web.exception;
 
 public class RenderException extends Exception {
 

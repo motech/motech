@@ -19,7 +19,7 @@
     <context:property-placeholder location="classpath:activemq.properties"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.motechproject.server.web.BundledJspView"/>
+        <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
         <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
@@ -43,7 +43,7 @@
     </bean>
 
     <osgi:service id="uiFrameworkServiceOsgi" auto-export="interfaces" ref="uiFrameworkService"
-                  interface="org.motechproject.server.ui.UIFrameworkService"/>
+                  interface="org.motechproject.osgi.web.UIFrameworkService"/>
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay" />

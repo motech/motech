@@ -10,11 +10,9 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.collections.CollectionUtils.find;
 import static org.apache.commons.lang.StringUtils.containsIgnoreCase;
 
 public class TasksBundleIT extends BaseOsgiIT {
@@ -68,21 +66,6 @@ public class TasksBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testApplicationTasksBundle.xml"};
-    }
-
-    @Override
-    protected String[] getTestBundlesNames() {
-        // bundles are started one by one, server-bundle need server-config to run
-        // but server-config is later in list than server-bundle
-        List<String> list = new ArrayList<>(asList(super.getTestBundlesNames()));
-
-        String serverConfig = (String) find(list, new ContainsPredicate("motech-platform-server-config"));
-        String serverBundle = (String) find(list, new ContainsPredicate("motech-platform-server-bundle"));
-
-        list.remove(serverConfig);
-        list.add(list.indexOf(serverBundle), serverConfig);
-
-        return list.toArray(new String[list.size()]);
     }
 
     private class ContainsPredicate implements Predicate {

@@ -1,4 +1,4 @@
-package org.motechproject.server.ui;
+package org.motechproject.osgi.web;
 
 import java.util.Collection;
 import java.util.Map;

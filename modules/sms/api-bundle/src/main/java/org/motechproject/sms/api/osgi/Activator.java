@@ -2,7 +2,7 @@ package org.motechproject.sms.api.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.ui.ModuleRegistrationData;
+import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
