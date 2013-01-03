@@ -26,12 +26,14 @@
     <script src="resources/lib/angular/angular-resource.min.js" type="text/javascript"></script>
     <script src="resources/lib/angular/angular-cookies.min.js" type="text/javascript"></script>
     <script src="resources/lib/angular/angular-bootstrap.js" type="text/javascript"></script>
+    <script src="resources/lib/angular/angular-ui.min.js" type="text/javascript"></script>
 
     <script src="resources/lib/bootstrap/bootstrap.min.js"></script>
 
     <script src="resources/js/util.js" type="text/javascript"></script>
     <script src="resources/js/common.js" type="text/javascript"></script>
     <script src="resources/js/localization.js"></script>
+    <script src="resources/js/directives.js"></script>
     <script src="resources/js/app.js"></script>
     <script src="resources/js/controllers.js"></script>
 
@@ -59,7 +61,7 @@
         <div class="clearfix"></div>
         <div class="startup-form">
             <div class="diver">
-                <form action="startup.jsp" method="POST" class="form-horizontal">
+                <form action="startup.do" method="POST" class="form-horizontal">
                     <div class="control-group">
                         <label class="control-label"><fmt:message key="select.language" bundle="${bundle}"/></label>
                         <div class="controls">

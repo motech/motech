@@ -18,6 +18,7 @@ public class StartupFormValidator implements Validator {
     private final static String ERROR_REQUIRED = "error.required.%s";
     private final static String PROVIDER_NAME = "providerName";
     private final static String PROVIDER_URL = "providerUrl";
+    private final static String LOGIN_MODE = "loginMode";
 
     public StartupFormValidator() {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
@@ -46,6 +47,8 @@ public class StartupFormValidator implements Validator {
             validateRepository(errors);
         } else if (AuthenticationMode.OPEN_ID.equals(errors.getFieldValue("loginMode").toString())) {
             validateOpenId(errors);
+        } else {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, LOGIN_MODE, String.format(ERROR_REQUIRED, LOGIN_MODE));
         }
     }
 

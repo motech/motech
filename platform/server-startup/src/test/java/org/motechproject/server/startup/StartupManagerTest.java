@@ -13,13 +13,17 @@ import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;
 import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -44,6 +48,9 @@ public class StartupManagerTest {
 
     @Mock
     ConfigFileMonitor configFileMonitor;
+
+    @Mock
+    private EventAdmin eventAdmin;
 
     @InjectMocks
     @Spy
@@ -70,6 +77,9 @@ public class StartupManagerTest {
         assertNull(platformSettingsService.getPlatformSettings());
         verify(configLoader).loadConfig();
         verify(configFileMonitor).getCurrentSettings();
+
+        verify(eventAdmin, never()).postEvent(any(Event.class));
+        verify(eventAdmin, never()).sendEvent(any(Event.class));
     }
 
     @Test
@@ -89,5 +99,8 @@ public class StartupManagerTest {
         assertFalse(startupManager.canLaunchBundles());
 
         verify(configFileMonitor).getCurrentSettings();
+
+        verify(eventAdmin, never()).postEvent(any(Event.class));
+        verify(eventAdmin, never()).sendEvent(any(Event.class));
     }
 }

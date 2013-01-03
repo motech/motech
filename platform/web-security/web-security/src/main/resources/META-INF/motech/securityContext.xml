@@ -23,6 +23,7 @@
     <security:http pattern="/**/*.css*" security="none" />
     <security:http pattern="/**/*.gif" security="none" />
     <security:http pattern="/**/*.jpg" security="none" />
+    <security:http pattern="/**/*.png" security="none" />
     <security:http pattern="/**/*.js" security="none" />
     <security:http pattern="/**/*.html" security="none" />
     <security:http pattern="/**/*.properties" security="none" />
@@ -33,6 +34,7 @@
     <security:http pattern="/**/lang*" security="none" />
     <security:http pattern="/**/list*" security="none" />
     <security:http pattern="/**/locate*" security="none" />
+    <security:http pattern="/**/startup*" security="none" />
 
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
 
