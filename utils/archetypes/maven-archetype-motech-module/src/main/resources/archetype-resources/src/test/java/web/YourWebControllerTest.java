@@ -1,4 +1,4 @@
-package ${groupId}.${artifactId}.web;
+package ${groupId}.web;
 
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
