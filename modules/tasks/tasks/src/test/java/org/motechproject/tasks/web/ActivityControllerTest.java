@@ -22,30 +22,45 @@ public class ActivityControllerTest {
     private static final String TASK_ID = "12345";
 
     @Mock
-    TaskActivityService messageService;
+    TaskActivityService activityService;
 
     ActivityController controller;
+
+    List<TaskActivity> expected;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        controller = new ActivityController(messageService);
+        controller = new ActivityController(activityService);
+
+        expected = new ArrayList<>();
+        expected.add(new TaskActivity(SUCCESS.getValue(), TASK_ID, SUCCESS));
+        expected.add(new TaskActivity(WARNING.getValue(), TASK_ID, WARNING));
+        expected.add(new TaskActivity(ERROR.getValue(), TASK_ID, ERROR));
     }
 
     @Test
     public void shouldGetAllActivities() {
-        List<TaskActivity> expected = new ArrayList<>();
-        expected.add(new TaskActivity(SUCCESS.getValue(), TASK_ID, SUCCESS));
-        expected.add(new TaskActivity(WARNING.getValue(), TASK_ID, WARNING));
-        expected.add(new TaskActivity(ERROR.getValue(), TASK_ID, ERROR));
-
-        when(messageService.getAllActivities()).thenReturn(expected);
+        when(activityService.getAllActivities()).thenReturn(expected);
 
         List<TaskActivity> actual = controller.getAllActivities();
 
-        verify(messageService).getAllActivities();
+        verify(activityService).getAllActivities();
+        verifyList(expected, actual);
+    }
 
+    @Test
+    public void shouldGetTaskActivities() {
+        when(activityService.getTaskActivities(TASK_ID)).thenReturn(expected);
+
+        List<TaskActivity> actual = controller.getTaskActivities(TASK_ID);
+
+        verify(activityService).getTaskActivities(TASK_ID);
+        verifyList(expected, actual);
+    }
+
+    private void verifyList(List<TaskActivity> expected, List<TaskActivity> actual) {
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
 

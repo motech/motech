@@ -8,6 +8,7 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
             when('/dashboard', {templateUrl: '../tasks/partials/tasks.html', controller: DashboardCtrl}).
             when('/task/new', {templateUrl: '../tasks/partials/form.html', controller: ManageTaskCtrl}).
             when('/task/:taskId/edit', {templateUrl: '../tasks/partials/form.html', controller: ManageTaskCtrl}).
+            when('/task/:taskId/log', {templateUrl: '../tasks/partials/history.html', controller: LogCtrl}).
             otherwise({redirectTo: '/dashboard'});
     }
 ]).filter('filterPagination', function () {

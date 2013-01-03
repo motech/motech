@@ -3,6 +3,7 @@ package org.motechproject.tasks.service.impl;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,15 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         this.allTaskActivities = allTaskActivities;
     }
 
+    @Deprecated
     @Override
     public void addError(Task task, String message) {
-        allTaskActivities.add(new TaskActivity(message, task.getId(), TaskActivityType.ERROR));
+        addError(task, new TaskException(message));
+    }
+
+    @Override
+    public void addError(Task task, TaskException e) {
+        allTaskActivities.add(new TaskActivity(e.getMessageKey(), e.getField(), task.getId(), TaskActivityType.ERROR));
     }
 
     @Override
@@ -64,8 +71,15 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     public List<TaskActivity> getAllActivities() {
-        List<TaskActivity> messages = allTaskActivities.getAll();
+        return sort(allTaskActivities.getAll());
+    }
 
+    @Override
+    public List<TaskActivity> getTaskActivities(String taskId) {
+        return sort(allTaskActivities.byTaskId(taskId));
+    }
+
+    private List<TaskActivity> sort(List<TaskActivity> messages) {
         Collections.sort(messages, new Comparator<TaskActivity>() {
             @Override
             public int compare(TaskActivity o1, TaskActivity o2) {

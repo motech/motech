@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
+import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -27,6 +29,7 @@ import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 
 public class TaskActivityServiceImplTest {
     private static final String TASK_ID = "12345";
+    private static final String ERROR_FIELD = "phone";
 
     @Mock
     AllTaskActivities allTaskActivities;
@@ -56,6 +59,7 @@ public class TaskActivityServiceImplTest {
             assertEquals(ERROR.getValue(), error.getMessage());
             assertEquals(TASK_ID, error.getTask());
             assertEquals(ERROR, error.getActivityType());
+            assertEquals(ERROR_FIELD, error.getField());
         }
     }
 
@@ -77,15 +81,15 @@ public class TaskActivityServiceImplTest {
         Task t = new Task();
         t.setId(TASK_ID);
 
-        String message = "error.notFoundTrigger";
+        String messageKey = "error.notFoundTrigger";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addError(t, message);
+        activityService.addError(t, new TaskException(messageKey, ERROR_FIELD));
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(message, TASK_ID, TaskActivityType.ERROR, captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, captor.getValue());
     }
 
     @Test
@@ -93,7 +97,7 @@ public class TaskActivityServiceImplTest {
         Task t = new Task();
         t.setId(TASK_ID);
 
-        String message = "success.ok";
+        String messageKey = "success.ok";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
@@ -101,7 +105,7 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(message, TASK_ID, TaskActivityType.SUCCESS, captor.getValue());
+        assertActivity(messageKey, null, TASK_ID, TaskActivityType.SUCCESS, captor.getValue());
     }
 
     @Test
@@ -109,7 +113,7 @@ public class TaskActivityServiceImplTest {
         Task t = new Task();
         t.setId(TASK_ID);
 
-        String message = "warning.taskDisabled";
+        String messageKey = "warning.taskDisabled";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
@@ -117,7 +121,7 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(message, TASK_ID, TaskActivityType.WARNING, captor.getValue());
+        assertActivity(messageKey, null, TASK_ID, TaskActivityType.WARNING, captor.getValue());
     }
 
     @Test
@@ -155,11 +159,30 @@ public class TaskActivityServiceImplTest {
         }
     }
 
-    private void assertActivity(String message, String task, TaskActivityType activityType, TaskActivity activity) {
+    @Test
+    public void shouldReturnAllActivitiesForGivenTask() {
+        List<TaskActivity> expected = getTaskActivities();
+
+        when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(expected);
+
+        List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID);
+
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        assertEquals(expected, actual);
+    }
+
+    private void assertActivity(String messageKey, String field, String task, TaskActivityType activityType, TaskActivity activity) {
         assertNotNull(activity);
-        assertEquals(message, activity.getMessage());
+        assertEquals(messageKey, activity.getMessage());
         assertEquals(task, activity.getTask());
         assertEquals(activityType, activity.getActivityType());
+
+        if (field == null) {
+            assertNull(activity.getField());
+        } else {
+            assertEquals(field, activity.getField());
+        }
     }
 
     private List<TaskActivity> getTaskActivities() {
@@ -180,7 +203,7 @@ public class TaskActivityServiceImplTest {
     }
 
     private TaskActivity createError() {
-        return new TaskActivity(ERROR.getValue(), TASK_ID, ERROR);
+        return new TaskActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR);
     }
 
     private TaskActivity createSuccess() {

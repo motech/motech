@@ -38,6 +38,7 @@
                     <div class="button-task"><a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit"></i> {{msg('button.edit')}}</div></a></div>
                     <div class="button-task"><a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause"></i> {{msg('button.pause')}}</div></a></div>
                     <div class="button-task"><a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash"></i> {{msg('button.delete')}}</div></a></div>
+                    <div class="button-task"><a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time"></i> {{msg('button.history')}}</div></a></div>
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -76,6 +77,7 @@
                     <div class="button-task"><a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit"></i> {{msg('button.edit')}}</div></a></div>
                     <div class="button-task"><a ng-click="enableTask(item, true)"><div class="button-task-in"><i class="icon-play"></i> {{msg('button.enable')}}</div></a></div>
                     <div class="button-task"><a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash"></i> {{msg('button.delete')}}</div></a></div>
+                    <div class="button-task"><a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time"></i> {{msg('button.history')}}</div></a></div>
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -112,11 +114,13 @@
                                 </div>
                             </td>
                             <td>{{ activity.date | fromNow }}</td>
-                            <td>
+                            <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('tooltip.clickToSeeDetails')}}">
                                  <div>
-                                     <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
-                                     <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
-                                     <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
+                                     <a href="#/task/{{activity.task}}/log">
+                                        <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
+                                        <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
+                                        <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
+                                     </a>
                                  </div>
                             </td>
                         </tr>

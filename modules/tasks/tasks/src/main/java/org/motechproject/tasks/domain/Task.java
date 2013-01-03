@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
@@ -32,6 +33,11 @@ public class Task extends MotechBaseDataObject {
         this.filters = filters;
         this.action = action;
         this.trigger = trigger;
+    }
+
+    @JsonIgnore
+    public boolean hasFilters() {
+        return !filters.isEmpty();
     }
 
     public String getTrigger() {

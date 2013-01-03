@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonValue;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -14,6 +15,16 @@ public enum EventParamType {
     @JsonValue
     public String getValue() {
         return value;
+    }
+
+    @JsonIgnore
+    public boolean isString() {
+        return value.equalsIgnoreCase(UNICODE.getValue()) || value.equalsIgnoreCase(TEXTAREA.getValue());
+    }
+
+    @JsonIgnore
+    public boolean isNumber() {
+        return value.equalsIgnoreCase(NUMBER.getValue());
     }
 
     private EventParamType(String value) {

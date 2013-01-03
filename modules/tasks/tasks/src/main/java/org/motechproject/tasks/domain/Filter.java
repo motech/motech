@@ -3,16 +3,16 @@ package org.motechproject.tasks.domain;
 
 public class Filter {
     private EventParameter eventParameter;
-    private boolean navigationOperator;
+    private boolean negationOperator;
     private String operator;
     private String expression;
 
     public Filter() {
     }
 
-    public Filter(EventParameter eventParameter, boolean navigationOperator, String operator, String expression) {
+    public Filter(EventParameter eventParameter, boolean negationOperator, String operator, String expression) {
         this.eventParameter = eventParameter;
-        this.navigationOperator = navigationOperator;
+        this.negationOperator = negationOperator;
         this.operator = operator;
         this.expression = expression;
     }
@@ -25,12 +25,12 @@ public class Filter {
         this.eventParameter = eventParameter;
     }
 
-    public boolean isNavigationOperator() {
-        return navigationOperator;
+    public boolean isNegationOperator() {
+        return negationOperator;
     }
 
-    public void setNavigationOperator(boolean navigationOperator) {
-        this.navigationOperator = navigationOperator;
+    public void setNegationOperator(boolean negationOperator) {
+        this.negationOperator = negationOperator;
     }
 
     public String getOperator() {
