@@ -189,10 +189,10 @@ public class MotechSchedulerServiceImplIT {
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
             schedulerService.scheduleRunOnceJob(
-                    new RunOnceSchedulableJob(
-                            new MotechEvent("test_event", params),
-                            newDateTime(2020, 6, 15, 12, 0, 0).toDate()
-                    ));
+                new RunOnceSchedulableJob(
+                    new MotechEvent("test_event", params),
+                    newDateTime(2020, 6, 15, 12, 0, 0).toDate()
+                ));
         } finally {
             stopFakingTime();
         }
@@ -279,6 +279,33 @@ public class MotechSchedulerServiceImplIT {
                     newDateTime(2020, 7, 15, 12, 0, 0),
                     newDateTime(2020, 7, 16, 12, 0, 0),
                     newDateTime(2020, 7, 17, 12, 0, 0)),
+                    fireTimes);
+        } finally {
+            stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldScheduleInterveningRepeatJobWithoutEndDate() throws SchedulerException {
+        try {
+            fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+
+            Map<String, Object> params = new HashMap<>();
+            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            RepeatingSchedulableJob repeatJob = new RepeatingSchedulableJob(
+                new MotechEvent("test_event", params),
+                newDateTime(2020, 7, 13, 12, 0, 0).toDate(),
+                null,
+                3,
+                (long) DateTimeConstants.MILLIS_PER_DAY,
+                true);
+            repeatJob.setUseOriginalFireTimeAfterMisfire(false);
+            schedulerService.scheduleRepeatingJob(repeatJob);
+
+            List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
+            assertEquals(asList(
+                    newDateTime(2020, 7, 15, 12, 0, 0),
+                    newDateTime(2020, 7, 16, 12, 0, 0)),
                     fireTimes);
         } finally {
             stopFakingTime();
