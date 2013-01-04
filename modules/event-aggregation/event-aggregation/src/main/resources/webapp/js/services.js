@@ -3,7 +3,7 @@
 angular.module('AggregationRuleServices', ['ngResource'])
 
     .factory('AggregationRules', function ($resource) {
-        return $resource('../event-aggregation/api/rules/:ruleName', {}, {
+        return $resource('../event-aggregation/rules/:ruleName', {}, {
             all: {
                 method:'GET',
                 params:{},
@@ -23,7 +23,7 @@ angular.module('AggregationRuleServices', ['ngResource'])
     })
 
     .factory('Aggregations', function ($resource) {
-        return $resource('../event-aggregation/api/aggregations/:ruleName/:eventStatus', {}, {
+        return $resource('../event-aggregation/aggregations/:ruleName/:eventStatus', {}, {
             find: {
                 method:'GET',
                 params:{

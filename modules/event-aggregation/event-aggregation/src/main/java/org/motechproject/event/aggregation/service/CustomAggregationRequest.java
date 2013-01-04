@@ -1,9 +1,8 @@
-package org.motechproject.event.aggregation.service.impl;
+package org.motechproject.event.aggregation.service;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.event.aggregation.model.validate.ValidRuleExpression;
-import org.motechproject.event.aggregation.service.CustomAggregation;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

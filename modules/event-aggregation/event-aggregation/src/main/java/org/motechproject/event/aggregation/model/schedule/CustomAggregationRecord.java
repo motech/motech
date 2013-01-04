@@ -3,7 +3,7 @@ package org.motechproject.event.aggregation.model.schedule;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.event.aggregation.service.CustomAggregation;
-import org.motechproject.event.aggregation.service.impl.CustomAggregationRequest;
+import org.motechproject.event.aggregation.service.CustomAggregationRequest;
 
 public class CustomAggregationRecord extends AggregationScheduleRecord implements CustomAggregation {
     private static final long serialVersionUID = 5795967601901810210L;

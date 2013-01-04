@@ -1,5 +1,5 @@
 
-angular.module('motech-event-aggregation').directive('tagsInput', function() {
+angular.module('event-aggregation').directive('tagsInput', function() {
 
     return {
         restrict: 'A',
@@ -10,7 +10,7 @@ angular.module('motech-event-aggregation').directive('tagsInput', function() {
     }
 });
 
-angular.module('motech-event-aggregation').directive('datetimePicker', function() {
+angular.module('event-aggregation').directive('datetimePicker', function() {
 
     var momentDateFormat = 'DD MMM YYYY HH:mm Z';
 
@@ -43,7 +43,7 @@ angular.module('motech-event-aggregation').directive('datetimePicker', function(
     }
 });
 
-angular.module('motech-event-aggregation').directive('cronMaker', function() {
+angular.module('event-aggregation').directive('cronMaker', function() {
 
     return {
         restrict: 'A',
@@ -52,14 +52,14 @@ angular.module('motech-event-aggregation').directive('cronMaker', function() {
             $(attrs.cronMaker).cron({
                 initial: scope.rule.aggregationSchedule.cronExpression,
                 onChange: function() {
-                    ngModel.$setViewValue($(this).cron("value"));
+                    ngModel.$setViewValue($(this).cron("value") + " ?");
                 }
             });
         }
     }
 });
 
-angular.module('motech-event-aggregation').directive('tooltip', function() {
+angular.module('event-aggregation').directive('tooltip', function() {
 
     return {
         restrict: 'A',
@@ -69,8 +69,8 @@ angular.module('motech-event-aggregation').directive('tooltip', function() {
                 trigger: 'focus',
                 placement: 'right',
                 html: true,
-                title: $($(attrs.tooltip).children()[0]).html(),
-                content: $($(attrs.tooltip).children()[1]).html()
+                title: $($(attrs.tooltip).children()[0]),
+                content: $($(attrs.tooltip).children()[1])
             });
         }
     }

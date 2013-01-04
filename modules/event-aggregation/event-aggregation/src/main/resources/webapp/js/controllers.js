@@ -10,7 +10,7 @@ function NewRulesController($scope, AggregationRules, i18nService, $routeParams,
             ruleName: $routeParams.ruleName
         }, function success(response) {
             $scope.scheduleType = $scope.rule.aggregationSchedule.scheduleType.split('_')[0];
-            $scope.scheduleTypePartial = '../event-aggregation/partials/new_' + $scope.scheduleType + '_schedule.html';
+            $scope.scheduleTypePartial = '../event-aggregation/resources/partials/new_' + $scope.scheduleType + '_schedule.html';
             $("#tagsinput").val($scope.rule.fields);
         });
 
@@ -19,14 +19,23 @@ function NewRulesController($scope, AggregationRules, i18nService, $routeParams,
         if ($routeParams.scheduleType === 'cron' || $routeParams.scheduleType === 'custom') {
             $scope.scheduleType = $routeParams.scheduleType;
         }
-        $scope.rule = {
-            "aggregationSchedule": {
-                "scheduleType": $scope.scheduleType + "_request",
-                "startTimeInMillis": moment().valueOf().toString()
-            },
-            "state": "running"
+        if ($scope.scheduleType == 'periodic') {
+            $scope.rule = {
+                "aggregationSchedule": {
+                    "scheduleType": $scope.scheduleType + "_request",
+                    "startTimeInMillis": moment().valueOf().toString()
+                },
+                "state": "running"
+            }
+        } else {
+            $scope.rule = {
+                "aggregationSchedule": {
+                    "scheduleType": $scope.scheduleType + "_request"
+                },
+                "state": "running"
+            }
         }
-        $scope.scheduleTypePartial = '../event-aggregation/partials/new_' + $scope.scheduleType + '_schedule.html';
+        $scope.scheduleTypePartial = '../event-aggregation/resources/partials/new_' + $scope.scheduleType + '_schedule.html';
     }
 
     $scope.errors = [];

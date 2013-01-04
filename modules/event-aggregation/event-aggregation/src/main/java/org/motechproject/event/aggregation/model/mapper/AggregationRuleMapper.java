@@ -1,7 +1,7 @@
 package org.motechproject.event.aggregation.model.mapper;
 
 import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
 
 public class AggregationRuleMapper {
     

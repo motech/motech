@@ -397,7 +397,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-event-aggregation-bundle</artifactId>
+                    <artifactId>motech-event-aggregation</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

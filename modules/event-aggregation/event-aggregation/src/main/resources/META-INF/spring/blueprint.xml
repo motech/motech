@@ -27,7 +27,8 @@
         <constructor-arg name="header" ref="header"/>
     </bean>
 
-
+    <osgi:service id="eventAggregationServiceOsgi" auto-export="interfaces" ref="eventAggregationServiceImpl"
+                  interface="org.motechproject.event.aggregation.service.EventAggregationService"/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 

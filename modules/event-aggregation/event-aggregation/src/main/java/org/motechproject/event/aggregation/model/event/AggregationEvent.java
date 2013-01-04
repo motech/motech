@@ -3,7 +3,7 @@ package org.motechproject.event.aggregation.model.event;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.aggregation.model.Aggregation;
 import org.motechproject.event.aggregation.service.AggregationRule;
-import org.motechproject.event.aggregation.service.impl.AggregatedEventResult;
+import org.motechproject.event.aggregation.service.AggregatedEventResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ public class AggregationEvent {
         Map<String, Object> params = new HashMap<>();
         params.put(EventStrings.ORIGINAL_SUBJECT, aggregationRule.getSubscribedTo());
         params.put(EventStrings.AGGREGATED_EVENTS, aggregation.getEvents());
-        event = new MotechEvent(EventStrings.AGGREGATION_EVENT, params);
+        event = new MotechEvent(aggregationRule.getPublishAs(), params);
     }
 
     public MotechEvent toMotechEvent() {

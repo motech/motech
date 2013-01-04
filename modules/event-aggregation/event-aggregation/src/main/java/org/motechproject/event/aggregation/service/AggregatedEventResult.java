@@ -1,16 +1,18 @@
-package org.motechproject.event.aggregation.service.impl;
+package org.motechproject.event.aggregation.service;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
-import org.motechproject.event.aggregation.service.AggregatedEvent;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.now;
 
 
-public class AggregatedEventResult implements AggregatedEvent {
+public class AggregatedEventResult implements AggregatedEvent, Serializable {
+
+    private static final long serialVersionUID = -1536678519770572131L;
 
     @JsonProperty
     private Map<String, Object> aggregationParams;

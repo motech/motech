@@ -9,10 +9,10 @@ import org.motechproject.event.aggregation.model.AggregationRuleRecord;
 import org.motechproject.event.aggregation.model.AggregationState;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.impl.CronBasedAggregationRequest;
-import org.motechproject.event.aggregation.service.impl.CustomAggregationRequest;
-import org.motechproject.event.aggregation.service.impl.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
+import org.motechproject.event.aggregation.service.CustomAggregationRequest;
+import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -135,7 +135,7 @@ public class AggregationRuleControllerIT {
     @Test
     public void shouldValidateRequestFields() throws Exception {
         AggregationRuleRequest request = new AggregationRuleRequest(null, "foo", "bar", asList("baz"), new CustomAggregationRequest("true"), "fuu", AggregationState.Running);
-        FieldError error = new FieldError("name", "Name must be present");
+        FieldError error = new FieldError("name", "Must be present");
         mockAggregationRuleController.perform(
             put("/rules")
                 .contentType(MediaType.APPLICATION_JSON)

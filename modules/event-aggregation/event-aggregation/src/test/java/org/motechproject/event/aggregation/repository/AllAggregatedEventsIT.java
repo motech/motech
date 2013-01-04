@@ -37,45 +37,28 @@ public class AllAggregatedEventsIT {
         params.put("foo", "bar");
         AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>());
         
-        allAggregatedEvents.addIfAbsent(aggregatedEvent);
+        allAggregatedEvents.add(aggregatedEvent);
         
         assertEquals(aggregatedEvent, allAggregatedEvents.find("aggregation", params, new HashMap<String, Object>()));
-    }
-
-    @Test
-    public void shouldNotAddDuplicateEventToAggregation() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("foo", "bar");
-        AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>());
-
-        allAggregatedEvents.addIfAbsent(aggregatedEvent);
-
-        Map<String, Object> duplicateParams = new HashMap<>();
-        duplicateParams.put("foo", "bar");
-        AggregatedEventRecord duplicateAggregatedEvent = new AggregatedEventRecord("aggregation", duplicateParams, new HashMap<String, Object>());
-
-        allAggregatedEvents.addIfAbsent(duplicateAggregatedEvent);
-
-        assertEquals(asList(aggregatedEvent), allAggregatedEvents.getAll());
     }
 
     @Test
     public void shouldFindAllAggregatedEvents() {
         Map<String, Object> params = new HashMap<>();
         params.put("foo", "bar");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "baz");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "bur");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
 
         params = new HashMap<>();
         params.put("foo", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
 
         List<AggregatedEventRecord> aggregatedEvents = allAggregatedEvents.findAllAggregated("aggregation");
 
@@ -86,19 +69,19 @@ public class AllAggregatedEventsIT {
     public void shouldFindAllBadEvents() {
         Map<String, Object> params = new HashMap<>();
         params.put("foo", "bar");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("fuu", "baz");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
 
         params = new HashMap<>();
         params.put("fii", "bur");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
 
         params = new HashMap<>();
         params.put("foo", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>(), true));
 
         List<AggregatedEventRecord> aggregatedEvents = allAggregatedEvents.findAllErrored("aggregation");
         assertEquals(2, aggregatedEvents.size());
@@ -113,34 +96,34 @@ public class AllAggregatedEventsIT {
         aggregationParams.put("sex", "m");
         Map<String, Object> nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data1", "foo");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data2", "fii");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "f");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fuu");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fee");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("ext_id", "123");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("name", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", aggregationParams, nonAggregationParams));
 
         List<Aggregation> aggregations = allAggregatedEvents.findAllAggregations("aggregation");
         assertEquals(3, aggregations.size());
@@ -174,28 +157,28 @@ public class AllAggregatedEventsIT {
         aggregationParams.put("sex", "m");
         Map<String, Object> nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data1", "foo");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data2", "fii");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "f");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fuu");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fee");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         List<Aggregation> aggregations = allAggregatedEvents.findAllAggregations("aggregation");
         assertEquals(2, aggregations.size());
@@ -217,19 +200,19 @@ public class AllAggregatedEventsIT {
     public void shouldFindByAggregationRule() {
         Map<String, Object> params = new HashMap<>();
         params.put("foo", "bar");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "baz");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "bur");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
 
         params = new HashMap<>();
         params.put("foo", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
 
         List<AggregatedEventRecord> aggregatedEvents = allAggregatedEvents.findByAggregationRule("aggregation");
         assertEquals(asList("bar", "baz", "bur"), extract(aggregatedEvents, on(AggregatedEventRecord.class).getAggregationParams().get("foo")));
@@ -239,19 +222,19 @@ public class AllAggregatedEventsIT {
     public void shouldRemoveByAggregationRule() {
         Map<String, Object> params = new HashMap<>();
         params.put("foo", "bar");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "baz");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
 
         params = new HashMap<>();
         params.put("foo", "bur");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
 
         params = new HashMap<>();
         params.put("foo", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
 
         allAggregatedEvents.removeByAggregationRule("aggregation");
         assertEquals(0, allAggregatedEvents.findByAggregationRule("aggregation").size());

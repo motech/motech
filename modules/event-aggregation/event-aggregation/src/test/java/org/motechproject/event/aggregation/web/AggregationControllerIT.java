@@ -11,8 +11,8 @@ import org.motechproject.event.aggregation.model.AggregationState;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.impl.CronBasedAggregationRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,13 +64,13 @@ public class AggregationControllerIT {
         aggregationParams.put("flw_id", "123");
         Map<String, Object> nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data1", "foo");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data2", "fii");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
 
         List<Aggregation> aggregation = allAggregatedEvents.findAllAggregations("my_aggregation");
 
@@ -88,13 +88,13 @@ public class AggregationControllerIT {
         aggregationParams.put("flw_id", "123");
         Map<String, Object> nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data1", "foo");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data2", "fii");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams, true));
+        allAggregatedEvents.add(new AggregatedEventRecord("my_aggregation", aggregationParams, nonAggregationParams, true));
 
         List<Aggregation> aggregation = allAggregatedEvents.findAllErrorEventsForAggregations("my_aggregation");
 

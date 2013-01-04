@@ -7,9 +7,10 @@ import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.aggregation.service.AggregationRule;
 import org.motechproject.event.aggregation.service.EventAggregationService;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,13 +55,17 @@ public class AggregationRuleController {
         return new AggregationRuleMapper().toRequest(allAggregationRules.findByName(ruleName));
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({BadRequestException.class, HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public String handleMethodArgumentNotValidException(BadRequestException exception) throws IOException {
-        ArrayList<FieldError> errors = new ArrayList<>();
-        for (ConstraintViolation violation : exception.getViolations()) {
-            errors.add(new FieldError(violation.getPropertyPath().toString(), violation.getMessage()));
+    public String handleMethodArgumentNotValidException(Exception exception) throws IOException {
+        ArrayList<RequestError> errors = new ArrayList<>();
+        if (exception instanceof BadRequestException) {
+            for (ConstraintViolation violation : ((BadRequestException) exception).getViolations()) {
+                errors.add(new FieldError(violation.getPropertyPath().toString(), violation.getMessage()));
+            }
+        } else {
+            errors.add(new RequestError(exception.getMessage()));
         }
         return new ObjectMapper().writeValueAsString(errors);
     }
@@ -98,20 +103,13 @@ class BadRequestException extends RuntimeException {
     }
 }
 
-class FieldError {
+class RequestError {
 
-    @JsonProperty
-    private String field;
     @JsonProperty
     private String errorMessage;
 
-    FieldError(String field, String errorMessage) {
-        this.field = field;
+    RequestError(String errorMessage) {
         this.errorMessage = errorMessage;
-    }
-
-    public String getField() {
-        return field;
     }
 
     public String getErrorMessage() {
@@ -119,3 +117,17 @@ class FieldError {
     }
 }
 
+class FieldError extends RequestError {
+
+    @JsonProperty
+    private String field;
+
+    FieldError(String field, String errorMessage) {
+        super(errorMessage);
+        this.field = field;
+    }
+
+    public String getField() {
+        return field;
+    }
+}

@@ -33,33 +33,33 @@ public class DummyDataSetup {
         aggregationParams.put("sex", "m");
         Map<String, Object> nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data1", "foo");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "123");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data2", "fii");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "f");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fuu");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams, true));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("flw_id", "234");
         aggregationParams.put("sex", "m");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("data", "fee");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", aggregationParams, nonAggregationParams));
 
         aggregationParams = new LinkedHashMap<>();
         aggregationParams.put("ext_id", "123");
         nonAggregationParams = new LinkedHashMap<>();
         nonAggregationParams.put("name", "bor");
-        allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", aggregationParams, nonAggregationParams));
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", aggregationParams, nonAggregationParams));
     }
 }

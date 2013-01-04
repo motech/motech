@@ -1182,7 +1182,6 @@
         <module>modules/commcare/api-bundle</module>
         <module>modules/decisiontree/server-bundle</module>
         <module>modules/demo/demo-bundle</module>
-        <module>modules/event-aggregation/event-aggregation-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>
         <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>

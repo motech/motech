@@ -13,8 +13,6 @@
     <context:annotation-config />
     <mvc:annotation-driven />
     <context:component-scan base-package="org.motechproject.event.aggregation" />
-    <context:component-scan base-package="org.motechproject.event.aggregation.web" />
-    <context:component-scan base-package="javax.validation" />
 
     <bean id="eventAggregationSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="event-aggregation"/>
@@ -23,4 +21,5 @@
     <bean id="eventAggregationDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-event-aggregation"/>
     </bean>
+
 </beans>

@@ -50,7 +50,7 @@ public class EventAggregator implements EventListener {
             }
         }
         AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord(aggregationRuleName, aggregationParameters, nonAggregationParameters, hasFieldMissing(event));
-        allAggregatedEvents.addIfAbsent(aggregatedEvent);
+        allAggregatedEvents.add(aggregatedEvent);
     }
 
     private boolean hasFieldMissing(MotechEvent event) {

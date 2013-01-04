@@ -2,7 +2,7 @@ package org.motechproject.event.aggregation.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.event.aggregation.service.impl.AggregatedEventResult;
+import org.motechproject.event.aggregation.service.AggregatedEventResult;
 
 import java.util.List;
 

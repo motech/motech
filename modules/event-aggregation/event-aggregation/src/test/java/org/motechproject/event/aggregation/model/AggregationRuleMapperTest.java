@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRecord;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.impl.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;

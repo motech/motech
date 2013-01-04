@@ -53,7 +53,7 @@ public class EventAggregatorTest {
         eventAggregator.handle(new MotechEvent("subject", params));
 
         AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>());
-        verify(allAggregatedEvents).addIfAbsent(aggregatedEvent);
+        verify(allAggregatedEvents).add(aggregatedEvent);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class EventAggregatorTest {
         eventAggregator.handle(new MotechEvent("subject", params));
 
         AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true);
-        verify(allAggregatedEvents).addIfAbsent(aggregatedEvent);
+        verify(allAggregatedEvents).add(aggregatedEvent);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class EventAggregatorTest {
         eventAggregator.handle(new MotechEvent("subject", params));
 
         ArgumentCaptor<AggregatedEventRecord> captor = ArgumentCaptor.forClass(AggregatedEventRecord.class);
-        verify(allAggregatedEvents).addIfAbsent(captor.capture());
+        verify(allAggregatedEvents).add(captor.capture());
         assertEquals(asList("fee", "fin", "foo", "fus", "fuu"), new ArrayList<>(captor.getValue().getAggregationParams().keySet()));
     }
 
@@ -108,6 +108,6 @@ public class EventAggregatorTest {
         params.put("foo", "bar");
         eventAggregator.handle(new MotechEvent("subject", params));
 
-        verify(allAggregatedEvents, never()).addIfAbsent(any(AggregatedEventRecord.class));
+        verify(allAggregatedEvents, never()).add(any(AggregatedEventRecord.class));
     }
 }

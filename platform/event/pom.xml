@@ -123,6 +123,9 @@
                             org.motechproject.event.metrics;version=${project.version},
                             org.motechproject.event.metrics.impl;version=${project.version}
                         </Export-Package>
+                        <DynamicImport-Package>
+                            *
+                        </DynamicImport-Package>
                         <Import-Package>
                             org.apache.activemq.command,
                             org.aopalliance.aop,

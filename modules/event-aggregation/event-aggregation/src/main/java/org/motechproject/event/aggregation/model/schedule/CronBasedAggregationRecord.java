@@ -3,7 +3,7 @@ package org.motechproject.event.aggregation.model.schedule;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.event.aggregation.service.CronBasedAggregation;
-import org.motechproject.event.aggregation.service.impl.CronBasedAggregationRequest;
+import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
 
 public class CronBasedAggregationRecord extends AggregationScheduleRecord implements CronBasedAggregation {
     private static final long serialVersionUID = 5729041837895097802L;

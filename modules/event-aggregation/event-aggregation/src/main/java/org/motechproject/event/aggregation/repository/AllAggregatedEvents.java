@@ -36,13 +36,6 @@ public class AllAggregatedEvents extends MotechBaseRepository<AggregatedEventRec
         return singleResult(queryView("by_rule_and_event_params", ComplexKey.of(aggregationRuleName, aggregationParams, nonAggregationParams)));
     }
 
-    public void addIfAbsent(AggregatedEventRecord aggregatedEvent) {
-        AggregatedEventRecord dbRecord = find(aggregatedEvent.getAggregationRuleName(), aggregatedEvent.getAggregationParams(), aggregatedEvent.getNonAggregationParams());
-        if (dbRecord == null) {
-            add(aggregatedEvent);
-        }
-    }
-
     private static final String BY_ERROR_STATE =
         "function(doc) {                                                           \n" +
             "   if (doc.type === 'AggregatedEvent') {                              \n" +

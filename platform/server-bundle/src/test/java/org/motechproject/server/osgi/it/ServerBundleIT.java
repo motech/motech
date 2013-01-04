@@ -37,4 +37,9 @@ public class ServerBundleIT extends BaseOsgiIT {
         // Packages in the test jar are excluded by default.
         return Arrays.asList("org.motechproject.server.ui");
     }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testApplicationPlatformServerBundle.xml"};
+    }
 }

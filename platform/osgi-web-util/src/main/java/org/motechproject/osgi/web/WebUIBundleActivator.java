@@ -52,7 +52,7 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
 
             @Override
             public Object addingService(ServiceReference ref) {
-                Object service = super.addingService(ref);
+                    Object service = super.addingService(ref);
                 serviceAdded((UIFrameworkService) service);
                 return service;
             }

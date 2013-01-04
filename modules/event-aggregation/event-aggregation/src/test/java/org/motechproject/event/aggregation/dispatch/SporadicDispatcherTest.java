@@ -8,12 +8,10 @@ import org.motechproject.event.aggregation.model.AggregationState;
 import org.motechproject.event.aggregation.model.event.SporadicDispatchEvent;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
-import org.motechproject.event.aggregation.service.AggregationRule;
-import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.impl.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 
 import static java.util.Arrays.asList;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -41,9 +39,9 @@ public class SporadicDispatcherTest {
         AggregationRuleRecord aggregationRule = aggregationRuleMapper.toRecord(new AggregationRuleRequest(
             "my_aggregation", "", "event", asList("foo", "fuu"), new PeriodicAggregationRequest("1 day", newDateTime(2012, 5, 22)), "aggregated_event", AggregationState.Running));
 
-        sporadicDispatcher.handle(new SporadicDispatchEvent(aggregationRule, "true").toMotechEvent());
+        sporadicDispatcher.handle(new SporadicDispatchEvent("my_aggregation", "true").toMotechEvent());
 
-        verify(eventDispatcher).dispatch(aggregationRule);
+        verify(eventDispatcher).dispatch("my_aggregation");
     }
 
     @Test
@@ -51,8 +49,8 @@ public class SporadicDispatcherTest {
         AggregationRuleRecord aggregationRule = aggregationRuleMapper.toRecord(new AggregationRuleRequest(
             "my_aggregation", "", "event", asList("foo", "fuu"), new PeriodicAggregationRequest("1 day", newDateTime(2012, 5, 22)), "aggregated_event", AggregationState.Running));
 
-        sporadicDispatcher.handle(new SporadicDispatchEvent(aggregationRule, "false").toMotechEvent());
+        sporadicDispatcher.handle(new SporadicDispatchEvent("my_aggregation", "false").toMotechEvent());
 
-        verify(eventDispatcher, never()).dispatch(any(AggregationRule.class));
+        verify(eventDispatcher, never()).dispatch("my_aggregation");
     }
 }

@@ -19,6 +19,6 @@ public class PeriodicDispatcher {
 
     @MotechListener(subjects = EventStrings.PERIODIC_DISPATCH_EVENT)
     public void handle(MotechEvent event) {
-        eventDispatcher.dispatch(new PeriodicDispatchEvent(event).getAggregationRule());
+        eventDispatcher.dispatch(new PeriodicDispatchEvent(event).getAggregationRuleName());
     }
 }

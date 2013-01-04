@@ -1,9 +1,8 @@
-package org.motechproject.event.aggregation.service.impl;
+package org.motechproject.event.aggregation.service;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.event.aggregation.model.AggregationState;
-import org.motechproject.event.aggregation.service.AggregationRule;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -12,8 +11,8 @@ import java.util.List;
 
 public class AggregationRuleRequest implements AggregationRule {
 
-    @NotNull(message = "Name must be present")
-    @Size(min = 1, message = "Name must be present")
+    @NotNull(message = "Must be present")
+    @Size(min = 1, message = "Must be present")
     @JsonProperty
     private String name;
 

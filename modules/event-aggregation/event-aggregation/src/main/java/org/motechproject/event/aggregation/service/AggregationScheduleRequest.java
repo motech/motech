@@ -1,8 +1,7 @@
-package org.motechproject.event.aggregation.service.impl;
+package org.motechproject.event.aggregation.service;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-import org.motechproject.event.aggregation.service.AggregationSchedule;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "scheduleType")
 @JsonSubTypes({

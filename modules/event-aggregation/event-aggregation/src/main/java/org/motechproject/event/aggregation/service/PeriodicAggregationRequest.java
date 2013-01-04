@@ -1,4 +1,4 @@
-package org.motechproject.event.aggregation.service.impl;
+package org.motechproject.event.aggregation.service;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -6,7 +6,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.commons.date.util.JodaFormatter;
 import org.motechproject.event.aggregation.model.validate.ValidPeriod;
-import org.motechproject.event.aggregation.service.PeriodicAggregation;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
