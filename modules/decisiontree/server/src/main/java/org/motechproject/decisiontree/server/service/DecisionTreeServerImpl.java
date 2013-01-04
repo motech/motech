@@ -186,28 +186,30 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
             if (noInput(key) || hasSpecialMeaning(key) || dtmfKey(key)) {
                 return;
             }
+
             if (anyInput(key)) {
                 return;
             }
-            if (dtmfKey(key)) {
+
+            if (isStatusKey(key)) {
                 return;
             }
-            if (DialStatus.isValid(key)) {
-                return;
-            }
-            if (CallStatus.isValid(key)) {
-                return;
-            }
+
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
                 throw new DecisionTreeException(Error.INVALID_TRANSITION_KEY, format("Invalid transition key [%s] for node [%s]", key, node), e);
             }
+
             ITransition transition = transitionEntry.getValue();
             if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
                 throw new DecisionTreeException(Error.NULL_DESTINATION_NODE, format("Missing destination node in the transition for key [%s] on node [%s]: ", key, node));
             }
         }
+    }
+
+    private boolean isStatusKey(String key) {
+        return DialStatus.isValid(key) || CallStatus.isValid(key);
     }
 
     private boolean hasSpecialMeaning(String key) {

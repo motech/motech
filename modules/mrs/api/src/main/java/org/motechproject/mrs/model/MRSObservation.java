@@ -5,6 +5,7 @@ import ch.lambdaj.Lambda;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static ch.lambdaj.Lambda.having;
@@ -92,26 +93,16 @@ public class MRSObservation<T> {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof MRSObservation)) {
             return false;
         }
+
         MRSObservation that = (MRSObservation) o;
-        if (conceptName != null ? !conceptName.equals(that.conceptName) : that.conceptName != null) {
-            return false;
-        }
-        if (date != null ? !date.equals(that.date) : that.date != null) {
-            return false;
-        }
-        if (dependantObservations != null ? !dependantObservations.equals(that.dependantObservations) : that.dependantObservations != null) {
-            return false;
-        }
-        if (id != null ? !id.equals(that.id) : that.id != null) {
-            return false;
-        }
-        if (value != null ? !value.equals(that.value) : that.value != null) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(conceptName, that.conceptName) && Objects.equals(date, that.date) &&
+                Objects.equals(dependantObservations, that.dependantObservations) && Objects.equals(id, that.id) &&
+                Objects.equals(value, that.value);
     }
 
     @Override

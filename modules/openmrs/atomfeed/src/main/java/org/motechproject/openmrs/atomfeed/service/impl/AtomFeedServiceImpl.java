@@ -92,20 +92,8 @@ public class AtomFeedServiceImpl implements AtomFeedService {
                 if (matchesLastUpdatedEntry(entry, lastTimeUpdate, lastId)) {
                     continue;
                 }
-                MotechEvent event = null;
-                if ("org.openmrs.Patient".equals(entry.getClassname())) {
-                    LOGGER.debug("Found a patient change");
-                    event = handlePatientEntry(entry);
-                } else if ("org.openmrs.Concept".equals(entry.getClassname())) {
-                    LOGGER.debug("Found a concept change");
-                    event = handleConceptEntry(entry);
-                } else if ("org.openmrs.Encounter".equals(entry.getClassname())) {
-                    LOGGER.debug("Found an encounter change");
-                    event = handleEncounterEntry(entry);
-                } else if ("org.openmrs.Obs".equals(entry.getClassname())) {
-                    LOGGER.debug("Found an observation change");
-                    event = handleObservationEntry(entry);
-                }
+
+                MotechEvent event = handleEntry(entry);
 
                 eventRelay.sendEventMessage(event);
                 lastProcessedEntryUpdateTime = entry.getUpdated();
@@ -127,6 +115,26 @@ public class AtomFeedServiceImpl implements AtomFeedService {
         }
 
         return lastTimeUpdate.equals(entry.getUpdated()) && lastId.equals(entry.getId());
+    }
+
+    private MotechEvent handleEntry(Entry entry) {
+        MotechEvent event = null;
+
+        if ("org.openmrs.Patient".equals(entry.getClassname())) {
+            LOGGER.debug("Found a patient change");
+            event = handlePatientEntry(entry);
+        } else if ("org.openmrs.Concept".equals(entry.getClassname())) {
+            LOGGER.debug("Found a concept change");
+            event = handleConceptEntry(entry);
+        } else if ("org.openmrs.Encounter".equals(entry.getClassname())) {
+            LOGGER.debug("Found an encounter change");
+            event = handleEncounterEntry(entry);
+        } else if ("org.openmrs.Obs".equals(entry.getClassname())) {
+            LOGGER.debug("Found an observation change");
+            event = handleObservationEntry(entry);
+        }
+
+        return event;
     }
 
     private MotechEvent handlePatientEntry(Entry entry) {
@@ -178,4 +186,5 @@ public class AtomFeedServiceImpl implements AtomFeedService {
 
         parseFeed(feed, sinceDateTime, lastId);
     }
+
 }

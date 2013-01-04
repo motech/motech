@@ -4,6 +4,7 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public final class MilestoneAlert implements Serializable {
     private String milestoneName;
@@ -61,28 +62,16 @@ public final class MilestoneAlert implements Serializable {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof MilestoneAlert)) {
             return false;
         }
 
         MilestoneAlert that = (MilestoneAlert) o;
 
-        if (defaultmentDateTime != null ? !defaultmentDateTime.equals(that.defaultmentDateTime) : that.defaultmentDateTime != null) {
-            return false;
-        }
-        if (dueDateTime != null ? !dueDateTime.equals(that.dueDateTime) : that.dueDateTime != null) {
-            return false;
-        }
-        if (earliestDateTime != null ? !earliestDateTime.equals(that.earliestDateTime) : that.earliestDateTime != null) {
-            return false;
-        }
-        if (lateDateTime != null ? !lateDateTime.equals(that.lateDateTime) : that.lateDateTime != null) {
-            return false;
-        }
-        if (milestoneName != null ? !milestoneName.equals(that.milestoneName) : that.milestoneName != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(defaultmentDateTime, that.defaultmentDateTime) &&
+                Objects.equals(dueDateTime, that.dueDateTime) && Objects.equals(earliestDateTime, that.earliestDateTime) &&
+                Objects.equals(lateDateTime, that.lateDateTime) && Objects.equals(milestoneName, that.milestoneName);
     }
 
     @Override

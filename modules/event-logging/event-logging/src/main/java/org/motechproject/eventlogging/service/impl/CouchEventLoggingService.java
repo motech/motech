@@ -71,20 +71,7 @@ public class CouchEventLoggingService implements EventLoggingService {
 
                     if (subjects != null) {
                         for (Map<String, String> map : mappingList) {
-                            String startKey = null;
-                            String startValue = null;
-                            String endKey = null;
-                            String endValue = null;
-                            for (Map.Entry<String, String> entry : map.entrySet()) {
-                                if (startKey == null) {
-                                    startKey = entry.getKey();
-                                    startValue = entry.getValue();
-                                } else {
-                                    endKey = entry.getKey();
-                                    endValue = entry.getValue();
-                                }
-                            }
-                            KeyValue keyValue = new KeyValue(startKey, startValue, endKey, endValue, true);
+                            KeyValue keyValue = constructKeyValue(map);
                             mappings.add(keyValue);
                         }
                     }
@@ -185,4 +172,22 @@ public class CouchEventLoggingService implements EventLoggingService {
         this.defaultCouchToLogConverter = defaultCouchToLogConverter;
     }
 
+    private KeyValue constructKeyValue(Map<String, String> map) {
+        String startKey = null;
+        String startValue = null;
+        String endKey = null;
+        String endValue = null;
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            if (startKey == null) {
+                startKey = entry.getKey();
+                startValue = entry.getValue();
+            } else {
+                endKey = entry.getKey();
+                endValue = entry.getValue();
+            }
+        }
+
+        return new KeyValue(startKey, startValue, endKey, endValue, true);
+    }
 }

@@ -5,6 +5,7 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'Task'")
 public class Task extends MotechBaseDataObject {
@@ -101,35 +102,10 @@ public class Task extends MotechBaseDataObject {
 
         Task task = (Task) o;
 
-        if (enabled != task.enabled) {
-            return false;
-        }
-
-        if (action != null ? !action.equals(task.action) : task.action != null) {
-            return false;
-        }
-
-        if (actionInputFields != null ? !actionInputFields.equals(task.actionInputFields) : task.actionInputFields != null) {
-            return false;
-        }
-
-        if (additionalData != null ? !additionalData.equals(task.additionalData) : task.additionalData != null) {
-            return false;
-        }
-
-        if (filters != null ? !filters.equals(task.filters) : task.filters != null) {
-            return false;
-        }
-
-        if (trigger != null ? !trigger.equals(task.trigger) : task.trigger != null) {
-            return false;
-        }
-
-        if (description != null ? !description.equals(task.description) : task.description != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(enabled, task.enabled) && Objects.equals(action, task.action) &&
+                Objects.equals(actionInputFields, task.actionInputFields) &&
+                Objects.equals(additionalData, task.additionalData) && Objects.equals(filters, task.filters) &&
+                Objects.equals(trigger, task.trigger) && Objects.equals(description, task.description);
     }
 
     @Override

@@ -153,29 +153,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 }
             }
 
-            // save property to db
-            SettingsRecord dbSettings = getDBSettings();
-
-            if (dbSettings != null) {
-                if (MotechSettings.LANGUAGE.equals(key)) {
-                    dbSettings.setLanguage(value);
-                } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
-                    dbSettings.setStatusMsgTimeout(value);
-                } else if (MotechSettings.SERVER_URL.equals(key)) {
-                    dbSettings.setServerUrl(value);
-                } else {
-                    for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
-                            dbSettings.getMetricsProperties())) {
-                        if (p.containsKey(key)) {
-                            p.put(key, value);
-
-                            break;
-                        }
-                    }
-                }
-
-                allSettings.addOrUpdateSettings(dbSettings);
-            }
+            saveSettingToDb(key, value);
         } catch (Exception e) {
             LOGGER.error("Error: ", e);
         }
@@ -381,6 +359,12 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         // Annotation will automatically remove all cached motech settings
     }
 
+    @Override
+    @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")
+    public Properties getActiveMqProperties() {
+        return getPlatformSettings().getActivemqProperties();
+    }
+
     private String getConfigDir(String bundleSymbolicName) {
         return String.format("%s/.motech/config/%s/", System.getProperty(USER_HOME), bundleSymbolicName);
     }
@@ -408,10 +392,28 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return allSettings == null ? null : allSettings.getSettings();
     }
 
-    @Override
-    @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")
-    public Properties getActiveMqProperties() {
-        return getPlatformSettings().getActivemqProperties();
-    }
+    private void saveSettingToDb(String key, String value) {
+        SettingsRecord dbSettings = getDBSettings();
 
+        if (dbSettings != null) {
+            if (MotechSettings.LANGUAGE.equals(key)) {
+                dbSettings.setLanguage(value);
+            } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
+                dbSettings.setStatusMsgTimeout(value);
+            } else if (MotechSettings.SERVER_URL.equals(key)) {
+                dbSettings.setServerUrl(value);
+            } else {
+                for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
+                        dbSettings.getMetricsProperties())) {
+                    if (p.containsKey(key)) {
+                        p.put(key, value);
+
+                        break;
+                    }
+                }
+            }
+
+            allSettings.addOrUpdateSettings(dbSettings);
+        }
+    }
 }

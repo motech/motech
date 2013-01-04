@@ -1,6 +1,7 @@
 package org.motechproject.mobileforms.api.domain;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,38 +86,17 @@ public class Form {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof Form)) {
             return false;
         }
 
         Form form = (Form) o;
 
-        if (bean != null ? !bean.equals(form.bean) : form.bean != null) {
-            return false;
-        }
-        if (content != null ? !content.equals(form.content) : form.content != null) {
-            return false;
-        }
-        if (depends != null ? !depends.equals(form.depends) : form.depends != null) {
-            return false;
-        }
-        if (fileName != null ? !fileName.equals(form.fileName) : form.fileName != null) {
-            return false;
-        }
-        if (id != null ? !id.equals(form.id) : form.id != null) {
-            return false;
-        }
-        if (name != null ? !name.equals(form.name) : form.name != null) {
-            return false;
-        }
-        if (studyName != null ? !studyName.equals(form.studyName) : form.studyName != null) {
-            return false;
-        }
-        if (validator != null ? !validator.equals(form.validator) : form.validator != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(bean, form.bean) && Objects.equals(content, form.content) &&
+                Objects.equals(depends, form.depends) && Objects.equals(fileName, form.fileName) &&
+                Objects.equals(id, form.id) && Objects.equals(name, form.name) &&
+                Objects.equals(studyName, form.studyName) && Objects.equals(validator, form.validator);
     }
 
     @Override

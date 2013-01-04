@@ -2,6 +2,8 @@ package org.motechproject.server.voxeo.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.Objects;
+
 /**
  * Phone/IVR Event in IVR system, represents context of call such as caller id, call status etc.
 */
@@ -87,26 +89,15 @@ public class PhoneCallEvent {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         PhoneCallEvent phoneCallEvent = (PhoneCallEvent) o;
 
-        if (callerId != null ? !callerId.equals(phoneCallEvent.callerId) : phoneCallEvent.callerId != null) {
-            return false;
-        }
-        if (reason != null ? !reason.equals(phoneCallEvent.reason) : phoneCallEvent.reason != null) {
-            return false;
-        }
-        if (status != null ? !status.equals(phoneCallEvent.status) : phoneCallEvent.status != null) {
-            return false;
-        }
-        if (timestamp != null ? !timestamp.equals(phoneCallEvent.timestamp) : phoneCallEvent.timestamp != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(callerId, phoneCallEvent.callerId) && Objects.equals(reason, phoneCallEvent.reason) &&
+                Objects.equals(status, phoneCallEvent.status) && Objects.equals(timestamp, phoneCallEvent.timestamp);
     }
 
     @Override

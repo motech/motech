@@ -65,30 +65,7 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
                         permissions.addAll(findPermissions(expression.getAST()));
                     }
 
-                    if (!permissions.isEmpty() && permissionService != null) {
-                        for (String permission : permissions) {
-                            permissionService.addPermission(new PermissionDto(permission, moduleName));
-                        }
-
-                        if (roleService != null) {
-                            String role = WordUtils.capitalize(String.format("%s bundle", moduleName));
-                            RoleDto dto = roleService.getRole(role);
-
-                            if (dto == null) {
-                                dto = new RoleDto(role, permissions);
-
-                                roleService.createRole(dto);
-                            } else {
-                                for (String permission : permissions) {
-                                    if (!dto.getPermissionNames().contains(permission)) {
-                                        dto.getPermissionNames().add(permission);
-                                    }
-                                }
-
-                                roleService.updateRole(dto);
-                            }
-                        }
-                    }
+                    addRoleAndPermissions(permissions);
                 }
             }
         });
@@ -124,5 +101,32 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         }
 
         return list;
+    }
+
+    private void addRoleAndPermissions(List<String> permissions) {
+        if (!permissions.isEmpty() && permissionService != null) {
+            for (String permission : permissions) {
+                permissionService.addPermission(new PermissionDto(permission, moduleName));
+            }
+
+            if (roleService != null) {
+                String role = WordUtils.capitalize(String.format("%s bundle", moduleName));
+                RoleDto dto = roleService.getRole(role);
+
+                if (dto == null) {
+                    dto = new RoleDto(role, permissions);
+
+                    roleService.createRole(dto);
+                } else {
+                    for (String permission : permissions) {
+                        if (!dto.getPermissionNames().contains(permission)) {
+                            dto.getPermissionNames().add(permission);
+                        }
+                    }
+
+                    roleService.updateRole(dto);
+                }
+            }
+        }
     }
 }

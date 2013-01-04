@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -262,26 +263,15 @@ public class Node implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        if (!(o instanceof Node)) {
             return false;
         }
 
         Node node = (Node) o;
 
-        if (actionsAfter != null ? !actionsAfter.equals(node.actionsAfter) : node.actionsAfter != null) {
-            return false;
-        }
-        if (actionsBefore != null ? !actionsBefore.equals(node.actionsBefore) : node.actionsBefore != null) {
-            return false;
-        }
-        if (prompts != null ? !prompts.equals(node.prompts) : node.prompts != null) {
-            return false;
-        }
-        if (transitions != null ? !transitions.equals(node.transitions) : node.transitions != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(actionsAfter, node.actionsAfter) && Objects.equals(actionsBefore, node.actionsBefore) &&
+                Objects.equals(prompts, node.prompts) && Objects.equals(transitions, node.transitions);
     }
 
     @Override

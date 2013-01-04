@@ -53,7 +53,7 @@ public class TreeNodeLocator {
     }
 
     public Node findRootNode(Tree tree, FlowSession session) {
-        if (tree == null ) {
+        if (tree == null) {
             throw new IllegalArgumentException(String.format("tree: %s", tree));
         }
         ITransition rootTransition = rootTransition(tree);

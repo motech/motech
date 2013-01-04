@@ -4,6 +4,8 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import java.util.Objects;
+
 @TypeDiscriminator("doc.type == 'TaskActivity'")
 public class TaskActivity extends MotechBaseDataObject {
     private String message;
@@ -66,23 +68,8 @@ public class TaskActivity extends MotechBaseDataObject {
 
         TaskActivity that = (TaskActivity) o;
 
-        if (date != null ? !date.equals(that.date) : that.date != null) {
-            return false;
-        }
-
-        if (activityType != that.activityType) {
-            return false;
-        }
-
-        if (message != null ? !message.equals(that.message) : that.message != null) {
-            return false;
-        }
-
-        if (task != null ? !task.equals(that.task) : that.task != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(date, that.date) && Objects.equals(activityType, that.activityType)
+                && Objects.equals(message, that.message) && Objects.equals(task, that.task);
     }
 
     @Override

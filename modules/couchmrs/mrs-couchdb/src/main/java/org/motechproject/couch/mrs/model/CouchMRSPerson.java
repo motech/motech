@@ -5,6 +5,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -131,40 +132,20 @@ public class CouchMRSPerson extends MotechBaseDataObject {
 
     @Override
     public boolean equals(Object o) {
-        boolean dobNull = false;
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof CouchMRSPerson)) {
             return false;
         }
+
         CouchMRSPerson other = (CouchMRSPerson) o;
-        if (!ObjectUtils.equals(externalId, other.externalId)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(firstName, other.firstName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(lastName, other.lastName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(address, other.address)) {
-            return false;
-        }
-        if (dateOfBirth == null && other.dateOfBirth == null) {
-            dobNull = true;
-            return dobNull;
-        }
-        if (!dobNull) {
-            return getDateOfBirth().equals(other.getDateOfBirth());
-        }
-        if (!ObjectUtils.equals(gender, other.gender)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(attributes, other.attributes)) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(externalId, other.externalId) && Objects.equals(firstName, other.firstName) &&
+                Objects.equals(lastName, other.lastName) && Objects.equals(address, other.address) &&
+                Objects.equals(getDateOfBirth(), other.getDateOfBirth()) && Objects.equals(gender, other.gender) &&
+                Objects.equals(attributes, other.attributes);
     }
 
     @Override

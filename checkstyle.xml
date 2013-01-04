@@ -265,5 +265,8 @@
         <module name="IllegalThrows">
             <property name="severity" value="error"/>
         </module>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
     </module>
 </module>

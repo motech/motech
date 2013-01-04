@@ -4,6 +4,7 @@ import org.motechproject.event.MotechEvent;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired unlimited number of times
@@ -77,43 +78,15 @@ public class CronSchedulableJob implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
+
+        if (!(obj instanceof CronSchedulableJob)) {
             return false;
         }
 
         CronSchedulableJob other = (CronSchedulableJob) obj;
-        if (cronExpression == null) {
-            if (other.cronExpression != null) {
-                return false;
-            }
-        } else if (!cronExpression.equals(other.cronExpression)) {
-            return false;
-        }
-        if (endTime == null) {
-            if (other.endTime != null) {
-                return false;
-            }
-        } else if (!endTime.equals(other.endTime)) {
-            return false;
-        }
-        if (motechEvent == null) {
-            if (other.motechEvent != null) {
-                return false;
-            }
-        } else if (!motechEvent.equals(other.motechEvent)) {
-            return false;
-        }
-        if (startTime == null) {
-            if (other.startTime != null) {
-                return false;
-            }
-        } else if (!startTime.equals(other.startTime)) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(cronExpression, other.cronExpression) && Objects.equals(endTime, other.endTime) &&
+                Objects.equals(motechEvent, other.motechEvent) && Objects.equals(startTime, other.startTime);
     }
 
     @Override

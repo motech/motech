@@ -169,13 +169,19 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         if (quartzProperties == null || quartzProperties.isEmpty()) {
             quartzProperties = emptyQuartzProperties();
         }
+
         if (metricsProperties == null || metricsProperties.isEmpty()) {
             metricsProperties = emptyMetricsProperties();
         }
+
         if (schedulerProperties == null || schedulerProperties.isEmpty()) {
             schedulerProperties = emptySchedulerProperties();
         }
 
+        handleMiscProperties(props);
+    }
+
+    private void handleMiscProperties(Properties props) {
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String key = (String)entry.getKey();
             String value = (String)entry.getValue();

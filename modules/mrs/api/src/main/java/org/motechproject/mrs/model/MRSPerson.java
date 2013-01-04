@@ -6,6 +6,7 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
@@ -167,50 +168,28 @@ public class MRSPerson {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof MRSPerson)) {
             return false;
         }
+
         MRSPerson other = (MRSPerson) o;
-        if (!ObjectUtils.equals(id, other.id)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(firstName, other.firstName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(middleName, other.middleName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(lastName, other.lastName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(preferredName, other.preferredName)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(address, other.address)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(dateOfBirth, other.dateOfBirth)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(birthDateEstimated, other.birthDateEstimated)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(age, other.age)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(gender, other.gender)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(attributes, other.attributes)) {
-            return false;
-        }
-        if (!ObjectUtils.equals(deathDate, other.deathDate)) {
-            return false;
-        }
-        if (dead != other.dead) {
-            return false;
-        }
-        return true;
+
+        return equalNameData(other) && equalAgeAndBirthDates(other) && Objects.equals(id, other.id) &&
+                Objects.equals(address, other.address) && Objects.equals(gender, other.gender) &&
+                Objects.equals(attributes, other.attributes) && Objects.equals(deathDate, other.deathDate) &&
+                dead == other.dead;
+    }
+
+    public boolean equalNameData(MRSPerson other) {
+        return Objects.equals(firstName, other.firstName) &&
+                Objects.equals(middleName, other.middleName) && Objects.equals(lastName, other.lastName) &&
+                Objects.equals(preferredName, other.preferredName);
+    }
+
+    public boolean equalAgeAndBirthDates(MRSPerson other) {
+        return Objects.equals(dateOfBirth, other.dateOfBirth) &&
+                Objects.equals(birthDateEstimated, other.birthDateEstimated) && Objects.equals(age, other.age);
     }
 
     @Override

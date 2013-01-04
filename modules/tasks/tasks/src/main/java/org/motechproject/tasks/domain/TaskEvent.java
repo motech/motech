@@ -1,6 +1,7 @@
 package org.motechproject.tasks.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TaskEvent {
     private List<EventParameter> eventParameters;
@@ -52,23 +53,8 @@ public class TaskEvent {
 
         TaskEvent taskEvent = (TaskEvent) o;
 
-        if (description != null ? !description.equals(taskEvent.description) : taskEvent.description != null) {
-            return false;
-        }
-
-        if (displayName != null ? !displayName.equals(taskEvent.displayName) : taskEvent.displayName != null) {
-            return false;
-        }
-
-        if (subject != null ? !subject.equals(taskEvent.subject) : taskEvent.subject != null) {
-            return false;
-        }
-
-        if (eventParameters != null ? !eventParameters.equals(taskEvent.eventParameters) : taskEvent.eventParameters != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(description, taskEvent.description) && Objects.equals(displayName, taskEvent.displayName) &&
+                Objects.equals(subject, taskEvent.subject) && Objects.equals(eventParameters, taskEvent.eventParameters);
     }
 
     @Override

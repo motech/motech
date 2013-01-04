@@ -4,6 +4,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.List;
+import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'Channel'")
 public class Channel extends MotechBaseDataObject {
@@ -67,37 +68,17 @@ public class Channel extends MotechBaseDataObject {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         Channel channel = (Channel) o;
 
-        if (actionTaskEvents != null ? !actionTaskEvents.equals(channel.actionTaskEvents) : channel.actionTaskEvents != null) {
-            return false;
-        }
-
-        if (description != null ? !description.equals(channel.description) : channel.description != null) {
-            return false;
-        }
-
-        if (displayName != null ? !displayName.equals(channel.displayName) : channel.displayName != null) {
-            return false;
-        }
-
-        if (moduleName != null ? !moduleName.equals(channel.moduleName) : channel.moduleName != null) {
-            return false;
-        }
-
-        if (moduleVersion != null ? !moduleVersion.equals(channel.moduleVersion) : channel.moduleVersion != null) {
-            return false;
-        }
-
-        if (triggerTaskEvents != null ? !triggerTaskEvents.equals(channel.triggerTaskEvents) : channel.triggerTaskEvents != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(actionTaskEvents, channel.actionTaskEvents) &&
+                Objects.equals(description, channel.description) && Objects.equals(displayName, channel.displayName) &&
+                Objects.equals(moduleName, channel.moduleName) && Objects.equals(moduleVersion, channel.moduleVersion) &&
+                Objects.equals(triggerTaskEvents, channel.triggerTaskEvents);
     }
 
     @Override

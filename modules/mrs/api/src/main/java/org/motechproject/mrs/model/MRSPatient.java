@@ -1,5 +1,7 @@
 package org.motechproject.mrs.model;
 
+import java.util.Objects;
+
 /**
  * Domain to hold patient information
  */
@@ -66,23 +68,15 @@ public class MRSPatient {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof MRSPatient)) {
             return false;
         }
+
         MRSPatient that = (MRSPatient) o;
-        if (facility != null ? !facility.equals(that.facility) : that.facility != null) {
-            return false;
-        }
-        if (id != null ? !id.equals(that.id) : that.id != null) {
-            return false;
-        }
-        if (motechId != null ? !motechId.equals(that.motechId) : that.motechId != null) {
-            return false;
-        }
-        if (person != null ? !person.equals(that.person) : that.person != null) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(facility, that.facility) && Objects.equals(id, that.id) &&
+                Objects.equals(motechId, that.motechId) && Objects.equals(person, that.person);
     }
 
     @Override
