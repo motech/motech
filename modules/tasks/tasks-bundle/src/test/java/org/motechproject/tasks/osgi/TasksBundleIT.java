@@ -1,6 +1,5 @@
 package org.motechproject.tasks.osgi;
 
-import org.apache.commons.collections.Predicate;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
@@ -13,12 +12,11 @@ import org.osgi.framework.ServiceReference;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang.StringUtils.containsIgnoreCase;
 
 public class TasksBundleIT extends BaseOsgiIT {
-    private static final Integer TRIES_COUNT = 15;
+    private static final Integer TRIES_COUNT = 50;
 
-    public void testTasksService() {
+    public void testTasksService() throws InterruptedException {
         assertNotNull(bundleContext.getServiceReference(PlatformSettingsService.class.getName()));
         assertNotNull(bundleContext.getServiceReference(EventListenerRegistryService.class.getName()));
         assertNotNull(bundleContext.getServiceReference(EventRelay.class.getName()));
@@ -29,6 +27,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         do {
             channelServiceOsgi = bundleContext.getServiceReference(ChannelService.class.getName());
             ++channelServiceOsgiTries;
+            Thread.sleep(500);
         } while (channelServiceOsgi == null && channelServiceOsgiTries < TRIES_COUNT);
 
         assertNotNull(channelServiceOsgi);
@@ -42,6 +41,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         do {
             fromFile = channelService.getChannel("test", "test", "0.15");
             ++channelTries;
+            Thread.sleep(500);
         } while (fromFile == null && channelTries < TRIES_COUNT);
 
         assertNotNull(fromFile);
@@ -66,19 +66,6 @@ public class TasksBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testApplicationTasksBundle.xml"};
-    }
-
-    private class ContainsPredicate implements Predicate {
-        private String match;
-
-        private ContainsPredicate(String match) {
-            this.match = match;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            return containsIgnoreCase(String.valueOf(object), match);
-        }
     }
 
 }
