@@ -24,4 +24,7 @@
         <constructor-arg ref="couchDbInstance" />
     </bean>
 
+    <bean class="org.motechproject.event.annotations.EventAnnotationBeanPostProcessor" />
+
+
 </beans>
