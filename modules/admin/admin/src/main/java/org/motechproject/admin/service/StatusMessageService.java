@@ -37,4 +37,6 @@ public interface StatusMessageService {
     void ok(String text);
 
     void ok(String text, DateTime timeout);
+
+    void removeMessage(StatusMessage message);
 }

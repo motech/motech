@@ -129,6 +129,11 @@ public class StatusMessageServiceImpl implements StatusMessageService {
         postMessage(text, Level.OK, timeout);
     }
 
+    @Override
+    public void removeMessage(StatusMessage message) {
+        allStatusMessages.remove(message);
+    }
+
     private AllStatusMessages getAllStatusMessages() {
         if (allStatusMessages == null) {
             try {

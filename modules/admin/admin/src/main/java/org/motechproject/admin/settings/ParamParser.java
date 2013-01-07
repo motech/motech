@@ -14,14 +14,17 @@ public final class ParamParser {
     public static List<SettingsOption> parseProperties(Properties props) {
         List<SettingsOption> settingsList = new ArrayList<>();
 
-        for (Map.Entry<Object, Object> entry : props.entrySet()) {
-            SettingsOption option = constructSettingsOption(entry);
-            settingsList.add(option);
+        if (props != null) {
+            for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                SettingsOption option = constructSettingsOption(entry);
+                settingsList.add(option);
+            }
         }
+
         return settingsList;
     }
 
-    public static  Properties constructProperties(Settings bundleSettings) {
+    public static Properties constructProperties(Settings bundleSettings) {
         Properties props = new Properties();
         for (SettingsOption option : bundleSettings.getSettings()) {
             props.put(option.getKey(), option.getValue());
@@ -29,7 +32,7 @@ public final class ParamParser {
         return props;
     }
 
-    public static  SettingsOption parseParam(String key, Object value) {
+    public static SettingsOption parseParam(String key, Object value) {
         SettingsOption settingsOption = new SettingsOption();
 
         settingsOption.setValue(value);
@@ -39,17 +42,17 @@ public final class ParamParser {
         return settingsOption;
     }
 
-    public static  void convertName(SettingsOption option) {
+    public static void convertName(SettingsOption option) {
         option.setKey(NameConversionUtil.convertName(option.getKey()));
     }
 
-    public static  void convertNames(List<SettingsOption> options) {
+    public static void convertNames(List<SettingsOption> options) {
         for (SettingsOption option : options) {
             convertName(option);
         }
     }
 
-    private static  SettingsOption constructSettingsOption(Map.Entry<Object, Object> entry) {
+    private static SettingsOption constructSettingsOption(Map.Entry<Object, Object> entry) {
         return parseParam(String.valueOf(entry.getKey()), entry.getValue());
     }
 }

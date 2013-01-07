@@ -7,8 +7,11 @@
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech-admin-bundle</artifactId>
+    <version>0.17-SNAPSHOT</version>
+
     <name>MOTECH Admin Bundle</name>
     <packaging>bundle</packaging>
     <description>MOTECH Admin User Interface</description>
@@ -51,6 +54,10 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cglib</groupId>
+            <artifactId>com.springsource.net.sf.cglib</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -62,9 +69,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            !*
-                        </Export-Package>
+                        <Context-Path>admin/api</Context-Path>
+                        <Context-File>META-INF/osgi/applicationAdminUIBundle.xml</Context-File>
                         <Bundle-Activator>
                             org.motechproject.admin.osgi.Activator
                         </Bundle-Activator>
@@ -91,8 +97,15 @@
                             org.springframework.web.servlet.support,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.security.config,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.core,
                             *
                         </Import-Package>
+                        <Export-Package>
+                            org.motechproject.admin.service,
+                            org.motechproject.admin.domain,
+                            org.motechproject.admin.messages
+                        </Export-Package>
                         <Embed-Dependency>motech-admin</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
