@@ -1,7 +1,7 @@
 {
     "outgoing":{
         "request":{
-            "urlPath":"http://localhost:8282/sms/send",
+            "urlPath":"http://localhost:8282/sms",
             "type":"GET",
             "queryParameters":{
                 "recipients":"$recipients",

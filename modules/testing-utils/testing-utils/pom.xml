@@ -10,6 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-testing-utils</artifactId>
     <name>MOTECH Testing Utils</name>
+    <packaging>bundle</packaging>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
@@ -44,11 +45,36 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>com.springsource.org.mortbay.jetty.server</artifactId>
+            <!-- Override parent scope -->
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.motechproject.testing.utils.*
+                        </Export-Package>
+                        <Bundle-Activator>
+                            org.motechproject.osgi.web.Activator
+                        </Bundle-Activator>
+                        <Import-Package>
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

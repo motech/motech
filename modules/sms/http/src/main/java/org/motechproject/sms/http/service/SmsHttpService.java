@@ -22,16 +22,16 @@ import java.util.List;
 public class SmsHttpService {
     private HttpClient commonsHttpClient;
 
-    private SmsHttpTemplate template;
 
     private static Logger log = LoggerFactory.getLogger(SmsHttpService.class);
+    private TemplateReader templateReader;
 
     private SmsHttpService() {
     }
 
     @Autowired
     public SmsHttpService(TemplateReader templateReader, HttpClient commonsHttpClient) {
-        this.template = templateReader.getTemplate();
+        this.templateReader = templateReader;
         this.commonsHttpClient = commonsHttpClient;
     }
 
@@ -47,8 +47,8 @@ public class SmsHttpService {
         String response = null;
         HttpMethod httpMethod = null;
         try {
-            httpMethod = template.generateRequestFor(recipients, message);
-            setAuthenticationInfo(template.getAuthentication());
+            httpMethod = template().generateRequestFor(recipients, message);
+            setAuthenticationInfo(template().getAuthentication());
             int status = commonsHttpClient.executeMethod(httpMethod);
             response = httpMethod.getResponseBodyAsString();
             log.info("HTTP Status:" + status + "|Response:" + response);
@@ -61,7 +61,7 @@ public class SmsHttpService {
             }
         }
 
-        if (response == null || !response.toLowerCase().contains(template.getResponseSuccessCode().toLowerCase())) {
+        if (response == null || !response.toLowerCase().contains(template().getResponseSuccessCode().toLowerCase())) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
             throw new SmsDeliveryFailureException(response);
         }
@@ -76,5 +76,10 @@ public class SmsHttpService {
 
         commonsHttpClient.getParams().setAuthenticationPreemptive(true);
         commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(authentication.getUsername(), authentication.getPassword()));
+    }
+
+    //Recreating the template for every request so that latest templates can be changed
+    private SmsHttpTemplate template(){
+        return templateReader.getTemplate();
     }
 }
