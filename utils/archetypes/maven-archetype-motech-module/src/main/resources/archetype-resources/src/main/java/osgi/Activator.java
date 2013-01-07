@@ -1,4 +1,4 @@
-package ${groupId}.${artifactId}.osgi;
+package ${groupId}.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
