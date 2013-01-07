@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.util.DateTimeSourceUtil;
 
 import java.util.Objects;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 public class TaskActivity extends MotechBaseDataObject {
     private String message;
     private String task;
+    private String field;
     private DateTime date;
     private TaskActivityType activityType;
 
@@ -18,9 +20,14 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     public TaskActivity(String message, String task, TaskActivityType activityType) {
+        this(message, null, task, activityType);
+    }
+
+    public TaskActivity(String message, String field, String task, TaskActivityType activityType) {
         this.message = message;
+        this.field = field;
         this.task = task;
-        this.date = DateTime.now();
+        this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
     }
 
@@ -38,6 +45,14 @@ public class TaskActivity extends MotechBaseDataObject {
 
     public void setTask(final String task) {
         this.task = task;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
     }
 
     public DateTime getDate() {
@@ -69,13 +84,15 @@ public class TaskActivity extends MotechBaseDataObject {
         TaskActivity that = (TaskActivity) o;
 
         return Objects.equals(date, that.date) && Objects.equals(activityType, that.activityType)
-                && Objects.equals(message, that.message) && Objects.equals(task, that.task);
+                && Objects.equals(field, that.field) && Objects.equals(message, that.message)
+                && Objects.equals(task, that.task);
     }
 
     @Override
     public int hashCode() {
         int result = message != null ? message.hashCode() : 0;
         result = 31 * result + (task != null ? task.hashCode() : 0);
+        result = 31 * result + (field != null ? field.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (activityType != null ? activityType.hashCode() : 0);
 
@@ -84,7 +101,7 @@ public class TaskActivity extends MotechBaseDataObject {
 
     @Override
     public String toString() {
-        return String.format("TaskActivity{message='%s', task='%s', date=%s, activityType=%s}",
-                message, task, date, activityType);
+        return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s}",
+                message, task, field, date, activityType);
     }
 }

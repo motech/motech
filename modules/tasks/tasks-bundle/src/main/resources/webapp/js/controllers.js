@@ -104,7 +104,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
     $scope.pageSize = 10;
     $scope.task = {};
     $scope.filters = [];
-    $scope.navigationOperators = [{key:'info.filter.is',value:'true'}, {key:'info.filter.isNot',value:'false'}];
+    $scope.negationOperators = [{key:'info.filter.is',value:'true'}, {key:'info.filter.isNot',value:'false'}];
 
     $scope.channels = Channels.query(function (){
         if ($routeParams.taskId != undefined) {
@@ -144,10 +144,10 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
                                 break;
                             }
                         }
-                        if ($scope.task.filters[i].navigationOperator) {
-                            $scope.task.filters[i].navigationOperator = $scope.navigationOperators[0];
+                        if ($scope.task.filters[i].negationOperator) {
+                            $scope.task.filters[i].negationOperator = $scope.negationOperators[0];
                         } else {
-                            $scope.task.filters[i].navigationOperator = $scope.navigationOperators[1];
+                            $scope.task.filters[i].negationOperator = $scope.negationOperators[1];
                         }
                         $scope.filters.push($scope.task.filters[i]);
                     }
@@ -223,8 +223,8 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         if ($scope.filters.length!=0) {
             for (i = 0; i < $scope.filters.length; i += 1) {
                 value = $scope.filters[i];
-                value.navigationOperator = $scope.filters[i].navigationOperator.value;
-                $scope.task.filters.push(value)
+                value.negationOperator = $scope.filters[i].negationOperator.value;
+                $scope.task.filters.push(value);
             }
         }
 
@@ -305,4 +305,44 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
 
             return msg;
         }
+}
+
+function LogCtrl($scope, Tasks, Activities, $routeParams) {
+    if ($routeParams.taskId != undefined) {
+        var data = { taskId: $routeParams.taskId }, task;
+
+        task = Tasks.get(data, function () {
+            $scope.activities = Activities.query(data);
+
+            setInterval(function () {
+                $scope.activities = Activities.query(data);
+            }, 30 * 1000);
+
+            $scope.trigger = {
+                display: $scope.get(task.trigger, 'displayName'),
+                module: $scope.get(task.trigger, 'moduleName'),
+                version: $scope.get(task.trigger, 'moduleVersion')
+            };
+
+            $scope.action = {
+                display: $scope.get(task.action, 'displayName'),
+                module: $scope.get(task.action, 'moduleName'),
+                version: $scope.get(task.action, 'moduleVersion')
+            };
+        });
+    }
+
+    $scope.get = function (taskEvent, prop) {
+        var index;
+
+        switch (prop) {
+            case 'displayName': index = 0; break;
+            case 'moduleName': index = 1; break;
+            case 'moduleVersion': index = 2; break;
+            case 'subject': index = 3; break;
+            default: index = 0; break;
+        }
+
+        return taskEvent.split(':')[index];
+    };
 }

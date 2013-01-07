@@ -24,6 +24,7 @@ import static org.motechproject.tasks.util.TaskUtil.getSubject;
 
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
+    private static final int TASK_EVENT_FIELD_COUNT = 4;
     private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private AllTasks allTasks;
@@ -37,11 +38,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void save(final Task task) {
-        if (task.getAction().split(":").length != 4) {
+        if (task.getAction().split(":").length != TASK_EVENT_FIELD_COUNT) {
             throw new IllegalArgumentException("Task action must contains channel.displayName:channel.moduleName:channel.moduleVersion:action.subject");
         }
 
-        if (task.getTrigger().split(":").length != 4) {
+        if (task.getTrigger().split(":").length != TASK_EVENT_FIELD_COUNT) {
             throw new IllegalArgumentException("Task trigger must contains channel.displayName:channel.moduleName:channel.moduleVersion:trigger.subject");
         }
 

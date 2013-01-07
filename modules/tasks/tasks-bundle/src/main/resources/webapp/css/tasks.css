@@ -13,14 +13,34 @@
     color: #B94A48;
 }
 
-#accordion1 .accordion-group, #accordion2 .accordion-group {
-    border: none;
+#accordion1.accordion {
+    margin-bottom: 0;
 }
 
-.accordion-group .section {
+#accordion1 .accordion-group, #accordion2 .accordion-group {
+    border: 1px solid #B2D8F8;
+}
+
+#accordion1 .accordion-inner, #accordion2 .accordion-inner {
+    border-top: none;
+    padding: 9px 15px 1px;
+}
+
+#accordion1 .accordion-group .control-section {
+    background: #DEEEFF;
+    border-radius: 4px;
+    margin: 8px -10px;
+    padding: 2px 0;
+}
+
+#accordion1 .accordion-group .section {
     border: 1px dashed #7bb5fc;
-    margin: 10px -10px 10px -10px;
+    margin: 5px -10px;
     padding: 10px 10px 0;
+}
+
+#accordion1 .control-group.section2 {
+    margin-bottom: 10px;
 }
 
 .accordion-body.in:hover {

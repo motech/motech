@@ -20,6 +20,9 @@ import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
 public class AllTaskActivitiesIT extends SpringIntegrationTest {
+    private static final String TASK_ID_1 = "12345";
+    private static final String FIELD = "phone";
+    private static final String TASK_ID_2 = "54321";
 
     @Autowired
     private AllTaskActivities allTaskActivities;
@@ -30,9 +33,9 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
 
     @Test
     public void shouldFindTaskActivitiesByTaskId() {
-        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), "12345", ERROR);
-        TaskActivity successMsg = new TaskActivity(SUCCESS.getValue(), "12345", SUCCESS);
-        TaskActivity warningMsg = new TaskActivity(WARNING.getValue(), "54321", WARNING);
+        TaskActivity errorMsg = new TaskActivity(ERROR.getValue(), FIELD, TASK_ID_1, ERROR);
+        TaskActivity successMsg = new TaskActivity(SUCCESS.getValue(), TASK_ID_1, SUCCESS);
+        TaskActivity warningMsg = new TaskActivity(WARNING.getValue(), TASK_ID_2, WARNING);
 
         allTaskActivities.add(errorMsg);
         allTaskActivities.add(warningMsg);
@@ -40,26 +43,27 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
 
         assertEquals(3, allTaskActivities.getAll().size());
 
-        List<TaskActivity> messages = allTaskActivities.byTaskId("12345");
+        List<TaskActivity> messages = allTaskActivities.byTaskId(TASK_ID_1);
 
         assertEquals(2, messages.size());
 
         assertEquals(ERROR, messages.get(0).getActivityType());
-        assertEquals("12345", messages.get(0).getTask());
+        assertEquals(TASK_ID_1, messages.get(0).getTask());
         assertEquals(ERROR.getValue(), messages.get(0).getMessage());
+        assertEquals(FIELD, messages.get(0).getField());
 
         assertEquals(SUCCESS, messages.get(1).getActivityType());
-        assertEquals("12345", messages.get(1).getTask());
+        assertEquals(TASK_ID_1, messages.get(1).getTask());
         assertEquals(SUCCESS.getValue(), messages.get(1).getMessage());
 
         markForDeletion(messages);
 
-        messages = allTaskActivities.byTaskId("54321");
+        messages = allTaskActivities.byTaskId(TASK_ID_2);
 
         assertEquals(1, messages.size());
 
         assertEquals(WARNING, messages.get(0).getActivityType());
-        assertEquals("54321", messages.get(0).getTask());
+        assertEquals(TASK_ID_2, messages.get(0).getTask());
         assertEquals(WARNING.getValue(), messages.get(0).getMessage());
 
         markForDeletion(messages);

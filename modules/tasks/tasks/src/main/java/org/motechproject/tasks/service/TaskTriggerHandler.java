@@ -14,6 +14,7 @@ import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,67 +57,64 @@ public class TaskTriggerHandler {
         registerHandler();
     }
 
-    public void handler(final MotechEvent triggerEvent) {
-        TaskEvent trigger;
+    public void handle(final MotechEvent triggerEvent) {
+        TaskEvent trigger = null;
 
         try {
-            trigger = taskService.findTrigger(triggerEvent.getSubject());
+            String subject = triggerEvent.getSubject();
+            trigger = taskService.findTrigger(subject);
+            LOG.info("Found trigger for subject: " + subject);
         } catch (TriggerNotFoundException e) {
             LOG.error(e.getMessage());
-            return;
         }
 
-        List<Task> tasks = taskService.findTasksForTrigger(trigger);
-
-        for (Task t : tasks) {
-            if (!t.isEnabled()) {
-                continue;
-            }
-
-            TaskEvent action;
-
-            try {
-                action = taskService.getActionEventFor(t);
-            } catch (ActionNotFoundException e) {
-                registerError(t, "error.actionNotFound");
-                continue;
-            }
-
-            String subject = action.getSubject();
-
-            if (StringUtils.isBlank(subject)) {
-                registerError(t, "error.actionWithoutSubject");
-                continue;
-            }
-
-            List<EventParameter> actionEventParameters = action.getEventParameters();
-            Map<String, Object> parameters = new HashMap<>(actionEventParameters.size());
-            boolean send = true;
-            if (!t.getFilters().isEmpty()) {
-                send = checkFilters(t, triggerEvent.getParameters());
-            }
-            for (EventParameter param : actionEventParameters) {
-                String key = param.getEventKey();
-                String value = replaceAll(t.getActionInputFields().get(key), trigger.getEventParameters(), triggerEvent);
-
-                if (StringUtils.isBlank(value)) {
-                    registerError(t, "error.wrongActionInputFields");
-                    send = false;
-                    break;
+        if (trigger != null) {
+            for (Task task : taskService.findTasksForTrigger(trigger)) {
+                if (!task.isEnabled()) {
+                    logOmittedTask(task, new Exception("Task is disabled"));
+                    continue;
                 }
 
-                parameters.put(key, value);
-            }
+                TaskEvent action;
 
-            if (send) {
-                eventRelay.sendEventMessage(new MotechEvent(subject, parameters));
-                activityService.addSuccess(t);
+                try {
+                    action = taskService.getActionEventFor(task);
+                    LOG.info("Found action for task: " + task);
+                } catch (ActionNotFoundException e) {
+                    TaskException exception = new TaskException("error.actionNotFound", e);
+                    registerError(task, exception);
+                    logOmittedTask(task, exception);
+                    continue;
+                }
+
+                String subject = action.getSubject();
+
+                if (StringUtils.isBlank(subject)) {
+                    TaskException exception = new TaskException("error.actionWithoutSubject");
+                    registerError(task, exception);
+                    logOmittedTask(task, exception);
+                    continue;
+                }
+
+                if (task.hasFilters() && !checkFilters(task.getFilters(), triggerEvent.getParameters())) {
+                    logOmittedTask(task, new Exception("Filter criteria not met"));
+                    continue;
+                }
+
+                try {
+                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), trigger, triggerEvent);
+                    eventRelay.sendEventMessage(new MotechEvent(subject, parameters));
+                    activityService.addSuccess(task);
+                } catch (TaskException e) {
+                    registerError(task, e);
+                    logOmittedTask(task, e);
+                }
             }
         }
     }
 
     public final void registerHandlerFor(final String subject) {
-        Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handler", MotechEvent.class);
+        Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handle", MotechEvent.class);
 
         try {
             if (method != null) {
@@ -137,9 +135,8 @@ public class TaskTriggerHandler {
         }
     }
 
-    private void registerError(final Task task, final String message) {
-        activityService.addError(task, message);
-        LOG.error(message);
+    private void registerError(final Task task, final TaskException e) {
+        activityService.addError(task, e);
 
         int errorRunsCount = activityService.errorsFromLastRun(task).size();
         int possibleErrorRun = Integer.valueOf(settingsFacade.getProperty(TASK_POSSIBLE_ERRORS_KEY));
@@ -151,14 +148,52 @@ public class TaskTriggerHandler {
         }
     }
 
-    private String replaceAll(final String template, final List<EventParameter> triggerEventParameters, final MotechEvent triggerEvent) {
+    private Map<String, Object> createParameters(Task task, List<EventParameter> actionParameters, TaskEvent trigger, MotechEvent event) throws TaskException {
+        Map<String, Object> parameters = new HashMap<>(actionParameters.size());
+
+        for (EventParameter param : actionParameters) {
+            final String key = param.getEventKey();
+            String template = task.getActionInputFields().get(key);
+
+            if (template == null) {
+                throw new TaskException("error.templateNull", key);
+            }
+
+            String userInput = replaceAll(template, trigger.getEventParameters(), event);
+            Object value;
+
+            if (param.getType().isNumber()) {
+                BigDecimal decimal;
+
+                try {
+                    decimal = new BigDecimal(userInput);
+                } catch (Exception e) {
+                    throw new TaskException("error.convertToNumber", key, e);
+                }
+
+                if (decimal.signum() == 0 || decimal.scale() <= 0 || decimal.stripTrailingZeros().scale() <= 0) {
+                    value = decimal.intValueExact();
+                } else {
+                    value = decimal.doubleValue();
+                }
+            } else {
+                value = userInput;
+            }
+
+            parameters.put(key, value);
+        }
+
+        return parameters;
+    }
+
+    private String replaceAll(final String template, final List<EventParameter> triggerParameters, final MotechEvent event) {
         String replaced = template;
 
-        if (replaced != null) {
-            for (EventParameter parameter : triggerEventParameters) {
-                String key = parameter.getEventKey();
-                String value = String.valueOf(triggerEvent.getParameters().get(key));
+        for (EventParameter param : triggerParameters) {
+            String key = param.getEventKey();
 
+            if (event.getParameters().containsKey(key)) {
+                String value = String.valueOf(event.getParameters().get(key));
                 replaced = replaced.replaceAll(String.format("\\{\\{%s\\}\\}", key), value);
             }
         }
@@ -166,24 +201,32 @@ public class TaskTriggerHandler {
         return replaced;
     }
 
-    private boolean checkFilters(Task task, Map<String, Object> triggerParameter) {
+    private boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
         boolean filterCheck = false;
-        for (Filter filter : task.getFilters()) {
-            if (triggerParameter.containsKey(filter.getEventParameter().getEventKey())) {
-                EventParamType type = filter.getEventParameter().getType();
-                if (type.equals(EventParamType.TEXTAREA) || type.equals(EventParamType.UNICODE)) {
-                    filterCheck = checkFilterForString(filter, (String) triggerParameter.get(filter.getEventParameter().getEventKey()));
-                } else if (type.equals(EventParamType.NUMBER)) {
-                    filterCheck = checkFilterForNumber(filter, new BigDecimal(triggerParameter.get(filter.getEventParameter().getEventKey()).toString()));
+
+        for (Filter filter : filters) {
+            EventParameter eventParameter = filter.getEventParameter();
+
+            if (triggerParameters.containsKey(eventParameter.getEventKey())) {
+                EventParamType type = eventParameter.getType();
+                Object object = triggerParameters.get(eventParameter.getEventKey());
+
+                if (type.isString()) {
+                    filterCheck = checkFilterForString(filter, (String) object);
+                } else if (type.isNumber()) {
+                    filterCheck = checkFilterForNumber(filter, new BigDecimal(object.toString()));
                 }
-                if (!filter.isNavigationOperator()) {
+
+                if (!filter.isNegationOperator()) {
                     filterCheck = !filterCheck;
                 }
             }
+
             if (!filterCheck) {
                 break;
             }
         }
+
         return filterCheck;
     }
 
@@ -212,6 +255,7 @@ public class TaskTriggerHandler {
         }
 
         int compare = param.compareTo(new BigDecimal(filter.getExpression()));
+
         switch (OperatorType.fromString(filter.getOperator())) {
             case EQUALS:
                 return compare == 0;
@@ -221,6 +265,12 @@ public class TaskTriggerHandler {
                 return compare == -1;
             default:
                 return false;
+        }
+    }
+
+    private void logOmittedTask(Task task, Throwable e) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
         }
     }
 }
