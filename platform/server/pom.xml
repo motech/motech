@@ -93,6 +93,11 @@
             <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Core bundles needed at runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -371,6 +376,12 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>motech-rules-api-bundle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>motech-platform-server-bundle</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

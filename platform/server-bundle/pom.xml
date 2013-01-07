@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security</artifactId>
+            <artifactId>motech-platform-web-security-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -82,6 +82,10 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>org.springframework.security.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -131,7 +135,6 @@
                             org.springframework.web.servlet.i18n,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.view,
-                            org.springframework.security.crypto.bcrypt,
                             *
                         </Import-Package>
                         <Embed-Dependency>

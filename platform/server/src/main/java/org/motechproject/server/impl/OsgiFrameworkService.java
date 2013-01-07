@@ -16,6 +16,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.launch.Framework;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
+import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +31,14 @@ import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +56,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private static final String PLATFORM_BUNDLES = "platform";
     private static final String MODULE_BUNDLES = "module";
     private static final String THIRD_PARTY_BUNDLES = "3party";
+
+    private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
 
     private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
 
@@ -74,6 +82,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private static final int THREADS_NUMBER = 10;
 
+    private boolean httpServiceRegistered = false;
+    private boolean startupEventReceived = false;
+
     /**
      * Initialize, install and start bundles and the OSGi framework
      */
@@ -90,27 +101,64 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             installAllBundles(servletContext, bundleContext);
 
+            registerHttpServiceListener();
+
             startBundles(THIRD_PARTY_BUNDLES);
+
+            registerStartupListener();
 
             registerBundleLoaderExecutor();
 
             startBundles(PLATFORM_BUNDLES);
 
-            bundleContext.addServiceListener(new ServiceListener() {
-                @Override
-                public void serviceChanged(ServiceEvent event) {
-                    if (event.getType() == ServiceEvent.REGISTERED) {
-                        startBundles(MODULE_BUNDLES);
-                    }
-                }
-            }, String.format("(&(%s=org.apache.felix.http.api.ExtHttpService))", Constants.OBJECTCLASS));
-
             osgiFramework.start();
+
             logger.info("OSGi framework started");
-        } catch (BundleException | BundleLoadingException | IOException | InvalidSyntaxException e) {
+        } catch (BundleException | BundleLoadingException | IOException | ClassNotFoundException |
+                InvalidSyntaxException e) {
             logger.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
+    }
+
+    private synchronized void startupModules() {
+        if (httpServiceRegistered && startupEventReceived) {
+            startBundles(MODULE_BUNDLES);
+        }
+    }
+
+    private void registerStartupListener() throws ClassNotFoundException {
+        BundleContext bundleContext = osgiFramework.getBundleContext();
+
+        // use the EventHandler class from the eventadmin bundle's classloader and construct a proxy
+        // we can't use the class from the webapp classloader
+        ClassLoader eventAdminCl = getClassLoaderBySymbolicName("org.apache.felix.eventadmin");
+
+        if (eventAdminCl == null) {
+            allowStartup();
+        } else {
+            Class<?> eventHandlerClass = eventAdminCl.loadClass(EventHandler.class.getName());
+
+            Object proxy = Proxy.newProxyInstance(eventAdminCl, new Class[] { eventHandlerClass }, new StartupListener());
+
+            Dictionary<String, String[]> properties = new Hashtable<>();
+            properties.put(EventConstants.EVENT_TOPIC, new String[] { STARTUP_TOPIC });
+
+            bundleContext.registerService(EventHandler.class.getName(), proxy, properties);
+        }
+    }
+
+    private void registerHttpServiceListener() throws InvalidSyntaxException {
+        BundleContext bundleContext = osgiFramework.getBundleContext();
+
+        bundleContext.addServiceListener(new ServiceListener() {
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                if (event.getType() == ServiceEvent.REGISTERED) {
+                    httpServiceRegistered();
+                }
+            }
+        }, String.format("(&(%s=%s))", Constants.OBJECTCLASS, HttpService.class.getName()));
     }
 
     private void installAllBundles(ServletContext servletContext, BundleContext bundleContext) throws IOException, BundleLoadingException {
@@ -394,6 +442,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         this.fragmentSubFolder = fragmentSubFolder;
     }
 
+    public void httpServiceRegistered() {
+        httpServiceRegistered = true;
+        startupModules();
+    }
+
+    public void allowStartup() {
+        startupEventReceived = true;
+        startupModules();
+    }
+
     private class BundleStarter implements Runnable {
 
         private Bundle bundle;
@@ -411,5 +469,4 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             }
         }
     }
-
 }

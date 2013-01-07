@@ -1,6 +1,8 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.helper.AuthenticationMode;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -24,16 +26,14 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-
 @Controller
 public class StartupController {
     private static final String START_PARAM = "START";
-
-    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin-bundle"; // NOPMD - unused, until todos in submitForm() are done
 
     private StartupManager startupManager = StartupManager.getInstance();
 
@@ -42,6 +42,9 @@ public class StartupController {
 
     @Autowired
     private LocaleSettings localeSettings;
+
+    @Autowired
+    private MotechUserService userService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -95,16 +98,13 @@ public class StartupController {
 
             platformSettingsService.savePlatformSettings(settings.getMotechSettings());
             platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());
-            startupManager.startup();
 
-            if (startupManager.canLaunchBundles()) {
-                if (StringUtils.isNotBlank(start)) {
-                    //TODO : call start  OsgiListener.getOsgiService().startMotechBundles();
-                    //TODO: Check if we can send an event instead of talking to web loader directly
-                } else {
-                    //TODO OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME);
-                }
+            if (AuthenticationMode.REPOSITORY.equals(form.getLoginMode())) {
+                registerAdminUser(form);
             }
+
+            boolean startAllBundles = StringUtils.isNotBlank(start);
+            startupManager.startup(startAllBundles);
         }
 
         return view;
@@ -145,4 +145,13 @@ public class StartupController {
         return suggestions;
     }
 
+    private void registerAdminUser(StartupForm form) {
+        String login = form.getAdminLogin();
+        String password = form.getAdminPassword();
+        String email = form.getAdminEmail();
+
+        List<String> roles = Arrays.asList("Admin User", "Admin Bundle");
+
+        userService.register(login, password, email, null, roles);
+    }
 }

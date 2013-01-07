@@ -18,8 +18,10 @@ public final class SecurityHelper {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         for (String role : roles) {
             MotechRole motechRole = allMotechRoles.findByRoleName(role);
-            for (String permission : motechRole.getPermissionNames()) {
-                authorities.add(new SimpleGrantedAuthority(permission));
+            if (motechRole != null) {
+                for (String permission : motechRole.getPermissionNames()) {
+                    authorities.add(new SimpleGrantedAuthority(permission));
+                }
             }
         }
         return authorities;

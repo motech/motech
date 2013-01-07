@@ -3,8 +3,11 @@ package org.motechproject.server.web.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.security.helper.AuthenticationMode;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -20,6 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.NavigableMap;
 import java.util.Properties;
@@ -29,7 +34,13 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -54,14 +65,17 @@ public class StartupControllerTest {
     @Mock
     private BindingResult bindingResult;
 
-    @InjectMocks
-    private StartupController startupController = new StartupController();
-
     @Mock
     private HttpServletRequest httpServletRequest;
 
     @Mock
     private ConfigFileSettings motechSettings;
+
+    @Mock
+    private MotechUserService userService;
+
+    @InjectMocks
+    private StartupController startupController = new StartupController();
 
     @Before
     public void setUp() {
@@ -124,20 +138,9 @@ public class StartupControllerTest {
     }
 
     @Test
-    public void testSubmitForm() {
-        StartupForm startupForm = new StartupForm();
-        startupForm.setLanguage("en");
-        startupForm.setDatabaseUrl("test_db_url");
-        startupForm.setQueueUrl("test_queue_url");
-        startupForm.setSchedulerUrl("test_scheduler_url");
-        startupForm.setAdminLogin("motech");
-        startupForm.setAdminEmail("motech@motech.com");
-        startupForm.setAdminPassword("motech");
-        startupForm.setAdminConfirmPassword("motech");
-        startupForm.setLoginMode("repository");
-        startupForm.setProviderName("Provider");
-        startupForm.setProviderUrl("test_provider_url");
-
+    public void testSubmitFormNoStart() {
+        StartupForm startupForm = startupForm();
+        startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
@@ -145,8 +148,42 @@ public class StartupControllerTest {
         ModelAndView result = startupController.submitForm(null, startupForm, bindingResult);
 
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
-        verify(startupManager).startup();
-        verify(startupManager).canLaunchBundles();
+        verify(startupManager).startup(false);
+        verifyUserRegistration();
+
+        assertEquals("redirect:home", result.getViewName());
+    }
+
+    @Test
+    public void testSubmitFormStart() {
+        StartupForm startupForm = startupForm();
+        startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.canLaunchBundles()).thenReturn(true);
+
+        ModelAndView result = startupController.submitForm("start", startupForm, bindingResult);
+
+        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
+        verify(startupManager).startup(true);
+        verifyUserRegistration();
+
+        assertEquals("redirect:home", result.getViewName());
+    }
+
+    @Test
+    public void testSubmitFormOpenId() {
+        StartupForm startupForm = startupForm();
+        startupForm.setLoginMode(AuthenticationMode.OPEN_ID);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.canLaunchBundles()).thenReturn(true);
+
+        ModelAndView result = startupController.submitForm("start", startupForm, bindingResult);
+
+        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
+        verify(startupManager).startup(true);
+        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class));
 
         assertEquals("redirect:home", result.getViewName());
     }
@@ -157,5 +194,33 @@ public class StartupControllerTest {
         for (String k : keys) {
             assertNotNull(modelMap.get(k));
         }
+    }
+
+    private StartupForm startupForm() {
+        StartupForm startupForm = new StartupForm();
+
+        startupForm.setLanguage("en");
+        startupForm.setDatabaseUrl("test_db_url");
+        startupForm.setQueueUrl("test_queue_url");
+        startupForm.setSchedulerUrl("test_scheduler_url");
+        startupForm.setAdminLogin("motech");
+        startupForm.setAdminEmail("motech@motech.com");
+        startupForm.setAdminPassword("motech");
+        startupForm.setAdminConfirmPassword("motech");
+        startupForm.setProviderName("Provider");
+        startupForm.setProviderUrl("test_provider_url");
+
+        return startupForm;
+    }
+
+    private void verifyUserRegistration() {
+        verify(userService).register(eq("motech"), eq("motech"), eq("motech@motech.com"), eq((String) null),
+                argThat(new ArgumentMatcher<List<String>>() {
+            @Override
+            public boolean matches(Object argument) {
+                List<String> val = (List<String>) argument;
+                return val.equals(Arrays.asList("Admin User", "Admin Bundle"));
+            }
+        }));
     }
 }
