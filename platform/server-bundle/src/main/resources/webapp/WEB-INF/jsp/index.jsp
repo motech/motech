@@ -167,7 +167,7 @@
                     <c:if test="${not empty links}">
                         <li class="nav-header"><fmt:message key="modules" bundle="${bundle}"/></li>
                         <c:forEach var="module" items="${links}">
-                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
+                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>><a href="?moduleName=${module.moduleName}">{{ msg("${module.moduleName}", "${module.moduleName}") }}</a></li>
                         </c:forEach>
                     </c:if>
                 </ul>
