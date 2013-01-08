@@ -21,10 +21,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class StatusMessageServiceTest {
 
     @InjectMocks
-    StatusMessageService statusMessageService = new StatusMessageServiceImpl();
+    private StatusMessageService statusMessageService = new StatusMessageServiceImpl();
 
     @Mock
-    AllStatusMessages allStatusMessages;
+    private AllStatusMessages allStatusMessages;
+
+    @Mock
+    private StatusMessage mockMsg;
 
     Level level = Level.INFO;
 
@@ -88,5 +91,11 @@ public class StatusMessageServiceTest {
     public void testPostMessageNullLevel() {
         StatusMessage illegal = new StatusMessage("text", null);
         statusMessageService.postMessage(illegal);
+    }
+
+    @Test
+    public void testRemoveMessage() {
+        statusMessageService.removeMessage(mockMsg);
+        verify(allStatusMessages).remove(mockMsg);
     }
 }

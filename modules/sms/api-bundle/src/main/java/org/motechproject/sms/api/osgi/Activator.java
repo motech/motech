@@ -3,6 +3,7 @@ package org.motechproject.sms.api.osgi;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIServiceTracker;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.Map;
 public class Activator extends org.motechproject.osgi.web.Activator {
 
     private static final String RESOURCE_URL_MAPPING = "/sms/resource";
-
 
     private UIServiceTracker uiServiceTracker;
 

@@ -1,14 +1,12 @@
-package org.motechproject.sms.api.osgi;
+package org.motechproject.osgi.web;
 
-import org.motechproject.osgi.web.ModuleRegistrationData;
-import org.motechproject.osgi.web.UIFrameworkService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class UIServiceTracker extends ServiceTracker {
+public class UIServiceTracker extends ServiceTracker {
 
     private static Logger logger = LoggerFactory.getLogger(UIServiceTracker.class);
 
