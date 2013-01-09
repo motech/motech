@@ -95,14 +95,11 @@ perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/contro
 cp -r $CONFIG_DIR ./motech-base/usr/share/motech/.motech
 
 mkdir -p ./motech-base/usr/share/motech/.motech/bundles
+
+# Platofrm bundles
+cp -r $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/usr/share/motech/.motech/bundles
 # Include motech-admin
 cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-common*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-event*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-server-config*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-server-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-osgi-web-util*.jar ./motech-base/usr/share/motech/.motech/bundles
-cp -r $ARTIFACT_DIR/motech-platform-web-security*.jar ./motech-base/usr/share/motech/.motech/bundles
 
 # Include dependencies
 cp -r $DEPENDENCY_DIR/* ./motech-base/usr/share/motech/.motech/bundles
