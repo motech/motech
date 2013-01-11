@@ -173,5 +173,10 @@ public class AdminBundleIT extends BaseOsgiIT {
             }
         }
     }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testAdminBundleContext.xml"};
+    }
 }
 

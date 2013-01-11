@@ -106,8 +106,7 @@
                             org.motechproject.admin.domain,
                             org.motechproject.admin.messages
                         </Export-Package>
-                        <Embed-Dependency>motech-admin</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-admin;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

@@ -20,7 +20,7 @@
         <spring.version>3.1.0.RELEASE</spring.version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
         <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
-        <activemq.version>5.4.2-r001</activemq.version>
+        <activemq.version>5.4.2-r008</activemq.version>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
 
@@ -565,7 +565,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>org.motechproject.org.hibernate.validator</artifactId>
-                <version>4.1.0.Final-r001</version>
+                <version>4.1.0.Final-r008</version>
             </dependency>
             <!-- SLF4J -->
             <dependency>
@@ -632,7 +632,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>motech-c3p0-fragment-bundle</artifactId>
-                <version>0.16-r001</version>
+                <version>0.16-r008</version>
             </dependency>
             <!-- Others -->
             <dependency>
@@ -653,7 +653,7 @@
             <dependency>
                 <groupId>com.googlecode.lambdaj</groupId>
                 <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
-                <version>2.3.3-r001</version>
+                <version>2.3.3-r008</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>lambdaj</artifactId>
@@ -664,7 +664,7 @@
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
-                <version>2.1.5-r001</version>
+                <version>2.1.5-r008</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
@@ -674,7 +674,7 @@
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
-                <version>1.9.7</version>
+                <version>1.9.7-r008</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -695,7 +695,7 @@
             <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
-                <version>1.4.2</version>
+                <version>1.4.2-r008</version>
             </dependency>
             <dependency>
                 <groupId>com.google.collections</groupId>
@@ -705,7 +705,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>org.motechproject.com.google.code.gson</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.1-r008</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -720,7 +720,7 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>org.motechproject.org.json</artifactId>
-                <version>20080701-r001</version>
+                <version>20080701-r008</version>
             </dependency>
             <dependency>
                 <groupId>org.motechproject.mforms</groupId>
@@ -745,7 +745,7 @@
             <dependency>
                 <groupId>org.ektorp</groupId>
                 <artifactId>org.motechproject.org.ektorp</artifactId>
-                <version>1.3.0</version>
+                <version>1.3.0-r008</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.ektorp</groupId>
@@ -765,17 +765,17 @@
             <dependency>
                 <groupId>org.mvel</groupId>
                 <artifactId>org.motechproject.org.mvel</artifactId>
-                <version>2.0beta1</version>
+                <version>2.0beta1-r008</version>
             </dependency>
             <dependency>
                 <groupId>org.smslib</groupId>
                 <artifactId>org.motechproject.org.smslib</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.1-r008</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.jsmpp</groupId>
                 <artifactId>org.motechproject.com.googlecode.jsmpp</artifactId>
-                <version>2.1.0</version>
+                <version>2.1.0-r008</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -1009,7 +1009,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>org.motechproject.org.junit</artifactId>
-                <version>4.9.0</version>
+                <version>4.9-r008</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -1076,7 +1076,7 @@
             <dependency>
                 <groupId>org.motechproject</groupId>
                 <artifactId>org.motechproject.osgi.it</artifactId>
-                <version>1.0.2.RELEASE-r003</version>
+                <version>1.0.2.RELEASE-r007</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
