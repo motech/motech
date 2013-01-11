@@ -34,7 +34,8 @@ public class AllMotechPermissionsCouchdbImpl extends MotechBaseRepository<Motech
     public MotechPermission findByPermissionName(String permissionName) {
         if (permissionName == null) { return null; }
         ViewQuery viewQuery = createQuery("by_permissionName").key(permissionName).includeDocs(true);
-        return singleResult(db.queryView(viewQuery, MotechPermissionCouchdbImpl.class));    }
+        return singleResult(db.queryView(viewQuery, MotechPermissionCouchdbImpl.class));
+    }
 
     @Override
     public List<MotechPermission> getPermissions() {
