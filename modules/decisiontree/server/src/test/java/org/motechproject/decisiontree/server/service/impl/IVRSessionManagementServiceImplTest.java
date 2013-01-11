@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
+import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

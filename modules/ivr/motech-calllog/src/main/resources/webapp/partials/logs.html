@@ -1,0 +1,57 @@
+<div class="box-header">{{ msg('calllog.welcome.heading') }}</div>
+
+<div ng-controller="CalllogController">
+    <div id='jqxexpander'>
+        <!--Header-->
+        <div>Filter by</div>
+        <!--Content-->
+
+        <div>
+            <form name="form" ng-submit="search()" nonvalidate>
+                <div class="controls controls-row">
+
+                    <label class="span3" for="phoneNumber">
+                        Phone number <input type="text" id="phoneNumber" ng-model="phoneNumber" class="span12"/>
+                    </label>
+                    <label class="span3" for="message">
+                        Message <input type="text" id="message" name="message" class="span12"/>
+                    </label>
+                </div>
+                <div class="controls controls-row">
+                    <label for="from" class="span3">From <input type="text" id="from" name="from"
+                                                                class="span12"/></label>
+                    <label for="to" class="span3"> To <input type="text" id="to" name="to" class="span12"/> </label>
+                </div>
+                <div class="controls controls-row">
+                    <label class="span6">Call Duration
+                        <div id="slider"></div>
+                        <label id="duration" for="slider"></label>
+                    </label>
+                </div>
+
+                <div class="controls">
+                    <input class="btn btn-primary offset4 span2" type="submit" value="{{msg('calllog.search')}}"
+                           ng-disabled="form.$invalid"/>
+                </div>
+            </form>
+        </div>
+    </div>
+    <table class="table table-bundles table-bordered table-striped table-lightblue">
+        <thead>
+        <tr>
+            <th>{{msg('calllog.phoneNumber')}}</th>
+            <th>{{msg('calllog.callId')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="calllog in calllogs" class="calllogs" ng-model="calllogs">
+            <td>{{calllog.phoneNumber}}</td>
+            <td>{{calllog.callId}}</td>
+            <td>{{calllog.callDirection}}</td>
+            <td>{{calllog.startDate}}</td>
+            <td>{{calllog.endDate}}</td>
+            <td>{{calllog.duration}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

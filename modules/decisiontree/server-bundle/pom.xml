@@ -74,6 +74,8 @@
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.eclipse.gemini.blueprint.config,
+                            org.codehaus.jackson.map,
+                            org.codehaus.jackson.type,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-decisiontree-server;inline=true</Embed-Dependency>

@@ -24,6 +24,12 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>com.springsource.org.apache.xmlcommons</artifactId>
+                    <groupId>org.apache.xmlcommons</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

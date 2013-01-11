@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.decisiontree.core.EventKeys;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
-import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
+import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;

@@ -1,5 +1,6 @@
 package org.motechproject.osgi.web;
 
+import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
@@ -12,9 +13,6 @@ import java.util.Map;
 
 public  class HttpServiceTracker extends ServiceTracker {
     private static Logger logger = LoggerFactory.getLogger(ServiceTracker.class);
-
-    public static final String HEADER_CONTEXT_PATH = "Context-Path";
-
     private ServiceReference httpServiceRef;
     private String contextPath;
     private Map<String, String> resourceMapping;
@@ -56,9 +54,9 @@ public  class HttpServiceTracker extends ServiceTracker {
         if (contextPath == null) {
             try {
                 DispatcherServlet dispatcherServlet = new OsgiDispatcherServlet(context);
-                contextPath = getContextPath(context);
+                contextPath = WebBundleUtil.getContextPath(context.getBundle());
                 dispatcherServlet.setContextClass(MotechOsgiWebApplicationContext.class);
-                dispatcherServlet.setContextConfigLocation(getContextLocation());
+                dispatcherServlet.setContextConfigLocation(WebBundleUtil.getContextLocation(context.getBundle()));
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
@@ -79,30 +77,5 @@ public  class HttpServiceTracker extends ServiceTracker {
                 throw new ServletRegistrationException(e);
             }
         }
-    }
-
-    private String getContextLocation() {
-        final String contextLocation = getHeaderValue("Context-File");
-        return contextLocation != null ? contextLocation : Activator.DEFAULT_CONTEXT_CONFIG_LOCATION;
-    }
-
-    private String getContextPath(BundleContext bundleContext) {
-        final String path = getHeaderValue(HEADER_CONTEXT_PATH);
-        if (path != null) {
-            return addRootPath(path);
-        } else {
-            return addRootPath(bundleContext.getBundle().getSymbolicName());
-        }
-    }
-
-    private String getHeaderValue(String headerContextPath) {
-        if (context.getBundle().getHeaders() == null) {
-            return null;
-        }
-        return (String) context.getBundle().getHeaders().get(headerContextPath);
-    }
-
-    private String addRootPath(String path) {
-        return "/" + path;
     }
 }

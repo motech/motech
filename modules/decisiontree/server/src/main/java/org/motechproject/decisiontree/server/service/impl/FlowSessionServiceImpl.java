@@ -3,6 +3,7 @@ package org.motechproject.decisiontree.server.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
+import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
