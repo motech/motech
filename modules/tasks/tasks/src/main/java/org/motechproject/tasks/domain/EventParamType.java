@@ -8,7 +8,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public enum EventParamType {
     UNICODE("UNICODE"),
     TEXTAREA("TEXTAREA"),
-    NUMBER("NUMBER");
+    NUMBER("NUMBER"),
+    DATE("DATE");
 
     private final String value;
 
@@ -25,6 +26,11 @@ public enum EventParamType {
     @JsonIgnore
     public boolean isNumber() {
         return value.equalsIgnoreCase(NUMBER.getValue());
+    }
+
+    @JsonIgnore
+    public boolean isDate() {
+        return value.equalsIgnoreCase(DATE.getValue());
     }
 
     private EventParamType(String value) {

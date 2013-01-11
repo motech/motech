@@ -577,3 +577,7 @@ editable-content .actionField.input-block-level span.badge {
 .float-left {
     float: left;
 }
+
+.ui-datepicker, #ui-timepicker-div {
+    z-index: 9999 !important;
+}

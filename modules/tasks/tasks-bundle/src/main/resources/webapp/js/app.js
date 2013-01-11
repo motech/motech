@@ -87,6 +87,10 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
                             return;
                         }
 
+                        if (dropType === 'DATE') {
+                            delete scope.selectedAction.eventParameters[dropIndex].value;
+                        }
+
                         eventKey = '{{' + scope.selectedTrigger.eventParameters[dragIndex].eventKey + '}}';
                         position = element.caret();
                         value = scope.selectedAction.eventParameters[dropIndex].value || '';
@@ -149,4 +153,20 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
             });
         }
     };
+}).directive('datetimePickerInput', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.datetimepicker({
+                showTimezone: true,
+                useLocalTimezone: true,
+                dateFormat: 'yy-mm-dd',
+                timeFormat: 'HH:mm z',
+                onSelect: function(dateTex) {
+                    scope.selectedAction.eventParameters[$(this).data('index')].value = dateTex;
+                    scope.$apply();
+                }
+            });
+        }
+    }
 });

@@ -35,6 +35,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.domain.EventParamType.DATE;
 import static org.motechproject.tasks.domain.EventParamType.NUMBER;
 import static org.motechproject.tasks.domain.EventParamType.TEXTAREA;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
@@ -187,6 +188,28 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToDate() throws Exception {
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("date", "234543fgf");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.convertToDate", captor.getValue().getMessageKey());
+    }
+
+    @Test
     public void shouldDisableTaskWhenNumberPossibleErrorsIsExceeded() throws Exception {
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
@@ -252,7 +275,7 @@ public class TaskTriggerHandlerTest {
         assertNotNull(motechEvent.getSubject());
         assertNotNull(motechEvent.getParameters());
 
-        assertEquals(2, motechEvent.getParameters().size());
+        assertEquals(3, motechEvent.getParameters().size());
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
         assertEquals(task.getActionInputFields().get("phone"), motechEvent.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEvent.getParameters().get("message"));
@@ -297,6 +320,7 @@ public class TaskTriggerHandlerTest {
         Map<String, String> actionInputFields = new HashMap<>();
         actionInputFields.put("phone", "123456");
         actionInputFields.put("message", "Hello {{externalId}}, You have an appointment on {{startDate}}");
+        actionInputFields.put("date", "2012-12-21 21:21 +0100");
 
         task = new Task(trigger, action, actionInputFields);
         task.setId("taskId1");
@@ -305,8 +329,8 @@ public class TaskTriggerHandlerTest {
 
         List<EventParameter> triggerEventParameters = new ArrayList<>();
         triggerEventParameters.add(new EventParameter("ExternalID", "externalId"));
-        triggerEventParameters.add(new EventParameter("StartDate", "startDate"));
-        triggerEventParameters.add(new EventParameter("EndDate", "endDate"));
+        triggerEventParameters.add(new EventParameter("StartDate", "startDate", DATE));
+        triggerEventParameters.add(new EventParameter("EndDate", "endDate", DATE));
         triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
         triggerEventParameters.add(new EventParameter("EventName", "eventName"));
 
@@ -317,6 +341,7 @@ public class TaskTriggerHandlerTest {
         List<EventParameter> actionEventParameters = new ArrayList<>();
         actionEventParameters.add(new EventParameter("Phone", "phone", NUMBER));
         actionEventParameters.add(new EventParameter("Message", "message", TEXTAREA));
+        actionEventParameters.add(new EventParameter("Date", "date", DATE));
 
         actionEvent = new TaskEvent();
         actionEvent.setSubject(ACTION_SUBJECT);

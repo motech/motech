@@ -1,6 +1,8 @@
 package org.motechproject.tasks.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -175,6 +177,12 @@ public class TaskTriggerHandler {
                     value = decimal.intValueExact();
                 } else {
                     value = decimal.doubleValue();
+                }
+            } else if (param.getType().isDate()) {
+                try {
+                    value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
+                } catch (IllegalArgumentException e) {
+                    throw new TaskException("error.convertToDate", key, e);
                 }
             } else {
                 value = userInput;

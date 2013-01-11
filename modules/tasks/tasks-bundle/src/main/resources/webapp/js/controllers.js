@@ -275,17 +275,20 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         $scope.filters.push({})
     }
 
-    $scope.setEventParameter = function(eventParameter, filterParameter) {
-
-        return filterParameter;
-    }
-
     $scope.validateForm = function() {
-        if ($scope.filterForm.$invalid && $scope.filters.length != 0) {
-            return true;
-        } else {
-            return false;
+        var i, param;
+
+        if ($scope.selectedAction !== undefined) {
+            for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
+                param = $scope.selectedAction.eventParameters[i].value;
+
+                if (param === null || param === undefined || !param.trim().length) {
+                    return false;
+                }
+            }
         }
+
+        return !($scope.filterForm.$invalid && $scope.filters.length != 0);
     }
 
     $scope.isDisabled = function(prop) {
@@ -297,14 +300,25 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
     }
 
     $scope.cssClass = function(prop) {
-            var msg = 'validation-area';
+        var msg = 'validation-area';
 
-            if (!prop) {
-                msg = msg.concat(' error');
-            }
-
-            return msg;
+        if (!prop) {
+            msg = msg.concat(' error');
         }
+
+        return msg;
+    }
+
+    $scope.actionCssClass = function(prop) {
+        var msg = "control-group";
+
+        if (!prop.value) {
+            msg = msg.concat(' error');
+        }
+
+        return msg;
+     }
+
 }
 
 function LogCtrl($scope, Tasks, Activities, $routeParams) {
