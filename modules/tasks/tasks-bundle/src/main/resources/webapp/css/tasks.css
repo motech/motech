@@ -13,12 +13,171 @@
     color: #B94A48;
 }
 
+editable-content .actionField.input-block-level {
+    min-height: 30px;
+    width: 100%;
+    padding: 3px 5px;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+}
+
+editable-content .actionField.input-block-level:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+}
+
+editable-content .actionField.input-block-level span.badge {
+    margin: 0 2px;
+}
+
+.accordion-inner.task-content {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
+
 #accordion1.accordion {
     margin-bottom: 0;
 }
 
-#accordion1 .accordion-group, #accordion2 .accordion-group {
+#accordion3 .accordion-inner.task-content,
+#accordion4 .accordion-inner.task-content {
+    background: #deefff;
+    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
+    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+}
+
+.tasks-list .inbox-header {
+    padding: 5px 5px;
+}
+
+.tasks-list .task-nav > li.divider-vertical {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    height: 40px;
+    margin: 0 5px;
+    line-height: 40px;
+}
+
+.tasks-list .accordion-body .task-nav > li.divider-vertical {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    height: 40px;
+    margin: 5px;
+    line-height: 40px;
+}
+
+.tasks-list .task-element {
+    text-align: center;
+}
+
+.tasks-list .task-nav.pull-right {
+    font-weight: normal;
+}
+
+.tasks-list .task-element.task-offset {
+    margin: 5px 15px;
+}
+
+.tasks-list .task-element img {
+    border: none;
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.tasks-list .task-element .task-list-img {
+    width: 36px;
+}
+
+.tasks-list .task-nav.pull-right .task-list-img {
+    width: 32px;
+}
+
+.tasks-list .task-element .task-list-img-activity {
+    width: 86px;
+}
+
+.tasks-list .task-element .task-list-img-arrow {
+    width: 20px;
+}
+
+.tasks-list .task-buttons {
     border: 1px solid #B2D8F8;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    color: #FFFFFF;
+    background: #3b679e; /* Old browsers */
+    background: -moz-linear-gradient(top,  #3b679e 0%, #2b88d9 50%, #207cca 51%, #7db9e8 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b679e), color-stop(50%,#2b88d9), color-stop(51%,#207cca), color-stop(100%,#7db9e8));
+    background: -webkit-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+}
+
+.tasks-list .task-buttons {
+    border: 1px solid #B2D8F8;
+    border-radius: 4px;
+    background: #3b679e; /* Old browsers */
+    background: -moz-linear-gradient(top,  #3b679e 0%, #2b88d9 50%, #207cca 51%, #7db9e8 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b679e), color-stop(50%,#2b88d9), color-stop(51%,#207cca), color-stop(100%,#7db9e8));
+    background: -webkit-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -o-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+}
+
+.task-bar .task-nav > li.task-buttons {
+    line-height: 20px;
+    margin: 10px 5px ;
+}
+
+.tasks-list .task-nav.pull-right {
+    overflow: visible;
+}
+
+.tasks-list .task-buttons a {
+    color: #ffffff;
+}
+
+.tasks-list .task-buttons a:hover {
+    text-decoration: underline;
+}
+
+.tasks-list .button-task-in {
+    padding: 2px 8px;
+}
+
+#accordion3 .accordion-heading .accordion-toggle,
+#accordion4 .accordion-heading .accordion-toggle {
+    padding: 0;
+    border: none;
+    color: #224477;
+}
+#accordion3 .accordion-heading .accordion-toggle:hover,
+#accordion4 .accordion-heading .accordion-toggle:hover {
+    color: #0088CC;
+}
+
+#accordion1 .accordion-group, #accordion2 .accordion-group,
+#accordion3 .accordion-group, #accordion4 .accordion-group {
+    border: 1px solid #B2D8F8;
+
 }
 
 #accordion1 .accordion-inner, #accordion2 .accordion-inner {
@@ -41,10 +200,6 @@
 
 #accordion1 .control-group.section2 {
     margin-bottom: 10px;
-}
-
-.accordion-body.in:hover {
-   overflow: visible;
 }
 
 .move-element span {
@@ -117,17 +272,10 @@
     width: 50px;
 }
 
-.task-footer {
-    border-radius: 0 0 4px 4px;
-    padding: 0;
-    float: left;
-    width: 100%;
-}
-
 .task-list {
     min-width: 120px;
-    height: 120px;
-    margin: 5px 5px 5px 0;
+    margin: 0;
+    padding: 5px 5px 5px 0;
     float: none;
     list-style: none;
     color: #000000;
@@ -144,66 +292,6 @@
 
 .task-list li.success {
     color: #51a451;
-}
-
-.button-task {
-    height: 40px;
-    width: 25%;
-    margin-left: -1px;
-    border-left: 1px solid #eee;
-    border-radius: 4px;
-    float: left;
-    font-size: 14px;
-    display: inline-block;
-    cursor: pointer;
-    vertical-align: middle;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
-    text-align: center;
-    box-shadow: 0 0 2px rgba(2, 2, 2, 0.2) inset, 0 1px 1px rgba(0, 0, 0, 0.2);
-    background: #f5f9fb;
-    background: -moz-linear-gradient(top,  #f5f9fb 0%, #e0edf4 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f9fb), color-stop(100%,#e0edf4));
-    background: -webkit-linear-gradient(top,  #f5f9fb 0%,#e0edf4 100%);
-    background: -o-linear-gradient(top,  #f5f9fb 0%,#e0edf4 100%);
-    background: -ms-linear-gradient(top,  #f5f9fb 0%,#e0edf4 100%);
-    background: linear-gradient(to bottom,  #f5f9fb 0%,#e0edf4 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f9fb', endColorstr='#e0edf4',GradientType=0 );
-}
-
-.button-task:hover {
-    border-left: 1px solid #eee;
-    background: #e0edf4;
-    background: -moz-linear-gradient(top,  #e0edf4 0%, #f5f9fb 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e0edf4), color-stop(100%,#f5f9fb));
-    background: -webkit-linear-gradient(top,  #e0edf4 0%,#f5f9fb 100%);
-    background: -o-linear-gradient(top,  #e0edf4 0%,#f5f9fb 100%);
-    background: -ms-linear-gradient(top,  #e0edf4 0%,#f5f9fb 100%);
-    background: linear-gradient(to bottom,  #e0edf4 0%,#f5f9fb 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0edf4', endColorstr='#f5f9fb',GradientType=0 );
-}
-
-.button-task a {
-    color: #333333;
-}
-
-.button-task:hover a {
-    color: #224477;
-    text-decoration: none;
-}
-
-.button-task-in {
-    padding: 9px 14px;
-}
-
-.task-footer .button-task:first-child {
-    margin-left: 0;
-    border-left: none;
-    border-radius: 4px;
-}
-
-.task-footer .button-task:last-child {
-    border-radius: 0 0 6px 0;
 }
 
 /*----- Tasks - recent -----*/
@@ -408,19 +496,24 @@
     display: block;
     float: left;
     left: 0;
-    margin: 0 10px 0 0;
+    margin: 0;
+    padding: 0;
     position: relative;
+}
+.task-bar .task-nav.pull-right {
+    float: right;
 }
 
 .task-nav {
-    width: 335px;
-    height: 128px;
     list-style: none;
     overflow: hidden;
 }
 
 .task-bar .task-nav > li {
     float: left;
+    display: inline-block;
+    line-height: 40px;
+    margin: 0 5px;
 }
 
 .task-bar .btn, .task-bar .btn-group {
@@ -479,4 +572,8 @@
     height: 64px;
     width: 64px;
     margin: 15px auto;
+}
+
+.float-left {
+    float: left;
 }

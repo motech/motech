@@ -43,16 +43,16 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
     }
 }).directive('expandaccordion', function () {
     return {
-       restrict: 'A',
-       link: function (scope, element, attrs) {
-           $('.accordion').on('show', function (e) {
-                   $(e.target).prev('.accordion-heading').find('i.icon-chevron-right').removeClass("icon-chevron-right").addClass('icon-chevron-down');
-               });
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+          $('.accordion').on('show', function (e) {
+              $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
+          });
 
-               $('.accordion').on('hide', function (e) {
-                   $(this).find("i.icon-chevron-down").not($(e.target)).removeClass("icon-chevron-down").addClass("icon-chevron-right");
-               });
-       }
+          $('.accordion').on('hide', function (e) {
+              $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right");
+          });
+        }
     }
 }).directive('draggable', function () {
     return {
