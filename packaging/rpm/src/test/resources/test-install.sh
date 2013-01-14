@@ -21,8 +21,13 @@ while getopts "d:b:e:" opt; do
     e)
 	    ERROR_LOG=$OPTARG
 	;;
+    p)
+        PORT=$OPTARG
+    ;;
     esac
 done
+
+PORT=${PORT-8099}
 
 if [ -z $ERROR_LOG ]; then
     ERROR_LOG=$BUILD_DIR/err.log
@@ -54,8 +59,13 @@ MOTECH_OWNED="/var/lib/motech/webapps /var/cache/motech /var/lib/motech/data/bun
 purge_motech
 
 # Install package
-$MAKEROOT cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
+cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
 $CHROOT yum install /tmp/$BASE_PACKAGE -y
+
+# Change the ports
+$CHROOT sed -i "s/8080/$PORT/i" /usr/share/motech/conf/server.xml
+$CHROOT sed -i "s/8005/8095/i" /usr/share/motech/conf/server.xml
+
 $CHROOT service motech start
 
 # Make sure files/directories exist with correct permissions
@@ -82,7 +92,7 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 --retry 5 --connect-timeout 30 | grep -i motech
+curl -L "localhost:$PORT" --retry 5 --connect-timeout 15 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" > $ERROR_LOG
@@ -100,9 +110,7 @@ $CHROOT rm -rf /var/log/motech/*
 $CHROOT yum remove motech-base -y
 
 for dir in $MOTECH_OWNED; do
-    $CHROOT file $dir # will return 0 if exists
-    RET=$?
-    if [ $RET -eq 0 ]; then
+    if [ -d $CHROOT_DIR/$dir ]; then
         echo "$dir still exists after uninstall" > $ERROR_LOG
         purge_motech
         exit 1

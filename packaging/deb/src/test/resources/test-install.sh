@@ -23,8 +23,13 @@ while getopts "d:b:e:" opt; do
 	e)
 	    ERROR_LOG=$OPTARG
 	;;
+	p)
+	    PORT=$OPTARG
+	;;
     esac
 done
+
+PORT=${PORT-8099}
 
 if [ -z $ERROR_LOG ]; then
     ERROR_LOG=$BUILD_DIR/err.log
@@ -59,6 +64,11 @@ purge_motech
 cp $BUILD_DIR/$BASE_PACKAGE $CHROOT_DIR/tmp
 $CHROOT dpkg -i /tmp/$BASE_PACKAGE
 $CHROOT apt-get install -f $YES # install dependencies
+
+# Change the ports
+$CHROOT sed -i "s/8080/$PORT/i" /usr/share/motech/conf/server.xml
+$CHROOT sed -i "s/8005/8095/i" /usr/share/motech/conf/server.xml
+
 $CHROOT service motech start
 
 # Make sure files/directories exist with correct permissions
@@ -85,7 +95,7 @@ done
 sleep 5
 
 # Check the homepage
-curl -L localhost:8080 --retry 5 --connect-timeout 30 | grep -i motech
+curl -L "localhost:$PORT" --retry 5 --connect-timeout 30 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech page" > $ERROR_LOG
