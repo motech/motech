@@ -140,8 +140,9 @@
 </div>
 
 <footer class="inside">
-<strong><fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
-<strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}
+<strong> <fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
+<strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}&#59;
+<strong> <fmt:message key="projectVersion" bundle="${bundle}"/>&#58; </strong> <fmt:message key="version" bundle="${bundle}"/>
 </footer>
 </body>
 </html>
