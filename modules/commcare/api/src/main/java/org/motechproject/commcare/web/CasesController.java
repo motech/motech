@@ -92,8 +92,7 @@ public class CasesController {
                 motechCaseEvent = caseEvent.toMotechEventWithData();
                 motechCaseEvent.getParameters().put("fieldValues",
                         caseEvent.getFieldValues());
-            }
-            if (caseEventStrategy.equals(PARTIAL_DATA_EVENT)) {
+            } else if (caseEventStrategy.equals(PARTIAL_DATA_EVENT)) {
                 motechCaseEvent = caseEvent.toMotechEventWithData();
             } else {
                 motechCaseEvent = caseEvent.toMotechEventWithoutData();
