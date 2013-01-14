@@ -71,13 +71,13 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>
-                            ${groupId}.${artifactId}.osgi.Activator
+                            ${groupId}.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.event.listener.annotations,
-                            org.motechproject.server.ui,
+                            org.motechproject.osgi.web,
                             *
                         </Import-Package>
                     </instructions>
