@@ -20,6 +20,10 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
         return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
     }
 
+    $scope.reloadPage = function(){
+        location.reload();
+    };
+
     $scope.bundlesWithSettings = [];
     $http({method: 'GET', url: '../admin/api/settings/bundles/list'}).
         success(function(data) {
@@ -130,6 +134,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
                 bundle.$uninstall(function() {
                     // remove bundle from list
                     $scope.bundles.removeObject(bundle);
+                    $scope.reloadPage();
                 },
                 function() {
                     motechAlert('bundles.error.uninstall', 'error');
@@ -156,7 +161,8 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
         $('#bundleUploadForm').ajaxSubmit({
             success : function(data) {
                 $scope.bundles = Bundle.query();
-                unblockUI();
+                $scope.reloadPage();
+//                unblockUI();
             },
             error : jFormErrorHandler
         });
