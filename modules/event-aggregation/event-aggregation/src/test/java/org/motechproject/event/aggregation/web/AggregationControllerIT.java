@@ -53,6 +53,7 @@ public class AggregationControllerIT {
     @After
     public void teardown() {
         allAggregatedEvents.removeAll();
+        allAggregationRules.removeAll();
     }
 
     @Test
