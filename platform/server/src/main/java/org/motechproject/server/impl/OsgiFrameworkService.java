@@ -80,7 +80,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private Map<String, String> bundleLocationMapping = new HashMap<String, String>();
 
-    private static final int THREADS_NUMBER = 10;
+    private static final int THREADS_NUMBER = 1;
 
     private boolean httpServiceRegistered = false;
     private boolean startupEventReceived = false;
