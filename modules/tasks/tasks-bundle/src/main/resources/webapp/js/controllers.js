@@ -361,6 +361,9 @@ function LogCtrl($scope, Tasks, Activities, $routeParams) {
                 module: $scope.get(task.action, 'moduleName'),
                 version: $scope.get(task.action, 'moduleVersion')
             };
+
+            $scope.description = task.description;
+            $scope.enabled = task.enabled;
         });
     }
 

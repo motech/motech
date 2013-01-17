@@ -1,56 +1,57 @@
 <!------------------------  History ------------------------------------->
-<div class="">
-    <h3>{{msg('header.taskHistory')}}</h3>
-    <a href="#/task/" class="btn btn-warning"> {{msg('button.back')}}</a>
-</div>
-<div class=" outside-tb2 top-line"></div>
-<h3 class="pagination-centered">{{msg('section.recentActivityForTask')}}</h3>
-<div class="section-input">
-    <div class="panel-input">
-        <ul class="trigger droppable">
-            <li class="task-panel dragged">
-                <div><img ng-src="../tasks/api/channel/icon?moduleName={{trigger.module}}&moduleVersion={{trigger.version}}" class="panel-img"/></div>
-                <span>{{trigger.display}}</span>
-            </li>
-        </ul>
-    </div>
-    <div class="to imgArrow"><img src="../tasks/img/arrow.png"/></div>
-    <div class="panel-input">
-        <ul class="action droppable">
-            <li class="task-panel dragged">
-                <div><img ng-src="../tasks/api/channel/icon?moduleName={{action.module}}&moduleVersion={{action.version}}" class="panel-img"/></div>
-                <span>{{action.display}}</span>
-            </li>
-        </ul>
-    </div>
-    <div class="clearfix"></div>
-</div>
-<div class="clearfix"></div><div class="margin-before4"></div>
-<div class="">
-    <div class="box-content clearfix" ng-hide="activities.length == 0">
-        <table class="table table-striped table-lightblue table-recent-activity-task">
-            <thead>
-            <tr>
-                <th>{{msg('subsection.status')}}</th>
-                <th>{{msg('subsection.message')}}</th>
-                <th>{{msg('subsection.additionalInformation')}}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="activity in activities">
-                <td>
-                    <img ng-show="activity.activityType == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
-                    <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
-                    <img ng-show="activity.activityType == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
-                </td>
-                <td>{{msg(activity.message, activity.field)}}</td>
-                <td>{{ activity.date | fromNow }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="alert" ng-show="activities.length == 0">
-        <strong>{{msg('warning')}}:</strong>
-        {{msg('info.notFoundActivities')}}
+<div class="row-fluid">
+    <div class="span10 margin-after history">
+        <div class="box-header">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+        <div class="box-content well3 tasks-list">
+            <div class="inbox-header margin-before">
+                <div class="task-bar">
+                    <ul class="task-nav">
+                        <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{trigger.module}}&moduleVersion={{trigger.version}}" class="task-list-img" /></li>
+                        <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
+                        <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{action.module}}&moduleVersion={{action.version}}" class="task-list-img" /></li>
+                        <li class="divider-vertical"></li>
+                        <li class="task-element">&nbsp;{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-chevron-right"></i>&nbsp;{{trigger.display}} - {{action.display}}</li>
+                    </ul>
+
+                    <ul class="task-nav pull-right">
+                        <li ng-show="description" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                        <li ng-show="description" class="divider-vertical"></li>
+                        <li ng-show="!enabled" class="task-element"><img src="../tasks/img/task-paused.png" class="task-list-img-activity" /></li>
+                        <li ng-show="enabled" class="task-element"><img src="../tasks/img/task-active.png" class="task-list-img-activity" /></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div><div class="margin-before2"></div>
+            <div class="margin-after">
+                <div class="box-content clearfix" ng-hide="activities.length == 0">
+                    <table class="table table-striped table-lightblue table-recent-activity-task table-condensed">
+                        <thead>
+                        <tr>
+                            <th>{{msg('subsection.status')}}</th>
+                            <th>{{msg('subsection.message')}}</th>
+                            <th>{{msg('subsection.additionalInformation')}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="activity in activities">
+                            <td>
+                                <img ng-show="activity.activityType == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
+                                <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
+                                <img ng-show="activity.activityType == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
+                            </td>
+                            <td>{{msg(activity.message, activity.field)}}</td>
+                            <td>{{ activity.date | fromNow }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert" ng-show="activities.length == 0">
+                    <strong>{{msg('warning')}}:</strong>
+                    {{msg('info.notFoundActivities')}}
+                </div>
+            </div>
+            <a href="#/task/" class="btn btn-primary"> {{msg('button.back')}}</a>
+        </div>
     </div>
 </div>
