@@ -8,6 +8,8 @@ function DashboardCtrl($scope, Tasks, Activities) {
     $scope.activeTasks = [];
     $scope.pausedTasks = [];
     $scope.activities = [];
+    $scope.showActive = true;
+    $scope.showPaused = true;
 
     var tasks = Tasks.query(function () {
         var activities = Activities.query(function () {
@@ -97,6 +99,22 @@ function DashboardCtrl($scope, Tasks, Activities) {
             }
         });
     };
+
+    $scope.setShowActive = function () {
+       if($scope.showActive != true) {
+            $scope.showActive = true;
+       } else {
+            $scope.showActive = false;
+       }
+    }
+
+    $scope.setShowPaused = function () {
+       if($scope.showPaused != true) {
+            $scope.showPaused = true;
+       } else {
+            $scope.showPaused = false;
+       }
+    }
 }
 
 function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {

@@ -163,6 +163,10 @@ editable-content .actionField.input-block-level span.badge {
     padding: 2px 8px;
 }
 
+#accordion3.accordion, #accordion4.accordion, .tasks-list.alert {
+    margin-bottom: 0;
+}
+
 #accordion3 .accordion-heading .accordion-toggle,
 #accordion4 .accordion-heading .accordion-toggle {
     padding: 0;
