@@ -7,8 +7,8 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
             http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-    <context:annotation-config />
-    <context:component-scan base-package="org.motechproject.commcare" />
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.commcare"/>
 
     <mvc:annotation-driven/>
 
@@ -22,12 +22,15 @@
         <property name="moduleName" value="commcare-api"/>
     </bean>
 
-    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager" />
+    <bean id="multiThreadedHttpConnectionManager"
+          class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
 
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
-        <constructor-arg ref="multiThreadedHttpConnectionManager" />
+        <constructor-arg ref="multiThreadedHttpConnectionManager"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
+        <property name="eventListenerRegistry" ref="eventListenerRegistry"/>
+    </bean>
 
 </beans>

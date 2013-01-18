@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 public class FormValueElement {
 
     private String elementName;
-    private Multimap<String, FormValueElement> subElements = ArrayListMultimap.create();
-    private Map<String, String> attributes = new HashMap<String, String>();
+    private Multimap<String, FormValueElement> subElements = new ArrayListMultimap<>();
+    private Map<String, String> attributes = new HashMap<>();
     private String value;
 
     public String getValue() {
