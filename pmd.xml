@@ -42,4 +42,25 @@
     <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable"/>
     <rule ref="rulesets/unusedcode.xml/UnusedPrivateField"/>
     <rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod"/>
+
+
+    <rule name="DontImportInternal"
+          message="Avoid importing internal packages of any external libraries"
+          class="net.sourceforge.pmd.rules.XPathRule">
+    <description>
+        Avoid importing any internal package of any external libraries.
+    </description>
+    <properties>
+        <property name="xpath">
+            <value>
+                <![CDATA[
+                //ImportDeclaration
+                [not(starts-with(Name/@Image, 'org.motechproject'))]
+                [contains(Name/@Image, '.internal.')]
+                ]]>
+            </value>
+        </property>
+    </properties>
+    <priority>3</priority>
+    </rule>
 </ruleset>
