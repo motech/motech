@@ -6,7 +6,7 @@
   <version>${version}</version>
   <packaging>bundle</packaging>
   <properties>
-      <motech.version>0.17-SNAPSHOT</motech.version>
+      <motech.version>${archetypeVersion}</motech.version>
   </properties>
     <dependencies>
         <!-- to configure your module properties -->
