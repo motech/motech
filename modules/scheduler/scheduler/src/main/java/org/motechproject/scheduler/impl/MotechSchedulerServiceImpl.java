@@ -139,13 +139,14 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         if (isEmpty(misfirePolicy)) {
             return cronSchedule;
         }
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING)) {
+        Integer intMisfirePolicy = Integer.valueOf(misfirePolicy);
+        if (intMisfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING)) {
             return cronSchedule.withMisfireHandlingInstructionDoNothing();
         }
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW)) {
+        if (intMisfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW)) {
             return cronSchedule.withMisfireHandlingInstructionFireAndProceed();
         }
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
+        if (intMisfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
             return cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
         }
         return cronSchedule;
