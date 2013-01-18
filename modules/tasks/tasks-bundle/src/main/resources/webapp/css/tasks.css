@@ -311,6 +311,10 @@ editable-content .actionField.input-block-level span.badge {
     margin-top: -1px;
 }
 
+.table-recent-activity.centered tbody td {
+    text-align: center;
+}
+
 .table-recent-activity tbody td {
     vertical-align: middle;
 }
@@ -320,6 +324,16 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 /*----- Tasks - history -----*/
+
+.history {
+    max-width: 999px;
+}
+
+.history .task-element .icon-chevron-right {
+    height: 18px;
+    line-height: 18px;
+    vertical-align: middle;
+}
 
 .recent-activity-task-img {
     height: 54px;
