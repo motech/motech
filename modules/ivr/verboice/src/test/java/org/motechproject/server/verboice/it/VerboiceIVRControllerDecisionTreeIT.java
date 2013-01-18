@@ -21,7 +21,7 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
-import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
+import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;

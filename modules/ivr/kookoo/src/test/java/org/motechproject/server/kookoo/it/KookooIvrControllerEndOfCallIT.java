@@ -12,7 +12,7 @@ import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
-import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
+import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;

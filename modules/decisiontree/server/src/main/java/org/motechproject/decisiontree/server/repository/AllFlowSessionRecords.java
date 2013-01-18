@@ -1,4 +1,4 @@
-package org.motechproject.decisiontree.server.service.impl;
+package org.motechproject.decisiontree.server.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;

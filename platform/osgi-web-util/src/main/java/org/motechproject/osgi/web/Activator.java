@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    public static final String DEFAULT_CONTEXT_CONFIG_LOCATION = "META-INF/osgi/*.xml";
-
     private HttpServiceTracker tracker;
 
     @Override

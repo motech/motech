@@ -2,8 +2,8 @@ package org.motechproject.decisiontree.server.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.decisiontree.core.CallDetail;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.decisiontree.core.CallDetail;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +28,6 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
         ANSWERED, BUSY, FAILED, NO_ANSWER, UNKNOWN;
     }
 
-    // TODO: replace with DateTime
     private DateTime startDate;
     private DateTime endDate;
     private Date answerDate;
@@ -37,8 +36,8 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
     private String phoneNumber;
     private String callId;
     private Integer duration;
-
     private CallDirection callDirection;
+
     private List<CallEvent> callEvents = new ArrayList<CallEvent>();
 
     private Map<String, Object> customProperties = new HashMap<>();
@@ -62,8 +61,8 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
      * @param duration
      */
     public CallDetailRecord(Date startDate, Date endDate, Date answerDate, Disposition disposition, Integer duration) {
-        this.startDate = startDate != null? newDateTime(startDate) : null;
-        this.endDate = endDate != null? newDateTime(endDate) : null;
+        this.startDate = startDate != null ? newDateTime(startDate) : null;
+        this.endDate = endDate != null ? newDateTime(endDate) : null;
         this.answerDate = answerDate;
         this.disposition = disposition;
         this.duration = duration;
