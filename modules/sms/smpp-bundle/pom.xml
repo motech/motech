@@ -61,11 +61,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>applicationSmsSmppBundle.xml</Context-File>
+                        <Context-Path>smssmpp</Context-Path>
                         <Export-Package>
-                            org.motechproject.sms.smpp
+                            org.motechproject.sms.smpp.*
                         </Export-Package>
                         <Bundle-Activator>
-                            org.motechproject.sms.smpp.osgi.Activator
+                            org.motechproject.osgi.web.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             !org.testng,
