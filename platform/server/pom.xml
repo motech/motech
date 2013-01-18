@@ -55,6 +55,10 @@
             <artifactId>com.springsource.org.apache.commons.digester</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
             <scope>provided</scope>

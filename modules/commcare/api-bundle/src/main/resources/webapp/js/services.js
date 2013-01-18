@@ -3,5 +3,5 @@
 /* Services */
 
 angular.module('settingsServices', ['ngResource']).factory('Settings', function($resource) {
-    return $resource('../commcare/api/settings');
+    return $resource('../commcare/settings');
 });

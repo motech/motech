@@ -105,11 +105,11 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
         </dependency>
+        <!-- OSGi IT -->
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>org.motechproject.osgi.it</artifactId>
         </dependency>
-        <!-- OSGi IT -->
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.jetty</artifactId>
@@ -699,9 +699,9 @@
                 <version>1.4.2-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>1.0</version>
+                <groupId>com.google.collect</groupId>
+                <artifactId>com.springsource.com.google.common.collect</artifactId>
+                <version>0.8.0.20080820</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -1082,7 +1082,7 @@
             <dependency>
                 <groupId>org.motechproject</groupId>
                 <artifactId>org.motechproject.osgi.it</artifactId>
-                <version>1.0.2.RELEASE-r007</version>
+                <version>1.0.2.RELEASE-r008</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>

@@ -1,6 +1,6 @@
 package org.motechproject.commcare.parser;
 
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import org.apache.xerces.parsers.DOMParser;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.response.OpenRosaResponse;
 import org.w3c.dom.Document;
