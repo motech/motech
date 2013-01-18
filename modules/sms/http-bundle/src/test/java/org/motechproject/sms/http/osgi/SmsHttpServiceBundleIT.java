@@ -41,14 +41,14 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
         PlatformSettingsService platformSettingsService = (PlatformSettingsService) bundleContext.getService(platformSettingsRef);
 
         InputStream inputStream = new ClassPathResource("sms-http-template.json").getInputStream();
-        platformSettingsService.saveRawConfig("org.motechproject.motech-sms-http-bundle","sms-http-template.json", inputStream);
+        platformSettingsService.saveRawConfig("org.motechproject.motech-sms-http-bundle", "sms-http-template.json", inputStream);
 
 
         ServiceReference smsServiceRef = bundleContext.getServiceReference(SmsService.class.getName());
         assertNotNull(smsServiceRef);
 
-        SmsService smsService = (SmsService) bundleContext.getService(smsServiceRef);
-        assertNotNull(smsService);
+
+        SmsService smsService = (SmsService) getApplicationContext().getBean("smsServiceRef");
 
         smsService.sendSMS("9999", "Hello");
 
@@ -73,7 +73,10 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
         stubServer.stop();
     }
 
-
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testSmsHttpBundleContext.xml"};
+    }
 }
 
 
