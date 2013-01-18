@@ -36,6 +36,7 @@ public class IvrController extends MultiActionController {
     @Autowired
     private EventRelay eventRelay;
 
+    @Autowired
     private AllPhoneCalls allPhoneCalls;
 
     @Autowired

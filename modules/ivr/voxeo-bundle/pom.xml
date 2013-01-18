@@ -87,10 +87,12 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
+                            org.springframework.ui.velocity,
                             org.springframework.web.context.support,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
+                            org.springframework.web.servlet.view.velocity,
                             org.eclipse.gemini.blueprint.config,
                             *
                         </Import-Package>

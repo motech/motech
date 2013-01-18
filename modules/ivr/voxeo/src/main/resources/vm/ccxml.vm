@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+#set($event = 'event$')
+
 <ccxml version="1.0">
   <log expr="'**** SCRIPT START ****'"/>
 
@@ -41,6 +44,7 @@
     <var name="phonenum" expr="session.values.phonenum"/>
     <var name="cid" expr="session.values.cid"/>
     <var name="vxml" expr="session.values.vxml"/>
+    <var name="motechid" expr="session.values.motechid"/>
     <var name="externalId" expr="session.values.externalId"/>
 
     <if cond="typeof session.values.timeout !== 'undefined'">
@@ -65,7 +69,7 @@
         <assign name="app_state" expr="'outgoing'"/>
         <log expr="'*** PLACING CALL ***'"/>
 
-        <createcall dest="'tel:+' + session.values.phonenum" callerid="session.values.cid" timeout="call_timeout"/>
+        <createcall dest="'tel:' + session.values.phonenum" callerid="session.values.cid" timeout="call_timeout"/>
       </if>
     </transition>
 
@@ -73,10 +77,10 @@
     <transition state="incoming" event="connection.alerting">
       <log expr="'*** CONNECTION.ALERTING ***'"/>
 
-      <assign name="callId" expr="event$.connectionid"/>
+      <assign name="callId" expr="${event}.connectionid"/>
 
       <var name="status" expr="'ALERTING'"/>
-      <assign name="application.callerId" expr="event$.connection.remote"/>
+      <assign name="application.callerId" expr="${event}.connection.remote"/>
       <var name="timestamp" expr="(+new Date)"/>
       <send target="base_url + '/ivr/incoming'" targettype="'basichttp'" name="'http.get'" namelist="session.id status application.callerId timestamp"/>
 
@@ -122,12 +126,12 @@
     <transition state="outgoing" event="connection.progressing">
       <log expr="'***** CONNECTION PROGRESSING *****'"/>
 
-      <assign name="callId" expr="event$.connectionid"/>
+      <assign name="callId" expr="${event}.connectionid"/>
 
       <var name="status" expr="'PROGRESSING'"/>
-      <assign name="application.callerId" expr="event$.connection.remote"/>
+      <assign name="application.callerId" expr="${event}.connection.remote"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
     </transition>
 
     <transition state="outgoing" event="connection.connected">
@@ -135,8 +139,9 @@
 
       <var name="status" expr="'CONNECTED'"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
-      <dialogstart src="vxml" type="'application/voicexml+xml'"/>
+
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
+      <dialogstart src="vxml" namelist="motechid phonenum" type="'application/voicexml+xml'"/>
     </transition>
 
     <transition state="outgoing" event="dialog.started">
@@ -144,7 +149,7 @@
 
       <var name="status" expr="'DIALOG_STARTED'"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
     </transition>
 
     <transition state="outgoing" event="dialog.exit">
@@ -152,7 +157,7 @@
 
       <var name="status" expr="'DIALOG_EXIT'"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
 
       <disconnect connectionid="callId"/>
     </transition>
@@ -162,16 +167,16 @@
 
       <var name="status" expr="'DISCONNECTED'"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status application.callerId timestamp"/>
     </transition>
 
     <transition state="outgoing" event="connection.failed">
       <log expr="'***** CONNECTION FAILED *****'"/>
 
       <var name="status" expr="'FAILED'"/>
-      <var name="reason" expr="event$.reason"/>
+      <var name="reason" expr="${event}.reason"/>
       <var name="timestamp" expr="(+new Date)"/>
-      <send target="base_url + '/ivr/outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status reason application.callerId timestamp"/>
+      <send target="'outgoing'" targettype="'basichttp'" name="'http.get'" namelist="session.id externalId status reason application.callerId timestamp"/>
     </transition>
 
     <transition event="TIMEOUT_REACHED">
