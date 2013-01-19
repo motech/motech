@@ -17,6 +17,8 @@ public interface TaskActivityService {
 
     void addWarning(Task task);
 
+    void addWarning(Task task, String key, String value);
+
     List<TaskActivity> errorsFromLastRun(Task task);
 
     void deleteActivitiesForTask(String taskId);

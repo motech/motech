@@ -1,8 +1,10 @@
 package org.motechproject.tasks.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -18,6 +20,7 @@ import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.util.Manipulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -27,9 +30,12 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.motechproject.tasks.util.TaskUtil.getSubject;
 
@@ -104,7 +110,7 @@ public class TaskTriggerHandler {
                 }
 
                 try {
-                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), trigger, triggerEvent);
+                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), triggerEvent);
                     eventRelay.sendEventMessage(new MotechEvent(subject, parameters));
                     activityService.addSuccess(task);
                 } catch (TaskException e) {
@@ -150,7 +156,7 @@ public class TaskTriggerHandler {
         }
     }
 
-    private Map<String, Object> createParameters(Task task, List<EventParameter> actionParameters, TaskEvent trigger, MotechEvent event) throws TaskException {
+    private Map<String, Object> createParameters(Task task, List<EventParameter> actionParameters, MotechEvent event) throws TaskException {
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
         for (EventParameter param : actionParameters) {
@@ -161,7 +167,8 @@ public class TaskTriggerHandler {
                 throw new TaskException("error.templateNull", key);
             }
 
-            String userInput = replaceAll(template, trigger.getEventParameters(), event);
+            String userInput = replaceAll(template, event, task);
+
             Object value;
 
             if (param.getType().isNumber()) {
@@ -194,19 +201,32 @@ public class TaskTriggerHandler {
         return parameters;
     }
 
-    private String replaceAll(final String template, final List<EventParameter> triggerParameters, final MotechEvent event) {
-        String replaced = template;
+    private String replaceAll(final String template, final MotechEvent event, final Task task) throws TaskException {
+        String conversionTemplate = template;
+        List<Manipulation> keys = getKeys(template);
+        for (Manipulation manipulation : keys) {
 
-        for (EventParameter param : triggerParameters) {
-            String key = param.getEventKey();
-
-            if (event.getParameters().containsKey(key)) {
-                String value = String.valueOf(event.getParameters().get(key));
-                replaced = replaced.replaceAll(String.format("\\{\\{%s\\}\\}", key), value);
+            if (event.getParameters().containsKey(manipulation.getEventKey())) {
+                Object obj = event.getParameters().get(manipulation.getEventKey());
+                if (obj == null) {
+                    obj = "";
+                }
+                String value = String.valueOf(obj);
+                String replaceValue = manipulateValue(value, manipulation.getManipulation(), task);
+                conversionTemplate = conversionTemplate.replace(String.format("{{%s}}", manipulation.getOriginalKey()), replaceValue);
             }
         }
+        return conversionTemplate;
+    }
 
-        return replaced;
+    private List<Manipulation> getKeys(String templateText) {
+        List<Manipulation> manipulations = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\{\\{(.*?)\\}\\}");
+        Matcher matcher = pattern.matcher(templateText);
+        while (matcher.find()) {
+            manipulations.add(new Manipulation(matcher.group(1)));
+        }
+        return manipulations;
     }
 
     private boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
@@ -280,5 +300,44 @@ public class TaskTriggerHandler {
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
         }
+    }
+
+
+    private String manipulateValue(String value, List<String> manipulations, Task task) throws TaskException {
+        String manipulateValue = value;
+        for (String man : manipulations) {
+            if (!man.toLowerCase().contains("join") && !man.toLowerCase().contains("datetime")) {
+                switch (man.toLowerCase()) {
+                    case "toupper" :
+                        manipulateValue = manipulateValue.toUpperCase();
+                        break;
+                    case "tolower" :
+                        manipulateValue = manipulateValue.toLowerCase();
+                        break;
+                    case "capitalize" :
+                        manipulateValue = WordUtils.capitalize(manipulateValue);
+                        break;
+                    default:
+                        activityService.addWarning(task, "warning.manipulation", man);
+                        break;
+                }
+            } else if (man.toLowerCase().contains("join")) {
+                String[] splitValue = manipulateValue.split(" ");
+                man = man.substring(5 , man.length()-1);
+                manipulateValue = StringUtils.join(splitValue, man);
+            } else if (man.toLowerCase().contains("datetime")) {
+                try {
+                    man = man.substring(9 , man.length()-1);
+                    DateTimeFormatter format = DateTimeFormat.forPattern(man);
+                    DateTime date = new DateTime(manipulateValue);
+                    manipulateValue = format.print(date);
+                } catch (IllegalArgumentException e) {
+                    throw new TaskException("error.date.format", man, e);
+                }
+            } else {
+                activityService.addWarning(task, "warning.manipulation", man);
+            }
+        }
+        return manipulateValue;
     }
 }

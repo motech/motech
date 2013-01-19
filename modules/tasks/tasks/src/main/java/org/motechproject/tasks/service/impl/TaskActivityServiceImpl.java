@@ -45,6 +45,11 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
+    public void addWarning(Task task, String key , String field) {
+        allTaskActivities.add(new TaskActivity(key, field, task.getId(), TaskActivityType.WARNING));
+    }
+
+    @Override
     public List<TaskActivity> errorsFromLastRun(Task task) {
         List<TaskActivity> messages = allTaskActivities.byTaskId(task.getId());
         List<TaskActivity> result = new ArrayList<>(messages.size());
