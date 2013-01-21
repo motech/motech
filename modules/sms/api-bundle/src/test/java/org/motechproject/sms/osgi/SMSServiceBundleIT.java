@@ -54,7 +54,7 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
         ServiceReference smsServiceReference = bundleContext.getServiceReference(SmsService.class.getName());
         assertNotNull(smsServiceReference);
 
-        SmsService smsService = (SmsService) bundleContext.getService(smsServiceReference);
+        SmsService smsService = (SmsService) getApplicationContext().getBean("smsServiceRef");
         assertNotNull(smsService);
 
 
@@ -75,5 +75,10 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
         }};
     }
 
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testSmsApiBundleContext.xml"};
+    }
 
 }
