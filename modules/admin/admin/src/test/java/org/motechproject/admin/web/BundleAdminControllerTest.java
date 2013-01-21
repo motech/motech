@@ -1,5 +1,6 @@
 package org.motechproject.admin.web;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,6 +57,9 @@ public class BundleAdminControllerTest {
 
     @Mock
     StatusMessageService statusMessageService;
+
+    @Mock
+    PrintWriter writer;
 
     @Before
     public void setUp() {
@@ -155,11 +160,17 @@ public class BundleAdminControllerTest {
     }
 
     @Test
-    public void testBundleException() {
-        String msg = "error message";
-        when(bundleException.getMessage()).thenReturn(msg);
+    public void testBundleException() throws IOException {
+        Exception ex = new Exception("testMessage");
 
-        controller.handleBundleException(bundleException);
+        String msg = ex.getMessage();
+        String exMsg = ExceptionUtils.getStackTrace(ex);
+
+        when(response.getWriter()).thenReturn(writer);
+
+        controller.handleBundleException(response, ex);
+
         verify(statusMessageService).error(msg);
+        verify(writer).write(exMsg);
     }
 }

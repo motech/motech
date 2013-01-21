@@ -140,7 +140,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                 LOG.error("Removing bundle due to exception", e);
                 savedBundleFile.delete();
             }
-            throw new MotechException("Error saving file", e);
+            throw new MotechException("Cannot install file", e);
         } finally {
             IOUtils.closeQuietly(bundleInputStream);
         }

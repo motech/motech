@@ -7,21 +7,11 @@ var jFormErrorHandler = function(response) {
 
 var angularHandler = function(title, defaultMsg) {
     return function(response) {
-        unblockUI();
-
-        var msg = "error";
-
-        if (response && response.startsWith('key:') && !response.endsWith('key')) {
-            msg = response.split(':')[1];
-        } else if (defaultMsg) {
-            msg = defaultMsg;
-        }
-
-        motechAlert(msg, title);
+        handleResponse(title, defaultMsg, response);
     }
 }
 
-var angularHandler = function(title, defaultMsg, response) {
+var handleResponse = function(title, defaultMsg, response) {
         unblockUI();
 
         var msg = "error";
@@ -31,8 +21,22 @@ var angularHandler = function(title, defaultMsg, response) {
         } else if (defaultMsg) {
             msg = defaultMsg;
         }
-
         motechAlert(msg, title);
+}
+
+var handleWithStackTrace = function(title, defaultMsg, response) {
+    var msg = "error";
+    if (response) {
+        if(response.responseText) {
+            response = response.responseText;
+        } else if(response.data) {
+            response = response.data;
+        }
+    }
+    if (defaultMsg) {
+        msg = defaultMsg;
+    }
+    motechAlertStackTrace(msg, title, response);
 }
 
 var alertHandler = function(msg, title) {
@@ -61,6 +65,10 @@ function motechAlert(msg, title) {
 
 function motechAlert(msg, title, callback) {
     jAlert(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
+}
+
+function motechAlertStackTrace(msg, title, response, callback) {
+    jAlert(jQuery.i18n.prop(msg).bold()+": \n"+response, jQuery.i18n.prop(title), callback);
 }
 
 /* Define "finished typing" as 5 second puase */
