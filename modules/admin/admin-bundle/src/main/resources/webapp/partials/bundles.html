@@ -24,15 +24,25 @@
 
 <div class="inside inline top-line">
     <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
-        <div class="inline"><span><b>{{msg('bundles.upload')}} </b></span>
-            <input type="file" id="bundleFile" name="bundleFile" placeholder="{{msg('bundles.file')}}" class="input-file"/>
-            <span class="offset1">
-                <label class="checkbox inline">
-                    <input type="checkbox" id="startBundle" name="startBundle" />
-                    {{msg('bundles.startOnInstall')}}
-                </label>
-            </span>
-            <span ng-click="submitBundle()" class="btn">{{msg('bundles.installOrUpdate')}}</span>
+        <div class="form-inline">
+            <div class="fileupload fileupload-new" data-provides="fileupload"><span><b>{{msg('bundles.upload')}} </b></span>
+                <div class="input-append">
+                    <input type="file" id="bundleFile" name="bundleFile" class="input-file"  placeholder="{{msg('bundles.file')}}" style="display: none;"/>
+                    <div class="uneditable-input span4">
+                        <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
+                    </div>
+                    <span class="btn btn-file"><span class="fileupload-new">{{msg('selectFile')}}</span>
+                    <span class="fileupload-exists">{{msg('bundles.change')}}</span><input type="file" />
+                    </span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{msg('bundles.remove')}}</a>
+                </div>
+                <div class="btn-group" data-toggle="buttons-checkbox">
+                    <button type="button" class="btn btn-primary start-on-upload" ng-click="startOnUpload()"><i class="icon-white icon-ban-circle"></i> {{msg('bundles.startOnInstall')}}</button>
+                    <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload" style="display: none;"/>
+                </div>
+                <div class="btn-group">
+                    <span ng-click="submitBundle()" class="btn btn-success">{{msg('bundles.installOrUpdate')}}</span>
+                </div>
+            </div>
         </div>
     </form>
 </div>

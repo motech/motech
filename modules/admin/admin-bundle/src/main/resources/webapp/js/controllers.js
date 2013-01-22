@@ -8,6 +8,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
 
     $scope.orderProp = 'name';
     $scope.invert = false;
+    $scope.startUpload = false;
     $scope.versionOrder = new Array("version.major", "version.minor", "version.micro", "version.qualifier");
 
     $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
@@ -158,6 +159,19 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.bundleStable = function(bundle) {
         return bundle.state != LOADING_STATE;
     }
+
+
+    $scope.startOnUpload = function() {
+        if ($scope.startUpload !=true) {
+            $scope.startUpload = true;
+            $('.start-on-upload').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+        } else {
+            $scope.startUpload = false;
+            $('.start-on-upload').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+        }
+    }
+
+
 
     $scope.submitBundle = function() {
         blockUI();
