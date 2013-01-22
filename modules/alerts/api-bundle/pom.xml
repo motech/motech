@@ -54,10 +54,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.alerts.contract,
-                            org.motechproject.server.alerts.domain,
-                            org.motechproject.server.alerts.repository,
-                            org.motechproject.server.alerts.service,
+                            org.motechproject.server.alerts.contract;version=${project.version},
+                            org.motechproject.server.alerts.domain;version=${project.version},
+                            org.motechproject.server.alerts.repository;version=${project.version},
+                            org.motechproject.server.alerts.service;version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.server.config,

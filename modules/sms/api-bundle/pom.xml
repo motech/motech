@@ -60,9 +60,9 @@
                         <Context-File>META-INF/osgi/applicationSmsAPIBundle.xml</Context-File>
                         <Context-Path>smsapi</Context-Path>
                         <Export-Package>
-                            org.motechproject.sms.api,
-                            org.motechproject.sms.api.constants,
-                            org.motechproject.sms.api.service
+                            org.motechproject.sms.api;version=${project.version},
+                            org.motechproject.sms.api.constants;version=${project.version},
+                            org.motechproject.sms.api.service;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.sms.api.osgi.Activator

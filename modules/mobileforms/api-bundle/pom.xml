@@ -53,15 +53,15 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.mobileforms.api.callbacks,
-                            org.motechproject.mobileforms.api.domain,
-                            org.motechproject.mobileforms.api.parser,
-                            org.motechproject.mobileforms.api.repository,
-                            org.motechproject.mobileforms.api.service,
-                            org.motechproject.mobileforms.api.utils,
-                            org.motechproject.mobileforms.api.validator,
-                            org.motechproject.mobileforms.api.vo,
-                            org.motechproject.mobileforms.api.web
+                            org.motechproject.mobileforms.api.callbacks;version=${project.version},
+                            org.motechproject.mobileforms.api.domain;version=${project.version},
+                            org.motechproject.mobileforms.api.parser;version=${project.version},
+                            org.motechproject.mobileforms.api.repository;version=${project.version},
+                            org.motechproject.mobileforms.api.service;version=${project.version},
+                            org.motechproject.mobileforms.api.utils;version=${project.version},
+                            org.motechproject.mobileforms.api.validator;version=${project.version},
+                            org.motechproject.mobileforms.api.vo;version=${project.version},
+                            org.motechproject.mobileforms.api.web;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.mobileforms.api.osgi.Activator

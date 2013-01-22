@@ -41,9 +41,9 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.decisiontree.core,
-                            org.motechproject.decisiontree.core.model,
-                            org.motechproject.decisiontree.core.repository
+                            org.motechproject.decisiontree.core;version=${project.version},
+                            org.motechproject.decisiontree.core.model;version=${project.version},
+                            org.motechproject.decisiontree.core.repository;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.ektorp.impl,

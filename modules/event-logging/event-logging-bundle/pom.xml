@@ -42,11 +42,11 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.eventlogging.converter,
-                            org.motechproject.eventlogging.domain,
-                            org.motechproject.eventlogging.loggers,
-                            org.motechproject.eventlogging.repository,
-                            org.motechproject.eventlogging.service
+                            org.motechproject.eventlogging.converter;version=${project.version},
+                            org.motechproject.eventlogging.domain;version=${project.version},
+                            org.motechproject.eventlogging.loggers;version=${project.version},
+                            org.motechproject.eventlogging.repository;version=${project.version},
+                            org.motechproject.eventlogging.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.ektorp.impl,

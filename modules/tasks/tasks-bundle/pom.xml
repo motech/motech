@@ -44,7 +44,7 @@
                             org.motechproject.tasks.osgi.Activator
                         </Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.tasks.*
+                            org.motechproject.tasks.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.eclipse.gemini.blueprint.config,

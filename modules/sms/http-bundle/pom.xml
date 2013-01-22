@@ -68,8 +68,8 @@
                         <Context-File>applicationSmsHttpBundle.xml</Context-File>
                         <Context-Path>smshttp/api</Context-Path>
                         <Export-Package>
-                            org.motechproject.sms.http,
-                            org.motechproject.sms.http.service
+                            org.motechproject.sms.http;version=${project.version},
+                            org.motechproject.sms.http.service;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.osgi.web.Activator

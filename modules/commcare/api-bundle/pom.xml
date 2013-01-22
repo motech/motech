@@ -46,12 +46,12 @@
                         </Bundle-Activator>
                         <Context-Path>commcare</Context-Path>
                         <Export-Package>
-                            org.motechproject.commcare.service,
-                            org.motechproject.commcare.domain,
-                            org.motechproject.commcare.request,
-                            org.motechproject.commcare.response,
-                            org.motechproject.commcare.events.constants,
-                            org.motechproject.commcare.events
+                            org.motechproject.commcare.service;version=${project.version},
+                            org.motechproject.commcare.domain;version=${project.version},
+                            org.motechproject.commcare.request;version=${project.version},
+                            org.motechproject.commcare.response;version=${project.version},
+                            org.motechproject.commcare.events.constants;version=${project.version},
+                            org.motechproject.commcare.events;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,

@@ -103,11 +103,11 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.event,
-                            org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
-                            org.motechproject.event.metrics,
-                            org.motechproject.event.metrics.impl
+                            org.motechproject.event;version=${project.version},
+                            org.motechproject.event.listener;version=${project.version},
+                            org.motechproject.event.listener.annotations;version=${project.version},
+                            org.motechproject.event.metrics;version=${project.version},
+                            org.motechproject.event.metrics.impl;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.apache.activemq.command,

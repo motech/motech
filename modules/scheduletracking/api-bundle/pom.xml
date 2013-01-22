@@ -70,11 +70,11 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.scheduletracking.api.service,
-                            org.motechproject.scheduletracking.api.service.impl,
-                            org.motechproject.scheduletracking.api.events,
-                            org.motechproject.scheduletracking.api.events.constants,
-                            org.motechproject.scheduletracking.api.domain
+                            org.motechproject.scheduletracking.api.service;version=${project.version},
+                            org.motechproject.scheduletracking.api.service.impl;version=${project.version},
+                            org.motechproject.scheduletracking.api.events;version=${project.version},
+                            org.motechproject.scheduletracking.api.events.constants;version=${project.version},
+                            org.motechproject.scheduletracking.api.domain;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,

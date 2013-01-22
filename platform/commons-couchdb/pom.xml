@@ -40,8 +40,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.commons.couchdb.model,
-                            org.motechproject.commons.couchdb.dao
+                            org.motechproject.commons.couchdb.model;version=${project.version},
+                            org.motechproject.commons.couchdb.dao;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -87,9 +87,9 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.messagecampaign,
-                            org.motechproject.server.messagecampaign.contract,
-                            org.motechproject.server.messagecampaign.service
+                            org.motechproject.server.messagecampaign;version=${project.version},
+                            org.motechproject.server.messagecampaign.contract;version=${project.version},
+                            org.motechproject.server.messagecampaign.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,

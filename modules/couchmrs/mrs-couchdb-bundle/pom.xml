@@ -49,9 +49,9 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.couch.mrs.service,
-                            org.motechproject.couch.mrs.model,
-                            org.motechproject.couch.mrs.repository
+                            org.motechproject.couch.mrs.service;version=${project.version},
+                            org.motechproject.couch.mrs.model;version=${project.version},
+                            org.motechproject.couch.mrs.repository;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Import-Package>

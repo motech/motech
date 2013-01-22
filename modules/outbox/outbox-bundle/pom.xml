@@ -62,10 +62,10 @@
                         <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Context-Path>outbox</Context-Path>
                         <Export-Package>
-                            org.motechproject.outbox.api,
-                            org.motechproject.outbox.api.domain,
-                            org.motechproject.outbox.api.context,
-                            org.motechproject.outbox.api.service
+                            org.motechproject.outbox.api;version=${project.version},
+                            org.motechproject.outbox.api.domain;version=${project.version},
+                            org.motechproject.outbox.api.context;version=${project.version},
+                            org.motechproject.outbox.api.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,

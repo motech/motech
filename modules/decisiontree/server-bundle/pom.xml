@@ -54,9 +54,9 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.decisiontree.server.domain,
-                            org.motechproject.decisiontree.server.repository,
-                            org.motechproject.decisiontree.server.service
+                            org.motechproject.decisiontree.server.domain;version=${project.version},
+                            org.motechproject.decisiontree.server.repository;version=${project.version},
+                            org.motechproject.decisiontree.server.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.ektorp.impl,

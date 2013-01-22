@@ -56,7 +56,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.openmrs.services
+                            org.motechproject.openmrs.services;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.openmrs.osgi.Activator

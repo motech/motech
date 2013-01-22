@@ -64,8 +64,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.rules,
-                            org.motechproject.rules.service
+                            org.motechproject.rules;version=${project.version},
+                            org.motechproject.rules.service;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.rules.osgi.Activator

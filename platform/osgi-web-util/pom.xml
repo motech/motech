@@ -43,7 +43,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.motechproject.osgi.web</Export-Package>
+                        <Export-Package>org.motechproject.osgi.web;version=${project.version}</Export-Package>
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",
                             org.osgi.framework;version="0.0.0",

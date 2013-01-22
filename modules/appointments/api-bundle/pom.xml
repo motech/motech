@@ -56,10 +56,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.appointments.api,
-                            org.motechproject.appointments.api.model,
-                            org.motechproject.appointments.api.service,
-                            org.motechproject.appointments.api.service.contract
+                            org.motechproject.appointments.api;version=${project.version},
+                            org.motechproject.appointments.api.model;version=${project.version},
+                            org.motechproject.appointments.api.service;version=${project.version},
+                            org.motechproject.appointments.api.service.contract;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,

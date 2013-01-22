@@ -45,8 +45,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.openmrs.atomfeed.events,
-                            org.motechproject.openmrs.atomfeed.service
+                            org.motechproject.openmrs.atomfeed.events;version=${project.version},
+                            org.motechproject.openmrs.atomfeed.service;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.openmrs.atomfeed.osgi.Activator

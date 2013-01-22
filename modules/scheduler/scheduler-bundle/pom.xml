@@ -35,7 +35,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.scheduler.*
+                            org.motechproject.scheduler.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.ejb;resolution:=optional,

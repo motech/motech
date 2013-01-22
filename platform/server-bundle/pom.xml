@@ -116,13 +116,13 @@
                         <Context-Path>server</Context-Path>
                         <Context-File>applicationPlatformServerBundle.xml</Context-File>
                         <Export-Package>
-                            org.motechproject.server.startup,
-                            org.motechproject.server.ui,
-                            org.motechproject.server.ui.ex,
-                            org.motechproject.server.web,
-                            org.motechproject.server.web.controller,
-                            org.motechproject.server.web.form,
-                            org.motechproject.server.web.validator
+                            org.motechproject.server.startup;version=${project.version},
+                            org.motechproject.server.ui;version=${project.version},
+                            org.motechproject.server.ui.ex;version=${project.version},
+                            org.motechproject.server.web;version=${project.version},
+                            org.motechproject.server.web.controller;version=${project.version},
+                            org.motechproject.server.web.form;version=${project.version},
+                            org.motechproject.server.web.validator;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.bundle.Activator

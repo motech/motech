@@ -44,10 +44,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.commons.api,
-                            org.motechproject.commons.api.annotations,
-                            org.motechproject.commons.api.json,
-                            org.motechproject.commons.api.model
+                            org.motechproject.commons.api;version=${project.version},
+                            org.motechproject.commons.api.annotations;version=${project.version},
+                            org.motechproject.commons.api.json;version=${project.version},
+                            org.motechproject.commons.api.model;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

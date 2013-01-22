@@ -64,7 +64,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.testing.utils.*
+                            org.motechproject.testing.utils.*;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.osgi.web.Activator

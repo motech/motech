@@ -42,10 +42,10 @@
                     <instructions>
                         <Context-Path>cmsliteapi</Context-Path>
                         <Export-Package>
-                            org.motechproject.cmslite.api.model,
-                            org.motechproject.cmslite.api.repository,
-                            org.motechproject.cmslite.api.service,
-                            org.motechproject.cmslite.api.web
+                            org.motechproject.cmslite.api.model;version=${project.version},
+                            org.motechproject.cmslite.api.repository;version=${project.version},
+                            org.motechproject.cmslite.api.service;version=${project.version},
+                            org.motechproject.cmslite.api.web;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Import-Package>

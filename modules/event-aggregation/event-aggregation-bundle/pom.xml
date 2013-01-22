@@ -57,7 +57,7 @@
                         <Context-Path>/event-aggregation/api</Context-Path>
                         <Context-File>META-INF/osgi/applicationEventAggregationBundle.xml</Context-File>
                         <Export-Package>
-                            org.motechproject.event.aggregation.model.schedule
+                            org.motechproject.event.aggregation.model.schedule;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.event.aggregation.osgi.Activator

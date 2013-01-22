@@ -86,9 +86,9 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.pillreminder.api,
-                            org.motechproject.server.pillreminder.api.contract,
-                            org.motechproject.server.pillreminder.api.service
+                            org.motechproject.server.pillreminder.api;version=${project.version},
+                            org.motechproject.server.pillreminder.api.contract;version=${project.version},
+                            org.motechproject.server.pillreminder.api.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,

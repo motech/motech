@@ -75,11 +75,11 @@
                     <instructions>
                         <Bundle-Activator>org.motechproject.ivr.osgi.Activator</Bundle-Activator>
                         <Export-Package>
-                            org.motechproject.ivr.domain,
-                            org.motechproject.ivr.event,
-                            org.motechproject.ivr.message,
-                            org.motechproject.ivr.model,
-                            org.motechproject.ivr.service
+                            org.motechproject.ivr.domain;version=${project.version},
+                            org.motechproject.ivr.event;version=${project.version},
+                            org.motechproject.ivr.message;version=${project.version},
+                            org.motechproject.ivr.model;version=${project.version},
+                            org.motechproject.ivr.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.server.config,

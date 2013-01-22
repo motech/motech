@@ -44,11 +44,11 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.commons.date,
-                            org.motechproject.commons.date.util,
-                            org.motechproject.commons.date.util.datetime,
-                            org.motechproject.commons.date.model,
-                            org.motechproject.commons.date.valueobjects
+                            org.motechproject.commons.date;version=${project.version},
+                            org.motechproject.commons.date.util;version=${project.version},
+                            org.motechproject.commons.date.util.datetime;version=${project.version},
+                            org.motechproject.commons.date.model;version=${project.version},
+                            org.motechproject.commons.date.valueobjects;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

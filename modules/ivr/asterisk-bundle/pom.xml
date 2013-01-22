@@ -65,7 +65,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.asterisk.*;
+                            org.motechproject.server.asterisk.*;version=${project.version}
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.asterisk.osgi.Activator

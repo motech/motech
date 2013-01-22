@@ -102,9 +102,9 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.motechproject.admin.service,
-                            org.motechproject.admin.domain,
-                            org.motechproject.admin.messages
+                            org.motechproject.admin.service;version=${project.version},
+                            org.motechproject.admin.domain;version=${project.version},
+                            org.motechproject.admin.messages;version=${project.version}
                         </Export-Package>
                         <Embed-Dependency>motech-admin;inline=true</Embed-Dependency>
                     </instructions>
