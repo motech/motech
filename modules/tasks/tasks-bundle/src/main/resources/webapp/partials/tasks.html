@@ -25,7 +25,11 @@
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
                                     <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}" class="task-list-img"/></li>
                                     <li class="divider-vertical"></li>
-                                    <li class="task-element"><i class="icon-chevron-right"></i>&nbsp;{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</li>
+                                    <li class="task-element task-name">
+                                        <i class="icon-chevron-right i-name"></i>
+                                        <span class="name-first">&nbsp;{{item.task.name}}</span>
+                                        <span class="name-second">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</span>
+                                    </li>
                                 </ul>
                             </a>
 
@@ -83,7 +87,11 @@
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
                                     <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}"  class="task-list-img"/></li>
                                     <li class="divider-vertical"></li>
-                                    <li class="task-element"><i class="icon-chevron-right"></i>&nbsp;{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</li>
+                                    <li class="task-element task-name">
+                                        <i class="icon-chevron-right i-name"></i>
+                                        <span class="name-first">&nbsp;{{item.task.name}}</span>
+                                        <span class="name-second">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</span>
+                                    </li>
                                 </ul>
                             </a>
                             <ul class="task-nav pull-right">
@@ -165,7 +173,9 @@
                                 <img ng-src="../tasks/api/channel/icon?moduleName={{get(activity.action, 'moduleName')}}&moduleVersion={{get(activity.action, 'moduleVersion')}}" class="recent-activity-img"/>
                             </div>
                         </td>
-                        <td>{{ activity.date | fromNow }}</td>
+                        <td><span class="recent-name-first">{{ activity.name }}<br></span>
+                            <span>{{ activity.date | fromNow }}</span>
+                        </td>
                         <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('tooltip.clickToSeeDetails')}}">
                             <div>
                                 <a href="#/task/{{activity.task}}/log">

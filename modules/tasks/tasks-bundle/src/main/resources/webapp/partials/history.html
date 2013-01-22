@@ -10,7 +10,10 @@
                         <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
                         <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{action.module}}&moduleVersion={{action.version}}" class="task-list-img" /></li>
                         <li class="divider-vertical"></li>
-                        <li class="task-element">&nbsp;{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-chevron-right"></i>&nbsp;{{trigger.display}} - {{action.display}}</li>
+                        <li class="task-element task-name">
+                            <span class="name-first">{{name}}</span>
+                            <span class="name-second-history">{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-chevron-right"></i>&nbsp;{{trigger.display}} - {{action.display}}</span>
+                        </li>
                     </ul>
 
                     <ul class="task-nav pull-right">

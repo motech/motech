@@ -50,6 +50,10 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException("Task must contains action input fields");
         }
 
+        if (task.getName() == null) {
+            throw new IllegalArgumentException("Task must contain name input");
+        }
+
         try {
             allTasks.addOrUpdate(task);
             LOG.info(String.format("Saved task: %s", task.getId()));

@@ -45,7 +45,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task("test:SEND", "test:test:0.14:RECEIVE", map);
+        Task t = new Task("test:SEND", "test:test:0.14:RECEIVE", map, "name");
 
         taskService.save(t);
 
@@ -57,7 +57,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", map);
+        Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", map, "name");
 
         taskService.save(t);
 
@@ -66,7 +66,7 @@ public class TaskServiceImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotSaveTaskWithNullActionInputFields() {
-        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", null);
+        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", null, "name");
 
         taskService.save(t);
 
@@ -75,7 +75,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldSaveTaskWithEmptyActionInputFields() {
-        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", new HashMap<String, String>());
+        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", new HashMap<String, String>(), "name");
 
         taskService.save(t);
 
@@ -88,7 +88,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", map);
+        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", map, "name");
 
         taskService.save(t);
 
@@ -102,7 +102,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task(trigger, action, map);
+        Task t = new Task(trigger, action, map, "name");
         Channel c = new Channel();
 
         when(channelService.getChannel("Test 3", "test-3", "0.15")).thenReturn(c);
@@ -117,7 +117,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task(trigger, action, map);
+        Task t = new Task(trigger, action, map, "name");
 
         TaskEvent expected = new TaskEvent();
         expected.setSubject("RECEIVE");
@@ -141,7 +141,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Task t = new Task(trigger, action, map);
+        Task t = new Task(trigger, action, map, "name");
 
         TaskEvent triggerEvent = new TaskEvent();
         triggerEvent.setSubject("SEND");

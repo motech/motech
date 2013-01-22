@@ -90,6 +90,11 @@
                 <div class="box-divider">
                     <div class="span6">
                         <form class="inside form-horizontal">
+                            <div ng-class="actionNameCssClass(task)">
+                                <h4>{{msg('task.data.name')}}</h4>
+                                <label>{{msg('task.name')}}</label>
+                                <input class="span8" type='text' ng-model='task.name' id="task.name" maxlength="30" required />
+                            </div>
                             <div class="control-group">
                                 <h4>{{selectedTrigger.displayName}}</h4>
                                 <p>{{msg('info.dragFieldBuildAction')}}</p>

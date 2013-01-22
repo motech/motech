@@ -16,28 +16,38 @@ public class Task extends MotechBaseDataObject {
     private String action;
     private String description;
     private String trigger;
+    private String name;
     private boolean enabled;
 
     public Task() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public Task(String trigger, String action, Map<String, String> actionInputFields) {
-        this(true, actionInputFields, null, null, action, trigger);
+    public Task(String trigger, String action, Map<String, String> actionInputFields, String name) {
+        this(true, actionInputFields, null, null, action, trigger, name);
     }
 
-    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, String> additionalData, List<Filter> filters, String action, String trigger) {
+    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, String> additionalData, List<Filter> filters, String action, String trigger, String name) {
         this.enabled = enabled;
         this.actionInputFields = actionInputFields;
         this.additionalData = additionalData;
         this.filters = filters;
         this.action = action;
         this.trigger = trigger;
+        this.name = name;
     }
 
     @JsonIgnore
     public boolean hasFilters() {
         return !filters.isEmpty();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTrigger() {
@@ -108,10 +118,22 @@ public class Task extends MotechBaseDataObject {
 
         Task task = (Task) o;
 
-        return Objects.equals(enabled, task.enabled) && Objects.equals(action, task.action) &&
-                Objects.equals(actionInputFields, task.actionInputFields) &&
-                Objects.equals(additionalData, task.additionalData) && Objects.equals(filters, task.filters) &&
-                Objects.equals(trigger, task.trigger) && Objects.equals(description, task.description);
+        return taskObjectCompare(task);
+    }
+
+    private boolean taskObjectCompare(Task task) {
+        boolean isEqualTo = Objects.equals(enabled, task.enabled) && Objects.equals(action, task.action) &&
+                Objects.equals(actionInputFields, task.actionInputFields);
+
+        if (isEqualTo) {
+            isEqualTo = Objects.equals(additionalData, task.additionalData) && Objects.equals(filters, task.filters) &&
+                    Objects.equals(trigger, task.trigger);
+        }
+        if (isEqualTo) {
+            isEqualTo = Objects.equals(description,
+                    task.description) && Objects.equals(name, task.name);
+        }
+        return isEqualTo;
     }
 
     @Override
@@ -122,6 +144,7 @@ public class Task extends MotechBaseDataObject {
         result = 31 * result + (filters != null ? filters.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
         result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
 
         return result;
@@ -129,7 +152,7 @@ public class Task extends MotechBaseDataObject {
 
     @Override
     public String toString() {
-        return String.format("Task{actionInputFields=%s, additionalData=%s, filters=%s, action='%s', description='%s', trigger='%s', enabled=%s}",
-                actionInputFields, additionalData, filters, action, description, trigger, enabled);
+        return String.format("Task{actionInputFields=%s, additionalData=%s, filters=%s, action='%s', description='%s', trigger='%s', name='%s', enabled=%s}",
+                actionInputFields, additionalData, filters, action, description, trigger, name, enabled);
     }
 }

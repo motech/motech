@@ -47,7 +47,8 @@ function DashboardCtrl($scope, Tasks, Activities) {
                             trigger: tasks[j].trigger,
                             action: tasks[j].action,
                             date: activities[i].date,
-                            type: activities[i].activityType
+                            type: activities[i].activityType,
+                            name: tasks[j].name
                         });
                         break;
                     }
@@ -309,6 +310,9 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
                 }
             }
         }
+        if ($scope.task.name === undefined){
+            return false;
+        }
 
         return $scope.validateFilterForm();
     }
@@ -354,6 +358,15 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         return msg;
      }
 
+    $scope.actionNameCssClass = function(prop) {
+        var msg = "control-group";
+
+        if (!prop.name) {
+            msg = msg.concat(' error');
+        }
+
+        return msg;
+     }
 }
 
 function LogCtrl($scope, Tasks, Activities, $routeParams) {
@@ -381,6 +394,7 @@ function LogCtrl($scope, Tasks, Activities, $routeParams) {
 
             $scope.description = task.description;
             $scope.enabled = task.enabled;
+            $scope.name = task.name;
         });
     }
 

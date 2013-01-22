@@ -49,9 +49,9 @@ public class TaskControllerTest {
     @Test
     public void shouldGetAllTasks() {
         List<Task> expected = new ArrayList<>();
-        expected.add(new Task("trigger1", "action1", new HashMap<String, String>()));
-        expected.add(new Task("trigger2", "action2", new HashMap<String, String>()));
-        expected.add(new Task("trigger3", "action3", new HashMap<String, String>()));
+        expected.add(new Task("trigger1", "action1", new HashMap<String, String>(), "name"));
+        expected.add(new Task("trigger2", "action2", new HashMap<String, String>(), "name"));
+        expected.add(new Task("trigger3", "action3", new HashMap<String, String>(), "name"));
 
         when(taskService.getAllTasks()).thenReturn(expected);
 
@@ -92,7 +92,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldSaveExistingTask() {
-        Task expected = new Task("trigger1", "action1", new HashMap<String, String>());
+        Task expected = new Task("trigger1", "action1", new HashMap<String, String>(), "name");
         expected.setId(TASK_ID);
 
         controller.saveTask(expected);
@@ -102,7 +102,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldNotSaveNewTask() {
-        Task expected = new Task("trigger1", "action1", new HashMap<String, String>());
+        Task expected = new Task("trigger1", "action1", new HashMap<String, String>(), "name");
 
         controller.saveTask(expected);
 
@@ -112,7 +112,7 @@ public class TaskControllerTest {
     @Test
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
-        Task expected = new Task(format("channel1:module1:0.15:%s", subject), "action1", new HashMap<String, String>());
+        Task expected = new Task(format("channel1:module1:0.15:%s", subject), "action1", new HashMap<String, String>(), "name");
 
         controller.save(expected);
 

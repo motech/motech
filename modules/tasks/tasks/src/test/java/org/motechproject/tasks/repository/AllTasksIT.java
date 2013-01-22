@@ -28,7 +28,7 @@ public class AllTasksIT extends SpringIntegrationTest {
 
     @Test
     public void shouldAddAndUpdateTask() {
-        Task expected = new Task("test:test:15:SEND", "test:test:14:RECEIVE", new HashMap<String, String>());
+        Task expected = new Task("test:test:15:SEND", "test:test:14:RECEIVE", new HashMap<String, String>(),"name");
 
         allTasks.addOrUpdate(expected);
 

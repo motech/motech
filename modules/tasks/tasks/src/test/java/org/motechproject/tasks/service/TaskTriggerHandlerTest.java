@@ -322,7 +322,7 @@ public class TaskTriggerHandlerTest {
         actionInputFields.put("message", "Hello {{externalId}}, You have an appointment on {{startDate}}");
         actionInputFields.put("date", "2012-12-21 21:21 +0100");
 
-        task = new Task(trigger, action, actionInputFields);
+        task = new Task(trigger, action, actionInputFields, "name");
         task.setId("taskId1");
         task.setFilters(new ArrayList<Filter>());
         tasks.add(task);

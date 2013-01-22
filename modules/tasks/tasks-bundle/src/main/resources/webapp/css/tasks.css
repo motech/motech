@@ -317,10 +317,15 @@ editable-content .actionField.input-block-level span.badge {
 
 .table-recent-activity tbody td {
     vertical-align: middle;
+    word-wrap: break-word;
 }
 
 .recent-activity-arrow {
     width: 30px;
+}
+
+.recent-name-first{
+font-weight: bold;
 }
 
 /*----- Tasks - history -----*/
@@ -516,7 +521,6 @@ editable-content .actionField.input-block-level span.badge {
     left: 0;
     margin: 0;
     padding: 0;
-    position: relative;
 }
 .task-bar .task-nav.pull-right {
     float: right;
@@ -530,7 +534,7 @@ editable-content .actionField.input-block-level span.badge {
 .task-bar .task-nav > li {
     float: left;
     display: inline-block;
-    line-height: 40px;
+    line-height: 36px;
     margin: 0 5px;
 }
 
@@ -584,6 +588,37 @@ editable-content .actionField.input-block-level span.badge {
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
+}
+
+.task-element.task-name {
+    text-align: left;
+}
+
+.task-element.task-name i.i-name {
+    margin: 10px 0 0;
+}
+
+.task-bar .task-nav > li.task-element.task-name {
+    line-height: 20px;
+    text-align: left;
+}
+
+.task-element.task-name .name-second {
+    white-space: pre;
+    margin: -9px 0 0 22px;
+    font-weight: normal;
+    font-size: 12px;
+    display: block;
+    line-height: 25px;
+}
+
+.task-element.task-name .name-second-history {
+    white-space: pre;
+    margin: -5px 0 0;
+    font-weight: normal;
+    font-size: 12px;
+    display: block;
+    line-height: 25px;
 }
 
 .panel-img  {
