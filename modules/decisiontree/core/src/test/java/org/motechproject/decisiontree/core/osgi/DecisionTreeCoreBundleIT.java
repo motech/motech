@@ -5,6 +5,9 @@ import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DecisionTreeCoreBundleIT extends BaseOsgiIT {
 
     public void testDecisionTreeService() {
@@ -20,5 +23,10 @@ public class DecisionTreeCoreBundleIT extends BaseOsgiIT {
         } finally {
             decisionTreeService.deleteDecisionTree(tree.getId());
         }
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.decisiontree.core.model");
     }
 }

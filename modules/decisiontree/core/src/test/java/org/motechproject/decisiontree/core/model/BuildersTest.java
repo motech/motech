@@ -1,13 +1,8 @@
-package org.motechproject.decisiontree.model;
+package org.motechproject.decisiontree.core.model;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.core.model.Action;
-import org.motechproject.decisiontree.core.model.Node;
-import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
-import org.motechproject.decisiontree.core.model.Transition;
-import org.motechproject.decisiontree.core.model.Tree;
 
 import java.util.Arrays;
 

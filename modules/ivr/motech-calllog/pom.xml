@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-decisiontree-core-bundle</artifactId>
+            <artifactId>motech-decisiontree-core</artifactId>
             <version>${motech.version}</version>
         </dependency>
         <dependency>

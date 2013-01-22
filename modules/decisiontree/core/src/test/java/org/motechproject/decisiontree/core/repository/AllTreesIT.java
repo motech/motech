@@ -1,4 +1,4 @@
-package org.motechproject.decisiontree.it;
+package org.motechproject.decisiontree.core.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
@@ -12,7 +12,6 @@ import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
-import org.motechproject.decisiontree.core.repository.AllTrees;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
