@@ -13,11 +13,14 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
 
     $scope.filterBundles = function(bundle) {
-        if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform") != -1) {
-            return false;
-        }
+        if (bundle.symbolicName != null){
+            if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform") != -1) {
+                return false;
+            }
 
-        return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
+            return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
+        }
+        else return false;
     }
 
     $scope.reloadPage = function(){
@@ -110,12 +113,12 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     }
 
     $scope.startBundle = function(bundle) {
-        bundle.state = LOADING_STATE;
-        bundle.$start(dummyHandler, function() {
-            bundle.state = 'RESOLVED';
-            motechAlert('bundles.error.start', 'error');
-        });
-    }
+            bundle.state = LOADING_STATE;
+            bundle.$start(dummyHandler, function(response) {
+                bundle.state = 'RESOLVED';
+                handleWithStackTrace('error', 'bundles.error.start', response);
+            });
+        }
 
     $scope.restartBundle = function(bundle) {
         bundle.state = LOADING_STATE;
@@ -164,7 +167,10 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
                 $scope.reloadPage();
 //                unblockUI();
             },
-            error : jFormErrorHandler
+            error : function(response) {
+                handleWithStackTrace('error', 'bundles.error.start', response);
+                unblockUI();
+            }
         });
     }
 

@@ -105,7 +105,7 @@ public class UserController {
     }
 
     @ExceptionHandler(EmailExistsException.class)
-    public void handleEmailExistsException(EmailExistsException exception, HttpServletResponse response) throws IOException {
+    public void handleEmailExistsException(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         try (Writer writer = response.getWriter()) {
@@ -114,7 +114,7 @@ public class UserController {
     }
 
     @ExceptionHandler(MailSendException.class)
-    public void handleMailSendException(MailSendException exception, HttpServletResponse response) throws IOException {
+    public void handleMailSendException(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         try (Writer writer = response.getWriter()) {

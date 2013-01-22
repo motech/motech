@@ -1,6 +1,7 @@
 package org.motechproject.admin.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 @Controller
@@ -87,10 +89,17 @@ public class BundleAdminController {
         response.getOutputStream().write(bundleIcon.getIcon());
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(BundleException.class)
-    public void handleBundleException(BundleException ex) {
+    @ExceptionHandler(Exception.class)
+    public void handleBundleException(HttpServletResponse response, Exception ex) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         Throwable rootEx = (ex.getCause() == null ? ex : ex.getCause());
-        statusMessageService.error(rootEx.getMessage());
+
+        String msg = (StringUtils.isNotBlank(rootEx.getMessage())) ? rootEx.getMessage() : rootEx.toString();
+        statusMessageService.error(msg);
+
+        try (Writer writer = response.getWriter()) {
+            writer.write(ExceptionUtils.getStackTrace(ex));
+        }
+
     }
 }
