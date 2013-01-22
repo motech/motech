@@ -25,10 +25,10 @@ public class ServerBundleIT extends BaseOsgiIT {
         assertEquals(registrationData, service.getModuleData(registrationData.getModuleName()));
     }
 
-    public void testController() throws IOException {
+    public void testThatControllerIsUp() throws IOException {
         HttpClient client = new DefaultHttpClient();
-        final String response = client.execute(new HttpGet("http://localhost:8080/server/lang"), new BasicResponseHandler());
-        assertEquals("en", response);
+        final String response = client.execute(new HttpGet("http://localhost:8080/server/lang/list"), new BasicResponseHandler());
+        assertTrue(response.contains("en"));
     }
 
     @Override
