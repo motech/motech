@@ -4,4 +4,5 @@
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
     <osgi:reference id="smsServiceRef" interface="org.motechproject.sms.api.service.SmsService" />
+    <osgi:reference id="smsAuditServiceRef" interface="org.motechproject.sms.api.service.SmsAuditService"/>
 </beans>

@@ -61,14 +61,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>applicationSmsSmppBundle.xml</Context-File>
+                        <Context-File>META-INF/osgi/applicationSmsSmppBundle.xml</Context-File>
                         <Context-Path>smssmpp</Context-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.sms.smpp.*;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             !org.testng,
                             !org.testng.annotations,

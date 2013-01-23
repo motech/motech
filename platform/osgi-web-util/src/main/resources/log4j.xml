@@ -9,16 +9,9 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject.scheduler.impl.MotechScheduler">
+    <logger name="org.motechproject.osgi.web">
         <level value="INFO"/>
-    </logger>
-
-    <logger name="org.motechproject.scheduler.impl.MotechScheduledJob">
-        <level value="INFO"/>
-    </logger>
-
-    <logger name="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl">
-        <level value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <root>

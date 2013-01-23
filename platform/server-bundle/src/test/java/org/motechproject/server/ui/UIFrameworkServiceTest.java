@@ -1,5 +1,6 @@
 package org.motechproject.server.ui;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
 import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 
@@ -49,6 +51,19 @@ public class UIFrameworkServiceTest {
     public void testDoubleRegistration() {
         service.registerModule(moduleRegistration());
         service.registerModule(moduleRegistration());
+    }
+
+    @Test
+    public void shouldCheckIfModuleRegistered() {
+        UIFrameworkServiceImpl uiFrameworkService = new UIFrameworkServiceImpl();
+        ModuleRegistrationData testModule = new ModuleRegistrationData("test-module", "http://goo.gl");
+
+        assertFalse(uiFrameworkService.isModuleRegistered("test-module"));
+
+        uiFrameworkService.registerModule(testModule);
+
+        Assert.assertTrue(uiFrameworkService.isModuleRegistered("test-module"));
+
     }
 
     private ModuleRegistrationData moduleRegistration() {

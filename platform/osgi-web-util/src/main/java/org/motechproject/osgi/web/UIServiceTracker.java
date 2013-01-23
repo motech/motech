@@ -6,6 +6,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+
 public class UIServiceTracker extends ServiceTracker {
 
     private static Logger logger = LoggerFactory.getLogger(UIServiceTracker.class);
@@ -17,10 +19,14 @@ public class UIServiceTracker extends ServiceTracker {
         this.moduleRegistrationData = moduleRegistrationData;
     }
 
+    public UIServiceTracker(BundleContextWrapper wrapper, ModuleRegistrationData moduleRegistrationData) {
+        this(wrapper.getBundleContext(), moduleRegistrationData);
+    }
+
     @Override
     public Object addingService(ServiceReference ref) {
         Object service = super.addingService(ref);
-        serviceAdded((UIFrameworkService) service);
+        register((UIFrameworkService) service);
         return service;
     }
 
@@ -30,7 +36,24 @@ public class UIServiceTracker extends ServiceTracker {
         super.removedService(ref, service);
     }
 
-    private void serviceAdded(UIFrameworkService service) {
+    @PostConstruct
+    public void start() {
+        registerServiceIfAvailable();
+        open();
+    }
+
+    private void registerServiceIfAvailable() {
+        ServiceReference serviceReference = context.getServiceReference(UIFrameworkService.class.getName());
+        if (serviceReference != null) {
+            register((UIFrameworkService) context.getService(serviceReference));
+        }
+    }
+
+    private void register(UIFrameworkService service) {
+        if (service.isModuleRegistered(moduleRegistrationData.getModuleName())) {
+            return;
+        }
+
         service.registerModule(moduleRegistrationData);
         logger.debug(String.format("%s registered in UI framework", moduleRegistrationData.getModuleName()));
     }

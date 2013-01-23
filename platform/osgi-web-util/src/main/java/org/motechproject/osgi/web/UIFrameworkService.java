@@ -14,4 +14,6 @@ public interface UIFrameworkService {
     Map<String, Collection<ModuleRegistrationData>> getRegisteredModules();
 
     ModuleRegistrationData getModuleData(String moduleName);
+
+    boolean isModuleRegistered(String moduleName);
 }

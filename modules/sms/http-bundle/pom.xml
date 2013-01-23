@@ -64,15 +64,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>applicationSmsHttpBundle.xml</Context-File>
+                        <Context-File>META-INF/osgi/applicationSmsHttpBundle.xml</Context-File>
                         <Context-Path>smshttp/api</Context-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.sms.http;version=${project.version},
                             org.motechproject.sms.http.service;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,
                             org.motechproject.scheduler,

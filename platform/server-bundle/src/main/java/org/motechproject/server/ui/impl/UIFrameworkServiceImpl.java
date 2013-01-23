@@ -70,4 +70,9 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
 
         return module;
     }
+
+    @Override
+    public boolean isModuleRegistered(String moduleName) {
+        return getModuleData(moduleName) != null;
+    }
 }

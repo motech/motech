@@ -59,14 +59,13 @@
                     <instructions>
                         <Context-File>META-INF/osgi/applicationSmsAPIBundle.xml</Context-File>
                         <Context-Path>smsapi</Context-Path>
+                        <Resource-Path>sms/resource</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.sms.api;version=${project.version},
                             org.motechproject.sms.api.constants;version=${project.version},
                             org.motechproject.sms.api.service;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.sms.api.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.xml,

@@ -2,8 +2,6 @@ package org.motechproject.osgi.web;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +14,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) {
         this.tracker = new HttpServiceTracker(context, resourceMappings());
-        this.tracker.open();
-        final ServiceReference httpServiceReference = context.getServiceReference(HttpService.class.getName());
-        if (httpServiceReference != null) {
-            tracker.register((HttpService) context.getService(httpServiceReference));
-        }
+        tracker.start();
         logger.debug(String.format("Started bundle: [%d] %s", context.getBundle().getBundleId(),
                 context.getBundle().getSymbolicName()));
     }

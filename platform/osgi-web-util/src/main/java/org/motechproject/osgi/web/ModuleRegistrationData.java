@@ -19,6 +19,14 @@ public class ModuleRegistrationData {
         this(null, null);
     }
 
+    public ModuleRegistrationData(String moduleName, String url, List<String> angularModules, Map<String, String> i18n, Header header) {
+        this.moduleName = moduleName;
+        this.url = url;
+        this.angularModules = angularModules;
+        this.i18n = i18n;
+        this.header = header.asString();
+    }
+
     public ModuleRegistrationData(String moduleName, String url) {
         this.moduleName = moduleName;
         this.url = url;

@@ -15,18 +15,11 @@
     <context:component-scan base-package="org.motechproject.sms.api"/>
 
 
-    <import resource="classpath*:META-INF/motech/*.xml" />
-
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
 
     <osgi:service id="smsServiceOsgi" auto-export="interfaces" ref="smsService"
                   interface="org.motechproject.sms.api.service.SmsService"/>
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.listener.EventRelay" />
-
-    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
-    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
 </beans>
