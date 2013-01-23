@@ -36,6 +36,10 @@
     <security:http pattern="/**/locate*" security="none" />
     <security:http pattern="/**/startup*" security="none" />
 
+    <!-- This should be removed once modules can register urls with the web security system for protection
+         under different authorization schemes.  i.e. no security, api key, etc. -->
+    <security:http pattern="/**/commcare/**" security="none" />
+
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
 
     <bean id="loginFormAuthentication" class="org.motechproject.security.authentication.MotechLoginUrlAuthenticationEntryPoint">
