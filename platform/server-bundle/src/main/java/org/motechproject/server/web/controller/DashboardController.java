@@ -83,11 +83,6 @@ public class DashboardController {
         return mav;
     }
 
-    @RequestMapping("/old")
-    public ModelAndView oldIndex() {
-        return new ModelAndView("oldindex");
-    }
-
     private String getUptime(HttpServletRequest request) {
         RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
         Period uptime = new Duration(mx.getUptime()).toPeriod();
