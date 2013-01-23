@@ -31,7 +31,6 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
@@ -47,6 +46,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
+                            org.motechproject.mrs;version=${project.version},
                             org.motechproject.mrs.exception;version=${project.version},
                             org.motechproject.mrs.security;version=${project.version},
                             org.motechproject.mrs.services;version=${project.version},
@@ -57,6 +57,7 @@
                             org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.springframework.stereotype,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-mrs-api</Embed-Dependency>
