@@ -1,0 +1,113 @@
+{
+    "name": "MRS",
+    "objects": [
+        {
+            "displayName": "Patient",
+            "type": "MRSPatient",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "ID",
+                    "fieldKey": "id"
+                },
+                {
+                    "displayName": "FacilityID",
+                    "fieldKey": "facility.id"
+                },
+                {
+                    "displayName": "PersonID",
+                    "fieldKey": "person.id"
+                }
+            ]
+        },
+        {
+            "displayName": "Person",
+            "type": "MRSPerson",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "ID",
+                    "fieldKey": "id"
+                },
+                {
+                    "displayName": "First name",
+                    "fieldKey": "firstName"
+                },
+                {
+                    "displayName": "Middle name",
+                    "fieldKey": "middleName"
+                },
+                {
+                    "displayName": "Last name",
+                    "fieldKey": "lastName"
+                },
+                {
+                    "displayName": "Preferred name",
+                    "fieldKey": "preferredName"
+                },
+                {
+                    "displayName": "Address",
+                    "fieldKey": "address"
+                },
+                {
+                    "displayName": "Date of birth",
+                    "fieldKey": "dateOfBirth",
+                    "type": "DATE"
+                },
+                {
+                    "displayName": "Birth date estimated",
+                    "fieldKey": "birthDateEstimated"
+                },
+                {
+                    "displayName": "Age",
+                    "fieldKey": "age",
+                    "type": "NUMBER"
+                },
+                {
+                    "displayName": "Gender",
+                    "fieldKey": "gender"
+                },
+                {
+                    "displayName": "Dead",
+                    "fieldKey": "dead"
+                },
+                {
+                    "displayName": "Death date",
+                    "fieldKey": "deathDate",
+                    "type": "DATE"
+                }
+            ]
+        },
+        {
+            "displayName": "Facility",
+            "type": "MRSFacility",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "ID",
+                    "fieldKey": "id"
+                },
+                {
+                    "displayName": "Name",
+                    "fieldKey": "name"
+                },
+                {
+                    "displayName": "Country",
+                    "fieldKey": "country"
+                },
+                {
+                    "displayName": "Region",
+                    "fieldKey": "region"
+                },
+                {
+                    "displayName": "County district",
+                    "fieldKey": "countyDistrict"
+                },
+                {
+                    "displayName": "State province",
+                    "fieldKey": "stateProvince"
+                }
+            ]
+        }
+    ]
+}

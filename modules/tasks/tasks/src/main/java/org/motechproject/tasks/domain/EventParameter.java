@@ -1,30 +1,21 @@
 package org.motechproject.tasks.domain;
 
-public class EventParameter {
-    private String displayName;
+import java.util.Objects;
+
+public class EventParameter extends Parameter {
     private String eventKey;
-    private EventParamType type;
 
     public EventParameter() {
         this(null, null);
     }
 
     public EventParameter(String displayName, String eventKey) {
-        this(displayName, eventKey, EventParamType.UNICODE);
+        this(displayName, eventKey, ParameterType.UNICODE);
     }
 
-    public EventParameter(final String displayName, final String eventKey, final EventParamType type) {
-        this.displayName = displayName;
+    public EventParameter(final String displayName, final String eventKey, final ParameterType type) {
+        super(displayName, type);
         this.eventKey = eventKey;
-        this.type = type;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
     }
 
     public String getEventKey() {
@@ -35,52 +26,35 @@ public class EventParameter {
         this.eventKey = eventKey;
     }
 
-    public EventParamType getType() {
-        return type;
-    }
-
-    public void setType(final EventParamType type) {
-        this.type = type;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof EventParameter)) {
             return false;
         }
 
-        EventParameter parameter = (EventParameter) o;
-
-        if (displayName != null ? !displayName.equals(parameter.displayName) : parameter.displayName != null) {
+        if (!super.equals(o)) {
             return false;
         }
 
-        if (eventKey != null ? !eventKey.equals(parameter.eventKey) : parameter.eventKey != null) {
-            return false;
-        }
+        EventParameter that = (EventParameter) o;
 
-        if (type != null ? !type.equals(parameter.type) : parameter.type != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(eventKey, that.eventKey);
     }
 
     @Override
     public int hashCode() {
-        int result = displayName != null ? displayName.hashCode() : 0;
+        int result = super.hashCode();
         result = 31 * result + (eventKey != null ? eventKey.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
 
         return result;
     }
 
     @Override
     public String toString() {
-        return String.format("EventParameter{displayName='%s', eventKey='%s', type=%s}", displayName, eventKey, type);
+        return String.format("EventParameter{eventKey='%s'} %s", eventKey, super.toString());
     }
 }

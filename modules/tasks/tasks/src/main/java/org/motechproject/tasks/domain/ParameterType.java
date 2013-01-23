@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonValue;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-public enum EventParamType {
+public enum ParameterType {
     UNICODE("UNICODE"),
     TEXTAREA("TEXTAREA"),
     NUMBER("NUMBER"),
@@ -33,15 +33,15 @@ public enum EventParamType {
         return value.equalsIgnoreCase(DATE.getValue());
     }
 
-    private EventParamType(String value) {
+    private ParameterType(String value) {
         this.value = value;
     }
 
-    public static EventParamType fromString(String string) {
-        EventParamType result = null;
+    public static ParameterType fromString(String string) {
+        ParameterType result = null;
 
         if (isNotBlank(string)) {
-            for (EventParamType level : EventParamType.values()) {
+            for (ParameterType level : ParameterType.values()) {
                 if (level.getValue().equalsIgnoreCase(string)) {
                     result = level;
                     break;

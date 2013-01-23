@@ -9,7 +9,7 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.EventParamType;
+import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.OperatorType;
@@ -216,7 +216,7 @@ public class TaskTriggerHandler {
             EventParameter eventParameter = filter.getEventParameter();
 
             if (triggerParameters.containsKey(eventParameter.getEventKey())) {
-                EventParamType type = eventParameter.getType();
+                ParameterType type = eventParameter.getType();
                 Object object = triggerParameters.get(eventParameter.getEventKey());
 
                 if (type.isString()) {
