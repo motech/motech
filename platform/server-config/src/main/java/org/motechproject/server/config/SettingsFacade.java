@@ -1,10 +1,6 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.CouchDbInstance;
-import org.ektorp.impl.StdCouchDbInstance;
-import org.ektorp.spring.HttpClientFactoryBean;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +8,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,66 +149,6 @@ public class SettingsFacade {
         }
 
         setProperty(filename, key, value);
-    }
-
-    public CouchDbConnector getConnector(String dbName, final String couchDbFileName) throws FileNotFoundException {
-        CouchDbConnector connector = null;
-        String finalDbName = getDbPrefix() + dbName;
-
-        if (platformSettingsService != null) {
-            try {
-                connector = platformSettingsService.getCouchConnector(finalDbName);
-            } catch (Exception e) {
-                connector = null;
-            }
-        }
-
-        if (connector == null) {
-            URL couchDbURL = getClass().getClassLoader().getResource(couchDbFileName);
-
-            if (couchDbURL != null) {
-                InputStream couchDbStream = null;
-
-                try {
-                    URLConnection conn = couchDbURL.openConnection();
-                    couchDbStream = conn.getInputStream();
-
-                    Properties couchDb = new Properties();
-                    couchDb.load(couchDbStream);
-
-                    HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean();
-                    httpClientFactoryBean.setProperties(couchDb);
-                    httpClientFactoryBean.setTestConnectionAtStartup(true);
-                    httpClientFactoryBean.setCaching(false);
-                    httpClientFactoryBean.afterPropertiesSet();
-
-                    CouchDbInstance instance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
-                    connector = instance.createConnector(finalDbName, true);
-                } catch (Exception e) {
-                    throw new MotechException("Error during creation CouchDbConnector", e);
-                } finally {
-                    IOUtils.closeQuietly(couchDbStream);
-                }
-            } else {
-                throw new FileNotFoundException(String.format("Cant find file: %s", couchDbFileName));
-            }
-        }
-
-        return connector;
-    }
-
-    private String getDbPrefix() {
-        Properties motechProperties = new Properties();
-        try {
-            motechProperties.load(getClass().getClassLoader().getResourceAsStream("motech.properties"));
-        } catch (Exception ignore) {
-        }
-
-        String appName = motechProperties.getProperty("motech.app.name", null);
-        if (appName == null || appName.trim().isEmpty() ) {
-            return "";
-        }
-        return appName + "_";
     }
 
     public void saveConfigProperties(String filename, Properties properties) {

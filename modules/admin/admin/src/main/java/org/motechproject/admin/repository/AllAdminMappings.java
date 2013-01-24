@@ -4,12 +4,17 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.admin.domain.AdminMapping;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class AllAdminMappings extends MotechBaseRepository<AdminMapping> {
 
-    public AllAdminMappings(CouchDbConnector connector) {
+    @Autowired
+    public AllAdminMappings(@Qualifier("adminDbConnector") CouchDbConnector connector) {
         super(AdminMapping.class, connector);
     }
 

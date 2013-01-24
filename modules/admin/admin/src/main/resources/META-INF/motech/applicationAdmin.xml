@@ -29,6 +29,10 @@
         <property name="cookieMaxAge" value="100000"/>
     </bean>
 
+    <bean id="adminDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-admin"/>
+    </bean>
+
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">

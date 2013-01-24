@@ -57,6 +57,7 @@
                             org.aopalliance.aop,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener,
                             org.springframework.cache.config,
                             org.springframework.cache.concurrent,

@@ -11,9 +11,8 @@
         <property name="moduleName" value="scheduletracking-api"/>
     </bean>
 
-    <bean id="scheduleTrackingDbConnector" factory-bean="scheduleTrackingSettings" factory-method="getConnector">
+    <bean id="scheduleTrackingDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-scheduletracking-api"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <context:annotation-config/>

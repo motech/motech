@@ -62,6 +62,7 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.ektorp.support,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.decisiontree.core,
                             org.motechproject.decisiontree.core.model,
                             org.motechproject.decisiontree.core.repository,

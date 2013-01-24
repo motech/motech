@@ -66,6 +66,7 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.ektorp.support,
+                            org.motechproject.commons.couchdb.service,
                             org.mvel,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,

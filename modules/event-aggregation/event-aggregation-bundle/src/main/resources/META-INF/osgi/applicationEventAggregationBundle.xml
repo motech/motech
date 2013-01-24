@@ -8,6 +8,8 @@
 
     <import resource="classpath*:META-INF/motech/applicationEventAggregation.xml" />
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" cardinality="0..1" />
 
     <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>

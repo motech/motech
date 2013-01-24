@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -128,6 +133,7 @@
                             org.motechproject.server.bundle.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.osgi.framework;version="0.0.0",

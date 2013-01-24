@@ -13,9 +13,8 @@
         <property name="moduleName" value="ivr-asterisk"/>
     </bean>
 
-    <bean id="platformIvrDbConnector" factory-bean="asteriskSettings" factory-method="getConnector">
+    <bean id="platformIvrDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-ivr-asterisk"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="ivrServiceAsterisk" class="org.motechproject.server.asterisk.IVRServiceAsteriskImpl">

@@ -94,6 +94,7 @@
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.osgi.web,
+                            org.motechproject.commons.couchdb.service,
                             *
                         </Import-Package>
                     </instructions>

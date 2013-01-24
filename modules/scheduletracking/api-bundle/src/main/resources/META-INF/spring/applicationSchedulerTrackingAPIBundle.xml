@@ -13,6 +13,8 @@
     <osgi:reference cardinality="0..1" id="schedulerServiceOsgi"
                     interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>

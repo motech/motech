@@ -13,9 +13,8 @@
         <property name="moduleName" value="decisiontree-core"/>
     </bean>
 
-    <bean id="treesDatabase" factory-bean="decissionTreeCoreSettings" factory-method="getConnector">
+    <bean id="treesDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="trees"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="treeDao" class="org.motechproject.decisiontree.core.repository.AllTrees">

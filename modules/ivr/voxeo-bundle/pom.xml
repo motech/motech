@@ -81,6 +81,7 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.motechproject.event.listener.annotations,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.ivr.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,

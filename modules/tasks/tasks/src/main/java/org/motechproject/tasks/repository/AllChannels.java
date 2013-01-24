@@ -6,6 +6,7 @@ import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.tasks.domain.Channel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class AllChannels extends MotechBaseRepository<Channel> {
 
     @Autowired
-    public AllChannels(final CouchDbConnector connector) {
+    public AllChannels(final @Qualifier("taskDbConnector") CouchDbConnector connector) {
         super(Channel.class, connector);
     }
 

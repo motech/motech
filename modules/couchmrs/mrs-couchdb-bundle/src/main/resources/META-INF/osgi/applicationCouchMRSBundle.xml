@@ -9,4 +9,6 @@
 
     <osgi:service ref="couchMRSService" interface="org.motechproject.couch.mrs.service.CouchMRSService" />
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
 </beans>

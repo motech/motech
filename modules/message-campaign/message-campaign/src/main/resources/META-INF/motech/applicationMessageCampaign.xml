@@ -20,9 +20,8 @@
         </property>
     </bean>
 
-    <bean id="messageCampaignDBConnector" factory-bean="messageCampaignSettings" factory-method="getConnector">
+    <bean id="messageCampaignDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-message-campaign"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>

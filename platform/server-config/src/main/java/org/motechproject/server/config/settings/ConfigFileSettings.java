@@ -74,21 +74,6 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     @Override
-    public Properties getCouchDBProperties() {
-        Properties couchProperties = new Properties();
-
-        putPropertyIfNotNull(couchProperties, "host", motechSettings.getProperty(DB_HOST));
-        putPropertyIfNotNull(couchProperties, "port", motechSettings.getProperty(DB_PORT));
-        putPropertyIfNotNull(couchProperties, "username", motechSettings.getProperty(DB_USERNAME));
-        putPropertyIfNotNull(couchProperties, "password", motechSettings.getProperty(DB_PASSWORD));
-        putPropertyIfNotNull(couchProperties, "maxConnections", motechSettings.getProperty(DB_MAX_CONNECTIONS));
-        putPropertyIfNotNull(couchProperties, "connectionTimeout", motechSettings.getProperty(DB_CONNECTION_TIMEOUT));
-        putPropertyIfNotNull(couchProperties, "socketTimeout", motechSettings.getProperty(DB_SOCKET_TIMEOUT));
-
-        return couchProperties;
-    }
-
-    @Override
     public Properties getActivemqProperties() {
         Properties activemqProperties = new Properties();
         activemqProperties.putAll(activemq);

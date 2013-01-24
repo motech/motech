@@ -8,15 +8,13 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.appointments.api"/>
-    <context:component-scan base-package="org.motechproject.server.config"/>
 
     <bean id="appointmentsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="appointments-api"/>
     </bean>
 
-    <bean id="appointmentsDatabase" factory-bean="appointmentsApiSettings" factory-method="getConnector">
+    <bean id="appointmentsDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-appointments"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
 </beans>

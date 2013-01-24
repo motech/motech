@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:META-INF/motech/applicationCouchMRS.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class AllCouchMRSPersonsIT extends SpringIntegrationTest {
 
     @Autowired

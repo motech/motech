@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
+@ContextConfiguration(locations = {"classpath*:testApplicationAsterisk.xml"})
 public class IVRServiceIT {
 
     private static final String CALLBACK_URL = "http://localhost";

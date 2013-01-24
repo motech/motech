@@ -17,9 +17,8 @@
         <property name="moduleName" value="outbox-api"/>
     </bean>
 
-    <bean id="outboxDatabase" factory-bean="outboxApiSettings" factory-method="getConnector">
+    <bean id="outboxDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-outbox"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.api.repository.AllOutboundVoiceMessages">

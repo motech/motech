@@ -9,6 +9,8 @@
 
     <osgi:service ref="decisionTreeServiceImpl"  interface="org.motechproject.decisiontree.core.DecisionTreeService"/>
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>

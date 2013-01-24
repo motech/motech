@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.config.settings.MotechSettings.AMQ_REDELIVERY_DELAY_IN_MILLIS;
-import static org.motechproject.server.config.settings.MotechSettings.DB_HOST;
 import static org.motechproject.server.config.settings.MotechSettings.GRAPHITE_URL;
 import static org.motechproject.server.config.settings.MotechSettings.LANGUAGE;
 import static org.motechproject.server.config.settings.MotechSettings.QUARTZ_SCHEDULER_NAME;
@@ -76,27 +75,23 @@ public class SettingsServiceTest {
     public void testGetSettings() {
         List<Settings> platformSettingsList = settingsService.getSettings();
 
-        assertEquals(6, platformSettingsList.size());
+        assertEquals(5, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
-        assertEquals(DB_HOST, option.getKey());
-        assertEquals(DB_HOST_VALUE, option.getValue());
-
-        option = platformSettingsList.get(1).getSettings().get(0);
         assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, option.getKey());
         assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, option.getValue());
 
-        option = platformSettingsList.get(2).getSettings().get(0);
+        option = platformSettingsList.get(1).getSettings().get(0);
         assertEquals(QUARTZ_SCHEDULER_NAME, option.getKey());
         assertEquals(QUARTZ_SCHEDULER_NAME_VALUE, option.getValue());
 
-        option = platformSettingsList.get(3).getSettings().get(0);
+        option = platformSettingsList.get(2).getSettings().get(0);
         assertEquals(GRAPHITE_URL, option.getKey());
         assertEquals(GRAPHITE_URL_VALUE, option.getValue());
 
-        assertEquals(0, platformSettingsList.get(4).getSettings().size());
+        assertEquals(0, platformSettingsList.get(3).getSettings().size());
 
-        option = platformSettingsList.get(5).getSettings().get(0);
+        option = platformSettingsList.get(4).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());
         assertEquals(LANGUAGE_VALUE, option.getValue());
 
@@ -148,15 +143,12 @@ public class SettingsServiceTest {
         activemq.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE);
         Properties quartz = new Properties();
         quartz.put(QUARTZ_SCHEDULER_NAME,QUARTZ_SCHEDULER_NAME_VALUE);
-        Properties couchDB = new Properties();
-        couchDB.put(DB_HOST, DB_HOST_VALUE);
         Properties metrics = new Properties();
         metrics.put(GRAPHITE_URL, GRAPHITE_URL_VALUE);
         Properties scheduler = new Properties();
 
         when(motechSettings.getActivemqProperties()).thenReturn(activemq);
         when(motechSettings.getQuartzProperties()).thenReturn(quartz);
-        when(motechSettings.getCouchDBProperties()).thenReturn(couchDB);
         when(motechSettings.getMetricsProperties()).thenReturn(metrics);
         when(motechSettings.getSchedulerProperties()).thenReturn(scheduler);
         when(motechSettings.getLanguage()).thenReturn(LANGUAGE_VALUE);

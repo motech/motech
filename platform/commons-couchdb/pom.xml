@@ -39,9 +39,17 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Import-Package>
+                            !org.motechproject.commons.couchdb.*,
+                            *
+                        </Import-Package>
+                        <DynamicImport-Package>
+                            org.springframework.beans.*
+                        </DynamicImport-Package>
                         <Export-Package>
                             org.motechproject.commons.couchdb.model;version=${project.version},
-                            org.motechproject.commons.couchdb.dao;version=${project.version}
+                            org.motechproject.commons.couchdb.dao;version=${project.version},
+                            org.motechproject.commons.couchdb.service;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

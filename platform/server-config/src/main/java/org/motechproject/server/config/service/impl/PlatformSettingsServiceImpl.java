@@ -1,11 +1,8 @@
 package org.motechproject.server.config.service.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.config.db.CouchDbManager;
-import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.AllSettings;
@@ -38,24 +35,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
     private static final String USER_HOME = "user.home";
 
+    @Autowired
     private AllSettings allSettings;
 
     @Autowired
-    private CouchDbManager couchDbManager;
-
-    @Autowired
     private ConfigFileMonitor configFileMonitor;
-
-    @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
-    public void configureCouchDBManager() throws DbConnectionException {
-        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
-
-        if (configFileSettings != null && !configFileSettings.getCouchDBProperties().isEmpty()) {
-            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
-            allSettings = new AllSettings(getCouchConnector(SETTINGS_DB));
-        }
-    }
 
     @Override
     @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")
@@ -63,14 +47,12 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         MotechSettings settings = configFileMonitor.getCurrentSettings();
 
         if (settings != null) {
-            SettingsRecord record = getDBSettings();
+            SettingsRecord record = allSettings.getSettings();
 
             if (record != null) {
-                record.setCouchDbProperties(settings.getCouchDBProperties());
                 settings = record;
             }
         }
-
         return settings;
     }
 
@@ -84,13 +66,12 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
 
-            SettingsRecord dbSettings = getDBSettings();
+            SettingsRecord dbSettings = allSettings.getSettings();
             if (dbSettings == null) {
                 dbSettings = new SettingsRecord();
-                configureCouchDBManager();
             }
 
-            if (allSettings != null) {
+            if (allSettings != null && configFileMonitor.getCurrentSettings() != null) {
                 dbSettings.updateFromProperties(settings);
                 dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
                 dbSettings.setLastRun(DateTime.now());
@@ -115,7 +96,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             settings.store(fos, null);
             configFileMonitor.monitor();
 
-            SettingsRecord dbSettings = getDBSettings();
+            SettingsRecord dbSettings = allSettings.getSettings();
             if (dbSettings == null) {
                 LOGGER.warn("activemq properties cannot be saved to database");
                 return;
@@ -143,16 +124,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         try {
             // save property to config file
             if (configFile.canWrite()) {
-                Properties couchDb = configFileSettings.getCouchDBProperties();
-
                 configFileSettings.saveMotechSetting(key, value);
                 configFileSettings.storeMotechSettings();
-
-                if (!configFileSettings.getCouchDBProperties().equals(couchDb)) {
-                    configureCouchDBManager();
-                }
             }
-
             saveSettingToDb(key, value);
         } catch (Exception e) {
             LOGGER.error("Error: ", e);
@@ -177,7 +151,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             }
 
             // save property to db
-            SettingsRecord dbSettings = getDBSettings();
+            SettingsRecord dbSettings = allSettings.getSettings();
 
             if (dbSettings != null) {
                 dbSettings.getActivemqProperties().setProperty(key, value);
@@ -212,7 +186,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public Properties exportPlatformSettings() {
         ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
-        SettingsRecord dbSettings = getDBSettings();
+        SettingsRecord dbSettings = allSettings.getSettings();
 
         Properties export = new Properties();
 
@@ -348,11 +322,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public CouchDbConnector getCouchConnector(String dbName) {
-        return couchDbManager.getConnector(dbName, true);
-    }
-
-    @Override
     @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
     public void evictMotechSettingsCache() {
         // Left blank.
@@ -380,20 +349,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         file.getParentFile().mkdirs();
     }
 
-    private SettingsRecord getDBSettings() {
-        if (allSettings == null) {
-            try {
-                configureCouchDBManager();
-            } catch (DbConnectionException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-
-        return allSettings == null ? null : allSettings.getSettings();
-    }
-
     private void saveSettingToDb(String key, String value) {
-        SettingsRecord dbSettings = getDBSettings();
+        SettingsRecord dbSettings = allSettings.getSettings();
 
         if (dbSettings != null) {
             if (MotechSettings.LANGUAGE.equals(key)) {

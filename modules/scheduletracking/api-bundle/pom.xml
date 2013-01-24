@@ -77,6 +77,7 @@
                             org.motechproject.scheduletracking.api.domain;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             *

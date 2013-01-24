@@ -76,6 +76,7 @@
                             org.asteriskjava.live,
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.decisiontree.server.domain,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,

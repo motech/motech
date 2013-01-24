@@ -34,18 +34,12 @@ public class SettingsServiceImpl implements SettingsService {
     @Autowired
     private BundleContext bundleContext;
 
-
     @Override
     public List<Settings> getSettings() {
         MotechSettings motechSettings = platformSettingsService.getPlatformSettings();
         List<Settings> settingsList = new ArrayList<>();
 
         if (motechSettings != null) {
-            Properties couchDbProperties = motechSettings.getCouchDBProperties();
-            Settings couchSettings = new Settings("couchdb", ParamParser.parseProperties(couchDbProperties));
-            ParamParser.convertNames(couchSettings.getSettings());
-            settingsList.add(couchSettings);
-
             Properties activemqProperties = motechSettings.getActivemqProperties();
             Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
             settingsList.add(activemqSettings);
@@ -73,10 +67,7 @@ public class SettingsServiceImpl implements SettingsService {
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);
-
-
         }
-
         return settingsList;
     }
 

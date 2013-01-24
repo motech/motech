@@ -4,8 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.server.config.db.CouchDbManager;
+import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.service.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -23,10 +24,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class PlatformSettingsServiceImplTest {
 
     @Mock
+    AllSettings allSettings;
+
+    @Mock
     ConfigFileSettings motechSettings;
 
     @Mock
-    CouchDbManager couchDbManager;
+    CouchDbManagerImpl couchDbManager;
 
     @Mock
     ConfigFileMonitor configFileMonitor;
@@ -37,14 +41,12 @@ public class PlatformSettingsServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-
         platformSettingsService.evictMotechSettingsCache();
     }
 
     @Test
     public void testGetLanguage() {
         // no settings
-        when(motechSettings.getCouchDBProperties()).thenReturn(new Properties());
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
 
         assertNull(platformSettingsService.getPlatformLanguage());
@@ -67,7 +69,6 @@ public class PlatformSettingsServiceImplTest {
     @Test
     public void testGetLocale() {
         // no settings
-        when(motechSettings.getCouchDBProperties()).thenReturn(new Properties());
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
 
         assertEquals(platformSettingsService.getPlatformLocale(), Locale.getDefault());

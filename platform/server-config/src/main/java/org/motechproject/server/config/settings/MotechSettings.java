@@ -3,13 +3,6 @@ package org.motechproject.server.config.settings;
 import java.util.Properties;
 
 public interface MotechSettings {
-    String DB_HOST = "db.host";
-    String DB_PORT = "db.port";
-    String DB_USERNAME = "db.username";
-    String DB_PASSWORD = "db.password";
-    String DB_MAX_CONNECTIONS = "db.maxConnections";
-    String DB_CONNECTION_TIMEOUT = "db.connectionTimeout";
-    String DB_SOCKET_TIMEOUT = "db.socketTimeout";
 
     String AMQ_QUEUE_EVENTS = "queue.for.events";
     String AMQ_QUEUE_SCHEDULER = "queue.for.scheduler";
@@ -47,8 +40,6 @@ public interface MotechSettings {
     String getProviderUrl();
 
     String getServerUrl();
-
-    Properties getCouchDBProperties();
 
     Properties getActivemqProperties();
 

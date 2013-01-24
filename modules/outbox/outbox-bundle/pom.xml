@@ -68,6 +68,7 @@
                             org.motechproject.outbox.api.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.springframework.context.support,

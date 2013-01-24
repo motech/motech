@@ -22,9 +22,8 @@
         <property name="moduleName" value="tasks"/>
     </bean>
 
-    <bean id="taskDbConnector" factory-bean="tasksSettings" factory-method="getConnector">
+    <bean id="taskDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-tasks"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>

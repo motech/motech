@@ -12,10 +12,8 @@
         <property name="moduleName" value="mrs-couchdb" />
     </bean>
 
-    <bean id="couchMRSDatabaseConnector" factory-bean="couchMRSSettings"
-        factory-method="getConnector">
+    <bean id="couchMRSDatabaseConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-mrs-couchdb" />
-        <constructor-arg value="couchdb.properties" />
     </bean>
 
     <context:annotation-config />

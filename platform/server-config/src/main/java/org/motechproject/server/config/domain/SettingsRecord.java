@@ -25,7 +25,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private DateTime lastRun;
     private byte[] configFileChecksum = new byte[0];
 
-    private Properties couchDbProperties;
     private Properties activemqProperties = new Properties();
     private Properties quartzProperties;
     private Properties metricsProperties;
@@ -39,11 +38,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public String getStatusMsgTimeout() {
         return statusMsgTimeout;
-    }
-
-    @Override
-    public Properties getCouchDBProperties() {
-        return couchDbProperties;
     }
 
     @Override
@@ -82,10 +76,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     public Properties getSchedulerProperties() {
         return schedulerProperties;
-    }
-
-    public void setCouchDbProperties(final Properties couchDbProperties) {
-        this.couchDbProperties = couchDbProperties;
     }
 
     public void setActivemqProperties(final Properties activemqProperties) {

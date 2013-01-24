@@ -34,8 +34,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
@@ -102,7 +100,6 @@ public class StartupControllerTest {
         when(startupManager.findSchedulerInstance(anyString())).thenReturn(false);
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
 
-        when(motechSettings.getCouchDBProperties()).thenReturn(properties);
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
         when(motechSettings.getSchedulerProperties()).thenReturn(properties);
 
@@ -200,7 +197,6 @@ public class StartupControllerTest {
         StartupForm startupForm = new StartupForm();
 
         startupForm.setLanguage("en");
-        startupForm.setDatabaseUrl("test_db_url");
         startupForm.setQueueUrl("test_queue_url");
         startupForm.setSchedulerUrl("test_scheduler_url");
         startupForm.setAdminLogin("motech");

@@ -96,6 +96,7 @@
                             net.sf.cglib.proxy,
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,

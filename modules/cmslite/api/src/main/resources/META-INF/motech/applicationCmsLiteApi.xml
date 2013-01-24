@@ -11,15 +11,13 @@
     <mvc:annotation-driven/>
     <context:component-scan base-package="org.motechproject.cmslite.api"/>
 
-    <bean id="cmsLiteDatabase" factory-bean="settingsFacade" factory-method="getConnector">
+    <bean id="cmsLiteDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-cmslite"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="allStreamContents" class="org.motechproject.cmslite.api.repository.AllStreamContents">
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
-
 
     <bean id="cmsLiteService" class="org.motechproject.cmslite.api.service.CMSLiteServiceImpl">
         <constructor-arg ref="allStreamContents"/>

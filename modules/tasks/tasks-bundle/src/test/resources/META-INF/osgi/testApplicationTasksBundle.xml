@@ -2,8 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+            ">
+
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
         <constructor-arg value="classpath:test-channel.json"/>
@@ -13,9 +17,8 @@
         <property name="moduleName" value="tasks"/>
     </bean>
 
-    <bean id="testTaskDbConnector" factory-bean="testTasksSettings" factory-method="getConnector">
+    <bean id="testTaskDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-tasks"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.tasks.repository.AllChannels">

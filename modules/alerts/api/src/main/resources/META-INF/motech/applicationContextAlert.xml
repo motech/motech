@@ -12,9 +12,8 @@
         <property name="moduleName" value="alerts-api" />
     </bean>
 
-    <bean id="alertDbConnector" factory-bean="alertApiSettings" factory-method="getConnector">
+    <bean id="alertDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-alert"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>

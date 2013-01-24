@@ -28,9 +28,8 @@
 
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
-    <bean id="smppDBConnector" factory-bean="smsSmppSettings" factory-method="getConnector">
+    <bean id="smppDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-sms-audit"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>

@@ -52,6 +52,7 @@
                             javax.servlet.*;resolution:=optional,
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.osgi.framework;version="0.0.0",

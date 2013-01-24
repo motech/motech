@@ -1,6 +1,5 @@
 package org.motechproject.admin.service.impl;
 
-import org.ektorp.CouchDbConnector;
 import org.motechproject.admin.domain.AdminMapping;
 import org.motechproject.admin.ex.NoDbException;
 import org.motechproject.admin.repository.AllAdminMappings;
@@ -91,14 +90,6 @@ public class AdminMappingServiceImpl implements AdminMappingService {
     }
 
     private AllAdminMappings getAllAdminMappings() {
-        if (allAdminMappings == null) {
-            try {
-                CouchDbConnector connector = platformSettingsService.getCouchConnector("motech-admin");
-                allAdminMappings = new AllAdminMappings(connector);
-            } catch (RuntimeException e) {
-                LOG.error("No db connection");
-            }
-        }
         return allAdminMappings;
     }
 

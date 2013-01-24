@@ -1,4 +1,4 @@
-package org.motechproject.server.config.db;
+package org.motechproject.commons.couchdb.service;
 
 public class DbConnectionException extends Exception {
 

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 
 @Controller
 public class StartupController {
@@ -89,8 +88,6 @@ public class StartupController {
             ConfigFileSettings settings = startupManager.getLoadedConfig();
             settings.saveMotechSetting(MotechSettings.LANGUAGE, form.getLanguage());
             settings.saveMotechSetting(MotechSettings.SCHEDULER_URL, form.getSchedulerUrl());
-            settings.saveMotechSetting(MotechSettings.DB_HOST, form.getDatabaseHost());
-            settings.saveMotechSetting(MotechSettings.DB_PORT, form.getDatabasePort());
             settings.saveMotechSetting(MotechSettings.LOGINMODE, form.getLoginMode());
             settings.saveActiveMqSetting(MotechSettings.AMQ_BROKER_URL, form.getQueueUrl());
             settings.saveMotechSetting(MotechSettings.PROVIDER_NAME, form.getProviderName());
@@ -123,16 +120,10 @@ public class StartupController {
 
     private StartupSuggestionsForm createSuggestions() {
         MotechSettings settings = startupManager.getLoadedConfig();
-        Properties couchDBProperties = settings.getCouchDBProperties();
         StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
 
-        String dbUrl = String.format("http://%s:%s", couchDBProperties.getProperty("host"), couchDBProperties.getProperty("port"));
         String queueUrl = settings.getActivemqProperties().getProperty(MotechSettings.AMQ_BROKER_URL);
         String schedulerUrl = settings.getSchedulerProperties().getProperty(MotechSettings.SCHEDULER_URL);
-
-        if (startupManager.findCouchDBInstance(dbUrl)) {
-            suggestions.addDatabaseSuggestion(dbUrl);
-        }
 
         if (startupManager.findActiveMQInstance(queueUrl)) {
             suggestions.addQueueSuggestion(queueUrl);

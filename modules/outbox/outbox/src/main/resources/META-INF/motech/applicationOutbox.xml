@@ -13,9 +13,8 @@
         <property name="moduleName" value="outbox"/>
     </bean>
 
-    <bean id="outboxDatabase" factory-bean="outboxSettings" factory-method="getConnector">
+    <bean id="outboxDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-outbox"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <context:annotation-config/>

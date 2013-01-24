@@ -10,6 +10,8 @@
     <osgi:service id="rulesServiceOsgi" auto-export="interfaces" ref="rulesService"
                   interface="org.motechproject.rules.service.KnowledgeBaseManagerInterface"/>
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>

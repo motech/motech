@@ -52,6 +52,7 @@
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.commons.couchdb.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.web.servlet.config,

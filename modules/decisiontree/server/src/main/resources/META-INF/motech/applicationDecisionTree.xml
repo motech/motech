@@ -13,17 +13,14 @@
         <property name="moduleName" value="decisiontree-server"/>
     </bean>
 
-    <bean id="flowSession" factory-bean="decissionTreeSettings" factory-method="getConnector">
+    <bean id="flowSession" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="flowSession"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
-    <bean id="callDetailRecord" factory-bean="decissionTreeSettings" factory-method="getConnector">
+    <bean id="callDetailRecord" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="callDetailRecords"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>
-
 
 </beans>

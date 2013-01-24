@@ -23,7 +23,6 @@ import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
@@ -55,9 +54,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertServicePresent(MotechRoleService.class);
     }
 
-    public void testStatusMessageService() throws DbConnectionException {
-        configureDb();
-
+    public void testStatusMessageService() {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
 
         service.error(ERROR_MSG, TIMEOUT);
@@ -95,9 +92,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No settings listed", json.size() > 0);
     }
 
-    public void testMessageController() throws IOException, DbConnectionException {
-        configureDb();
-
+    public void testMessageController() throws IOException {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
         service.error(ERROR_MSG, TIMEOUT);
 
@@ -153,12 +148,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertFalse("Found more then one matching message for: " + text, found.size() > 1);
 
         return found.get(0);
-    }
-
-    private void configureDb() throws DbConnectionException {
-        PlatformSettingsService settingsService = (PlatformSettingsService)
-                assertServicePresent(PlatformSettingsService.class);
-        settingsService.configureCouchDBManager();
     }
 
     @Override

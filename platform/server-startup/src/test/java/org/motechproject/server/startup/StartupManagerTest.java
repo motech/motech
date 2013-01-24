@@ -6,9 +6,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.motechproject.server.config.ConfigLoader;
-import org.motechproject.server.config.db.CouchDbManager;
-import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;
@@ -22,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +33,7 @@ public class StartupManagerTest {
     private CouchDbConnector couchDbConnector;
 
     @Mock
-    CouchDbManager couchDbManager;
+    CouchDbManagerImpl couchDbManager;
 
     @Mock
     ConfigLoader configLoader;
@@ -62,7 +60,6 @@ public class StartupManagerTest {
     @Before
     public void setUp() {
         initMocks(this);
-//        when(couchDbManager.getConnector("motech-platform-startup", true)).thenReturn(couchDbConnector);
     }
 
     @Test
@@ -76,28 +73,6 @@ public class StartupManagerTest {
         assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
         verify(configLoader).loadConfig();
-        verify(configFileMonitor).getCurrentSettings();
-
-        verify(eventAdmin, never()).postEvent(any(Event.class));
-        verify(eventAdmin, never()).sendEvent(any(Event.class));
-    }
-
-    @Test
-    public void testNoDb() throws DbConnectionException {
-        when(configLoader.loadConfig()).thenReturn(configFileSettings);
-        when(configFileMonitor.getCurrentSettings()).thenReturn(configFileSettings);
-        when(configFileSettings.getCouchDBProperties()).thenReturn(couchDbProperties);
-        doThrow(new DbConnectionException("Failure")).when(platformSettingsService).configureCouchDBManager();
-
-        startupManager.startup();
-
-        verify(configLoader).loadConfig();
-        verify(platformSettingsService).configureCouchDBManager();
-
-        assertEquals(startupManager.getPlatformState(), MotechPlatformState.NO_DB);
-        assertEquals(platformSettingsService.getPlatformSettings(), configFileSettings);
-        assertFalse(startupManager.canLaunchBundles());
-
         verify(configFileMonitor).getCurrentSettings();
 
         verify(eventAdmin, never()).postEvent(any(Event.class));

@@ -7,11 +7,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.server.config.ConfigLoader;
-import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -47,7 +46,7 @@ public final class StartupManager {
     private ConfigLoader configLoader;
 
     @Autowired
-    private PlatformSettingsService platformSettingsService;
+    private CouchDbManager couchDbManager;
 
     @Autowired
     private EventAdmin eventAdmin;
@@ -189,40 +188,29 @@ public final class StartupManager {
     }
 
     private void syncSettingsWithDb() {
-        // test Database
         try {
-            platformSettingsService.configureCouchDBManager();
-        } catch (DbConnectionException e) {
-            LOGGER.error(e.getMessage(), e);
-            platformState = MotechPlatformState.NO_DB;
-        }
+            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
+            SettingsRecord dbSettings = allSettings.getSettings();
 
-        // load db settings
-        if (platformState != MotechPlatformState.NO_DB) {
-            try {
-                AllSettings allSettings = new AllSettings(platformSettingsService.getCouchConnector(SETTINGS_DB));
-                SettingsRecord dbSettings = allSettings.getSettings();
-
-                if (dbSettings.getLastRun() == null) {
-                    platformState = MotechPlatformState.FIRST_RUN;
-                } else {
-                    platformState = MotechPlatformState.NORMAL_RUN;
-                }
-
-                if (platformState == MotechPlatformState.FIRST_RUN ||
-                        !Arrays.equals(configFileSettings.getMd5checkSum(), dbSettings.getConfigFileChecksum())) {
-                    LOGGER.info("Updating database startup");
-                    dbSettings.updateSettings(configFileSettings);
-                }
-
-                dbSettings.setLastRun(DateTime.now());
-                dbSettings.setConfigFileChecksum(configFileSettings.getMd5checkSum());
-
-                allSettings.addOrUpdateSettings(dbSettings);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-                platformState = MotechPlatformState.DB_ERROR;
+            if (dbSettings.getLastRun() == null) {
+                platformState = MotechPlatformState.FIRST_RUN;
+            } else {
+                platformState = MotechPlatformState.NORMAL_RUN;
             }
+
+            if (platformState == MotechPlatformState.FIRST_RUN ||
+                    !Arrays.equals(configFileSettings.getMd5checkSum(), dbSettings.getConfigFileChecksum())) {
+                LOGGER.info("Updating database startup");
+                dbSettings.updateSettings(configFileSettings);
+            }
+
+            dbSettings.setLastRun(DateTime.now());
+            dbSettings.setConfigFileChecksum(configFileSettings.getMd5checkSum());
+
+            allSettings.addOrUpdateSettings(dbSettings);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            platformState = MotechPlatformState.DB_ERROR;
         }
     }
 

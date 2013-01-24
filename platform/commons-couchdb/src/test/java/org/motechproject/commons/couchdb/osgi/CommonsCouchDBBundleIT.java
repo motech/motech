@@ -1,8 +1,6 @@
 package org.motechproject.commons.couchdb.osgi;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.ektorp.CouchDbConnector;
-import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
@@ -11,12 +9,24 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.dao.BusinessIdNotUniqueException;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.osgi.framework.ServiceReference;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 public class CommonsCouchDBBundleIT extends BaseOsgiIT {
+
+    public void testCouchDbManager() throws Exception {
+        ServiceReference registryReference = bundleContext.getServiceReference(CouchDbManager.class.getName());
+        assertNotNull(registryReference);
+        CouchDbManager service = (CouchDbManager) bundleContext.getService(registryReference);
+        assertNotNull(service);
+        CouchDbConnector dbConnector = service.getConnector("foo");
+        assertEquals("foo", dbConnector.getDatabaseName());
+    }
 
     public void testCommonsCouchDB() throws Exception {
         CouchDbConnector connector = getConnector();
@@ -44,6 +54,15 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
         return new StdCouchDbConnector("test", new StdCouchDbInstance(httpClientFactoryBean.getObject()));
     }
 
+    @Override
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.commons.couchdb.service");
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {"/testApplicationCommonsCouchdbBundleContext.xml"};
+    }
 
     class TestRepository extends MotechBaseRepository<TestRecord> {
         protected TestRepository(Class<TestRecord> type, CouchDbConnector db) {

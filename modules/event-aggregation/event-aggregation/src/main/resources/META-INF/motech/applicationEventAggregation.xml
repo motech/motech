@@ -20,8 +20,7 @@
         <property name="moduleName" value="event-aggregation"/>
     </bean>
 
-    <bean id="eventAggregationDbConnector" factory-bean="eventAggregationSettings" factory-method="getConnector">
+    <bean id="eventAggregationDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-event-aggregation"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 </beans>

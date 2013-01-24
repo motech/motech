@@ -1,7 +1,5 @@
 package org.motechproject.server.config.service;
 
-import org.ektorp.CouchDbConnector;
-import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;
@@ -12,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface PlatformSettingsService {
-    String SETTINGS_DB = "motech-platform-startup";
     String SETTINGS_CACHE_NAME = "MotechSettings";
     String SETTINGS_FILE_NAME = "motech-settings.conf";
     String ACTIVEMQ_FILE_NAME = "activemq.properties";
@@ -62,9 +59,6 @@ public interface PlatformSettingsService {
 
     Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException;
 
-    CouchDbConnector getCouchConnector(String dbName);
-
     void evictMotechSettingsCache();
 
-    void configureCouchDBManager() throws DbConnectionException;
 }

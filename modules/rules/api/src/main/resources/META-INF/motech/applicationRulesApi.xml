@@ -12,9 +12,8 @@
         <property name="moduleName" value="rules-api"/>
     </bean>
 
-    <bean id="rulesDatabase" factory-bean="rulesApiSettings" factory-method="getConnector">
+    <bean id="rulesDatabase" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="rules"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="filesystemRuleLoader" class="org.motechproject.rules.service.FilesystemRuleLoader" init-method="load">

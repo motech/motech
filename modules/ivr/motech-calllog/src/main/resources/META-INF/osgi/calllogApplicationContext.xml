@@ -18,10 +18,11 @@
         <property name="moduleName" value="motech-calllog"/>
     </bean>
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <!-- get a couchdb connector to access motech's datastore -->
-    <bean id="dbConnector" factory-bean="settings" factory-method="getConnector">
-        <constructor-arg value="motech-calllog"/>
-        <constructor-arg value="couchdb.properties"/>
+    <bean id="dbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-calllog" />
     </bean>
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />

@@ -1,6 +1,5 @@
 package org.motechproject.admin.service.impl;
 
-import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
@@ -22,6 +21,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatusMessageServiceImpl.class);
 
+    @Autowired
     private AllStatusMessages allStatusMessages;
 
     @Autowired
@@ -135,14 +135,6 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     }
 
     private AllStatusMessages getAllStatusMessages() {
-        if (allStatusMessages == null) {
-            try {
-                CouchDbConnector connector = platformSettingsService.getCouchConnector("motech-admin");
-                allStatusMessages = new AllStatusMessages(connector);
-            } catch (RuntimeException e) {
-                LOG.warn("No db connection");
-            }
-        }
         return allStatusMessages;
     }
 

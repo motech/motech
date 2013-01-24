@@ -71,22 +71,6 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label"><fmt:message key="enter.databaseUrl" bundle="${bundle}"/></label>
-                        <div class="controls">
-                            <input type="text" class="input-large" name="databaseUrl" value="${startupSettings.databaseUrl}"/>
-                            <c:if test="${ not empty suggestions.databaseUrls }">
-                                <div id="database.urls">
-                                <c:forEach var="url" items="${suggestions.databaseUrls}" varStatus="status">
-                                    <div id="database.url.${status.count}">
-                                        <span><i><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: </i>${url}</span>
-                                        <button type="button" class="btn btn-mini"><fmt:message key="use" bundle="${bundle}"/></button>
-                                    </div>
-                                </c:forEach>
-                                </div>
-                            </c:if>
-                        </div>
-                    </div>
-                    <div class="control-group">
                         <label class="control-label"><fmt:message key="enter.queueUrl" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-large" name="queueUrl" value="${startupSettings.queueUrl}"/>

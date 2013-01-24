@@ -17,11 +17,8 @@
         <property name="moduleName" value="event-logging"/>
     </bean>
 
-    <bean id="eventLoggingDBConnector" factory-bean="eventLoggingSettings" factory-method="getConnector">
+    <bean id="eventLoggingDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-event-logging" />
-        <constructor-arg value="couchdb.properties"/>
     </bean>
-
-
 
 </beans>

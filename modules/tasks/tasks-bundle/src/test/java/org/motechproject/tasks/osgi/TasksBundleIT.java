@@ -60,12 +60,16 @@ public class TasksBundleIT extends BaseOsgiIT {
 
     @Override
     protected List<String> getImports() {
-        return asList("org.motechproject.tasks.util", "org.motechproject.server.config");
+        return asList(
+            "org.motechproject.tasks.util",
+            "org.motechproject.server.config",
+            "org.motechproject.commons.couchdb.service"
+        );
     }
 
     @Override
     protected String[] getConfigLocations() {
-        return new String[]{"/META-INF/osgi/testApplicationTasksBundle.xml"};
+        return new String[]{"META-INF/osgi/testApplicationTasksBundle.xml"};
     }
 
 }

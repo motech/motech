@@ -12,6 +12,8 @@
     <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
         interface="org.motechproject.scheduler.MotechSchedulerService" />
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
     <osgi:reference id="eventRelayOsgi" cardinality="1..1" interface="org.motechproject.event.listener.EventRelay" />
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
@@ -19,8 +21,7 @@
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
-    <bean id="alertDbConnector" factory-bean="atomfeedSettings" factory-method="getConnector">
+    <bean id="alertDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-openmrs-atomfeed"/>
-        <constructor-arg value="couchdb.properties"/>
     </bean>
 </beans>

@@ -56,6 +56,7 @@
                             org.ektorp.spring,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.config,

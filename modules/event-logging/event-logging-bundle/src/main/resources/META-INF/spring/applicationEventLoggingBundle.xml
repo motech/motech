@@ -9,8 +9,7 @@
     <osgi:service id="eventLoggingServiceManager" auto-export="interfaces" ref="eventLoggingServiceManagerImpl" interface="org.motechproject.eventlogging.service.EventLoggingServiceManager" />
 
     <osgi:service id="eventQueryServiceOsgi" auto-export="interfaces" ref="couchEventQueryService" interface="org.motechproject.eventlogging.service.EventQueryService" />
-
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService" />
 

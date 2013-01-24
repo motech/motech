@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
-
-
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
-    <osgi:reference id="settingsFacade" interface="org.motechproject.server.config.SettingsFacade" />
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+        ">
 
     <import resource="classpath*:META-INF/motech/applicationCmsLiteApi.xml"/>
+
     <osgi:service ref="cmsLiteService" interface="org.motechproject.cmslite.api.service.CMSLiteService" />
+
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="settingsFacade" interface="org.motechproject.server.config.SettingsFacade" />
+
 </beans>

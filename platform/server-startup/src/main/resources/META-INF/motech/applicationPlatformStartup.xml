@@ -11,4 +11,9 @@
     <context:component-scan base-package="org.motechproject.server.startup"/>
 
     <bean id="startupManager" class="org.motechproject.server.startup.StartupManager" factory-method="getInstance"/>
+
+    <bean id="settingsDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-platform-startup"/>
+    </bean>
+
 </beans>

@@ -31,11 +31,11 @@ public class StartupFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        for (String field : Arrays.asList("language", "databaseUrl", "queueUrl")) {
+        for (String field : Arrays.asList("language", "queueUrl")) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
         }
 
-        for (String field : Arrays.asList("databaseUrl", "queueUrl")) {
+        for (String field : Arrays.asList("queueUrl")) {
             String value = errors.getFieldValue(field).toString().replace("localhost", "127.0.0.1");
 
             if (errors.getFieldErrorCount(field) == 0 && !urlValidator.isValid(value)) {
