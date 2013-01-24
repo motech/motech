@@ -6,7 +6,7 @@ import org.motechproject.event.aggregation.service.CronBasedAggregation;
 import org.motechproject.event.aggregation.service.impl.CronBasedAggregationRequest;
 
 public class CronBasedAggregationRecord extends AggregationScheduleRecord implements CronBasedAggregation {
-
+    private static final long serialVersionUID = 5729041837895097802L;
     @JsonProperty
     private String cronExpression;
 

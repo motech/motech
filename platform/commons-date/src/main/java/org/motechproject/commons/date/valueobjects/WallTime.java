@@ -6,7 +6,7 @@ import org.motechproject.commons.date.util.JodaFormatter;
 import java.io.Serializable;
 
 public class WallTime implements Serializable {
-
+    private static final long serialVersionUID = -8883948916682885845L;
     private Period period;
 
     public WallTime(String userReadableForm) {

@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public final class MilestoneAlert implements Serializable {
+    private static final long serialVersionUID = 2228943790691449648L;
     private String milestoneName;
-
     private DateTime earliestDateTime;
     private DateTime dueDateTime;
     private DateTime lateDateTime;

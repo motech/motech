@@ -6,7 +6,7 @@ import org.motechproject.event.aggregation.service.CustomAggregation;
 import org.motechproject.event.aggregation.service.impl.CustomAggregationRequest;
 
 public class CustomAggregationRecord extends AggregationScheduleRecord implements CustomAggregation {
-
+    private static final long serialVersionUID = 5795967601901810210L;
     @JsonProperty
     private String rule;
 

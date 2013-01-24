@@ -7,6 +7,7 @@ import org.joda.time.LocalTime;
 import java.io.Serializable;
 
 public class Time implements Comparable<Time>, Serializable {
+    private static final long serialVersionUID = -6049964979382913093L;
     private Integer hour;
     private Integer minute;
 

@@ -43,6 +43,7 @@
     <rule ref="rulesets/unusedcode.xml/UnusedPrivateField"/>
     <rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod"/>
 
+    <rule ref="rulesets/javabeans.xml/MissingSerialVersionUID"/>
 
     <rule name="DontImportInternal"
           message="Avoid importing internal packages of any external libraries"

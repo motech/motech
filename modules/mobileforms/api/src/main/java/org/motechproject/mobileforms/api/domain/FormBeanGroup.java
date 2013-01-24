@@ -16,7 +16,7 @@ import static ch.lambdaj.Lambda.on;
  * Represents set of forms, also supports sorting based on dependency.
  */
 public class FormBeanGroup implements Serializable {
-
+    private static final long serialVersionUID = 4221247940572161948L;
     private List<FormBean> formBeans;
 
     public FormBeanGroup(List<FormBean> formBeans) {

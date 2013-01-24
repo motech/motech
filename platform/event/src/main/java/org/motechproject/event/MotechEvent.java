@@ -18,6 +18,8 @@ public class MotechEvent implements Serializable {
     public static final String PARAM_INVALID_MOTECH_EVENT = "invalidMotechEvent";
     public static final String PARAM_DISCARDED_MOTECH_EVENT = "discardedMotechEvent";
 
+    private static final long serialVersionUID = -6710829948064847678L;
+
     private UUID id;
     private String subject;
     private Map<String, Object> parameters;

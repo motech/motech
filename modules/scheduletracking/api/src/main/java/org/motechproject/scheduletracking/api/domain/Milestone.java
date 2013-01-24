@@ -15,7 +15,7 @@ import java.util.Map;
 import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class Milestone implements Serializable {
-
+    private static final long serialVersionUID = 2041937390099820322L;
     @JsonProperty
     private String name;
     @JsonProperty
