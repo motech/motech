@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.motechproject.mrs.exception.MRSException;
-import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.PersonResource;
 import org.motechproject.openmrs.ws.resource.model.Attribute;
@@ -36,7 +36,7 @@ public class MRSPersonAdapterImpl {
         this.personResource = personResource;
     }
 
-    public MRSPerson getPerson(String uuid) {
+    public OpenMRSPerson getPerson(String uuid) {
         Person person = null;
         try {
             person = personResource.getPersonById(uuid);
@@ -47,7 +47,7 @@ public class MRSPersonAdapterImpl {
         return ConverterUtils.convertToMrsPerson(person);
     }
 
-    MRSPerson savePerson(MRSPerson person) {
+    OpenMRSPerson savePerson(OpenMRSPerson person) {
         Validate.notNull(person, "Person canont be null");
         Person converted = ConverterUtils.convertToPerson(person, true);
         Person saved = null;
@@ -65,11 +65,11 @@ public class MRSPersonAdapterImpl {
         return person;
     }
 
-    void saveAttributesForPerson(MRSPerson person) {
-        for (org.motechproject.mrs.model.Attribute attribute : person.getAttributes()) {
+    void saveAttributesForPerson(OpenMRSPerson person) {
+        for (org.motechproject.mrs.domain.Attribute attribute : person.getAttributes()) {
             Attribute attr = new Attribute();
-            attr.setValue(attribute.value());
-            attr.setAttributeType(getAttributeTypeUuid(attribute.name()));
+            attr.setValue(attribute.getValue());
+            attr.setAttributeType(getAttributeTypeUuid(attribute.getName()));
 
             try {
                 personResource.createPersonAttribute(person.getId(), attr);
@@ -104,7 +104,7 @@ public class MRSPersonAdapterImpl {
         return type;
     }
 
-    void deleteAllAttributes(MRSPerson person) {
+    void deleteAllAttributes(OpenMRSPerson person) {
         Person saved = null;
         try {
             saved = personResource.getPersonById(person.getId());
@@ -123,7 +123,7 @@ public class MRSPersonAdapterImpl {
         }
     }
 
-    void updatePerson(MRSPerson person) {
+    void updatePerson(OpenMRSPerson person) {
         Person converted = ConverterUtils.convertToPerson(person, false);
         try {
             // Must update the name and address separately when updating a

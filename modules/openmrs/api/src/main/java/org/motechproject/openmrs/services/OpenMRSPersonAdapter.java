@@ -1,8 +1,10 @@
 package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSPerson;
+import org.joda.time.DateTime;
+import org.motechproject.mrs.domain.Attribute;
+import org.motechproject.mrs.model.OpenMRSAttribute;
+import org.motechproject.mrs.model.OpenMRSPerson;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -11,6 +13,7 @@ import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -31,17 +34,21 @@ public class OpenMRSPersonAdapter {
         this.personService = personService;
     }
 
-    MRSPerson openMRSToMRSPerson(Person person) {
+    OpenMRSPerson openMRSToMRSPerson(Person person) {
 
         Set<PersonName> personNames = person.getNames();
         PersonName personName = getFirstName(personNames);
 
-        final List<Attribute> attributes = project(person.getAttributes(), Attribute.class,
+        final List<OpenMRSAttribute> attributes = project(person.getAttributes(), OpenMRSAttribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+        List<Attribute> personAttributes = new ArrayList<Attribute>();
+
+        personAttributes.addAll(attributes);
+
+        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
                 .lastName(personName.getFamilyName()).birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender()).age(person.getAge())
-                .address(getAddress(person)).attributes(attributes).dateOfBirth(person.getBirthdate()).dead(person.isDead()).deathDate(person.getDeathDate());
+                .address(getAddress(person)).attributes(personAttributes).dateOfBirth(new DateTime(person.getBirthdate())).dead(person.isDead()).deathDate(new DateTime(person.getDeathDate()));
 
         if (person.getId() != null) {
             mrsPerson.id(Integer.toString(person.getId()));

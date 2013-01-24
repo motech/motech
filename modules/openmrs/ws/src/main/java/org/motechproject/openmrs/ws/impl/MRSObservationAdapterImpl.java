@@ -3,14 +3,13 @@ package org.motechproject.openmrs.ws.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.motechproject.mrs.domain.Patient;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.model.MRSPatient;
-import org.motechproject.mrs.services.MRSObservationAdapter;
-import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.services.ObservationAdapter;
+import org.motechproject.mrs.services.PatientAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.ObservationResource;
 import org.motechproject.openmrs.ws.resource.model.Observation;
@@ -21,32 +20,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component("observationAdapter")
-public class MRSObservationAdapterImpl implements MRSObservationAdapter {
+public class MRSObservationAdapterImpl implements ObservationAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSObservationAdapterImpl.class);
 
-    private final MRSPatientAdapter patientAdapter;
+    private final PatientAdapter patientAdapter;
     private final ObservationResource obsResource;
 
     @Autowired
-    public MRSObservationAdapterImpl(ObservationResource obsResource, MRSPatientAdapter patientAdapter) {
+    public MRSObservationAdapterImpl(ObservationResource obsResource, PatientAdapter patientAdapter) {
         this.obsResource = obsResource;
         this.patientAdapter = patientAdapter;
     }
 
     @Override
-    public List<MRSObservation> findObservations(String motechId, String conceptName) {
+    public List<org.motechproject.mrs.domain.Observation> findObservations(String motechId, String conceptName) {
         Validate.notEmpty(motechId, "Motech id cannot be empty");
         Validate.notEmpty(conceptName, "Concept name cannot be empty");
 
-        List<MRSObservation> obs = new ArrayList<MRSObservation>();
-        MRSPatient patient = patientAdapter.getPatientByMotechId(motechId);
+        List<org.motechproject.mrs.domain.Observation> obs = new ArrayList<org.motechproject.mrs.domain.Observation>();
+        Patient patient = patientAdapter.getPatientByMotechId(motechId);
         if (patient == null) {
             return obs;
         }
 
         ObservationListResult result = null;
         try {
-            result = obsResource.queryForObservationsByPatientId(patient.getId());
+            result = obsResource.queryForObservationsByPatientId(patient.getPatientId());
         } catch (HttpException e) {
             LOGGER.error("Could not retrieve observations for patient with motech id: " + motechId);
             return Collections.emptyList();
@@ -62,38 +61,38 @@ public class MRSObservationAdapterImpl implements MRSObservationAdapter {
     }
 
     @Override
-    public void voidObservation(MRSObservation mrsObservation, String reason, String mrsUserMotechId)
+    public void voidObservation(org.motechproject.mrs.domain.Observation mrsObservation, String reason, String mrsUserMotechId)
             throws ObservationNotFoundException {
         Validate.notNull(mrsObservation);
-        Validate.notEmpty(mrsObservation.getId());
+        Validate.notEmpty(mrsObservation.getObservationId());
 
         try {
-            obsResource.deleteObservation(mrsObservation.getId(), reason);
+            obsResource.deleteObservation(mrsObservation.getObservationId(), reason);
         } catch (HttpException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                LOGGER.warn("No Observation found with uuid: " + mrsObservation.getId());
-                throw new ObservationNotFoundException(mrsObservation.getId(), e);
+                LOGGER.warn("No Observation found with uuid: " + mrsObservation.getObservationId());
+                throw new ObservationNotFoundException(mrsObservation.getObservationId(), e);
             }
 
-            LOGGER.error("Could not void observation with uuid: " + mrsObservation.getId());
+            LOGGER.error("Could not void observation with uuid: " + mrsObservation.getObservationId());
         }
     }
 
     @Override
-    public MRSObservation findObservation(String patientMotechId, String conceptName) {
+    public OpenMRSObservation findObservation(String patientMotechId, String conceptName) {
         Validate.notEmpty(patientMotechId, "MoTeCH Id cannot be empty");
         Validate.notEmpty(conceptName, "Concept name cannot be empty");
 
-        List<MRSObservation> observations = findObservations(patientMotechId, conceptName);
+        List<org.motechproject.mrs.domain.Observation> observations = findObservations(patientMotechId, conceptName);
         if (observations.size() == 0) {
             return null;
         }
 
-        return observations.get(0);
+        return (OpenMRSObservation) observations.get(0);
     }
 
     @Override
-    public MRSObservation getObservationById(String id) {
+    public OpenMRSObservation getObservationById(String id) {
         try {
             Observation obs = obsResource.getObservationById(id);
             return ConverterUtils.convertObservationToMrsObservation(obs);

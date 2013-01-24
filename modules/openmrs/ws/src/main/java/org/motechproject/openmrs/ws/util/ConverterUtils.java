@@ -2,11 +2,11 @@ package org.motechproject.openmrs.ws.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang.ObjectUtils;
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.model.MRSPerson;
+import org.joda.time.DateTime;
+import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.model.OpenMRSFacility;
+import org.motechproject.mrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.resource.model.Attribute;
 import org.motechproject.openmrs.ws.resource.model.Location;
 import org.motechproject.openmrs.ws.resource.model.Observation;
@@ -19,17 +19,24 @@ public final class ConverterUtils {
     private ConverterUtils() {
     }
 
-    public static MRSPerson convertToMrsPerson(Person person) {
-        MRSPerson converted = new MRSPerson();
+    public static OpenMRSPerson convertToMrsPerson(Person person) {
+        OpenMRSPerson converted = new OpenMRSPerson();
         converted.id(person.getUuid()).birthDateEstimated(person.isBirthdateEstimated())
-                .dateOfBirth(person.getBirthdate()).dead(person.isDead()).deathDate(person.getDeathDate())
-                .firstName(person.getPreferredName().getGivenName())
-                .middleName(person.getPreferredName().getMiddleName())
-                .lastName(person.getPreferredName().getFamilyName()).gender(person.getGender())
-                .preferredName(person.getPreferredName().getDisplay());
+        .dead(person.isDead()).firstName(person.getPreferredName().getGivenName())
+        .middleName(person.getPreferredName().getMiddleName())
+        .lastName(person.getPreferredName().getFamilyName()).gender(person.getGender())
+        .preferredName(person.getPreferredName().getDisplay());
 
         if (person.getPreferredAddress() != null) {
             converted.address(person.getPreferredAddress().getAddress1());
+        }
+
+        if (person.getBirthdate() != null) {
+            converted.dateOfBirth(new DateTime(person.getBirthdate()));
+        }
+
+        if (person.getDeathDate() != null) {
+            converted.deathDate(new DateTime(person.getDeathDate()));
         }
 
         for (Attribute attr : person.getAttributes()) {
@@ -40,19 +47,23 @@ public final class ConverterUtils {
             int index = display.indexOf('=');
             String name = display.substring(0, index).trim();
 
-            converted.addAttribute(new org.motechproject.mrs.model.Attribute(name, attr.getValue()));
+            converted.addAttribute(new org.motechproject.mrs.model.OpenMRSAttribute(name, attr.getValue()));
         }
 
         return converted;
     }
 
-    public static Person convertToPerson(MRSPerson person, boolean includeNames) {
+    public static Person convertToPerson(OpenMRSPerson person, boolean includeNames) {
         Person converted = new Person();
         converted.setUuid(person.getId());
-        converted.setBirthdate(person.getDateOfBirth());
+        if (person.getDateOfBirth() != null) {
+            converted.setBirthdate(person.getDateOfBirth().toDate());
+        }
+        if (person.getDeathDate() != null) {
+            converted.setDeathDate(person.getDeathDate().toDate());
+        }
         converted.setBirthdateEstimated((Boolean) ObjectUtils.defaultIfNull(person.getBirthDateEstimated(), false));
         converted.setDead(person.isDead());
-        converted.setDeathDate(person.deathDate());
         converted.setGender(person.getGender());
 
         if (includeNames) {
@@ -74,13 +85,13 @@ public final class ConverterUtils {
         return converted;
     }
 
-    public static MRSFacility convertLocationToMrsLocation(Location location) {
-        return new MRSFacility(location.getUuid(), location.getName(), location.getCountry(), location.getAddress6(),
+    public static OpenMRSFacility convertLocationToMrsLocation(Location location) {
+        return new OpenMRSFacility(location.getUuid(), location.getName(), location.getCountry(), location.getAddress6(),
                 location.getCountyDistrict(), location.getStateProvince());
     }
 
-    public static MRSObservation convertObservationToMrsObservation(Observation ob) {
-        return new MRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
+    public static OpenMRSObservation convertObservationToMrsObservation(Observation ob) {
+        return new OpenMRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
                 .getDisplay());
     }
 }

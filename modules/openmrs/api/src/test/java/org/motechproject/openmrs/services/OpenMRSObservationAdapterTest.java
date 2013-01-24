@@ -8,9 +8,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
-import org.motechproject.mrs.model.MRSConcept;
-import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.model.OpenMRSConcept;
+import org.motechproject.mrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
@@ -87,8 +88,8 @@ public class OpenMRSObservationAdapterTest {
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
         Date dependentObservationDate = new LocalDate(1999, 1, 1).toDate();
 
-        MRSConcept observationValueConcept = new MRSConcept(observationValueConceptName);
-        MRSConcept dependentConceptValue = new MRSConcept(dependentObservationValueConceptName);
+        OpenMRSConcept observationValueConcept = new OpenMRSConcept(observationValueConceptName);
+        OpenMRSConcept dependentConceptValue = new OpenMRSConcept(dependentObservationValueConceptName);
 
         Concept openMrsConceptUsedForObsName = mock(Concept.class);
         Concept openMrsConceptUsedForObsValue = mock(Concept.class);
@@ -98,8 +99,8 @@ public class OpenMRSObservationAdapterTest {
         when(mockConceptAdapter.getConceptByName(observationValueConceptName)).thenReturn(openMrsConceptUsedForObsValue);
         when(mockConceptAdapter.getConceptByName(dependentObservationValueConceptName)).thenReturn(openMrsConceptUsedForDepObsValue);
 
-        MRSObservation<MRSConcept> expectedDeliveryConcept = new MRSObservation<MRSConcept>(observationDate, observationConceptName, observationValueConcept);
-        expectedDeliveryConcept.addDependantObservation(new MRSObservation<MRSConcept>(dependentObservationDate, dependentObservationValueConceptName, dependentConceptValue));
+        OpenMRSObservation<OpenMRSConcept> expectedDeliveryConcept = new OpenMRSObservation<OpenMRSConcept>(observationDate, observationConceptName, observationValueConcept);
+        expectedDeliveryConcept.addDependantObservation(new OpenMRSObservation<OpenMRSConcept>(dependentObservationDate, dependentObservationValueConceptName, dependentConceptValue));
 
         Obs openMRSObservation = observationAdapter.createOpenMRSObservationForEncounter(expectedDeliveryConcept, encounter, patient, facility, creator);
 
@@ -124,10 +125,10 @@ public class OpenMRSObservationAdapterTest {
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
 
-        MRSObservation<String> fever = new MRSObservation<String>(observationDate, observationConceptName, feverValue);
-        MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, observationConceptName, temperatureValue);
-        MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, observationConceptName, hivValue);
-        MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, observationConceptName, expectedDeliveryDateValue);
+        OpenMRSObservation<String> fever = new OpenMRSObservation<String>(observationDate, observationConceptName, feverValue);
+        OpenMRSObservation<Double> temperature = new OpenMRSObservation<Double>(observationDate, observationConceptName, temperatureValue);
+        OpenMRSObservation<Boolean> hiv = new OpenMRSObservation<Boolean>(observationDate, observationConceptName, hivValue);
+        OpenMRSObservation<Date> expectedDeliveryDate = new OpenMRSObservation<Date>(observationDate, observationConceptName, expectedDeliveryDateValue);
 
         Concept openMrsConceptUsedForObsName = mock(Concept.class);
         when(mockConceptAdapter.getConceptByName(observationConceptName)).thenReturn(openMrsConceptUsedForObsName);
@@ -157,10 +158,10 @@ public class OpenMRSObservationAdapterTest {
         User creator = mock(User.class);
 
         OpenMRSObservationAdapter observationAdapterSpy = spy(observationAdapter);
-        final MRSObservation observation1 = mock(MRSObservation.class);
-        final MRSObservation observation2 = mock(MRSObservation.class);
+        final OpenMRSObservation observation1 = mock(OpenMRSObservation.class);
+        final OpenMRSObservation observation2 = mock(OpenMRSObservation.class);
 
-        Set<MRSObservation> mrsObservations = new HashSet<MRSObservation>() {{
+        Set<OpenMRSObservation> mrsObservations = new HashSet<OpenMRSObservation>() {{
             add(observation1);
             add(observation2);
         }};
@@ -237,28 +238,28 @@ public class OpenMRSObservationAdapterTest {
             add(obs1);
             add(obs2);
         }};
-        Set<MRSObservation> actualMrsObservations = observationAdapter.convertOpenMRSToMRSObservations(openMRSObservations);
+        Set<OpenMRSObservation> actualMrsObservations = observationAdapter.convertOpenMRSToMRSObservations(openMRSObservations);
 
         assertThat(actualMrsObservations.size(), Matchers.is(equalTo(2)));
-        final MRSObservation expectedObservation1 = new MRSObservation(obs1.getObsDatetime(), conceptName1.getName(), obs1.getValueText());
-        expectedObservation1.addDependantObservation(new MRSObservation("10", dependentObservationDate, dependentConceptName, dependentConceptValue));
+        final OpenMRSObservation expectedObservation1 = new OpenMRSObservation(obs1.getObsDatetime(), conceptName1.getName(), obs1.getValueText());
+        expectedObservation1.addDependantObservation(new OpenMRSObservation("10", dependentObservationDate, dependentConceptName, dependentConceptValue));
         assertMRSObservation(observationBy(conceptName1, actualMrsObservations), expectedObservation1, true);
         assertMRSObservation(observationBy(conceptName2, actualMrsObservations),
-                new MRSObservation(obs2.getObsDatetime(), conceptName2.getName(), obs2.getValueNumeric()), false);
+                new OpenMRSObservation(obs2.getObsDatetime(), conceptName2.getName(), obs2.getValueNumeric()), false);
     }
 
-    private MRSObservation observationBy(ConceptName conceptName1, Set<MRSObservation> actualMrsObservations) {
-        return (MRSObservation) selectFirst(actualMrsObservations, having(on(MRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
+    private OpenMRSObservation observationBy(ConceptName conceptName1, Set<? extends Observation> actualMrsObservations) {
+        return (OpenMRSObservation) selectFirst(actualMrsObservations, having(on(OpenMRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
     }
 
-    private void assertMRSObservation(MRSObservation actualObservation, MRSObservation expectedObservation, boolean hasDependents) {
+    private void assertMRSObservation(OpenMRSObservation actualObservation, OpenMRSObservation expectedObservation, boolean hasDependents) {
         assertThat(actualObservation.getConceptName(), is(expectedObservation.getConceptName()));
         assertThat(actualObservation.getValue(), is(expectedObservation.getValue()));
         assertThat(actualObservation.getDate(), is(expectedObservation.getDate()));
         if (hasDependents) {
             assertThat(actualObservation.getDependantObservations().size(), is(expectedObservation.getDependantObservations().size()));
-            assertMRSObservation((MRSObservation) actualObservation.getDependantObservations().iterator().next(),
-                    (MRSObservation) expectedObservation.getDependantObservations().iterator().next(), false);
+            assertMRSObservation((OpenMRSObservation) actualObservation.getDependantObservations().iterator().next(),
+                    (OpenMRSObservation) expectedObservation.getDependantObservations().iterator().next(), false);
         }
     }
 
@@ -275,7 +276,7 @@ public class OpenMRSObservationAdapterTest {
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
-        final MRSConcept concept = new MRSConcept("conceptName");
+        final OpenMRSConcept concept = new OpenMRSConcept("conceptName");
 
         Concept openMrsConcept = mock(Concept.class);
         when(mockConceptAdapter.getConceptByName(concept.getName())).thenReturn(openMrsConcept);
@@ -306,8 +307,8 @@ public class OpenMRSObservationAdapterTest {
     @Test
     public void shouldSaveObservation() {
         OpenMRSObservationAdapter observationAdapterSpy = Mockito.spy(observationAdapter);
-        MRSObservation mrsObservation = mock(MRSObservation.class);
-        MRSObservation savedMRSObservation = mock(MRSObservation.class);
+        OpenMRSObservation mrsObservation = mock(OpenMRSObservation.class);
+        OpenMRSObservation savedMRSObservation = mock(OpenMRSObservation.class);
         Obs openMRSObservation = Mockito.mock(Obs.class);
         Obs savedOpenMRSObservation = Mockito.mock(Obs.class);
 
@@ -320,13 +321,13 @@ public class OpenMRSObservationAdapterTest {
         when(mockObservationService.saveObs(openMRSObservation, null)).thenReturn(savedOpenMRSObservation);
         doReturn(savedMRSObservation).when(observationAdapterSpy).convertOpenMRSToMRSObservation(savedOpenMRSObservation);
 
-        MRSObservation returnedMRSObservation = observationAdapterSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
+        OpenMRSObservation returnedMRSObservation = observationAdapterSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
         Assert.assertThat(returnedMRSObservation, Matchers.is(equalTo(savedMRSObservation)));
     }
 
-    private void assertOpenMrsObservationProperties(Obs openMrsObservation, MRSObservation mrsObservation, Patient patient,
+    private void assertOpenMrsObservationProperties(Obs openMrsObservation, OpenMRSObservation mrsObservation, Patient patient,
                                                     Location facility, Encounter encounter, User creator, Concept concept) {
-        assertThat(openMrsObservation.getObsDatetime(), is(equalTo(mrsObservation.getDate())));
+        assertThat(openMrsObservation.getObsDatetime(), is(equalTo(mrsObservation.getDate().toDate())));
         assertThat(openMrsObservation.getConcept(), is(equalTo(concept)));
         assertThat(openMrsObservation.getPerson(), is(equalTo((Person) patient)));
         assertThat(openMrsObservation.getLocation(), is(equalTo(facility)));
@@ -343,7 +344,7 @@ public class OpenMRSObservationAdapterTest {
         Patient openMRSpatient = new Patient();
         Concept openMRSConcept = new Concept();
         final Obs mockObs = mock(Obs.class);
-        MRSObservation mockMrsObs = mock(MRSObservation.class);
+        OpenMRSObservation mockMrsObs = mock(OpenMRSObservation.class);
         ArrayList<Obs> obsList = new ArrayList<Obs>(){{
             add(mockObs);
         }};
@@ -361,7 +362,7 @@ public class OpenMRSObservationAdapterTest {
     public void shouldVoidObservation() throws ObservationNotFoundException {
         String observationId = "34";
         String mrsUserId="userId";
-        MRSObservation mrsObservation = new MRSObservation(observationId, new Date(), "name", Integer.valueOf("34"));
+        OpenMRSObservation mrsObservation = new OpenMRSObservation(observationId, new Date(), "name", Integer.valueOf("34"));
         Obs expectedOpenmRSObs = new Obs();
         expectedOpenmRSObs.setVoided(false);
         String reason = "reason";
@@ -394,14 +395,14 @@ public class OpenMRSObservationAdapterTest {
         Concept openMRSConcept = new Concept();
         final Obs mockObs1 = mock(Obs.class);
         final Obs mockObs2 = mock(Obs.class);
-        final MRSObservation mockMrsObs1 = mock(MRSObservation.class);
-        final MRSObservation mockMrsObs2 = mock(MRSObservation.class);
+        final OpenMRSObservation mockMrsObs1 = mock(OpenMRSObservation.class);
+        final OpenMRSObservation mockMrsObs2 = mock(OpenMRSObservation.class);
         List<Obs> obsList = new ArrayList<Obs>(){{
             add(mockObs1);
             add(mockObs2);
         }};
 
-        List<MRSObservation> expectedMRSObservations = new ArrayList<MRSObservation>(){{
+        List<Observation> expectedMRSObservations = new ArrayList<Observation>(){{
             add(mockMrsObs1);
             add(mockMrsObs2);
         }};
@@ -412,7 +413,7 @@ public class OpenMRSObservationAdapterTest {
         doReturn(mockMrsObs1).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs1);
         doReturn(mockMrsObs2).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs2);
 
-        List<MRSObservation> actualObservations = spyOpenMrsObservationAdapter.findObservations(patientMotechId, conceptName);
+        List<Observation> actualObservations = spyOpenMrsObservationAdapter.findObservations(patientMotechId, conceptName);
         ArgumentCaptor<Obs> obsArgumentCaptor=ArgumentCaptor.forClass(Obs.class);
         verify(spyOpenMrsObservationAdapter,times(2)).convertOpenMRSToMRSObservation(obsArgumentCaptor.capture());
 
