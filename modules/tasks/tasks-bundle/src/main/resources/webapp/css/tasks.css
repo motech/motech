@@ -253,10 +253,6 @@ editable-content .actionField.input-block-level span.badge {
     padding: 2px 0;
 }
 
-#accordion1 .collapse.in {
-    overflow: visible;
-}
-
 #accordion1 .accordion-group .section {
     border: 1px dashed #7bb5fc;
     margin: 5px -10px;

@@ -24,6 +24,8 @@
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-cron.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css" />
+    <link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css" />
 
     <script src="resources/lib/jquery/jquery-1.8.2.js" type="text/javascript"></script>
     <script src="resources/lib/jquery/jquery.form.js" type="text/javascript"></script>
@@ -43,6 +45,7 @@
 
     <script src="resources/lib/bootstrap/bootstrap.min.js" type="text/javascript"></script>
     <script src="resources/lib/bootstrap/bootstrap-fileupload.min.js" type="text/javascript"></script>
+    <script src="resources/lib/bootstrap/bootstrap-notify.js" type="text/javascript"></script>
 
     <script src="resources/lib/tagsinput/jquery.tagsinput.js"></script>
 

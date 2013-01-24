@@ -13,3 +13,7 @@ angular.module('taskServices', ['ngResource']).factory('Tasks', function ($resou
 angular.module('activityServices', ['ngResource']).factory('Activities', function ($resource) {
     return $resource('../tasks/api/activity/:taskId');
 });
+
+angular.module('dataSourceServices', ['ngResource']).factory('DataSources', function ($resource) {
+    return $resource('../tasks/api/datasource');
+});

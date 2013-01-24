@@ -7,6 +7,7 @@ import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.motechproject.commons.api.DataProvider;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -18,11 +19,11 @@ import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
-import org.motechproject.tasks.util.Manipulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,6 +45,9 @@ import static org.motechproject.tasks.util.TaskUtil.getSubject;
 
 @Service
 public class TaskTriggerHandler {
+    public static final String TRIGGER_PREFIX = "trigger";
+    public static final String ADDITIONAL_DATA_PREFIX = "ad";
+
     private static final String SERVICE_NAME = "taskTriggerHandler";
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
@@ -53,6 +58,7 @@ public class TaskTriggerHandler {
     private EventListenerRegistryService registryService;
     private EventRelay eventRelay;
     private SettingsFacade settingsFacade;
+    private List<DataProvider> dataProviders;
 
     @Autowired
     public TaskTriggerHandler(final TaskService taskService, final TaskActivityService activityService,
@@ -214,30 +220,76 @@ public class TaskTriggerHandler {
 
     private String replaceAll(final String template, final MotechEvent event, final Task task) throws TaskException {
         String conversionTemplate = template;
-        List<Manipulation> keys = getKeys(template);
-        for (Manipulation manipulation : keys) {
+        List<KeyInformation> keys = getKeys(template);
 
-            if (event.getParameters().containsKey(manipulation.getEventKey())) {
-                Object obj = event.getParameters().get(manipulation.getEventKey());
-                if (obj == null) {
-                    obj = "";
-                }
-                String value = String.valueOf(obj);
-                String replaceValue = manipulateValue(value, manipulation.getManipulation(), task);
-                conversionTemplate = conversionTemplate.replace(String.format("{{%s}}", manipulation.getOriginalKey()), replaceValue);
+        for (KeyInformation key : keys) {
+            if (key.fromTrigger()) {
+                conversionTemplate = replaceTriggerKey(event, task, conversionTemplate, key);
+            } else if (key.fromAdditionalData()) {
+                conversionTemplate = replaceAdditionalDataKey(event, task, conversionTemplate, key);
             }
         }
+
         return conversionTemplate;
     }
 
-    private List<Manipulation> getKeys(String templateText) {
-        List<Manipulation> manipulations = new ArrayList<>();
+    private String replaceTriggerKey(MotechEvent event, Task task, String template, KeyInformation key) throws TaskException {
+        String replaced = "";
+
+        if (event.getParameters().containsKey(key.getEventKey())) {
+            Object obj = event.getParameters().get(key.getEventKey());
+
+            if (obj == null) {
+                obj = "";
+            }
+
+            String value = String.valueOf(obj);
+            String replacedValue = manipulateValue(value, key.getManipulations(), task);
+            replaced = template.replace(String.format("{{%s}}", key.getOriginalKey()), replacedValue);
+        }
+
+        return replaced;
+    }
+
+    private String replaceAdditionalDataKey(MotechEvent event, Task task, String template, KeyInformation key) throws TaskException {
+        String replaced;
+
+        if (dataProviders == null || dataProviders.isEmpty()) {
+            throw new TaskException("error.notFoundDataProvider", key.getObjectType());
+        }
+
+        DataProvider provider = findDataProvider(key.getDataProviderName(), key.getObjectType());
+
+        if (provider == null || !provider.supports(key.getObjectType())) {
+            throw new TaskException("error.notFoundDataProvider", key.getObjectType());
+        }
+
+        TaskAdditionalData ad = findAdditionalData(task, key);
+        Map<String, String> lookupFields = new HashMap<>();
+        lookupFields.put(ad.getLookupField(), event.getParameters().get(ad.getLookupValue()).toString());
+
+        Object found = provider.lookup(key.getObjectType(), lookupFields);
+
+        if (found == null) {
+            throw new TaskException("error.notFoundObjectForType", key.getObjectType());
+        }
+
+        String objectValue = getValueFromObject(found, key.getEventKey());
+        replaced = template.replace(String.format("{{%s}}", key.getOriginalKey()), objectValue);
+
+        return replaced;
+    }
+
+    private List<KeyInformation> getKeys(String templateText) {
+        List<KeyInformation> keys = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\{\\{(.*?)\\}\\}");
         Matcher matcher = pattern.matcher(templateText);
+
         while (matcher.find()) {
-            manipulations.add(new Manipulation(matcher.group(1)));
+            keys.add(new KeyInformation(matcher.group(1)));
         }
-        return manipulations;
+
+        return keys;
     }
 
     private boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
@@ -307,12 +359,60 @@ public class TaskTriggerHandler {
         }
     }
 
+    private DataProvider findDataProvider(String name, String type) {
+        DataProvider providerWithGivenName = null;
+        DataProvider providerSupportsGivenType = null;
+
+        for (DataProvider p : dataProviders) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                providerWithGivenName = p;
+                break;
+            }
+
+            if (providerSupportsGivenType == null && p.supports(type)) {
+                providerSupportsGivenType = p;
+            }
+        }
+
+        return providerWithGivenName != null ? providerWithGivenName : providerSupportsGivenType;
+    }
+
+
+    private String getValueFromObject(Object object, String eventKey) throws TaskException {
+        String[] fields = eventKey.split("\\.");
+        Object current = object;
+
+        for (String f : fields) {
+            try {
+                Method method = current.getClass().getMethod("get" + WordUtils.capitalize(f));
+                current = method.invoke(current);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new TaskException("error.objectNotContainsField", eventKey, e);
+            }
+        }
+
+        return current.toString();
+    }
+
+    private TaskAdditionalData findAdditionalData(Task t, KeyInformation key) {
+        List<TaskAdditionalData> taskAdditionalDatas = t.getAdditionalData(key.getDataProviderName());
+        TaskAdditionalData taskAdditionalData = null;
+
+        for (TaskAdditionalData ad : taskAdditionalDatas) {
+            if (ad.getId().equals(key.getObjectId()) && ad.getType().equalsIgnoreCase(key.getObjectType())) {
+                taskAdditionalData = ad;
+                break;
+            }
+        }
+
+        return taskAdditionalData;
+    }
+
     private void logOmittedTask(Task task, Throwable e) {
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
         }
     }
-
 
     private String manipulateValue(String value, List<String> manipulations, Task task) throws TaskException {
         String manipulateValue = value;
@@ -350,5 +450,23 @@ public class TaskTriggerHandler {
             }
         }
         return manipulateValue;
+    }
+
+    public void addDataProvider(DataProvider provider) {
+        if (dataProviders == null) {
+            dataProviders = new ArrayList<>();
+        }
+
+        dataProviders.add(provider);
+    }
+
+    public void removeDataProvider(DataProvider provider) {
+        if (dataProviders != null && !dataProviders.isEmpty()) {
+            dataProviders.remove(provider);
+        }
+    }
+
+    void setDataProviders(List<DataProvider> dataProviders) {
+        this.dataProviders = dataProviders;
     }
 }

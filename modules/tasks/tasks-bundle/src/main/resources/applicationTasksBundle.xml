@@ -27,6 +27,9 @@
         <osgi:reference-listener>
             <bean class="org.motechproject.tasks.util.DataProviderRegister"/>
         </osgi:reference-listener>
+        <osgi:reference-listener>
+            <bean class="org.motechproject.tasks.util.ManagementDataProvider"/>
+        </osgi:reference-listener>
     </osgi:set>
 
 </beans>

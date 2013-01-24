@@ -55,10 +55,10 @@
     <div class="section-source" ng-hide="task.trigger && task.action">
         <h3 class="centered">{{msg('help.dragChannelFromListBelow')}}</h3>
         <div data-left-arrow="true" class="left-arrow">
-            <img src="../tasks/img/larrow.png" ng-click="currentPage = currentPage - 1" ng-hide="currentPage == 0"/>
+            <img src="../tasks/img/larrow.png" ng-click="currentPage.channels = currentPage.channels - 1" ng-hide="currentPage.channels == 0"/>
         </div>
         <ul class="task-selector droppable" style="position: relative;" droppable>
-            <li class="task-panel draggable" ng-repeat="channel in channels | filterPagination:currentPage*pageSize | limitTo:pageSize" draggable data-channel-name="{{channel.displayName}}" data-module-name="{{channel.moduleName}}" data-module-version="{{channel.moduleVersion}}">
+            <li class="task-panel draggable" ng-repeat="channel in channels | filterPagination:currentPage.channels*pageSize.channels | limitTo:pageSize.channels" draggable data-channel-name="{{channel.displayName}}" data-module-name="{{channel.moduleName}}" data-module-version="{{channel.moduleVersion}}">
                 <div task-popover rel="popover">
                     <div><img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" /></div>
                     <span>{{msg(channel.displayName)}}</span>
@@ -76,7 +76,7 @@
             </li>
         </ul>
         <div data-right-arrow="true" class="right-arrow">
-            <img src="../tasks/img/rarrow.png" ng-click="currentPage = currentPage + 1" ng-hide="currentPage &gt;= channels.length/pageSize - 1"/>
+            <img src="../tasks/img/rarrow.png" ng-click="currentPage.channels = currentPage.channels + 1" ng-hide="currentPage.channels &gt;= channels.length/pageSize.channels - 1"/>
         </div>
         <div class="clearfix"></div>
     </div>
@@ -101,6 +101,140 @@
                             </div>
                             <div class="control-group move-element">
                                 <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                            </div>
+                            <!------------------  Include Additional Data  ------------------------>
+                            <div class="accordion" id="accordion1" ng-hide="allDataSources == undefined || allDataSources.length == 0">
+                                <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <a class="accordion-toggle inbox-header" overflow-change expandaccordion data-toggle="collapse" data-parent="#accordion1" href="#collapse1">
+                                            <i class="icon-chevron-right"></i> {{msg('subsection.IncludeAdditionalData')}}
+                                        </a>
+                                    </div>
+                                    <div id="collapse1" class="accordion-body collapse stripes-bg">
+                                        <div class="accordion-inner">
+                                            <div ng-repeat="dataSource in selectedDataSources | filterPagination:currentPage.dataSource*pageSize.dataSource | limitTo:pageSize.dataSource">
+                                                <div class="control-group control-section">
+                                                    <label class="control-label">{{msg('subsubsection.source')}} </label>
+                                                    <div class="controls">
+                                                        <div class="btn-group">
+                                                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                                {{dataSource.name}}
+                                                                <span class="caret"></span>
+                                                            </a>
+                                                            <ul class="dropdown-menu">
+                                                                <li ng-repeat="available in allDataSources">
+                                                                    <a ui-if="dataSource.name == available.name"><i class="icon-ok-sign"></i> {{available.name}}</a>
+                                                                    <a ui-if="dataSource.name != available.name && findDataSource(selectedDataSources, available.name) != undefined"><i class="icon-ok-sign"></i> {{available.name}}</a>
+                                                                    <a ui-if="dataSource.name != available.name && findDataSource(selectedDataSources, available.name) == undefined" ng-click="changeDataSource(dataSource, available)"><i></i> {{available.name}}</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="section" ng-hide="dataSource.name == undefined" ng-repeat="object in dataSource.objects | filterPagination:currentPage.dataSourceObject*pageSize.dataSourceObject | limitTo:pageSize.dataSourceObject">
+                                                    <div class="control-group control-section">
+                                                        <label class="control-label">{{msg('subsubsection.object')}} #{{object.id}}</label>
+                                                        <div class="controls">
+                                                            <div class="btn-group">
+                                                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                                    {{object.displayName}}
+                                                                    <span class="caret"></span>
+                                                                </a>
+                                                                <ul class="dropdown-menu">
+                                                                    <li ng-repeat="obj in dataSource.available">
+                                                                        <a ui-if="object.type == obj.type"><i class="icon-ok-sign"></i> {{obj.displayName}}</a>
+                                                                        <a ui-if="object.type != obj.type" ng-click="selectObject(dataSource.name, object, obj)"><i></i> {{obj.displayName}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group control-section" ng-hide="object.displayName == undefined">
+                                                        <label class="control-label">{{msg('subsubsection.lookup')}} </label>
+                                                        <div class="controls">
+                                                            <div class="btn-group">
+                                                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                                    {{object.lookup.field}}
+                                                                    <span class="caret"></span>
+                                                                </a>
+                                                                <ul class="dropdown-menu">
+                                                                    <li ng-repeat="i in object.lookupFields">
+                                                                        <a ui-if="object.lookup.field == i"><i class="icon-ok-sign"></i> {{i}}</a>
+                                                                        <a ui-if="object.lookup.field != i" ng-click="object.lookup.field = i"><i></i> {{i}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <span> {{msg('equals') | lowercase}} </span>
+                                                            <div class="btn-group">
+                                                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                                    {{msg(object.lookup.displayName)}}
+                                                                    <span class="caret"></span>
+                                                                </a>
+                                                                <ul class="dropdown-menu">
+                                                                    <li ng-repeat="i in selectedTrigger.eventParameters">
+                                                                        <a ui-if="object.lookup.by == i.eventKey"><i class="icon-ok-sign"></i> {{msg(i.displayName)}}</a>
+                                                                        <a ui-if="object.lookup.by != i.eventKey" ng-click="selectLookup(object, i)"><i></i> {{msg(i.displayName)}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group move-element margin-before2" ng-hide="object.displayName == undefined">
+                                                        <p><strong>{{msg('subsubsection.objectFields')}}</strong></p>
+                                                        <span contenteditable="false" ng-repeat="i in object.fields" class="badge badge-warning triggerField" draggable
+                                                              data-prefix="ad" data-source="{{dataSource.name}}" data-object="{{object.displayName}}" data-object-type="{{object.type}}"
+                                                              data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{object.id}}" data-type="{{i.type}}">{{i.displayName}}</span>​
+                                                    </div>
+                                                </div>
+                                                <div class="control-section pagination pagination-centered pagination-condensed pagination-mini" ng-show="numberOfDataSourceObjects(dataSource) &gt; 1">
+                                                    <ul>
+                                                        <li ng-hide="currentPage.dataSourceObject == 0">
+                                                            <a ng-click="currentPage.dataSourceObject = 0">{{msg('button.first')}}</a>
+                                                        </li>
+                                                        <li ng-hide="currentPage.dataSourceObject == 0">
+                                                            <a ng-click="currentPage.dataSourceObject = currentPage.dataSourceObject - 1">{{msg('button.prev')}}</a>
+                                                        </li>
+                                                        <li ng-repeat="number in [] | repeat:{total: numberOfDataSourceObjects(dataSource), current: currentPage.dataSourceObject}" ng-class="{true:'active', false:''}[number == currentPage.dataSourceObject]">
+                                                            <a ng-click="currentPage.dataSourceObject = number">{{number + 1}}</a>
+                                                        </li>
+                                                        <li ng-hide="currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1">
+                                                            <a ng-click="currentPage.dataSourceObject = currentPage.dataSourceObject + 1">{{msg('button.next')}}</a>
+                                                        </li>
+                                                        <li ng-hide="currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1">
+                                                            <a ng-click="currentPage.dataSourceObject = numberOfDataSourceObjects(dataSource) - 1">{{msg('button.last')}}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="margin-before control-group section2">
+                                                    <button class="btn btn-primary" ng-click="addObject(dataSource)"><i class="icon-white icon-plus"></i> {{msg('button.addObject', dataSource.name)}}</button>
+                                                    <div id="addObjectNotification" class="notifications center" style="z-index: 9999;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="control-section pagination pagination-centered pagination-condensed pagination-mini" ng-show="numberOfSelectedDataSources() &gt; 1">
+                                                <ul>
+                                                    <li ng-hide="currentPage.dataSource == 0">
+                                                        <a ng-click="currentPage.dataSource = 0">{{msg('button.first')}}</a>
+                                                    </li>
+                                                    <li ng-hide="currentPage.dataSource == 0">
+                                                        <a ng-click="currentPage.dataSource = currentPage.dataSource - 1">{{msg('button.prev')}}</a>
+                                                    </li>
+                                                    <li ng-repeat="number in [] | repeat:{total: numberOfSelectedDataSources(), current: currentPage.dataSource}" ng-class="{true:'active', false:''}[number == currentPage.dataSource]">
+                                                        <a ng-click="currentPage.dataSource = number">{{number + 1}}</a>
+                                                    </li>
+                                                    <li ng-hide="currentPage.dataSource == numberOfSelectedDataSources() - 1">
+                                                        <a ng-click="currentPage.dataSource = currentPage.dataSource + 1">{{msg('button.next')}}</a>
+                                                    </li>
+                                                    <li ng-hide="currentPage.dataSource == numberOfSelectedDataSources() - 1">
+                                                        <a ng-click="currentPage.dataSource = numberOfSelectedDataSources() - 1">{{msg('button.last')}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="control-group section2" ng-hide="availableDataSources.length == 0">
+                                                <button class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('button.addDataSource')}}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>

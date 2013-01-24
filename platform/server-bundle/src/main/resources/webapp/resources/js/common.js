@@ -67,6 +67,10 @@ function motechAlert(msg, title, callback) {
     jAlert(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
 }
 
+function motechConfirm(msg, title, callback) {
+    jConfirm(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
+}
+
 function motechAlertStackTrace(msg, title, response, callback) {
     jAlertStackTrace(jQuery.i18n.prop(msg).bold()+": \n"+response, jQuery.i18n.prop(title), callback);
 }

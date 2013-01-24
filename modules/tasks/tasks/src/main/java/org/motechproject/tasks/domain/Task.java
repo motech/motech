@@ -10,8 +10,10 @@ import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'Task'")
 public class Task extends MotechBaseDataObject {
+    private static final long serialVersionUID = -8754186387983558616L;
+
     private Map<String, String> actionInputFields;
-    private Map<String, String> additionalData;
+    private Map<String, List<TaskAdditionalData>> additionalData;
     private List<Filter> filters;
     private String action;
     private String description;
@@ -27,7 +29,8 @@ public class Task extends MotechBaseDataObject {
         this(true, actionInputFields, null, null, action, trigger, name);
     }
 
-    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, String> additionalData, List<Filter> filters, String action, String trigger, String name) {
+    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, List<TaskAdditionalData>> additionalData,
+                List<Filter> filters, String action, String trigger, String name) {
         this.enabled = enabled;
         this.actionInputFields = actionInputFields;
         this.additionalData = additionalData;
@@ -35,6 +38,11 @@ public class Task extends MotechBaseDataObject {
         this.action = action;
         this.trigger = trigger;
         this.name = name;
+    }
+
+    @JsonIgnore
+    public List<TaskAdditionalData> getAdditionalData(String dataProviderName) {
+        return additionalData.get(dataProviderName);
     }
 
     @JsonIgnore
@@ -82,11 +90,11 @@ public class Task extends MotechBaseDataObject {
         this.enabled = enabled;
     }
 
-    public Map<String, String> getAdditionalData() {
+    public Map<String, List<TaskAdditionalData>> getAdditionalData() {
         return additionalData;
     }
 
-    public void setAdditionalData(final Map<String, String> additionalData) {
+    public void setAdditionalData(final Map<String, List<TaskAdditionalData>> additionalData) {
         this.additionalData = additionalData;
     }
 

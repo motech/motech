@@ -37,6 +37,12 @@ String.prototype.format = function() {
   });
 };
 
+if(!Array.prototype.last) {
+    Array.prototype.last = function() {
+        return this[this.length - 1];
+    }
+}
+
 String.prototype.insert = function (index, string) {
   if (index > 0)
     return this.substring(0, index) + string + this.substring(index, this.length);
@@ -77,4 +83,18 @@ function toLocale(lang) {
             }
         }
     };
+}
+
+function cloneObj(obj) {
+    var clone = {};
+
+    for (var i in obj) {
+        if (typeof obj[i] == 'object') {
+            clone[i] = cloneObj(obj[i]);
+        } else {
+            clone[i] = obj[i];
+        }
+    }
+
+    return clone;
 }

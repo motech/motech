@@ -23,6 +23,22 @@ widgetModule.directive('doubleClick', function () {
     }
 })
 
+widgetModule.directive('overflowChange', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            $('#collapse1').on({
+                shown: function(){
+                    $(this).css('overflow','visible');
+                },
+                hide: function(){
+                    $(this).css('overflow','hidden');
+                }
+            });
+        }
+    }
+});
+
 widgetModule.directive('expandaccordion', function () {
      return {
          restrict: 'A',
@@ -65,78 +81,85 @@ widgetModule.directive('droppable', function ($compile) {
         link: function (scope, element, attrs) {
             element.droppable({
                 drop: function (event, ui) {
-                    var channelName, moduleName, moduleVersion,
-                        parent, value, position, eventKey, dragType, dropType, dropElement;
+                    var channelName, moduleName, moduleVersion, parent, value, pos, eventKey, dropElement, dragElement, browser,
+                        position = function(dropElement, dragElement) {
+                            var sel, range;
+                            var space = document.createTextNode(' ');
+                            if (window.getSelection) {
+                                sel = window.getSelection();
+                                if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentElement.tagName.toLowerCase() != 'span') {
+                                    range = sel.getRangeAt(0);
+                                    if (range.commonAncestorContainer.parentNode == dropElement[0] || range.commonAncestorContainer == dropElement[0] || range.commonAncestorContainer.parentNode.parentNode ==dropElement[0]) {
+                                        var el = document.createElement("div");
+                                        el.innerHTML = dragElement[0].outerHTML;
+                                        var frag = document.createDocumentFragment(), node, lastNode;
 
-                    var position = function(dropElement, dragElement) {
-                        var sel, range;
-                        var space = document.createTextNode(' ');
-                        if (window.getSelection) {
-                            sel = window.getSelection();
-                            if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentElement.tagName.toLowerCase() != 'span') {
-                                range = sel.getRangeAt(0);
-                                if (range.commonAncestorContainer.parentNode == dropElement[0] || range.commonAncestorContainer == dropElement[0] || range.commonAncestorContainer.parentNode.parentNode ==dropElement[0]) {
-                                    var el = document.createElement("div");
-                                    el.innerHTML = dragElement[0].outerHTML;
-                                    var frag = document.createDocumentFragment(), node, lastNode;
+                                        while ( (node = el.firstChild) ) {
+                                            lastNode = frag.appendChild(node);
+                                        }
 
-                                    while ( (node = el.firstChild) ) {
-                                        lastNode = frag.appendChild(node);
+                                        $compile(frag)(scope);
+                                        range.insertNode(frag);
+                                        range.insertNode(space);
+                                        if (lastNode) {
+                                            range = range.cloneRange();
+                                            range.setStartAfter(lastNode);
+                                            range.collapse(true);
+                                            sel.removeAllRanges();
+                                            sel.addRange(range);
+                                        }
+                                    } else {
+                                        $compile(dragElement)(scope);
+                                        dropElement.append(dragElement);
+                                        dropElement.append(space);
                                     }
-
-                                    $compile(frag)(scope);
-                                    range.insertNode(frag);
-                                    range.insertNode(space);
-                                    if (lastNode) {
-                                        range = range.cloneRange();
-                                        range.setStartAfter(lastNode);
-                                        range.collapse(true);
-                                        sel.removeAllRanges();
-                                        sel.addRange(range);
-                                    }
-                                } else {
-                                    $compile(dragElement)(scope);
-                                    dropElement.append(dragElement);
-                                    dropElement.append(space);
                                 }
+                            } else if (document.selection && document.selection.type != "Control") {
+                                document.selection.createRange().pasteHTML($compile(dragElement[0].outerHTML)(scope));
                             }
-                        } else if (document.selection && document.selection.type != "Control") {
-                            document.selection.createRange().pasteHTML($compile(dragElement[0].outerHTML)(scope));
-                        }
-                    }
+                        };
 
                     if (angular.element(ui.draggable).hasClass('triggerField') && element.hasClass('actionField')) {
-                        var browser = scope.$parent.BrowserDetect.browser
+                        dragElement = angular.element(ui.draggable);
+                        dropElement = angular.element(element);
+                        browser = scope.$parent.BrowserDetect.browser
 
-                        dragIndex = angular.element(ui.draggable).data('index');
-                        dropIndex = angular.element(element).data('index');
-                        dragType = angular.element(ui.draggable).data('type');
-                        dropType = angular.element(element).data('type');
-                        if (dropType === 'DATE') {
+                        if (dropElement.data('type') === 'DATE') {
                             delete scope.selectedAction.eventParameters[dropIndex].value;
                         }
-                        if (browser != 'Chrome') {
-                            eventKey = '{{' + scope.selectedTrigger.eventParameters[dragIndex].eventKey + '}}';
-                            position = element.caret();
-                            value = scope.selectedAction.eventParameters[dropIndex].value || '';
 
-                            scope.selectedAction.eventParameters[dropIndex].value = value.insert(position, eventKey);
+                        if (browser != 'Chrome') {
+                            if (dragElement.data('prefix') === 'trigger') {
+                                eventKey = '{{trigger.' + scope.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
+                            } else if (dragElement.data('prefix') === 'ad') {
+                                eventKey = '{{ad.' + dragElement.data('source') + '.' + dragElement.data('object-type') + "#" + dragElement.data('object-id') + '.' + dragElement.data('field') + '}}';
+                            }
+
+                            pos = element.caret();
+                            value = scope.selectedAction.eventParameters[dropElement.data('index')].value || '';
+
+                            scope.selectedAction.eventParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
                         } else {
-                            dropElement = angular.element(element);
                             dropElement.find('em').remove();
 
                             var dragElement = angular.element(ui.draggable).clone();
                             dragElement.css("position", "relative");
                             dragElement.css("left", "0px");
                             dragElement.css("top", "0px");
-                            if (dragType != 'NUMBER') {
+
+                            if (dragElement.data('type') != 'NUMBER') {
                                 dragElement.attr("manipulationpopover", "");
                             }
+
                             dragElement.addClass('pointer');
                             dragElement.addClass('popoverEvent');
                             dragElement.addClass('nonEditable');
                             dragElement.removeAttr("ng-repeat");
                             dragElement.removeAttr("draggable");
+
+                            if (dragElement.data('prefix') === 'ad') {
+                                dragElement.text(dragElement.data('source') + '.' + dragElement.data('object') + "#" + dragElement.data('object-id') + '.' + dragElement.text());
+                            }
 
                             position(dropElement, dragElement);
                         }
