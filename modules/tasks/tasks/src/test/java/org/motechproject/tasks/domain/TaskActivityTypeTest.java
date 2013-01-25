@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.motechproject.tasks.domain.EventParamType.TEXTAREA;
+import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 
 public class TaskActivityTypeTest {

@@ -25,8 +25,22 @@
         <constructor-arg ref="testTaskDbConnector"/>
     </bean>
 
+    <bean class="org.motechproject.tasks.repository.AllTaskDataProviders">
+        <constructor-arg ref="testTaskDbConnector"/>
+    </bean>
+
     <osgi:reference id="channelServiceOsgi" interface="org.motechproject.tasks.service.ChannelService">
         <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered"/>
     </osgi:reference>
+
+    <osgi:reference id="dataProviderServiceOsgi" interface="org.motechproject.tasks.service.TaskDataProviderService"/>
+
+    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" cardinality="0..N">
+        <osgi:reference-listener>
+            <bean class="org.motechproject.tasks.util.DataProviderRegister">
+                <constructor-arg ref="dataProviderServiceOsgi"/>
+            </bean>
+        </osgi:reference-listener>
+    </osgi:set>
 
 </beans>

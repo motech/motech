@@ -63,7 +63,8 @@ public class TasksBundleIT extends BaseOsgiIT {
         return asList(
             "org.motechproject.tasks.util",
             "org.motechproject.server.config",
-            "org.motechproject.commons.couchdb.service"
+            "org.motechproject.commons.couchdb.service",
+            "org.motechproject.commons.api"
         );
     }
 
