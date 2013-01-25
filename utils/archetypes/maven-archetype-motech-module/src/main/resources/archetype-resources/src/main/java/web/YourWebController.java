@@ -13,8 +13,8 @@ public class YourWebController {    // service methods for angular ui
 
         // send some dummy json
         return "[" +
-            "{ \"foo\":\"bar\"}," +
-            "{ \"foo\":\"baz\"}" +
-        "]";
+                "{ \"name\":\"foo\", \"age\":23}," +
+                "{ \"name\":\"bar\", \"age\":34}" +
+                "]";
     }
 }

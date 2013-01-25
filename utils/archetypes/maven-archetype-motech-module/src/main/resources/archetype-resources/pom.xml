@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>${groupId}</groupId>
-  <artifactId>${artifactId}</artifactId>
-  <version>${version}</version>
-  <packaging>bundle</packaging>
-  <properties>
-      <motech.version>${archetypeVersion}</motech.version>
-  </properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>bundle</packaging>
+    <properties>
+        <motech.version>${archetypeVersion}</motech.version>
+    </properties>
     <dependencies>
         <!-- to configure your module properties -->
         <dependency>
@@ -70,14 +70,16 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-Path>${artifactId}</Context-Path>
                         <Bundle-Activator>
-                            ${groupId}.osgi.Activator
+                            org.motechproject.osgi.web.WebUIBundleActivator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.motechproject.server.config,
-                            org.motechproject.server.config.service,
-                            org.motechproject.event.listener.annotations,
-                            org.motechproject.osgi.web,
+                            org.motechproject.server.config;version=${motech.version},
+                            org.motechproject.server.config.service;version=${motech.version},
+                            org.motechproject.event.listener.annotations;version=${motech.version},
+                            org.motechproject.osgi.web;version=${motech.version},
+                            org.motechproject.commons.couchdb.service;version=${motech.version},
                             *
                         </Import-Package>
                     </instructions>
@@ -109,8 +111,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-osgi-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <outputDirectory>
+                                ${user.home}/.motech/bundles
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
     </build>
     <repositories>
         <repository>

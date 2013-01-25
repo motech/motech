@@ -1,5 +1,18 @@
-<div class="box-header">{{ msg('${artifactId}.welcome.heading') }}</div>
+<div class="box-header">{{ msg('wv-sierra-leone.welcome.heading') }}</div>
 
 <div ng-controller="YourController">
-    {{ yourObjects }}
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="object in yourObjects" ng-model="yourObjects">
+            <td>{{object.name}}</td>
+            <td>{{object.age}}</td>
+        </tr>
+        </tbody>
+    </table>
 </div>

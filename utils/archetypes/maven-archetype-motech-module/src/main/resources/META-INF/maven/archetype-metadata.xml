@@ -6,10 +6,28 @@ name="Maven archetype motech module" >
         <requiredProperty key="archetypeVersion"/>
     </requiredProperties>
     <fileSets>
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>src/test/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="true" encoding="UTF-8" packaged="false">
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
         <fileSet filtered="true" packaged="false">
             <directory/>
             <includes>
-                <include>**/*</include>
+                <include>*</include>
             </includes>
         </fileSet>
     </fileSets>
