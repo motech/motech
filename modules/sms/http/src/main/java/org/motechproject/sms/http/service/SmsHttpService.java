@@ -61,7 +61,9 @@ public class SmsHttpService {
             }
         }
 
-        if (response == null || !response.toLowerCase().contains(template().getResponseSuccessCode().toLowerCase())) {
+        if (response == null ||
+                (!response.toLowerCase().contains(template().getResponseSuccessCode().toLowerCase())
+                        && !response.matches(template().getResponseSuccessCode()))) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
             throw new SmsDeliveryFailureException(response);
         }
@@ -79,7 +81,7 @@ public class SmsHttpService {
     }
 
     //Recreating the template for every request so that latest templates can be changed
-    private SmsHttpTemplate template(){
+    private SmsHttpTemplate template() {
         return templateReader.getTemplate();
     }
 }

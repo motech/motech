@@ -99,28 +99,28 @@ public class SmsHttpServiceTest {
 
         ArgumentCaptor<HttpMethod> argumentCaptor = ArgumentCaptor.forClass(HttpMethod.class);
         verify(httpClient).executeMethod(argumentCaptor.capture());
-        assertEquals(httpMethod,argumentCaptor.getValue());
+        assertEquals(httpMethod, argumentCaptor.getValue());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfRecipientListIsNull() throws SmsDeliveryFailureException {
         SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
         smsHttpService.sendSms(null, "message");
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfRecipientListIsEmpty() throws SmsDeliveryFailureException {
         SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
         smsHttpService.sendSms(new ArrayList<String>(), "message");
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfMessageIsNull() throws SmsDeliveryFailureException {
         SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
         smsHttpService.sendSms(Arrays.asList("123"), null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfMessageIsEmpty() throws SmsDeliveryFailureException {
         SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
         smsHttpService.sendSms(Arrays.asList("123"), StringUtils.EMPTY);
@@ -146,5 +146,24 @@ public class SmsHttpServiceTest {
 
         verify(httpClientParams).setAuthenticationPreemptive(true);
         verify(httpClientState).setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("username", "password"));
+    }
+
+    @Test
+    public void shouldMatchRegexSuccessMessage() throws IOException, SmsDeliveryFailureException {
+        HttpMethod httpMethod = mock(HttpMethod.class);
+        SmsHttpTemplate smsHttpTemplate = mock(SmsHttpTemplate.class);
+        HttpClientParams httpClientParams = mock(HttpClientParams.class);
+        HttpState httpClientState = mock(HttpState.class);
+
+        when(httpMethod.getResponseBodyAsString()).thenReturn("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<string xmlns=\"http://yellowpepper.com/webservices/literalTypes\">64a0f3a016084c52</string>");
+        when(smsHttpTemplate.getResponseSuccessCode()).thenReturn("\\w*<\\?xml version=\"1.0\" encoding=\"utf-8\"\\?>\\w*\\r\\n<string xmlns=\"http://yellowpepper.com/webservices/literalTypes\">+(?!9989|9969)*\\w+</string>");
+        when(smsHttpTemplate.generateRequestFor(Arrays.asList("123"), "message")).thenReturn(httpMethod);
+        when(smsHttpTemplate.getAuthentication()).thenReturn(new Authentication("username", "password"));
+        when(templateReader.getTemplate()).thenReturn(smsHttpTemplate);
+        when(httpClient.getParams()).thenReturn(httpClientParams);
+        when(httpClient.getState()).thenReturn(httpClientState);
+
+        SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
+        smsHttpService.sendSms(Arrays.asList("123"), "message");
     }
 }
