@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.jar.JarEntry;
@@ -44,7 +45,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         //we want to build and unpack jar files in application temporary directory
         //if we found jsp file then we will copy it to destination directory
         File tempRoot = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-        File destRoot =  new File(servletContext.getRealPath("/"));
+        File destRoot = new File(servletContext.getRealPath("/"));
         try {
             if (tempRoot != null && destRoot != null) {
                 tempDir = new File(tempRoot, String.valueOf(bundle.getBundleId()));
@@ -88,8 +89,9 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                 }
 
                 //Search for *.properties files in bundle
-                loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/resources/messages");
-                loadBundleMessageFilesFromBundle(bundle, destRoot, "/webapp/bundles");
+                for (String path : Arrays.asList("/webapp/resources/messages", "/webapp/bundles", "/webapp/messages")) {
+                    loadBundleMessageFilesFromBundle(bundle, destRoot, path);
+                }
             }
         } catch (Exception e) {
             throw new BundleLoadingException(e);
@@ -97,7 +99,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
     }
 
     private void loadBundleMessageFilesFromBundle(final Bundle bundle, final File destRoot, final String pathInBundle)
-        throws IOException {
+            throws IOException {
         Enumeration<URL> messages = bundle.findEntries(pathInBundle, "*.properties", true);
         if (messages != null) {
             File msgDestDir = new File(destRoot, "/WEB-INF/classes/org/motechproject/resources/");
@@ -143,7 +145,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             JarEntry jarEntry = (JarEntry) filesInJar.nextElement();
             if (jarEntry != null) {
                 if (jarEntry.getName().contains(".jsp")) {
-                    InputStream input  = jarFile.getInputStream(jarEntry);
+                    InputStream input = jarFile.getInputStream(jarEntry);
                     try {
                         File tempJspFile = saveJspToTempFile(input);
 
