@@ -46,14 +46,14 @@ h4.settings-section {
 
 .bundle-dtLabel {
     float: left;
-    width: 33%;
+    width: 23%;
     font-weight: bold;
 }
 
 .bundle-dtValue {
     min-height: 1em;
-    margin-left: 33%;
-    width: 65%;
+    margin-left: 23%;
+    width: 75%;
 }
 
 .bundle-prop {

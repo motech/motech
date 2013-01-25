@@ -15,17 +15,17 @@ import java.util.List;
 
 public class ExtendedBundleInformation extends BundleInformation {
 
-    private static final String BUILT_BY = "Built-By";
-    private static final String TOOL = "Tool";
-    private static final String CREATED_BY = "Created-By";
-    private static final String VENDOR = "Bundle-Vendor";
-    private static final String BUILD_JDK = "Build-Jdk";
-    private static final String LAST_MODIFIED = "Bnd-LastModified";
-    private static final String BUNDLE_ACTIVATOR = "Bundle-Activator";
-    private static final String DESCRIPTION = "Bundle-Description";
-    private static final String DOC_URL = "Bundle-DocURL";
-    private static final String IMPORT_PACKAGE = "Import-Package";
-    private static final String EXPORT_PACKAGE = "Export-Package";
+    public static final String BUILT_BY = "Built-By";
+    public static final String TOOL = "Tool";
+    public static final String CREATED_BY = "Created-By";
+    public static final String VENDOR = "Bundle-Vendor";
+    public static final String BUILD_JDK = "Build-Jdk";
+    public static final String LAST_MODIFIED = "Bnd-LastModified";
+    public static final String BUNDLE_ACTIVATOR = "Bundle-Activator";
+    public static final String DESCRIPTION = "Bundle-Description";
+    public static final String DOC_URL = "Bundle-DocURL";
+    public static final String IMPORT_PACKAGE = "Import-Package";
+    public static final String EXPORT_PACKAGE = "Export-Package";
 
     private String builtBy;
     private String tool;
@@ -36,11 +36,14 @@ public class ExtendedBundleInformation extends BundleInformation {
     private String bundleActivator;
     private String description;
     private String docURL;
-    private String importPackage;
-    private String exportPackage;
+    private String importPackageHeader;
+    private String exportPackageHeader;
+
     private List<String> registeredServices = new ArrayList<>();
     private List<String> servicesInUse = new ArrayList<>();
 
+    private List<PackageInfo> bundleImports = new ArrayList<>();
+    private List<PackageInfo> bundleExports = new ArrayList<>();
 
     public ExtendedBundleInformation(Bundle bundle) {
         super(bundle);
@@ -92,8 +95,8 @@ public class ExtendedBundleInformation extends BundleInformation {
         bundleActivator = headers.get(BUNDLE_ACTIVATOR);
         description = headers.get(DESCRIPTION);
         docURL = headers.get(DOC_URL);
-        importPackage = headers.get(IMPORT_PACKAGE);
-        exportPackage = headers.get(EXPORT_PACKAGE);
+        importPackageHeader = headers.get(IMPORT_PACKAGE);
+        exportPackageHeader = headers.get(EXPORT_PACKAGE);
 
         String lastModHeader = headers.get(LAST_MODIFIED);
         if (StringUtils.isNotBlank(lastModHeader)) {
@@ -108,11 +111,11 @@ public class ExtendedBundleInformation extends BundleInformation {
     }
 
     private void formatOutput() {
-        if (importPackage != null) {
-            importPackage = addSpaces(importPackage);
+        if (importPackageHeader != null) {
+            importPackageHeader = addSpaces(importPackageHeader);
         }
-        if (exportPackage != null) {
-            exportPackage = addSpaces(exportPackage);
+        if (exportPackageHeader != null) {
+            exportPackageHeader = addSpaces(exportPackageHeader);
         }
     }
 
@@ -156,19 +159,35 @@ public class ExtendedBundleInformation extends BundleInformation {
         return docURL;
     }
 
-    public String getImportPackage() {
-        return importPackage;
-    }
-
-    public String getExportPackage() {
-        return exportPackage;
-    }
-
     public List<String> getRegisteredServices() {
         return registeredServices;
     }
 
     public List<String> getServicesInUse() {
         return servicesInUse;
+    }
+
+    public List<PackageInfo> getBundleImports() {
+        return bundleImports;
+    }
+
+    public void setBundleImports(List<PackageInfo> bundleImports) {
+        this.bundleImports = bundleImports;
+    }
+
+    public List<PackageInfo> getBundleExports() {
+        return bundleExports;
+    }
+
+    public void setBundleExports(List<PackageInfo> bundleExports) {
+        this.bundleExports = bundleExports;
+    }
+
+    public String getImportPackageHeader() {
+        return importPackageHeader;
+    }
+
+    public String getExportPackageHeader() {
+        return exportPackageHeader;
     }
 }

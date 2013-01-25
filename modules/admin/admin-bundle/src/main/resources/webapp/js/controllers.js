@@ -110,7 +110,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     }
 
     $scope.stopBundle = function(bundle) {
-        bundle.$stop(dummyHandler, angularErrorHandler);
+        bundle.$stop(dummyHandler, angularHandler('error', 'bundles.error.stop'));
     }
 
     $scope.startBundle = function(bundle) {
@@ -371,7 +371,7 @@ function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http)
         }
 
         blockUI();
-        mSettings.$save({bundleId: $scope.module.bundleId}, successHandler, angularErrorHandler);
+        mSettings.$save({bundleId: $scope.module.bundleId}, successHandler, angularHandler('error', 'settings.error'));
     }
 
     $scope.uploadRaw = function(filename, doRestart) {

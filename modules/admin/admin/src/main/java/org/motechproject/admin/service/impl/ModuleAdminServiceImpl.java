@@ -4,10 +4,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.bundles.BundleDirectoryManager;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
+import org.motechproject.admin.bundles.ImportExportResolver;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
-import org.motechproject.server.api.BundleIcon;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
 import org.osgi.framework.Bundle;
@@ -41,6 +42,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Autowired
     private BundleDirectoryManager bundleDirectoryManager;
+
+    @Autowired
+    private ImportExportResolver importExportResolver;
 
     @Override
     public List<BundleInformation> getBundles() {
@@ -149,7 +153,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     @Override
     public ExtendedBundleInformation getBundleDetails(long bundleId) {
         Bundle bundle = getBundle(bundleId);
-        return new ExtendedBundleInformation(bundle);
+
+        ExtendedBundleInformation bundleInfo = new ExtendedBundleInformation(bundle);
+        importExportResolver.resolveBundleWiring(bundleInfo);
+
+        return bundleInfo;
     }
 
     private BundleIcon loadBundleIcon(URL iconURL) {

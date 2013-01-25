@@ -6,7 +6,7 @@ import org.osgi.framework.Version;
 import java.util.Objects;
 
 public class BundleInformation {
-    private enum State {
+    public enum State {
         UNINSTALLED(1),
         INSTALLED(2),
         RESOLVED(4),

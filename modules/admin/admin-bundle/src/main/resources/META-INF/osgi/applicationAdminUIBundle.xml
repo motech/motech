@@ -23,4 +23,5 @@
 
     <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
 
+    <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 </beans>

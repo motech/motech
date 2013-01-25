@@ -59,18 +59,34 @@
         <div class="bundle-prop">
             <div class="bundle-dtLabel">{{msg('bundles.docURL')}}</div>
             <div class="bundle-dtValue"><a ng-href="{{module.docURL}}">{{module.docURL}}</a>&nbsp;</div>
-        </div >
-        <div class="bundle-prop">
-            <div class="bundle-dtLabel">{{msg('bundles.importPackage')}}</div>
-            <div class="bundle-dtValue"><p>{{module.importPackage}}</p></div>
         </div>
         <div class="bundle-prop">
-            <div class="bundle-dtLabel">{{msg('bundles.exportPackage')}}</div>
-            <div class="bundle-dtValue"><p>{{module.exportPackage}}</p></div>
+            <div class="bundle-dtLabel">{{msg('bundles.wiredExports')}}</div>
+            <div class="bundle-dtValue">
+                <div ng-repeat="export in module.bundleExports">
+                    {{export.name}},{{msg('package.version')}}={{export.version}}
+                </div>
+            </div>
+        </div>
+        <div class="bundle-prop">
+            <div class="bundle-dtLabel">{{msg('bundles.exportPackageHeader')}}</div>
+            <div class="bundle-dtValue">{{module.exportPackageHeader}}</div>
+        </div>
+        <div class="bundle-prop">
+            <div class="bundle-dtLabel">{{msg('bundles.wiredImports')}}</div>
+            <div class="bundle-dtValue">
+                <div ng-repeat="import in module.bundleImports">
+                    {{import.name}},{{msg('package.version')}}={{import.version}} {{msg('import.from')}} {{import.from}}
+                </div>
+            </div>
+        </div>
+        <div class="bundle-prop">
+            <div class="bundle-dtLabel">{{msg('bundles.importPackageHeader')}}</div>
+            <div class="bundle-dtValue">{{module.importPackageHeader}}</div>
         </div>
         <div class="bundle-prop">
             <div class="bundle-dtLabel">{{msg('bundles.registeredServices')}}</div>
-            <div class="bundle-dtValue">
+            <div class="bundle-dtValue ">
                 <div ng-repeat="service in module.registeredServices">{{service}}</div>
             </div>
         </div>
