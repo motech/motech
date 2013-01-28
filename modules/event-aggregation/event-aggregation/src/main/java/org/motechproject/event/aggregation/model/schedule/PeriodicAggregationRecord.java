@@ -7,7 +7,7 @@ import org.joda.time.Period;
 import org.motechproject.event.aggregation.service.PeriodicAggregation;
 
 public class PeriodicAggregationRecord extends AggregationScheduleRecord implements PeriodicAggregation {
-
+    private static final long serialVersionUID = 3403337605865847986L;
     @JsonProperty
     private Period period;
     @JsonProperty

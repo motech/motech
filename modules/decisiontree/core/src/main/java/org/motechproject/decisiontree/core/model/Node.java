@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public class Node implements Serializable {
-
+    private static final long serialVersionUID = -59058061959085064L;
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;
     @JsonProperty

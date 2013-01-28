@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class MotechUserProfile implements Serializable {
-
+    private static final long serialVersionUID = -5704183407915646673L;
     private MotechUser user;
 
     public MotechUserProfile(MotechUser motechUser) {

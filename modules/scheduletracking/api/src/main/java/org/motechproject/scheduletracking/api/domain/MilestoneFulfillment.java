@@ -7,6 +7,7 @@ import java.io.Serializable;
 import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 public class MilestoneFulfillment implements Serializable {
+    private static final long serialVersionUID = 7990212996988800913L;
     private String milestoneName;
     private DateTime fulfillmentDateTime;
 

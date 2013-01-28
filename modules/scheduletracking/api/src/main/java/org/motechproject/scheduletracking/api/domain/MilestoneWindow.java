@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
-
+    private static final long serialVersionUID = 7828029668079018381L;
     @JsonProperty
     private WindowName name;
     @JsonProperty

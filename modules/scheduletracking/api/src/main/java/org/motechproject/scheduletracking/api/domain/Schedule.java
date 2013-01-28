@@ -17,7 +17,7 @@ import static org.motechproject.commons.date.util.DateUtil.now;
 
 @TypeDiscriminator("doc.type === 'Schedule'")
 public class Schedule extends MotechBaseDataObject implements Serializable {
-
+    private static final long serialVersionUID = 5289540619417160322L;
     @JsonProperty
     private String name;
     @JsonProperty
