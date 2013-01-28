@@ -1,11 +1,14 @@
 package org.motechproject.openmrs.services;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.MRSPatient;
-import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.domain.Person;
+import org.motechproject.mrs.model.OpenMRSAttribute;
+import org.motechproject.mrs.model.OpenMRSFacility;
+import org.motechproject.mrs.model.OpenMRSPatient;
+import org.motechproject.mrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.motechproject.openmrs.util.PatientTestUtil;
 import org.openmrs.Patient;
@@ -13,11 +16,9 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,12 +44,12 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         Boolean birthDateEstimated = true;
         String motechId = "1234567";
 
-        final MRSFacility savedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+        final OpenMRSFacility savedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", "district", "province"));
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(new DateTime(birthDate)).birthDateEstimated(birthDateEstimated)
                 .gender(gender).address(address1);
-        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
-        final MRSPatient savedPatient = patientAdapter.savePatient(patient);
+        final org.motechproject.mrs.domain.Patient patient = new OpenMRSPatient(motechId, mrsPerson, savedFacility);
+        final org.motechproject.mrs.domain.Patient savedPatient = patientAdapter.savePatient(patient);
 
         new PatientTestUtil().verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, savedFacility, savedPatient, motechId);
     }
@@ -66,26 +67,26 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         Boolean birthDateEstimated = true;
         String motechId = "1234567";
 
-        final MRSPatient savedPatient = createMRSPatient(first, middle, last, address1, birthDate, gender, birthDateEstimated, motechId);
+        final OpenMRSPatient savedPatient = (OpenMRSPatient) createMRSPatient(first, middle, last, address1, birthDate, gender, birthDateEstimated, motechId);
 
         final String updatedMiddleName = "new middle name";
-        MRSPerson mrsPersonUpdated = new MRSPerson().firstName(first).middleName(updatedMiddleName).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
-                .gender(gender).address("address changed").addAttribute(new Attribute("Insured", "true")).addAttribute(new Attribute("NHIS Number", "123465"));
+        OpenMRSPerson mrsPersonUpdated = new OpenMRSPerson().firstName(first).middleName(updatedMiddleName).lastName(last).dateOfBirth(new DateTime(birthDate)).birthDateEstimated(birthDateEstimated)
+                .gender(gender).address("address changed").addAttribute(new OpenMRSAttribute("Insured", "true")).addAttribute(new OpenMRSAttribute("NHIS Number", "123465"));
 
-        final MRSFacility changedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", null, null));
-        final MRSPatient patientToBeUpdated = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, changedFacility);
-        final MRSPatient updatedPatient = patientAdapter.updatePatient(patientToBeUpdated);
+        final OpenMRSFacility changedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", null, null));
+        final org.motechproject.mrs.domain.Patient patientToBeUpdated = new OpenMRSPatient(savedPatient.getPatientId(), "1234567", mrsPersonUpdated, changedFacility);
+        final org.motechproject.mrs.domain.Patient updatedPatient = patientAdapter.updatePatient(patientToBeUpdated);
 
         assertThat(savedPatient.getMotechId(), is(equalTo(updatedPatient.getMotechId())));
         assertThat(updatedPatient.getPerson().getMiddleName(), is(equalTo(updatedMiddleName)));
     }
 
-    private MRSPatient createMRSPatient(String first, String middle, String last, String address1, Date birthDate, String gender, Boolean birthDateEstimated, String motechId) {
-        final MRSFacility savedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+    private org.motechproject.mrs.domain.Patient createMRSPatient(String first, String middle, String last, String address1, Date birthDate, String gender, Boolean birthDateEstimated, String motechId) {
+        final OpenMRSFacility savedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", "district", "province"));
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
-                .gender(gender).address(address1).addAttribute(new Attribute("Insured", "true"));
-        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
+        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(new DateTime(birthDate)).birthDateEstimated(birthDateEstimated)
+                .gender(gender).address(address1).addAttribute(new OpenMRSAttribute("Insured", "true"));
+        final OpenMRSPatient patient = new OpenMRSPatient(motechId, mrsPerson, savedFacility);
         return patientAdapter.savePatient(patient);
     }
 
@@ -118,20 +119,20 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         final String gender = "M";
         Boolean birthDateEstimated = true;
 
-        final MRSFacility savedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+        final OpenMRSFacility savedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", "district", "province"));
 
         createPatientInOpenMrs(motechId1, firstName1, middleName1, lastName1, address, birthDate, gender, birthDateEstimated, savedFacility);
         createPatientInOpenMrs(motechId2, firstName2, middleName2, lastName2, address, birthDate, gender, birthDateEstimated, savedFacility);
         createPatientInOpenMrs(motechId3, firstName3, middleName3, lastName3, address, birthDate, gender, birthDateEstimated, savedFacility);
         createPatientInOpenMrs(motechId4, firstName4, middleName4, lastName4, address, birthDate, gender, birthDateEstimated, savedFacility);
 
-        List<MRSPatient> returnedPatients = patientAdapter.search("Am", null);
+        List<org.motechproject.mrs.domain.Patient> returnedPatients = patientAdapter.search("Am", null);
 
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
         new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1), motechId2);
         assertThat(returnedPatients.size(), is(equalTo(2)));
 
-        assertThat(patientAdapter.search("x", null), is(equalTo(Arrays.<MRSPatient>asList())));
+        assertThat(patientAdapter.search("x", null), is(equalTo(Arrays.<org.motechproject.mrs.domain.Patient>asList())));
 
         returnedPatients = patientAdapter.search("Ames", null);
         assertThat(returnedPatients.size(), is(equalTo(1)));
@@ -144,7 +145,7 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         returnedPatients = patientAdapter.search(null, "23");
         assertThat(returnedPatients.size(), is(equalTo(0)));
 
-        assertThat(patientAdapter.search(null, "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
+        assertThat(patientAdapter.search(null, "0000"), is(equalTo(Arrays.<org.motechproject.mrs.domain.Patient>asList())));
 
         returnedPatients = patientAdapter.search("Cathey", "12356");
         assertThat(returnedPatients.size(), is(equalTo(1)));
@@ -163,7 +164,7 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         returnedPatients = patientAdapter.search("A", "123");
         assertThat(returnedPatients.size(), is(equalTo(0)));
 
-        assertThat(patientAdapter.search("x", "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
+        assertThat(patientAdapter.search("x", "0000"), is(equalTo(Arrays.<org.motechproject.mrs.domain.Patient>asList())));
     }
 
     @Test
@@ -178,13 +179,13 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         Boolean birthDateEstimated = true;
         String motechId = "1234567";
 
-        final MRSFacility savedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+        final OpenMRSFacility savedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", "district", "province"));
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(new DateTime(birthDate)).birthDateEstimated(birthDateEstimated)
                 .gender(gender).address(address1);
-        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
-        final MRSPatient savedPatient = patientAdapter.savePatient(patient);
-        final MRSPatient duplicatePatient = patientAdapter.savePatient(patient);
+        final OpenMRSPatient patient = new OpenMRSPatient(motechId, mrsPerson, savedFacility);
+        final OpenMRSPatient savedPatient = (OpenMRSPatient) patientAdapter.savePatient(patient);
+        final OpenMRSPatient duplicatePatient = (OpenMRSPatient) patientAdapter.savePatient(patient);
 
         assertThat(savedPatient.getMotechId(), is(duplicatePatient.getMotechId()));
         new PatientTestUtil().verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, savedFacility, savedPatient, motechId);
@@ -203,21 +204,21 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         Boolean birthDateEstimated = true;
         String motechId = "1234567";
 
-        final MRSPatient savedPatient = createMRSPatient(first, middle, last, address1, birthDate, gender, birthDateEstimated, motechId);
+        final OpenMRSPatient savedPatient = (OpenMRSPatient) createMRSPatient(first, middle, last, address1, birthDate, gender, birthDateEstimated, motechId);
 
         Date dateOfDeath = new Date();
         patientAdapter.deceasePatient(savedPatient.getMotechId(), "NONE", dateOfDeath, null);
 
-        Patient actualPatient = patientService.getPatient(Integer.valueOf(savedPatient.getId()));
+        Patient actualPatient = patientService.getPatient(Integer.valueOf(savedPatient.getPatientId()));
         assertThat(actualPatient.isDead(), is(true));
     }
 
 
-    private MRSPatient createPatientInOpenMrs(String motechId, String firstName, String middleName, String lastName, String address, Date birthDate, String gender, Boolean birthDateEstimated, MRSFacility savedFacility) {
+    private org.motechproject.mrs.domain.Patient createPatientInOpenMrs(String motechId, String firstName, String middleName, String lastName, String address, Date birthDate, String gender, Boolean birthDateEstimated, OpenMRSFacility savedFacility) {
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(firstName).middleName(middleName).lastName(lastName).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(firstName).middleName(middleName).lastName(lastName).dateOfBirth(new DateTime(birthDate)).birthDateEstimated(birthDateEstimated)
                 .gender(gender).address(address);
-        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
+        final OpenMRSPatient patient = new OpenMRSPatient(motechId, mrsPerson, savedFacility);
         return patientAdapter.savePatient(patient);
     }
 }

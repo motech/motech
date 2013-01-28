@@ -3,11 +3,11 @@ package org.motechproject.openmrs.ws.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.model.OpenMRSFacility;
+import org.motechproject.mrs.services.FacilityAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.LocationResource;
 import org.motechproject.openmrs.ws.resource.model.Location;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("facilityAdapter")
-public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
+public class MRSFacilityAdapterImpl implements FacilityAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSFacilityAdapterImpl.class);
 
     private final LocationResource locationResource;
@@ -28,7 +28,7 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
     }
 
     @Override
-    public List<MRSFacility> getFacilities() {
+    public List<OpenMRSFacility> getFacilities() {
         LocationListResult result = null;
         try {
             result = locationResource.getAllLocations();
@@ -40,8 +40,8 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
         return mapLocationToMrsFacility(result.getResults());
     }
 
-    private List<MRSFacility> mapLocationToMrsFacility(List<Location> facilities) {
-        List<MRSFacility> mrsFacilities = new ArrayList<MRSFacility>();
+    private List<OpenMRSFacility> mapLocationToMrsFacility(List<Location> facilities) {
+        List<OpenMRSFacility> mrsFacilities = new ArrayList<OpenMRSFacility>();
         for (Location location : facilities) {
             mrsFacilities.add(ConverterUtils.convertLocationToMrsLocation(location));
         }
@@ -49,7 +49,7 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
     }
 
     @Override
-    public List<MRSFacility> getFacilities(String locationName) {
+    public List<OpenMRSFacility> getFacilities(String locationName) {
         Validate.notEmpty(locationName, "Location name cannot be empty");
         LocationListResult result = null;
         try {
@@ -63,7 +63,7 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
     }
 
     @Override
-    public MRSFacility getFacility(String facilityId) {
+    public OpenMRSFacility getFacility(String facilityId) {
         Validate.notEmpty(facilityId, "Facility id cannot be empty");
         Location location = null;
         try {
@@ -77,12 +77,12 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
     }
 
     @Override
-    public MRSFacility saveFacility(MRSFacility facility) {
+    public OpenMRSFacility saveFacility(Facility facility) {
         Validate.notNull(facility, "Facility cannot be null");
 
         // The uuid cannot be included with the request, otherwise OpenMRS will
         // fail
-        facility.setId(null);
+        facility.setFacilityId(null);
         Location location = convertMrsFacilityToLocation(facility);
         Location saved = null;
         try {
@@ -95,7 +95,7 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
         return ConverterUtils.convertLocationToMrsLocation(saved);
     }
 
-    private Location convertMrsFacilityToLocation(MRSFacility facility) {
+    private Location convertMrsFacilityToLocation(Facility facility) {
         Location location = new Location();
         location.setAddress6(facility.getRegion());
         location.setDescription(facility.getName());
@@ -103,7 +103,7 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
         location.setCountyDistrict(facility.getCountyDistrict());
         location.setName(facility.getName());
         location.setStateProvince(facility.getStateProvince());
-        location.setUuid(facility.getId());
+        location.setUuid(facility.getFacilityId());
         return location;
     }
 }

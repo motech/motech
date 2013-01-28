@@ -1,9 +1,10 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
-import org.motechproject.mrs.model.MRSConcept;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.services.MRSObservationAdapter;
+import org.motechproject.mrs.model.OpenMRSConcept;
+import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.services.ObservationAdapter;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
@@ -14,17 +15,15 @@ import org.openmrs.User;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
 @Service
-public class OpenMRSObservationAdapter implements MRSObservationAdapter {
+public class OpenMRSObservationAdapter implements ObservationAdapter {
 
     @Autowired
     private OpenMRSConceptAdapter openMRSConceptAdapter;
@@ -47,10 +46,10 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
      * @throws ObservationNotFoundException Exception when the expected Observation does not exist
      */
     @Override
-    public void voidObservation(MRSObservation mrsObservation, String reason, String userMotechId) throws ObservationNotFoundException {
-        Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getId()));
+    public void voidObservation(Observation mrsObservation, String reason, String userMotechId) throws ObservationNotFoundException {
+        Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getObservationId()));
         if (obs == null) {
-            throw new ObservationNotFoundException("Observation not found for MOTECH id :" + userMotechId + " and with MRS observation id :" + mrsObservation.getId());
+            throw new ObservationNotFoundException("Observation not found for MOTECH id :" + userMotechId + " and with MRS observation id :" + mrsObservation.getObservationId());
         }
         obs.setVoided(true);
         obs.setVoidReason(reason);
@@ -67,7 +66,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
      * @return MRSObservation if present, else null.
      */
     @Override
-    public MRSObservation findObservation(String patientMotechId, String conceptName) {
+    public OpenMRSObservation findObservation(String patientMotechId, String conceptName) {
         Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
         Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
         List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
@@ -78,16 +77,16 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
         return null;
     }
 
-    <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
+    <T> Obs createOpenMRSObservationForEncounter(Observation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
         openMrsObservation.setConcept(openMRSConceptAdapter.getConceptByName(mrsObservation.getConceptName()));
         openMrsObservation.setPerson(patient);
         openMrsObservation.setLocation(location);
         openMrsObservation.setCreator(staff);
         openMrsObservation.setEncounter(encounter);
-        openMrsObservation.setObsDatetime(mrsObservation.getDate());
+        openMrsObservation.setObsDatetime(mrsObservation.getDate().toDate());
         if (mrsObservation.getDependantObservations() != null && !mrsObservation.getDependantObservations().isEmpty()) {
-            for (MRSObservation observation : mrsObservation.getDependantObservations()) {
+            for (Observation observation : mrsObservation.getDependantObservations()) {
                 openMrsObservation.addGroupMember(createOpenMRSObservationForEncounter(observation, encounter, patient, location, staff));
             }
         }
@@ -104,38 +103,38 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
             openMRSObservation.setValueNumeric(Boolean.TRUE.equals(value) ? 1.0 : 0.0);
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
-        } else if (value instanceof MRSConcept) {
-            openMRSObservation.setValueCoded(openMRSConceptAdapter.getConceptByName(((MRSConcept) value).getName()));
+        } else if (value instanceof OpenMRSConcept) {
+            openMRSObservation.setValueCoded(openMRSConceptAdapter.getConceptByName(((OpenMRSConcept) value).getName()));
         } else if (value != null) {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
     }
 
-    Set<Obs> createOpenMRSObservationsForEncounter(Set<MRSObservation> mrsObservations, Encounter encounter, Patient patient, Location facility, User staff) {
+    Set<Obs> createOpenMRSObservationsForEncounter(Set<? extends Observation> mrsObservations, Encounter encounter, Patient patient, Location facility, User staff) {
         Set<Obs> openMrsObservations = new HashSet<Obs>();
-        for (MRSObservation observation : mrsObservations) {
+        for (Observation observation : mrsObservations) {
             openMrsObservations.add(createOpenMRSObservationForEncounter(observation, encounter, patient, facility, staff));
         }
         return openMrsObservations;
     }
 
-    MRSObservation saveObservation(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+    OpenMRSObservation saveObservation(Observation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
         return convertOpenMRSToMRSObservation(saveObs(mrsObservation, encounter, patient, facility, creator));
     }
 
-    private Obs saveObs(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+    private Obs saveObs(Observation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
         return obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null);
     }
 
-    Set<MRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
-        Set<MRSObservation> mrsObservations = new HashSet<MRSObservation>();
+    Set<OpenMRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
+        Set<OpenMRSObservation> mrsObservations = new HashSet<OpenMRSObservation>();
         for (Obs obs : openMrsObservations) {
             mrsObservations.add(convertOpenMRSToMRSObservation(obs));
         }
         return mrsObservations;
     }
 
-    MRSObservation convertOpenMRSToMRSObservation(Obs obs) {
+    OpenMRSObservation convertOpenMRSToMRSObservation(Obs obs) {
         ConceptDatatype datatype = obs.getConcept().getDatatype();
         if (datatype.isAnswerOnly()) {
             return createMRSObservation(obs, null);
@@ -148,14 +147,14 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
         } else if (datatype.isText()) {
             return createMRSObservation(obs, obs.getValueText());
         } else if (datatype.isCoded()) {
-            return createMRSObservation(obs, new MRSConcept(obs.getValueCoded().getName().getName()));
+            return createMRSObservation(obs, new OpenMRSConcept(obs.getValueCoded().getName().getName()));
         } else {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
         }
     }
 
-    private MRSObservation createMRSObservation(Obs obs, Object value) {
-        final MRSObservation mrsObservation = new MRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),
+    private OpenMRSObservation createMRSObservation(Obs obs, Object value) {
+        final OpenMRSObservation mrsObservation = new OpenMRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),
                 obs.getConcept().getName().getName(), value);
         if (obs.hasGroupMembers()) {
             for (Obs observation : obs.getGroupMembers()) {
@@ -166,11 +165,11 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     }
 
     @Override
-    public List<MRSObservation> findObservations(String patientMotechId, String conceptName) {
+    public List<Observation> findObservations(String patientMotechId, String conceptName) {
         Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
         Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
         List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
-        List<MRSObservation> mrsObservations = new ArrayList<MRSObservation>();
+        List<Observation> mrsObservations = new ArrayList<Observation>();
         for (Obs observation : observations) {
             mrsObservations.add(convertOpenMRSToMRSObservation(observation));
         }
@@ -178,7 +177,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     }
 
     @Override
-    public MRSObservation getObservationById(String observationId) {
+    public OpenMRSObservation getObservationById(String observationId) {
         Obs obs = obsService.getObsByUuid(observationId);
         if (obs == null) {
             return null;

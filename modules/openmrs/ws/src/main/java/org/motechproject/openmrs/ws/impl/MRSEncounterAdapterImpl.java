@@ -8,17 +8,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.motechproject.mrs.model.MRSEncounter;
-import org.motechproject.mrs.model.MRSEncounter.MRSEncounterBuilder;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.model.MRSPatient;
-import org.motechproject.mrs.model.MRSPerson;
-import org.motechproject.mrs.services.MRSEncounterAdapter;
-import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.model.OpenMRSEncounter;
+import org.motechproject.mrs.model.OpenMRSEncounter.MRSEncounterBuilder;
+import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.model.OpenMRSPatient;
+import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.model.OpenMRSProvider;
+import org.motechproject.mrs.model.OpenMRSUser;
+import org.motechproject.mrs.services.EncounterAdapter;
+import org.motechproject.mrs.services.PatientAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.EncounterResource;
 import org.motechproject.openmrs.ws.resource.model.Concept;
@@ -37,16 +38,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("encounterAdapter")
-public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
+public class MRSEncounterAdapterImpl implements EncounterAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MRSEncounterAdapterImpl.class);
 
-    private final MRSPatientAdapter patientAdapter;
+    private final PatientAdapter patientAdapter;
     private final MRSPersonAdapterImpl personAdapter;
     private final MRSConceptAdapterImpl conceptAdapter;
     private final EncounterResource encounterResource;
 
     @Autowired
-    public MRSEncounterAdapterImpl(EncounterResource encounterResource, MRSPatientAdapter patientAdapter,
+    public MRSEncounterAdapterImpl(EncounterResource encounterResource, PatientAdapter patientAdapter,
             MRSPersonAdapterImpl personAdapter, MRSConceptAdapterImpl conceptAdapter) {
         this.encounterResource = encounterResource;
         this.patientAdapter = patientAdapter;
@@ -55,17 +56,17 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     }
 
     @Override
-    public MRSEncounter createEncounter(MRSEncounter encounter) {
-        validateEncounter(encounter);
+    public OpenMRSEncounter createEncounter(org.motechproject.mrs.domain.Encounter encounter) {
+        validateEncounter((OpenMRSEncounter) encounter);
 
         // OpenMRS expects the observations to reference a concept uuid rather
         // than just a concept name. Attempt to map all concept names to concept
         // uuid's for each of the observations
-        Set<MRSObservation> updatedObs = resolveConceptUuidForConceptNames(encounter.getObservations());
-        MRSEncounter encounterCopy = new MRSEncounterBuilder().withId(encounter.getId())
-                .withProvider(encounter.getProvider()).withCreator(encounter.getCreator())
-                .withFacility(encounter.getFacility()).withDate(encounter.getDate())
-                .withPatient(encounter.getPatient()).withObservations(updatedObs)
+        Set<OpenMRSObservation> updatedObs = resolveConceptUuidForConceptNames((Set<OpenMRSObservation>) encounter.getObservations());
+        OpenMRSEncounter encounterCopy = new MRSEncounterBuilder().withId(encounter.getEncounterId())
+                .withProvider((OpenMRSProvider) encounter.getProvider()).withCreator((OpenMRSUser) encounter.getCreator())
+                .withFacility(encounter.getFacility()).withDate(encounter.getDate().toDate())
+                .withPatient((OpenMRSPatient) encounter.getPatient()).withObservations((Set<? extends org.motechproject.mrs.domain.Observation>) updatedObs)
                 .withEncounterType(encounter.getEncounterType()).build();
 
         Encounter converted = toEncounter(encounterCopy);
@@ -77,23 +78,23 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
             return null;
         }
 
-        return new MRSEncounterBuilder().withId(saved.getUuid()).withProvider(encounter.getProvider())
-                .withCreator(encounter.getCreator()).withFacility(encounter.getFacility())
-                .withDate(encounter.getDate()).withPatient(encounter.getPatient())
+        return new MRSEncounterBuilder().withId(saved.getUuid()).withProvider((OpenMRSProvider) encounter.getProvider())
+                .withCreator((OpenMRSUser) encounter.getCreator()).withFacility(encounter.getFacility())
+                .withDate(encounter.getDate().toDate()).withPatient((OpenMRSPatient) encounter.getPatient())
                 .withObservations(encounter.getObservations()).withEncounterType(encounter.getEncounterType()).build();
     }
 
-    private void validateEncounter(MRSEncounter encounter) {
+    private void validateEncounter(OpenMRSEncounter encounter) {
         Validate.notNull(encounter, "Encounter cannot be null");
         Validate.notNull(encounter.getPatient(), "Patient cannot be null");
-        Validate.notEmpty(encounter.getPatient().getId(), "Patient must have an id");
+        Validate.notEmpty(encounter.getPatient().getPatientId(), "Patient must have an id");
         Validate.notNull(encounter.getDate(), "Encounter Date cannot be null");
         Validate.notEmpty(encounter.getEncounterType(), "Encounter type cannot be empty");
     }
 
-    private Encounter toEncounter(MRSEncounter encounter) {
+    private Encounter toEncounter(OpenMRSEncounter encounter) {
         Encounter converted = new Encounter();
-        converted.setEncounterDatetime(encounter.getDate());
+        converted.setEncounterDatetime(encounter.getDate().toDate());
 
         EncounterType encounterType = new EncounterType();
         encounterType.setName(encounter.getEncounterType());
@@ -104,11 +105,11 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         converted.setLocation(location);
 
         Patient patient = new Patient();
-        patient.setUuid(encounter.getPatient().getId());
+        patient.setUuid(encounter.getPatient().getPatientId());
         converted.setPatient(patient);
 
         Person person = new Person();
-        person.setUuid(encounter.getProvider().getId());
+        person.setUuid(encounter.getProvider().getProviderId());
         converted.setProvider(person);
 
         converted.setObs(convertToObservations(encounter.getObservations()));
@@ -116,12 +117,12 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         return converted;
     }
 
-    private List<Observation> convertToObservations(Set<MRSObservation> observations) {
+    private List<Observation> convertToObservations(Set<OpenMRSObservation> observations) {
         List<Observation> obs = new ArrayList<Observation>();
 
-        for (MRSObservation observation : observations) {
+        for (OpenMRSObservation observation : observations) {
             Observation ob = new Observation();
-            ob.setObsDatetime(observation.getDate());
+            ob.setObsDatetime(observation.getDate().toDate());
 
             Concept concept = new Concept();
             concept.setDisplay(observation.getConceptName());
@@ -141,14 +142,14 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         return obs;
     }
 
-    private Set<MRSObservation> resolveConceptUuidForConceptNames(Set<MRSObservation> originalObservations) {
-        Set<MRSObservation> updatedObs = new HashSet<MRSObservation>();
-        for (MRSObservation observation : originalObservations) {
+    private Set<OpenMRSObservation> resolveConceptUuidForConceptNames(Set<OpenMRSObservation> originalObservations) {
+        Set<OpenMRSObservation> updatedObs = new HashSet<OpenMRSObservation>();
+        for (OpenMRSObservation observation : originalObservations) {
             String conceptUuid = conceptAdapter.resolveConceptUuidFromConceptName(observation.getConceptName());
             if (CollectionUtils.isNotEmpty(observation.getDependantObservations())) {
                 resolveConceptUuidForConceptNames(observation.getDependantObservations());
             }
-            updatedObs.add(new MRSObservation(observation.getId(), observation.getDate(), conceptUuid, observation
+            updatedObs.add(new OpenMRSObservation(observation.getId(), observation.getDate().toDate(), conceptUuid, observation
                     .getValue()));
         }
 
@@ -156,51 +157,44 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     }
 
     @Override
-    public MRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType) {
+    public OpenMRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType) {
         Validate.notEmpty(motechId, "MoTeCH Id cannot be empty");
 
-        List<MRSEncounter> previousEncounters = getAllEncountersByPatientMotechId(motechId);
-        Iterator<MRSEncounter> encounterItr = previousEncounters.iterator();
+        List<org.motechproject.mrs.domain.Encounter> previousEncounters = getAllEncountersByPatientMotechId(motechId);
 
-        // filter out encounters with non matching encounterType
-        while (StringUtils.isNotBlank(encounterType) && encounterItr.hasNext()) {
-            MRSEncounter enc = encounterItr.next();
-            if (!encounterType.equals(enc.getEncounterType())) {
-                encounterItr.remove();
-            }
-        }
+        removeEncounters(previousEncounters, encounterType);
 
-        MRSEncounter latestEncounter = null;
-        for (MRSEncounter enc : previousEncounters) {
+        org.motechproject.mrs.domain.Encounter latestEncounter = null;
+        for (org.motechproject.mrs.domain.Encounter enc : previousEncounters) {
             if (latestEncounter == null) {
                 latestEncounter = enc;
             } else {
-                latestEncounter = enc.getDate().after(latestEncounter.getDate()) ? enc : latestEncounter;
+                latestEncounter = enc.getDate().isAfter(latestEncounter.getDate()) ? enc : latestEncounter;
             }
         }
 
-        return latestEncounter;
+        return (OpenMRSEncounter) latestEncounter;
     }
 
-    public List<MRSEncounter> getAllEncountersByPatientMotechId(String motechId) {
+    public List<org.motechproject.mrs.domain.Encounter> getAllEncountersByPatientMotechId(String motechId) {
         Validate.notEmpty(motechId, "MoTeCH Id cannot be empty");
 
-        List<MRSEncounter> encounters = new ArrayList<MRSEncounter>();
-        MRSPatient patient = patientAdapter.getPatientByMotechId(motechId);
+        List<org.motechproject.mrs.domain.Encounter> encounters = new ArrayList<org.motechproject.mrs.domain.Encounter>();
+        org.motechproject.mrs.domain.Patient patient = patientAdapter.getPatientByMotechId(motechId);
 
         if (patient != null) {
-            encounters.addAll(getEncountersForPatient(patient));
+            encounters.addAll(getEncountersForPatient((OpenMRSPatient) patient));
         }
 
         return encounters;
     }
 
-    private List<MRSEncounter> getEncountersForPatient(MRSPatient patient) {
+    private List<OpenMRSEncounter> getEncountersForPatient(OpenMRSPatient patient) {
         EncounterListResult result = null;
         try {
-            result = encounterResource.queryForAllEncountersByPatientId(patient.getId());
+            result = encounterResource.queryForAllEncountersByPatientId(patient.getPatientId());
         } catch (HttpException e) {
-            LOGGER.error("Error retrieving encounters for patient: " + patient.getId());
+            LOGGER.error("Error retrieving encounters for patient: " + patient.getPatientId());
             return Collections.emptyList();
         }
 
@@ -214,28 +208,31 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         // full provider
         // information. As an optimization, only make 1 request per unique
         // provider
-        Map<String, MRSPerson> providers = new HashMap<String, MRSPerson>();
+        Map<String, OpenMRSPerson> providers = new HashMap<String, OpenMRSPerson>();
         for (Encounter encounter : result.getResults()) {
             providers.put(encounter.getProvider().getUuid(), null);
         }
 
         for (String providerUuid : providers.keySet()) {
-            MRSPerson provider = personAdapter.getPerson(providerUuid);
+            OpenMRSPerson provider = personAdapter.getPerson(providerUuid);
             providers.put(providerUuid, provider);
         }
 
-        List<MRSEncounter> updatedEncounters = new ArrayList<MRSEncounter>();
+        List<OpenMRSEncounter> updatedEncounters = new ArrayList<OpenMRSEncounter>();
         for (Encounter encounter : result.getResults()) {
-            MRSEncounter mrsEncounter = convertToMrsEncounter(encounter,
-                    providers.get(encounter.getProvider().getUuid()), patient);
+            OpenMRSPerson person = providers.get(encounter.getProvider().getUuid());
+            OpenMRSProvider provider = new OpenMRSProvider(person);
+            provider.setProviderId(person.getPersonId());
+            OpenMRSEncounter mrsEncounter = convertToMrsEncounter(encounter,
+                    provider, patient);
             updatedEncounters.add(mrsEncounter);
         }
 
         return updatedEncounters;
     }
 
-    private MRSEncounter convertToMrsEncounter(Encounter encounter, MRSPerson mrsPerson, MRSPatient patient) {
-        MRSEncounter updated = new MRSEncounterBuilder().withId(encounter.getUuid()).withProvider(mrsPerson)
+    private OpenMRSEncounter convertToMrsEncounter(Encounter encounter, OpenMRSProvider mrsPerson, OpenMRSPatient patient) {
+        OpenMRSEncounter updated = new MRSEncounterBuilder().withId(encounter.getUuid()).withProvider(mrsPerson)
                 .withFacility(ConverterUtils.convertLocationToMrsLocation(encounter.getLocation()))
                 .withDate(encounter.getEncounterDatetime()).withPatient(patient)
                 .withObservations(convertToMrsObservation(encounter.getObs()))
@@ -244,8 +241,8 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         return updated;
     }
 
-    private Set<MRSObservation> convertToMrsObservation(List<Observation> obs) {
-        Set<MRSObservation> mrsObs = new HashSet<MRSObservation>();
+    private Set<OpenMRSObservation> convertToMrsObservation(List<Observation> obs) {
+        Set<OpenMRSObservation> mrsObs = new HashSet<OpenMRSObservation>();
 
         for (Observation ob : obs) {
             mrsObs.add(ConverterUtils.convertObservationToMrsObservation(ob));
@@ -255,11 +252,13 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     }
 
     @Override
-    public MRSEncounter getEncounterById(String id) {
+    public OpenMRSEncounter getEncounterById(String id) {
         try {
             Encounter encounter = encounterResource.getEncounterById(id);
-            MRSPatient patient = patientAdapter.getPatient(encounter.getPatient().getUuid());
-            MRSPerson provider = personAdapter.getPerson(encounter.getProvider().getUuid());
+            OpenMRSPatient patient = (OpenMRSPatient) patientAdapter.getPatient(encounter.getPatient().getUuid());
+            OpenMRSPerson person = personAdapter.getPerson(encounter.getProvider().getUuid());
+            OpenMRSProvider provider = new OpenMRSProvider(person);
+            provider.setProviderId(person.getPersonId());
             return convertToMrsEncounter(encounter, provider, patient);
         } catch (HttpException e) {
             return null;
@@ -267,20 +266,28 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     }
 
     @Override
-    public List<MRSEncounter> getEncountersByEncounterType(String motechId, String encounterType) {
+    public List<org.motechproject.mrs.domain.Encounter> getEncountersByEncounterType(String motechId, String encounterType) {
         Validate.notEmpty(motechId, "MoTeCH Id cannot be empty");
 
-        List<MRSEncounter> previousEncounters = getAllEncountersByPatientMotechId(motechId);
-        Iterator<MRSEncounter> encounterItr = previousEncounters.iterator();
+        List<org.motechproject.mrs.domain.Encounter> previousEncounters = getAllEncountersByPatientMotechId(motechId);
+
+        removeEncounters(previousEncounters, encounterType);
+
+        return previousEncounters;
+    }
+
+    private void removeEncounters(List<org.motechproject.mrs.domain.Encounter> previousEncounters, String encounterType) {
+
+        Iterator<org.motechproject.mrs.domain.Encounter> encounterItr = previousEncounters.iterator();
 
         // filter out encounters with non matching encounterType
         while (StringUtils.isNotBlank(encounterType) && encounterItr.hasNext()) {
-            MRSEncounter enc = encounterItr.next();
+            org.motechproject.mrs.domain.Encounter enc = encounterItr.next();
             if (!encounterType.equals(enc.getEncounterType())) {
                 encounterItr.remove();
             }
         }
-
-        return previousEncounters;
     }
+
+
 }

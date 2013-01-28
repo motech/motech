@@ -2,17 +2,15 @@ package org.motechproject.openmrs.services;
 
 import org.junit.Test;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSPerson;
-import org.motechproject.mrs.model.MRSUser;
-import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.mrs.model.OpenMRSAttribute;
+import org.motechproject.mrs.model.OpenMRSUser;
+import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.services.UserAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Map;
-
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.selectUnique;
@@ -22,15 +20,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 public class OpenMRSUserAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Autowired
-    MRSUserAdapter mrsUserAdapter;
+    UserAdapter mrsUserAdapter;
     @Autowired
     UserService userService;
 
     @Test
     @Transactional(readOnly = true)
     public void shouldSaveUser() throws UserAlreadyExistsException {
-        MRSUser mrsUser = new MRSUser();
-        MRSPerson person = new MRSPerson();
+        OpenMRSUser mrsUser = new OpenMRSUser();
+        OpenMRSPerson person = new OpenMRSPerson();
         String lastName = "Last";
         String middleName = "Middle";
         String firstName = "First";
@@ -40,20 +38,20 @@ public class OpenMRSUserAdapterIT extends OpenMRSIntegrationTestBase {
         String phoneNumber = "0987654321";
 
         person.firstName(firstName).middleName(middleName).lastName(lastName).address(address)
-                .addAttribute(new Attribute("Email", email)).addAttribute(new Attribute("Phone Number", phoneNumber));
+                .addAttribute(new OpenMRSAttribute("Email", email)).addAttribute(new OpenMRSAttribute("Phone Number", phoneNumber));
         mrsUser.person(person).userName(email).securityRole(securityRole);
         final Map userData = mrsUserAdapter.saveUser(mrsUser);
 
         assertEquals(2, userData.size());
-        final MRSUser user = (MRSUser) userData.get(OpenMRSUserAdapter.USER_KEY);
+        final OpenMRSUser user = (OpenMRSUser) userData.get(OpenMRSUserAdapter.USER_KEY);
 
         assertEquals(firstName, user.getPerson().getFirstName());
         assertEquals(middleName, user.getPerson().getMiddleName());
         assertEquals(lastName, user.getPerson().getLastName());
         assertEquals(securityRole, user.getSecurityRole());
 
-        Attribute actualEmail = selectUnique(user.getPerson().getAttributes(), having(on(Attribute.class).name(), equalTo("Email")));
-        Attribute actualPhone = selectUnique(user.getPerson().getAttributes(), having(on(Attribute.class).name(), equalTo("Phone Number")));
+        OpenMRSAttribute actualEmail = selectUnique(user.getPerson().getAttributes(), having(on(OpenMRSAttribute.class).name(), equalTo("Email")));
+        OpenMRSAttribute actualPhone = selectUnique(user.getPerson().getAttributes(), having(on(OpenMRSAttribute.class).name(), equalTo("Phone Number")));
 
         assertEquals(email, actualEmail.value());
         assertEquals(email, user.getUserName());

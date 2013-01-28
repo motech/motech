@@ -48,9 +48,9 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.mrs.exception;version=${project.version},
-                            org.motechproject.mrs.model;version=${project.version},
                             org.motechproject.mrs.security;version=${project.version},
-                            org.motechproject.mrs.services;version=${project.version}
+                            org.motechproject.mrs.services;version=${project.version},
+                            org.motechproject.mrs.domain;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,

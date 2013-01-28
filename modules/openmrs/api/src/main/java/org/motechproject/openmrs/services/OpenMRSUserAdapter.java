@@ -1,12 +1,12 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.mrs.domain.Attribute;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSPerson;
-import org.motechproject.mrs.model.MRSUser;
+import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.model.OpenMRSUser;
 import org.motechproject.mrs.model.Password;
-import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.mrs.services.UserAdapter;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -21,17 +21,15 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Service
-public class OpenMRSUserAdapter implements MRSUserAdapter {
+public class OpenMRSUserAdapter implements UserAdapter {
     private static final Integer PASSWORD_LENGTH = 8;
     private static final String PERSON_UNKNOWN_GENDER = "?";
 
@@ -70,8 +68,9 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @throws UserAlreadyExistsException Thrown if the user already exists
      */
     @Override
-    public Map<String, Object> saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
-        MRSUser userByUserName = getUserByUserName(mrsUser.getPerson().attrValue("Email"));
+    public Map<String, Object> saveUser(org.motechproject.mrs.domain.User mrsUser) throws UserAlreadyExistsException {
+        OpenMRSPerson person = (OpenMRSPerson) mrsUser.getPerson();
+        OpenMRSUser userByUserName = getUserByUserName(person.attrValue("Email"));
         if (userByUserName != null && !isSystemAdmin(userByUserName.getSystemId())) {
             throw new UserAlreadyExistsException();
         }
@@ -85,7 +84,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @return A Map containing saved user's data
      */
     @Override
-    public Map<String, Object> updateUser(MRSUser mrsUser) {
+    public Map<String, Object> updateUser(org.motechproject.mrs.domain.User mrsUser) {
         return save(mrsUser);
     }
 
@@ -96,14 +95,14 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @return The User object, if found, else null.
      */
     @Override
-    public MRSUser getUserByUserName(String userId) {
+    public OpenMRSUser getUserByUserName(String userId) {
         org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userId);
         if (openMrsUser == null) {
             return null;
         }
         return (!isSystemAdmin(openMrsUser.getSystemId())) ? openMrsToMrsUser(openMrsUser)
-                : new MRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
-                .person(new MRSPerson().id(Integer.toString(openMrsUser.getPerson().getId())));
+                : new OpenMRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
+                .person(new OpenMRSPerson().id(Integer.toString(openMrsUser.getPerson().getId())));
     }
 
     org.openmrs.User getOpenMrsUserByUserName(String userName) {
@@ -120,8 +119,8 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @return List of all Users if users exist, else empty list
      */
     @Override
-    public List<MRSUser> getAllUsers() {
-        List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
+    public List<org.motechproject.mrs.domain.User> getAllUsers() {
+        List<org.motechproject.mrs.domain.User> mrsUsers = new ArrayList<org.motechproject.mrs.domain.User>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
             if (isSystemAdmin(openMRSUser.getSystemId())) {
@@ -132,9 +131,9 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return mrsUsers;
     }
 
-    MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
-        MRSUser mrsUser = new MRSUser();
-        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(openMRSUser.getPerson());
+    OpenMRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
+        OpenMRSUser mrsUser = new OpenMRSUser();
+        OpenMRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(openMRSUser.getPerson());
 
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
                 securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
@@ -150,7 +149,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return roles != null && !roles.isEmpty() ? roles.iterator().next().getRole() : null;
     }
 
-    private Map<String, Object> save(MRSUser mrsUser) {
+    private Map<String, Object> save(org.motechproject.mrs.domain.User mrsUser) {
 
         org.openmrs.User openMRSUser = mrsUserToOpenMRSUser(mrsUser);
         final String password = new Password(PASSWORD_LENGTH).create();
@@ -162,19 +161,19 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return userMap;
     }
 
-    org.openmrs.User mrsUserToOpenMRSUser(MRSUser mrsUser) {
-        User user = getOrCreateUser(mrsUser.getId());
+    org.openmrs.User mrsUserToOpenMRSUser(org.motechproject.mrs.domain.User mrsUser) {
+        User user = getOrCreateUser(mrsUser.getUserId());
         Person person = user.getPerson();
         clearAttributes(user);
 
-        MRSPerson mrsPerson = mrsUser.getPerson();
+        OpenMRSPerson mrsPerson = (OpenMRSPerson) mrsUser.getPerson();
         PersonName personName = new PersonName(mrsPerson.getFirstName(), mrsPerson.getMiddleName(), mrsPerson.getLastName());
         person.addName(personName);
         person.setGender(PERSON_UNKNOWN_GENDER);
 
         for (Attribute attribute : mrsPerson.getAttributes()) {
-            PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
-            person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
+            PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.getName());
+            person.addAttribute(new PersonAttribute(attributeType, attribute.getValue()));
         }
 
         Role role = userService.getRole(mrsUser.getSecurityRole());

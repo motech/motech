@@ -7,9 +7,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.services.MRSObservationAdapter;
+import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.services.ObservationAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,17 +18,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public abstract class AbstractObservationIT {
 
     @Autowired
-    private MRSObservationAdapter obsAdapter;
+    private ObservationAdapter obsAdapter;
 
     @Test
     public void shouldFindSearchedConcept() {
-        MRSObservation obs = obsAdapter.findObservation("700", "Search Concept");
+        OpenMRSObservation obs = (OpenMRSObservation) obsAdapter.findObservation("700", "Search Concept");
         assertNotNull(obs);
     }
 
     @Test
     public void shouldFindListOfObservations() {
-        List<MRSObservation> obs = obsAdapter.findObservations("700", "Search Concept");
+        List<Observation> obs = obsAdapter.findObservations("700", "Search Concept");
 
         assertNotNull(obs);
         assertTrue(obs.size() > 0);
@@ -35,7 +36,7 @@ public abstract class AbstractObservationIT {
 
     @Test
     public void shouldVoidObservation() throws ObservationNotFoundException {
-        MRSObservation obsToVoid = obsAdapter.findObservation("700", "Voidable Concept");
+        OpenMRSObservation obsToVoid = (OpenMRSObservation) obsAdapter.findObservation("700", "Voidable Concept");
         obsAdapter.voidObservation(obsToVoid, null, null);
     }
 }

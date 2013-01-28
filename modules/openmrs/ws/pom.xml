@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
+            <artifactId>motech-openmrs-domain-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>motech-mrs-api-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>

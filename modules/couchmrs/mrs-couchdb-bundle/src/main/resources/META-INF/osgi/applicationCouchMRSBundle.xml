@@ -7,7 +7,13 @@
 
     <import resource="classpath*:META-INF/motech/applicationCouchMRS.xml"/>
 
-    <osgi:service ref="couchMRSService" interface="org.motechproject.couch.mrs.service.CouchMRSService" />
+    <osgi:service ref="couchPersonAdapter" interface="org.motechproject.mrs.services.PersonAdapter" />
+
+    <osgi:service ref="couchFacilityAdapter" interface="org.motechproject.mrs.services.FacilityAdapter" />
+
+    <osgi:service ref="couchPatientAdapter" interface="org.motechproject.mrs.services.PatientAdapter" />
+
+    <osgi:service ref="couchProviderAdapter" interface="org.motechproject.mrs.services.ProviderAdapter" />
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 

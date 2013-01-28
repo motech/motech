@@ -1,8 +1,6 @@
 package org.motechproject.openmrs.util;
 
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.MRSPatient;
-import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.domain.Facility;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -21,7 +19,7 @@ public class PatientTestUtil {
 
     private FacilityTestUtil facilityTestUtil = new FacilityTestUtil();
 
-    public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, MRSFacility facility, String motechId) {
+    public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, Facility facility, String motechId) {
         PersonName personName = new PersonName(first, middle, last);
         person.addName(personName);
         setAddress(person, address1);
@@ -29,7 +27,7 @@ public class PatientTestUtil {
         patient.setBirthdate(birthdate);
         patient.setBirthdateEstimated(birthdateEstimated);
         patient.setGender(gender);
-        patient.addIdentifier(new PatientIdentifier(motechId, null, new Location(Integer.parseInt(facility.getId()))));
+        patient.addIdentifier(new PatientIdentifier(motechId, null, new Location(Integer.parseInt(facility.getFacilityId()))));
         return patient;
     }
 
@@ -41,13 +39,13 @@ public class PatientTestUtil {
         person.setAddresses(addresses);
     }
 
-    public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, MRSPatient actualPatient, String motechId) {
-        MRSPerson actualMRSPerson = actualPatient.getPerson();
+    public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, Facility facility, org.motechproject.mrs.domain.Patient actualPatient, String motechId) {
+        org.motechproject.mrs.domain.Person actualMRSPerson = actualPatient.getPerson();
         assertThat(actualMRSPerson.getFirstName(), is(first));
         assertThat(actualMRSPerson.getLastName(), is(last));
         assertThat(actualMRSPerson.getMiddleName(), is(middle));
         assertThat(actualMRSPerson.getAddress(), is(address1));
-        assertThat(actualMRSPerson.getDateOfBirth(), is(birthdate));
+        assertThat(actualMRSPerson.getDateOfBirth().toDate(), is(birthdate));
         assertThat(actualMRSPerson.getGender(), is(gender));
         assertThat(actualPatient.getFacility(), is(equalTo(facility)));
     }
