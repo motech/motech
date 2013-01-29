@@ -81,7 +81,7 @@ public final class MotechScheduler {
     private static void unscheduleTestEvent() {
         try {
             log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
-            schedulerService.unscheduleJob(new CronJobId(TEST_SUBJECT, TEST_EVENT_NAME));
+            schedulerService.unscheduleJob(new CronJobId(TEST_SUBJECT, TEST_EVENT_NAME), MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         } catch (Exception e) {
             log.warn(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
         }

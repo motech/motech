@@ -96,7 +96,7 @@ public interface MotechSchedulerService {
      */
     void unscheduleJob(String subject, String externalId);
 
-    void unscheduleJob(JobId job);
+    void unscheduleJob(JobId job, String jobGroupName);
 
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
@@ -139,5 +139,7 @@ public interface MotechSchedulerService {
     /**
      * shut's down scheduler instance after waiting for executing jobs to finish
      */
-    void shutdownScheduler();    
+    void shutdownScheduler();
+
+    String getJobGroupName(String subject);
 }

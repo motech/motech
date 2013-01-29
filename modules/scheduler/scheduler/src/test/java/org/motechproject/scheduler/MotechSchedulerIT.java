@@ -2,16 +2,18 @@ package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.EventListenerRegistry;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.annotations.MotechListenerEventProxy;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
-import org.motechproject.event.EventListenerRegistry;
-import org.motechproject.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -24,19 +26,12 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.motechproject.testing.utils.TimeFaker.fakeNow;
-import static org.motechproject.testing.utils.TimeFaker.fakeToday;
-import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.motechproject.testing.utils.TimeFaker.*;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.quartz.JobKey.jobKey;
@@ -62,10 +57,6 @@ public class MotechSchedulerIT {
 
     private String uuidStr = UUID.randomUUID().toString();
 
-    private long scheduledHour;
-    private long scheduledMinute;
-    private long scheduledSecond;
-
     private boolean executed;
 
     @Before
@@ -73,20 +64,10 @@ public class MotechSchedulerIT {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(1, Calendar.MINUTE);
-        DateTime now = DateUtil.now();
-
-        scheduledHour = now.getHourOfDay();
-        scheduledMinute = now.getMinuteOfHour() + 1;
-        scheduledSecond = now.getSecondOfMinute();
-        if (scheduledMinute == 59) {
-            scheduledHour = (scheduledHour + 1) % 24;
-            scheduledMinute = 0;
-        }
     }
 
     @Test
-    @Ignore
-    public void scheduleCronJobTest() {
+    public void scheduleCronJobTest() throws InterruptedException, SchedulerException {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", UUID.randomUUID().toString());
         String testSubject = "MotechSchedulerITScheduleTest";
@@ -95,13 +76,26 @@ public class MotechSchedulerIT {
         Method handlerMethod = ReflectionUtils.findMethod(MotechSchedulerIT.class, "handleEvent", MotechEvent.class);
         eventListenerRegistry.registerListener(new MotechListenerEventProxy("handleEvent", this, handlerMethod), testSubject);
 
+        DateTime now = DateUtil.now();
+        long scheduledHour = now.getHourOfDay();
+        long scheduledMinute = now.getMinuteOfHour();
+        long scheduledSecond = now.getSecondOfMinute();
+
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
         motechSchedulerService.scheduleJob(cronSchedulableJob);
 
-        //Thread.sleep(90000);   // seems to pass without sleep
+        Thread.sleep(5000);
         if (!executed) {
             Assert.fail("scheduler job not handled ..........");
         }
+
+        assertTrue(schedulerFactoryBean.getScheduler().getJobGroupNames().contains("motechSchedulerIT"));
+    }
+
+    @Test
+    public void shouldGetJobGroupNameFromEventSubject() {
+        assertEquals("motechSchedulerIT", motechSchedulerService.getJobGroupName("MotechSchedulerITScheduleTest"));
+        assertEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME, motechSchedulerService.getJobGroupName("undefinedSubjectName"));
     }
 
     public void handleEvent(MotechEvent motechEvent) {
