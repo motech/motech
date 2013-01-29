@@ -16,7 +16,13 @@ localizationModule.factory("i18nService", function() {
             var msg = '';
 
             if (this.ready == true) {
-                msg = jQuery.i18n.prop(key, value);
+                if (!value) {
+                    msg = jQuery.i18n.prop(key, value);
+                } else {
+                    var mergeArray = $.merge($.merge([], [key]), value);
+                    msg = jQuery.i18n.prop.apply(null, mergeArray);
+                }
+
             }
 
             return msg;
