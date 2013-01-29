@@ -49,6 +49,7 @@ public class Activator extends org.motechproject.osgi.web.Activator {
         regData.addSubMenu("#/messages", "messages");
         regData.addSubMenu("#/settings", "settings");
         regData.addSubMenu("#/operations", "operations");
+        regData.addSubMenu("#/log", "log");
 
         regData.addI18N("messages", "../admin/bundles/");
 

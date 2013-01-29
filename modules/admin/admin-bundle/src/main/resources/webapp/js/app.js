@@ -12,9 +12,16 @@ angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageSe
           when('/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: BundleSettingsCtrl}).
           when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
           when('/operations', {templateUrl: '../admin/partials/operations.html', controller: OperationsCtrl}).
+          when('/log', {templateUrl: '../admin/partials/log.html', controller: ServerLogCtrl}).
           otherwise({redirectTo: '/bundles'});
 }]).filter('moduleName', function () {
     return function (input) {
         return input.replace(/(motech\s|\sapi|\sbundle)/ig, '');
     }
+}).directive('sidebar', function () {
+   return function (scope, element, attrs) {
+       $(element).sidebar({
+           position:"right"
+       });
+   }
 });

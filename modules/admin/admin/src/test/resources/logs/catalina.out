@@ -1,0 +1,11 @@
+I am an example log file used for tests
+2013-01-31 11:22:48,725 INFO [org.motechproject.sms.smpp.ManagedSmslibService] Configure SMS Lib Service
+2013-01-31 11:22:48,726 INFO [org.motechproject.sms.smpp.ManagedSmslibService] Register JSMPP gateway
+2013-01-31 11:22:48,750 INFO [org.motechproject.sms.smpp.ManagedSmslibService] Register listeners
+2013-01-31 11:22:48,754 INFO [org.motechproject.sms.smpp.ManagedSmslibService] Start SMS Lib Service
+2013-01-31 11:22:50,158 ERROR [org.motechproject.sms.smpp.ManagedSmslibService] Connection refused
+[INFO] Initialized servlet for org.motechproject.motech-sms-smpp-bundle [151]
+[INFO] Initializing Spring FrameworkServlet 'servlet_38'
+[INFO] Initialized servlet for org.motechproject.motech-outbox-bundle [159]
+Jan 31, 2013 11:22:51 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 28838 ms

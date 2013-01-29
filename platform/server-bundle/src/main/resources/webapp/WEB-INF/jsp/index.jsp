@@ -22,6 +22,7 @@
     <link rel="stylesheet" type="text/css" href="resources/css/timepicker/jquery-ui-timepicker-addon.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-gentleSelect.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-cron.css">
+    <link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/index.css" />
 
     <script src="resources/lib/jquery/jquery-1.8.2.js" type="text/javascript"></script>
@@ -32,6 +33,7 @@
     <script src="resources/lib/jquery/jquery.tools.min.js" type="text/javascript"></script>
     <script src="resources/lib/jquery/jquery.blockUI.js" type="text/javascript"></script>
     <script src="resources/lib/jquery/jquery.caret.js" type="text/javascript"></script>
+    <script src="resources/lib/jquery/jquery.sidebar.js" type="text/javascript"></script>
 
     <script src="resources/lib/angular/angular.min.js" type="text/javascript"></script>
     <script src="resources/lib/angular/angular-resource.min.js" type="text/javascript"></script>
