@@ -6,9 +6,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.commons.date.model.DayOfWeek;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -17,12 +19,15 @@ import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerUtils;
+import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +36,12 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
-import static org.motechproject.testing.utils.TimeFaker.fakeNow;
-import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,6 +50,9 @@ public class MotechSchedulerServiceImplIT {
 
     @Autowired
     MotechSchedulerService schedulerService;
+
+    @Autowired
+    EventListenerRegistryService eventListenerRegistryService;
 
     @Autowired
     SchedulerFactoryBean schedulerFactoryBean;
@@ -80,6 +90,56 @@ public class MotechSchedulerServiceImplIT {
                     first3FireTimes);
         } finally {
             stopFakingTime();
+        }
+    }
+
+    @Test
+    public void shouldIgnoreFiresInPastWhenSchedulingCronJob() throws InterruptedException, SchedulerException {
+        try {
+            TestEventListener listener = new TestEventListener();
+            eventListenerRegistryService.registerListener(listener, "eve");
+
+            DateTime now;
+            for (now = now(); now.getSecondOfMinute() > 56 || now.getSecondOfMinute() < 3; now = now()) {   // we don't want triggers now, only misfires
+                Thread.sleep(1000);
+            }
+            DateTime jobStartTime = now.minusMinutes(3);
+            Map<String, Object> params = new HashMap<>();
+            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("eve", params), "0 0/1 * 1/1 * ? *", jobStartTime.toDate(), null, true));
+
+            synchronized (listener.getReceivedEvents()) {
+                listener.getReceivedEvents().wait(2000);
+            }
+            assertTrue(listener.getReceivedEvents().size() == 0);
+        } finally {
+            eventListenerRegistryService.clearListenersForBean("test");
+            schedulerService.unscheduleAllJobs("test-job_id");
+        }
+    }
+
+    @Test
+    public void shouldNotIgnoreFiresInPastWhenSchedulingCronJob() throws InterruptedException, SchedulerException {
+        try {
+            TestEventListener listener = new TestEventListener();
+            eventListenerRegistryService.registerListener(listener, "eve");
+
+            DateTime now;
+            for (now = now(); now.getSecondOfMinute() > 56 || now.getSecondOfMinute() < 3; now = now()) {   // we don't want triggers now, only misfires
+                Thread.sleep(1000);
+            }
+            DateTime jobStartTime = now.minusMinutes(3);
+            Map<String, Object> params = new HashMap<>();
+            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("eve", params), "0 0/1 * 1/1 * ? *", jobStartTime.toDate(), null, false));
+
+            synchronized (listener.getReceivedEvents()) {
+                listener.getReceivedEvents().wait(2000);
+            }
+            assertTrue(listener.getReceivedEvents().size() > 0);
+        } finally {
+            eventListenerRegistryService.clearListenersForBean("test");
+            schedulerService.unscheduleAllJobs("test-job_id");
         }
     }
 
@@ -451,7 +511,6 @@ public class MotechSchedulerServiceImplIT {
         }
     }
 
-
     private List<DateTime> getFireTimes(String triggerKey) throws SchedulerException {
         Trigger trigger = scheduler.getTrigger(triggerKey(triggerKey, "default"));
         List<DateTime> fireTimes = new ArrayList<>();
@@ -462,4 +521,27 @@ public class MotechSchedulerServiceImplIT {
         }
         return fireTimes;
     }
+}
+
+class TestEventListener implements EventListener {
+
+    private List<MotechEvent> receivedEvents = new ArrayList<>();
+
+    @Override
+    public void handle(MotechEvent event) {
+        synchronized (receivedEvents) {
+            receivedEvents.add(event);
+            receivedEvents.notify();
+        }
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "test";
+    }
+
+    public List<MotechEvent> getReceivedEvents() {
+        return receivedEvents;
+    }
+
 }
