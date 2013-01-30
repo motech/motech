@@ -67,7 +67,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterBundles | filter:filterProp">
+    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
         <td>{{bundle.bundleId}}</td>
         <td>
             <div ng-class="getIconClass(bundle)">

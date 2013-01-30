@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -68,18 +69,24 @@ public class BundleAdminServiceTest {
     @Mock
     ServiceReference exposedServiceReference;
 
+    @Mock
+    MotechBundleFilter motechBundleFilter;
+
     @Before
     public void setUp() {
         initMocks(this);
-        when(bundle.getHeaders()).thenReturn(headers);
     }
 
     @Test
     public void testGetBundles() {
-        List<Bundle> bundles = dummyBundleList();
-        when(bundleContext.getBundles()).thenReturn(bundles.toArray(new Bundle[bundles.size()]));
+        List<Bundle> bundleList = dummyBundleList();
+        Bundle[] bundles = bundleList.toArray(new Bundle[bundleList.size()]);
 
-        assertEquals(toBundleInfoList(bundles), moduleAdminService.getBundles());
+        setupBundleRetrieval();
+        when(bundleContext.getBundles()).thenReturn(bundles);
+        when(motechBundleFilter.filter(bundles)).thenReturn(bundleList);
+
+        assertEquals(toBundleInfoList(bundleList), moduleAdminService.getBundles());
         verify(bundleContext).getBundles();
     }
 
@@ -226,6 +233,14 @@ public class BundleAdminServiceTest {
         moduleAdminService.getBundleInfo(BUNDLE_ID);
     }
 
+    @Test(expected = BundleNotFoundException.class)
+    public void testGet3rdPartyBundle() {
+        setupBundleRetrieval();
+        when(motechBundleFilter.passesCriteria(bundle)).thenReturn(false);
+
+        moduleAdminService.getBundleInfo(BUNDLE_ID);
+    }
+
     private List<Bundle> dummyBundleList() {
         List<Bundle> bundles = new ArrayList<>();
         for(int i = 0; i < 3; i++) {
@@ -240,6 +255,8 @@ public class BundleAdminServiceTest {
         when(bundle.getState()).thenReturn(Bundle.ACTIVE);
         when(bundle.getSymbolicName()).thenReturn("Bundle");
         when(bundle.getBundleContext()).thenReturn(bundleContext);
+        when(bundle.getHeaders()).thenReturn(headers);
+        when(motechBundleFilter.passesCriteria(any(Bundle.class))).thenReturn(true);
     }
 
     private static List<BundleInformation> toBundleInfoList(List<Bundle> bundles) {

@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.admin.bundles.BundleDirectoryManager;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.bundles.ImportExportResolver;
+import org.motechproject.admin.bundles.MotechBundleFilter;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.commons.api.MotechException;
@@ -46,12 +47,19 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     @Autowired
     private ImportExportResolver importExportResolver;
 
+    @Autowired
+    private MotechBundleFilter motechBundleFilter;
+
     @Override
     public List<BundleInformation> getBundles() {
         List<BundleInformation> bundles = new ArrayList<>();
-        for (Bundle bundle : bundleContext.getBundles()) {
+
+        List<Bundle> motechBundles = motechBundleFilter.filter(bundleContext.getBundles());
+
+        for (Bundle bundle : motechBundles) {
             bundles.add(new BundleInformation(bundle));
         }
+
         return bundles;
     }
 
@@ -179,7 +187,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private Bundle getBundle(long bundleId) {
         Bundle bundle = bundleContext.getBundle(bundleId);
-        if (bundle == null) {
+        if (bundle == null || !motechBundleFilter.passesCriteria(bundle)) {
             throw new BundleNotFoundException("Bundle with id [" + bundleId + "] not found");
         }
         return bundle;

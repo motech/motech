@@ -11,19 +11,6 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.startUpload = false;
     $scope.versionOrder = new Array("version.major", "version.minor", "version.micro", "version.qualifier");
 
-    $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
-
-    $scope.filterBundles = function(bundle) {
-        if (bundle.symbolicName != null){
-            if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform") != -1) {
-                return false;
-            }
-
-            return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
-        }
-        else return false;
-    }
-
     $scope.reloadPage = function(){
         location.reload();
     };
@@ -66,22 +53,17 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     }
 
     $scope.allBundlesCount = function() {
-        var count = 0;
-        angular.forEach($scope.bundles, function(bundle) {
-            if ($scope.filterBundles(bundle)) {
-                count ++;
-            }
-        });
-
-        return count;
+        if ($scope.bundles) {
+            return $scope.bundles.length;
+        } else {
+            return 0;
+        }
     }
 
     $scope.activeBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if ($scope.filterBundles(bundle)) {
-                count += bundle.isActive() ? 1 : 0;
-            }
+            count += bundle.isActive() ? 1 : 0;
         });
 
         return count;
@@ -90,9 +72,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.installedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if ($scope.filterBundles(bundle)) {
-                count += bundle.isInstalled() ? 1 : 0;
-            }
+            count += bundle.isInstalled() ? 1 : 0;
         });
 
         return count;
@@ -101,9 +81,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.resolvedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if ($scope.filterBundles(bundle)) {
-                count += bundle.isResolved() ? 1 : 0;
-            }
+            count += bundle.isResolved() ? 1 : 0;
         });
 
         return count;
