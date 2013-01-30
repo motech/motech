@@ -60,10 +60,6 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
         });
     }
 
-    $scope.msg = function(key) {
-        return i18nService.getMessage(key);
-    };
-
     $scope.msg = function(key, value) {
         return i18nService.getMessage(key, value);
     };

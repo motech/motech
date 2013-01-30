@@ -293,6 +293,10 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         $scope.filters.push({})
     }
 
+    $scope.removeNode = function(filter) {
+       $scope.filters.removeObject(filter);
+    }
+
     $scope.validateForm = function() {
         var i, param;
 
@@ -306,7 +310,20 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
             }
         }
 
-        return !($scope.filterForm.$invalid && $scope.filters.length != 0);
+        return $scope.validateFilterForm();
+    }
+
+    $scope.validateFilterForm = function () {
+        var isPass = true
+        for(var i = 0; i < $scope.filters.length; i++) {
+            if (!$scope.filters[i].eventParameter || !$scope.filters[i].negationOperator || !$scope.filters[i].operator) {
+                isPass = false;
+            }
+            if ($scope.filters[i].operator && $scope.filters[i].operator!='exist' && !$scope.filters[i].expression ) {
+                isPass = false;
+            }
+        }
+        return isPass;
     }
 
     $scope.isDisabled = function(prop) {

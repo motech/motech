@@ -129,9 +129,9 @@
                         </div>
                         <div id="collapse21" ng-class="{true:'collapse in', false:'collapse'}[filters.length!=0]" class="accordion-body stripes-bg">
                             <div class="accordion-inner">
-                                <form id="filtersForm" name="filterForm" class="form-horizontal" novalidate>
+                                <ng-form id="filtersForm" name="filterForm" class="form-horizontal" novalidate>
                                     <div class="margin-center">
-                                        <p class="centered">{{msg('info.filter.title')}}</p>
+                                        <p class="centered">{{msg('info.filter.title', [selectedTrigger.displayName, selectedAction.displayName])}}</p>
                                         <p class="centered"><strong>{{msg('info.filter.run')}}</strong></p>
 
                                         <div ng-repeat="filter in filters">
@@ -139,32 +139,33 @@
                                                 <div class="control-group centered">
                                                     <span ng-class="cssClass(filter.eventParameter)" class="">
                                                         <label><i class="icon icon-plus"></i> {{msg('info.if')}} {{selectedTrigger.displayName}}</label>
-                                                        <select ng-model="filter.eventParameter" class="input-medium" ng-options="c.displayName for c in selectedTrigger.eventParameters" required>
+                                                        <select ng-model="filter.eventParameter" class="input-medium" ng-options="c.displayName for c in selectedTrigger.eventParameters">
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.negationOperator)" class="">
-                                                        <select ng-disabled="isDisabled(filter.eventParameter)" ng-model="filter.negationOperator" ng-options="msg(c.key) for c in negationOperators" class="input-medium" required>
+                                                        <select ng-disabled="isDisabled(filter.eventParameter)" ng-model="filter.negationOperator" ng-options="msg(c.key) for c in negationOperators" class="input-medium">
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.operator)" class="">
-                                                        <select ng-disabled="isDisabled(filter.negationOperator)" ng-model="filter.operator" class="input-medium" ng-options="msg(c) for c in operators(filter.eventParameter)" required>
+                                                        <select ng-disabled="isDisabled(filter.negationOperator)" ng-model="filter.operator" class="input-medium" ng-options="msg(c) for c in operators(filter.eventParameter)" >
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.expression)">
-                                                        <input ng-disabled="isDisabled(filter.operator)" ng-model="filter.expression" class="input-medium" ng-show="filter.operator!='exist'" type="text" value="" ng-required="filter.operator!='exist'"/>
+                                                        <input ng-disabled="isDisabled(filter.operator)" ng-model="filter.expression" class="input-medium" ng-show="filter.operator!='exist'" type="text" value=""/>
                                                     </span>
-                                                     <a ng-click="filters.splice($index, 1)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a>
+                                                     <a ng-click="removeNode(filter)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="control-group centered">
-                                        <button class="btn btn-success" ng-click="addFilter()"><i class="icon-plus icon-white"></i> {{msg('button.addAnotherFilter')}}</button>
+                                        <button ui-if="filters.length==0" class="btn btn-success" ng-click="addFilter()"><i class="icon-plus icon-white"></i> {{msg('button.addFilter')}}</button>
+                                        <button ui-if="filters.length!=0" class="btn btn-success" ng-click="addFilter()"><i class="icon-plus icon-white"></i> {{msg('button.addAnotherFilter')}}</button>
                                     </div>
-                                </form>
+                                </ng-form>
                             </div>
                         </div>
                     </div>
