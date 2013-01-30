@@ -496,13 +496,13 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     @Override
     public void unscheduleJob(String subject, String externalId) {
-        unscheduleJob(new CronJobId(subject, externalId), getJobGroupName(subject));
+        unscheduleJob(new CronJobId(subject, externalId));
     }
 
     @Override
-    public void unscheduleJob(JobId job, String jobGroupName) {
+    public void unscheduleJob(JobId job) {
         logInfo("Unscheduling the Job: %s", job);
-        unscheduleJobByJobIdAndJobGroupName(job.value(), jobGroupName);
+        unscheduleJobByJobIdAndJobGroupName(job.value(), getJobGroupName(job.getSubject()));
     }
 
     @Override

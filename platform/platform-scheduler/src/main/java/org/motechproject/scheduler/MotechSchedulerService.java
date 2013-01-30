@@ -96,7 +96,7 @@ public interface MotechSchedulerService {
      */
     void unscheduleJob(String subject, String externalId);
 
-    void unscheduleJob(JobId job, String jobGroupName);
+    void unscheduleJob(JobId job);
 
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist

@@ -30,4 +30,8 @@ public abstract class JobId implements Serializable {
     public String toString() {
         return value();
     }
+
+    public String getSubject() {
+        return subject;
+    }
 }
