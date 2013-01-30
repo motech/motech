@@ -142,4 +142,5 @@ public interface MotechSchedulerService {
     void shutdownScheduler();
 
     String getJobGroupName(String subject);
+    String customMisfirePolicyForJobGroup(String subject);
 }

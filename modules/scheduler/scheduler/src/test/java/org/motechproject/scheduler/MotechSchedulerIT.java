@@ -13,7 +13,6 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
-import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.util.DateUtil;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -28,9 +27,11 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.*;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.motechproject.scheduler.impl.MotechSchedulerServiceImpl.JOB_GROUP_NAME;
 import static org.motechproject.testing.utils.TimeFaker.*;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -55,9 +56,13 @@ public class MotechSchedulerIT {
     @Autowired
     private TestJobHandler testJobHandler;
 
+    @Autowired
+    private Properties quartzProperties;
+
     private String uuidStr = UUID.randomUUID().toString();
 
     private boolean executed;
+    private final String EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME = "eventSubjectWithCustomGroupName";
 
     @Before
     public void setUp() {
@@ -68,9 +73,9 @@ public class MotechSchedulerIT {
 
     @Test
     public void scheduleCronJobTest() throws InterruptedException, SchedulerException {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("JobID", UUID.randomUUID().toString());
-        String testSubject = "MotechSchedulerITScheduleTest";
+        String testSubject = "testSubject";
         MotechEvent motechEvent = new MotechEvent(testSubject, params);
 
         Method handlerMethod = ReflectionUtils.findMethod(MotechSchedulerIT.class, "handleEvent", MotechEvent.class);
@@ -88,14 +93,51 @@ public class MotechSchedulerIT {
         if (!executed) {
             Assert.fail("scheduler job not handled ..........");
         }
+    }
 
-        assertTrue(schedulerFactoryBean.getScheduler().getJobGroupNames().contains("motechSchedulerIT"));
+    @Test
+    public void scheduleCronJobTestWithGivenProperties() throws InterruptedException, SchedulerException {
+        Map<String, Object> params = new HashMap<>();
+        String jobId = UUID.randomUUID().toString();
+        params.put("JobID", jobId);
+        MotechEvent motechEvent = new MotechEvent(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME, params);
+
+        Method handlerMethod = ReflectionUtils.findMethod(MotechSchedulerIT.class, "handleEvent", MotechEvent.class);
+        eventListenerRegistry.registerListener(new MotechListenerEventProxy("handleEvent", this, handlerMethod), EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME);
+
+        DateTime now = DateUtil.now();
+        long scheduledHour = now.getHourOfDay();
+        long scheduledMinute = now.getMinuteOfHour();
+        long scheduledSecond = now.getSecondOfMinute();
+
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
+        motechSchedulerService.scheduleJob(cronSchedulableJob);
+
+        Thread.sleep(5000);
+        if (!executed) {
+            Assert.fail("scheduler job not handled ..........");
+        }
+
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        String jobGroupName = motechSchedulerService.getJobGroupName(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME);
+        assertTrue(scheduler.getJobGroupNames().contains(jobGroupName));
+
+        Trigger trigger = scheduler.getTriggersOfJob(jobKey(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME +"-" + jobId, jobGroupName)).get(0);
+        String expectedMisfirePolicy = motechSchedulerService.customMisfirePolicyForJobGroup(jobGroupName);
+        assertEquals(parseInt(expectedMisfirePolicy), trigger.getMisfireInstruction());
     }
 
     @Test
     public void shouldGetJobGroupNameFromEventSubject() {
-        assertEquals("motechSchedulerIT", motechSchedulerService.getJobGroupName("MotechSchedulerITScheduleTest"));
-        assertEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME, motechSchedulerService.getJobGroupName("undefinedSubjectName"));
+        assertEquals("testGroupName", motechSchedulerService.getJobGroupName(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME));
+        assertEquals(JOB_GROUP_NAME, motechSchedulerService.getJobGroupName("undefinedSubjectName"));
+    }
+
+    @Test
+    public void shouldGetCustomMisfirePolicyForJobGroupName() {
+        String jobGroupName = motechSchedulerService.getJobGroupName(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME);
+        String propertyName = String.format("jobgroup.%s.misfire.policy", jobGroupName);
+        assertEquals(quartzProperties.getProperty(propertyName), motechSchedulerService.customMisfirePolicyForJobGroup(jobGroupName));
     }
 
     public void handleEvent(MotechEvent motechEvent) {
@@ -110,11 +152,11 @@ public class MotechSchedulerIT {
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
 
-        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
     }
 
     @Test
@@ -132,16 +174,16 @@ public class MotechSchedulerIT {
         MotechEvent newMotechEvent = new MotechEvent("testEvent", newParameters);
         CronSchedulableJob newCronSchedulableJob = new CronSchedulableJob(newMotechEvent, newCronExpression);
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
-        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
 
         motechSchedulerService.scheduleJob(newCronSchedulableJob);
-        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
 
-        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(triggerKey("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME));
-        JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobKey("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(triggerKey("testEvent-" + uuidStr, JOB_GROUP_NAME));
+        JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(jobKey("testEvent-" + uuidStr, JOB_GROUP_NAME));
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
         assertEquals(newCronExpression, trigger.getCronExpression());
@@ -185,7 +227,7 @@ public class MotechSchedulerIT {
 
         String patientIdKeyName = "patientId";
         String patientId = "1";
-        params = new HashMap<String, Object>();
+        params = new HashMap<>();
         params.put(patientIdKeyName, patientId);
         params.put("JobID", uuidStr);
 
@@ -193,7 +235,7 @@ public class MotechSchedulerIT {
 
         motechSchedulerService.updateScheduledJob(motechEvent);
 
-        JobDataMap jobDataMap = schedulerFactoryBean.getScheduler().getJobDetail(jobKey("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME)).getJobDataMap();
+        JobDataMap jobDataMap = schedulerFactoryBean.getScheduler().getJobDetail(jobKey("testEvent-" + uuidStr, JOB_GROUP_NAME)).getJobDataMap();
 
         assertEquals(patientId, jobDataMap.getString(patientIdKeyName));
     }
@@ -212,14 +254,14 @@ public class MotechSchedulerIT {
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         String newCronExpression = "0 0 10 * * ?";
 
         motechSchedulerService.rescheduleJob("testEvent", uuidStr, newCronExpression);
-        assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
 
-        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(triggerKey("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(triggerKey("testEvent-" + uuidStr, JOB_GROUP_NAME));
         String triggerCronExpression = trigger.getCronExpression();
 
         assertEquals(newCronExpression, triggerCronExpression);
@@ -262,11 +304,11 @@ public class MotechSchedulerIT {
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(motechEvent, new Date((new Date()).getTime() + 5000));
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.scheduleRunOnceJob(schedulableJob);
 
-        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -279,7 +321,7 @@ public class MotechSchedulerIT {
 
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(motechEvent, calendar.getTime());
 
-        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME));
         motechSchedulerService.scheduleRunOnceJob(schedulableJob);
     }
 
@@ -304,15 +346,52 @@ public class MotechSchedulerIT {
             .setRepeatIntervalInMilliSeconds(5000L)
             .setIgnorePastFiresAtStart(false);
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
 
-        GroupMatcher<TriggerKey> bar = GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        GroupMatcher<TriggerKey> bar = GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME);
         Set<TriggerKey> foo = schedulerFactoryBean.getScheduler().getTriggerKeys(bar);
         final List<? extends Trigger> triggersOfJob = schedulerFactoryBean.getScheduler().getTriggersOfJob(JobKey.jobKey(new RepeatingJobId(motechEvent).value(), "default"));
         assertEquals(new Date(start.getTime() + 5 * 5000), triggersOfJob.get(0).getFinalFireTime());
         assertEquals(scheduledJobsNum + 1, foo.size());
+    }
+
+    @Test
+    public void testScheduleRepeatingJobWithCustomProperties() throws Exception {
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = new MotechEvent(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME, params);
+
+        Calendar cal = Calendar.getInstance();
+        Date start = cal.getTime();
+        cal.add(Calendar.DATE, 1);
+        Date end = cal.getTime();
+
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(start)
+            .setEndTime(end)
+            .setRepeatCount(5)
+            .setRepeatIntervalInMilliSeconds(5000L)
+            .setIgnorePastFiresAtStart(false);
+
+        String jobGroupName = motechSchedulerService.getJobGroupName(EVENT_SUBJECT_WITH_CUSTOM_GROUPNAME);
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(jobGroupName)).size();
+
+        motechSchedulerService.scheduleRepeatingJob(schedulableJob);
+
+        GroupMatcher<TriggerKey> bar = GroupMatcher.triggerGroupEquals(jobGroupName);
+        Set<TriggerKey> foo = schedulerFactoryBean.getScheduler().getTriggerKeys(bar);
+        final List<? extends Trigger> triggersOfJob = schedulerFactoryBean.getScheduler().getTriggersOfJob(JobKey.jobKey(new RepeatingJobId(motechEvent).value(), jobGroupName));
+        Trigger trigger = triggersOfJob.get(0);
+        assertEquals(new Date(start.getTime() + 5 * 5000), trigger.getFinalFireTime());
+        assertEquals(scheduledJobsNum + 1, foo.size());
+
+        String expectedMisfirePolicy = motechSchedulerService.customMisfirePolicyForJobGroup(jobGroupName);
+        assertEquals(parseInt(expectedMisfirePolicy), trigger.getMisfireInstruction());
     }
 
     @Test
@@ -360,7 +439,7 @@ public class MotechSchedulerIT {
             .setRepeatCount(5)
             .setRepeatIntervalInMilliSeconds(5000L)
             .setIgnorePastFiresAtStart(false);
-        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME));
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
     }
 
@@ -379,7 +458,7 @@ public class MotechSchedulerIT {
             .setRepeatIntervalInMilliSeconds(5000L)
             .setIgnorePastFiresAtStart(false);
 
-        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME));
 
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
     }
@@ -387,7 +466,7 @@ public class MotechSchedulerIT {
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleRepeatingJobTest_NullJob() throws Exception {
         RepeatingSchedulableJob schedulableJob = null;
-        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME));
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
     }
 
@@ -402,7 +481,7 @@ public class MotechSchedulerIT {
             .setRepeatIntervalInMilliSeconds(5000L)
             .setIgnorePastFiresAtStart(false);
 
-        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME));
 
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
     }
@@ -456,11 +535,11 @@ public class MotechSchedulerIT {
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.unscheduleJob(SUBJECT, uuidStr);
 
-        assertEquals(scheduledJobsNum - 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(scheduledJobsNum - 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
     }
 
     @Test
@@ -470,11 +549,11 @@ public class MotechSchedulerIT {
         motechSchedulerService.scheduleJob(getJob("testJobId.1.2"));
         motechSchedulerService.scheduleJob(getJob("testJobId.1.3"));
 
-        int numOfScheduledJobs = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int numOfScheduledJobs = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size();
 
         motechSchedulerService.unscheduleAllJobs("testJobId");
 
-        assertEquals(numOfScheduledJobs - 3, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        assertEquals(numOfScheduledJobs - 3, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(JOB_GROUP_NAME)).size());
     }
 
     @Test

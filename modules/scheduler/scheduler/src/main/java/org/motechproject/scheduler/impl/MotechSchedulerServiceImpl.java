@@ -47,10 +47,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Value("#{quartzProperties['org.quartz.scheduler.cron.trigger.misfire.policy']}")
-    private String cronTriggerMisfirePolicy;
+    private String defaultCronTriggerMisfirePolicy;
 
     @Value("#{quartzProperties['org.quartz.scheduler.repeating.trigger.misfire.policy']}")
-    private String repeatingTriggerMisfirePolicy;
+    private String defaultRepeatingTriggerMisfirePolicy;
     private Scheduler scheduler;
 
     @Autowired
@@ -87,7 +87,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             throw new MotechSchedulerException(errorMessage);
         }
 
-        cronSchedule = setMisfirePolicyForCronTrigger(cronSchedule, cronTriggerMisfirePolicy);
+        cronSchedule = setMisfirePolicyForCronTrigger(cronSchedule, getMisfirePolicy(jobGroupName));
 
         CronTrigger trigger = newTrigger()
                 .withIdentity(triggerKey(jobId.value(), jobGroupName))
@@ -110,6 +110,15 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
 
         scheduleJob(jobDetail, trigger);
+    }
+
+    private String getMisfirePolicy(String jobGroupName) {
+        String customMisfirePolicy = customMisfirePolicyForJobGroup(jobGroupName);
+        return StringUtils.isNotBlank(customMisfirePolicy) ? customMisfirePolicy :defaultCronTriggerMisfirePolicy;
+    }
+
+    public String customMisfirePolicyForJobGroup(String jobGroupName) {
+        return quartzProperties.getProperty(String.format("jobgroup.%s.misfire.policy", jobGroupName));
     }
 
     private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
@@ -273,7 +282,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             SimpleScheduleBuilder simpleSchedule = simpleSchedule()
                     .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
                     .withRepeatCount(jobRepeatCount);
-            simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
+            simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, getMisfirePolicy(jobGroupName));
             scheduleBuilder = simpleSchedule;
         } else {
             if (repeatingSchedulableJob.getRepeatCount() != null) {
@@ -635,7 +644,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     @Override
     public String getJobGroupName(String subject) {
-        String givenJobGroupName = quartzProperties.getProperty(String.format("%s.%s", subject, "jobGroupName"));
+        String givenJobGroupName = quartzProperties.getProperty(String.format("event.subject.%s.%s", subject, "jobGroupName"));
         return givenJobGroupName != null ? givenJobGroupName : JOB_GROUP_NAME;
     }
 
