@@ -1,29 +1,28 @@
-<div class="well2 ivr-panel">
-    <div class="box-header">{{msg('sms.tab')}}</div>
-    <div class="box-content" clearfix>
-        <span>{{smsDeliveryStatus()}}</span>
-    </div>
-    <div class="box-content clearfix">
+<div class="row-fluid">
+    <div class="span8 margin-after">
+        <div class="box-header">{{msg('sms.tab')}}</div>
+        <div class="box-content inside clearfix">
+            <div class="smsAlert">{{smsDeliveryStatus()}}</div>
+            <form name="form" class="form-horizontal inside" ng-submit="sendSMS()" nonvalidate>
 
-        <form name="form" class="form-horizontal inside" ng-submit="sendSMS()" nonvalidate>
-
-            <div class="control-group">
-                <label class="control-label" for="recipient">{{msg('sms.phone.number')}}</label>
-                <div class="controls">
-                    <input type="text" ng-model="sms.recipient" id="recipient" required>
+                <div class="control-group">
+                    <label class="control-label" for="recipient">{{msg('sms.phone.number')}}</label>
+                    <div class="controls">
+                        <input class="span10" type="text" ng-model="sms.recipient" id="recipient" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="control-group">
-                <label class="control-label" for="message">{{msg('sms.message')}}</label>
-                <div class="controls">
-                    <input type="text" ng-model="sms.message" id="message" placeholder="{{msg('sms.message.placeholder')}}" required>
+                <div class="control-group">
+                    <label class="control-label" for="message">{{msg('sms.message')}}</label>
+                    <div class="controls">
+                        <textarea class="span10" rows="3" ng-model="sms.message" id="message" placeholder="{{msg('sms.message.placeholder')}}" required></textarea>
+                    </div>
                 </div>
-            </div>
 
-            <div class="controls">
-                <input class="btn btn-primary" type="submit" value="{{msg('sms.send')}}" ng-disabled="form.$invalid"/>
-            </div>
-        </form>
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit" value="{{msg('sms.send')}}" ng-disabled="form.$invalid"/>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
