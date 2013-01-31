@@ -62,6 +62,13 @@
 				if( callback ) callback(result);
 			});
 		},
+
+		stackTrace: function(message, title, callback) {
+			if( title == null ) title = 'Alert';
+			$.alerts._show(title, message, null, 'stackTrace', function(result) {
+				if( callback ) callback(result);
+			});
+		},
 		
 		// Private methods
 		
@@ -148,6 +155,29 @@
 					if( value ) $("#popup_prompt").val(value);
 					$("#popup_prompt").focus().select();
 				break;
+				case 'stackTrace':
+				    $("#popup_content").after('<div id="popup_panel" class="modal-footer">  <input class="btn btn-success" type="button" value="Select All" id="popup_select" /> <input class="btn btn-success" type="button" value="' + $.alerts.okButton + '" id="popup_ok" /></div>');
+					$("#popup_ok").click( function() {
+						$.alerts._hide();
+					});
+					$("#popup_ok").focus().keypress( function(e) {
+						if( e.keyCode == 13 || e.keyCode == 27 ) $("#popup_ok").trigger('click');
+					});
+
+					$("#popup_select").click( function() {
+						if (document.selection) {
+							document.selection.empty();
+							var range = document.body.createTextRange();
+							range.moveToElementText(document.getElementById("popup_message"));
+							range.select();
+						}
+						else if (window.getSelection) {
+							window.getSelection().removeAllRanges();
+							var range = document.createRange();
+							range.selectNode(document.getElementById("popup_message"));
+							window.getSelection().addRange(range);
+						}
+					});
 			}
 			
 			// Make draggable
@@ -230,5 +260,9 @@
 	jPrompt = function(message, value, title, callback) {
 		$.alerts.prompt(message, value, title, callback);
 	};
+
+	jAlertStackTrace = function(message, title, callback) {
+		$.alerts.stackTrace(message, title, callback);
+	}
 	
 })(jQuery);

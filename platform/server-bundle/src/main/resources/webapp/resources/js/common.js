@@ -68,7 +68,7 @@ function motechAlert(msg, title, callback) {
 }
 
 function motechAlertStackTrace(msg, title, response, callback) {
-    jAlert(jQuery.i18n.prop(msg).bold()+": \n"+response, jQuery.i18n.prop(title), callback);
+    jAlertStackTrace(jQuery.i18n.prop(msg).bold()+": \n"+response, jQuery.i18n.prop(title), callback);
 }
 
 /* Define "finished typing" as 5 second puase */
@@ -87,4 +87,3 @@ function blockUI() {
 function unblockUI() {
     $.unblockUI();
 }
-
