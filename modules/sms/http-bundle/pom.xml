@@ -3,13 +3,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.17.1-SNAPSHOT</version>
+        <version>0.17</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-http-bundle</artifactId>
-    <version>0.17.1-SNAPSHOT</version>
+    <version>0.17</version>
     <name>MOTECH SMS HTTP Bundle</name>
     <packaging>bundle</packaging>
     <properties>

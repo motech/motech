@@ -3,16 +3,16 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-calllog</artifactId>
     <name>Call Log</name>
-    <version>0.17.1-SNAPSHOT</version>
+    <version>0.17</version>
     <packaging>bundle</packaging>
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.17.1-SNAPSHOT</version>
+        <version>0.17</version>
         <relativePath>../../../</relativePath>
     </parent>
     <properties>
-        <motech.version>0.17.1-SNAPSHOT</motech.version>
+        <motech.version>0.17</motech.version>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
     <dependencies>
