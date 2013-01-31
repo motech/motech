@@ -263,7 +263,11 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
                 }
 
                 for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
-                    $scope.selectedAction.eventParameters[i].value = $scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey];
+                    if ($scope.BrowserDetect.browser != 'Chrome') {
+                        $scope.selectedAction.eventParameters[i].value = $scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey];
+                    } else {
+                         $scope.selectedAction.eventParameters[i].value = $scope.createDraggableElement($scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey]);
+                    }
                 }
 
                 $scope.filters = [];
@@ -361,8 +365,11 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
 
         for (i = 0; i < action.eventParameters.length; i += 1) {
             eventKey = action.eventParameters[i].eventKey;
-            value = action.eventParameters[i].value || '';
-
+            if ($scope.BrowserDetect.browser != 'Chrome') {
+                value = action.eventParameters[i].value || '';
+            } else {
+                value = $scope.refactorDivEditable(action.eventParameters[i].value  || '');
+            }
             $scope.task.actionInputFields[eventKey] = value;
         }
 
@@ -403,6 +410,66 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         }
     };
 
+    $scope.refactorDivEditable = function (value) {
+        var result = $('<div>' + value + '</div>');
+        result.find('span').replaceWith(function() {
+            var eventKey = '';
+            for (var i = 0; i < $scope.selectedTrigger.eventParameters.length; i += 1) {
+                if ($scope.selectedTrigger.eventParameters[i].displayName == $(this).text()) {
+                    eventKey = $scope.selectedTrigger.eventParameters[i].eventKey;
+                }
+            }
+
+            var manipulation = this.attributes.getNamedItem('manipulate')!=null ? this.attributes.getNamedItem('manipulate').value : '';
+            if (manipulation && manipulation != "" ) {
+                if (this.attributes.getNamedItem('data-type').value == 'UNICODE' || this.attributes.getNamedItem('data-type').value == 'TEXTAREA') {
+                    var man = manipulation.split(" ");
+                    for (var i = 0; i<man.length; i++) {
+                        eventKey = eventKey +"?" + man[i];
+                    }
+                } else if (this.attributes.getNamedItem('data-type').value == 'DATE') {
+                    eventKey = eventKey + "?" + manipulation;
+                }
+            }
+            return '{{' + eventKey + '}}';
+        });
+        result.find('em').remove();
+            if ($.browser.webkit)
+              result.find("div").replaceWith(function() { return "\n" + this.innerHTML; });
+            if ($.browser.msie)
+              result.find("p").replaceWith(function() { return this.innerHTML + "<br>"; });
+            if ($.browser.mozilla || $.browser.opera || $.browser.msie || $.browser.webkit)
+              result.find("br").replaceWith("\n");
+        return result.text();
+    }
+
+    $scope.createDraggableElement = function (value) {
+        value = value.replace(/{{.*?}}/g, $scope.buildSpan);
+        return value;
+    }
+
+    $scope.buildSpan = function(eventParameterKey) {
+
+        var key = eventParameterKey.slice(2, -2).split("?"),
+            span = "",
+            param;
+        eventParameterKey = key[0];
+        key.remove(0);
+        var manipulation = key;
+
+        for (var i = 0; i < $scope.selectedTrigger.eventParameters.length; i += 1) {
+            if ($scope.selectedTrigger.eventParameters[i].eventKey == eventParameterKey) {
+                param = $scope.selectedTrigger.eventParameters[i];
+
+                span = '<span ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer" data-index="' + i +
+                '" data-type="' + param.type + '" style="position: relative;" ' +
+                (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + param.displayName + '</span>';
+                break;
+            }
+        }
+        return span;
+    }
+
     $scope.operators = function(event) {
         var operator = ['exist'];
         if (event && (event.type==='UNICODE' || event.type==='TEXTAREA')) {
@@ -431,9 +498,12 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
 
         if ($scope.selectedAction !== undefined) {
             for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
-                param = $scope.selectedAction.eventParameters[i].value;
-
-                if (param === null || param === undefined || !param.trim().length) {
+                if ($scope.BrowserDetect.browser != 'Chrome') {
+                    param = $scope.selectedAction.eventParameters[i].value;
+                } else {
+                    param = $scope.refactorDivEditable($scope.selectedAction.eventParameters[i].value || '');
+                }
+                if (param === null || param === undefined || param === "\n" || !param.trim().length) {
                     return false;
                 }
             }
@@ -477,14 +547,14 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
     }
 
     $scope.actionCssClass = function(prop) {
-        var msg = "control-group";
+        var msg = "control-group", value = $scope.refactorDivEditable(prop.value || '');
 
-        if (!prop.value) {
+        if (value.length === 0 || value==="\n") {
             msg = msg.concat(' error');
         }
 
         return msg;
-     }
+    }
 
     $scope.actionNameCssClass = function(prop) {
         var msg = "control-group";

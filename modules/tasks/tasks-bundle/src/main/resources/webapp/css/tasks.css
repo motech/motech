@@ -689,6 +689,26 @@ font-weight: bold;
     z-index: 9999 !important;
 }
 
+span.pointer {
+    cursor: pointer;
+    cursor: hand;
+}
+
+div.dragpopover {
+    width: auto;
+}
+
+li.padding-botton6 {
+    padding-bottom : 6px;
+    height: 20px;
+}
+
+input.input-popover {
+    height: 12px;
+    width: 50px;
+    margin: 0px 8px;
+}
+
 #helpModal.modal {
     width: 660px;
 }

@@ -1,5 +1,5 @@
 <!------------------------  Create Task  ------------------------>
-<div ng-hide="task._id" class="box-header">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+    <div ng-hide="task._id" class="box-header" xmlns="http://www.w3.org/1999/html">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div ng-show="task._id" class="box-header">{{msg('section.editTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div class="box-content">
     <h3 class="centered" ng-hide="task.trigger && task.action">{{msg('section.selectEvents')}}</h3>
@@ -100,7 +100,7 @@
                                 <p>{{msg('info.dragFieldBuildAction')}}</p>
                             </div>
                             <div class="control-group move-element">
-                                <span class="badge badge-info triggerField" draggable ng-repeat="i in selectedTrigger.eventParameters" data-index="{{$index}}" data-type="{{i.type}}">{{i.displayName}}</span>
+                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{i.displayName}}</span>​
                             </div>
                         </form>
                     </div>
@@ -113,6 +113,7 @@
                             <div class="control-group" ng-show="selectedAction.description">
                                 <label>{{selectedAction.description}}</label>
                             </div>
+                            <span ui-if="BrowserDetect.browser!='Chrome'">
                             <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
                                 <label>{{i.displayName}}</label>
                                 <textarea ui-if="i.type == 'TEXTAREA'" rows="5" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
@@ -337,6 +338,16 @@
                                     <button class="btn" data-dismiss="modal">{{msg('close')}}</button>
                                 </div>
                             </div>
+                            </span>
+                            <span ui-if="BrowserDetect.browser=='Chrome'">
+                                <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
+                                    <label>{{i.displayName}}</label>
+                                    <editable-content ui-if="i.type=='UNICODE'" data="i" index="$index" type="UNICODE"></editable-content>
+                                    <editable-content ui-if="i.type=='TEXTAREA'" data="i" index="$index" type="TEXTAREA"></editable-content>
+                                    <editable-content ui-if="i.type=='NUMBER'" data="i" index="$index" type="NUMBER"></editable-content>
+                                    <editable-content ui-if="i.type=='DATE'" data="i" index="$index" type="DATE"></editable-content>
+                                </div>
+                            </span>
                         </form>
                     </div>
                      <div class="clearfix"></div>
@@ -346,7 +357,7 @@
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle inbox-header" expandaccordion data-toggle="collapse" data-parent="#accordion2" href="#collapse21">
-                                <i  class="icon-chevron-right"></i> {{msg('section.filters')}}
+                                <i ng-class="{true:'icon-chevron-down', false:'icon-chevron-right'}[filters.length!=0]"></i>&nbsp;{{msg('section.filters')}}
                             </a>
                         </div>
                         <div id="collapse21" ng-class="{true:'collapse in', false:'collapse'}[filters.length!=0]" class="accordion-body stripes-bg">
@@ -395,10 +406,10 @@
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle inbox-header" expandaccordion data-toggle="collapse" data-parent="#accordion2" href="#collapse22">
-                                <i class="icon-chevron-right"></i> {{msg('section.taskDescription')}}
+                                <i ng-class="{true:'icon-chevron-down', false:'icon-chevron-right'}[task.description!= null || task.description.length() > 0]"></i>&nbsp;{{msg('section.taskDescription')}}
                             </a>
                         </div>
-                        <div id="collapse22" class="accordion-body collapse in stripes-bg">
+                        <div id="collapse22" class="accordion-body stripes-bg" ng-class="{true:'collapse in', false:'collapse'}[task.description!= null || task.description.length() > 0]">
                             <div class="accordion-inner">
                                 <div class="centered">
                                     <p class="centered spn9 margin-center">{{msg('info.taskDescription')}}</p>
