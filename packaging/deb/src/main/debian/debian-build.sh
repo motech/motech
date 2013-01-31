@@ -47,7 +47,7 @@ mkdir -p $BUILD_DIR
 
 ARTIFACT_DIR=$BUILD_DIR/artifacts
 DEPENDENCY_DIR=$BUILD_DIR/dependencies
-CONFIG_DIR=$BUILD_DIR/
+CONFIG_DIR=$MOTECH_BASE/platform/server-config/src/main/config
 
 MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
 MOTECH_BASE_PACKAGENAME="motech-base_$MOTECH_VERSION.deb"
