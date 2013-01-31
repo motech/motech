@@ -7,7 +7,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.17</version>
+        <version>0.17.1-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
 
     </parent>
@@ -17,7 +17,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo-bundle</artifactId>
-    <version>0.17</version>
+    <version>0.17.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
