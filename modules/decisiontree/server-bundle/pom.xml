@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.17-SNAPSHOT</version>
+        <version>0.17</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-decisiontree-server-bundle</artifactId>
-    <version>0.17-SNAPSHOT</version>
+    <version>0.17</version>
     <name>MOTECH Decision Tree Server Bundle</name>
     <packaging>bundle</packaging>
     <description>MOTECH Decision Tree Server Bundle</description>
