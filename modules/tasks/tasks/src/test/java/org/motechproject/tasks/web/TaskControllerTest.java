@@ -14,6 +14,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
@@ -70,7 +71,10 @@ public class TaskControllerTest {
     @Test
     public void shouldGetTaskWithId() {
         Task expected = new Task();
+        Map<String,String> actionFields = new HashMap<String, String>();
+        actionFields.put("1", "test");
         expected.setId(TASK_ID);
+        expected.setActionInputFields(actionFields);
 
         when(taskService.getTask(expected.getId())).thenReturn(expected);
 
