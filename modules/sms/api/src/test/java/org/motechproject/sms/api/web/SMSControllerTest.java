@@ -8,10 +8,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.sms.api.SMSRequest;
 import org.motechproject.sms.api.SmsDeliveryFailureException;
+import org.motechproject.sms.api.service.SendSmsRequest;
 import org.motechproject.sms.api.service.SmsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
@@ -38,7 +40,7 @@ public class SMSControllerTest {
 
         assertThat(HttpStatus.OK, Is.is(responseEntity.getStatusCode()));
 
-        verify(smsService).sendSMS(recipient, message);
+        verify(smsService).sendSMS(new SendSmsRequest(asList(recipient), message));
 
     }
 

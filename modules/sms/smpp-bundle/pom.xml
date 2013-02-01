@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-sms-api-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -46,6 +51,10 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.motechproject.org.ektorp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.smslib</groupId>
@@ -76,6 +85,7 @@
                             org.motechproject.event,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config.service,
+                            org.motechproject.sms.api,
                             org.osgi.framework;version="0.0.0",
                             org.osgi.util.tracker;version="0.0.0",
                             org.springframework.beans.factory.xml,

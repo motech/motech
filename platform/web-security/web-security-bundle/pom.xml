@@ -24,6 +24,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -41,7 +42,16 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>com.springsource.org.apache.velocity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>com.springsource.javax.mail</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
@@ -134,6 +144,7 @@
                             org.springframework.web.servlet.support,
                             org.springframework.web.servlet.view,
                             org.springframework.security.openid,
+                            org.springframework.security.web.authentication.www,
                             org.openid4java.consumer,
                             *
                         </Import-Package>

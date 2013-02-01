@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:security="http://www.springframework.org/schema/security"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+       ">
 
     <security:global-method-security pre-post-annotations="enabled"/>
-
-    <bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
-        <security:filter-chain-map request-matcher="ant">
-            <security:filter-chain pattern="/**/*.xml" filters="
-                 securityContextPersistenceFilter,
-                 userAuthenticationProcessingFilter,
-                 openIdAuthenticationProcessingFilter"/>
-            <security:filter-chain pattern="/**" filters="
-                 securityContextPersistenceFilter,
-                 userAuthenticationProcessingFilter,
-                 openIdAuthenticationProcessingFilter"/>
-        </security:filter-chain-map>
-    </bean>
 
     <security:http pattern="/**/*.css*" security="none" />
     <security:http pattern="/**/*.gif" security="none" />
@@ -37,10 +27,22 @@
     <security:http pattern="/**/startup*" security="none" />
 
     <!-- This should be removed once modules can register urls with the web security system for protection
-         under different authorization schemes.  i.e. no security, api key, etc. -->
+under different authorization schemes.  i.e. no security, api key, etc. -->
     <security:http pattern="/**/commcare/**" security="none" />
 
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+
+    <bean id="basicAuthenticationFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+        <constructor-arg ref="authenticationManager"/>
+        <constructor-arg ref="basicAuthenticationEntryPoint"/>
+    </bean>
+
+    <bean id="basicAuthenticationEntryPoint" class="org.motechproject.security.authentication.ChallengelessBasicAuthenticationEntryPoint"/>
+
+    <security:http auto-config="false" pattern="/**/web-api/**" entry-point-ref="basicAuthenticationEntryPoint" create-session="stateless" use-expressions="true">
+        <security:custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthenticationFilter" />
+        <security:intercept-url pattern="/**/web-api/**" access="isFullyAuthenticated()"/>
+    </security:http>
 
     <bean id="loginFormAuthentication" class="org.motechproject.security.authentication.MotechLoginUrlAuthenticationEntryPoint">
         <property name="loginFormUrl" value="/module/server/login" />
