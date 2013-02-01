@@ -3,7 +3,7 @@
     <div class="span10 margin-after history">
         <div class="box-header">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
         <div class="box-content well3 tasks-list">
-            <div class="inbox-header margin-before">
+            <div class="inbox-header margin-before" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
                     <ul class="task-nav">
                         <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{trigger.module}}&moduleVersion={{trigger.version}}" class="task-list-img" /></li>
@@ -17,10 +17,21 @@
                     </ul>
 
                     <ul class="task-nav pull-right">
-                        <li ng-show="description" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                        <li ng-show="description && enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                        <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                         <li ng-show="description" class="divider-vertical"></li>
-                        <li ng-show="!enabled" class="task-element"><img src="../tasks/img/task-paused.png" class="task-list-img-activity" /></li>
-                        <li ng-show="enabled" class="task-element"><img src="../tasks/img/task-active.png" class="task-list-img-activity" /></li>
+                        <li ng-hide="enabled" class="task-element task-paused">
+                            <span class="task-list-button-activity">
+                                <span class="task-list-text-activity">{{msg('task.paused')}}</span>
+                                <img class="task-list-img-activity" src="../tasks/img/task-paused.png" />
+                            </span>
+                        </li>
+                        <li ng-show="enabled" class="task-element task-active">
+                            <span class="task-list-button-activity">
+                                <img class="task-list-img-activity" src="../tasks/img/task-active.png" />
+                                <span class="task-list-text-activity">{{msg('task.active')}}</span>
+                            </span>
+                        </li>
                     </ul>
                     <div class="clearfix"></div>
                 </div>

@@ -45,13 +45,18 @@ angular.module('motech-tasks', ['motech-dashboard', 'channelServices', 'taskServ
     return {
         restrict: 'A',
         link: function (scope, element, attrs) {
-          $('.accordion').on('show', function (e) {
-              $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
-          });
-
-          $('.accordion').on('hide', function (e) {
-              $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right");
-          });
+            $('.accordion').on('show', function (e) {
+                $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
+            });
+            $('.tasks-list').on('show', function (e) {
+                $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
+            });
+            $('.accordion').on('hide', function (e) {
+                $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right");
+            });
+            $('.tasks-list').on('hide', function (e) {
+                $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass('icon-chevron-right');
+            });
         }
     }
 }).directive('draggable', function () {

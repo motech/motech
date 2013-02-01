@@ -6,18 +6,19 @@
         <div class="box-content inside clearfix">
 
             <div class="control-group">
+                <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
+            </div>
+            <div class="control-group form-inline">
+                <label >{{msg('header.searchTasks')}}</label>
+                <input type="text" ng-model="query" ng-change="search()" class="input-medium search-query" placeholder="Search">
                 <div data-toggle="buttons-checkbox" class="btn-group">
-                    <button ng-click="setShowActive()" ng-class="{true:'', false:'disabled'}[activeTasks.length!=0]" class="btn btn-primary active" type="button">{{msg('header.activeTasks')}}</button>
-                    <button ng-click="setShowPaused()" ng-class="{true:'', false:'disabled'}[pausedTasks.length!=0]" class="btn btn-primary active" type="button">{{msg('header.pausedTasks')}}</button>
-                </div>
-                <div class="btn-group">
-                    <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
+                    <button ng-click="setHideActive()" class="btn btn-primary setHideActive" type="button"><i class="icon-white icon-ok"></i> {{msg('header.activeTasks')}}</button>
+                    <button ng-click="setHidePaused()" class="btn btn-primary setHidePaused" type="button"><i class="icon-white icon-ok"></i> {{msg('header.pausedTasks')}}</button>
                 </div>
             </div>
-
-            <div class="accordion tasks-list" id="accordion3" ng-show="activeTasks.length != 0  && showActive">
-                <div class="accordion-group" ng-repeat="item in activeTasks">
-                    <div class="accordion-heading inbox-header">
+            <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
+                <div class="task-list-group" ng-repeat="item in pagedItems[currentPage]">
+                    <div class="accordion-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
@@ -34,84 +35,39 @@
                             </a>
 
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
-                                <li class="task-element"><img src="../tasks/img/task-active.png" class="task-list-img-activity" /></li>
+                                <li ng-hide="item.task.enabled" class="task-element task-paused">
+                                    <span class="task-list-button-activity">
+                                        <span class="task-list-text-activity">{{msg('task.paused')}}</span>
+                                        <img class="task-list-img-activity" src="../tasks/img/task-paused.png" />
+                                    </span>
+                                </li>
+                                <li ng-show="item.task.enabled" class="task-element task-active">
+                                    <span class="task-list-button-activity">
+                                        <img class="task-list-img-activity" src="../tasks/img/task-active.png" />
+                                        <span class="task-list-text-activity">{{msg('task.active')}}</span>
+                                    </span>
+                                </li>
                                 <li class="divider-vertical"></li>
-                                <li class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
+                                <li ng-show="item.task.enabled" class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
+                                <li ng-hide="item.task.enabled" class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></a></li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
                     </div>
-                    <div id="collapse3{{$index}}" class="accordion-body accordion-inner collapse task-content clearfix">
+                    <div id="collapse3{{$index}}" class="accordion-body accordion-inner collapse task-content clearfix" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar">
                             <ul class="task-nav">
                                 <li class="task-element task-offset"></li>
                                 <li class="task-element task-buttons">
                                     <a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('button.edit')}}</div></a>
                                 </li>
-                                <li class="task-element task-buttons">
+                                <li ng-show="item.task.enabled" class="task-element task-buttons">
                                     <a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause icon-white"></i> {{msg('button.pause')}}</div></a>
                                 </li>
-                                <li class="task-element task-buttons">
-                                    <a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash icon-white"></i> {{msg('button.delete')}}</div></a>
-                                </li>
-                                <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('button.history')}}</div></a>
-                                </li>
-                                <li class="task-element task-offset"></li>
-                                <li class="divider-vertical"></li>
-                                <li class="task-element task-offset"></li>
-                            </ul>
-                            <div class="task-nav">
-                                <ul class="task-list">
-                                    <li class="info"><i class="icon icon-share icon-blue"></i> {{msg('info.executedTimes', item.success)}}</li>
-                                    <li class="error" ng-hide="item.error == 0"><i class="icon icon-exclamation-sign icon-red"></i> {{msg('info.errorsLastDays', item.error)}}</li>
-                                    <li class="success" ng-show="item.error == 0"><i class="icon icon-ok-sign icon-green"></i> {{msg('info.errorsLastDays', item.error)}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion tasks-list" id="accordion4" ng-show="pausedTasks.length != 0 && showPaused">
-                <div class="accordion-group" ng-repeat="item in pausedTasks">
-                    <div class="accordion-heading inbox-header">
-                        <div class="task-bar" expandaccordion>
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion4" href="#collapse4{{$index}}">
-                                <ul class="task-nav">
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.trigger, 'moduleName')}}&moduleVersion={{get(item.task.trigger, 'moduleVersion')}}" class="task-list-img" /></li>
-                                    <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}"  class="task-list-img"/></li>
-                                    <li class="divider-vertical"></li>
-                                    <li class="task-element task-name">
-                                        <i class="icon-chevron-right i-name"></i>
-                                        <span class="name-first">&nbsp;{{item.task.name}}</span>
-                                        <span class="name-second">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</span>
-                                    </li>
-                                </ul>
-                            </a>
-                            <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png" class="task-list-img" /></li>
-                                <li ng-show="item.task.description" class="divider-vertical"></li>
-                                <li class="task-element"><img src="../tasks/img/task-paused.png" class="task-list-img-activity" /></li>
-                                <li class="divider-vertical"></li>
-                                <li class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                    <div id="collapse4{{$index}}" class="accordion-body accordion-inner collapse task-content clearfix">
-                        <div class="task-bar">
-                            <ul class="task-nav">
-                                <li class="task-element task-offset"></li>
-                                <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('button.edit')}}</div></a>
-                                </li>
-                                <li class="task-element task-buttons">
+                                <li ng-hide="item.task.enabled" class="task-element task-buttons">
                                     <a ng-click="enableTask(item, true)"><div class="button-task-in"><i class="icon-play icon-white"></i> {{msg('button.enable')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
@@ -137,8 +93,19 @@
                     </div>
                 </div>
             </div>
+            <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
+                <ul>
+                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('pagination.prev')}}</a></li>
+                    <li ng-repeat="number in range(pagedItems.length)"
+                        ng-class="{active: number == currentPage}"
+                        ng-click="setPage()">
+                        <a href ng-bind="number + 1">1</a>
+                    </li>
+                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('pagination.next')}}</a></li>
+                </ul>
+            </div>
 
-            <div class="tasks-list alert"  ng-show="activeTasks.length == 0 && pausedTasks.length == 0">
+            <div class="tasks-list alert" ng-show="allTasks.length == 0">
                 <strong>{{msg('warning')}}:</strong>
                 {{msg('info.notFoundTasks')}}
             </div>

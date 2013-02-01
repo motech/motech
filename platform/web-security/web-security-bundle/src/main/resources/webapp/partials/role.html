@@ -24,7 +24,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination pagination-centered pagination-condensed" ng-show="numberOfPages() &gt; 1">
+        <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="numberOfPages() &gt; 1">
             <ul>
                 <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('first')}}</a></li>
                 <li ng-repeat="number in [] | repeat:numberOfPages()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>

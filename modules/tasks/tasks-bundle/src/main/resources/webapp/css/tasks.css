@@ -44,8 +44,7 @@ editable-content .actionField.input-block-level span.badge {
     margin-bottom: 0;
 }
 
-#accordion3 .accordion-inner.task-content,
-#accordion4 .accordion-inner.task-content {
+#accordion3 .accordion-inner.task-content {
     background: #deefff;
     background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
@@ -54,6 +53,18 @@ editable-content .actionField.input-block-level span.badge {
     background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
     background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+}
+
+.tasks-list .inbox-header.paused,
+#accordion3 .accordion-inner.task-content.paused {
+    background: #FCFCFC;
+    background: -moz-linear-gradient(top,  #FCFCFC 0%, #ACB7BF 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FCFCFC), color-stop(100%,#ACB7BF));
+    background: -webkit-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
+    background: -o-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
+    background: -ms-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
+    background: linear-gradient(to bottom,  #FCFCFC 0%,#ACB7BF 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FCFCFC', endColorstr='#ACB7BF',GradientType=0 );
 }
 
 .tasks-list .inbox-header {
@@ -100,7 +111,7 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .tasks-list .task-nav.pull-right .task-list-img {
-    width: 32px;
+    width: 28px;
 }
 
 .tasks-list .task-element .task-list-img-activity {
@@ -109,6 +120,50 @@ editable-content .actionField.input-block-level span.badge {
 
 .tasks-list .task-element .task-list-img-arrow {
     width: 20px;
+}
+
+.tasks-list .task-element.task-active .task-list-img-activity {
+    width: 19px;
+    vertical-align: middle;
+    padding: 0 0 2px 3px;
+}
+
+.task-active .task-list-button-activity {
+    background: #9ECEEF url("../img/bg-light-active.png") repeat-x;
+    color: #FFFFFF;
+    font-size: 13px;
+    padding: 2px 0;
+    border: 1px solid #1566B1;
+    border-radius: 6px;
+}
+
+.task-active .task-list-text-activity {
+    background: #1566B1 url("../img/bg-active.png") repeat-x;
+    width: 90px;
+    padding: 2px 6px;
+    border-radius: 0 6px 6px 0;
+}
+
+.tasks-list .task-element.task-paused .task-list-img-activity {
+    width: 19px;
+    vertical-align: middle;
+    padding: 0 3px 2px 0;
+}
+
+.task-paused .task-list-button-activity {
+    background: #999999 url("../img/bg-light-paused.png") repeat-x;
+    color: #EEEEEE;
+    font-size: 13px;
+    padding: 2px 0;
+    border: 1px solid #666666;
+    border-radius: 6px;
+}
+
+.task-paused .task-list-text-activity {
+    background: #333333 url("../img/bg-paused.png") repeat-x;
+    width: 80px;
+    padding: 2px 5px;
+    border-radius: 6px 0 0 6px;
 }
 
 .tasks-list .task-buttons {
@@ -163,7 +218,7 @@ editable-content .actionField.input-block-level span.badge {
     padding: 2px 8px;
 }
 
-#accordion3.accordion, #accordion4.accordion, .tasks-list.alert {
+#accordion3.tasks-list, .tasks-list.alert {
     margin-bottom: 0;
 }
 
@@ -179,8 +234,10 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 #accordion1 .accordion-group, #accordion2 .accordion-group,
-#accordion3 .accordion-group, #accordion4 .accordion-group {
+#accordion3 .task-list-group {
     border: 1px solid #B2D8F8;
+    border-radius: 4px 4px 4px 4px;
+    margin-bottom: 2px;
 
 }
 

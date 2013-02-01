@@ -2,14 +2,19 @@
 
 /* Controllers */
 
-function DashboardCtrl($scope, Tasks, Activities) {
+function DashboardCtrl($scope, $filter, Tasks, Activities) {
     var RECENT_TASK_COUNT = 7;
 
-    $scope.activeTasks = [];
-    $scope.pausedTasks = [];
+    $scope.allTasks = [];
     $scope.activities = [];
-    $scope.showActive = true;
-    $scope.showPaused = true;
+    $scope.hideActive = false;
+    $scope.hidePaused = false;
+    $scope.filteredItems = [];
+    $scope.groupedItems = [];
+    $scope.itemsPerPage = 10;
+    $scope.pagedItems = [];
+    $scope.currentPage = 0;
+    $scope.currentFilter = 'allItems';
 
     var tasks = Tasks.query(function () {
         var activities = Activities.query(function () {
@@ -31,12 +36,7 @@ function DashboardCtrl($scope, Tasks, Activities) {
                         item.error += 1;
                     }
                 }
-
-                if (item.task.enabled) {
-                    $scope.activeTasks.push(item);
-                } else {
-                    $scope.pausedTasks.push(item);
-                }
+                $scope.allTasks.push(item);
             }
 
             for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
@@ -54,6 +54,7 @@ function DashboardCtrl($scope, Tasks, Activities) {
                     }
                 }
             }
+            $scope.search();
         });
     });
 
@@ -74,14 +75,9 @@ function DashboardCtrl($scope, Tasks, Activities) {
     $scope.enableTask = function (item, enabled) {
         item.task.enabled = enabled;
 
-        item.task.$save(function () {
-            if (item.task.enabled) {
-                $scope.pausedTasks.removeObject(item);
-                $scope.activeTasks.push(item);
-            } else {
-                $scope.activeTasks.removeObject(item);
-                $scope.pausedTasks.push(item);
-            }
+        item.task.$save(dummyHandler, function(response) {
+            item.task.enabled = !enabled;
+            handleResponse('error.actionNotChangeTitle', 'error.actionNotChange', response);
         });
     }
 
@@ -91,31 +87,147 @@ function DashboardCtrl($scope, Tasks, Activities) {
         jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("header.confirm"), function (val) {
             if (val) {
                 item.task.$remove(function () {
-                    if (enabled) {
-                        $scope.activeTasks.removeObject(item);
-                    } else {
-                        $scope.pausedTasks.removeObject(item);
-                    }
+                    $scope.allTasks.removeObject(item);
+                    $scope.search();
                 }, alertHandler('task.error.removed', 'header.error'));
             }
         });
     };
 
-    $scope.setShowActive = function () {
-       if($scope.showActive != true) {
-            $scope.showActive = true;
-       } else {
-            $scope.showActive = false;
-       }
+    var searchMatch = function (item, method, searchQuery) {
+        if (!searchQuery) {
+            if (method == 'pausedTaskFilter') {
+                return item.task.enabled == true;
+            } else if (method == 'activeTaskFilter'){
+                return item.task.enabled == false;
+            } else if (method == 'noItems'){
+                return false;
+            } else {
+                return true;
+            }
+        } else if (method == 'pausedTaskFilter' && item.task.description) {
+            return item.task.enabled == true &&
+            (item.task.description.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1 ||
+            item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1);
+        } else if (method == 'activeTaskFilter' && item.task.description) {
+            return item.task.enabled == false &&
+            (item.task.description.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1 ||
+            item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1);
+        } else if (method == 'activeTaskFilter' && item.task.description) {
+            return item.task.description.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1 ||
+            item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+        } else if (method == 'allItems' && item.task.description) {
+            return item.task.description.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1 ||
+            item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+        } else if (method == 'pausedTaskFilter') {
+            return item.task.enabled == true && item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+        } else if (method == 'activeTaskFilter') {
+            return item.task.enabled == false && item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+        } else if (method == 'noItems'){
+            return false;
+        } else
+            return item.task.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+
+    };
+
+    $scope.search = function () {
+
+        $scope.filteredItems = $filter('filter')($scope.allTasks, function (item) {
+            if (item) {
+                if (searchMatch(item, $scope.currentFilter, $scope.query))
+                    return true;
+                }
+                return false;
+            });
+        $scope.currentPage = 0;
+        $scope.groupToPages();
+    };
+
+    $scope.groupToPages = function () {
+        $scope.pagedItems = [];
+
+        for (var i = 0; i < $scope.filteredItems.length; i++) {
+            if (i % $scope.itemsPerPage === 0) {
+                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.filteredItems[i] ];
+            } else {
+                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+            }
+        }
+    };
+
+    $scope.range = function (start, end) {
+        var ret = [];
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        for (var i = start; i < end; i++) {
+            ret.push(i);
+        }
+        return ret;
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.pagedItems.length - 1) {
+            $scope.currentPage++;
+        }
+    };
+
+    $scope.setPage = function () {
+        $scope.currentPage = this.number;
+    };
+
+    $scope.setHideActive = function () {
+        if($scope.hideActive == true) {
+            $scope.hideActive = false;
+            if($scope.hidePaused == true) {
+                $scope.setFilter('pausedTaskFilter');
+            } else {
+                $scope.setFilter('allItems');
+            }
+            $('.setHideActive').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+        } else {
+            $scope.hideActive = true;
+            if($scope.hidePaused == true) {
+                $scope.setFilter('noItems');
+            } else {
+                $scope.setFilter('activeTaskFilter');
+            }
+            $('.setHideActive').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+        }
     }
 
-    $scope.setShowPaused = function () {
-       if($scope.showPaused != true) {
-            $scope.showPaused = true;
-       } else {
-            $scope.showPaused = false;
-       }
+    $scope.setHidePaused = function () {
+        if($scope.hidePaused == true) {
+            $scope.hidePaused = false;
+            if($scope.hideActive == true) {
+                $scope.setFilter('activeTaskFilter');
+            } else {
+                $scope.setFilter('allItems');
+            }
+            $('.setHidePaused').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+        } else {
+            $scope.hidePaused = true;
+            if($scope.hideActive == true) {
+                $scope.setFilter('noItems');
+            } else {
+                $scope.setFilter('pausedTaskFilter');
+            }
+            $('.setHidePaused').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+        }
     }
+
+    $scope.setFilter = function (method) {
+        $scope.currentFilter = method;
+        $scope.search();
+    }
+
 }
 
 function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
