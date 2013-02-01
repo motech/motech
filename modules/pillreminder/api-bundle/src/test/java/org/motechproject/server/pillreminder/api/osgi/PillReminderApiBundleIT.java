@@ -15,7 +15,11 @@ public class PillReminderApiBundleIT extends BaseOsgiIT {
     public void testPillreminderService() {
         ServiceReference serviceReference = bundleContext.getServiceReference(PillReminderService.class.getName());
         assertNotNull(serviceReference);
-        PillReminderService pillReminderService = (PillReminderService) bundleContext.getService(serviceReference);
+
+        PillReminderService pillReminderService = (PillReminderService) getApplicationContext().getBean("pillreminderServiceRef");
+        assertNotNull(pillReminderService);
+
+        pillReminderService = (PillReminderService) bundleContext.getService(serviceReference);
         assertNotNull(pillReminderService);
 
         final String externalId = "PillReminderApiBundleIT-" + UUID.randomUUID();
@@ -27,5 +31,10 @@ public class PillReminderApiBundleIT extends BaseOsgiIT {
         } finally {
             pillReminderService.remove(externalId);
         }
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testPillreminderApiBundleContext.xml"};
     }
 }

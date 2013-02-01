@@ -29,7 +29,7 @@ public class UIFrameworkServiceTest {
 
         Map<String, Collection<ModuleRegistrationData>> result = service.getRegisteredModules();
 
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         assertTrue(result.containsKey(MODULES_WITH_SUBMENU));
         assertTrue(result.containsKey(MODULES_WITHOUT_SUBMENU));
         assertTrue(result.get(MODULES_WITH_SUBMENU).isEmpty());
@@ -40,7 +40,7 @@ public class UIFrameworkServiceTest {
 
         result = service.getRegisteredModules();
 
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         assertTrue(result.containsKey(MODULES_WITH_SUBMENU));
         assertTrue(result.containsKey(MODULES_WITHOUT_SUBMENU));
         assertTrue(result.get(MODULES_WITH_SUBMENU).isEmpty());
@@ -69,6 +69,7 @@ public class UIFrameworkServiceTest {
     private ModuleRegistrationData moduleRegistration() {
         ModuleRegistrationData registration = new ModuleRegistrationData();
         registration.setModuleName("demo");
+        registration.setUrl("url");
         return registration;
     }
 }

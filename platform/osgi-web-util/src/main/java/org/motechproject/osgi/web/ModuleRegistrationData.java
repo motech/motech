@@ -16,7 +16,7 @@ public class ModuleRegistrationData {
     private Map<String, String> i18n = new HashMap<>();
 
     public ModuleRegistrationData() {
-        this(null, null);
+        this(null, (String)null);
     }
 
     public ModuleRegistrationData(String moduleName, String url, List<String> angularModules, Map<String, String> i18n, Header header) {
@@ -30,6 +30,11 @@ public class ModuleRegistrationData {
     public ModuleRegistrationData(String moduleName, String url) {
         this.moduleName = moduleName;
         this.url = url;
+    }
+
+    public ModuleRegistrationData(String moduleName, Map<String, String> i18n) {
+        this.moduleName = moduleName;
+        this.i18n = i18n;
     }
 
     public void addAngularModule(String moduleName) {

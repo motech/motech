@@ -415,7 +415,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         result.find('span').replaceWith(function() {
             var eventKey = '';
             for (var i = 0; i < $scope.selectedTrigger.eventParameters.length; i += 1) {
-                if ($scope.selectedTrigger.eventParameters[i].displayName == $(this).text()) {
+                if ($scope.msg($scope.selectedTrigger.eventParameters[i].displayName) == $(this).text()) {
                     eventKey = $scope.selectedTrigger.eventParameters[i].eventKey;
                 }
             }
@@ -463,7 +463,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
 
                 span = '<span ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer" data-index="' + i +
                 '" data-type="' + param.type + '" style="position: relative;" ' +
-                (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + param.displayName + '</span>';
+                (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + $scope.msg(param.displayName) + '</span>';
                 break;
             }
         }

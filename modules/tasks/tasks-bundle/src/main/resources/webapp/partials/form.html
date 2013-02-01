@@ -9,14 +9,14 @@
                 <ul class="trigger droppable" droppable>
                     <li class="task-panel dragged" ng-show="draggedTrigger" draggable double-click>
                         <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}&moduleVersion={{draggedTrigger.version}}" class="panel-img"/></div>
-                        <span>{{draggedTrigger.display}}</span>
+                        <span>{{msg(draggedTrigger.display)}}</span>
                         <div class="popover left" ng-hide="selectedTrigger">
                             <div class="arrow"></div>
                             <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectTrigger')}}</h3>
                             <div class="content-task popover-content">
                                 <ul>
                                     <li ng-repeat="t in draggedTrigger.events">
-                                        <a ng-click="selectTaskEvent('trigger', t)">{{t.displayName}}</a>
+                                        <a ng-click="selectTaskEvent('trigger', t)">{{msg(t.displayName)}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -31,14 +31,14 @@
                 <ul class="action droppable" droppable>
                     <li class="task-panel dragged" ng-show="draggedAction" draggable double-click>
                         <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}&moduleVersion={{draggedAction.version}}" class="panel-img"/></div>
-                        <span>{{draggedAction.display}}</span>
+                        <span>{{msg(draggedAction.display)}}</span>
                         <div class="popover right" ng-hide="selectedAction">
                             <div class="arrow"></div>
                             <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectAction')}}</h3>
                             <div class="content-task popover-content">
                                 <ul>
                                     <li ng-repeat="a in draggedAction.events">
-                                        <a ng-click="selectTaskEvent('action', a)">{{a.displayName}}</a>
+                                        <a ng-click="selectTaskEvent('action', a)">{{msg(a.displayName)}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -61,15 +61,15 @@
             <li class="task-panel draggable" ng-repeat="channel in channels | filterPagination:currentPage*pageSize | limitTo:pageSize" draggable data-channel-name="{{channel.displayName}}" data-module-name="{{channel.moduleName}}" data-module-version="{{channel.moduleVersion}}">
                 <div task-popover rel="popover">
                     <div><img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" /></div>
-                    <span>{{channel.displayName}}</span>
+                    <span>{{msg(channel.displayName)}}</span>
                     <div class="content-task" style="display:none;">
                         <div class="popover-titles">{{msg('tooltip.availableTriggers')}}</div>
                         <ul>
-                            <li ng-repeat="trigger in channel.triggerTaskEvents">{{trigger.displayName}}</li>
+                            <li ng-repeat="trigger in channel.triggerTaskEvents">{{msg(trigger.displayName)}}</li>
                         </ul>
                         <div class="popover-titles">{{msg('tooltip.availableActions')}}</div>
                         <ul>
-                            <li ng-repeat="action in channel.actionTaskEvents">{{action.displayName}}</li>
+                            <li ng-repeat="action in channel.actionTaskEvents">{{msg(action.displayName)}}</li>
                         </ul>
                     </div>
                 </div>
@@ -96,11 +96,11 @@
                                 <input class="span8" type='text' ng-model='task.name' id="task.name" maxlength="30" required />
                             </div>
                             <div class="control-group">
-                                <h4>{{selectedTrigger.displayName}}</h4>
+                                <h4>{{msg(selectedTrigger.displayName)}}</h4>
                                 <p>{{msg('info.dragFieldBuildAction')}}</p>
                             </div>
                             <div class="control-group move-element">
-                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{i.displayName}}</span>​
+                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                             </div>
                         </form>
                     </div>
@@ -108,14 +108,14 @@
                     <div class="span6">
                         <form name="form" class="inside">
                             <div class="control-group">
-                                <h4>{{selectedAction.displayName}}</h4>
+                                <h4>{{msg(selectedAction.displayName)}}</h4>
                             </div>
                             <div class="control-group" ng-show="selectedAction.description">
-                                <label>{{selectedAction.description}}</label>
+                                <label>{{msg(i.selectedAction.description)}}</label>
                             </div>
                             <span ui-if="BrowserDetect.browser!='Chrome'">
                             <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
-                                <label>{{i.displayName}}</label>
+                                <label>{{msg(i.displayName)}}</label>
                                 <textarea ui-if="i.type == 'TEXTAREA'" rows="5" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
                                 <input ui-if="i.type == 'NUMBER'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
                                 <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"/>
@@ -341,7 +341,7 @@
                             </span>
                             <span ui-if="BrowserDetect.browser=='Chrome'">
                                 <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
-                                    <label>{{i.displayName}}</label>
+                                    <label>{{msg(i.displayName)}}</label>
                                     <editable-content ui-if="i.type=='UNICODE'" data="i" index="$index" type="UNICODE"></editable-content>
                                     <editable-content ui-if="i.type=='TEXTAREA'" data="i" index="$index" type="TEXTAREA"></editable-content>
                                     <editable-content ui-if="i.type=='NUMBER'" data="i" index="$index" type="NUMBER"></editable-content>
@@ -364,15 +364,15 @@
                             <div class="accordion-inner">
                                 <ng-form id="filtersForm" name="filterForm" class="form-horizontal" novalidate>
                                     <div class="margin-center">
-                                        <p class="centered">{{msg('info.filter.title', [selectedTrigger.displayName, selectedAction.displayName])}}</p>
+                                        <p class="centered">{{msg('info.filter.title', [msg(selectedTrigger.displayName), msg(selectedAction.displayName)])}}</p>
                                         <p class="centered"><strong>{{msg('info.filter.run')}}</strong></p>
 
                                         <div ng-repeat="filter in filters">
                                             <div class="form-inline">
                                                 <div class="control-group centered">
                                                     <span ng-class="cssClass(filter.eventParameter)" class="">
-                                                        <label><i class="icon icon-plus"></i> {{msg('info.if')}} {{selectedTrigger.displayName}}</label>
-                                                        <select ng-model="filter.eventParameter" class="input-medium" ng-options="c.displayName for c in selectedTrigger.eventParameters">
+                                                        <label><i class="icon icon-plus"></i> {{msg('info.if')}} {{msg(selectedTrigger.displayName)}}</label>
+                                                        <select ng-model="filter.eventParameter" class="input-medium" ng-options="msg(c.displayName) for c in selectedTrigger.eventParameters">
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>

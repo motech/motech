@@ -29,7 +29,7 @@
                                     <li class="task-element task-name">
                                         <i class="icon-chevron-right i-name"></i>
                                         <span class="name-first">&nbsp;{{item.task.name}}</span>
-                                        <span class="name-second">{{get(item.task.trigger, 'displayName')}} - {{get(item.task.action, 'displayName')}}</span>
+                                        <span class="name-second">{{msg(get(item.task.trigger, 'displayName'))}} - {{msg(get(item.task.action, 'displayName'))}}</span>
                                     </li>
                                 </ul>
                             </a>

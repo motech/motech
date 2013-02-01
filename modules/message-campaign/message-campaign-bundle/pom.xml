@@ -86,6 +86,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>META-INF/osgi/applicationMessageCampaignBundle.xml</Context-File>
+                        <Context-Path>message-campaign</Context-Path>
+                        <Resource-Path>message-campaign/resource</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.server.messagecampaign;version=${project.version},
                             org.motechproject.server.messagecampaign.contract;version=${project.version},
@@ -104,9 +108,6 @@
                             org.motechproject.tasks.service,
                             org.motechproject.tasks.util,
                             org.quartz.simpl,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.scheduling.quartz,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign;inline=true</Embed-Dependency>

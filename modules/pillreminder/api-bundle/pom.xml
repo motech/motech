@@ -85,6 +85,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>META-INF/osgi/applicationPillReminderAPIBundle.xml</Context-File>
+                        <Context-Path>pillreminder</Context-Path>
+                        <Resource-Path>pillreminder/resource</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.server.pillreminder.api;version=${project.version},
                             org.motechproject.server.pillreminder.api.contract;version=${project.version},
@@ -96,6 +100,7 @@
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.motechproject.tasks.service,
+                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-pillreminder-api;inline=true</Embed-Dependency>
