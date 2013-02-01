@@ -10,6 +10,9 @@
     <osgi:service id="commcareUserServiceOsgi" ref="commcareUserServiceImpl"
                   interface="org.motechproject.commcare.service.CommcareUserService"/>
 
+    <osgi:service id="commcareFixtureServiceOsgi" ref="commcareFixtureServiceImpl"
+                  interface="org.motechproject.commcare.service.CommcareFixtureService"/>
+
     <osgi:service id="commcareCaseServiceOsgi" ref="commcareCaseServiceImpl"
                   interface="org.motechproject.commcare.service.CommcareCaseService"/>
 

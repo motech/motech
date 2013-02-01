@@ -53,6 +53,14 @@ public class CommCareAPIHttpClient {
         return this.getRequest(baseCommcareUrl(), queryParams);
     }
 
+    public String fixturesRequest() {
+        return this.getRequest(commcareFixturesUrl(), null);
+    }
+
+    public String fixtureRequest(String fixtureId) {
+        return this.getRequest(commcareFixtureUrl(fixtureId), null);
+    }
+
     private HttpMethod buildRequest(String url, NameValuePair[] queryParams) {
         HttpMethod requestMethod = new GetMethod(url);
 
@@ -145,6 +153,14 @@ public class CommCareAPIHttpClient {
 
     private String commcareFormUrl(String formId) {
         return String.format("%s/%s/api/v0.1/form/%s/?format=json", getCommcareBaseUrl(), getCommcareDomain(), formId);
+    }
+
+    private String commcareFixturesUrl() {
+        return String.format("%s/%s/api/v0.3/fixture/", getCommcareBaseUrl(), getCommcareDomain());
+    }
+
+    private String commcareFixtureUrl(String fixtureId) {
+        return String.format("%s%s/", commcareFixturesUrl(), fixtureId);
     }
 
     private String baseCommcareUrl() {
