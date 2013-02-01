@@ -386,3 +386,21 @@ function OperationsCtrl($scope, $http) {
             }
         });
 }
+
+function ServerLogCtrl($scope, $http) {
+    $scope.refresh = function() {
+        blockUI();
+        $http({method: 'GET', url: '../admin/api/log'}).
+            success(function (data) {
+                if (data === 'tomcat.error.logFileNotFound') {
+                    $('#logContent').html($scope.msg(data));
+                } else {
+                    $('#logContent').html(data.replace(/\r\n|\n/g, "<br/>"));
+                    unblockUI();
+                }
+            }).
+            error(unblockUI());
+    }
+
+    $scope.refresh();
+}

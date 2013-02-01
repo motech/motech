@@ -233,3 +233,15 @@ h4.settings-section {
 .filter label {
     margin-bottom: 0;
 }
+
+.log-content {
+    background-color: white;
+    padding: 5px;
+    font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
+    font-size: 12px;
+    word-wrap: break-word;
+}
+
+div.sidebar-container {
+    height: 90px !important
+}

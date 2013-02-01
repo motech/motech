@@ -1,0 +1,27 @@
+<div class="well2">
+    <div class="box-header">
+        {{msg('log')}}
+        <a ng-click="refresh()">
+            <img src="../admin/img/refresh.png" title="{{msg('refresh')}}" alt="{{msg('refresh')}}"/>
+        </a>
+        <a href="../admin/api/log/raw" class="btn btn-info btn-in-header pull-right">
+            {{msg('raw')}}
+        </a>
+    </div>
+    <div class="box-content inside">
+        <p>{{msg('log.limitation')}} <a href="../admin/api/log/raw">{{msg('log.full')}}</a></p>
+        <div id="logContent" class="log-content"></div>
+    </div>
+    <ul sidebar>
+        <li go-to-top>
+            <a href="#">
+                <i class="icon-chevron-up"></i>
+            </a>
+        </li>
+        <li go-to-end>
+            <a href="#">
+                <i class="icon-chevron-down"></i>
+            </a>
+        </li>
+    </ul>
+</div>
