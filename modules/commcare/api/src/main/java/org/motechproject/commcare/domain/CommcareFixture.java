@@ -1,9 +1,8 @@
 package org.motechproject.commcare.domain;
 
-import java.util.List;
-import java.util.Map;
-
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Map;
 
 /**
  * A domain class that represents the information and properties of a fixture from
