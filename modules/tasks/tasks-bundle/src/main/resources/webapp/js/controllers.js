@@ -255,24 +255,40 @@ function ManageTaskCtrl($scope, Channels, Tasks, $routeParams, $http) {
         }
 
         blockUI();
-        $http.post('../tasks/api/task/save', $scope.task).
-            success(function () {
-                var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
+
+        if ($routeParams.taskId === undefined) {
+            $http.post('../tasks/api/task/save', $scope.task).
+                success(function () {
+                    var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
+
+                    unblockUI();
+
+                    motechAlert(msg, 'header.saved', function () {
+                        loc = new String(window.location);
+                        indexOf = loc.indexOf('#');
+
+                        window.location = loc.substring(0, indexOf) + "#/dashboard";
+                    });
+                }).error(function () {
+                    delete $scope.task.actionInputFields;
+                    delete $scope.task.enabled;
+
+                    alertHandler('task.error.saved', 'header.error');
+                });
+        } else {
+            $scope.task.$save(function () {
+                var loc, indexOf;
 
                 unblockUI();
 
-                motechAlert(msg, 'header.saved', function () {
+                motechAlert('task.success.saved', 'header.saved', function () {
                     loc = new String(window.location);
                     indexOf = loc.indexOf('#');
 
                     window.location = loc.substring(0, indexOf) + "#/dashboard";
                 });
-            }).error(function () {
-                delete $scope.task.actionInputFields;
-                delete $scope.task.enabled;
-
-                alertHandler('task.error.saved', 'header.error');
             });
+        }
     };
 
     $scope.operators = function(event) {

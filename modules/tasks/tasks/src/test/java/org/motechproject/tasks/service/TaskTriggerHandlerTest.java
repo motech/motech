@@ -9,6 +9,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
@@ -19,25 +20,26 @@ import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.NUMBER;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
@@ -45,7 +47,12 @@ import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.ParameterType.DATE;
+import static org.motechproject.tasks.domain.ParameterType.NUMBER;
+import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.springframework.aop.support.AopUtils.getTargetClass;
+import static org.springframework.util.ReflectionUtils.findMethod;
 
 public class TaskTriggerHandlerTest {
     private static final String TRIGGER_SUBJECT = "APPOINTMENT_CREATE_EVENT_SUBJECT";
@@ -85,6 +92,45 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).getAllTasks();
         verify(registryService).registerListener(any(EventListener.class), anyString());
+    }
+
+    @Test
+    public void shouldRegisterHandlerForSubject() {
+        String subject = "org.motechproject.server.messagecampaign.campaign-completed";
+
+        handler.registerHandlerFor(subject);
+        ArgumentCaptor<EventListener> captor = ArgumentCaptor.forClass(EventListener.class);
+
+        verify(registryService).registerListener(captor.capture(), eq(subject));
+
+        MotechListenerEventProxy proxy = (MotechListenerEventProxy) captor.getValue();
+
+        assertEquals("taskTriggerHandler", proxy.getIdentifier());
+        assertEquals(handler, proxy.getBean());
+        assertEquals(findMethod(getTargetClass(handler), "handle", MotechEvent.class), proxy.getMethod());
+    }
+
+    @Test
+    public void shouldRegisterHandlerOneTimeForSameSubjects() {
+        String subject = "org.motechproject.server.messagecampaign.campaign-completed";
+        Method method = findMethod(getTargetClass(handler), "handle", MotechEvent.class);
+
+        handler.registerHandlerFor(subject);
+
+        Set<EventListener> listeners = new HashSet<>();
+        listeners.add(new MotechListenerEventProxy("taskTriggerHandler", this, method));
+
+        when(registryService.getListeners(subject)).thenReturn(listeners);
+
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+        handler.registerHandlerFor(subject);
+
+        verify(registryService).registerListener(any(EventListener.class), eq(subject));
     }
 
     @Test
