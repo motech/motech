@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
@@ -11,10 +13,10 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.OperatorType;
+import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
@@ -127,8 +129,17 @@ public class TaskTriggerHandler {
         try {
             if (method != null) {
                 EventListener proxy = new MotechListenerEventProxy(SERVICE_NAME, this, method);
-                registryService.registerListener(proxy, subject);
-                LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
+                Object obj = CollectionUtils.find(registryService.getListeners(subject), new Predicate() {
+                    @Override
+                    public boolean evaluate(Object object) {
+                        return object instanceof MotechListenerEventProxy && ((MotechListenerEventProxy) object).getIdentifier().equalsIgnoreCase(SERVICE_NAME);
+                    }
+                });
+
+                if (obj == null) {
+                    registryService.registerListener(proxy, subject);
+                    LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
+                }
             }
         } catch (Exception e) {
             LOG.error(String.format("Cant register TaskTriggerHandler for subject: %s", subject), e);
@@ -308,13 +319,13 @@ public class TaskTriggerHandler {
         for (String man : manipulations) {
             if (!man.toLowerCase().contains("join") && !man.toLowerCase().contains("datetime")) {
                 switch (man.toLowerCase()) {
-                    case "toupper" :
+                    case "toupper":
                         manipulateValue = manipulateValue.toUpperCase();
                         break;
-                    case "tolower" :
+                    case "tolower":
                         manipulateValue = manipulateValue.toLowerCase();
                         break;
-                    case "capitalize" :
+                    case "capitalize":
                         manipulateValue = WordUtils.capitalize(manipulateValue);
                         break;
                     default:
@@ -323,11 +334,11 @@ public class TaskTriggerHandler {
                 }
             } else if (man.toLowerCase().contains("join")) {
                 String[] splitValue = manipulateValue.split(" ");
-                man = man.substring(5 , man.length()-1);
+                man = man.substring(5, man.length() - 1);
                 manipulateValue = StringUtils.join(splitValue, man);
             } else if (man.toLowerCase().contains("datetime")) {
                 try {
-                    man = man.substring(9 , man.length()-1);
+                    man = man.substring(9, man.length() - 1);
                     DateTimeFormatter format = DateTimeFormat.forPattern(man);
                     DateTime date = new DateTime(manipulateValue);
                     manipulateValue = format.print(date);
