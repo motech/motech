@@ -12,17 +12,14 @@ localizationModule.factory("i18nService", function() {
         name : '',
         path : '',
 
-        getMessage : function(key, value) {
+        getMessage : function(key) {
             var msg = '';
 
             if (this.ready == true) {
-                if (!value) {
-                    msg = jQuery.i18n.prop(key, value);
-                } else {
-                    var mergeArray = $.merge($.merge([], [key]), value);
-                    msg = jQuery.i18n.prop.apply(null, mergeArray);
-                }
-
+                // flatten the arg list and pass to i18n.prop as args
+                msg = jQuery.i18n.prop.apply(null, $.map(arguments, function(n) {
+                    return n;
+                }));
             }
 
             return msg;
