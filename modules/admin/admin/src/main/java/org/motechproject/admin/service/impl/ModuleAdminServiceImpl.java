@@ -95,6 +95,15 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     public void uninstallBundle(long bundleId) throws BundleException {
         Bundle bundle = getBundle(bundleId);
         bundle.uninstall();
+
+        try {
+            boolean deleted = bundleDirectoryManager.removeBundle(bundle);
+            if (!deleted) {
+                LOG.warn("Failed to delete bundle file: " + bundle.getLocation());
+            }
+        } catch (IOException e) {
+            throw new MotechException("Error while removing bundle file", e);
+        }
     }
 
     @Override

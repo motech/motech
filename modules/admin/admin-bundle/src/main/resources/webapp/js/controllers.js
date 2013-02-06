@@ -113,6 +113,8 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
                 var oldState = bundle.state;
                 bundle.state = LOADING_STATE;
 
+                blockUI()
+
                 bundle.$uninstall(function() {
                     // remove bundle from list
                     $scope.bundles.removeObject(bundle);
@@ -121,6 +123,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
                 function() {
                     motechAlert('bundles.error.uninstall', 'error');
                     bundle.state = oldState;
+                    unBlockUI();
                 });
             }
         });

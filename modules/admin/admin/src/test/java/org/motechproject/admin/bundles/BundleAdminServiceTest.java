@@ -36,8 +36,6 @@ public class BundleAdminServiceTest {
 
     private static final long BUNDLE_ID = 1;
     private static final String ICON_MIME = "image/png";
-    private static final String BUNDLE_LOCATION = "C:\bundles";
-    private static final String name = "Bundle name";
 
     @InjectMocks
     ModuleAdminService moduleAdminService = new ModuleAdminServiceImpl();
@@ -166,13 +164,14 @@ public class BundleAdminServiceTest {
     }
 
     @Test
-    public void testUnInstallBundle() throws BundleException {
+    public void testUnInstallBundle() throws BundleException, IOException {
         setupBundleRetrieval();
 
         moduleAdminService.uninstallBundle(BUNDLE_ID);
 
         verify(bundleContext).getBundle(BUNDLE_ID);
         verify(bundle).uninstall();
+        verify(bundleDirectoryManager).removeBundle(bundle);
     }
 
     @Test

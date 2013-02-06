@@ -3,12 +3,14 @@ package org.motechproject.admin.bundles;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.osgi.framework.Bundle;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collection;
 
 public class BundleDirectoryManager {
@@ -41,6 +43,14 @@ public class BundleDirectoryManager {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(os);
         }
+    }
+
+    public boolean removeBundle(Bundle bundle) throws IOException {
+        URL location = new URL(bundle.getLocation());
+
+        File bundleFile = FileUtils.toFile(location);
+
+        return FileUtils.deleteQuietly(bundleFile);
     }
 
     public Collection<File> retrieveAllFiles() {
