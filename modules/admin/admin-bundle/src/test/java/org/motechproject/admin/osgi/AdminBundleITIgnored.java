@@ -17,7 +17,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
-import org.junit.Ignore;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
@@ -36,7 +35,7 @@ import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class AdminBundleIT extends BaseOsgiIT {
+public class AdminBundleITIgnored extends BaseOsgiIT {
 
     private static final String ERROR_MSG = "test-error";
     private static final String DEBUG_MSG = "test-debug";
@@ -48,11 +47,6 @@ public class AdminBundleIT extends BaseOsgiIT {
 
     private HttpClient httpClient = new DefaultHttpClient();
 
-    // overriding so I can ignore it
-    @Ignore
-    public void testOsgiPlatformStarts() throws java.lang.Exception { /* compiled code */ }
-
-    @Ignore
     public void testAdminBundleContext() {
         assertServicePresent(PlatformSettingsService.class);
         assertServicePresent(EventListenerRegistryService.class);
@@ -60,7 +54,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertServicePresent(MotechRoleService.class);
     }
 
-    @Ignore
     public void testStatusMessageService() {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
 
@@ -83,7 +76,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertEquals(Level.DEBUG, msg.getLevel());
     }
 
-    @Ignore
     public void testBundleController() throws IOException {
         final String response = apiGet("bundles/");
 
@@ -92,7 +84,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No bundles listed as active", json.size() > 0);
     }
 
-    @Ignore
     public void testSettingsController() throws IOException {
         final String response = apiGet("settings/platform");
 
@@ -101,7 +92,6 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No settings listed", json.size() > 0);
     }
 
-    @Ignore
     public void testMessageController() throws IOException {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
         service.error(ERROR_MSG, TIMEOUT);
