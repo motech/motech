@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.motechproject.tasks.util.TaskUtil.getSubject;
 
@@ -41,11 +40,7 @@ public class TaskController {
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
     @ResponseBody
     public Task getTask(@PathVariable String taskId) {
-        Task task = taskService.getTask(taskId);
-        for(Map.Entry<String, String> actionfields : task.getActionInputFields().entrySet()) {
-            task.getActionInputFields().put(actionfields.getKey(), actionfields.getValue().replaceAll("\\n", "<br>"));
-        }
-        return task;
+        return taskService.getTask(taskId);
     }
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.POST)
