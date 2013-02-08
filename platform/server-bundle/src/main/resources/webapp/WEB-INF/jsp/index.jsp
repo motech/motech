@@ -201,8 +201,18 @@
     </div>
 
     <div id="footer">
+        <script type="text/javascript">
+              getTime();
+              window.setInterval(getTime, 60000);
+
+              function getTime() {
+                  $.post('gettime', function(time) {
+                       $('#serverTime').text(time);
+                  });
+              }
+        </script>
         <span class="inside">
-            <strong> <fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
+            <strong> <fmt:message key="server.localTime" bundle="${bundle}"/>&#58; </strong> <span id="serverTime"> </span>&#59;
             <strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}&#59;
             <strong> <fmt:message key="projectVersion" bundle="${bundle}"/>&#58; </strong> <fmt:message key="version" bundle="${bundle}"/>
         </span>
