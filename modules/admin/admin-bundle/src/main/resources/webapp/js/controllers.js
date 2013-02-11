@@ -432,3 +432,93 @@ function ServerLogCtrl($scope, $http) {
 
     $scope.refresh();
 }
+
+function ServerLogOptionsCtrl($scope, LogService, $http) {
+    $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
+    $scope.entry = {};
+
+    $scope.config = LogService.get();
+
+    $scope.save = function () {
+        $scope.config.$save({}, alertHandlerWithCallback('log.changedLevel', function () {
+                var loc = new String(window.location), indexOf = loc.indexOf('#');
+                window.location = loc.substring(0, indexOf) + "#/log";
+            }), function () { motechAlert('log.changedLevelError', 'error') });
+    }
+
+    $scope.add = function () {
+        $scope.config.loggers.push({
+            logName: $scope.entry.name,
+            logLevel: $scope.entry.level
+        });
+
+        delete $scope.entry.name;
+        delete $scope.entry.level;
+    }
+
+    $scope.forAll = function (level) {
+        var i;
+
+        for (i = 0; i < $scope.config.loggers.length; i += 1) {
+            $scope.config.loggers[i].logLevel = level;
+        }
+
+        $scope.config.root.logLevel = level;
+    }
+
+    $scope.change = function (logger, level) {
+        $('#changeForAll .active').removeClass('active');
+        logger.logLevel = level;
+    }
+
+    $scope.changeRoot = function (level) {
+        $('#changeForAll .active').removeClass('active');
+        $scope.config.root.logLevel = level;
+    }
+
+    $scope.changeEntry = function (value) {
+        $('#changeForAll .active').removeClass('active');
+        $scope.entry.level = value;
+    }
+
+    $scope.remove = function (logger) {
+        $scope.config.loggers.removeObject(logger);
+
+        if ($scope.config.trash === undefined || $scope.config.trash === null) {
+            $scope.config.trash = [];
+        }
+
+        $scope.config.trash.push(logger);
+    }
+
+    $scope.validate = function () {
+        if (!$scope.entry.name || $scope.entry.name.trim() === '' || $scope.entry.name === 'root') {
+            return false;
+        }
+
+        if (!$scope.entry.level || $scope.entry.level.trim() === '') {
+            return false;
+        }
+
+        return true;
+    }
+
+    $scope.levelsCss = function (level) {
+        var cssClass = '';
+
+        if (level !== undefined) {
+            switch(level.toLowerCase()) {
+                case 'trace': cssClass = 'btn-primary'; break;
+                case 'debug': cssClass = 'btn-success'; break;
+                case 'info': cssClass = 'btn-info'; break;
+                case 'warn': cssClass = 'btn-warning'; break;
+                case 'error': cssClass = 'btn-danger'; break;
+                case 'fatal': cssClass = 'btn-inverse'; break;
+                default: cssClass = ''; break;
+            }
+        }
+
+        return cssClass;
+    }
+}
+

@@ -2,9 +2,17 @@ package org.motechproject.admin.web.controller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.admin.domain.LogMapping;
+import org.motechproject.admin.service.ServerLogService;
+import org.motechproject.admin.settings.Loggers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -12,9 +20,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.List;
 
 @Controller
 public class ServerLogController {
+    private ServerLogService logService;
+
+    @Autowired
+    public ServerLogController(ServerLogService logService) {
+        this.logService = logService;
+    }
 
     @RequestMapping(value = "/log", method = RequestMethod.GET)
     public void getServerLog(HttpServletResponse response) throws IOException {
@@ -71,7 +86,39 @@ public class ServerLogController {
         }
     }
 
+    @RequestMapping(value = "/log/level", method = RequestMethod.GET)
+    @ResponseBody
+    public Loggers getLogLevels() {
+        return new Loggers(logService.getLogLevels(), logService.getRootLogLevel());
+    }
+
+    @RequestMapping(value = "/log/level", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void changeLogLevels(@RequestBody Loggers config) {
+        if (config != null) {
+            LogMapping root = config.getRoot();
+            List<LogMapping> loggers = config.getLoggers();
+            List<LogMapping> trash = config.getTrash();
+
+            if (root != null) {
+                logService.changeRootLogLevel(root.getLogLevel());
+            }
+
+            if (loggers != null) {
+                for (LogMapping mapping : loggers) {
+                    logService.changeLogLevel(mapping.getLogName(), mapping.getLogLevel());
+                }
+            }
+
+            if (trash != null) {
+                for (LogMapping mapping : trash) {
+                    logService.removeLogger(mapping.getLogName());
+                }
+            }
+        }
+    }
+
     private File getLogFile() {
-       return new File(String.format("%s/logs/catalina.out", System.getProperty("catalina.base")));
+        return new File(String.format("%s/logs/catalina.out", System.getProperty("catalina.base")));
     }
 }

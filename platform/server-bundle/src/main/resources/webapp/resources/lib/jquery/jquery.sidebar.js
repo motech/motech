@@ -103,7 +103,7 @@
                 callback: {
                     item : {
                         enter : function(){
-                            $(this).animate({marginLeft:"5px"},250);
+                            $(this).animate({marginLeft:"0px"},250);
                         },
                         leave : function(){
                             $(this).animate({marginLeft:"0px"},250);

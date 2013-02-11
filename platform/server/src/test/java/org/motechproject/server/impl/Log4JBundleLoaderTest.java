@@ -3,6 +3,7 @@ package org.motechproject.server.impl;
 import org.apache.log4j.LogManager;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -17,7 +18,12 @@ public class Log4JBundleLoaderTest {
         loader.setLog4jConf(testConf);
 
         Bundle bundle = mock(Bundle.class);
+        BundleContext bundleContext = mock(BundleContext.class);
+
         when(bundle.getResource(testConf)).thenReturn(this.getClass().getResource(testConf));
+        when(bundle.getBundleContext()).thenReturn(bundleContext);
+
+        when(bundleContext.getServiceReference("org.motechproject.event.listener.EventRelay")).thenReturn(null);
 
         loader.loadBundle(bundle);
 
