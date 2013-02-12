@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 @Repository
 public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<CallDetailRecord> {
 
@@ -43,6 +46,12 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
         return queryView("by_phoneNumber", phoneNumber);
     }
 
+    @View(name="countLogs", map="function(doc){ emit(null, 1);}", reduce="function(keys, values) { return sum(values); }")
+     public long countRecords(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions){
+         StringBuilder queryString = generateQueryString(phoneNumber, startTime, endTime, minDurationInSeconds, maxDurationInSeconds, dispositions);
+         return runQuery(queryString,0,0,null,false).size();
+    }
+
     public CallDetailRecord findOrCreate(String callId, String phoneNumber) {
         CallDetailRecord callDetailRecord = findByCallId(callId);
         if (callDetailRecord == null) {
@@ -54,10 +63,16 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
 
     @FullText({@Index(
             name = "search",
-            index = "function(doc) { var ret=new Document(); ret.add(doc.phoneNumber,{'field':'phoneNumber'}); ret.add(doc.startDate, {'type':'date', 'field':'startDate'});ret.add(doc.duration, {'type':'int', 'field':'duration'}); return ret }"
+            index = "function(doc) { var ret=new Document(); ret.add(doc.phoneNumber,{'field':'phoneNumber'}); ret.add(doc.startDate, {'type':'date', 'field':'startDate'});ret.add(doc.duration, {'type':'int', 'field':'duration'}); ret.add(doc.disposition,{'field':'disposition'}); return ret }"
     )})
-    public List<CallDetail> search(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds) {
-        LuceneQuery query = new LuceneQuery("CallDetailRecord", "search");
+    public List<CallDetail> search(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions, int page, int pageSize, String sortby, boolean reverse) {
+
+        StringBuilder queryString = generateQueryString(phoneNumber, startTime, endTime, minDurationInSeconds, maxDurationInSeconds, dispositions);
+
+        return runQuery(queryString, page, pageSize, sortby, reverse);
+    }
+
+    private StringBuilder generateQueryString(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions) {
         StringBuilder queryString = new StringBuilder();
         if (maxDurationInSeconds != null && minDurationInSeconds != null) {
             queryString.append(String.format("duration<int>:[%d TO %d]", minDurationInSeconds, maxDurationInSeconds));
@@ -76,12 +91,40 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
             }
             queryString.append(String.format("startDate<date>:[%s TO %s]", startTime.toString("yyyy-MM-dd'T'HH:mm:ss"), endTime.toString("yyyy-MM-dd'T'HH:mm:ss")));
         }
+        addDispositionFilter(dispositions, queryString);
+        return queryString;
+    }
 
+
+    private void addDispositionFilter(List<String> dispositions, StringBuilder queryString) {
+        if (isNotEmpty(dispositions)) {
+            queryString.append(" AND (");
+            for (int i = 0; i < dispositions.size(); i++) {
+                if (i > 0) {
+                    queryString.append(" OR ");
+                }
+                queryString.append("disposition:").append(dispositions.get(i));
+            }
+            queryString.append(")");
+        }
+    }
+
+    private List<CallDetail> runQuery(StringBuilder queryString, int page, int pageSize, String sortBy, boolean reverse) {
+        LuceneQuery query = new LuceneQuery("CallDetailRecord", "search");
         query.setQuery(queryString.toString());
         query.setStaleOk(false);
         query.setIncludeDocs(true);
+        if(pageSize > 0){
+            query.setLimit(pageSize);
+            query.setSkip(page * pageSize);
+        }
+        if (!isBlank(sortBy)) {
+            String sortString = reverse ? "\\" + sortBy : sortBy;
+            query.setSort(sortString);
+        }
         TypeReference<CustomLuceneResult<CallDetailRecord>> typeRef
-                = new TypeReference<CustomLuceneResult<CallDetailRecord>>() { };
+                = new TypeReference<CustomLuceneResult<CallDetailRecord>>() {
+        };
         CustomLuceneResult<CallDetailRecord> result = db.queryLucene(query, typeRef);
         return convert2Calllogs(result.getRows());
     }

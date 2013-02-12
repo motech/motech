@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.decisiontree.core.CallDetail;
 import org.motechproject.decisiontree.server.domain.CallDetailRecord;
+import org.motechproject.decisiontree.server.domain.CallDirection;
 import org.motechproject.decisiontree.server.repository.AllCallDetailRecords;
 import org.motechproject.decisiontree.server.service.CalllogSearchParameters;
 import org.motechproject.decisiontree.server.service.CalllogSearchService;
@@ -38,8 +39,12 @@ public class CalllogSearchServiceImplIT {
         log.setStartDate(DateUtil.now());
         log.setEndDate(DateUtil.now());
         log.setDuration(34);
+        log.setCallDirection(CallDirection.Inbound);
+        log.setDisposition(CallDetailRecord.Disposition.UNKNOWN);
         repository.add(log);
         final CallDetailRecord b = repository.findOrCreate("b", PHONE_NUMBER + "23");
+        b.setDisposition(CallDetailRecord.Disposition.ANSWERED);
+        b.setCallDirection(CallDirection.Outbound);
         b.setDuration(324);
         repository.update(b);
     }

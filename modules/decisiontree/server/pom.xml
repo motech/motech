@@ -61,6 +61,13 @@
                                     <arg value="DELETE" />
                                     <arg value="http://${db.server}:${db.port}/trees" />
                                 </exec>
+                                <exec executable="curl">
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg value="http://${db.server}:${db.port}/calldetailrecords" />
+                                </exec>
                             </target>
                         </configuration>
                         <goals>

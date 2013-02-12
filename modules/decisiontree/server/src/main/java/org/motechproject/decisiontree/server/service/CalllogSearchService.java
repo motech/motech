@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CalllogSearchService {
     List<CallDetail> search(CalllogSearchParameters searchParameters);
+
+    long count(CalllogSearchParameters params);
 }
