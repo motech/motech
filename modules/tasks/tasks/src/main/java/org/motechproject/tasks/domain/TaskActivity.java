@@ -4,6 +4,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Objects;
 
@@ -56,7 +57,7 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     public DateTime getDate() {
-        return date;
+        return DateUtil.setTimeZone(date);
     }
 
     public void setDate(final DateTime date) {
@@ -83,7 +84,7 @@ public class TaskActivity extends MotechBaseDataObject {
 
         TaskActivity that = (TaskActivity) o;
 
-        return Objects.equals(date, that.date) && Objects.equals(activityType, that.activityType)
+        return Objects.equals(getDate(), that.getDate()) && Objects.equals(activityType, that.activityType)
                 && Objects.equals(field, that.field) && Objects.equals(message, that.message)
                 && Objects.equals(task, that.task);
     }
@@ -93,7 +94,7 @@ public class TaskActivity extends MotechBaseDataObject {
         int result = message != null ? message.hashCode() : 0;
         result = 31 * result + (task != null ? task.hashCode() : 0);
         result = 31 * result + (field != null ? field.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (getDate() != null ? getDate().hashCode() : 0);
         result = 31 * result + (activityType != null ? activityType.hashCode() : 0);
 
         return result;

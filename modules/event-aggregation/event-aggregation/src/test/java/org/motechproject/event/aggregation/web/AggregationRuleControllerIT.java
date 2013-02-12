@@ -173,7 +173,6 @@ public class AggregationRuleControllerIT {
             delete("/rules/aggregation2"));
 
         List<AggregationRuleRecord> allRules = allAggregationRules.getAll();
-        assertEquals(1, allRules.size());
-        assertEquals(rules.get(0), allRules.get(0));
+        assertEquals(asList(rules.get(0)), allRules);
     }
 }

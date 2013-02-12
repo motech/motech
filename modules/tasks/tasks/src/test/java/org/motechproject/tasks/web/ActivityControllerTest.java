@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -47,7 +46,7 @@ public class ActivityControllerTest {
         List<TaskActivity> actual = controller.getAllActivities();
 
         verify(activityService).getAllActivities();
-        verifyList(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -57,16 +56,6 @@ public class ActivityControllerTest {
         List<TaskActivity> actual = controller.getTaskActivities(TASK_ID);
 
         verify(activityService).getTaskActivities(TASK_ID);
-        verifyList(expected, actual);
+        assertEquals(expected, actual);
     }
-
-    private void verifyList(List<TaskActivity> expected, List<TaskActivity> actual) {
-        assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-
-        for (int i = 0; i < expected.size(); ++i) {
-            assertEquals(expected.get(i), actual.get(i));
-        }
-    }
-
 }

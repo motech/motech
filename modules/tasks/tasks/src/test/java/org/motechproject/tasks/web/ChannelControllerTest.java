@@ -56,7 +56,7 @@ public class ChannelControllerTest {
         verify(channelService).getAllChannels();
 
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
+        assertEquals(expected, actual);
     }
 
     @Test

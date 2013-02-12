@@ -5,13 +5,16 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.server.alerts.contract.AlertCriteria;
 import org.motechproject.server.alerts.repository.AllAlerts;
-import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -39,7 +42,7 @@ public class CriterionTest {
         when(allAlerts.findByDateTime(fromDate, toDate)).thenReturn(expectedAlerts);
 
         List<Alert> actualAlerts = Criterion.dateRange.fetch(allAlerts, alertCriteria);
-        assertEquals(expectedAlerts.size(), actualAlerts.size());
+        assertEquals(expectedAlerts, actualAlerts);
     }
 
     @Test
@@ -57,8 +60,7 @@ public class CriterionTest {
         }};
 
         List<Alert> filteredAlerts = Criterion.dateRange.filter(allAlerts, alertCriteria);
-        assertEquals(2, filteredAlerts.size());
-        assertEquals(dayTwo, filteredAlerts.get(0).getDateTime());
-        assertEquals(dayThree, filteredAlerts.get(1).getDateTime());
+
+        assertEquals(asList(dayTwo, dayThree), extract(filteredAlerts, on(Alert.class).getDateTime()));
     }
 }

@@ -56,7 +56,7 @@ public class AllAggregatedEventsIT {
 
         allAggregatedEvents.addIfAbsent(duplicateAggregatedEvent);
 
-        assertEquals(1, allAggregatedEvents.getAll().size());
+        assertEquals(asList(aggregatedEvent), allAggregatedEvents.getAll());
     }
 
     @Test
@@ -78,9 +78,8 @@ public class AllAggregatedEventsIT {
         allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
 
         List<AggregatedEventRecord> aggregatedEvents = allAggregatedEvents.findAllAggregated("aggregation");
-        assertEquals(2, aggregatedEvents.size());
-        assertEquals("bar", aggregatedEvents.get(0).getAggregationParams().get("foo"));
-        assertEquals("baz", aggregatedEvents.get(1).getAggregationParams().get("foo"));
+
+        assertEquals(asList("bar", "baz"), extract(aggregatedEvents, on(AggregatedEventRecord.class).getAggregationParams().get("foo")));
     }
 
     @Test
@@ -233,10 +232,7 @@ public class AllAggregatedEventsIT {
         allAggregatedEvents.addIfAbsent(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
 
         List<AggregatedEventRecord> aggregatedEvents = allAggregatedEvents.findByAggregationRule("aggregation");
-        assertEquals(3, aggregatedEvents.size());
-        assertEquals("bar", aggregatedEvents.get(0).getAggregationParams().get("foo"));
-        assertEquals("baz", aggregatedEvents.get(1).getAggregationParams().get("foo"));
-        assertEquals("bur", aggregatedEvents.get(2).getAggregationParams().get("foo"));
+        assertEquals(asList("bar", "baz", "bur"), extract(aggregatedEvents, on(AggregatedEventRecord.class).getAggregationParams().get("foo")));
     }
 
     @Test

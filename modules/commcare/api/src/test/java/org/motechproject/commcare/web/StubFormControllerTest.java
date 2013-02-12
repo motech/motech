@@ -15,9 +15,10 @@ import org.motechproject.event.listener.EventRelay;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,9 +69,10 @@ public class StubFormControllerTest {
 
         Map<String, Object> eventParameters = event.getParameters();
 
-        assertEquals(eventParameters.size(), 3);
+        assertEquals(new HashSet<String>(asList(EventDataKeys.FORM_ID, EventDataKeys.CASE_IDS, EventDataKeys.RECEIVED_ON)),
+                eventParameters.keySet());
         assertEquals(eventParameters.get(EventDataKeys.FORM_ID), "id123");
-        assertEquals(((List<String>) eventParameters.get(EventDataKeys.CASE_IDS)).size(), 2);
+        assertEquals(asList("123", "345") ,eventParameters.get(EventDataKeys.CASE_IDS));
         assertEquals(eventParameters.get(EventDataKeys.RECEIVED_ON), "1-1-2012");
     }
 }

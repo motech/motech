@@ -10,11 +10,15 @@ import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.AudioPrompt;
 import org.motechproject.decisiontree.core.model.Node;
+import org.motechproject.decisiontree.core.model.Prompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -75,10 +79,10 @@ public class TreeNodeLocatorTest {
     @Test
     public void addPrompts() {
         final Node rootNode = tree.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class));
-        rootNode.setPrompts(new AudioPrompt());
-        rootNode.addPrompts(new AudioPrompt());
+        rootNode.setPrompts(new AudioPrompt().setName("1"));
+        rootNode.addPrompts(new AudioPrompt().setName("2"));
 
-        assertEquals(2, rootNode.getPrompts().size());
+        assertEquals(asList("1", "2"), extract(rootNode.getPrompts(), on(Prompt.class).getName()));
     }
 
     @Test
@@ -90,11 +94,9 @@ public class TreeNodeLocatorTest {
         audioPrompt_2.setName("2");
 
         rootNode.addPrompts(audioPrompt_1);
-        assertEquals(1, rootNode.getPrompts().size());
+        assertEquals(asList(audioPrompt_1), rootNode.getPrompts());
 
         rootNode.addPromptToBeginning(audioPrompt_2);
-        assertEquals(2, rootNode.getPrompts().size());
-        assertEquals("2", rootNode.getPrompts().get(0).getName());
-        assertEquals("1", rootNode.getPrompts().get(1).getName());
+        assertEquals(asList(audioPrompt_2, audioPrompt_1), rootNode.getPrompts());
     }
 }

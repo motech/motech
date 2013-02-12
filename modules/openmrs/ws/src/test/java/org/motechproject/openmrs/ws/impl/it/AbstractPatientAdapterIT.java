@@ -1,10 +1,5 @@
 package org.motechproject.openmrs.ws.impl.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import java.util.Date;
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.domain.Patient;
@@ -18,6 +13,16 @@ import org.motechproject.mrs.services.PatientAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Date;
+import java.util.List;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractPatientAdapterIT {
@@ -65,7 +70,7 @@ public abstract class AbstractPatientAdapterIT {
     public void shouldSearchForPatient() {
         List<Patient> found = patientAdapter.search("Bill", null);
 
-        assertEquals(1, found.size());
+        assertEquals(asList("Bill"), extract(found, on(Patient.class).getPerson().getFirstName()));
     }
 
     @Test

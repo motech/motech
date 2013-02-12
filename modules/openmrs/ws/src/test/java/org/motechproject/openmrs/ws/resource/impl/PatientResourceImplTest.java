@@ -1,11 +1,6 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.net.URI;
-
+import com.google.gson.JsonElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +14,14 @@ import org.motechproject.openmrs.ws.resource.model.Patient;
 import org.motechproject.openmrs.ws.resource.model.PatientListResult;
 import org.motechproject.openmrs.ws.resource.model.Person;
 
-import com.google.gson.JsonElement;
+import java.io.IOException;
+import java.net.URI;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class PatientResourceImplTest extends AbstractResourceImplTest {
 
@@ -74,8 +76,10 @@ public class PatientResourceImplTest extends AbstractResourceImplTest {
 
         PatientListResult result = impl.queryForPatient("558");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("PPP"), extract(result.getResults(), on(Patient.class).getUuid()));
     }
+
+
 
     @Test
     public void shouldGetPatientById() throws HttpException, IOException {

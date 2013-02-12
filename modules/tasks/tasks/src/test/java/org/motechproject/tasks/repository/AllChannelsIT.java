@@ -14,9 +14,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,11 +39,11 @@ public class AllChannelsIT extends SpringIntegrationTest {
         allChannels.addOrUpdate(channels.get(0));
         allChannels.addOrUpdate(channels.get(1));
 
-        assertEquals(2, allChannels.getAll().size());
+        assertEquals(channels, allChannels.getAll());
 
         allChannels.addOrUpdate(channels.get(1));
 
-        assertEquals(2, allChannels.getAll().size());
+        assertEquals(channels, allChannels.getAll());
 
         markForDeletion(allChannels.getAll());
     }
@@ -57,10 +57,15 @@ public class AllChannelsIT extends SpringIntegrationTest {
 
         List<Channel> channelList = allChannels.getAll();
 
-        assertEquals(2, channelList.size());
+        assertEquals(channels, channelList);
 
         Channel channel = channelList.get(0);
         Channel actual = allChannels.byChannelInfo(channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion());
+
+        assertEquals(channel, actual);
+
+        channel = channelList.get(1);
+        actual = allChannels.byChannelInfo(channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion());
 
         assertEquals(channel, actual);
 
@@ -78,7 +83,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
         Channel messageCampaignChannel = (Channel) motechJsonReader.readFromStream(messageCampaignChannelStream, type);
         Channel pillReminderChannel = (Channel) motechJsonReader.readFromStream(pillReminderChannelStream, type);
 
-        return Arrays.asList(messageCampaignChannel, pillReminderChannel);
+        return asList(messageCampaignChannel, pillReminderChannel);
     }
 
     @Override

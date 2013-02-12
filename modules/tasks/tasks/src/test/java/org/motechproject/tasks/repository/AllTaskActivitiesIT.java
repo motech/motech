@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
@@ -41,11 +42,11 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
         allTaskActivities.add(warningMsg);
         allTaskActivities.add(successMsg);
 
-        assertEquals(3, allTaskActivities.getAll().size());
+        assertEquals(asList(errorMsg, warningMsg, successMsg), allTaskActivities.getAll());
 
         List<TaskActivity> messages = allTaskActivities.byTaskId(TASK_ID_1);
 
-        assertEquals(2, messages.size());
+        assertEquals(asList(errorMsg, successMsg), messages);
 
         assertEquals(ERROR, messages.get(0).getActivityType());
         assertEquals(TASK_ID_1, messages.get(0).getTask());
@@ -60,7 +61,7 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
 
         messages = allTaskActivities.byTaskId(TASK_ID_2);
 
-        assertEquals(1, messages.size());
+        assertEquals(asList(warningMsg), messages);
 
         assertEquals(WARNING, messages.get(0).getActivityType());
         assertEquals(TASK_ID_2, messages.get(0).getTask());

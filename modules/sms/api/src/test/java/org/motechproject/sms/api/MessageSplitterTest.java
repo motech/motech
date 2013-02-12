@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 
 public class MessageSplitterTest {
@@ -19,34 +20,24 @@ public class MessageSplitterTest {
     @Test
     public void shouldNotSplitMessageIfLessThanUnitLength() {
         List<String> parts = messageSplitter.split("very short message", 20, "(%d/%d):", "..");
-        assertEquals(1, parts.size());
-        assertEquals("very short message", parts.get(0));
+        assertEquals(asList("very short message"), parts);
     }
 
     @Test
     public void shouldSplitMessageInto2Parts() {
         List<String> parts = messageSplitter.split("this message is longer than 30 characters.", 30, "(%d/%d):", "..");
-        assertEquals(2, parts.size());
-        assertEquals("(1/2):this message is longer..", parts.get(0));
-        assertEquals("(2/2): than 30 characters.", parts.get(1));
+        assertEquals(asList("(1/2):this message is longer..", "(2/2): than 30 characters."), parts);
     }
 
     @Test
     public void shouldSplitMessageInto3Parts() {
         List<String> parts = messageSplitter.split("this message should be split into six parts.", 16, "(%d/%d):", "..");
-        assertEquals(6, parts.size());
-        assertEquals("(1/6):this mes..", parts.get(0));
-        assertEquals("(2/6):sage sho..", parts.get(1));
-        assertEquals("(3/6):uld be s..", parts.get(2));
-        assertEquals("(4/6):plit int..", parts.get(3));
-        assertEquals("(5/6):o six pa..", parts.get(4));
-        assertEquals("(6/6):rts.", parts.get(5));
+        assertEquals(asList("(1/6):this mes..", "(2/6):sage sho..", "(3/6):uld be s..", "(4/6):plit int..", "(5/6):o six pa..", "(6/6):rts."), parts);
     }
 
     @Test
     public void shouldNotSplitMessageIfSplitSizeIsLessThanEqualToZero() {
         List<String> parts = messageSplitter.split("this message should not be split into any parts.", 0, "(%d/%d):", "..");
-        assertEquals(1, parts.size());
-        assertEquals("this message should not be split into any parts.", parts.get(0));
+        assertEquals(asList("this message should not be split into any parts."), parts);
     }
 }

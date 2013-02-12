@@ -13,11 +13,11 @@ import org.motechproject.tasks.repository.AllTasks;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -122,10 +122,10 @@ public class TaskServiceImplTest {
         TaskEvent expected = new TaskEvent();
         expected.setSubject("RECEIVE");
         expected.setDisplayName("Receive");
-        expected.setEventParameters(Arrays.asList(new EventParameter("Phone", "phone")));
+        expected.setEventParameters(asList(new EventParameter("Phone", "phone")));
 
         Channel c = new Channel();
-        c.setActionTaskEvents(Arrays.asList(expected));
+        c.setActionTaskEvents(asList(expected));
 
         when(channelService.getChannel("Test 3", "test-3", "0.15")).thenReturn(c);
 
@@ -147,14 +147,13 @@ public class TaskServiceImplTest {
         triggerEvent.setSubject("SEND");
 
         Channel c = new Channel();
-        c.setActionTaskEvents(Arrays.asList(triggerEvent));
+        c.setActionTaskEvents(asList(triggerEvent));
 
-        when(allTasks.getAll()).thenReturn(Arrays.asList(t));
+        when(allTasks.getAll()).thenReturn(asList(t));
 
         List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
 
-        assertEquals(1, tasks.size());
-        assertEquals(t, tasks.get(0));
+        assertEquals(asList(t), tasks);
     }
 
     @Test(expected = TriggerNotFoundException.class)
@@ -163,9 +162,9 @@ public class TaskServiceImplTest {
         triggerEvent.setSubject("RECEIVE");
 
         Channel c = new Channel();
-        c.setTriggerTaskEvents(Arrays.asList(triggerEvent));
+        c.setTriggerTaskEvents(asList(triggerEvent));
 
-        when(channelService.getAllChannels()).thenReturn(Arrays.asList(c));
+        when(channelService.getAllChannels()).thenReturn(asList(c));
 
         taskService.findTrigger("SEND");
     }
@@ -176,9 +175,9 @@ public class TaskServiceImplTest {
         triggerEvent.setSubject("RECEIVE");
 
         Channel c = new Channel();
-        c.setTriggerTaskEvents(Arrays.asList(triggerEvent));
+        c.setTriggerTaskEvents(asList(triggerEvent));
 
-        when(channelService.getAllChannels()).thenReturn(Arrays.asList(c));
+        when(channelService.getAllChannels()).thenReturn(asList(c));
 
         TaskEvent actual = taskService.findTrigger("RECEIVE");
 

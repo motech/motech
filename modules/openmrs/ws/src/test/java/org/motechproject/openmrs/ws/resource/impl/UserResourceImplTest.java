@@ -1,11 +1,5 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +11,14 @@ import org.motechproject.openmrs.ws.resource.model.Role;
 import org.motechproject.openmrs.ws.resource.model.RoleListResult;
 import org.motechproject.openmrs.ws.resource.model.User;
 import org.motechproject.openmrs.ws.resource.model.UserListResult;
+
+import java.io.IOException;
+import java.net.URI;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 public class UserResourceImplTest extends AbstractResourceImplTest {
 
@@ -35,7 +37,8 @@ public class UserResourceImplTest extends AbstractResourceImplTest {
 
         UserListResult result = impl.getAllUsers();
 
-        assertEquals(3, result.getResults().size());
+        assertEquals(asList("b187e426-4d07-11e1-a4ea-00ff26c46bb6", "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB", "1752391c-1e30-4682-b699-e3dcab79d4d3"),
+                extract(result.getResults(), on(User.class).getUuid()));
     }
 
     @Test
@@ -45,7 +48,7 @@ public class UserResourceImplTest extends AbstractResourceImplTest {
 
         UserListResult result = impl.queryForUsersByUsername("AAA");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("UUU"), extract(result.getResults(), on(User.class).getUuid()));
     }
 
     @Test
@@ -55,7 +58,7 @@ public class UserResourceImplTest extends AbstractResourceImplTest {
 
         RoleListResult result = impl.getAllRoles();
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("roleUuid"), extract(result.getResults(), on(Role.class).getUuid()));
     }
 
     @Test
@@ -81,7 +84,7 @@ public class UserResourceImplTest extends AbstractResourceImplTest {
 
         Role role = new Role();
         role.setUuid("roleUuid");
-        user.setRoles(Arrays.asList(role));
+        user.setRoles(asList(role));
 
         return user;
     }

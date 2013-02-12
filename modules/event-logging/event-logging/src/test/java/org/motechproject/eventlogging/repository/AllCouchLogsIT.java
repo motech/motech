@@ -13,7 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationEventLogging.xml")
@@ -41,11 +45,11 @@ public class AllCouchLogsIT {
 
         List<CouchEventLog> logList = allCouchLogs
                 .findAllBySubject("org.motechproject.test");
-        assertEquals(logList.size(), 1);
+        assertEquals(asList("org.motechproject.test"), extract(logList, on(CouchEventLog.class).getSubject()));
 
         logList = allCouchLogs.findAllBySubject("org.motechproject.test2");
 
-        assertEquals(logList.size(), 1);
+        assertEquals(asList("org.motechproject.test2"), extract(logList, on(CouchEventLog.class).getSubject()));;
     }
 
     @Test
@@ -69,19 +73,19 @@ public class AllCouchLogsIT {
         List<CouchEventLog> logList = allCouchLogs.findAllByParameter("key1",
                 "value1");
 
-        assertEquals(logList.size(), 2);
+        assertEquals(asList("org.motechproject.test", "org.motechproject.test2"), extract(logList, on(CouchEventLog.class).getSubject()));
 
         logList = allCouchLogs.findAllByParameter("key2", "value2");
 
-        assertEquals(logList.size(), 2);
+        assertEquals(asList("org.motechproject.test", "org.motechproject.test2"), extract(logList, on(CouchEventLog.class).getSubject()));
 
         logList = allCouchLogs.findAllByParameter("key1", "value2");
 
-        assertEquals(logList.size(), 0);
+        assertTrue(logList.isEmpty());
 
         logList = allCouchLogs.findAllByParameter("key3", "value3");
 
-        assertEquals(logList.size(), 0);
+        assertTrue(logList.isEmpty());
     }
 
     @Test
@@ -105,11 +109,11 @@ public class AllCouchLogsIT {
         List<CouchEventLog> logList = allCouchLogs
                 .findAllBySubjectAndParameter("org.motechproject.test", "key1",
                         "value1");
-        assertEquals(logList.size(), 1);
+        assertEquals(asList("org.motechproject.test"), extract(logList, on(CouchEventLog.class).getSubject()));
 
         logList = allCouchLogs.findAllBySubjectAndParameter(
                 "org.motechproject.test2", "key1", "value1");
-        assertEquals(logList.size(), 1);
+        assertEquals(asList("org.motechproject.test2"), extract(logList, on(CouchEventLog.class).getSubject()));
     }
 
     @After

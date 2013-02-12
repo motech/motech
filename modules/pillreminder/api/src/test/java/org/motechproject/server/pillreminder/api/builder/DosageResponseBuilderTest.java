@@ -4,14 +4,18 @@ import junit.framework.Assert;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.server.pillreminder.api.contract.DosageResponse;
 import org.motechproject.server.pillreminder.api.contract.MedicineResponse;
 import org.motechproject.server.pillreminder.api.domain.Dosage;
 import org.motechproject.server.pillreminder.api.domain.Medicine;
-import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.HashSet;
 import java.util.List;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 
 public class DosageResponseBuilderTest {
 
@@ -31,8 +35,6 @@ public class DosageResponseBuilderTest {
         Assert.assertEquals(5, dosageResponse.getDosageMinute());
 
         List<MedicineResponse> dosageResponseMedicines = dosageResponse.getMedicines();
-        Assert.assertEquals(2, dosageResponseMedicines.size());
-        Assert.assertEquals("medicine1", dosageResponseMedicines.get(0).getName());
-        Assert.assertEquals("medicine2", dosageResponseMedicines.get(1).getName());
+        Assert.assertEquals(asList("medicine1", "medicine2"), extract(dosageResponseMedicines, on(MedicineResponse.class).getName()));
     }
 }
