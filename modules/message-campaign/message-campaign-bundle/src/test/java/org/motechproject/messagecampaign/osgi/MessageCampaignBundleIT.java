@@ -16,7 +16,11 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     public void testMessageCampaignService() {
         ServiceReference serviceReference = bundleContext.getServiceReference(MessageCampaignService.class.getName());
         assertNotNull(serviceReference);
-        MessageCampaignService messageCampaignService = (MessageCampaignService) bundleContext.getService(serviceReference);
+
+        MessageCampaignService messageCampaignService = (MessageCampaignService) getApplicationContext().getBean("messageCampaignServiceRef");
+        assertNotNull(messageCampaignService);
+
+        messageCampaignService = (MessageCampaignService) bundleContext.getService(serviceReference);
         assertNotNull(messageCampaignService);
 
         String externalId = "MessageCampaignBundleIT-" + UUID.randomUUID();
@@ -29,5 +33,10 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         } finally {
             messageCampaignService.stopAll(campaignRequest); // Doesn't delete the doc
         }
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"/META-INF/spring/testMessageCampaignApiBundleContext.xml"};
     }
 }

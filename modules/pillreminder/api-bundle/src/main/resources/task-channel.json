@@ -1,33 +1,33 @@
 {
-  "displayName" : "Pill Reminder",
+  "displayName" : "pillreminder.name",
   "moduleName" : "${project.artifactId}",
   "moduleVersion" : "${parsedVersion.osgiVersion}",
   "triggerTaskEvents" : [
     {
-      "displayName" : "Event subject",
+      "displayName" : "pillreminder.event.subject",
       "subject" : "org.motechproject.server.pillreminder.pill-reminder",
       "eventParameters" : [
         {
           "eventKey" : "DosageID",
-          "displayName" : "Dosage ID"
+          "displayName" : "pillreminder.dossageID"
         },
         {
           "eventKey" : "ExternalID",
-          "displayName" : "External ID"
+          "displayName" : "pillreminder.externalID"
         },
         {
           "eventKey" : "times-reminders-sent",
-          "displayName" : "Times sent",
+          "displayName" : "pillreminder.times.sent",
           "type": "NUMBER"
         },
         {
           "eventKey" :  "times-reminders-to-be-sent",
-          "displayName" : "Total times to send",
+          "displayName" : "pillreminder.total.times.sent",
           "type": "NUMBER"
         },
         {
           "eventKey" :  "retry-interval",
-          "displayName" : "Retry interval",
+          "displayName" : "pillreminder.retry.interval",
           "type": "NUMBER"
         }
       ]
@@ -35,30 +35,30 @@
   ],
   "actionTaskEvents" : [
     {
-      "displayName" : "Event subject scheduler",
+      "displayName" : "pillreminder.event.subject.scheduler",
       "subject" : "org.motechproject.server.pillreminder.scheduler-reminder",
       "eventParameters" : [
         {
           "eventKey" : "DosageID",
-          "displayName" : "Dosage ID"
+          "displayName" : "pillreminder.dossageID"
         },
         {
           "eventKey" : "ExternalID",
-          "displayName" : "External ID"
+          "displayName" : "pillreminder.externalID"
         },
         {
           "eventKey" : "times-reminders-sent",
-          "displayName" : "Times sent",
+          "displayName" : "pillreminder.times.sent",
           "type": "NUMBER"
         },
         {
           "eventKey" :  "times-reminders-to-be-sent",
-          "displayName" : "Total times to send",
+          "displayName" : "pillreminder.total.times.sent",
           "type": "NUMBER"
         },
         {
           "eventKey" :  "retry-interval",
-          "displayName" : "Retry interval",
+          "displayName" : "pillreminder.retry.interval",
           "type": "NUMBER"
         }
       ]

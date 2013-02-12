@@ -1,5 +1,6 @@
 package org.motechproject.server.ui.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
@@ -18,19 +19,24 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
 
     private Map<String, ModuleRegistrationData> individuals = new HashMap<>();
     private Map<String, ModuleRegistrationData> links = new HashMap<>();
+    private Map<String, ModuleRegistrationData> withoutUI = new HashMap<>();
 
     @Override
     public void registerModule(ModuleRegistrationData module) {
         String moduleName = module.getModuleName();
 
-        if (links.containsKey(moduleName) || individuals.containsKey(moduleName)) {
+        if (links.containsKey(moduleName) || individuals.containsKey(moduleName) || withoutUI.containsKey(moduleName)) {
             throw new AlreadyRegisteredException("Module already registered");
         }
 
-        if (module.getSubMenu().isEmpty()) {
-            links.put(moduleName, module);
+        if (StringUtils.isNotBlank(module.getUrl())){
+            if (module.getSubMenu().isEmpty()) {
+                links.put(moduleName, module);
+            } else {
+                individuals.put(moduleName, module);
+            }
         } else {
-            individuals.put(moduleName, module);
+            withoutUI.put(moduleName, module);
         }
 
         LOG.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
@@ -54,6 +60,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         Map<String, Collection<ModuleRegistrationData>> map = new HashMap<>(2);
         map.put(MODULES_WITH_SUBMENU, individuals.values());
         map.put(MODULES_WITHOUT_SUBMENU, links.values());
+        map.put(MODULES_WITHOUT_UI, withoutUI.values());
 
         return map;
     }
@@ -66,6 +73,8 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
             module = links.get(moduleName);
         } else if (individuals.containsKey(moduleName)) {
             module = individuals.get(moduleName);
+        } else if (withoutUI.containsKey(moduleName)) {
+            module = withoutUI.get(moduleName);
         }
 
         return module;
