@@ -12,6 +12,6 @@
     <import resource="classpath*:META-INF/motech/applicationMessageCampaign.xml" />
 
     <osgi:service id="messageCampaignServiceOsgi" auto-export="interfaces" ref="messageCampaignService"
-                  interface="org.motechproject.server.messagecampaign.service.MessageCampaignService" />
+                  interface="org.motechproject.messagecampaign.service.MessageCampaignService" />
 
 </beans>

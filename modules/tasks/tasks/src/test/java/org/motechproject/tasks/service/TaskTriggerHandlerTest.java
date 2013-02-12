@@ -162,7 +162,7 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldRegisterHandlerForSubject() {
-        String subject = "org.motechproject.server.messagecampaign.campaign-completed";
+        String subject = "org.motechproject.messagecampaign.campaign-completed";
 
         handler.registerHandlerFor(subject);
         ArgumentCaptor<EventListener> captor = ArgumentCaptor.forClass(EventListener.class);
@@ -178,7 +178,7 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldRegisterHandlerOneTimeForSameSubjects() {
-        String subject = "org.motechproject.server.messagecampaign.campaign-completed";
+        String subject = "org.motechproject.messagecampaign.campaign-completed";
         Method method = findMethod(getTargetClass(handler), "handle", MotechEvent.class);
 
         Set<EventListener> listeners = new HashSet<>();

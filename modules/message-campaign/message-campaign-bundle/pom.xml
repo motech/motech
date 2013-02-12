@@ -96,11 +96,11 @@
                         <Resource-Path>messagecampaign/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.server.messagecampaign;version=${project.version},
-                            org.motechproject.server.messagecampaign.contract;version=${project.version},
-                            org.motechproject.server.messagecampaign.service;version=${project.version},
-                            org.motechproject.server.messagecampaign.domain.campaign;version=${project.version},
-                            org.motechproject.server.messagecampaign.userspecified;version=${project.version}
+                            org.motechproject.messagecampaign;version=${project.version},
+                            org.motechproject.messagecampaign.contract;version=${project.version},
+                            org.motechproject.messagecampaign.service;version=${project.version},
+                            org.motechproject.messagecampaign.domain.campaign;version=${project.version},
+                            org.motechproject.messagecampaign.userspecified;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.core,

@@ -11,7 +11,7 @@
         ">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
+    <context:component-scan base-package="org.motechproject.messagecampaign"/>
 
     <mvc:annotation-driven />
 

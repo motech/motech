@@ -9,12 +9,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.LocalDate;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
-import org.motechproject.server.messagecampaign.service.CampaignEnrollmentRecord;
-import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
-import org.motechproject.server.messagecampaign.service.MessageCampaignService;
-import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
+import org.motechproject.messagecampaign.contract.CampaignRequest;
+import org.motechproject.messagecampaign.domain.campaign.CampaignType;
+import org.motechproject.messagecampaign.service.CampaignEnrollmentRecord;
+import org.motechproject.messagecampaign.service.CampaignEnrollmentsQuery;
+import org.motechproject.messagecampaign.service.MessageCampaignService;
+import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 

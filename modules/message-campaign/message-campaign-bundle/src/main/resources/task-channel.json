@@ -6,7 +6,7 @@
   "triggerTaskEvents" : [
     {
       "displayName" : "messagecampaign.send.message",
-      "subject" : "org.motechproject.server.messagecampaign.fired-campaign-message",
+      "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
       "eventParameters" : [
         {
           "eventKey" : "CampaignName",
@@ -24,7 +24,7 @@
     },
     {
       "displayName" : "messagecampaign.campaign.completed",
-      "subject" : "org.motechproject.server.messagecampaign.campaign-completed",
+      "subject" : "org.motechproject.messagecampaign.campaign-completed",
       "eventParameters" : [
         {
           "eventKey" : "ExternalID",
@@ -40,8 +40,8 @@
   "actionTaskEvents" : [
     {
       "displayName" : "messagecampaign.send.message",
-      "subject" : "org.motechproject.server.messagecampaign.fired-campaign-message",
-      "actionParameters" : [
+      "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
+      "eventParameters" : [
         {
           "key" : "CampaignName",
           "displayName" : "messagecampaign.campaign.name"
@@ -60,7 +60,7 @@
       "displayName" : "messagecampaign.campaign.completed",
       "serviceInterface": "org.motechproject.server.messagecampaign.service.MessageCampaignService",
       "serviceMethod": "campaignCompleted",
-      "subject" : "org.motechproject.server.messagecampaign.campaign-completed",
+      "subject" : "org.motechproject.messagecampaign.campaign-completed",
       "actionParameters" : [
         {
           "key" : "ExternalID",
