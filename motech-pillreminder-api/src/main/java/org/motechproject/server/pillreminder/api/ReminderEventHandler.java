@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.MotechObject;
 import org.motechproject.gateway.OutboundEventGateway;
@@ -33,12 +34,16 @@ public class ReminderEventHandler extends MotechObject {
     @MotechListener(subjects = {EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER})
     public void handleEvent(MotechEvent motechEvent) {
         PillRegimen pillRegimen = getPillRegimen(motechEvent);
-        Dosage dosage = getDosage(pillRegimen, motechEvent);
-
-        if (!dosage.isTodaysDosageResponseCaptured()) {
-            if (pillRegimen.isFirstReminderFor(dosage))
-                scheduleRepeatReminders(motechEvent, pillRegimen, dosage);
-            outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
+        if (null != pillRegimen) {
+            Dosage dosage = getDosage(pillRegimen, motechEvent);
+            if (null != dosage) {
+                if (!dosage.isTodaysDosageResponseCaptured()) {
+                    if (pillRegimen.isFirstReminderFor(dosage)) {
+                        scheduleRepeatReminders(motechEvent, pillRegimen, dosage);
+                    }
+                    outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
+                }
+            }
         }
     }
 
@@ -75,9 +80,11 @@ public class ReminderEventHandler extends MotechObject {
         return findDosage(dosageId, pillRegimen);
     }
 
-    private Dosage findDosage(final String dosageId, PillRegimen pillRegimen) {
+    private Dosage findDosage(String dosageId, PillRegimen pillRegimen) {
         for (Dosage dosage : pillRegimen.getDosages()) {
-            if (dosage.getId().equals(dosageId)) return dosage;
+            if (null != dosage && StringUtils.equals(dosage.getId(), dosageId)) {
+                return dosage;
+            }
         }
         return null;
     }

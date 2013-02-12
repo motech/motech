@@ -51,6 +51,23 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
     }
 
     @Test
+    public void shouldNotRaiseEventWhenPillRegimenIsNotFound() {
+        when(allPillRegimens.findByExternalId(anyString())).thenReturn(null);
+        pillReminderEventHandler.handleEvent(buildMotechEvent("externalId", null));
+        verifyZeroInteractions(outboundEventGateway);
+    }
+
+    @Test
+    public void shouldNotRaiseEventWhenDosageIsNotFound() {
+        String externalId = "externalId";
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, null, retryInterval);
+
+        when(allPillRegimens.findByExternalId(anyString())).thenReturn(pillRegimen);
+        pillReminderEventHandler.handleEvent(buildMotechEvent(externalId, null));
+        verifyZeroInteractions(outboundEventGateway);
+    }
+
+    @Test
     public void shouldRaiseEventsForEachPillWindow() {
         mockCurrentDate(dateTime(DateUtil.today(), reminderStartTime.plusMinutes(25)));
         int pillWindow = 1;
