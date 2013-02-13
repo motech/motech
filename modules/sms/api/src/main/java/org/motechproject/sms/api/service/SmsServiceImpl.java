@@ -2,21 +2,25 @@ package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.org.hibernate.validator.ValidatorFactoryBean;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.MessageSplitter;
-import org.motechproject.sms.api.constants.EventDataKeys;
-import org.motechproject.sms.api.constants.EventSubjects;
+import org.motechproject.sms.api.event.SendSmsEvent;
+import org.motechproject.sms.api.exceptions.SendSmsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import static java.lang.String.format;
 
 @Service
 public class SmsServiceImpl implements SmsService {
@@ -25,6 +29,7 @@ public class SmsServiceImpl implements SmsService {
     private MotechSchedulerService schedulerService;
     private MessageSplitter messageSplitter;
     private SettingsFacade settings;
+    private Validator validator;
 
     private final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
@@ -41,33 +46,21 @@ public class SmsServiceImpl implements SmsService {
         this.messageSplitter = messageSplitter;
         this.settings = settings;
         this.eventRelay = eventRelay;
+        this.validator = ValidatorFactoryBean.getInstance().getValidator();
     }
 
     @Override
-    public void sendSMS(String recipient, String message) {
-        scheduleOrRaiseSendSmsEvent(Arrays.asList(recipient), message, null);
-    }
-
-    @Override
-    public void sendSMS(List<String> recipients, String message) {
-        scheduleOrRaiseSendSmsEvent(recipients, message, null);
-    }
-
-    @Override
-    public void sendSMS(String recipient, String message, DateTime deliveryTime) {
-        scheduleOrRaiseSendSmsEvent(Arrays.asList(recipient), message, deliveryTime);
-    }
-
-    @Override
-    public void sendSMS(List<String> recipients, String message, DateTime deliveryTime) {
-        scheduleOrRaiseSendSmsEvent(recipients, message, deliveryTime);
-    }
-
-    private void scheduleOrRaiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
+    public void sendSMS(SendSmsRequest request) {
+        Set<ConstraintViolation<SendSmsRequest>> violations = validator.validate(request);
+        if (violations != null && violations.size() > 0) {
+            throw new SendSmsException(new IllegalArgumentException(getExceptionMessage(violations)));
+        }
+        final List<String> recipients = request.getRecipients();
+        final DateTime deliveryTime = request.getDeliveryTime();
         int partMessageSize = getIntegerPropertyValue(SMS_MAX_MESSAGE_SIZE);
         boolean isMultiRecipientSupported = getBooleanPropertyValue(SMS_MULTI_RECIPIENT_SUPPORTED);
 
-        List<String> partMessages = messageSplitter.split(message, partMessageSize, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
+        List<String> partMessages = messageSplitter.split(request.getMessage(), partMessageSize, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
         if (isMultiRecipientSupported) {
             generateOneSendSmsEvent(recipients, partMessages, deliveryTime);
         } else {
@@ -103,21 +96,20 @@ public class SmsServiceImpl implements SmsService {
 
     private void raiseSendSmsEvent(List<String> recipients, String message, DateTime deliveryTime) {
         log.info(String.format("Sending message [%s] to number %s.", message, recipients));
-        eventRelay.sendEventMessage(sendSmsEvent(recipients, message, deliveryTime));
+        eventRelay.sendEventMessage(new SendSmsEvent(recipients, message, deliveryTime).toMotechEvent());
     }
 
     private void scheduleSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-        MotechEvent sendSmsEvent = sendSmsEvent(recipients, message, deliveryTime);
-        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(sendSmsEvent, deliveryTime.toDate());
+        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(new SendSmsEvent(recipients, message, deliveryTime).toMotechEvent(), deliveryTime.toDate());
         log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
         schedulerService.safeScheduleRunOnceJob(schedulableJob);
     }
 
-    private MotechEvent sendSmsEvent(List<String> recipients, String message, DateTime deliveryTime) {
-        HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventDataKeys.RECIPIENTS, recipients);
-        parameters.put(EventDataKeys.MESSAGE, message);
-        parameters.put(EventDataKeys.DELIVERY_TIME, deliveryTime);
-        return new MotechEvent(EventSubjects.SEND_SMS, parameters);
+    private String getExceptionMessage(Set<ConstraintViolation<SendSmsRequest>> violations) {
+        String message = "";
+        for (ConstraintViolation<SendSmsRequest> violation : violations) {
+            message += format("%s %s; ", violation.getPropertyPath().toString(), violation.getMessage());
+        }
+        return message;
     }
 }

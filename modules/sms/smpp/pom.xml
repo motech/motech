@@ -18,9 +18,33 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-sms-api-bundle</artifactId>
+            <artifactId>motech-sms-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.motechproject.org.ektorp</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.smslib</groupId>
             <artifactId>org.motechproject.org.smslib</artifactId>

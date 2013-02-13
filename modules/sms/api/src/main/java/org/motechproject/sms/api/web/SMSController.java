@@ -2,6 +2,7 @@ package org.motechproject.sms.api.web;
 
 import org.motechproject.sms.api.SMSRequest;
 import org.motechproject.sms.api.SmsDeliveryFailureException;
+import org.motechproject.sms.api.service.SendSmsRequest;
 import org.motechproject.sms.api.service.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static java.util.Arrays.asList;
 
 
 /*
@@ -33,7 +36,7 @@ public class SMSController {
     public ResponseEntity<String> send(@RequestBody final SMSRequest smsRequest) throws SmsDeliveryFailureException {
         log.info(String.format("Sending message : %s to recipients %s", smsRequest.getMessage(), smsRequest.getRecipient()));
         if (smsRequest.isValid()) {
-            smsService.sendSMS(smsRequest.getRecipient(), smsRequest.getMessage());
+            smsService.sendSMS(new SendSmsRequest(asList(smsRequest.getRecipient()), smsRequest.getMessage()));
             log.info(String.format("Sent message : %s to recipients %s", smsRequest.getMessage(), smsRequest.getRecipient()));
             return new ResponseEntity<>(HttpStatus.OK);
         }

@@ -3,6 +3,7 @@ package org.motechproject.sms.http.osgi;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.sms.api.service.SendSmsRequest;
 import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.sms.api.service.SmsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
@@ -14,6 +15,8 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.InputStream;
+
+import static java.util.Arrays.asList;
 
 
 public class SmsHttpServiceBundleIT extends BaseOsgiIT {
@@ -50,7 +53,7 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
 
         SmsService smsService = (SmsService) getApplicationContext().getBean("smsServiceRef");
 
-        smsService.sendSMS("9999", "Hello");
+        smsService.sendSMS(new SendSmsRequest(asList("9999"), "Hello"));
 
         new Wait(stubServer, new WaitCondition() {
             @Override

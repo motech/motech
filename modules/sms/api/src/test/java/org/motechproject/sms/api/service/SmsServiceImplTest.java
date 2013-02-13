@@ -14,7 +14,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.MessageSplitter;
-import org.motechproject.sms.api.constants.EventDataKeys;
+import org.motechproject.sms.api.event.SendSmsEvent;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,69 +56,71 @@ public class SmsServiceImplTest {
 
     @Test
     public void shouldRaiseSendSmsEventWithMessageAndRecipient() {
-        smsService.sendSMS("9876543210", "This is a test message");
+        smsService.sendSMS(new SendSmsRequest(asList("9876543210"), "This is a test message"));
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
-        MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals(Arrays.asList("9876543210"), eventMessageSent.getParameters().get(EventDataKeys.RECIPIENTS));
+        SendSmsEvent sendSmsEvent = new SendSmsEvent(motechEventArgumentCaptor.getValue());
+        assertEquals("This is a test message", sendSmsEvent.getMessage());
+        assertEquals(asList("9876543210"), sendSmsEvent.getRecipients());
     }
 
     @Test
-    public void shouldRaiseSendSmsEventWithMessageMulitpleRecipients() {
+    public void shouldRaiseSendSmsEventWithMessageMultipleRecipients() {
         ArrayList<String> recipients = new ArrayList<String>() {{
             add("123");
             add("456");
             add("789");
         }};
-        smsService.sendSMS(recipients, "This is a test message");
+        smsService.sendSMS(new SendSmsRequest(recipients, "This is a test message"));
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
-        MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals(recipients, eventMessageSent.getParameters().get(EventDataKeys.RECIPIENTS));
+        SendSmsEvent sendSmsEvent = new SendSmsEvent(motechEventArgumentCaptor.getValue());
+        assertEquals("This is a test message", sendSmsEvent.getMessage());
+        assertEquals(recipients, sendSmsEvent.getRecipients());
     }
 
     @Test
     public void shouldRaiseSendSmsEvent_WhenDeliveryTimeIsNull() {
-        smsService.sendSMS("123", "This is a test message", null);
+        smsService.sendSMS(new SendSmsRequest(asList("123"), "This is a test message", null));
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
-        MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals(Arrays.asList("123"), eventMessageSent.getParameters().get(EventDataKeys.RECIPIENTS));
+        SendSmsEvent sendSmsEvent = new SendSmsEvent(motechEventArgumentCaptor.getValue());
+        assertEquals("This is a test message", sendSmsEvent.getMessage());
+        assertEquals(asList("123"), sendSmsEvent.getRecipients());
     }
 
     @Test
     public void shouldRaiseTwoEventsIfMessageLengthIs170() {
-        smsService.sendSMS("123", "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.");
+        smsService.sendSMS(new SendSmsRequest(asList("123"), "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code."));
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay, times(2)).sendEventMessage(motechEventArgumentCaptor.capture());
 
         List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
-        assertEquals("Msg 1 of 2: This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wh...", events.get(0).getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals("Msg 2 of 2: at is in the source code.", events.get(1).getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent1 = new SendSmsEvent(events.get(0));
+        SendSmsEvent sendSmsEvent2 = new SendSmsEvent(events.get(1));
+        assertEquals("Msg 1 of 2: This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wh...", sendSmsEvent1.getMessage());
+        assertEquals("Msg 2 of 2: at is in the source code.", sendSmsEvent2.getMessage());
     }
 
     @Test
     public void shouldScheduleSendingOfSMSAtSpecificDeliveryTime() {
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
-        smsService.sendSMS("123", "This is a test message", deliveryTime);
+        smsService.sendSMS(new SendSmsRequest(asList("123"), "This is a test message", deliveryTime));
 
         ArgumentCaptor<RunOnceSchedulableJob> scheduledJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService).safeScheduleRunOnceJob(scheduledJobCaptor.capture());
 
-        MotechEvent sendSmsEvent = scheduledJobCaptor.getValue().getMotechEvent();
-        assertEquals("This is a test message", (String) sendSmsEvent.getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals(Arrays.asList("123"), sendSmsEvent.getParameters().get(EventDataKeys.RECIPIENTS));
-        assertEquals(deliveryTime, sendSmsEvent.getParameters().get(EventDataKeys.DELIVERY_TIME));
+        SendSmsEvent sendSmsEvent = new SendSmsEvent(scheduledJobCaptor.getValue().getMotechEvent());
+        assertEquals("This is a test message", sendSmsEvent.getMessage());
+        assertEquals(asList("123"), sendSmsEvent.getRecipients());
+        assertEquals(deliveryTime, sendSmsEvent.getDeliveryTime());
 
         Date scheduledDeliveryDate = scheduledJobCaptor.getValue().getStartDate();
         assertEquals(deliveryTime.toDate(), scheduledDeliveryDate);
@@ -127,7 +130,7 @@ public class SmsServiceImplTest {
     public void shouldNotScheduleSendSmsEvent_WhenScheduleFutureSmsIsSetToBeFalse() {
         when(settings.getProperty("sms.schedule.future.sms")).thenReturn("false");
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
-        smsService.sendSMS("123", "This is a test message", deliveryTime);
+        smsService.sendSMS(new SendSmsRequest(asList("123"), "This is a test message", deliveryTime));
 
         verify(schedulerService, never()).safeScheduleRunOnceJob(Matchers.<RunOnceSchedulableJob>any());
         verify(eventRelay).sendEventMessage(Matchers.<MotechEvent>any());
@@ -138,14 +141,16 @@ public class SmsServiceImplTest {
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
         String part1 = "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wh";
         String part2 = "at is in the source code.";
-        smsService.sendSMS("123", part1 + part2, deliveryTime);
+        smsService.sendSMS(new SendSmsRequest(Arrays.asList("123"), part1 + part2, deliveryTime));
 
         ArgumentCaptor<RunOnceSchedulableJob> scheduledJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(2)).safeScheduleRunOnceJob(scheduledJobCaptor.capture());
 
         List<RunOnceSchedulableJob> schedulableJobs = scheduledJobCaptor.getAllValues();
-        assertEquals("Msg 1 of 2: " + part1 + "...", schedulableJobs.get(0).getMotechEvent().getParameters().get(EventDataKeys.MESSAGE));
-        assertEquals("Msg 2 of 2: " + part2, schedulableJobs.get(1).getMotechEvent().getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent1 = new SendSmsEvent(schedulableJobs.get(0).getMotechEvent());
+        SendSmsEvent sendSmsEvent2 = new SendSmsEvent(schedulableJobs.get(1).getMotechEvent());
+        assertEquals("Msg 1 of 2: " + part1 + "...", sendSmsEvent1.getMessage());
+        assertEquals("Msg 2 of 2: " + part2, sendSmsEvent2.getMessage());
     }
 
     @Test
@@ -154,13 +159,13 @@ public class SmsServiceImplTest {
 
         DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
         String text = "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.";
-        smsService.sendSMS("123", text, deliveryTime);
+        smsService.sendSMS(new SendSmsRequest(asList("123"), text, deliveryTime));
 
         ArgumentCaptor<RunOnceSchedulableJob> scheduledJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService).safeScheduleRunOnceJob(scheduledJobCaptor.capture());
 
-        RunOnceSchedulableJob schedulableJob = scheduledJobCaptor.getValue();
-        assertEquals(text, schedulableJob.getMotechEvent().getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent = new SendSmsEvent(scheduledJobCaptor.getValue().getMotechEvent());
+        assertEquals(text, sendSmsEvent.getMessage());
     }
 
     @Test
@@ -168,19 +173,22 @@ public class SmsServiceImplTest {
         when(settings.getProperty("sms.multi.recipient.supported")).thenReturn("false");
         String message = "This is a test message";
 
-        smsService.sendSMS(Arrays.asList("100", "200", "300"), message);
+        smsService.sendSMS(new SendSmsRequest(asList("100", "200", "300"), message));
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay, times(3)).sendEventMessage(motechEventArgumentCaptor.capture());
 
         List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
-        assertEquals(Arrays.asList("100"), events.get(0).getParameters().get(EventDataKeys.RECIPIENTS));
-        assertEquals(message, events.get(0).getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent1 = new SendSmsEvent(events.get(0));
+        assertEquals(asList("100"), sendSmsEvent1.getRecipients());
+        assertEquals(message, sendSmsEvent1.getMessage());
 
-        assertEquals(Arrays.asList("200"), events.get(1).getParameters().get(EventDataKeys.RECIPIENTS));
-        assertEquals(message, events.get(1).getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent2 = new SendSmsEvent(events.get(1));
+        assertEquals(asList("200"), sendSmsEvent2.getRecipients());
+        assertEquals(message, sendSmsEvent2.getMessage());
 
-        assertEquals(Arrays.asList("300"), events.get(2).getParameters().get(EventDataKeys.RECIPIENTS));
-        assertEquals(message, events.get(2).getParameters().get(EventDataKeys.MESSAGE));
+        SendSmsEvent sendSmsEvent3 = new SendSmsEvent(events.get(2));
+        assertEquals(asList("300"), sendSmsEvent3.getRecipients());
+        assertEquals(message, sendSmsEvent3.getMessage());
     }
 }

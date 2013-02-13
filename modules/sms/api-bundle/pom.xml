@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.18-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-api-bundle</artifactId>
     <version>0.18-SNAPSHOT</version>
-    <name>MOTECH SMS API Bundle</name>
     <packaging>bundle</packaging>
+
+    <name>MOTECH SMS API Bundle</name>
     <description>MOTECH SMS API</description>
+
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
+
     <dependencies>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-sms-api</artifactId>
@@ -32,6 +40,7 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -41,13 +50,39 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
+
+        <!-- test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-web-security</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -68,13 +103,21 @@
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,
+                            org.motechproject.security.annotations,
+                            org.motechproject.security.service,
                             org.springframework.beans.factory.xml,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.aopalliance.aop,
                             org.springframework.context.config,
+                            org.springframework.security.config,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.core,
+                            net.sf.cglib.reflect,
                             org.motechproject.scheduler,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-sms-api</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
