@@ -64,12 +64,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-Path>asterisk</Context-Path>
+                        <Context-File>META-INF/osgi/applicationAsteriskBundle.xml</Context-File>
                         <Export-Package>
                             org.motechproject.server.asterisk.*;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.server.asterisk.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.apache.log4j,
                             org.asteriskjava,

@@ -71,9 +71,8 @@
                     <instructions>
                         <Context-Path>admin/api</Context-Path>
                         <Context-File>META-INF/osgi/applicationAdminUIBundle.xml</Context-File>
-                        <Bundle-Activator>
-                            org.motechproject.admin.osgi.Activator
-                        </Bundle-Activator>
+                        <Resource-Path>admin</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Import-Package>
                             org.aopalliance.aop,
                             org.apache.commons.fileupload,

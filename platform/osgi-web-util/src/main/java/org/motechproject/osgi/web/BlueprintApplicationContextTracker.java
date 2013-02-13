@@ -1,98 +1,80 @@
 package org.motechproject.osgi.web;
 
-import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.lang.String.format;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 public class BlueprintApplicationContextTracker extends ServiceTracker {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
+
     private static final String APPLICATION_CONTEXT_SERVICE_NAME = "org.springframework.context.service.name";
 
-    private final List<String> servicesTracked = new ArrayList<>();
+    private HttpServiceTrackers httpServiceTrackers;
+    private final UIServiceTrackers uiServiceTrackers;
 
     public BlueprintApplicationContextTracker(BundleContext context) {
         super(context, ApplicationContext.class.getName(), null);
+        this.httpServiceTrackers = new HttpServiceTrackers();
+        this.uiServiceTrackers = new UIServiceTrackers();
+        registerServiceTrackersAsService(context);
     }
 
     @Override
     public Object addingService(ServiceReference serviceReference) {
-        Object service = super.addingService(serviceReference);
+        Object applicationContext = super.addingService(serviceReference);
         Bundle bundle = serviceReference.getBundle();
-        String bundleSymbolicName = OsgiStringUtils.nullSafeSymbolicName(bundle);
-        BundleHeaders headers = new BundleHeaders(bundle);
-        if (!headers.isBluePrintEnabled()) {
-            return service;
-        }
-        final String serviceName = getServiceName(serviceReference);
-        if (!bundleSymbolicName.equals(serviceName) || isTrackerRegisteredFor(serviceName)) {
-            return service;
-        }
-        registerServiceTrackerForBundle(bundle, serviceName);
-        return service;
-    }
 
-    private void registerServiceTrackerForBundle(Bundle bundle, String serviceName) {
-        final HttpServiceTracker httpServiceTracker
-                = new HttpServiceTracker(bundle.getBundleContext(), getResourceMapping(new BundleHeaders(bundle)));
-        servicesTracked.add(serviceName);
-        httpServiceTracker.start();
-        bundle.getBundleContext().addBundleListener(new SynchronousBundleListener() {
-            @Override
-            public void bundleChanged(BundleEvent event) {
-                if (event.getType() == BundleEvent.STOPPING) {
-                    String symbolicName = event.getBundle().getSymbolicName();
-                    httpServiceTracker.unregister();
-                    httpServiceTracker.close();
-                    servicesTracked.remove(symbolicName);
-                }
-            }
-        });
-    }
-
-    private Map<String, String> getResourceMapping(BundleHeaders headers) {
-        final String resourcePath = getResourcePath(headers);
-        Map<String, String> resourceMapping = new HashMap<>();
-        if (isNotBlank(resourcePath)) {
-            resourceMapping.put(resourcePath, "/webapp");
+        if (!isBlueprintEnabledBundle(bundle)) {
+            return applicationContext;
         }
-        return resourceMapping;
+        String symbolicName = nullSafeSymbolicName(bundle);
+        String contextServiceName = getServiceName(serviceReference);
+        if (!symbolicName.equals(contextServiceName) || httpServiceTrackers.isBeingTracked(bundle)) {
+            return applicationContext;
+        }
+
+        httpServiceTrackers.addTrackerFor(bundle);
+        uiServiceTrackers.addTrackerFor(bundle, (ApplicationContext) applicationContext);
+        return applicationContext;
     }
 
     @Override
     public void removedService(ServiceReference reference, Object service) {
         super.removedService(reference, service);
-        String serviceName = getServiceName(reference);
-        servicesTracked.remove(serviceName);
+        Bundle bundle = reference.getBundle();
+        if (!isBlueprintEnabledBundle(bundle)) {
+            return;
+        }
+        String symbolicName = nullSafeSymbolicName(bundle);
+        String contextServiceName = getServiceName(reference);
+
+        if (symbolicName.equals(contextServiceName)) {
+            LOGGER.info("Removed service " + bundle.getSymbolicName());
+            httpServiceTrackers.removeTrackerFor(bundle);
+            uiServiceTrackers.removeTrackerFor(bundle);
+        }
+    }
+
+    private void registerServiceTrackersAsService(BundleContext context) {
+        context.registerService(HttpServiceTrackers.class.getName(), httpServiceTrackers, null);
+        context.registerService(UIServiceTrackers.class.getName(), uiServiceTrackers, null);
+    }
+
+
+    private boolean isBlueprintEnabledBundle(Bundle bundle) {
+        return new BundleHeaders(bundle).isBluePrintEnabled();
     }
 
     private String getServiceName(ServiceReference serviceReference) {
         return (String) serviceReference.getProperty(APPLICATION_CONTEXT_SERVICE_NAME);
     }
 
-    private String getResourcePath(BundleHeaders headers) {
-        String path = headers.getResourcePath();
-        if (isBlank(path) || path.startsWith("/")) {
-            return path;
-        }
-        return format("/%s", path);
-    }
-
-    private boolean isTrackerRegisteredFor(String serviceName) {
-        return servicesTracked.contains(serviceName);
-    }
 
 }

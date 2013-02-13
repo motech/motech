@@ -10,21 +10,14 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.listener.EventRelay" />
 
     <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="ivrServiceAsterisk"
-                  interface="org.motechproject.ivr.service.IVRService" >
+                  interface="org.motechproject.ivr.service.IVRService">
         <osgi:service-properties>
             <entry key="IvrProvider" value="Asterisk"/>
             <entry key="Host" value="localhost"/>
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1" interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
-    <osgi:reference id="eventListenerRegistryServiceOsgi" cardinality="0..1" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
 </beans>

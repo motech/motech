@@ -86,9 +86,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.server.kookoo.osgi.Activator
-                        </Bundle-Activator>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-Path>kookoo</Context-Path>
+                        <Context-File>META-INF/osgi/ivrKookooOsgiContext.xml</Context-File>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,

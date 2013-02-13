@@ -77,6 +77,10 @@ public class ModuleRegistrationData {
         return subMenu;
     }
 
+    public void setSubMenu(Map<String, String> subMenu) {
+        this.subMenu = subMenu;
+    }
+
     public Map<String, String> getI18n() {
         return i18n;
     }

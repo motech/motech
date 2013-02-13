@@ -13,30 +13,45 @@
     <bean id="header" class="org.motechproject.osgi.web.Header"></bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="url" value="../sms/resource/index.html"/>
-        <constructor-arg name="moduleName" value="SMS"/>
+        <constructor-arg name="url" value="../admin/index.html"/>
+        <constructor-arg name="moduleName" value="admin"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-sms</value>
+                <value>motech-admin</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../sms/resource/bundles/"/>
+                <entry key="messages" value="../admin/bundles/"/>
             </map>
         </constructor-arg>
         <constructor-arg name="header" ref="header"/>
+        <property name="subMenu">
+            <map>
+                <entry key="manageModules" value="#/bundles"/>
+                <entry key="messages" value="#/messages"/>
+                <entry key="settings" value="#/settings"/>
+                <entry key="operations" value="#/operations"/>
+                <entry key="log" value="#/log"/>
+            </map>
+        </property>
     </bean>
 
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.listener.EventRelay"/>
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+
+    <osgi:reference id="platformSettingsServiceOsgi"
+                    interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>
+    <osgi:reference id="motechPermissionServiceOsgi"
+                    interface="org.motechproject.security.service.MotechPermissionService"/>
 
+    <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
+
+    <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 
 
 </beans>

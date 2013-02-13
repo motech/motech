@@ -49,7 +49,7 @@ public class BundleContextWrapper implements BundleContextAware {
             applicationContext = (ApplicationContext) bundleContext.getService(serviceReferences[0]);
         }
         if (applicationContext != null) {
-            LOGGER.error("Application context is " + applicationContext.getDisplayName());
+            LOGGER.debug("Application context is " + applicationContext.getDisplayName());
         }
         return applicationContext;
     }
