@@ -682,7 +682,8 @@ select {
     background: #deefff;
 }
 
-.pagination.lightblue li.disabled a {
+.pagination.lightblue li.disabled a,
+.pagination.lightblue li.disabled a:hover {
     color: #95A6C1;
 }
 

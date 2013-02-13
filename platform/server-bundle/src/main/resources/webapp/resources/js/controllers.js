@@ -235,4 +235,70 @@ function MasterCtrl($scope, $http, i18nService, $cookieStore) {
 
     };
     $scope.BrowserDetect.init();
+
+
+    $scope.pagedItems = [];
+    $scope.currentPage = 0;
+
+    $scope.resetItemsPagination = function () {
+        $scope.pagedItems = [];
+        $scope.currentPage = 0;
+    }
+
+    $scope.groupToPages = function (filteredItems, itemsPerPage) {
+        $scope.pagedItems = [];
+
+        for (var i = 0; i < filteredItems.length; i++) {
+            if (i % itemsPerPage === 0) {
+                $scope.pagedItems[Math.floor(i / itemsPerPage)] = [ filteredItems[i] ];
+            } else {
+                $scope.pagedItems[Math.floor(i / itemsPerPage)].push(filteredItems[i]);
+            }
+        }
+    };
+
+    $scope.range = function (start, end) {
+        var ret = [];
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        for (var i = start; i < end; i++) {
+            ret.push(i);
+        }
+        return ret;
+    };
+
+    $scope.setCurrentPage = function (currentPage) {
+        $scope.currentPage = currentPage;
+    }
+
+    $scope.firstPage = function () {
+        $scope.currentPage = 0;
+    }
+
+    $scope.lastPage = function (lastPage) {
+        $scope.currentPage = lastPage;
+    }
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.pagedItems.length - 1) {
+            $scope.currentPage++;
+        }
+    };
+
+    $scope.setPage = function () {
+        $scope.currentPage = this.number;
+    };
+
+    $scope.hidePages = function (number) {
+        return $scope.currentPage + 4 < number && number > 8 || $scope.currentPage - 4 > number && number + 9 < $scope.pagedItems.length;
+    }
+
 }

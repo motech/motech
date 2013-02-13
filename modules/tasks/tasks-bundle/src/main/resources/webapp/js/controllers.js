@@ -5,15 +5,13 @@
 function DashboardCtrl($scope, $filter, Tasks, Activities) {
     var RECENT_TASK_COUNT = 7;
 
+    $scope.resetItemsPagination();
     $scope.allTasks = [];
     $scope.activities = [];
     $scope.hideActive = false;
     $scope.hidePaused = false;
     $scope.filteredItems = [];
-    $scope.groupedItems = [];
     $scope.itemsPerPage = 10;
-    $scope.pagedItems = [];
-    $scope.currentPage = 0;
     $scope.currentFilter = 'allItems';
 
     var tasks = Tasks.query(function () {
@@ -139,49 +137,10 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
                 }
                 return false;
             });
-        $scope.currentPage = 0;
-        $scope.groupToPages();
+        $scope.setCurrentPage(0);
+        $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
     };
 
-    $scope.groupToPages = function () {
-        $scope.pagedItems = [];
-
-        for (var i = 0; i < $scope.filteredItems.length; i++) {
-            if (i % $scope.itemsPerPage === 0) {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.filteredItems[i] ];
-            } else {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
-            }
-        }
-    };
-
-    $scope.range = function (start, end) {
-        var ret = [];
-        if (!end) {
-            end = start;
-            start = 0;
-        }
-        for (var i = start; i < end; i++) {
-            ret.push(i);
-        }
-        return ret;
-    };
-
-    $scope.prevPage = function () {
-        if ($scope.currentPage > 0) {
-            $scope.currentPage--;
-        }
-    };
-
-    $scope.nextPage = function () {
-        if ($scope.currentPage < $scope.pagedItems.length - 1) {
-            $scope.currentPage++;
-        }
-    };
-
-    $scope.setPage = function () {
-        $scope.currentPage = this.number;
-    };
 
     $scope.setHideActive = function () {
         if($scope.hideActive == true) {
@@ -985,12 +944,20 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
      }
 }
 
-function LogCtrl($scope, Tasks, Activities, $routeParams) {
+function LogCtrl($scope, Tasks, Activities, $routeParams, $filter) {
+
+    $scope.resetItemsPagination();
+    $scope.filteredItems = [];
+    $scope.limitPages = [10, 20, 50, 100];
+    $scope.itemsPerPage = $scope.limitPages[0];
+    $scope.histories = ['ALL', 'WARNING', 'SUCCESS', 'ERROR'];
+    $scope.filterHistory = $scope.histories[0];
+
     if ($routeParams.taskId != undefined) {
         var data = { taskId: $routeParams.taskId }, task;
 
         task = Tasks.get(data, function () {
-            $scope.activities = Activities.query(data);
+            $scope.activities = Activities.query(data, $scope.search);
 
             setInterval(function () {
                 $scope.activities = Activities.query(data);
@@ -1027,4 +994,35 @@ function LogCtrl($scope, Tasks, Activities, $routeParams) {
 
         return taskEvent.split(':')[index];
     };
+
+    $scope.changeItemsPerPage = function(){
+        $scope.setCurrentPage(0);
+        $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
+    }
+
+    $scope.changeFilterHistory = function(){
+        $scope.search();
+    }
+
+    var searchMatch = function (activity, filterHistory) {
+        if (filterHistory == $scope.histories[0]) {
+            return true;
+        } else {
+            return activity.activityType == filterHistory;
+        }
+    };
+
+    $scope.search = function () {
+        $scope.filteredItems = $filter('filter')($scope.activities, function (activity) {
+            if (activity) {
+                if (searchMatch(activity, $scope.filterHistory))
+                    return true;
+                }
+                return false;
+            });
+
+        $scope.setCurrentPage(0);
+        $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
+    };
+
 }
