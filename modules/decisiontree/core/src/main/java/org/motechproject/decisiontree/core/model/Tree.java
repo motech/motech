@@ -1,6 +1,5 @@
 package org.motechproject.decisiontree.core.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
@@ -31,28 +30,6 @@ public class Tree extends MotechBaseDataObject {
 
     public Tree setDescription(String description) {
         this.description = description;
-        return this;
-    }
-
-    /**
-     * @deprecated will be removed in 0.13 see {@link #getRootTransition()}
-     * @return
-     */
-    @Deprecated
-    @JsonIgnore
-    public Node getRootNode() {
-        return rootTransition.getDestinationNode(null, null);
-    }
-
-    /**
-     * @deprecated will be removed in 0.13 see {@link #setRootTransition(ITransition)}
-     * @param rootNode
-     * @return
-     */
-    @Deprecated
-    @JsonIgnore
-    public Tree setRootNode(Node rootNode) {
-        this.rootTransition = new Transition().setDestinationNode(rootNode);
         return this;
     }
 
