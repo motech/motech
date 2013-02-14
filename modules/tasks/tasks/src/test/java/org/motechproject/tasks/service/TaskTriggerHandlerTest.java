@@ -61,6 +61,7 @@ import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 public class TaskTriggerHandlerTest {
+
     private class TestObjectField {
         private int id = 6789;
 
@@ -79,6 +80,7 @@ public class TaskTriggerHandlerTest {
 
     private static final String TRIGGER_SUBJECT = "APPOINTMENT_CREATE_EVENT_SUBJECT";
     private static final String ACTION_SUBJECT = "SEND_SMS";
+    private static final String TASK_DATA_PROVIDER_ID = "12345";
 
     private static Map<String, String> lookupFields;
 
@@ -125,7 +127,7 @@ public class TaskTriggerHandlerTest {
 
         obj = new TestObject();
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
-        handler.setDataProviders(Arrays.asList(dataProvider));
+        handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
 
         verify(taskService).getAllTasks();
         verify(registryService).registerListener(any(EventListener.class), anyString());
@@ -356,7 +358,7 @@ public class TaskTriggerHandlerTest {
 
         assertTrue(task.isEnabled());
 
-        handler.setDataProviders(new ArrayList<DataProvider>());
+        handler.setDataProviders(new HashMap<String, DataProvider>());
         handler.handle(createEvent());
         ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
 
@@ -393,7 +395,6 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task);
-        verify(dataProvider).supports("TestObject");
         verify(dataProvider).lookup("TestObject", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
@@ -423,7 +424,6 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task);
-        verify(dataProvider).supports("TestObject");
         verify(dataProvider).lookup("TestObject", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
@@ -575,7 +575,7 @@ public class TaskTriggerHandlerTest {
         actionInputFields.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
         actionInputFields.put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
         actionInputFields.put("date", "2012-12-21 21:21 +0100");
-        actionInputFields.put("ds", "test: {{ad.TEST.TestObject#1.field.id}}");
+        actionInputFields.put("ds", "test: {{ad.12345.TestObject#1.field.id}}");
 
         task = new Task(trigger, action, actionInputFields, "name");
         task.setId("taskId1");
@@ -583,7 +583,7 @@ public class TaskTriggerHandlerTest {
         tasks.add(task);
 
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(1);
-        additionalData.put("TEST", Arrays.asList(new TaskAdditionalData(1L, "TestObject", "id", "externalId")));
+        additionalData.put("12345", Arrays.asList(new TaskAdditionalData(1L, "TestObject", "id", "externalId")));
 
         task.setAdditionalData(additionalData);
 

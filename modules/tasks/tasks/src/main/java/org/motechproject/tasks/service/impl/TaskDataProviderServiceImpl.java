@@ -29,19 +29,21 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
     }
 
     @Override
-    public void registerProvider(final String body) {
+    public TaskDataProvider registerProvider(final String body) {
         byte[] bytes = body.getBytes();
         InputStream stream = new ByteArrayInputStream(bytes);
 
-        registerProvider(stream);
+        return registerProvider(stream);
     }
 
     @Override
-    public void registerProvider(final InputStream stream) {
+    public TaskDataProvider registerProvider(final InputStream stream) {
         Type type = new TypeToken<TaskDataProvider>() { }.getType();
         TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
         allTaskDataProviders.addOrUpdate(provider);
+
+        return provider;
     }
 
     @Override

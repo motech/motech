@@ -45,6 +45,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>META-INF/osgi/applicationMrsAPIBundle.xml</Context-File>
+                        <Context-Path>mrs</Context-Path>
+                        <Resource-Path>mrs/resource</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.mrs;version=${project.version},
                             org.motechproject.mrs.exception;version=${project.version},

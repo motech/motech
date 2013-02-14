@@ -255,8 +255,10 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     $scope.channels = Channels.query(function (){
         if ($routeParams.taskId != undefined) {
             $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                var trigger = $scope.task.trigger.split(':'), action = $scope.task.action.split(':'),
-                    i, source, dataSource, ds, object, obj;
+                var trigger = $scope.task.trigger.split(':'),
+                    action = $scope.task.action.split(':'),
+                    regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
+                    found, replaced = [], dataSource, dataSourceId, ds, object, obj, eventKey, value, i, j;
 
                 $scope.setTaskEvent('trigger', trigger[0], trigger[1], trigger[2]);
                 $scope.setTaskEvent('action', action[0], action[1], action[2]);
@@ -277,12 +279,12 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     }
                 }
 
-                for (source in $scope.task.additionalData) {
-                    ds = $scope.findDataSource($scope.allDataSources, source);
-                    dataSource = { name: source, objects: [], available: ds.objects};
+                for (dataSourceId in $scope.task.additionalData) {
+                    ds = $scope.findDataSourceById($scope.allDataSources, dataSourceId);
+                    dataSource = { '_id': ds._id, 'name': ds.name, 'objects': [], 'available': ds.objects};
 
-                    for (i = 0; i < $scope.task.additionalData[source].length; i += 1) {
-                        object = $scope.task.additionalData[source][i];
+                    for (i = 0; i < $scope.task.additionalData[dataSourceId].length; i += 1) {
+                        object = $scope.task.additionalData[dataSourceId][i];
                         obj = $scope.findObject(ds, object.type);
 
                         dataSource.objects.push({
@@ -290,6 +292,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                             displayName: obj.displayName,
                             type: object.type,
                             fields: obj.fields,
+                            lookupFields: obj.lookupFields,
                             lookup: {
                                 displayName: $scope.findTriggerEventParameter(object.lookupValue).displayName,
                                 by: object.lookupValue,
@@ -299,14 +302,28 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     }
 
                     $scope.selectedDataSources.push(dataSource);
-                    $scope.availableDataSources.removeObject($scope.findDataSource($scope.availableDataSources, source));
+                    $scope.availableDataSources.removeObject($scope.findDataSourceById($scope.availableDataSources, dataSourceId));
                 }
 
                 for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
+                    eventKey = $scope.selectedAction.eventParameters[i].eventKey;
+                    value = $scope.task.actionInputFields[eventKey];
+
                     if ($scope.BrowserDetect.browser != 'Chrome') {
-                        $scope.selectedAction.eventParameters[i].value = $scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey];
+                        while ((found = regex.exec(value)) !== null) {
+                            replaced.push({
+                                find: '{{ad.' + found[1] + found[2] + '}}',
+                                value: '{{ad.' + $scope.msg($scope.findDataSourceById($scope.selectedDataSources, found[1]).name) + found[2] + '}}'
+                            });
+                        }
+
+                        for (j = 0; j < replaced.length; j += 1) {
+                            value = value.replace(replaced[j].find, replaced[j].value);
+                        };
+
+                        $scope.selectedAction.eventParameters[i].value = value;
                     } else {
-                        $scope.selectedAction.eventParameters[i].value = $scope.createDraggableElement($scope.task.actionInputFields[$scope.selectedAction.eventParameters[i].eventKey]);
+                        $scope.selectedAction.eventParameters[i].value = $scope.createDraggableElement(value);
                     }
                 }
 
@@ -397,7 +414,9 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     }
 
     $scope.save = function (enabled) {
-        var action = $scope.selectedAction, i, eventKey, value;
+        var action = $scope.selectedAction,
+            regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
+            eventKey, value, found, replaced = [], i, j;
 
         $scope.task.actionInputFields = {};
         $scope.task.enabled = enabled;
@@ -434,22 +453,23 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                         id = +type.substring(type.lastIndexOf('#') + 1);
                         type = type.substring(0, type.lastIndexOf('#'));
 
-                        if ($scope.task.additionalData[source] === undefined) {
-                            $scope.task.additionalData[source] = [];
+                        ds = $scope.findDataSourceByName($scope.selectedDataSources, source);
+
+                        if ($scope.task.additionalData[ds._id] === undefined) {
+                            $scope.task.additionalData[ds._id] = [];
                         }
 
-                        for (i = 0; i < $scope.task.additionalData[source].length; i += 1) {
-                            if ($scope.task.additionalData[source][i].id === id) {
+                        for (i = 0; i < $scope.task.additionalData[ds._id].length; i += 1) {
+                            if ($scope.task.additionalData[ds._id][i].id === id) {
                                 exists = true;
                                 break;
                             }
                         }
 
                         if (!exists) {
-                            ds = $scope.findDataSource($scope.selectedDataSources, source);
                             object = $scope.findObject(ds, type, id);
 
-                            $scope.task.additionalData[source].push({
+                            $scope.task.additionalData[ds._id].push({
                                 id: object.id,
                                 type: object.type,
                                 lookupField: object.lookup.field,
@@ -465,22 +485,23 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                         objectType = span.data('object-type'), objectId = span.data('object-id'),
                         exists = false, dataSource, object, i;
 
-                    if ($scope.task.additionalData[source] === undefined) {
-                        $scope.task.additionalData[source] = [];
+                    dataSource = $scope.findDataSourceByName($scope.selectedDataSources, source);
+
+                    if ($scope.task.additionalData[dataSource._id] === undefined) {
+                        $scope.task.additionalData[dataSource._id] = [];
                     }
 
-                    for (i = 0; i < $scope.task.additionalData[source].length; i += 1) {
-                        if ($scope.task.additionalData[source][i].id === objectId) {
+                    for (i = 0; i < $scope.task.additionalData[dataSource._id].length; i += 1) {
+                        if ($scope.task.additionalData[dataSource._id][i].id === objectId) {
                             exists = true;
                             break;
                         }
                     }
 
                     if (!exists) {
-                        dataSource = $scope.findDataSource($scope.selectedDataSources, source);
                         object = $scope.findObject(dataSource, objectType, objectId);
 
-                        $scope.task.additionalData[source].push({
+                        $scope.task.additionalData[dataSource._id].push({
                             id: object.id,
                             type: object.type,
                             lookupField: object.lookup.field,
@@ -493,11 +514,24 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
         for (i = 0; i < action.eventParameters.length; i += 1) {
             eventKey = action.eventParameters[i].eventKey;
+
             if ($scope.BrowserDetect.browser != 'Chrome') {
                 value = action.eventParameters[i].value || '';
             } else {
                 value = $scope.refactorDivEditable(action.eventParameters[i].value  || '');
             }
+
+            while ((found = regex.exec(value)) !== null) {
+                replaced.push({
+                    find: '{{ad.' + found[1] + found[2] + '}}',
+                    value: '{{ad.' + $scope.findDataSourceByName($scope.selectedDataSources, found[1])._id + found[2] + '}}'
+                });
+            }
+
+            for (j = 0; j < replaced.length; j += 1) {
+                value = value.replace(replaced[j].find, replaced[j].value);
+            };
+
             $scope.task.actionInputFields[eventKey] = value;
         }
 
@@ -534,7 +568,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
                     window.location = loc.substring(0, indexOf) + "#/dashboard";
                 });
-            }).error(function () {
+            }, function () {
                 delete $scope.task.actionInputFields;
                 delete $scope.task.enabled;
                 delete $scope.task.additionalData;
@@ -578,7 +612,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
             if (prefix === 'trigger') {
                 val = '{{' + prefix + '.' + eventKey + '}}';
             } else if (prefix === 'ad') {
-                val = '{{' + prefix + '.' + source + '.' + type + '#' + id + '.' + eventKey + '}}';
+                val = '{{' + prefix + '.' + $scope.msg(source) + '.' + type + '#' + id + '.' + eventKey + '}}';
             }
 
             return val;
@@ -609,7 +643,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     $scope.buildSpan = function(eventParameterKey) {
         var key = eventParameterKey.slice(eventParameterKey.indexOf('.') + 1, -2).split("?"),
             prefix = eventParameterKey.slice(2, eventParameterKey.indexOf('.')),
-            span = "", param, source, type, field, cuts, dataSource, object, id;
+            span = "", param, type, field, cuts, dataSource, dataSourceId, object, id;
 
         eventParameterKey = key[0];
         key.remove(0);
@@ -623,7 +657,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         } else if (prefix === 'ad') {
             cuts = eventParameterKey.split('.');
 
-            source = cuts[0];
+            dataSourceId = cuts[0];
             type = cuts[1].split('#');
             id = type.last();
 
@@ -633,14 +667,14 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
             field = cuts.join('.');
             type = type.join('#');
 
-            dataSource = $scope.findDataSource($scope.selectedDataSources, source);
+            dataSource = $scope.findDataSourceById($scope.selectedDataSources, dataSourceId);
             object = $scope.findObject(dataSource, type);
             param = $scope.findObjectField(object, field);
 
             span = '<span ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
-                   '" data-prefix="' + prefix + '" data-source="' + source + '" data-object="' + param.displayName +'" data-object-type="' + type + '" data-field="' + field +
+                   '" data-prefix="' + prefix + '" data-source="' + dataSource.name + '" data-object="' + param.displayName +'" data-object-type="' + type + '" data-field="' + field +
                    '" data-object-id="' + id + '" style="position: relative;" ' + (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' +
-                   source + '.' + object.displayName + '#' + id + '.' + param.displayName + '</span>';
+                   $scope.msg(dataSource.name) + '.' + $scope.msg(object.displayName) + '#' + id + '.' + $scope.msg(param.displayName) + '</span>';
         }
 
         return span;
@@ -733,18 +767,25 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     }
 
     $scope.addDataSource = function () {
-        $scope.selectedDataSources.push({name: $scope.availableDataSources[0].name, objects: [], available: $scope.availableDataSources[0].objects});
+        $scope.selectedDataSources.push({
+            '_id': $scope.availableDataSources[0]._id,
+            'name': $scope.availableDataSources[0].name,
+            'objects': [],
+            'available': $scope.availableDataSources[0].objects
+        });
+
         $scope.availableDataSources.remove(0);
         $scope.currentPage.dataSource = $scope.selectedDataSources.length - 1;
     }
 
     $scope.changeDataSource = function (dataSource, available) {
-        var regex = new RegExp('\\{\\{ad\\.' + dataSource.name + '\\..*?\\}\\}', "g"),
+        var regex = new RegExp('\\{\\{ad\\.' + $scope.msg(dataSource.name) + '\\..*?\\}\\}', "g"),
             spans = 0,
             change = function (ds, a) {
                 $scope.availableDataSources.removeObject(a);
-                $scope.availableDataSources.push($scope.findDataSource($scope.allDataSources, ds.name));
+                $scope.availableDataSources.push($scope.findDataSourceByName($scope.allDataSources, ds.name));
 
+                ds._id = a._id;
                 ds.name = a.name;
                 ds.objects = [];
                 ds.available = a.objects;
@@ -786,7 +827,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     }
 
     $scope.selectObject = function (dataSourceName, object, selected) {
-        var regex = new RegExp('\\{\\{ad\\.' + dataSourceName + '\\.' + object.type + '\\#' + object.id + '.*?\\}\\}', "g"),
+        var regex = new RegExp('\\{\\{ad\\.' + $scope.msg(dataSourceName) + '\\.' + object.type + '\\#' + object.id + '.*?\\}\\}', "g"),
             spans = 0,
             change = function (obj, sel) {
                 obj.displayName = sel.displayName;
@@ -861,7 +902,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         }
 
         $('#addObjectNotification').notify({
-            message: { text: parent.msg('notification.addObject', dataSource.name) },
+            message: { text: parent.msg('notification.addObject', parent.msg(dataSource.name)) },
             type: 'blackgloss'
         }).show();
     }
@@ -879,11 +920,23 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return found;
     }
 
-    $scope.findDataSource = function (dataSources, name) {
+    $scope.findDataSourceByName = function (dataSources, name) {
         var found;
 
         angular.forEach(dataSources, function (ds) {
-            if (ds.name === name) {
+            if (ds.name === name || $scope.msg(ds.name) === name) {
+                found = ds;
+            }
+        });
+
+        return found;
+    }
+
+    $scope.findDataSourceById = function (dataSources, dataSourceId) {
+        var found;
+
+        angular.forEach(dataSources, function (ds) {
+            if (ds._id === dataSourceId) {
                 found = ds;
             }
         });

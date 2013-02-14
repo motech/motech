@@ -118,14 +118,14 @@
                                                     <div class="controls">
                                                         <div class="btn-group">
                                                             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                                {{dataSource.name}}
+                                                                {{msg(dataSource.name)}}
                                                                 <span class="caret"></span>
                                                             </a>
                                                             <ul class="dropdown-menu">
                                                                 <li ng-repeat="available in allDataSources">
-                                                                    <a ui-if="dataSource.name == available.name"><i class="icon-ok-sign"></i> {{available.name}}</a>
-                                                                    <a ui-if="dataSource.name != available.name && findDataSource(selectedDataSources, available.name) != undefined"><i class="icon-ok-sign"></i> {{available.name}}</a>
-                                                                    <a ui-if="dataSource.name != available.name && findDataSource(selectedDataSources, available.name) == undefined" ng-click="changeDataSource(dataSource, available)"><i></i> {{available.name}}</a>
+                                                                    <a ui-if="dataSource.name == available.name"><i class="icon-ok-sign"></i> {{msg(available.name)}}</a>
+                                                                    <a ui-if="dataSource.name != available.name && findDataSourceByName(selectedDataSources, available.name) != undefined"><i class="icon-ok-sign"></i> {{msg(available.name)}}</a>
+                                                                    <a ui-if="dataSource.name != available.name && findDataSourceByName(selectedDataSources, available.name) == undefined" ng-click="changeDataSource(dataSource, available)"><i></i> {{msg(available.name)}}</a>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -137,13 +137,13 @@
                                                         <div class="controls">
                                                             <div class="btn-group">
                                                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                                    {{object.displayName}}
+                                                                    {{msg(object.displayName)}}
                                                                     <span class="caret"></span>
                                                                 </a>
                                                                 <ul class="dropdown-menu">
                                                                     <li ng-repeat="obj in dataSource.available">
-                                                                        <a ui-if="object.type == obj.type"><i class="icon-ok-sign"></i> {{obj.displayName}}</a>
-                                                                        <a ui-if="object.type != obj.type" ng-click="selectObject(dataSource.name, object, obj)"><i></i> {{obj.displayName}}</a>
+                                                                        <a ui-if="object.type == obj.type"><i class="icon-ok-sign"></i> {{msg(obj.displayName)}}</a>
+                                                                        <a ui-if="object.type != obj.type" ng-click="selectObject(dataSource.name, object, obj)"><i></i> {{msg(obj.displayName)}}</a>
                                                                     </li>
                                                                 </ul>
                                                             </div>
@@ -154,13 +154,13 @@
                                                         <div class="controls">
                                                             <div class="btn-group">
                                                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                                    {{object.lookup.field}}
+                                                                    {{msg(object.lookup.field)}}
                                                                     <span class="caret"></span>
                                                                 </a>
                                                                 <ul class="dropdown-menu">
                                                                     <li ng-repeat="i in object.lookupFields">
-                                                                        <a ui-if="object.lookup.field == i"><i class="icon-ok-sign"></i> {{i}}</a>
-                                                                        <a ui-if="object.lookup.field != i" ng-click="object.lookup.field = i"><i></i> {{i}}</a>
+                                                                        <a ui-if="object.lookup.field == i"><i class="icon-ok-sign"></i> {{msg(i)}}</a>
+                                                                        <a ui-if="object.lookup.field != i" ng-click="object.lookup.field = i"><i></i> {{msg(i)}}</a>
                                                                     </li>
                                                                 </ul>
                                                             </div>
@@ -183,7 +183,7 @@
                                                         <p><strong>{{msg('subsubsection.objectFields')}}</strong></p>
                                                         <span contenteditable="false" ng-repeat="i in object.fields" class="badge badge-warning triggerField" draggable
                                                               data-prefix="ad" data-source="{{dataSource.name}}" data-object="{{object.displayName}}" data-object-type="{{object.type}}"
-                                                              data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{object.id}}" data-type="{{i.type}}">{{i.displayName}}</span>​
+                                                              data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{object.id}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                                                     </div>
                                                 </div>
                                                 <div class="control-section pagination pagination-centered pagination-condensed pagination-mini" ng-show="numberOfDataSourceObjects(dataSource) &gt; 1">
@@ -206,7 +206,7 @@
                                                     </ul>
                                                 </div>
                                                 <div class="margin-before control-group section2">
-                                                    <button class="btn btn-primary" ng-click="addObject(dataSource)"><i class="icon-white icon-plus"></i> {{msg('button.addObject', dataSource.name)}}</button>
+                                                    <button class="btn btn-primary" ng-click="addObject(dataSource)"><i class="icon-white icon-plus"></i> {{msg('button.addObject', msg(dataSource.name))}}</button>
                                                     <div id="addObjectNotification" class="notifications center" style="z-index: 9999;"></div>
                                                 </div>
                                             </div>

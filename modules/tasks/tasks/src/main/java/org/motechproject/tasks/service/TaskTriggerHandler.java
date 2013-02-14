@@ -58,7 +58,7 @@ public class TaskTriggerHandler {
     private EventListenerRegistryService registryService;
     private EventRelay eventRelay;
     private SettingsFacade settingsFacade;
-    private List<DataProvider> dataProviders;
+    private Map<String, DataProvider> dataProviders;
 
     @Autowired
     public TaskTriggerHandler(final TaskService taskService, final TaskActivityService activityService,
@@ -258,9 +258,9 @@ public class TaskTriggerHandler {
             throw new TaskException("error.notFoundDataProvider", key.getObjectType());
         }
 
-        DataProvider provider = findDataProvider(key.getDataProviderName(), key.getObjectType());
+        DataProvider provider = dataProviders.get(key.getDataProviderId());
 
-        if (provider == null || !provider.supports(key.getObjectType())) {
+        if (provider == null) {
             throw new TaskException("error.notFoundDataProvider", key.getObjectType());
         }
 
@@ -359,25 +359,6 @@ public class TaskTriggerHandler {
         }
     }
 
-    private DataProvider findDataProvider(String name, String type) {
-        DataProvider providerWithGivenName = null;
-        DataProvider providerSupportsGivenType = null;
-
-        for (DataProvider p : dataProviders) {
-            if (p.getName().equalsIgnoreCase(name)) {
-                providerWithGivenName = p;
-                break;
-            }
-
-            if (providerSupportsGivenType == null && p.supports(type)) {
-                providerSupportsGivenType = p;
-            }
-        }
-
-        return providerWithGivenName != null ? providerWithGivenName : providerSupportsGivenType;
-    }
-
-
     private String getValueFromObject(Object object, String eventKey) throws TaskException {
         String[] fields = eventKey.split("\\.");
         Object current = object;
@@ -395,7 +376,7 @@ public class TaskTriggerHandler {
     }
 
     private TaskAdditionalData findAdditionalData(Task t, KeyInformation key) {
-        List<TaskAdditionalData> taskAdditionalDatas = t.getAdditionalData(key.getDataProviderName());
+        List<TaskAdditionalData> taskAdditionalDatas = t.getAdditionalData(key.getDataProviderId());
         TaskAdditionalData taskAdditionalData = null;
 
         for (TaskAdditionalData ad : taskAdditionalDatas) {
@@ -452,21 +433,21 @@ public class TaskTriggerHandler {
         return manipulateValue;
     }
 
-    public void addDataProvider(DataProvider provider) {
+    public void addDataProvider(String taskDataProviderId, DataProvider provider) {
         if (dataProviders == null) {
-            dataProviders = new ArrayList<>();
+            dataProviders = new HashMap<>();
         }
 
-        dataProviders.add(provider);
+        dataProviders.put(taskDataProviderId, provider);
     }
 
-    public void removeDataProvider(DataProvider provider) {
+    public void removeDataProvider(String taskDataProviderId) {
         if (dataProviders != null && !dataProviders.isEmpty()) {
-            dataProviders.remove(provider);
+            dataProviders.remove(taskDataProviderId);
         }
     }
 
-    void setDataProviders(List<DataProvider> dataProviders) {
+    void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
     }
 }
