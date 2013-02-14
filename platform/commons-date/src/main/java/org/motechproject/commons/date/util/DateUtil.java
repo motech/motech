@@ -3,7 +3,9 @@ package org.motechproject.commons.date.util;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.motechproject.commons.date.model.DayOfWeek;
@@ -42,7 +44,8 @@ public final class DateUtil {
     }
 
     public static DateTime newDateTime(LocalDate localDate, int hour, int minute, int second) {
-        return new DateTime(DateTimeSourceUtil.timeZone())
+        final DateTimeZone zone = DateTimeSourceUtil.timeZone();
+        LocalDateTime localDateTime = new LocalDateTime(zone)
                 .withYear(localDate.getYear())
                 .withMonthOfYear(localDate.getMonthOfYear())
                 .withDayOfMonth(localDate.getDayOfMonth())
@@ -50,6 +53,12 @@ public final class DateUtil {
                 .withMinuteOfHour(minute)
                 .withSecondOfMinute(second)
                 .withMillisOfSecond(0);
+
+        if (zone.isLocalDateTimeGap(localDateTime)) {
+            localDateTime = localDateTime.withHourOfDay(hour+1);
+        }
+
+        return localDateTime.toDateTime();
     }
 
     public static DateTime setTimeZone(DateTime dateTime) {

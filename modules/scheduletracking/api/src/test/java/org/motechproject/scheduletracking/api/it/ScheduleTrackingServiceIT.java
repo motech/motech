@@ -76,7 +76,7 @@ public class ScheduleTrackingServiceIT {
         assertEquals(originalPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
         assertEquals(newDateTime(now.toLocalDate(), new Time(0, 0)), activeEnrollment.getStartOfSchedule());
 
-        Time updatedPreferredAlertTime = new Time(8, 5);
+        Time updatedPreferredAlertTime = new Time(2, 5);
         DateTime updatedReferenceDate = now.minusDays(1);
         String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("externalId").setScheduleName("IPTI Schedule").setPreferredAlertTime(updatedPreferredAlertTime).setReferenceDate(updatedReferenceDate.toLocalDate()).setReferenceTime(null).setEnrollmentDate(null).setEnrollmentTime(null).setStartingMilestoneName(null));
         assertEquals(enrollmentId, updatedEnrollmentId);
