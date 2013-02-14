@@ -11,4 +11,6 @@ public interface CalllogSearchService {
     long count(CalllogSearchParameters params);
 
     long findMaxCallDuration();
+
+    List<String> getAllPhoneNumbers();
 }

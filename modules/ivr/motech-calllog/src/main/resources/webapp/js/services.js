@@ -9,3 +9,7 @@ angular.module('CalllogCountService', ['ngResource']).factory('CalllogCount', fu
 angular.module('CalllogMaxDurationService', ['ngResource']).factory('CalllogMaxDuration', function ($resource) {
     return $resource('../callLog/maxduration', {}, { query:{method:'GET', isArray:false}});
 });
+
+angular.module('CalllogPhoneNumberService', ['ngResource']).factory('CalllogPhoneNumber', function($resource) {
+        return $resource('../callLog/phone-numbers',{}, { query: {method: 'GET', isArray: true}});
+});

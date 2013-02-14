@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('callLog', ['motech-dashboard', 'CalllogSearchService', 'CalllogCountService', 'CalllogMaxDurationService', 'ngCookies', 'bootstrap'])
+angular.module('callLog', ['motech-dashboard', 'CalllogSearchService', 'CalllogCountService', 'CalllogPhoneNumberService', 'CalllogMaxDurationService', 'ngCookies', 'bootstrap'])
     .config(['$routeProvider', function ($routeProvider) {
 
         $routeProvider

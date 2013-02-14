@@ -1,0 +1,41 @@
+<table class="call-event single-row-table table table-bundles table-bordered table-striped table-lightblue">
+    <thead>
+        <th>Event</th>
+        <th>Timestamp</th>
+        <th>Data</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                {{callEvent.name}}
+            </td>
+            <td>
+                {{callEvent.timeStamp | date:'yyyy-MM-dd hh:mm:ss'}}
+            </td>
+            <td>
+                <a tooltip>{{callEvent.data.data}}</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="tooltip" ng-show="false">
+    <div>
+        Data
+    </div>
+    <div>
+        <div class="padded" ng-show="isEmpty(callEvent.data.data)">Empty</div>
+        <table class="table">
+            <tbody>
+            <tr ng-repeat="(key, value) in callEvent.data.data">
+                <td>
+                    {{key}}
+                </td>
+                <td>
+                    {{value}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

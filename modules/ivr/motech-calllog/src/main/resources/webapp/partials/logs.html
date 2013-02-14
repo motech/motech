@@ -1,70 +1,73 @@
 <div class="box-header">{{ msg('calllog.welcome.heading') }}</div>
 
 <div ng-controller="CalllogController">
-    <div id='jqxexpander'>
-        <!--Header-->
-        <div>Filter by</div>
-        <!--Content-->
 
-        <div>
-            <form name="form" ng-submit="search()" nonvalidate>
-                <div class="controls controls-row">
-                    <div class="span4">
+    <div class="accordion" id="filter-accordion">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a id="filter-title" class="accordion-toggle" data-toggle="collapse" data-parent="#filter-accordion" href="#filter-panel">
+                    Filter by
+                </a>
+            </div>
+            <div id="filter-panel" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    <form name="form" ng-submit="search()" nonvalidate>
                         <div class="controls controls-row">
+                            <div class="span4">
+                                <div class="controls controls-row">
+                                    <label class="span6" for="phoneNumber">
+                                        Phone number <input type="text" id="phoneNumber" ng-model="phoneNumber" typeahead class="span12"/>
+                                    </label>
+                                    <label class="span6" for="message">
+                                        Message <input type="text" id="message" name="message" class="span12"/>
+                                    </label>
+                                </div>
+                                <div class="controls controls-row">
+                                    <label for="from" class="span6">From <input type="text" id="from" name="from" class="span12"/></label>
+                                    <label for="to" class="span6"> To <input type="text" id="to" name="to" class="span12"/></label>
+                                </div>
 
-                            <label class="span6" for="phoneNumber">
-                                Phone number <input type="text" id="phoneNumber" ng-model="phoneNumber" class="span12"/>
-                            </label>
-                            <label class="span6" for="message">
-                                Message <input type="text" id="message" name="message" class="span12"/>
-                            </label>
-                        </div>
-                        <div class="controls controls-row">
-                            <label for="from" class="span6">From <input type="text" id="from" name="from"
-                                                                        class="span12"/></label>
-                            <label for="to" class="span6"> To <input type="text" id="to" name="to" class="span12"/>
-                            </label>
+                                <div class="controls controls-row">
+                                    <label class="span12">Call Duration
+                                    </label>
+                                    <input type="text" class="slider-control" slider="#slider" slider-point="min"/>
+                                    -
+                                    <input type="text" class="slider-control" slider="#slider" slider-point="max"/>
+                                    seconds
+                                    <div id="slider"></div>
+                                </div>
+                            </div>
+
+                            <div class="span2">
+                                <div class="controls controls-row">
+                                    <fieldset>
+                                        <legend>Disposition</legend>
+                                        <label for="answered" class="checkbox">
+                                            <input type="checkbox" id="answered" name="answered" class="btn">Answered
+                                        </label>
+                                        <label class="checkbox" for="busy">
+                                            <input type="checkbox" class="control" name="busy" id="busy">Busy
+                                        </label>
+                                        <label class="checkbox" for="failed">
+                                            <input type="checkbox" class="control" name="failed" id="failed">Failed
+                                        </label>
+                                        <label class="checkbox" for="noAnswer">
+                                            <input type="checkbox" class="control" name="noAnswer" id="noAnswer">No Answer
+                                        </label>
+                                        <label class="checkbox" for="unknown">
+                                            <input type="checkbox" class="control" name="unknown" id="unknown">Unknown
+                                        </label>
+                                    </fieldset>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="controls controls-row">
-                            <label class="span12">Call Duration
-                                <div id="slider"></div>
-                                <label id="duration" for="slider"></label>
-                            </label>
+                        <div class="controls control-row">
+                            <input class="btn btn-primary offset4 span2" type="submit" value="{{msg('calllog.search')}}" ng-disabled="form.$invalid"/>
                         </div>
-
-                    </div>
-
-                    <div class="span2">
-                        <div class="controls controls-row">
-                            <fieldset>
-                                <legend>Disposition</legend>
-                                <label for="answered" class="checkbox">
-                                    <input type="checkbox" id="answered" name="answered" class="btn">Answered
-                                </label>
-                                <label class="checkbox" for="busy">
-                                    <input type="checkbox" class="control" name="busy" id="busy">Busy
-                                </label>
-                                <label class="checkbox" for="failed">
-                                    <input type="checkbox" class="control" name="failed" id="failed">Failed
-                                </label>
-                                <label class="checkbox" for="noAnswer">
-                                    <input type="checkbox" class="control" name="noAnswer" id="noAnswer">No Answer
-                                </label>
-                                <label class="checkbox" for="unknown">
-                                    <input type="checkbox" class="control" name="unknown" id="unknown">Unknown
-                                </label>
-                            </fieldset>
-                        </div>
-                    </div>
+                    </form>
                 </div>
-
-
-                <div class="controls control-row">
-                    <input class="btn btn-primary offset4 span2" type="submit" value="{{msg('calllog.search')}}"
-                           ng-disabled="form.$invalid"/>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -79,26 +82,47 @@
         </ul>
     </div>
 
-    <table class="table table-bundles table-bordered table-striped table-lightblue">
-        <thead>
-        <tr>
-            <th><a href  ng-click="sort('phoneNumber')">{{msg('calllog.phoneNumber')}}</a></th>
-            <th><a href  ng-click="sort('direction')">{{msg('calllog.direction')}}</a></th>
-            <th><a href  ng-click="sort('startDate')">{{msg('calllog.startDate')}}</a></th>
-            <th><a href  ng-click="sort('endDate')">{{msg('calllog.endDate')}}</a></th>
-            <th><a href  ng-click="sort('disposition')">{{msg('calllog.disposition')}}</a></th>
-            <th><a href  ng-click="sort('duration')">{{msg('calllog.duration')}}</a></th>
-        </tr>
-        </thead>
+    <table class="calllogs-head single-row-table table table-bundles table-bordered table-striped table-lightblue">
         <tbody>
-        <tr ng-repeat="calllog in calllogs" class="calllogs" ng-model="calllogs">
-            <td>{{calllog.phoneNumber}}</td>
-            <td>{{calllog.callDirection}}</td>
-            <td>{{calllog.startDate | date:'yyyy-MM-dd hh:mm:ss'}}</td>
-            <td>{{calllog.endDate | date:'yyyy-MM-dd hh:mm:ss'}}</td>
-            <td>{{calllog.disposition}}</td>
-            <td>{{calllog.duration}}</td>
+        <tr>
+            <th><a href ng-click="sort('phoneNumber')">{{msg('calllog.phoneNumber')}}</a></th>
+            <th><a href ng-click="sort('direction')">{{msg('calllog.direction')}}</a></th>
+            <th><a href ng-click="sort('startDate')">{{msg('calllog.startDate')}}</a></th>
+            <th><a href ng-click="sort('endDate')">{{msg('calllog.endDate')}}</a></th>
+            <th><a href ng-click="sort('disposition')">{{msg('calllog.disposition')}}</a></th>
+            <th><a href ng-click="sort('duration')">{{msg('calllog.duration')}}</a></th>
         </tr>
         </tbody>
     </table>
+
+    <div class="calllogs-body accordion" id="calllogs">
+        <div ng-repeat="calllog in calllogs" class="" ng-model="calllogs">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#calllogs" href="#item{{$index}}">
+                        <table class="single-row-table table table-bundles table-bordered table-striped table-lightblue">
+                            <tbody>
+                            <tr>
+                                <td>{{calllog.phoneNumber}}</td>
+                                <td>{{calllog.callDirection}}</td>
+                                <td>{{calllog.startDate | date:'yyyy-MM-dd hh:mm:ss'}}</td>
+                                <td>{{calllog.endDate | date:'yyyy-MM-dd hh:mm:ss'}}</td>
+                                <td>{{calllog.disposition}}</td>
+                                <td>{{calllog.duration}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </a>
+                </div>
+                <div id="item{{$index}}" class="accordion-body collapse clearfix">
+                    <div class="accordion-inner">
+                        <div class="padded" ng-show="isEmpty(calllog.callEvents)">No events.</div>
+                        <div ng-repeat="callEvent in calllog.callEvents" ng-model="calllogs">
+                            <div ng-include="'../callLog/resources/partials/event.html'"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

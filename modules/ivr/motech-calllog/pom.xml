@@ -56,6 +56,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit</groupId>
             <artifactId>org.motechproject.org.junit</artifactId>
             <version>4.9.0</version>
@@ -94,7 +99,7 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>callLog</Context-Path>
-                        <Context-File>META-INF/osgi/calllogApplicationContext.xml</Context-File>
+                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Resource-Path>callLog/resources</Resource-Path>
                         <Import-Package>
                             org.motechproject.server.config,

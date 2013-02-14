@@ -9,7 +9,7 @@ import java.util.Map;
  * Extra data stored as key value pair along with call event.
  */
 public class CallEventCustomData {
-    private Map<String, List<String>> data = new HashMap<String, List<String>>();
+    private Map<String, List<String>> data = new HashMap<String, List<String>>();         // TODO: why list?
 
     public void add(String key, String value) {
         if (data.get(key) == null) {
