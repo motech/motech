@@ -35,7 +35,7 @@ import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class AdminBundleITIgnored extends BaseOsgiIT {
+public class AdminBundleIT extends BaseOsgiIT {
 
     private static final String ERROR_MSG = "test-error";
     private static final String DEBUG_MSG = "test-debug";

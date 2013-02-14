@@ -10,19 +10,19 @@
     </appender>
 
     <logger name="org.motechproject.scheduler.impl.MotechScheduler">
-        <level value="INFO"/>
+        <level value="ERROR"/>
     </logger>
 
     <logger name="org.motechproject.scheduler.impl.MotechScheduledJob">
-        <level value="INFO"/>
+        <level value="ERROR"/>
     </logger>
 
     <logger name="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl">
-        <level value="INFO"/>
+        <level value="ERROR"/>
     </logger>
 
     <root>
-        <priority value="INFO"/>
+        <priority value="ERROR"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 
