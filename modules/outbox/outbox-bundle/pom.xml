@@ -49,6 +49,12 @@
             <artifactId>com.springsource.org.apache.commons.lang</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
