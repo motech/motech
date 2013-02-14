@@ -59,6 +59,8 @@ public class StubFormController {
             formEvent.getParameters().put(EventDataKeys.CASE_IDS, formStub.getCaseIds());
 
             eventRelay.sendEventMessage(formEvent);
+        } else {
+            logger.error("Unable to parse form stub: " + body);
         }
 
         return null;

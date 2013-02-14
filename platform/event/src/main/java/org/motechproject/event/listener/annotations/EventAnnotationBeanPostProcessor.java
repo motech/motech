@@ -74,6 +74,8 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
 
                         if (eventListenerRegistry != null) {
                             eventListenerRegistry.registerListener(proxy, subjects);
+                        } else {
+                            logger.error("Null eventListenerRegistry.  Unable to register listener");
                         }
                     }
                 }
