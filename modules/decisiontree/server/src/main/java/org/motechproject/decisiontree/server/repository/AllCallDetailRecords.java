@@ -9,6 +9,7 @@ import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.type.TypeReference;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewResult;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
@@ -46,10 +47,26 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
         return queryView("by_phoneNumber", phoneNumber);
     }
 
-    @View(name="countLogs", map="function(doc){ emit(null, 1);}", reduce="function(keys, values) { return sum(values); }")
-     public long countRecords(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions){
-         StringBuilder queryString = generateQueryString(phoneNumber, startTime, endTime, minDurationInSeconds, maxDurationInSeconds, dispositions);
-         return runQuery(queryString,0,0,null,false).size();
+    @View(name = "countLogs", map = "function(doc){ emit(null, 1);}", reduce = "_count")
+    public long countRecords(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions) {
+        StringBuilder queryString = generateQueryString(phoneNumber, startTime, endTime, minDurationInSeconds, maxDurationInSeconds, dispositions);
+        return runQuery(queryString, 0, 0, null, false).size();
+    }
+
+    @View(name = "maxCallDuration", map = "function(doc){ emit(null, doc.duration);}",
+            reduce = "function (key, values) {" +
+                    "    var max = 0;" +
+                    "    for(var i = 0; i < values.length; i++) {" +
+                    "        max = Math.max(values[i], max);" +
+                    "    }" +
+                    "    return max;" +
+                    "}")
+    public long findMaxCallDuration() {
+        ViewResult result = db.queryView(createQuery("maxCallDuration").reduce(true));
+        if (!result.isEmpty() && result.iterator().hasNext()) {
+            return Integer.valueOf(result.iterator().next().getValue());
+        }
+        return 0;
     }
 
     public CallDetailRecord findOrCreate(String callId, String phoneNumber) {
@@ -114,7 +131,7 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
         query.setQuery(queryString.toString());
         query.setStaleOk(false);
         query.setIncludeDocs(true);
-        if(pageSize > 0){
+        if (pageSize > 0) {
             query.setLimit(pageSize);
             query.setSkip(page * pageSize);
         }
