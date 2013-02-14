@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
@@ -20,6 +21,8 @@ import org.motechproject.appointments.api.service.contract.RescheduleAppointment
 import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.service.contract.VisitsQuery;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,13 +46,15 @@ public class AppointmentServiceImplTest {
     private AllReminderJobs allReminderJobs;
     @Mock
     private VisitsQueryService visitsQueryService;
+    @Mock
+    private EventRelay eventRelay;
 
     AppointmentService appointmentService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        appointmentService = new AppointmentServiceImpl(allAppointmentCalendars, allReminderJobs, visitsQueryService);
+        appointmentService = new AppointmentServiceImpl(allAppointmentCalendars, allReminderJobs, visitsQueryService, eventRelay);
     }
 
     @Test
@@ -67,39 +72,55 @@ public class AppointmentServiceImplTest {
                 .addVisitRequest(week4CreateVisit);
 
         ArgumentCaptor<AppointmentCalendar> appointmentCalendarArgumentCaptor = ArgumentCaptor.forClass(AppointmentCalendar.class);
-
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         appointmentService.addCalendar(appointmentCalendarRequest);
 
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarArgumentCaptor.capture());
-
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
         AppointmentCalendar calendar = appointmentCalendarArgumentCaptor.getValue();
+        MotechEvent event = motechEventArgumentCaptor.getValue();
         assertEquals(externalId, calendar.getExternalId());
         assertEquals(3, calendar.visits().size());
         assertEquals("baseline", calendar.visits().get(0).name());
         assertEquals("week2", calendar.visits().get(1).name());
         assertEquals("week4", calendar.visits().get(2).name());
-
+        assertEquals(EventKeys.CREATED_APPOINTMENT_EVENT_SUBJECT, event.getSubject());
+        assertEquals(externalId, event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
         verify(allReminderJobs, times(3)).addAppointmentJob(eq(externalId), Matchers.<Visit>any());
     }
 
     @Test
     public void shouldRemoveAnAppointmentCalender() {
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("externalId");
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 
         appointmentService.removeCalendar("externalId");
 
         verify(allAppointmentCalendars).remove(appointmentCalendar);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+
+        assertEquals(EventKeys.DELETED_APPOINTMENT_EVENT_SUBJECT, event.getSubject());
+        assertEquals("externalId", event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
     }
 
     @Test
     public void removeCalendarShouldUnscheduleAllReminders() {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("externalId");
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 
         appointmentService.removeCalendar("externalId");
 
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
         verify(allReminderJobs).removeAll("externalId");
+
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+
+        assertEquals(EventKeys.DELETED_APPOINTMENT_EVENT_SUBJECT, event.getSubject());
+        assertEquals("externalId", event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
     }
 
     @Test
@@ -114,12 +135,20 @@ public class AppointmentServiceImplTest {
         String visitName = appointmentService.addVisit(externalId, createVisitRequest).getName();
 
         ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+
         verify(allReminderJobs).addAppointmentJob(eq(externalId), visitCaptor.capture());
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        MotechEvent event = motechEventArgumentCaptor.getValue();
 
         assertEquals(visitName, visitName);
         assertEquals(now, visitCaptor.getValue().appointment().dueDate());
         assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
+        assertEquals(EventKeys.CREATED_VISIT_EVENT_SUBJECT, event.getSubject());
+        assertEquals(visitName, event.getParameters().get(EventKeys.VISIT_NAME));
+        assertEquals(visitCaptor.getValue().visitDate(), event.getParameters().get(EventKeys.VISIT_DATE));
     }
 
     @Test
@@ -157,6 +186,7 @@ public class AppointmentServiceImplTest {
         assertNotNull(visit.reminder());
         verify(allReminderJobs).removeAppointmentJob(externalId, visit);
         verify(allReminderJobs).rescheduleVisitJob(externalId, visit);
+
     }
 
     @Test
@@ -191,7 +221,7 @@ public class AppointmentServiceImplTest {
         RescheduleAppointmentRequest rescheduleAppointmentRequest = new RescheduleAppointmentRequest().setExternalId(externalId).setVisitName(visitName).
                 setAppointmentDueDate(adjustedDueDate).addAppointmentReminderConfiguration(new ReminderConfiguration());
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
-
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
         appointmentService.rescheduleAppointment(rescheduleAppointmentRequest);
@@ -201,6 +231,13 @@ public class AppointmentServiceImplTest {
 
         verify(allReminderJobs).rescheduleAppointmentJob(externalId, visit);
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+
+        assertEquals(EventKeys.MODIFY_APPOINTMENT_EVENT_SUBJECT, event.getSubject());
+        assertEquals(externalId, event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
+
     }
 
     @Test
@@ -228,12 +265,18 @@ public class AppointmentServiceImplTest {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
 
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 
         appointmentService.markVisitAsMissed(externalId, visitName);
 
         assertTrue(visit.missed());
         verify(allReminderJobs).removeAll(externalId);
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+        assertEquals(EventKeys.MISSED_VISIT_EVENT_SUBJECT, event.getSubject());
+        assertEquals(visitName, event.getParameters().get(EventKeys.VISIT_NAME));
     }
 
     @Test
