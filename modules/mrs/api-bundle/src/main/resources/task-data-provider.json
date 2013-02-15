@@ -1,110 +1,110 @@
 {
-    "name": "MRS",
+    "name": "data.provider.mrs.name",
     "objects": [
         {
-            "displayName": "Patient",
+            "displayName": "data.provider.mrs.patient.name",
             "type": "Patient",
-            "lookupFields": ["id"],
+            "lookupFields": ["data.provider.mrs.patient.lookupField.id"],
             "fields": [
                 {
-                    "displayName": "Patient ID",
+                    "displayName": "data.provider.mrs.patient.field.patientId",
                     "fieldKey": "patientId"
                 },
                 {
-                    "displayName": "Facility ID",
+                    "displayName": "data.provider.mrs.patient.field.facilityId",
                     "fieldKey": "facility.id"
                 },
                 {
-                    "displayName": "Person ID",
+                    "displayName": "data.provider.mrs.patient.field.personId",
                     "fieldKey": "person.id"
                 }
             ]
         },
         {
-            "displayName": "Person",
+            "displayName": "data.provider.mrs.person.name",
             "type": "Person",
-            "lookupFields": ["id"],
+            "lookupFields": ["data.provider.mrs.person.lookupField.id"],
             "fields": [
                 {
-                    "displayName": "Person ID",
+                    "displayName": "data.provider.mrs.person.field.personId",
                     "fieldKey": "personId"
                 },
                 {
-                    "displayName": "First name",
+                    "displayName": "data.provider.mrs.person.field.firstName",
                     "fieldKey": "firstName"
                 },
                 {
-                    "displayName": "Middle name",
+                    "displayName": "data.provider.mrs.person.field.middleName",
                     "fieldKey": "middleName"
                 },
                 {
-                    "displayName": "Last name",
+                    "displayName": "data.provider.mrs.person.field.lastName",
                     "fieldKey": "lastName"
                 },
                 {
-                    "displayName": "Preferred name",
+                    "displayName": "data.provider.mrs.person.field.preferredName",
                     "fieldKey": "preferredName"
                 },
                 {
-                    "displayName": "Address",
+                    "displayName": "data.provider.mrs.person.field.address",
                     "fieldKey": "address"
                 },
                 {
-                    "displayName": "Date of birth",
+                    "displayName": "data.provider.mrs.person.field.dateOfBirth",
                     "fieldKey": "dateOfBirth",
                     "type": "DATE"
                 },
                 {
-                    "displayName": "Birth date estimated",
+                    "displayName": "data.provider.mrs.person.field.birthDateEstimated",
                     "fieldKey": "birthDateEstimated"
                 },
                 {
-                    "displayName": "Age",
+                    "displayName": "data.provider.mrs.person.field.age",
                     "fieldKey": "age",
                     "type": "NUMBER"
                 },
                 {
-                    "displayName": "Gender",
+                    "displayName": "data.provider.mrs.person.field.gender",
                     "fieldKey": "gender"
                 },
                 {
-                    "displayName": "Dead",
+                    "displayName": "data.provider.mrs.person.field.dead",
                     "fieldKey": "dead"
                 },
                 {
-                    "displayName": "Death date",
+                    "displayName": "data.provider.mrs.person.field.deathDate",
                     "fieldKey": "deathDate",
                     "type": "DATE"
                 }
             ]
         },
         {
-            "displayName": "Facility",
+            "displayName": "data.provider.mrs.facility.name",
             "type": "Facility",
-            "lookupFields": ["id"],
+            "lookupFields": ["data.provider.mrs.facility.lookupField.id"],
             "fields": [
                 {
-                    "displayName": "Facility ID",
+                    "displayName": "data.provider.mrs.facility.field.facilityId",
                     "fieldKey": "facilityId"
                 },
                 {
-                    "displayName": "Name",
+                    "displayName": "data.provider.mrs.facility.field.name",
                     "fieldKey": "name"
                 },
                 {
-                    "displayName": "Country",
+                    "displayName": "data.provider.mrs.facility.field.country",
                     "fieldKey": "country"
                 },
                 {
-                    "displayName": "Region",
+                    "displayName": "data.provider.mrs.facility.field.region",
                     "fieldKey": "region"
                 },
                 {
-                    "displayName": "County district",
+                    "displayName": "data.provider.mrs.facility.field.countyDistrict",
                     "fieldKey": "countyDistrict"
                 },
                 {
-                    "displayName": "State province",
+                    "displayName": "data.provider.mrs.facility.field.stateProvince",
                     "fieldKey": "stateProvince"
                 }
             ]

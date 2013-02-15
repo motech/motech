@@ -51,7 +51,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         int tries = 0;
 
         do {
-            fromFile = taskDataProviderService.getProvider("MRS");
+            fromFile = taskDataProviderService.getProvider("data.provider.mrs.name");
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
@@ -59,7 +59,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         assertNotNull(fromFile);
 
         AllTaskDataProviders allTaskDataProviders = getApplicationContext().getBean(AllTaskDataProviders.class);
-        TaskDataProvider fromDB = allTaskDataProviders.byName("MRS");
+        TaskDataProvider fromDB = allTaskDataProviders.byName("data.provider.mrs.name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);

@@ -37,7 +37,7 @@
 
     <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" cardinality="0..N">
         <osgi:reference-listener>
-            <bean class="org.motechproject.tasks.util.DataProviderRegister">
+            <bean class="org.motechproject.tasks.util.ManagementDataProvider">
                 <constructor-arg ref="dataProviderServiceOsgi"/>
             </bean>
         </osgi:reference-listener>

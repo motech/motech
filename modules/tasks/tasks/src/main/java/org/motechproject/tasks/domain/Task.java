@@ -41,8 +41,8 @@ public class Task extends MotechBaseDataObject {
     }
 
     @JsonIgnore
-    public List<TaskAdditionalData> getAdditionalData(String dataProviderName) {
-        return additionalData.get(dataProviderName);
+    public List<TaskAdditionalData> getAdditionalData(String dataProviderId) {
+        return additionalData.get(dataProviderId);
     }
 
     @JsonIgnore

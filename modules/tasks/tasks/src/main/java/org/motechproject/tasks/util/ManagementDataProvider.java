@@ -2,6 +2,8 @@ package org.motechproject.tasks.util;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.motechproject.commons.api.DataProvider;
+import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +15,27 @@ import java.util.Map;
 public class ManagementDataProvider implements OsgiServiceLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelRegister.class);
     private TaskTriggerHandler handler;
+    private TaskDataProviderService taskDataProviderService;
+
+    public ManagementDataProvider(TaskDataProviderService taskDataProviderService) {
+        this(null, taskDataProviderService);
+    }
 
     @Autowired
-    public ManagementDataProvider(TaskTriggerHandler handler) {
+    public ManagementDataProvider(TaskTriggerHandler handler, TaskDataProviderService taskDataProviderService) {
         this.handler = handler;
+        this.taskDataProviderService = taskDataProviderService;
     }
 
     @Override
     public void bind(Object service, Map serviceProperties) throws IOException {
         if (service instanceof DataProvider) {
             DataProvider provider = (DataProvider) service;
-            handler.addDataProvider(provider);
+            TaskDataProvider taskDataProvider = taskDataProviderService.registerProvider(provider.toJSON());
+
+            if (handler != null) {
+                handler.addDataProvider(taskDataProvider.getId(), provider);
+            }
             LOG.info(String.format("Added data provider: %s", provider.getName()));
         }
     }
@@ -32,7 +44,11 @@ public class ManagementDataProvider implements OsgiServiceLifecycleListener {
     public void unbind(Object service, Map serviceProperties) {
         if (service instanceof DataProvider) {
             DataProvider provider = (DataProvider) service;
-            handler.removeDataProvider(provider);
+            TaskDataProvider taskDataProvider = taskDataProviderService.getProvider(provider.getName());
+
+            if (handler != null) {
+                handler.removeDataProvider(taskDataProvider.getId());
+            }
             LOG.info(String.format("Removed data provider: %s", provider.getName()));
         }
     }

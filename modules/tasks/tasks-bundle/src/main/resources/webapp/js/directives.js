@@ -124,6 +124,12 @@ widgetModule.directive('droppable', function ($compile) {
                         dropElement = angular.element(element);
                         browser = scope.$parent.BrowserDetect.browser
 
+                        parent = scope;
+
+                        while (parent.msg === undefined) {
+                            parent = parent.$parent;
+                        }
+
                         if (dropElement.data('type') === 'DATE') {
                             delete scope.selectedAction.eventParameters[dropIndex].value;
                         }
@@ -132,7 +138,7 @@ widgetModule.directive('droppable', function ($compile) {
                             if (dragElement.data('prefix') === 'trigger') {
                                 eventKey = '{{trigger.' + scope.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
                             } else if (dragElement.data('prefix') === 'ad') {
-                                eventKey = '{{ad.' + dragElement.data('source') + '.' + dragElement.data('object-type') + "#" + dragElement.data('object-id') + '.' + dragElement.data('field') + '}}';
+                                eventKey = '{{ad.' + parent.msg(dragElement.data('source')) + '.' + dragElement.data('object-type') + "#" + dragElement.data('object-id') + '.' + dragElement.data('field') + '}}';
                             }
 
                             pos = element.caret();
@@ -158,7 +164,12 @@ widgetModule.directive('droppable', function ($compile) {
                             dragElement.removeAttr("draggable");
 
                             if (dragElement.data('prefix') === 'ad') {
-                                dragElement.text(dragElement.data('source') + '.' + dragElement.data('object') + "#" + dragElement.data('object-id') + '.' + dragElement.text());
+                                dragElement.text(
+                                    parent.msg(dragElement.data('source')) + '.' +
+                                    parent.msg(dragElement.data('object')) + "#" +
+                                    dragElement.data('object-id') + '.' +
+                                    dragElement.text()
+                                );
                             }
 
                             position(dropElement, dragElement);

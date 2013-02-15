@@ -12,7 +12,7 @@ import static org.motechproject.tasks.service.TaskTriggerHandler.TRIGGER_PREFIX;
 class KeyInformation {
     private String originalKey;
     private String prefix;
-    private String dataProviderName;
+    private String dataProviderId;
     private String objectType;
     private Long objectId;
     private String eventKey;
@@ -40,7 +40,7 @@ class KeyInformation {
             Matcher matcher = pattern.matcher(withoutManipulation);
 
             if (matcher.matches()) {
-                dataProviderName = matcher.group(1);
+                dataProviderId = matcher.group(1);
                 objectType = matcher.group(2);
                 objectId = Long.valueOf(matcher.group(3));
                 eventKey = matcher.group(4);
@@ -60,8 +60,8 @@ class KeyInformation {
         return originalKey;
     }
 
-    public String getDataProviderName() {
-        return dataProviderName;
+    public String getDataProviderId() {
+        return dataProviderId;
     }
 
     public String getObjectType() {
