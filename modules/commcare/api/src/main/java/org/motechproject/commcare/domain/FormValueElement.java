@@ -1,8 +1,7 @@
 package org.motechproject.commcare.domain;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.Map.Entry;
 public class FormValueElement {
 
     private String elementName;
-    private Multimap<String, FormValueElement> subElements = new ArrayListMultimap<>();
+    private Multimap<String, FormValueElement> subElements = new LinkedHashMultimap<>();
     private Map<String, String> attributes = new HashMap<>();
     private String value;
 
@@ -57,34 +56,27 @@ public class FormValueElement {
     }
 
     public FormValueElement getElementByName(String elementName) {
-        if ("case".equals(this.elementName)) {
-            return null;
-        }
-        if (elementName.equals(this.elementName)) {
-            return this;
-        } else {
-            for (Entry<String, FormValueElement> entry : subElements.entries()) {
-                FormValueElement subElement = entry.getValue().getElementByName(elementName);
-                if (subElement != null) {
-                    return subElement;
-                }
-            }
-        }
-        return null;
+        List<FormValueElement> elements = getElementsByName(elementName);
+        return (elements.size() > 0 ? elements.get(0) : null);
     }
 
-    public FormValueElement getElementByNameIncludeCase(String elementName) {
-        if (elementName.equals(this.elementName)) {
-            return this;
-        } else {
-            for (Entry<String, FormValueElement> entry : subElements.entries()) {
-                FormValueElement subElement = entry.getValue().getElementByNameIncludeCase(elementName);
-                if (subElement != null) {
-                    return subElement;
-                }
+    public List<FormValueElement> getElementsByName(String elementName) {
+        return new ArrayList<FormValueElement>(subElements.get(elementName));
+    }
+
+    public List<FormValueElement> getAllElementsByName(String elementName) {
+        List<FormValueElement> elements = new ArrayList<FormValueElement>();
+
+        for (Entry<String, FormValueElement> entry : subElements.entries()) {
+
+            elements.addAll(entry.getValue().getAllElementsByName(elementName));
+
+            if (entry.getKey().equals(elementName)) {
+                elements.add(entry.getValue());
             }
         }
-        return null;
+
+        return elements;
     }
 
     public List<FormValueElement> getElementsByAttribute(String attribute, String value) {
