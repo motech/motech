@@ -13,9 +13,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.motechproject.testing.utils.HttpServiceCheck.waitForLocalPortToListen;
+
 public class ServerBundleIT extends BaseOsgiIT {
 
-    public void testUIFrameworkService() {
+    private static final int HTTP_PORT = 8080;
+
+    public void testUIFrameworkService() throws IOException, InterruptedException {
+        waitForLocalPortToListen(HTTP_PORT, 30);
         ServiceReference serviceReference = bundleContext.getServiceReference(UIFrameworkService.class.getName());
         assertNotNull(serviceReference);
         UIFrameworkService service = (UIFrameworkService) bundleContext.getService(serviceReference);
