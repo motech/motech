@@ -1,11 +1,7 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.net.URI;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,8 +11,14 @@ import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.model.Location;
 import org.motechproject.openmrs.ws.resource.model.LocationListResult;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.net.URI;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class LocationResourceImplTest extends AbstractResourceImplTest {
 
@@ -62,7 +64,7 @@ public class LocationResourceImplTest extends AbstractResourceImplTest {
 
         LocationListResult result = impl.getAllLocations();
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("AAABBBCCC"), extract(result.getResults(), on(Location.class).getUuid()));
     }
 
     @Test
@@ -72,7 +74,7 @@ public class LocationResourceImplTest extends AbstractResourceImplTest {
 
         LocationListResult result = impl.queryForLocationByName("Test");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("AAABBBCCC"), extract(result.getResults(), on(Location.class).getUuid()));
     }
 
     @Test

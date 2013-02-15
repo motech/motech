@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.quartz.JobBuilder.newJob;
@@ -67,7 +68,7 @@ public class SpringQuartzIT {
 
         List<TriggerKey> triggerKeys = new ArrayList<TriggerKey>(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName)));
         List<String> triggerNames = extractTriggerNames(triggerKeys);
-        assertEquals(1, triggerNames.size());
+        assertEquals(asList(uuidStr), triggerNames);
 
 
         scheduler.unscheduleJob(triggerKey(uuidStr, groupName));

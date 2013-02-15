@@ -1,16 +1,20 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.openmrs.ws.HttpException;
+import org.motechproject.openmrs.ws.resource.model.Concept;
 import org.motechproject.openmrs.ws.resource.model.ConceptListResult;
+
+import java.io.IOException;
+import java.net.URI;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 public class ConceptResourceImplTest extends AbstractResourceImplTest {
 
@@ -27,6 +31,6 @@ public class ConceptResourceImplTest extends AbstractResourceImplTest {
         ConceptResourceImpl impl = new ConceptResourceImpl(getClient(), getInstance());
         ConceptListResult result = impl.queryForConceptsByName("test");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("Test Concept"), extract(result.getResults(), on(Concept.class).getDisplay()));
     }
 }

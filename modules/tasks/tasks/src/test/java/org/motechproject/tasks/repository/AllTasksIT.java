@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,21 +35,17 @@ public class AllTasksIT extends SpringIntegrationTest {
 
         List<Task> tasks = allTasks.getAll();
 
-        assertEquals(1, tasks.size());
+        assertEquals(asList(expected), tasks);
 
         Task actual = tasks.get(0);
 
-        assertEquals(expected, actual);
+        actual.setName("newName");
 
         allTasks.addOrUpdate(actual);
 
         tasks = allTasks.getAll();
 
-        assertEquals(1, tasks.size());
-
-        actual = tasks.get(0);
-
-        assertEquals(expected, actual);
+        assertEquals(asList(actual), tasks);
 
         markForDeletion(actual);
     }

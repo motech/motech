@@ -10,6 +10,9 @@ import org.motechproject.commcare.util.CommCareAPIHttpClient;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -37,7 +40,8 @@ public class CommcareCaseServiceImplTest {
 
         List<CaseInfo> cases = caseService.getAllCases();
 
-        assertEquals(cases.size(), 4);
+        assertEquals(asList("3ECE7ROKGQ7U1XX1DOL0PNRJW", "63ZB8WGEQY3TJ23PHB2EGD39J", "EP60PTXTZW6HD42KPSY9U018V",
+                "EPKT93XZQ8COVAIQZ7DMQXO7S"), extract(cases, on(CaseInfo.class).getCaseId()));
     }
 
     @Test
@@ -67,7 +71,8 @@ public class CommcareCaseServiceImplTest {
 
         List<CaseInfo> cases = caseService.getAllCasesByUserId(userId);
 
-        assertEquals(cases.size(), 4);
+        assertEquals(asList("3ECE7ROKGQ7U1XX1DOL0PNRJW", "63ZB8WGEQY3TJ23PHB2EGD39J", "EP60PTXTZW6HD42KPSY9U018V",
+                "EPKT93XZQ8COVAIQZ7DMQXO7S"), extract(cases, on(CaseInfo.class).getCaseId()));
     }
 
     public void testCaseByCaseIdAndUserId() {

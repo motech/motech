@@ -4,8 +4,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.motechproject.decisiontree.core.FlowSession;
 
-import java.util.Arrays;
-
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -25,7 +26,7 @@ public class BuildersTest {
                 .setName("tree1")
                 .setDescription("desc")
                 .setRootTransition(new Transition().setDestinationNode(new Node()
-                        .setActionsBefore(Arrays.asList(Action.newBuilder()
+                        .setActionsBefore(asList(Action.newBuilder()
                                 .setEventId("event_x")
                                 .build()))
                         .setPrompts(new TextToSpeechPrompt()
@@ -37,13 +38,14 @@ public class BuildersTest {
                                         .setName("healthy")}
                         })
                 ));
-//        System.out.print(t);
+
         assertNotNull(t);
         assertEquals("tree1", t.getName());
         assertEquals("desc", t.getDescription());
         assertNotNull(t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getTransitions());
         assertNotNull(t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)));
-        assertEquals(2, t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getTransitions().size());
+        assertEquals(asList("healthy", "sick"), extract(t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getTransitions(),
+                on(Transition.class).getName()));
     }
 
 }

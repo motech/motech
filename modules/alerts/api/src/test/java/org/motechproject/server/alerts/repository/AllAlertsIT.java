@@ -5,22 +5,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
-import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,7 +52,7 @@ public class AllAlertsIT {
         createAlert("included_entity", AlertType.LOW, AlertStatus.NEW, 2, null, DateUtil.now());
 
         Collection<Alert> alerts = allAlerts.findByExternalId("included_entity");
-        assertEquals(Arrays.asList("included_entity", "included_entity"), extract(alerts, on(Alert.class).getExternalId()));
+        assertEquals(asList("included_entity", "included_entity"), extract(alerts, on(Alert.class).getExternalId()));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class AllAlertsIT {
         createAlert("entity3", AlertType.LOW, AlertStatus.NEW, 2, null, DateUtil.now());
 
         Collection<Alert> alerts = allAlerts.findByAlertType(AlertType.LOW);
-        assertEquals(Arrays.asList(AlertType.LOW, AlertType.LOW), extract(alerts, on(Alert.class).getAlertType()));
+        assertEquals(asList(AlertType.LOW, AlertType.LOW), extract(alerts, on(Alert.class).getAlertType()));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AllAlertsIT {
         createAlert("entity3", AlertType.LOW, AlertStatus.NEW, 2, null, DateUtil.now());
 
         Collection<Alert> alerts = allAlerts.findByStatus(AlertStatus.CLOSED);
-        assertEquals(Arrays.asList(AlertStatus.CLOSED, AlertStatus.CLOSED), extract(alerts, on(Alert.class).getStatus()));
+        assertEquals(asList(AlertStatus.CLOSED, AlertStatus.CLOSED), extract(alerts, on(Alert.class).getStatus()));
     }
 
     @Test
@@ -82,22 +82,20 @@ public class AllAlertsIT {
         createAlert("entity3", AlertType.LOW, AlertStatus.NEW, 2, null, DateUtil.now());
 
         Collection<Alert> alerts = allAlerts.findByPriority(1);
-        assertEquals(Arrays.asList(1), extract(alerts, on(Alert.class).getPriority()));
+        assertEquals(asList(1), extract(alerts, on(Alert.class).getPriority()));
     }
 
     @Test
     public void shouldFilterAlertsBasedOnDateRange() {
         DateTime now = DateUtil.now();
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, now.minusDays(2));
+
+        createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, now.minusDays(2));
         Alert alert2 = createAlert("112", AlertType.HIGH, AlertStatus.NEW, 2, null, now.minusDays(1));
         Alert alert3 = createAlert("113", AlertType.HIGH, AlertStatus.NEW, 2, null, now);
         Alert alert4 = createAlert("113", AlertType.HIGH, AlertStatus.NEW, 2, null, now.plusDays(1));
 
         List<Alert> listAlerts = allAlerts.findByDateTime(now.minusDays(1), now.plusDays(1));
-        assertEquals(3, listAlerts.size());
-        assertEquals(alert2.getId(), listAlerts.get(0).getId());
-        assertEquals(alert3.getId(), listAlerts.get(1).getId());
-        assertEquals(alert4.getId(), listAlerts.get(2).getId());
+        assertEquals(asList(alert2, alert3, alert4), listAlerts);
     }
 
     @Test

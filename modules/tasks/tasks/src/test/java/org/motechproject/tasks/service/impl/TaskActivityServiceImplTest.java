@@ -31,6 +31,8 @@ public class TaskActivityServiceImplTest {
     private static final String TASK_ID = "12345";
     private static final String ERROR_FIELD = "phone";
 
+    private List<TaskActivity> activities;
+
     @Mock
     AllTaskActivities allTaskActivities;
 
@@ -41,11 +43,12 @@ public class TaskActivityServiceImplTest {
         initMocks(this);
 
         activityService = new TaskActivityServiceImpl(allTaskActivities);
+        activities = createTaskActivities();
     }
 
     @Test
     public void shouldReturnTaskActivitiesForTaskFromLastErrorActivity() {
-        when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(getTaskActivities());
+        when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(activities);
 
         Task t = new Task();
         t.setId(TASK_ID);
@@ -53,7 +56,6 @@ public class TaskActivityServiceImplTest {
         List<TaskActivity> errors = activityService.errorsFromLastRun(t);
 
         assertNotNull(errors);
-        assertEquals(4, errors.size());
 
         for (TaskActivity error : errors) {
             assertEquals(ERROR.getValue(), error.getMessage());
@@ -126,7 +128,6 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldDeleteAllTaskActivitiesForGivenTask() {
-        List<TaskActivity> activities = getTaskActivities();
         when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(activities);
 
         activityService.deleteActivitiesForTask(TASK_ID);
@@ -145,31 +146,22 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldReturnAllActivities() {
-        List<TaskActivity> expected = getTaskActivities();
-
-        when(allTaskActivities.getAll()).thenReturn(expected);
+        when(allTaskActivities.getAll()).thenReturn(activities);
 
         List<TaskActivity> actual = activityService.getAllActivities();
 
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-
-        for (int i = 0; i < expected.size(); ++i) {
-            assertEquals(expected.get(i), actual.get(i));
-        }
+        assertEquals(activities, actual);
     }
 
     @Test
     public void shouldReturnAllActivitiesForGivenTask() {
-        List<TaskActivity> expected = getTaskActivities();
-
-        when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(expected);
+        when(allTaskActivities.byTaskId(TASK_ID)).thenReturn(activities);
 
         List<TaskActivity> actual = activityService.getTaskActivities(TASK_ID);
 
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        assertEquals(expected, actual);
+        assertEquals(activities, actual);
     }
 
     private void assertActivity(String messageKey, String field, String task, TaskActivityType activityType, TaskActivity activity) {
@@ -185,7 +177,7 @@ public class TaskActivityServiceImplTest {
         }
     }
 
-    private List<TaskActivity> getTaskActivities() {
+    private List<TaskActivity> createTaskActivities() {
         List<TaskActivity> messages = new ArrayList<>();
         messages.add(createError());
         messages.add(createError());

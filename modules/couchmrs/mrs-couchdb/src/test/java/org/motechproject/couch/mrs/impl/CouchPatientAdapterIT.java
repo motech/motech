@@ -1,10 +1,5 @@
 package org.motechproject.couch.mrs.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -27,6 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
@@ -100,9 +103,8 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
 
         List<Patient> patientsRetrieved = patientAdapter.search("John Doe", "456");
 
-        assertTrue(patientsRetrieved.size() > 0);
-        assertEquals(patientsRetrieved.get(0).getMotechId(), "456");
-        assertTrue(patientsRetrieved.get(0).getPerson().getPreferredName().equals("John Doe"));
+        assertEquals(asList("456"), extract(patientsRetrieved, on(Patient.class).getMotechId()));
+        assertEquals(asList("John Doe"), extract(patientsRetrieved, on(Patient.class).getPerson().getPreferredName()));
     }
 
     @Override

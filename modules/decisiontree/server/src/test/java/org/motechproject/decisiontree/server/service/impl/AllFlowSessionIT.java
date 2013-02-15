@@ -16,6 +16,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.flatten;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -43,15 +47,9 @@ public class AllFlowSessionIT {
         allFlowSessionRecords.add(flowSessionRecord);
 
         List<FlowSessionRecord> flowSessionRecords = allFlowSessionRecords.getAll();
-        assertThat(flowSessionRecords.size(), is(1));
 
-        FlowSessionRecord actualRecord = flowSessionRecords.get(0);
-        assertThat(actualRecord, is(flowSessionRecord));
-        List<String> values = actualRecord.<ArrayList<String>>get("key");
-        assertThat(values.size(), is(3));
-        assertThat(values.get(0), is("value1"));
-        assertThat(values.get(1), is("value2"));
-        assertThat(values.get(2), is("value3"));
+        assertEquals(asList(flowSessionRecord), flowSessionRecords);
+        assertEquals(asList("value1", "value2", "value3"), flatten(extract(flowSessionRecords, on(FlowSessionRecord.class).get("key"))));
     }
 
     @Test
@@ -70,21 +68,22 @@ public class AllFlowSessionIT {
     public void shouldFindOrCreateACallSessionRecord() {
         assertThat(allFlowSessionRecords.getAll().size(), is(0));
         FlowSessionRecord newRecord = allFlowSessionRecords.findOrCreate("session1", "1234567890");
-        assertThat(allFlowSessionRecords.getAll().size(), is(1));
+        assertThat(allFlowSessionRecords.getAll(), is(asList(newRecord)));
 
         FlowSessionRecord existingRecord = allFlowSessionRecords.findOrCreate("session1", "1234567890");
-        assertThat(allFlowSessionRecords.getAll().size(), is(1));
+        assertThat(allFlowSessionRecords.getAll(), is(asList(newRecord)));
         assertThat(existingRecord, is(equalTo(newRecord)));
     }
 
     @Test
     public void shouldIgnoreCaseWhileFindOrCreateACallSessionRecord() {
         assertThat(allFlowSessionRecords.getAll().size(), is(0));
-        allFlowSessionRecords.findOrCreate("Session1", "1234567890");
-        assertThat(allFlowSessionRecords.getAll().size(), is(1));
+
+        FlowSessionRecord record = allFlowSessionRecords.findOrCreate("Session1", "1234567890");
+        assertThat(allFlowSessionRecords.getAll(), is(asList(record)));
 
         allFlowSessionRecords.findOrCreate("SESSION1", "1234567890");
-        assertThat(allFlowSessionRecords.getAll().size(), is(1));
+        assertThat(allFlowSessionRecords.getAll(), is(asList(record)));
     }
 
     @Test

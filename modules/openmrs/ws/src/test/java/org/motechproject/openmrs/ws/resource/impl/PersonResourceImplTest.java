@@ -1,12 +1,5 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +12,15 @@ import org.motechproject.openmrs.ws.resource.model.AttributeTypeListResult;
 import org.motechproject.openmrs.ws.resource.model.Person;
 import org.motechproject.openmrs.ws.resource.model.Person.PreferredAddress;
 import org.motechproject.openmrs.ws.resource.model.Person.PreferredName;
+
+import java.io.IOException;
+import java.net.URI;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class PersonResourceImplTest extends AbstractResourceImplTest {
     private PersonResourceImpl impl;
@@ -60,11 +62,11 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
         name.setGivenName("John");
         name.setMiddleName("E");
         name.setFamilyName("Doe");
-        person.setNames(Arrays.asList(name));
+        person.setNames(asList(name));
 
         PreferredAddress addr = new PreferredAddress();
         addr.setAddress1("5 Main St");
-        person.setAddresses(Arrays.asList(addr));
+        person.setAddresses(asList(addr));
         return person;
     }
 
@@ -91,7 +93,7 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
                 readJsonFromFile("json/person-attribute-type-response.json"));
         AttributeTypeListResult result = impl.queryPersonAttributeTypeByName("Citizenship");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("8d871afc-c2cc-11de-8d13-0010c6dffd0f"), extract(result.getResults(), on(AttributeType.class).getUuid()));
     }
 
     @Test

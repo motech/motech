@@ -8,6 +8,9 @@ import org.motechproject.commcare.util.CommCareAPIHttpClient;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -33,7 +36,9 @@ public class CommcareUserServiceImplTest {
 
         List<CommcareUser> users = userService.getAllUsers();
 
-        assertEquals(users.size(), 4);
+        assertEquals(asList("3F2504E04F8911D39A0C0305E82C3301", "5d622c4336d118a9020d1c758e71de51",
+                "5d622c4336d118a9020d1c758e71f368", "5d622c4336d118a9020d1c758e71ea2f"),
+                extract(users, on(CommcareUser.class).getId()));
     }
 
     @Test

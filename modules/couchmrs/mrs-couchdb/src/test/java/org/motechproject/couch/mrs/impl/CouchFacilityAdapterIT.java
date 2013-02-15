@@ -1,8 +1,5 @@
 package org.motechproject.couch.mrs.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Test;
@@ -16,6 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
@@ -48,9 +52,7 @@ public class CouchFacilityAdapterIT extends SpringIntegrationTest {
 
         List<CouchFacility> facilities = facilityAdapter.getFacilities("facilityName");
 
-        assertTrue(facilities.size() > 1);
-
-        assertEquals(facilities.get(0).getName(), "facilityName");
+        assertEquals(asList("facilityId", "facilityId2"), extract(facilities, on(CouchFacility.class).getFacilityId()));
     }
 
     @Override

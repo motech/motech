@@ -1,19 +1,19 @@
 package org.motechproject.server.messagecampaign.dao;
 
-import ch.lambdaj.Lambda;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
-import org.motechproject.commons.date.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -55,11 +55,12 @@ public class AllCampaignEnrollmentsIT {
         allCampaignEnrollments.saveOrUpdate(enrollment);
         verify(allCampaignEnrollments).add(any(CampaignEnrollment.class));
 
-        enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
         allCampaignEnrollments.saveOrUpdate(new CampaignEnrollment(externalId, campaignName).setReferenceDate(DateUtil.newDate(2011, 11, 1)));
         verify(allCampaignEnrollments).update(any(CampaignEnrollment.class));
 
-        assertEquals(1, allCampaignEnrollments.getAll().size());
+        assertEquals(asList(campaignName), extract(allCampaignEnrollments.getAll(), on(CampaignEnrollment.class).getCampaignName()));
+        assertEquals(asList(externalId), extract(allCampaignEnrollments.getAll(), on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(DateUtil.newDate(2011, 11, 1)), extract(allCampaignEnrollments.getAll(), on(CampaignEnrollment.class).getReferenceDate()));
     }
 
     @Test
@@ -79,10 +80,10 @@ public class AllCampaignEnrollmentsIT {
         allCampaignEnrollments.add(completedEnrollment);
 
         List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByStatus(CampaignEnrollmentStatus.ACTIVE);
-        assertEquals(asList(new String[]{"active_external_id_1", "active_external_id_2"}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(new String[]{"active_external_id_1", "active_external_id_2"}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
 
         filteredEnrollments = allCampaignEnrollments.findByStatus(CampaignEnrollmentStatus.INACTIVE);
-        assertEquals(asList(new String[] { "some_external_id"}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(new String[] { "some_external_id"}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class AllCampaignEnrollmentsIT {
         allCampaignEnrollments.add(new CampaignEnrollment("some_other_external_id", campaignName));
 
         List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByExternalId(externalId);
-        assertEquals(asList(new String[]{externalId, externalId}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(new String[]{externalId, externalId}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class AllCampaignEnrollmentsIT {
         allCampaignEnrollments.add(new CampaignEnrollment("some_other_external_id", campaignName));
 
         List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByCampaignName(campaignName);
-        assertEquals(asList(new String[]{campaignName, campaignName}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getCampaignName()));
+        assertEquals(asList(new String[]{campaignName, campaignName}), extract(filteredEnrollments, on(CampaignEnrollment.class).getCampaignName()));
     }
 
     @After

@@ -1,12 +1,7 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,8 +18,15 @@ import org.motechproject.openmrs.ws.resource.model.Observation.ObservationValue;
 import org.motechproject.openmrs.ws.resource.model.Patient;
 import org.motechproject.openmrs.ws.resource.model.Person;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 public class EncounterResourceImplTest extends AbstractResourceImplTest {
 
@@ -91,6 +93,6 @@ public class EncounterResourceImplTest extends AbstractResourceImplTest {
         EncounterResourceImpl impl = new EncounterResourceImpl(getClient(), getInstance());
         EncounterListResult result = impl.queryForAllEncountersByPatientId("200");
 
-        assertEquals(1, result.getResults().size());
+        assertEquals(asList("446d0bec-5e65-4f25-aacd-ee7da78ec616"), extract(result.getResults(), on(Encounter.class).getUuid()));
     }
 }

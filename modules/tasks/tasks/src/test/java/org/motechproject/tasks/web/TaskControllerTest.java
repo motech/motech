@@ -61,11 +61,7 @@ public class TaskControllerTest {
         verify(taskService).getAllTasks();
 
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-
-        for (int i = 0; i < expected.size(); ++i) {
-            assertEquals(expected.get(i), actual.get(i));
-        }
+        assertEquals(expected, actual);
     }
 
     @Test

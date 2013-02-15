@@ -1,8 +1,8 @@
 package org.motechproject.ivr.event;
 
 import org.junit.Test;
-import org.motechproject.ivr.event.CallEventCustomData;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 
 public class CallEventCustomDataTest {
@@ -14,8 +14,8 @@ public class CallEventCustomDataTest {
         callEventCustomData.add(key1, "bar");
         callEventCustomData.add(key1, "bar");
         callEventCustomData.add(key2, "baz");
-        assertEquals(2, callEventCustomData.getAll(key1).size());
-        assertEquals(1, callEventCustomData.getAll(key2).size());
+        assertEquals(asList("bar", "bar"), callEventCustomData.getAll(key1));
+        assertEquals(asList("baz"), callEventCustomData.getAll(key2));
     }
 
     @Test
