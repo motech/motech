@@ -10,7 +10,7 @@
             </div>
             <div class="control-group form-inline">
                 <label >{{msg('header.searchTasks')}}</label>
-                <input type="text" ng-model="query" ng-change="search()" class="input-medium search-query" placeholder="Search">
+                <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('header.searchByNameOrDescription')}}">
                 <div data-toggle="buttons-checkbox" class="btn-group">
                     <button ng-click="setHideActive()" class="btn btn-primary setHideActive" type="button"><i class="icon-white icon-ok"></i> {{msg('header.activeTasks')}}</button>
                     <button ng-click="setHidePaused()" class="btn btn-primary setHidePaused" type="button"><i class="icon-white icon-ok"></i> {{msg('header.pausedTasks')}}</button>
@@ -35,8 +35,8 @@
                             </a>
 
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description && item.task.enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
-                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-hide="item.task.enabled" class="task-element task-paused">
                                     <span class="task-list-button-activity">
@@ -95,13 +95,16 @@
             </div>
             <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
                 <ul>
+                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('pagination.first')}}</a></li>
                     <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('pagination.prev')}}</a></li>
                     <li ng-repeat="number in range(pagedItems.length)"
+                        ng-hide="hidePages(number)"
                         ng-class="{active: number == currentPage}"
                         ng-click="setPage()">
                         <a href ng-bind="number + 1">1</a>
                     </li>
                     <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('pagination.next')}}</a></li>
+                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('pagination.last')}}</a></li>
                 </ul>
             </div>
 

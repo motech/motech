@@ -17,8 +17,8 @@
                     </ul>
 
                     <ul class="task-nav pull-right">
-                        <li ng-show="description && enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
-                        <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-original-title="{{msg('section.taskDescription')}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
+                        <li ng-show="description && enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                        <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                         <li ng-show="description" class="divider-vertical"></li>
                         <li ng-hide="enabled" class="task-element task-paused">
                             <span class="task-list-button-activity">
@@ -37,7 +37,14 @@
                 </div>
             </div>
             <div class="clearfix"></div><div class="margin-before2"></div>
-            <div class="margin-after">
+
+            <div class="margin-after"  ng-show="activities.length &gt; 0">
+                <div class="control-group">
+                    <label class="help-inline">{{msg('header.filterActivity')}}</label>
+                    <select ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
+                    <label class="help-inline">{{msg('header.activitiesPerPage')}}</label>
+                    <select class="span1" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
+                </div>
                 <div class="box-content clearfix" ng-hide="activities.length == 0">
                     <table class="table table-striped table-lightblue table-recent-activity-task table-condensed">
                         <thead>
@@ -48,7 +55,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="activity in activities">
+                        <tr ng-repeat="activity in pagedItems[currentPage]">
                             <td>
                                 <img ng-show="activity.activityType == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
                                 <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
@@ -59,6 +66,20 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
+                    <ul>
+                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('pagination.first')}}</a></li>
+                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('pagination.prev')}}</a></li>
+                        <li ng-repeat="number in range(pagedItems.length)"
+                            ng-hide="hidePages(number)"
+                            ng-class="{active: number == currentPage}"
+                            ng-click="setPage()">
+                            <a href ng-bind="number + 1">1</a>
+                        </li>
+                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('pagination.next')}}</a></li>
+                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('pagination.last')}}</a></li>
+                    </ul>
                 </div>
                 <div class="alert" ng-show="activities.length == 0">
                     <strong>{{msg('warning')}}:</strong>
