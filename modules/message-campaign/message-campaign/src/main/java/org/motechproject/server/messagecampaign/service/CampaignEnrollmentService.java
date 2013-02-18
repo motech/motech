@@ -17,7 +17,7 @@ public class CampaignEnrollmentService {
     private AllCampaignEnrollments allCampaignEnrollments;
 
     public void register(CampaignEnrollment enrollment) {
-        allCampaignEnrollments.saveOrUpdate(enrollment);   
+        allCampaignEnrollments.saveOrUpdate(enrollment);
     }
 
     public void unregister(String externalId, String campaignName) {

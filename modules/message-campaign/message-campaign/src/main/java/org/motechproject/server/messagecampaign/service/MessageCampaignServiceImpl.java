@@ -1,6 +1,9 @@
 package org.motechproject.server.messagecampaign.service;
 
 import org.joda.time.DateTime;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
@@ -26,15 +29,17 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     private AllCampaignEnrollments allCampaignEnrollments;
     private CampaignSchedulerFactory campaignSchedulerFactory;
     private AllMessageCampaigns allMessageCampaigns;
+    private EventRelay relay;
 
     @Autowired
     public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory,
-                                      AllMessageCampaigns allMessageCampaigns) {
+                                      AllMessageCampaigns allMessageCampaigns, EventRelay relay) {
         this.campaignEnrollmentService = campaignEnrollmentService;
         this.campaignEnrollmentRecordMapper = campaignEnrollmentRecordMapper;
         this.allCampaignEnrollments = allCampaignEnrollments;
         this.campaignSchedulerFactory = campaignSchedulerFactory;
         this.allMessageCampaigns = allMessageCampaigns;
+        this.relay = relay;
     }
 
     public void startFor(CampaignRequest request) {
@@ -42,6 +47,13 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         campaignEnrollmentService.register(enrollment);
         CampaignSchedulerService campaignScheduler = campaignSchedulerFactory.getCampaignScheduler(request.campaignName());
         campaignScheduler.start(enrollment);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put(EventKeys.EXTERNAL_ID_KEY, enrollment.getExternalId());
+        param.put(EventKeys.CAMPAIGN_NAME_KEY, enrollment.getCampaignName());
+        MotechEvent event = new MotechEvent(EventKeys.ENROLLED_USER_SUBJECT, param);
+
+        relay.sendEventMessage(event);
     }
 
     @Override
@@ -49,6 +61,13 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         campaignEnrollmentService.unregister(request.externalId(), request.campaignName());
         CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(request.externalId(), request.campaignName());
         campaignSchedulerFactory.getCampaignScheduler(request.campaignName()).stop(enrollment);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put(EventKeys.EXTERNAL_ID_KEY, request.externalId());
+        param.put(EventKeys.CAMPAIGN_NAME_KEY, request.campaignName());
+        MotechEvent event = new MotechEvent(EventKeys.UNENROLLED_USER_SUBJECT, param);
+
+        relay.sendEventMessage(event);
     }
 
     @Override

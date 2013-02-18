@@ -8,7 +8,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
@@ -61,12 +64,14 @@ public class MessageCampaignServiceImplTest {
     private CampaignSchedulerFactory campaignSchedulerFactory;
     @Mock
     private CampaignRecord campaignRecord;
+    @Mock
+    private EventRelay eventRelay;
 
     @Before
     public void setUp() {
         initMocks(this);
         messageCampaignService = new MessageCampaignServiceImpl(campaignEnrollmentService, campaignEnrollmentRecordMapper,
-                allCampaignEnrollments, campaignSchedulerFactory, allMessageCampaigns);
+                allCampaignEnrollments, campaignSchedulerFactory, allMessageCampaigns, eventRelay);
     }
 
     @Test
@@ -88,6 +93,13 @@ public class MessageCampaignServiceImplTest {
 
         CampaignEnrollment campaignEnrollment = campaignEnrollmentCaptor.getValue();
         assertThat(campaignEnrollment.getReferenceDate(), is(new LocalDate(2011, 11, 22)));
+
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+        assertEquals(event.getSubject(), EventKeys.ENROLLED_USER_SUBJECT);
+        assertEquals(request.externalId(), event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
+        assertEquals(request.campaignName(), event.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY));
     }
 
     @Test
@@ -105,6 +117,13 @@ public class MessageCampaignServiceImplTest {
         messageCampaignService.stopAll(request);
 
         verify(campaignEnrollmentService).unregister(request.externalId(), request.campaignName());
+
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+        assertEquals(event.getSubject(), EventKeys.UNENROLLED_USER_SUBJECT);
+        assertEquals(request.externalId(), event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
+        assertEquals(request.campaignName(), event.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY));
     }
 
     @Test
@@ -155,6 +174,13 @@ public class MessageCampaignServiceImplTest {
         verify(campaignScheduler).start(enrollment.capture());
         assertEquals("entity_1", enrollment.getValue().getExternalId());
         assertEquals("campaign-name", enrollment.getValue().getCampaignName());
+
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+        MotechEvent event = motechEventArgumentCaptor.getValue();
+        assertEquals(event.getSubject(), EventKeys.ENROLLED_USER_SUBJECT);
+        assertEquals(enrollment.getValue().getExternalId(), event.getParameters().get(EventKeys.EXTERNAL_ID_KEY));
+        assertEquals(enrollment.getValue().getCampaignName(), event.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY));
     }
 
     @Test
