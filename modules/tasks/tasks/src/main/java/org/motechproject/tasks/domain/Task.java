@@ -47,7 +47,7 @@ public class Task extends MotechBaseDataObject {
 
     @JsonIgnore
     public boolean hasFilters() {
-        return !filters.isEmpty();
+        return filters != null && !filters.isEmpty();
     }
 
     public String getName() {

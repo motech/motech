@@ -223,18 +223,23 @@ public class TaskTriggerHandler {
         List<KeyInformation> keys = getKeys(template);
 
         for (KeyInformation key : keys) {
+            String value = "";
+
             if (key.fromTrigger()) {
-                conversionTemplate = replaceTriggerKey(event, task, conversionTemplate, key);
+                value = getTriggerKey(event, key);
             } else if (key.fromAdditionalData()) {
-                conversionTemplate = replaceAdditionalDataKey(event, task, conversionTemplate, key);
+                value = getAdditionalDataKey(event, task, key);
             }
+
+            String replacedValue = manipulateValue(value, key.getManipulations(), task);
+            conversionTemplate = conversionTemplate.replace(String.format("{{%s}}", key.getOriginalKey()), replacedValue);
         }
 
         return conversionTemplate;
     }
 
-    private String replaceTriggerKey(MotechEvent event, Task task, String template, KeyInformation key) throws TaskException {
-        String replaced = "";
+    private String getTriggerKey(MotechEvent event, KeyInformation key) throws TaskException {
+        String value = "";
 
         if (event.getParameters().containsKey(key.getEventKey())) {
             Object obj = event.getParameters().get(key.getEventKey());
@@ -243,17 +248,13 @@ public class TaskTriggerHandler {
                 obj = "";
             }
 
-            String value = String.valueOf(obj);
-            String replacedValue = manipulateValue(value, key.getManipulations(), task);
-            replaced = template.replace(String.format("{{%s}}", key.getOriginalKey()), replacedValue);
+            value = String.valueOf(obj);
         }
 
-        return replaced;
+        return value;
     }
 
-    private String replaceAdditionalDataKey(MotechEvent event, Task task, String template, KeyInformation key) throws TaskException {
-        String replaced;
-
+    private String getAdditionalDataKey(MotechEvent event, Task task, KeyInformation key) throws TaskException {
         if (dataProviders == null || dataProviders.isEmpty()) {
             throw new TaskException("error.notFoundDataProvider", key.getObjectType());
         }
@@ -265,8 +266,16 @@ public class TaskTriggerHandler {
         }
 
         TaskAdditionalData ad = findAdditionalData(task, key);
+        KeyInformation adKey = new KeyInformation(ad.getLookupValue());
+
         Map<String, String> lookupFields = new HashMap<>();
-        lookupFields.put(ad.getLookupField(), event.getParameters().get(ad.getLookupValue()).toString());
+
+        if (adKey.fromTrigger()) {
+            lookupFields.put(ad.getLookupField(), event.getParameters().get(adKey.getEventKey()).toString());
+        } else if (adKey.fromAdditionalData()) {
+            String objectValue = getAdditionalDataKey(event, task, adKey);
+            lookupFields.put(ad.getLookupField(), objectValue);
+        }
 
         Object found = provider.lookup(key.getObjectType(), lookupFields);
 
@@ -274,10 +283,7 @@ public class TaskTriggerHandler {
             throw new TaskException("error.notFoundObjectForType", key.getObjectType());
         }
 
-        String objectValue = getValueFromObject(found, key.getEventKey());
-        replaced = template.replace(String.format("{{%s}}", key.getOriginalKey()), objectValue);
-
-        return replaced;
+        return getValueFromObject(found, key.getEventKey());
     }
 
     private List<KeyInformation> getKeys(String templateText) {

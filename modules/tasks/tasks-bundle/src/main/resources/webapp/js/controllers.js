@@ -73,7 +73,7 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
     $scope.enableTask = function (item, enabled) {
         item.task.enabled = enabled;
 
-        item.task.$save(dummyHandler, function(response) {
+        item.task.$save(dummyHandler, function (response) {
             item.task.enabled = !enabled;
             handleResponse('error.actionNotChangeTitle', 'error.actionNotChange', response);
         });
@@ -143,9 +143,9 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
 
 
     $scope.setHideActive = function () {
-        if($scope.hideActive == true) {
+        if ($scope.hideActive == true) {
             $scope.hideActive = false;
-            if($scope.hidePaused == true) {
+            if ($scope.hidePaused == true) {
                 $scope.setFilter('pausedTaskFilter');
             } else {
                 $scope.setFilter('allItems');
@@ -153,7 +153,7 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
             $('.setHideActive').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
         } else {
             $scope.hideActive = true;
-            if($scope.hidePaused == true) {
+            if ($scope.hidePaused == true) {
                 $scope.setFilter('noItems');
             } else {
                 $scope.setFilter('activeTaskFilter');
@@ -163,9 +163,9 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
     }
 
     $scope.setHidePaused = function () {
-        if($scope.hidePaused == true) {
+        if ($scope.hidePaused == true) {
             $scope.hidePaused = false;
-            if($scope.hideActive == true) {
+            if ($scope.hideActive == true) {
                 $scope.setFilter('activeTaskFilter');
             } else {
                 $scope.setFilter('allItems');
@@ -173,7 +173,7 @@ function DashboardCtrl($scope, $filter, Tasks, Activities) {
             $('.setHidePaused').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
         } else {
             $scope.hidePaused = true;
-            if($scope.hideActive == true) {
+            if ($scope.hideActive == true) {
                 $scope.setFilter('noItems');
             } else {
                 $scope.setFilter('pausedTaskFilter');
@@ -217,7 +217,8 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                 var trigger = $scope.task.trigger.split(':'),
                     action = $scope.task.action.split(':'),
                     regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
-                    found, replaced = [], dataSource, dataSourceId, ds, object, obj, eventKey, value, i, j;
+                    rgx = new RegExp('ad\\.(.+?)\\.(.+?)\\#(.+?)\\.(.+)', "g"),
+                    replaced = [], lookupDS, lookupObj, lookupField, found, dataSource, dataSourceId, ds, object, obj, eventKey, value, displayName, i, j;
 
                 $scope.setTaskEvent('trigger', trigger[0], trigger[1], trigger[2]);
                 $scope.setTaskEvent('action', action[0], action[1], action[2]);
@@ -253,7 +254,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                             fields: obj.fields,
                             lookupFields: obj.lookupFields,
                             lookup: {
-                                displayName: $scope.findTriggerEventParameter(object.lookupValue).displayName,
+                                displayName: object.lookupValue,
                                 by: object.lookupValue,
                                 field: object.lookupField
                             }
@@ -263,6 +264,21 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     $scope.selectedDataSources.push(dataSource);
                     $scope.availableDataSources.removeObject($scope.findDataSourceById($scope.availableDataSources, dataSourceId));
                 }
+
+                angular.forEach($scope.selectedDataSources, function (dataSource) {
+                    angular.forEach(dataSource.objects, function (object) {
+                        if (object.lookup.displayName.indexOf('trigger') === 0) {
+                            object.lookup.displayName = $scope.msg($scope.findTriggerEventParameter(object.lookup.displayName.substring(8)).displayName);
+                        } else if (object.lookup.displayName.indexOf('ad') === 0) {
+                            found = rgx.exec(object.lookup.displayName);
+                            lookupDS = $scope.findDataSourceById($scope.selectedDataSources, found[1]);
+                            lookupObj = $scope.findObject(lookupDS, found[2], +found[3]);
+                            lookupField = $scope.findObjectField(lookupObj, found[4]);
+
+                            object.lookup.displayName = "{0} {1}#{2} {3}".format($scope.msg(lookupDS.name), $scope.msg(lookupObj.displayName),lookupObj.id, $scope.msg(lookupField.displayName));
+                        }
+                    });
+                });
 
                 for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
                     eventKey = $scope.selectedAction.eventParameters[i].eventKey;
@@ -368,7 +384,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         }
     };
 
-    $scope.getTooltipMsg = function(selected) {
+    $scope.getTooltipMsg = function (selected) {
         return selected !== undefined ? $scope.msg('help.doubleClickToEdit') : '';
     }
 
@@ -439,7 +455,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     });
                 });
             } else {
-                $('<div>' + action.eventParameters[i].value + "</div>").find('span[data-prefix="ad"]').each(function(index, value) {
+                $('<div>' + action.eventParameters[i].value + "</div>").find('span[data-prefix="ad"]').each(function (index, value) {
                     var span = $(value), source = span.data('source'),
                         objectType = span.data('object-type'), objectId = span.data('object-id'),
                         exists = false, dataSource, object, i;
@@ -470,6 +486,37 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                 });
             }
         }
+
+        angular.forEach($scope.selectedDataSources, function (dataSource) {
+            angular.forEach(dataSource.objects, function (object) {
+                var regex = new RegExp('ad\\.(.+?)\\.(.+?)\\#(.+?)\\.(.+)', "g"),
+                    idx = 0,
+                    exec, found, ds, obj, i;
+
+                if (object.lookup.by.indexOf('ad') === 0) {
+                    exec = regex.exec(object.lookup.by);
+                    ds = $scope.findDataSourceById($scope.selectedDataSources, exec[1]);
+                    obj = $scope.findObject(ds, exec[2], +exec[3]);
+
+                    if ($scope.task.additionalData[ds._id] === undefined) {
+                       $scope.task.additionalData[ds._id] = [];
+                    }
+
+                    for (i = 0; i < $scope.task.additionalData[ds._id].length; i += 1) {
+                        if ($scope.task.additionalData[ds._id][i].id < obj.id) {
+                            idx += 1;
+                        }
+                    }
+
+                    $scope.task.additionalData[ds._id].insert(idx, {
+                        id: obj.id,
+                        type: obj.type,
+                        lookupField: obj.lookup.field,
+                        lookupValue: obj.lookup.by
+                    });
+                }
+            });
+        });
 
         for (i = 0; i < action.eventParameters.length; i += 1) {
             eventKey = action.eventParameters[i].eventKey;
@@ -540,7 +587,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     $scope.refactorDivEditable = function (value) {
         var result = $('<div>' + value + '</div>');
 
-        result.find('span[data-prefix]').replaceWith(function() {
+        result.find('span[data-prefix]').replaceWith(function () {
             var eventKey = '', source = $(this).data('source'),
                 type = $(this).data('object-type'), objectDisplayName = $(this).data('object'),
                 prefix = $(this).data('prefix'), field = $(this).data('field'), id = $(this).data('object-id'),
@@ -580,11 +627,11 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         result.find('em').remove();
 
         if ($.browser.webkit) {
-          result.find("div").replaceWith(function() { return "\n" + this.innerHTML; });
+          result.find("div").replaceWith(function () { return "\n" + this.innerHTML; });
         }
 
         if ($.browser.msie) {
-          result.find("p").replaceWith(function() { return this.innerHTML + "<br>"; });
+          result.find("p").replaceWith(function () { return this.innerHTML + "<br>"; });
         }
 
         if ($.browser.mozilla || $.browser.opera || $.browser.msie || $.browser.webkit) {
@@ -599,7 +646,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return value;
     }
 
-    $scope.buildSpan = function(eventParameterKey) {
+    $scope.buildSpan = function (eventParameterKey) {
         var key = eventParameterKey.slice(eventParameterKey.indexOf('.') + 1, -2).split("?"),
             prefix = eventParameterKey.slice(2, eventParameterKey.indexOf('.')),
             span = "", param, type, field, cuts, dataSource, dataSourceId, object, id;
@@ -639,7 +686,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return span;
     }
 
-    $scope.operators = function(event) {
+    $scope.operators = function (event) {
         var operator = ['exist'];
         if (event && (event.type==='UNICODE' || event.type==='TEXTAREA')) {
             operator.push("equals");
@@ -654,15 +701,15 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return operator;
     }
 
-    $scope.addFilter = function() {
+    $scope.addFilter = function () {
         $scope.filters.push({})
     }
 
-    $scope.removeNode = function(filter) {
+    $scope.removeNode = function (filter) {
        $scope.filters.removeObject(filter);
     }
 
-    $scope.validateForm = function() {
+    $scope.validateForm = function () {
         var i, param;
 
         if ($scope.selectedAction !== undefined) {
@@ -697,15 +744,15 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return isPass;
     }
 
-    $scope.isDisabled = function(prop) {
-        if(!prop) {
+    $scope.isDisabled = function (prop) {
+        if (!prop) {
             return true;
         } else {
             return false;
         }
     }
 
-    $scope.cssClass = function(prop) {
+    $scope.cssClass = function (prop) {
         var msg = 'validation-area';
 
         if (!prop) {
@@ -715,7 +762,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return msg;
     }
 
-    $scope.actionCssClass = function(prop) {
+    $scope.actionCssClass = function (prop) {
         var msg = "control-group", value = $scope.refactorDivEditable(prop.value || '');
 
         if (value.length === 0 || value==="\n") {
@@ -794,6 +841,8 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                 obj.fields = sel.fields;
                 obj.lookupFields = sel.lookupFields;
                 obj.lookup.field = sel.lookupFields[0];
+                obj.lookup.by = 'trigger.' + $scope.selectedTrigger.eventParameters[0].eventKey;
+                obj.lookup.displayName = $scope.msg($scope.selectedTrigger.eventParameters[0].displayName);
             };
 
         if ($scope.BrowserDetect.browser != 'Chrome') {
@@ -831,9 +880,22 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         }
     }
 
-    $scope.selectLookup = function (object, lookup) {
-        object.lookup.displayName = lookup.displayName;
-        object.lookup.by = lookup.eventKey;
+    $scope.selectLookup = function (prefix, lookup, dsName, obj) {
+        var dataSource = $scope.findDataSourceByName($scope.selectedDataSources, $scope.availableLookupValue.dataSourceName),
+            target = $scope.findObject(dataSource, $scope.availableLookupValue.objectType, $scope.availableLookupValue.objectId),
+            ds;
+
+        if (prefix === 'trigger') {
+            target.lookup.displayName = $scope.msg(lookup.displayName);
+            target.lookup.by = prefix + '.' + lookup.eventKey;
+        } else if (prefix === 'ad') {
+            ds = $scope.findDataSourceByName($scope.selectedDataSources, dsName);
+
+            target.lookup.displayName = $scope.msg(ds.name) + ' ' + $scope.msg(obj.displayName) + '#' + obj.id + ' ' + $scope.msg(lookup.displayName);
+            target.lookup.by = prefix + '.' + ds._id + '.' + obj.type + '#' + obj.id + '.' + lookup.fieldKey;
+        }
+
+        $scope.closeLookupValueModal();
     }
 
     $scope.addObject = function (dataSource) {
@@ -848,8 +910,8 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
             fields: first.fields,
             lookupFields: first.lookupFields,
             lookup: {
-                displayName: $scope.selectedTrigger.eventParameters[0].displayName,
-                by: $scope.selectedTrigger.eventParameters[0].eventKey,
+                displayName: $scope.msg($scope.selectedTrigger.eventParameters[0].displayName),
+                by: 'trigger.' + $scope.selectedTrigger.eventParameters[0].eventKey,
                 field: first.lookupFields[0]
             }
         });
@@ -933,7 +995,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         return found;
     }
 
-    $scope.actionNameCssClass = function(prop) {
+    $scope.actionNameCssClass = function (prop) {
         var msg = "control-group";
 
         if (!prop.name) {
@@ -941,6 +1003,59 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         }
 
         return msg;
+     }
+
+     $scope.showLookupValueModal = function (ds, obj) {
+        var array = {}, dataSource, object, i, j;
+
+        for (i = 0; i < $scope.selectedDataSources.length; i += 1) {
+            dataSource = $scope.selectedDataSources[i];
+
+            if (ds.name !== dataSource.name) {
+                array[dataSource.name] = dataSource.objects;
+            } else {
+                for (j = 0; j < dataSource.objects.length; j += 1) {
+                    object = dataSource.objects[j];
+
+                    if (object.id !== obj.id) {
+                        if (array[dataSource.name] === undefined) {
+                            array[dataSource.name] = [];
+                        }
+
+                        array[dataSource.name].push(object);
+                    }
+                }
+            }
+        }
+
+        $scope.availableLookupValue = {
+            dataSourceName: ds.name,
+            objectType: obj.type,
+            objectId: obj.id,
+            selected: obj.lookup.by,
+            trigger: $scope.selectedTrigger.eventParameters,
+            ad: array
+        };
+        $('#lookupValueModal').modal('show');
+     }
+
+     $scope.closeLookupValueModal = function () {
+        delete $scope.availableLookupValue;
+        $('#lookupValueModal').modal('hide');
+     }
+
+     $scope.selectedObject = function (prefix, lookup, dsName, obj) {
+        var val, ds;
+
+        if (prefix === 'trigger') {
+            val = prefix + '.' + lookup.eventKey;
+        } else if (prefix === 'ad') {
+            ds = $scope.findDataSourceByName($scope.selectedDataSources, dsName);
+
+            val = prefix + '.' + ds._id + '.' + obj.type + '#' + obj.id + '.' + lookup.fieldKey;
+        }
+
+        return $scope.availableLookupValue.selected === val;
      }
 }
 

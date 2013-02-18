@@ -51,9 +51,9 @@
             <div class="clearfix"></div>
         </div>
     </div>
-    <div class="clearfix"></div><div class="margin-before4"></div>
+    <div class="clearfix"></div><div class="margin-before1"></div>
     <div class="section-source" ng-hide="task.trigger && task.action">
-        <h3 class="centered">{{msg('help.dragChannelFromListBelow')}}</h3>
+        <h3 class="centered"><img class="arrow-drop1" src="../tasks/img/arrow-drop1.png" width="76" height="70">{{msg('help.dragChannelFromListBelow')}}</h3>
         <div data-left-arrow="true" class="left-arrow">
             <img src="../tasks/img/larrow.png" ng-click="currentPage.channels = currentPage.channels - 1" ng-hide="currentPage.channels == 0"/>
         </div>
@@ -93,10 +93,10 @@
                             <div ng-class="actionNameCssClass(task)">
                                 <h4>{{msg('task.data.name')}}</h4>
                                 <label>{{msg('task.name')}}</label>
-                                <input class="span8" type='text' ng-model='task.name' id="task.name" maxlength="30" required />
+                                <input class="span7" type='text' ng-model='task.name' id="task.name" maxlength="30" required />
                             </div>
                             <div class="control-group">
-                                <h4>{{msg(selectedTrigger.displayName)}}</h4>
+                                <h4>{{msg(selectedTrigger.displayName)}} <img class="pull-right arrow-drop2" src="../tasks/img/arrow-drop2.png" width="85" height="57"></h4>
                                 <p>{{msg('info.dragFieldBuildAction')}}</p>
                             </div>
                             <div class="control-group move-element">
@@ -133,7 +133,7 @@
                                                 </div>
                                                 <div class="section" ng-hide="dataSource.name == undefined" ng-repeat="object in dataSource.objects | filterPagination:currentPage.dataSourceObject*pageSize.dataSourceObject | limitTo:pageSize.dataSourceObject">
                                                     <div class="control-group control-section">
-                                                        <label class="control-label">{{msg('subsubsection.object')}} #{{object.id}}</label>
+                                                        <label class="control-label">{{msg('subsubsection.object')}} <span class="index-label"> #{{object.id}}</span></label>
                                                         <div class="controls">
                                                             <div class="btn-group">
                                                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -166,16 +166,10 @@
                                                             </div>
                                                             <span> {{msg('equals') | lowercase}} </span>
                                                             <div class="btn-group">
-                                                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                                    {{msg(object.lookup.displayName)}}
+                                                                <a class="btn" ng-click="showLookupValueModal(dataSource, object)">
+                                                                    {{object.lookup.displayName}}
                                                                     <span class="caret"></span>
                                                                 </a>
-                                                                <ul class="dropdown-menu">
-                                                                    <li ng-repeat="i in selectedTrigger.eventParameters">
-                                                                        <a ui-if="object.lookup.by == i.eventKey"><i class="icon-ok-sign"></i> {{msg(i.displayName)}}</a>
-                                                                        <a ui-if="object.lookup.by != i.eventKey" ng-click="selectLookup(object, i)"><i></i> {{msg(i.displayName)}}</a>
-                                                                    </li>
-                                                                </ul>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -186,21 +180,21 @@
                                                               data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{object.id}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                                                     </div>
                                                 </div>
-                                                <div class="control-section pagination pagination-centered pagination-condensed pagination-mini" ng-show="numberOfDataSourceObjects(dataSource) &gt; 1">
+                                                <div class="control-section pagination pagination-centered pagination-condensed pagination-mini lightblue" ng-show="numberOfDataSourceObjects(dataSource) &gt; 1">
                                                     <ul>
-                                                        <li ng-hide="currentPage.dataSourceObject == 0">
+                                                        <li ng-class="{disabled: currentPage.dataSourceObject == 0}">
                                                             <a ng-click="currentPage.dataSourceObject = 0">{{msg('button.first')}}</a>
                                                         </li>
-                                                        <li ng-hide="currentPage.dataSourceObject == 0">
+                                                        <li ng-class="{disabled: currentPage.dataSourceObject == 0}">
                                                             <a ng-click="currentPage.dataSourceObject = currentPage.dataSourceObject - 1">{{msg('button.prev')}}</a>
                                                         </li>
                                                         <li ng-repeat="number in [] | repeat:{total: numberOfDataSourceObjects(dataSource), current: currentPage.dataSourceObject}" ng-class="{true:'active', false:''}[number == currentPage.dataSourceObject]">
                                                             <a ng-click="currentPage.dataSourceObject = number">{{number + 1}}</a>
                                                         </li>
-                                                        <li ng-hide="currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1">
+                                                        <li ng-class="{disabled: currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1}">
                                                             <a ng-click="currentPage.dataSourceObject = currentPage.dataSourceObject + 1">{{msg('button.next')}}</a>
                                                         </li>
-                                                        <li ng-hide="currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1">
+                                                        <li ng-class="{disabled: currentPage.dataSourceObject == numberOfDataSourceObjects(dataSource) - 1}">
                                                             <a ng-click="currentPage.dataSourceObject = numberOfDataSourceObjects(dataSource) - 1">{{msg('button.last')}}</a>
                                                         </li>
                                                     </ul>
@@ -210,21 +204,21 @@
                                                     <div id="addObjectNotification" class="notifications center" style="z-index: 9999;"></div>
                                                 </div>
                                             </div>
-                                            <div class="control-section pagination pagination-centered pagination-condensed pagination-mini" ng-show="numberOfSelectedDataSources() &gt; 1">
+                                            <div class="control-section pagination pagination-centered pagination-condensed pagination-mini lightblue" ng-show="numberOfSelectedDataSources() &gt; 1">
                                                 <ul>
-                                                    <li ng-hide="currentPage.dataSource == 0">
+                                                    <li ng-class="{disabled: currentPage.dataSource == 0}">
                                                         <a ng-click="currentPage.dataSource = 0">{{msg('button.first')}}</a>
                                                     </li>
-                                                    <li ng-hide="currentPage.dataSource == 0">
+                                                    <li ng-class="{disabled: currentPage.dataSource == 0}">
                                                         <a ng-click="currentPage.dataSource = currentPage.dataSource - 1">{{msg('button.prev')}}</a>
                                                     </li>
                                                     <li ng-repeat="number in [] | repeat:{total: numberOfSelectedDataSources(), current: currentPage.dataSource}" ng-class="{true:'active', false:''}[number == currentPage.dataSource]">
                                                         <a ng-click="currentPage.dataSource = number">{{number + 1}}</a>
                                                     </li>
-                                                    <li ng-hide="currentPage.dataSource == numberOfSelectedDataSources() - 1">
+                                                    <li ng-class="{disabled: currentPage.dataSource == numberOfSelectedDataSources() - 1}">
                                                         <a ng-click="currentPage.dataSource = currentPage.dataSource + 1">{{msg('button.next')}}</a>
                                                     </li>
-                                                    <li ng-hide="currentPage.dataSource == numberOfSelectedDataSources() - 1">
+                                                    <li ng-class="{disabled: currentPage.dataSource == numberOfSelectedDataSources() - 1}">
                                                         <a ng-click="currentPage.dataSource = numberOfSelectedDataSources() - 1">{{msg('button.last')}}</a>
                                                     </li>
                                                 </ul>
@@ -488,7 +482,7 @@
                 </div>
                 <div class="accordion inside" id="accordion2">
                     <!------------------------  Filter  ------------------------>
-                    <div class="accordion-group">
+                    <div class="task-filter-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle inbox-header" expandaccordion data-toggle="collapse" data-parent="#accordion2" href="#collapse21">
                                 <i ng-class="{true:'icon-chevron-down', false:'icon-chevron-right'}[filters.length!=0]"></i>&nbsp;{{msg('section.filters')}}
@@ -537,13 +531,13 @@
                         </div>
                     </div>
                     <!------------------------  Description  ------------------------->
-                    <div class="accordion-group">
+                    <div class="task-description-group">
                         <div class="accordion-heading">
                             <a class="accordion-toggle inbox-header" expandaccordion data-toggle="collapse" data-parent="#accordion2" href="#collapse22">
-                                <i ng-class="{true:'icon-chevron-down', false:'icon-chevron-right'}[task.description!= null || task.description.length() > 0]"></i>&nbsp;{{msg('section.taskDescription')}}
+                                <i ng-class="{true:'icon-chevron-down', false:'icon-chevron-right'}[task.description.length != null && task.description.length > 0]"></i>&nbsp;{{msg('section.taskDescription')}}
                             </a>
                         </div>
-                        <div id="collapse22" class="accordion-body stripes-bg" ng-class="{true:'collapse in', false:'collapse'}[task.description!= null || task.description.length() > 0]">
+                        <div id="collapse22" class="accordion-body stripes-bg" ng-class="{true:'collapse in', false:'collapse'}[task.description != null && task.description.length > 0]">
                             <div class="accordion-inner">
                                 <div class="centered">
                                     <p class="centered spn9 margin-center">{{msg('info.taskDescription')}}</p>
@@ -575,6 +569,35 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="lookupValueModal" class="modal hide fade">
+        <div class="modal-header">
+            <h3 id="modalLabel">{{msg('lookupValueModal.header')}}</h3>
+        </div>
+        <div class="modal-body">
+            <h4>{{msg(selectedTrigger.displayName)}}</h4>
+            <ul class="unstyled">
+                <li ng-repeat="i in availableLookupValue.trigger">
+                    <a ui-if="selectedObject('trigger', i)" ><i class="icon-ok-sign"></i> {{msg(i.displayName)}}</a>
+                    <a ui-if="!selectedObject('trigger', i)" ng-click="selectLookup('trigger', i)"><i></i> {{msg(i.displayName)}}</a>
+                </li>
+            </ul>
+            <div ng-repeat="(dsName, objects) in availableLookupValue.ad">
+                <h4>{{msg(dsName)}}</h4>
+                <div ng-repeat="obj in objects" style="float: left; margin-right: 15px; width: 150px">
+                    <h5>{{msg(obj.displayName)}} #{{obj.id}}</h5>
+                    <ul class="unstyled">
+                        <li ng-repeat="f in obj.fields">
+                            <a ui-if="selectedObject('ad', f, dsName, obj)"><i class="icon-ok-sign"></i> {{msg(f.displayName)}}</a>
+                            <a ui-if="!selectedObject('ad', f, dsName, obj)" ng-click="selectLookup('ad', f, dsName, obj)"><i></i> {{msg(f.displayName)}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" ng-click="closeLookupValueModal()">{{msg('button.close')}}</button>
         </div>
     </div>
 </div>
