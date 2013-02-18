@@ -53,6 +53,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.decisiontree.server.domain;version=${project.version},
                             org.motechproject.decisiontree.server.repository;version=${project.version},
