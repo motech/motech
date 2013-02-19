@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-calllog</artifactId>
+    <artifactId>callLog</artifactId>
     <name>Call Log</name>
     <version>0.18-SNAPSHOT</version>
     <packaging>bundle</packaging>
@@ -92,10 +92,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.WebUIBundleActivator
-                        </Bundle-Activator>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>callLog</Context-Path>
+                        <Context-File>META-INF/osgi/calllogApplicationContext.xml</Context-File>
+                        <Resource-Path>callLog/resources</Resource-Path>
                         <Import-Package>
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,

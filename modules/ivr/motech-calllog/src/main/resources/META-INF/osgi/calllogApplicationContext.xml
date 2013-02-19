@@ -10,23 +10,4 @@
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
        ">
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.ivr.calllog"/>
-
-    <!-- get a settings instance to store your module's properties -->
-    <bean id="settings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
-        <property name="moduleName" value="motech-calllog"/>
-    </bean>
-
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
-    <!-- get a couchdb connector to access motech's datastore -->
-    <bean id="dbConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-calllog" />
-    </bean>
-
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
-    <osgi:reference id="calllogSearchService" interface="org.motechproject.decisiontree.server.service.CalllogSearchService" />
-
 </beans>
