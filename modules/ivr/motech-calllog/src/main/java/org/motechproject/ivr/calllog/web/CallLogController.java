@@ -34,4 +34,12 @@ public class CallLogController {    // service methods for angular ui
         map.put("count", calllogSearchService.count(params));
         return new ObjectMapper().writeValueAsString(map);
     }
+
+    @RequestMapping("/maxduration")
+    @ResponseBody
+    public String findMaxCallDuration() throws IOException {
+        HashMap<String, Long> map = new HashMap<>();
+        map.put("maxDuration", calllogSearchService.findMaxCallDuration());
+        return new ObjectMapper().writeValueAsString(map);
+    }
 }

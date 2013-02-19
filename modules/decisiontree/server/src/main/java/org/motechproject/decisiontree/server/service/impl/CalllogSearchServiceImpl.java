@@ -43,6 +43,11 @@ public class CalllogSearchServiceImpl implements CalllogSearchService {
         return Math.round(Math.ceil(numOfPages));
     }
 
+    @Override
+    public long findMaxCallDuration() {
+        return allCallDetailRecords.findMaxCallDuration();
+    }
+
     private List<String> mapToDispositions(CalllogSearchParameters params) {
         List<String> dispositions = new ArrayList<>();
 
