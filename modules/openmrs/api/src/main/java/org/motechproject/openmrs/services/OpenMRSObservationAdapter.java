@@ -5,12 +5,14 @@ import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.OpenMRSConcept;
 import org.motechproject.mrs.model.OpenMRSObservation;
 import org.motechproject.mrs.services.ObservationAdapter;
+import org.motechproject.openmrs.IdentifierType;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.User;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,6 +158,19 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
     private OpenMRSObservation createMRSObservation(Obs obs, Object value) {
         final OpenMRSObservation mrsObservation = new OpenMRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),
                 obs.getConcept().getName().getName(), value);
+
+        if (obs.getPatient() != null) {
+            List<PatientIdentifier> patientIdentifiers = obs.getPatient().getActiveIdentifiers();
+
+            if (patientIdentifiers != null) {
+                for (PatientIdentifier patientId : patientIdentifiers) {
+                    if (IdentifierType.IDENTIFIER_MOTECH_ID.getName().equals(patientId.getIdentifierType())) {
+                        mrsObservation.setPatientId(patientId.getIdentifier());
+                    }
+                }
+            }
+        }
+
         if (obs.hasGroupMembers()) {
             for (Obs observation : obs.getGroupMembers()) {
                 mrsObservation.addDependantObservation(convertOpenMRSToMRSObservation(observation));

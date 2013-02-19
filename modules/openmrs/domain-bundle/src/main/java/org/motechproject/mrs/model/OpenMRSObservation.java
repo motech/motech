@@ -23,6 +23,7 @@ public class OpenMRSObservation<T> implements Observation<T> {
     private String id;
     private Date date;
     private String conceptName;
+    private String patientId;
     private T value;
     private Set<OpenMRSObservation> dependantObservations;
 
@@ -151,4 +152,13 @@ public class OpenMRSObservation<T> implements Observation<T> {
         this.dependantObservations = (Set<OpenMRSObservation>) dependantObservations;
     }
 
+    @Override
+    public String getPatientId() {
+        return patientId;
+    }
+
+    @Override
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
 }

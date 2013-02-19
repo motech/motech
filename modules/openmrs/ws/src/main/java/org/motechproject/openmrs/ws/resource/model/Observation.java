@@ -14,6 +14,7 @@ import com.google.gson.JsonSerializer;
 public class Observation {
     private String uuid;
     private Concept concept;
+    private Encounter encounter;
     private ObservationValue value;
     private Date obsDatetime;
     private List<Observation> groupsMembers;
@@ -94,5 +95,13 @@ public class Observation {
 
     public boolean hasConceptByName(String conceptName) {
         return concept.getDisplay().equals(conceptName);
+    }
+
+    public Encounter getEncounter() {
+        return encounter;
+    }
+
+    public void setEncounter(Encounter encounter) {
+        this.encounter = encounter;
     }
 }
