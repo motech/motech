@@ -7,7 +7,7 @@ import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.aggregation.service.AggregationRule;
 import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.motechproject.org.hibernate.validator.ValidatorFactoryBean;
+import org.hibernate.validator.ValidatorFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;

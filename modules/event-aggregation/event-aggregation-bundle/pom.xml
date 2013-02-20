@@ -94,7 +94,6 @@
                             !com.googlecode.jtype,
                             org.hibernate.validator,
                             org.hibernate.validator.engine,
-                            org.motechproject.org.hibernate.validator,
                             *
                         </Import-Package>
                         <Embed-Dependency>

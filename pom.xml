@@ -20,7 +20,7 @@
         <spring.version>3.1.0.RELEASE</spring.version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
         <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
-        <external.dependency.release.tag>r008</external.dependency.release.tag>
+        <external.dependency.release.tag>r010</external.dependency.release.tag>
         <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
