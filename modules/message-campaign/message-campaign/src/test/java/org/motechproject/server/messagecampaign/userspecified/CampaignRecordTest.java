@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
 import org.junit.Test;
+import org.motechproject.commons.date.util.JodaFormatter;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageRecordTestBuilder;
 import org.motechproject.server.messagecampaign.builder.CampaignRecordBuilder;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
@@ -10,8 +11,6 @@ import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.util.List;
 
@@ -31,16 +30,16 @@ public class CampaignRecordTest {
         Campaign campaign =  campaignRecord.build();
         assertTrue(campaign instanceof AbsoluteCampaign);
         AbsoluteCampaign absoluteCampaign = (AbsoluteCampaign) campaign;
-        assertEquals(campaignRecord.name(), absoluteCampaign.getName());
+        assertEquals(campaignRecord.getName(), absoluteCampaign.getName());
         List<AbsoluteCampaignMessage> messages = absoluteCampaign.getMessages();
         assertEquals(1, messages.size());
 
         AbsoluteCampaignMessage message = messages.get(0);
-        assertEquals(messageRecord.name(), message.name());
-        assertEquals(messageRecord.formats(), message.formats());
-        assertEquals(messageRecord.languages(), message.languages());
-        assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(DateUtil.newDate(messageRecord.date()), message.date());
+        assertEquals(messageRecord.getName(), message.name());
+        assertEquals(messageRecord.getFormats(), message.formats());
+        assertEquals(messageRecord.getLanguages(), message.languages());
+        assertEquals(messageRecord.getMessageKey(), message.messageKey());
+        assertEquals(messageRecord.getDate(), message.date());
     }
 
     @Test
@@ -51,17 +50,17 @@ public class CampaignRecordTest {
         Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof OffsetCampaign);
         OffsetCampaign offsetCampaign = (OffsetCampaign) campaign;
-        assertEquals(campaignRecord.name(), offsetCampaign.getName());
-        assertEquals(campaignRecord.maxDuration(), offsetCampaign.maxDuration());
+        assertEquals(campaignRecord.getName(), offsetCampaign.getName());
+        assertEquals(campaignRecord.getMaxDuration(), offsetCampaign.maxDuration());
         List<OffsetCampaignMessage> messages = offsetCampaign.getMessages();
         assertEquals(1, messages.size());
 
         OffsetCampaignMessage message = messages.get(0);
-        assertEquals(messageRecord.name(), message.name());
-        assertEquals(messageRecord.formats(), message.formats());
-        assertEquals(messageRecord.languages(), message.languages());
-        assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(new JodaFormatter().parsePeriod(messageRecord.timeOffset()), message.timeOffset());
+        assertEquals(messageRecord.getName(), message.name());
+        assertEquals(messageRecord.getFormats(), message.formats());
+        assertEquals(messageRecord.getLanguages(), message.languages());
+        assertEquals(messageRecord.getMessageKey(), message.messageKey());
+        assertEquals(new JodaFormatter().parsePeriod(messageRecord.getTimeOffset()), message.timeOffset());
 
     }
 
@@ -73,15 +72,15 @@ public class CampaignRecordTest {
         Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof CronBasedCampaign);
         CronBasedCampaign cronBasedCampaign = (CronBasedCampaign) campaign;
-        assertEquals(campaignRecord.name(), cronBasedCampaign.getName());
+        assertEquals(campaignRecord.getName(), cronBasedCampaign.getName());
         List<CronBasedCampaignMessage> messages = cronBasedCampaign.getMessages();
         assertEquals(1, messages.size());
 
         CronBasedCampaignMessage message = messages.get(0);
-        assertEquals(messageRecord.name(), message.name());
-        assertEquals(messageRecord.formats(), message.formats());
-        assertEquals(messageRecord.languages(), message.languages());
-        assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(messageRecord.cron(), message.cron());
+        assertEquals(messageRecord.getName(), message.name());
+        assertEquals(messageRecord.getFormats(), message.formats());
+        assertEquals(messageRecord.getLanguages(), message.languages());
+        assertEquals(messageRecord.getMessageKey(), message.messageKey());
+        assertEquals(messageRecord.getCron(), message.cron());
     }
 }

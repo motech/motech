@@ -47,7 +47,7 @@ public class CronBasedProgramSchedulerTest {
 
         CronBasedCampaignSchedulerService cronBasedCampaignScheduler = new CronBasedCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
-        when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
+        when(allMessageCampaigns.getCampaign("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today()).setDeliverTime(new Time(9, 30));
         cronBasedCampaignScheduler.start(enrollment);

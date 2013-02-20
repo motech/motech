@@ -1,0 +1,55 @@
+[
+    {
+      "name" : "Absolute Dates Message Program",
+      "type" : "ABSOLUTE",
+      "messages" : [
+          {
+              "name" : "First",
+              "formats" : ["IVR", "SMS"],
+              "languages" : ["en"],
+              "messageKey": "random-1",
+              "date" : "2013-06-15",
+              "startTime" : "10:30"
+          },
+          {
+              "name" : "Second",
+              "formats" : ["IVR"],
+              "languages" : ["en"],
+              "messageKey": "random-2",
+              "startTime" : "10:30",
+              "date" : "2013-06-22"
+          }
+      ]
+    },
+    {
+      "name" : "Relative Parameterized Dates Message Program",
+      "type" : "REPEAT_INTERVAL",
+      "maxDuration" : "5 weeks",
+      "messages" : [
+          {
+              "name" : "Weekly Message #1",
+              "formats" : ["IVR", "SMS"],
+              "languages" : ["en"],
+              "messageKey": "child-info-week-{Offset}-1",
+              "repeatEvery" : "1 Week",
+              "startTime" : "10:30"
+          },
+          {
+              "name" : "Weekly Message #2",
+              "formats" : ["SMS"],
+              "languages" : ["en"],
+              "messageKey": "child-info-week-{Offset}-2",
+              "repeatEvery" : "9 Days",
+              "startTime" : "10:30"
+          },
+          {
+              "name" : "Weekly Message #3",
+              "formats" : ["SMS"],
+              "languages" : ["en"],
+              "messageKey": "child-info-week-{Offset}-3",
+              "repeatEvery" : "12 Days",
+              "startTime" : "10:30"
+          }
+      ]
+  }
+]

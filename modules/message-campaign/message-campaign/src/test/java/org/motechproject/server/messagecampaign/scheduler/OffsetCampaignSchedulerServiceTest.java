@@ -56,7 +56,7 @@ public class OffsetCampaignSchedulerServiceTest {
 
             Campaign campaign = new OffsetCampaign();
             campaign.setName("camp");
-            when(allMessageCampaigns.get("camp")).thenReturn(campaign);
+            when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
                 new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(3, 10),
@@ -79,7 +79,7 @@ public class OffsetCampaignSchedulerServiceTest {
 
             Campaign campaign = new OffsetCampaign();
             campaign.setName("camp");
-            when(allMessageCampaigns.get("camp")).thenReturn(campaign);
+            when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
                 new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(2, 0).setDeliverTime(8, 20),
@@ -102,7 +102,7 @@ public class OffsetCampaignSchedulerServiceTest {
 
             Campaign campaign = new OffsetCampaign();
             campaign.setName("camp");
-            when(allMessageCampaigns.get("camp")).thenReturn(campaign);
+            when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
                 new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setDeliverTime(8, 20),
@@ -125,7 +125,7 @@ public class OffsetCampaignSchedulerServiceTest {
 
         OffsetCampaignSchedulerService offsetCampaignScheduler = new OffsetCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
-        when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
+        when(allMessageCampaigns.getCampaign("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today()).setDeliverTime(new Time(9, 30));
         offsetCampaignScheduler.start(enrollment);

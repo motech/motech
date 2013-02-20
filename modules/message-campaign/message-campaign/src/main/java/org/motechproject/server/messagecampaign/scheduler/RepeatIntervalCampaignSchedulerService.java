@@ -28,7 +28,7 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
 
     @Override
     protected void scheduleMessageJob(CampaignEnrollment enrollment, CampaignMessage m) {
-        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
+        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().getCampaign(enrollment.getCampaignName());
         RepeatIntervalCampaignMessage message = (RepeatIntervalCampaignMessage) m;
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, jobParams(message.messageKey(), enrollment));
         DateTime start = newDateTime(enrollment.getReferenceDate(), deliverTimeFor(enrollment, message));
@@ -54,7 +54,7 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
 
     @Override
     public void stop(CampaignEnrollment enrollment) {
-        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
+        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().getCampaign(enrollment.getCampaignName());
         for (RepeatIntervalCampaignMessage message : campaign.getMessages()) {
             getSchedulerService().safeUnscheduleRepeatingJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }

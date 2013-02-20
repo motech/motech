@@ -1,6 +1,10 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class CronBasedCampaignMessage extends CampaignMessage {
+
+    @JsonProperty
     private String cron;
 
     public String cron() {

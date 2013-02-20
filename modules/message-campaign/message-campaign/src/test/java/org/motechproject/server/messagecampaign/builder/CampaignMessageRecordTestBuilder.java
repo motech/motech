@@ -1,9 +1,9 @@
 package org.motechproject.server.messagecampaign.builder;
 
+import org.joda.time.LocalDate;
 import org.motechproject.server.messagecampaign.userspecified.CampaignMessageRecord;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class CampaignMessageRecordTestBuilder {
@@ -19,39 +19,60 @@ public class CampaignMessageRecordTestBuilder {
 
     public static CampaignMessageRecord createAbsoluteCampaignMessageRecord(String name, String messageKey) {
         CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
-        campaignMessageRecord.date(new Date());
+        campaignMessageRecord.setDate(new LocalDate());
         return campaignMessageRecord;
     }
 
     public static CampaignMessageRecord createOffsetCampaignMessageRecord(String name, String messageKey) {
         CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
-        campaignMessageRecord.timeOffset("1 Week");
+        campaignMessageRecord.setTimeOffset("1 Week");
         return campaignMessageRecord;
     }
 
     private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).startTime("10:30");
+        CampaignMessageRecord record = new CampaignMessageRecord();
+        record.setName(name);
+        record.setFormats(formats);
+        record.setLanguages(languages);
+        record.setMessageKey(messageKey);
+        record.setStartTime("10:30");
+        return record;
     }
 
     private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatEvery(repeatInterval).startTime("10:30");
+        CampaignMessageRecord record = new CampaignMessageRecord();
+        record.setName(name);
+        record.setFormats(formats);
+        record.setLanguages(languages);
+        record.setMessageKey(messageKey);
+        record.setRepeatEvery(repeatInterval);
+        record.setStartTime("10:30");
+        return record;
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithInterval(String name, String messageKey, String repeatInterval) {
-        return createCampaignMessageRecord(name, messageKey, repeatInterval).startTime("10:30");
+        CampaignMessageRecord record = createCampaignMessageRecord(name, messageKey, repeatInterval);
+        record.setStartTime("10:30");
+        return record;
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithWeekApplicableDays(String name, String messageKey, List<String> applicableWeekDays) {
-        return createCampaignMessageRecord(name, messageKey, null).repeatOn(applicableWeekDays).startTime("10:30");
+        CampaignMessageRecord record = createCampaignMessageRecord(name, messageKey, null);
+        record.setRepeatOn(applicableWeekDays);
+        record.setStartTime("10:30");
+        return record;
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithCalendarWeek(String name, String messageKey, String calendarStartOfWeek, List<String> applicableWeekDays) {
-        return createRepeatingMessageRecordWithWeekApplicableDays(name, messageKey, applicableWeekDays).startTime("10:30");
+        CampaignMessageRecord record = createRepeatingMessageRecordWithWeekApplicableDays(name, messageKey, applicableWeekDays);
+        record.setStartTime("10:30");
+        return record;
     }
 
     public static CampaignMessageRecord createCronBasedCampaignMessageRecord(String name, String messageKey) {
-        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey).startTime("10:30");
-        campaignMessageRecord.cron("0 11 11 11 11 ?");
-        return campaignMessageRecord;
+        CampaignMessageRecord record = createCampaignMessageRecord(name, messageKey);
+        record.setStartTime("10:30");
+        record.setCron("0 11 11 11 11 ?");
+        return record;
     }
 }

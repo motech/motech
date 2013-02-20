@@ -29,7 +29,7 @@ public abstract class CampaignSchedulerService<M extends CampaignMessage, C exte
     }
 
     public void start(CampaignEnrollment enrollment) {
-        C campaign = (C) allMessageCampaigns.get(enrollment.getCampaignName());
+        C campaign = (C) allMessageCampaigns.getCampaign(enrollment.getCampaignName());
         for (M message : campaign.getMessages()) {
             scheduleMessageJob(enrollment, message);
         }
@@ -39,7 +39,7 @@ public abstract class CampaignSchedulerService<M extends CampaignMessage, C exte
 
     public Map<String, List<DateTime>> getCampaignTimings(DateTime startDate, DateTime endDate, CampaignEnrollment enrollment) {
         Map<String, List<DateTime>> messageTimingsMap = new HashMap<>();
-        C campaign = (C) allMessageCampaigns.get(enrollment.getCampaignName());
+        C campaign = (C) allMessageCampaigns.getCampaign(enrollment.getCampaignName());
         for (M message : campaign.getMessages()) {
             String externalJobIdPrefix = messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName());
             List<DateTime> dates = convertToDateTimeList(schedulerService.getScheduledJobTimingsWithPrefix(EventKeys.SEND_MESSAGE, externalJobIdPrefix, startDate.toDate(), endDate.toDate()));
@@ -56,7 +56,7 @@ public abstract class CampaignSchedulerService<M extends CampaignMessage, C exte
     }
 
     protected Map<String, Object> jobParams(String messageKey, CampaignEnrollment enrollment) {
-        Campaign campaign = allMessageCampaigns.get(enrollment.getCampaignName());
+        Campaign campaign = allMessageCampaigns.getCampaign(enrollment.getCampaignName());
         return new SchedulerPayloadBuilder()
                 .withJobId(messageJobIdFor(messageKey, enrollment.getExternalId(), enrollment.getCampaignName()))
                 .withCampaignName(campaign.getName())

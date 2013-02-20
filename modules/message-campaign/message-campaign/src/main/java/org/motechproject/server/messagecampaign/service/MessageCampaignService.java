@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 
 import java.util.List;
 import java.util.Map;
@@ -30,4 +31,14 @@ public interface MessageCampaignService {
     List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query);
 
     Map<String, List<DateTime>> getCampaignTimings(String externalId, String campaignName, DateTime startDate, DateTime endDate);
+
+    void stopAll(CampaignEnrollmentsQuery query);
+
+    void saveCampaign(CampaignRecord campaign);
+
+    void deleteCampaign(String campaignName);
+
+    CampaignRecord getCampaignRecord(String campaignName);
+
+    List<CampaignRecord> getAllCampaignRecords();
 }

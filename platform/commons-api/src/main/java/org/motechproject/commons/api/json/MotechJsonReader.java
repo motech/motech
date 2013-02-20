@@ -6,8 +6,10 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import org.apache.commons.io.IOUtils;
+import org.joda.time.LocalDate;
 import org.motechproject.commons.api.MotechException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ public class MotechJsonReader {
 
     static {
         standardTypeAdapters.put(Date.class, new DateDeserializer());
+        standardTypeAdapters.put(LocalDate.class, new LocalDateDeserializer());
     }
 
     public Object readFromStream(InputStream stream, Type ofType) {
@@ -80,6 +83,13 @@ public class MotechJsonReader {
                 LOG.error(e.getMessage(), e);
             }
             return date;
+        }
+    }
+
+    private static class LocalDateDeserializer implements JsonDeserializer<LocalDate> {
+        @Override
+        public LocalDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return new LocalDate(jsonElement.getAsJsonPrimitive().getAsString());
         }
     }
 }

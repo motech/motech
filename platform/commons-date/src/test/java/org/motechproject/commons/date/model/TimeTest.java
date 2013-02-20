@@ -44,4 +44,12 @@ public class TimeTest {
         assertTrue(new Time(5, 0).ge(new Time(5, 0)));
         assertFalse(new Time(4, 0).ge(new Time(5, 0)));
     }
+
+    @Test
+    public void testStringConstructor() {
+        assertEquals(new Time(23, 59), new Time("23:59"));
+        assertEquals(new Time(23, 59), new Time("23:59:00"));
+        assertEquals(new Time(9, 22), new Time("9:22:11"));
+        assertEquals(new Time(7, 30), new Time("7:30"));
+    }
 }

@@ -1,62 +1,33 @@
 package org.motechproject.server.messagecampaign.dao;
 
-import com.google.gson.reflect.TypeToken;
-import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.server.config.SettingsFacade;
+import org.apache.commons.collections.CollectionUtils;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.support.View;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.select;
-import static org.hamcrest.CoreMatchers.equalTo;
-
-@Component
-public class AllMessageCampaigns {
-
-    private SettingsFacade settings;
-    private MotechJsonReader motechJsonReader;
-    private String messageCampaignsJsonFile = "message-campaigns.json";
-    private static List<Campaign> campaigns = new ArrayList<Campaign>();
-
-    public AllMessageCampaigns(@Qualifier("messageCampaignSettings") SettingsFacade settings, MotechJsonReader motechJsonReader) {
-        this.settings = settings;
-        this.motechJsonReader = motechJsonReader;
-    }
+@Repository
+public class AllMessageCampaigns extends MotechBaseRepository<CampaignRecord> {
 
     @Autowired
-    public AllMessageCampaigns(@Qualifier("messageCampaignSettings") SettingsFacade settings) {
-        this(settings, new MotechJsonReader());
+    public AllMessageCampaigns(@Qualifier("messageCampaignDBConnector") CouchDbConnector db) {
+        super(CampaignRecord.class, db);
     }
 
-    public Campaign get(String campaignName) {
-        List<Campaign> campaign = select(readCampaignsFromJSON(), having(on(Campaign.class).getName(), equalTo(campaignName)));
-        return CollectionUtils.isEmpty(campaign) ? null : campaign.get(0);
+    public Campaign getCampaign(String campaignName) {
+        CampaignRecord record = findFirstByName(campaignName);
+        return record == null ? null : record.build();
     }
 
-    private List<Campaign> readCampaignsFromJSON() {
-        if (CollectionUtils.isEmpty(campaigns)) {
-            List<CampaignRecord> campaignRecords = (List<CampaignRecord>) motechJsonReader.readFromStream(
-                settings.getRawConfig(messageCampaignsJsonFile),
-                new TypeToken<List<CampaignRecord>>() { } .getType()
-            );
-            for (CampaignRecord campaignRecord : campaignRecords) {
-                campaigns.add(campaignRecord.build());
-            }
-        }
-        return campaigns;
-    }
-
-    public CampaignMessage get(String campaignName, String messageKey) {
-        Campaign campaign = get(campaignName);
+    public CampaignMessage getMessage(String campaignName, String messageKey) {
+        Campaign campaign = getCampaign(campaignName);
         if (campaign != null) {
             for (Object message : campaign.getMessages()) {
                 CampaignMessage campaignMessage = (CampaignMessage) message;
@@ -68,11 +39,24 @@ public class AllMessageCampaigns {
         return null;
     }
 
-    public void setMessageCampaignsJsonFile(String messageCampaignsJsonFile) {
-        this.messageCampaignsJsonFile = messageCampaignsJsonFile;
+    public void saveOrUpdate(CampaignRecord campaignRecord) {
+        CampaignRecord existingRecord = findFirstByName(campaignRecord.getName());
+
+        if (existingRecord == null) {
+            add(campaignRecord);
+        } else {
+            existingRecord.updateFrom(campaignRecord);
+            update(existingRecord);
+        }
     }
 
-    public String getMessageCampaignsJsonFile() {
-        return messageCampaignsJsonFile;
+    @View(name = "by_name", map = "function(doc) { if(doc.type === 'CampaignRecord') emit(doc.name); }")
+    public List<CampaignRecord> findByName(String campaignName) {
+        return queryView("by_name", campaignName);
+    }
+
+    public CampaignRecord findFirstByName(String campaignName) {
+        List<CampaignRecord> records = findByName(campaignName);
+        return CollectionUtils.isEmpty(records) ? null : records.get(0);
     }
 }
