@@ -35,8 +35,7 @@ public class ObservationResourceImpl implements ObservationResource {
         String responseJson = restClient.getJson(openmrsInstance.toInstancePathWithParams("/obs?patient={uuid}&v=full",
                 id));
 
-        Map<Type, Object> adapters = new HashMap<Type, Object>();
-        adapters.put(ObservationValue.class, new ObservationValueDeserializer());
+        Map<Type, Object> adapters = getObsAdapters();
         ObservationListResult result = (ObservationListResult) JsonUtils.readJsonWithAdapters(responseJson,
                 ObservationListResult.class, adapters);
         return result;

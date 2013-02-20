@@ -91,7 +91,11 @@ public final class ConverterUtils {
     }
 
     public static OpenMRSObservation convertObservationToMrsObservation(Observation ob) {
-        return new OpenMRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
+        OpenMRSObservation obs =  new OpenMRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
                 .getDisplay());
+        if (ob.getEncounter() != null && ob.getEncounter().getPatient() != null) {
+            obs.setPatientId(ob.getEncounter().getPatient().getUuid());
+        }
+        return obs;
     }
 }
