@@ -7,15 +7,15 @@ import java.util.Map;
 public class CommcareForm {
 
     private FormValueElement form;
-    private FormValueElement caseElement;
     private String id;
     private String md5;
-    private Map<String, String> metadata; // change this to a metadata class
+    private Map<String, String> metadata;
     @SerializedName("resource_uri")
     private String resourceUri;
     private String type;
     private String uiversion;
     private String version;
+    private boolean archived;
 
     public FormValueElement getForm() {
         return form;
@@ -65,12 +65,11 @@ public class CommcareForm {
     public void setVersion(String version) {
         this.version = version;
     }
-
-    public FormValueElement getCaseElement() {
-        return caseElement;
+    public boolean isArchived() {
+        return archived;
+    }
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
-    public void setCaseElement(FormValueElement caseElement) {
-        this.caseElement = caseElement;
-    }
 }
