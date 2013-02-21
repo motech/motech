@@ -9,7 +9,6 @@
 
     <context:annotation-config/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 
     <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
         <constructor-arg value="classpath:task-channel.json"/>

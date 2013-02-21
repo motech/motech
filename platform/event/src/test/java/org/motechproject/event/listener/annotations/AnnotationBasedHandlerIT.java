@@ -1,5 +1,6 @@
 package org.motechproject.event.listener.annotations;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
@@ -18,6 +19,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class AnnotationBasedHandlerIT {
@@ -41,35 +43,6 @@ public class AnnotationBasedHandlerIT {
         eventRelay.relayEvent(event);
     }
 
-    // Annotation based handler (needs a spring bean config.)
-    @Component
-    public static class MyHandler {
-        @MotechListener(subjects = {"sub_a", "sub_b"})
-        public void handleX(MotechEvent event) {
-            test = true;
-        }
-
-        @MotechListener(subjects = {"sub_a", "sub_c"})
-        public void handleY(MotechEvent event) {
-            test = true;
-        }
-
-        @MotechListener(subjects = {"params"}, type = MotechListenerType.ORDERED_PARAMETERS)
-        public void handleParams(Integer a, Integer b, String s) {
-            test = true;
-        }
-
-        @MotechListener(subjects = {"exception"}, type = MotechListenerType.ORDERED_PARAMETERS)
-        public void orderedParams(Integer a, Integer b, String s) {
-            test = true;
-            Assert.notNull(s, "s must not be null");
-        }
-
-        @MotechListener(subjects = {"named"}, type = MotechListenerType.NAMED_PARAMETERS)
-        public void namedParams(@MotechParam("id") String id, @MotechParam("key") String key) {
-            test = true;
-        }
-    }
 
     public static void clear() {
         test=false;

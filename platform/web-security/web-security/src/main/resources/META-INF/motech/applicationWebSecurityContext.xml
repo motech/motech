@@ -15,7 +15,6 @@
         <constructor-arg value="motech-web-security"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean class="org.motechproject.security.Initialize"/>
     <bean class="org.motechproject.security.helper.SessionHandler"/>

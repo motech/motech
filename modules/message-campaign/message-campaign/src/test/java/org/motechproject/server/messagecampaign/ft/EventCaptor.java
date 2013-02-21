@@ -1,4 +1,4 @@
-package org.motechproject.testing.utils.faketime;
+package org.motechproject.server.messagecampaign.ft;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
@@ -78,7 +78,7 @@ public class EventCaptor implements EventListener {
             synchronized (sigLock) {
                 sigLock.wait(10);
             }
-            if (System.currentTimeMillis() > start + (eventsRaised > 0? EVENT_TIMEOUT : 1000)) {  // first trigger seems to take longer
+            if (System.currentTimeMillis() > start + (eventsRaised > 0 ? EVENT_TIMEOUT : 1000)) {  // first trigger seems to take longer
                 throw new EventTimeoutException();
             }
         }

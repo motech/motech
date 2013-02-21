@@ -28,7 +28,6 @@
         <constructor-arg value="motech-message-campaign"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">
         <property name="moduleName" value="message-campaign"/>

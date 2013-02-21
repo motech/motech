@@ -28,7 +28,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
 
     @Override
     public Object addingService(ServiceReference serviceReference) {
-        Object applicationContext = super.addingService(serviceReference);
+        ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
         Bundle bundle = serviceReference.getBundle();
 
         if (!isBlueprintEnabledBundle(bundle)) {
@@ -41,7 +41,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         }
 
         httpServiceTrackers.addTrackerFor(bundle);
-        uiServiceTrackers.addTrackerFor(bundle, (ApplicationContext) applicationContext);
+        uiServiceTrackers.addTrackerFor(bundle, applicationContext);
         return applicationContext;
     }
 
@@ -49,6 +49,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
     public void removedService(ServiceReference reference, Object service) {
         super.removedService(reference, service);
         Bundle bundle = reference.getBundle();
+
         if (!isBlueprintEnabledBundle(bundle)) {
             return;
         }

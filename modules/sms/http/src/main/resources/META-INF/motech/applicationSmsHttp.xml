@@ -29,5 +29,4 @@
         <property name="moduleName" value="sms-http-bundle"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 </beans>

@@ -32,6 +32,4 @@
         <constructor-arg value="motech-sms-audit"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
-
 </beans>
