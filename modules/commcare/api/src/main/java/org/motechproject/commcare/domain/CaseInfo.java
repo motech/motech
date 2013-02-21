@@ -23,7 +23,7 @@ public class CaseInfo {
     private Map<String, String> fieldValues;
     private String serverDateModified;
     private boolean closed;
-    private Map<String, String> indices;
+    private Map<String, Map<String, String>> indices;
 
     public String getCaseId() {
         return this.caseId;
@@ -137,11 +137,11 @@ public class CaseInfo {
         this.closed = closed;
     }
 
-    public Map<String, String> getIndices() {
+    public Map<String, Map<String, String>> getIndices() {
         return this.indices;
     }
 
-    public void setIndices(Map<String, String> indices) {
+    public void setIndices(Map<String, Map<String, String>> indices) {
         this.indices = indices;
     }
 }
