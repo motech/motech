@@ -26,4 +26,7 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:reference id="motechPermissionServiceOsgi" interface="org.motechproject.security.service.MotechPermissionService"/>
+
+    <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
 </beans>

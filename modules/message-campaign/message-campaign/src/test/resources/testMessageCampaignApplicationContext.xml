@@ -9,4 +9,10 @@
         <constructor-arg value="test-motech-message-campaign"/>
     </bean>
 
+    <bean id="campaignJsonLoader" class="org.motechproject.server.messagecampaign.loader.CampaignJsonLoader"
+          init-method="loadAferInit">
+        <property name="messageCampaignsJsonFile" value="message-campaigns.json"/>
+        <property name="settings" ref="messageCampaignSettings" />
+        <property name="allMessageCampaigns" ref="allMessageCampaigns" />
+    </bean>
 </beans>

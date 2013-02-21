@@ -1,0 +1,22 @@
+{
+    "name" : "Absolute Dates Message Program",
+    "type" : "ABSOLUTE",
+    "messages" : [
+        {
+            "name" : "First",
+            "formats" : ["IVR", "SMS"],
+            "languages" : ["en"],
+            "messageKey": "random-1",
+            "date" : "2013-06-15",
+            "startTime" : "10:30:00"
+        },
+        {
+            "name" : "Second",
+            "formats" : ["IVR"],
+            "languages" : ["en"],
+            "messageKey": "random-2",
+            "startTime" : "10:30:00",
+            "date" : "2013-06-22"
+        }
+    ]
+}

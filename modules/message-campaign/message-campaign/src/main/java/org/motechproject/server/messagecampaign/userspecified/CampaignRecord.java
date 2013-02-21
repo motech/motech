@@ -1,5 +1,7 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
+import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
@@ -11,22 +13,22 @@ import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class CampaignRecord {
+@TypeDiscriminator("doc.type == 'CampaignRecord'")
+public class CampaignRecord extends MotechBaseDataObject {
+
+    private static final long serialVersionUID = 7088652519806025250L;
 
     private String name;
-    private List<CampaignMessageRecord> messages;
-    private CampaignType type;
+    private List<CampaignMessageRecord> messages = new ArrayList<>();
+    private CampaignType campaignType;
     private String maxDuration;
 
-    public String name() {
-        return this.name;
-    }
-
     public Campaign build() {
-        Campaign campaign = type.instance();
+        Campaign campaign = campaignType.instance();
         campaign.setMessages(buildCampaignMessages());
-        campaign.setName(this.name());
+        campaign.setName(this.name);
         if (campaign instanceof OffsetCampaign) {
             ((OffsetCampaign) campaign).maxDuration(maxDuration);
         } else if (campaign instanceof RepeatIntervalCampaign) {
@@ -41,37 +43,72 @@ public class CampaignRecord {
 
     private List<CampaignMessage> buildCampaignMessages() {
         List<CampaignMessage> campaignMessages = new ArrayList<CampaignMessage>();
-        for (CampaignMessageRecord messageRecord : this.messageBuilders()) {
-            campaignMessages.add(messageRecord.build(type));
+        for (CampaignMessageRecord messageRecord : this.messages) {
+            campaignMessages.add(messageRecord.build(campaignType));
         }
         return campaignMessages;
     }
 
-    private List<CampaignMessageRecord> messageBuilders() {
-        return this.messages;
+    public String getName() {
+        return name;
     }
 
-    public CampaignRecord name(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
-    public CampaignRecord messages(List<CampaignMessageRecord> campaignMessageRecords) {
-        this.messages = campaignMessageRecords;
-        return this;
+    public List<CampaignMessageRecord> getMessages() {
+        return messages;
     }
 
-    public CampaignRecord type(CampaignType type) {
-        this.type = type;
-        return this;
+    public void setMessages(List<CampaignMessageRecord> messages) {
+        this.messages = messages;
     }
 
-    public String maxDuration() {
+    public CampaignType getCampaignType() {
+        return campaignType;
+    }
+
+    public void setCampaignType(CampaignType type) {
+        this.campaignType = type;
+    }
+
+    public String getMaxDuration() {
         return maxDuration;
     }
 
-    public CampaignRecord maxDuration(String maxDuration) {
+    public void setMaxDuration(String maxDuration) {
         this.maxDuration = maxDuration;
-        return this;
+    }
+
+    public void updateFrom(CampaignRecord other) {
+        name = other.name;
+        messages = other.messages;
+        campaignType = other.campaignType;
+        maxDuration = other.maxDuration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        CampaignRecord other = (CampaignRecord) o;
+
+        return Objects.equals(campaignType, other.campaignType) && Objects.equals(maxDuration, other.maxDuration)
+                && Objects.equals(messages, other.messages) && Objects.equals(name, other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (messages != null ? messages.hashCode() : 0);
+        result = 31 * result + (campaignType != null ? campaignType.hashCode() : 0);
+        result = 31 * result + (maxDuration != null ? maxDuration.hashCode() : 0);
+        return result;
     }
 }

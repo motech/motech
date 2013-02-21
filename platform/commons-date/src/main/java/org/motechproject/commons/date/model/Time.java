@@ -28,6 +28,21 @@ public class Time implements Comparable<Time>, Serializable {
         this(localTime.getHourOfDay(), localTime.getMinuteOfHour());
     }
 
+    public Time(String timeStr) {
+        String[] tokens = timeStr.split(":");
+
+        if (tokens.length < 2 || tokens.length > 3) {
+            throw new IllegalArgumentException("Invalid time string: " + timeStr);
+        }
+
+        try {
+            this.hour = Integer.parseInt(tokens[0]);
+            this.minute = Integer.parseInt(tokens[1]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid time string: " + timeStr, e);
+        }
+    }
+
     public Integer getHour() {
         return hour;
     }

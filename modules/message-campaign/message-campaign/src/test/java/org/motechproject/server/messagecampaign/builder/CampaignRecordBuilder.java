@@ -12,18 +12,37 @@ public class CampaignRecordBuilder {
     public static CampaignRecord absoluteCampaignRecord(String name, CampaignMessageRecord absoluteCampaignMessageRecord) {
         List<CampaignMessageRecord> campaignMessageRecords = new ArrayList<CampaignMessageRecord>();
         campaignMessageRecords.add(absoluteCampaignMessageRecord);
-        return new CampaignRecord().name(name).type(CampaignType.ABSOLUTE).messages(campaignMessageRecords);
+
+        CampaignRecord record = new CampaignRecord();
+        record.setName(name);
+        record.setCampaignType(CampaignType.ABSOLUTE);
+        record.setMessages(campaignMessageRecords);
+
+        return record;
     }
 
     public static CampaignRecord offsetCampaignRecord(String name, CampaignMessageRecord offsetCampaignMessageRecord) {
         List<CampaignMessageRecord> campaignMessageRecords = new ArrayList<CampaignMessageRecord>();
         campaignMessageRecords.add(offsetCampaignMessageRecord);
-        return new CampaignRecord().name(name).type(CampaignType.OFFSET).maxDuration("2 Weeks").messages(campaignMessageRecords);
+
+        CampaignRecord record = new CampaignRecord();
+        record.setName(name);
+        record.setCampaignType(CampaignType.OFFSET);
+        record.setMaxDuration("2 Weeks");
+        record.setMessages(campaignMessageRecords);
+
+        return record;
     }
 
     public static CampaignRecord cronBasedCampaignRecord(String name, CampaignMessageRecord cronBasedMessageRecord) {
         List<CampaignMessageRecord> campaignMessageRecords = new ArrayList<CampaignMessageRecord>();
         campaignMessageRecords.add(cronBasedMessageRecord);
-        return new CampaignRecord().name(name).type(CampaignType.CRON).messages(campaignMessageRecords);
+
+        CampaignRecord record = new CampaignRecord();
+        record.setName(name);
+        record.setCampaignType(CampaignType.CRON);
+        record.setMessages(campaignMessageRecords);
+
+        return record;
     }
 }

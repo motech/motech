@@ -1,14 +1,23 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.server.messagecampaign.web.util.TimeSerializer;
 
 import java.util.List;
 
 public class CampaignMessage {
+    @JsonProperty
     private String name;
+    @JsonProperty
     private List<String> formats;
+    @JsonProperty
     private List<String> languages;
+    @JsonProperty
     private String messageKey;
+    @JsonProperty
+    @JsonSerialize(using = TimeSerializer.class)
     private Time startTime;
 
     public String name() {

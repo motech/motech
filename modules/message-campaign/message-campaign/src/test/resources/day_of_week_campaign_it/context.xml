@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+    ">
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
@@ -16,8 +15,10 @@
         </property>
     </bean>
 
-    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns">
+    <bean id="campaignJsonLoader" class="org.motechproject.server.messagecampaign.loader.CampaignJsonLoader"
+          init-method="loadAferInit">
         <property name="messageCampaignsJsonFile" value="day_of_week_campaign_it/campaigns.json"/>
+        <property name="settings" ref="messageCampaignSettings" />
+        <property name="allMessageCampaigns" ref="allMessageCampaigns" />
     </bean>
-
 </beans>

@@ -16,8 +16,11 @@
         </property>
     </bean>
 
-    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns">
+    <bean id="campaignJsonLoader" class="org.motechproject.server.messagecampaign.loader.CampaignJsonLoader"
+          init-method="loadAferInit">
         <property name="messageCampaignsJsonFile" value="repeat_campaign_it/campaigns.json"/>
+        <property name="settings" ref="messageCampaignSettings" />
+        <property name="allMessageCampaigns" ref="allMessageCampaigns" />
     </bean>
 
 </beans>

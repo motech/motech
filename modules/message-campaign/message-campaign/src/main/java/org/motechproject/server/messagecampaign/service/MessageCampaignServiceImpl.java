@@ -3,9 +3,12 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
+import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.server.messagecampaign.domain.CampaignNotFoundException;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
+import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +24,16 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     private CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper;
     private AllCampaignEnrollments allCampaignEnrollments;
     private CampaignSchedulerFactory campaignSchedulerFactory;
+    private AllMessageCampaigns allMessageCampaigns;
 
     @Autowired
-    public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory) {
+    public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory,
+                                      AllMessageCampaigns allMessageCampaigns) {
         this.campaignEnrollmentService = campaignEnrollmentService;
         this.campaignEnrollmentRecordMapper = campaignEnrollmentRecordMapper;
         this.allCampaignEnrollments = allCampaignEnrollments;
         this.campaignSchedulerFactory = campaignSchedulerFactory;
+        this.allMessageCampaigns = allMessageCampaigns;
     }
 
     public void startFor(CampaignRequest request) {
@@ -60,5 +66,43 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
             return new HashMap<>();
         }
         return campaignSchedulerFactory.getCampaignScheduler(campaignName).getCampaignTimings(startDate, endDate, enrollment);
+    }
+
+    @Override
+    public void stopAll(CampaignEnrollmentsQuery query) {
+        List<CampaignEnrollment> enrollments = campaignEnrollmentService.search(query);
+        for (CampaignEnrollment enrollment : enrollments) {
+            campaignEnrollmentService.unregister(enrollment.getExternalId(), enrollment.getCampaignName());
+            campaignSchedulerFactory.getCampaignScheduler(enrollment.getCampaignName()).stop(enrollment);
+        }
+    }
+
+    @Override
+    public void saveCampaign(CampaignRecord campaign) {
+        allMessageCampaigns.saveOrUpdate(campaign);
+    }
+
+    @Override
+    public void deleteCampaign(String campaignName) {
+        CampaignRecord campaignRecord = allMessageCampaigns.findFirstByName(campaignName);
+
+        if (campaignRecord == null) {
+            throw new CampaignNotFoundException("Campaign not found: " + campaignName);
+        } else {
+            CampaignEnrollmentsQuery enrollmentsQuery = new CampaignEnrollmentsQuery().withCampaignName(campaignName);
+            stopAll(enrollmentsQuery);
+
+            allMessageCampaigns.remove(campaignRecord);
+        }
+    }
+
+    @Override
+    public CampaignRecord getCampaignRecord(String campaignName) {
+        return allMessageCampaigns.findFirstByName(campaignName);
+    }
+
+    @Override
+    public List<CampaignRecord> getAllCampaignRecords() {
+        return allMessageCampaigns.getAll();
     }
 }

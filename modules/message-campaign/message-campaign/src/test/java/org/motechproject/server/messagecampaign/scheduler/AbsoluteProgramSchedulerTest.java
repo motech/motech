@@ -48,7 +48,7 @@ public class AbsoluteProgramSchedulerTest {
 
         AbsoluteCampaignSchedulerService absoluteCampaignScheduler = new AbsoluteCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
-        when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
+        when(allMessageCampaigns.getCampaign("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign");
         absoluteCampaignScheduler.start(enrollment);
