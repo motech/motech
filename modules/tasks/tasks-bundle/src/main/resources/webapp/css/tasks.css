@@ -222,6 +222,10 @@ editable-content .actionField.input-block-level span.badge {
     margin-bottom: 0;
 }
 
+#accordion3 .popover-title:empty {
+    display: none;
+}
+
 #accordion3 .accordion-heading .accordion-toggle,
 #accordion4 .accordion-heading .accordion-toggle {
     padding: 0;
@@ -233,7 +237,9 @@ editable-content .actionField.input-block-level span.badge {
     color: #0088CC;
 }
 
-#accordion1 .accordion-group, #accordion2 .accordion-group,
+#accordion1 .accordion-group,
+#accordion2 .task-filter-group,
+#accordion2 .task-description-group,
 #accordion3 .task-list-group {
     border: 1px solid #B2D8F8;
     border-radius: 4px 4px 4px 4px;
@@ -263,9 +269,26 @@ editable-content .actionField.input-block-level span.badge {
     margin-bottom: 10px;
 }
 
+#accordion1 .index-label {
+    background: #ffffff;
+    padding: 3px;
+    border: 1px solid #1A96F9;
+    border-radius: 4px;
+}
+
 .move-element span {
     cursor: move;
     margin-right: 10px;
+}
+
+.arrow-drop1 {
+    margin-left: -150px;
+    margin-right: 30px;
+}
+
+.arrow-drop2 {
+    margin-left: 240px;
+    margin-top: -30px;
 }
 
 .right-divider {

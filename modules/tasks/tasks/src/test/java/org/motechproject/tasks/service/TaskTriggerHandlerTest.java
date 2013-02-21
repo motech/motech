@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -57,10 +56,14 @@ import static org.motechproject.tasks.domain.ParameterType.DATE;
 import static org.motechproject.tasks.domain.ParameterType.NUMBER;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
+import static org.motechproject.tasks.util.TaskUtil.getSubject;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 public class TaskTriggerHandlerTest {
+    private static final String TRIGGER_SUBJECT = "APPOINTMENT_CREATE_EVENT_SUBJECT";
+    private static final String ACTION_SUBJECT = "SEND_SMS";
+    private static final String TASK_DATA_PROVIDER_ID = "12345";
 
     private class TestObjectField {
         private int id = 6789;
@@ -78,12 +81,6 @@ public class TaskTriggerHandlerTest {
         }
     }
 
-    private static final String TRIGGER_SUBJECT = "APPOINTMENT_CREATE_EVENT_SUBJECT";
-    private static final String ACTION_SUBJECT = "SEND_SMS";
-    private static final String TASK_DATA_PROVIDER_ID = "12345";
-
-    private static Map<String, String> lookupFields;
-
     @Mock
     TaskService taskService;
 
@@ -94,43 +91,40 @@ public class TaskTriggerHandlerTest {
     EventListenerRegistryService registryService;
 
     @Mock
-    SettingsFacade settingsFacade;
+    EventRelay eventRelay;
 
     @Mock
-    EventRelay eventRelay;
+    SettingsFacade settingsFacade;
 
     @Mock
     DataProvider dataProvider;
 
-    TestObject obj;
-
     TaskTriggerHandler handler;
 
-    List<Task> tasks;
-    List<TaskActivity> messages;
+    List<Task> tasks = new ArrayList<>(1);
+    List<TaskActivity> taskActivities;
+
     Task task;
+
     TaskEvent triggerEvent;
     TaskEvent actionEvent;
 
-    @BeforeClass
-    public static void setLookupFields() {
-        lookupFields = new HashMap<>();
-        lookupFields.put("id", "123456789");
-    }
-
     @Before
     public void setup() throws Exception {
-        initTest();
+        initMocks(this);
+        initTask();
+
+        setTriggerEvent();
+        setActionEvent();
+        setTaskActivities();
 
         when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
 
-        obj = new TestObject();
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
-        handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
 
         verify(taskService).getAllTasks();
-        verify(registryService).registerListener(any(EventListener.class), anyString());
+        verify(registryService).registerListener(any(EventListener.class), eq(getSubject(task.getTrigger())));
     }
 
     @Test
@@ -154,8 +148,6 @@ public class TaskTriggerHandlerTest {
         String subject = "org.motechproject.server.messagecampaign.campaign-completed";
         Method method = findMethod(getTargetClass(handler), "handle", MotechEvent.class);
 
-        handler.registerHandlerFor(subject);
-
         Set<EventListener> listeners = new HashSet<>();
         listeners.add(new MotechListenerEventProxy("taskTriggerHandler", this, method));
 
@@ -169,7 +161,7 @@ public class TaskTriggerHandlerTest {
         handler.registerHandlerFor(subject);
         handler.registerHandlerFor(subject);
 
-        verify(registryService).registerListener(any(EventListener.class), eq(subject));
+        verify(registryService, never()).registerListener(any(EventListener.class), eq(subject));
     }
 
     @Test
@@ -274,6 +266,8 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToDate() throws Exception {
+        addDateField();
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
@@ -299,7 +293,7 @@ public class TaskTriggerHandlerTest {
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
         task.getActionInputFields().put("message", null);
 
         assertTrue(task.isEnabled());
@@ -324,10 +318,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotSendEventIfDataProvidersListIsNull() throws Exception {
+        addAdditionalData();
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
 
@@ -351,10 +347,12 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotSendEventIfDataProvidersListIsEmpty() throws Exception {
+        addAdditionalData();
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
 
@@ -378,14 +376,19 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotSendEventIfDataProviderNotFoundObject() throws Exception {
+        addAdditionalData();
+
+        Map<String, String> lookupFields = new HashMap<>();
+        lookupFields.put("id", "123456789");
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         when(dataProvider.getName()).thenReturn("TEST");
-        when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", lookupFields)).thenReturn(null);
+        when(dataProvider.supports("TestObjectField")).thenReturn(true);
+        when(dataProvider.lookup("TestObjectField", lookupFields)).thenReturn(null);
 
         assertTrue(task.isEnabled());
 
@@ -395,7 +398,7 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task);
-        verify(dataProvider).lookup("TestObject", lookupFields);
+        verify(dataProvider).lookup("TestObjectField", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
@@ -407,14 +410,19 @@ public class TaskTriggerHandlerTest {
 
     @Test
     public void shouldNotSendEventIfDataProviderObjectNotContainsField() throws Exception {
+        addAdditionalData();
+
+        Map<String, String> lookupFields = new HashMap<>();
+        lookupFields.put("id", "123456789");
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-        when(taskActivityService.errorsFromLastRun(task)).thenReturn(messages);
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         when(dataProvider.getName()).thenReturn("TEST");
-        when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", lookupFields)).thenReturn(new Object());
+        when(dataProvider.supports("TestObjectField")).thenReturn(true);
+        when(dataProvider.lookup("TestObjectField", lookupFields)).thenReturn(new Object());
 
         assertTrue(task.isEnabled());
 
@@ -424,7 +432,7 @@ public class TaskTriggerHandlerTest {
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
         verify(taskService).getActionEventFor(task);
-        verify(dataProvider).lookup("TestObject", lookupFields);
+        verify(dataProvider).lookup("TestObjectField", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
@@ -451,14 +459,94 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
+    public void shouldNotSendEventIfDateFormatInManipulationIsNotValid() throws Exception {
+        addManipulation();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("manipulations", "{{trigger.startDate?dateTime(BadFormat)}}");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.date.format", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldGetWarningWhenManipulationHaveMistake() throws Exception {
+        addManipulation();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("manipulations", "{{trigger.eventName?toUper}}");
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+
+        verify(eventRelay).sendEventMessage(captor.capture());
+        verify(taskActivityService).addWarning(task, "warning.manipulation", "toUper");
+    }
+
+    @Test
+    public void shouldPassFiltersCriteria() throws Exception {
+        addFilters();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(eventRelay).sendEventMessage(captor.capture());
+        verify(taskActivityService).addSuccess(task);
+    }
+
+    @Test
     public void shouldSendEventForGivenTrigger() throws Exception {
+        addManipulation();
+        addDateField();
+        addFilters();
+        addAdditionalData();
+
+        Map<String, String> testObjectLookup = new HashMap<>();
+        testObjectLookup.put("id", "6789");
+
+        TestObject testObject = new TestObject();
+        TestObjectField testObjectField = new TestObjectField();
+
+        Map<String, String> testObjectFieldLookup = new HashMap<>();
+        testObjectFieldLookup.put("id", "123456789");
+
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
         when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", lookupFields)).thenReturn(obj);
+        when(dataProvider.lookup("TestObject", testObjectLookup)).thenReturn(testObject);
+
+        when(dataProvider.supports("TestObjectField")).thenReturn(true);
+        when(dataProvider.lookup("TestObjectField", testObjectFieldLookup)).thenReturn(testObjectField);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
 
@@ -476,79 +564,87 @@ public class TaskTriggerHandlerTest {
         assertNotNull(motechEvent.getSubject());
         assertNotNull(motechEvent.getParameters());
 
-        assertEquals(5, motechEvent.getParameters().size());
+        assertEquals(6, motechEvent.getParameters().size());
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
         assertEquals(task.getActionInputFields().get("phone"), motechEvent.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEvent.getParameters().get("message"));
         assertEquals("String manipulation: Event-Name, Date manipulation: 20121120", motechEvent.getParameters().get("manipulations"));
         assertEquals(DateTime.parse(task.getActionInputFields().get("date"), DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z")), motechEvent.getParameters().get("date"));
-        assertEquals("test: 6789", motechEvent.getParameters().get("ds"));
+        assertEquals("test: 6789", motechEvent.getParameters().get("dataSourceTrigger"));
+        assertEquals("test: 6789", motechEvent.getParameters().get("dataSourceObject"));
     }
 
-    @Test
-    public void shouldPassFiltersCriteria() throws Exception {
-        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
-        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+    private void initTask() throws Exception {
+        String trigger = String.format("Appointments:appointments-bundle:0.15:%s", TRIGGER_SUBJECT);
+        String action = String.format("SMS:sms-bundle:0.15:%s", ACTION_SUBJECT);
 
-        when(dataProvider.getName()).thenReturn("TEST");
-        when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", lookupFields)).thenReturn(obj);
+        Map<String, String> actionInputFields = new HashMap<>();
+        actionInputFields.put("phone", "123456");
+        actionInputFields.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
 
-        addFilters();
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-
-        handler.handle(createEvent());
-
-        verify(taskService).findTrigger(TRIGGER_SUBJECT);
-        verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task);
-        verify(eventRelay).sendEventMessage(captor.capture());
-        verify(taskActivityService).addSuccess(task);
+        task = new Task(trigger, action, actionInputFields, "name");
+        task.setId("taskId1");
+        tasks.add(task);
     }
 
-    @Test
-    public void shouldNotSendEventIfDateFormatInManipulationIsNotValid() throws Exception {
-        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
-        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
-
-        task.getActionInputFields().put("message", "{{trigger.startDate?dateTime(BadFormat)}}");
-
-        handler.handle(createEvent());
-        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
-
-        verify(taskService).findTrigger(TRIGGER_SUBJECT);
-        verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task);
-        verify(taskActivityService).addError(eq(task), captor.capture());
-
-        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
-        verify(taskActivityService, never()).addSuccess(task);
-
-        assertEquals("error.date.format", captor.getValue().getMessageKey());
+    private void addManipulation() {
+        task.getActionInputFields().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
+        actionEvent.getEventParameters().add(new EventParameter("Manipulations", "manipulations", TEXTAREA));
     }
 
-    @Test
-    public void shouldGetWarningWhenManipulationHaveMistake() throws Exception{
-        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
-        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+    private void addDateField() {
+        task.getActionInputFields().put("date", "2012-12-21 21:21 +0100");
+        actionEvent.getEventParameters().add(new EventParameter("Date", "date", DATE));
+    }
 
-        when(dataProvider.getName()).thenReturn("TEST");
-        when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", lookupFields)).thenReturn(obj);
+    private void addAdditionalData() {
+        task.getActionInputFields().put("dataSourceTrigger", "test: {{ad.12345.TestObjectField#1.id}}");
+        task.getActionInputFields().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
 
-        task.getActionInputFields().put("message", "{{trigger.eventName?toUper}}");
-        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
-        handler.handle(createEvent());
+        actionEvent.getEventParameters().add(new EventParameter("Data source by trigger", "dataSourceTrigger"));
+        actionEvent.getEventParameters().add(new EventParameter("Data source by data source object", "dataSourceObject"));
 
-        verify(taskService).findTrigger(TRIGGER_SUBJECT);
-        verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task);
+        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
+        additionalData.put("12345", Arrays.asList(
+                new TaskAdditionalData(1L, "TestObjectField", "id", "trigger.externalId"),
+                new TaskAdditionalData(2L, "TestObject", "id", "ad.12345.TestObjectField#1.id")
+        ));
 
-        verify(eventRelay).sendEventMessage(captor.capture());
-        verify(taskActivityService).addWarning(task, "warning.manipulation", "toUper");
+        task.setAdditionalData(additionalData);
+
+        handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
+    }
+
+    private void setTriggerEvent() {
+        List<EventParameter> triggerEventParameters = new ArrayList<>();
+        triggerEventParameters.add(new EventParameter("ExternalID", "externalId"));
+        triggerEventParameters.add(new EventParameter("StartDate", "startDate", DATE));
+        triggerEventParameters.add(new EventParameter("EndDate", "endDate", DATE));
+        triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
+        triggerEventParameters.add(new EventParameter("EventName", "eventName"));
+
+        triggerEvent = new TaskEvent();
+        triggerEvent.setSubject(TRIGGER_SUBJECT);
+        triggerEvent.setEventParameters(triggerEventParameters);
+    }
+
+    private void setActionEvent() {
+        List<EventParameter> actionEventParameters = new ArrayList<>();
+        actionEventParameters.add(new EventParameter("Phone", "phone", NUMBER));
+        actionEventParameters.add(new EventParameter("Message", "message", TEXTAREA));
+
+        actionEvent = new TaskEvent();
+        actionEvent.setSubject(ACTION_SUBJECT);
+        actionEvent.setEventParameters(actionEventParameters);
+    }
+
+    private void setTaskActivities() {
+        taskActivities = new ArrayList<>(5);
+        taskActivities.add(new TaskActivity("Error1", task.getId(), ERROR));
+        taskActivities.add(new TaskActivity("Error2", task.getId(), ERROR));
+        taskActivities.add(new TaskActivity("Error3", task.getId(), ERROR));
+        taskActivities.add(new TaskActivity("Error4", task.getId(), ERROR));
+        taskActivities.add(new TaskActivity("Error5", task.getId(), ERROR));
     }
 
     private MotechEvent createEvent() {
@@ -560,62 +656,6 @@ public class TaskTriggerHandlerTest {
         param.put("eventName", "event name");
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
-    }
-
-    private void initTest() throws Exception {
-        initMocks(this);
-
-        tasks = new ArrayList<>();
-
-        String trigger = String.format("Appointments:appointments-bundle:0.15:%s", TRIGGER_SUBJECT);
-        String action = String.format("SMS:sms-bundle:0.15:%s", ACTION_SUBJECT);
-
-        Map<String, String> actionInputFields = new HashMap<>();
-        actionInputFields.put("phone", "123456");
-        actionInputFields.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
-        actionInputFields.put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
-        actionInputFields.put("date", "2012-12-21 21:21 +0100");
-        actionInputFields.put("ds", "test: {{ad.12345.TestObject#1.field.id}}");
-
-        task = new Task(trigger, action, actionInputFields, "name");
-        task.setId("taskId1");
-        task.setFilters(new ArrayList<Filter>());
-        tasks.add(task);
-
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(1);
-        additionalData.put("12345", Arrays.asList(new TaskAdditionalData(1L, "TestObject", "id", "externalId")));
-
-        task.setAdditionalData(additionalData);
-
-        List<EventParameter> triggerEventParameters = new ArrayList<>();
-        triggerEventParameters.add(new EventParameter("ExternalID", "externalId"));
-        triggerEventParameters.add(new EventParameter("StartDate", "startDate", DATE));
-        triggerEventParameters.add(new EventParameter("EndDate", "endDate", DATE));
-        triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
-        triggerEventParameters.add(new EventParameter("EventName", "eventName"));
-
-        triggerEvent = new TaskEvent();
-        triggerEvent.setSubject(TRIGGER_SUBJECT);
-        triggerEvent.setEventParameters(triggerEventParameters);
-
-        List<EventParameter> actionEventParameters = new ArrayList<>();
-        actionEventParameters.add(new EventParameter("Phone", "phone", NUMBER));
-        actionEventParameters.add(new EventParameter("Message", "message", TEXTAREA));
-        actionEventParameters.add(new EventParameter("Manipulations", "manipulations", TEXTAREA));
-        actionEventParameters.add(new EventParameter("Date", "date", DATE));
-        actionEventParameters.add(new EventParameter("DS", "ds"));
-
-        actionEvent = new TaskEvent();
-        actionEvent.setSubject(ACTION_SUBJECT);
-        actionEvent.setEventParameters(actionEventParameters);
-        actionEvent.setDisplayName("SMS");
-
-        messages = new ArrayList<>();
-        messages.add(new TaskActivity("Error1", task.getId(), ERROR));
-        messages.add(new TaskActivity("Error2", task.getId(), ERROR));
-        messages.add(new TaskActivity("Error3", task.getId(), ERROR));
-        messages.add(new TaskActivity("Error4", task.getId(), ERROR));
-        messages.add(new TaskActivity("Error5", task.getId(), ERROR));
     }
 
     private void addFilters() {
@@ -633,4 +673,5 @@ public class TaskTriggerHandlerTest {
 
         task.setFilters(filters);
     }
+
 }

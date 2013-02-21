@@ -50,6 +50,10 @@ String.prototype.insert = function (index, string) {
     return string + this;
 };
 
+Array.prototype.insert = function (index, item) {
+  this.splice(index, 0, item);
+};
+
 function arraysEqual(arr1, arr2) {
     if(arr1.length !== arr2.length)
         return false;
