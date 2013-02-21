@@ -16,7 +16,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class TasksBundleIT extends BaseOsgiIT {
+public class TasksBundleITIgnored extends BaseOsgiIT {
     private static final Integer TRIES_COUNT = 50;
 
     public void testCoreServiceReferences() {
