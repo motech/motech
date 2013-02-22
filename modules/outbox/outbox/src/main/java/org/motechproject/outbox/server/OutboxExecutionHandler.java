@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox;
+package org.motechproject.outbox.server;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;

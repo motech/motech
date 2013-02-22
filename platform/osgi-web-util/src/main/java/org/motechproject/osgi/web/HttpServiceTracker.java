@@ -67,7 +67,7 @@ public class HttpServiceTracker extends ServiceTracker {
                             httpService.registerResources(key, resourceMapping.get(key), null);
                         }
                     }
-                    logger.debug("Servlet registered");
+                    logger.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 } finally {

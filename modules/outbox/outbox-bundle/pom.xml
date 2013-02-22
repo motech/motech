@@ -65,7 +65,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>outbox</Context-Path>
                         <Export-Package>
                             org.motechproject.outbox.api;version=${project.version},
