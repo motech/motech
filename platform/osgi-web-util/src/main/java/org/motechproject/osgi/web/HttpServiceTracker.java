@@ -1,9 +1,12 @@
 package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.osgi.web.ext.ApplicationEnvironment;
+import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
@@ -59,12 +62,13 @@ public class HttpServiceTracker extends ServiceTracker {
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                    HttpContext httpContext = HttpContextFactory.getHttpContext(httpService.createDefaultHttpContext(), context.getBundle(), new ApplicationEnvironment());
                     httpService.unregister(contextPath);
-                    httpService.registerServlet(contextPath, dispatcherServlet, null, null);
+                    httpService.registerServlet(contextPath, dispatcherServlet, null, httpContext);
                     if (resourceMapping != null) {
                         for (String key : resourceMapping.keySet()) {
                             logger.debug(String.format("Registering %s = %s for bundle %s ", key, resourceMapping.keySet(), bundleContextWrapper.getCurrentBundleSymbolicName()));
-                            httpService.registerResources(key, resourceMapping.get(key), null);
+                            httpService.registerResources(key, resourceMapping.get(key), httpContext);
                         }
                     }
                     logger.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
@@ -90,4 +94,5 @@ public class HttpServiceTracker extends ServiceTracker {
     private HttpService getHttpService() {
         return bundleContextWrapper.getService(HttpService.class);
     }
+
 }

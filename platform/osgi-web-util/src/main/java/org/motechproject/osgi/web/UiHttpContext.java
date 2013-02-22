@@ -30,6 +30,10 @@ public class UiHttpContext implements HttpContext {
         return context.getMimeType(resolveName(name));
     }
 
+    protected HttpContext getContext() {
+        return context;
+    }
+
     private String resolveName(String name) {
         String resolvedName = name;
         if ("webapp/".equals(name)) {
