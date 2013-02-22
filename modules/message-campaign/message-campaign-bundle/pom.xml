@@ -93,7 +93,7 @@
                     <instructions>
                         <Context-File>META-INF/osgi/applicationMessageCampaignBundle.xml</Context-File>
                         <Context-Path>messagecampaign</Context-Path>
-                        <Resource-Path>message-campaign/resource</Resource-Path>
+                        <Resource-Path>messagecampaign/resource</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.server.messagecampaign;version=${project.version},
