@@ -23,10 +23,10 @@
     </bean>
 
     <bean id="messagecampaignRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="moduleName" value="message-campaign"/>
+        <constructor-arg name="moduleName" value="messagecampaign"/>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../message-campaign/resource/bundles/"/>
+                <entry key="messages" value="../messagecampaign/resource/bundles/"/>
             </map>
         </constructor-arg>
     </bean>
