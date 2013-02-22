@@ -55,9 +55,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.server.demo.osgi.Activator
-                        </Bundle-Activator>
+                        <!--<Bundle-Activator>-->
+                            <!--org.motechproject.server.demo.osgi.Activator-->
+                        <!--</Bundle-Activator>-->
+                        <Context-Path>demo/api</Context-Path>
+                        <Context-File>META-INF/osgi/applicationDemoBundle.xml</Context-File>
+                        <Resource-Path>demo</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Import-Package>
                             org.motechproject.decisiontree.core.model,
                             org.motechproject.event.listener.annotations,
