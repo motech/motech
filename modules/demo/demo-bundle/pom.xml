@@ -55,9 +55,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!--<Bundle-Activator>-->
-                            <!--org.motechproject.server.demo.osgi.Activator-->
-                        <!--</Bundle-Activator>-->
                         <Context-Path>demo/api</Context-Path>
                         <Context-File>META-INF/osgi/applicationDemoBundle.xml</Context-File>
                         <Resource-Path>demo</Resource-Path>

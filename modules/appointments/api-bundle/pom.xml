@@ -50,6 +50,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.appointments.api;version=${project.version},
                             org.motechproject.appointments.api.model;version=${project.version},
