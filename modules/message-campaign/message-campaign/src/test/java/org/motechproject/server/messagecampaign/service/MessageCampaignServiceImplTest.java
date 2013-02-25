@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -21,10 +22,12 @@ import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFacto
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 import org.motechproject.server.messagecampaign.search.Criterion;
 import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
+import org.motechproject.server.messagecampaign.web.ex.EnrollmentNotFoundException;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -32,6 +35,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -253,5 +257,61 @@ public class MessageCampaignServiceImplTest {
     public void shouldThrowExceptionWhenDeletingNonExistantCampaign() {
         when(allMessageCampaigns.findFirstByName("PREGNANCY")).thenReturn(null);
         messageCampaignService.deleteCampaign("PREGNANCY");
+    }
+
+    @Test
+    public void shouldUpdateExistingEnrollments() {
+        final LocalDate now = LocalDate.now();
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("oldExtId", "campaign");
+        enrollment.setStatus(CampaignEnrollmentStatus.ACTIVE);
+        enrollment.setDeliverTime(10, 50);
+        enrollment.setReferenceDate(now.plusWeeks(1));
+        enrollment.setReferenceTime(10, 51);
+
+        CampaignSchedulerService campaignScheduler = mock(CampaignSchedulerService.class);
+
+        when(allCampaignEnrollments.get("enrollmentId")).thenReturn(enrollment);
+        when(campaignSchedulerFactory.getCampaignScheduler("campaign")).thenReturn(campaignScheduler);
+
+        CampaignRequest campaignRequest = new CampaignRequest("extId", "campaign", now, new Time(11, 0), new Time(10, 0));
+
+        messageCampaignService.updateEnrollment(campaignRequest, "enrollmentId");
+
+        verify(campaignScheduler).stop(enrollment);
+
+        ArgumentMatcher<CampaignEnrollment> matcher = new ArgumentMatcher<CampaignEnrollment>() {
+            @Override
+            public boolean matches(Object argument) {
+                CampaignEnrollment enrollment = (CampaignEnrollment) argument;
+                return Objects.equals("campaign", enrollment.getCampaignName()) && Objects.equals("extId", enrollment.getExternalId())
+                        && Objects.equals(new Time(11, 0), enrollment.getReferenceTime()) && Objects.equals(new Time(10, 0), enrollment.getDeliverTime())
+                        && Objects.equals(now, enrollment.getReferenceDate());
+            }
+        };
+
+        verify(allCampaignEnrollments).saveOrUpdate(argThat(matcher));
+        verify(campaignScheduler).start(argThat(matcher));
+    }
+
+    @Test(expected = EnrollmentNotFoundException.class)
+    public void shouldThrowExceptionWhenUpdatingNonExistentEnrollment() {
+        when(allCampaignEnrollments.get("id")).thenReturn(null);
+        messageCampaignService.updateEnrollment(new CampaignRequest(), "id");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionForDuplicateExtIdAndCampaignName() {
+        CampaignEnrollment enrollment = new CampaignEnrollment("extId", "PREGNANCY");
+        enrollment.setId("couchId");
+        CampaignEnrollment otherEnrollment = new CampaignEnrollment("extId2", "PREGNANCY");
+        otherEnrollment.setId("otherEnrollmentId");
+
+        when(allCampaignEnrollments.get("couchId")).thenReturn(enrollment);
+        when(allCampaignEnrollments.findByExternalIdAndCampaignName("extId2", "PREGNANCY")).thenReturn(otherEnrollment);
+
+        CampaignRequest campaignRequest = new CampaignRequest("extId2", "PREGNANCY", null, null, null);
+
+        messageCampaignService.updateEnrollment(campaignRequest, "couchId");
     }
 }

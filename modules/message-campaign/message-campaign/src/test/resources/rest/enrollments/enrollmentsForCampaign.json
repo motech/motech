@@ -4,17 +4,20 @@
    {
        "externalId": "47sf6a",
        "startTime": "20:01:00",
-       "referenceDate" : "2013-04-01"
+       "referenceDate" : "2013-04-01",
+       "enrollmentId":"enrollmentId1"
    },
    {
        "externalId": "d6gt40",
        "startTime": "10:00:00",
-       "referenceDate" : "2013-08-18"
+       "referenceDate" : "2013-08-18",
+       "enrollmentId":"enrollmentId2"
    },
    {
        "externalId": "o34j6f",
        "startTime": "10:00:00",
-       "referenceDate" : "2013-01-25"
+       "referenceDate" : "2013-01-25",
+       "enrollmentId":"enrollmentId3"
    }
    ]
 }

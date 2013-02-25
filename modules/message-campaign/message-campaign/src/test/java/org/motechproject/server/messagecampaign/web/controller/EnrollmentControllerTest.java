@@ -17,6 +17,7 @@ import org.motechproject.server.messagecampaign.search.Criterion;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
+import org.motechproject.server.messagecampaign.web.ex.EnrollmentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.server.MockMvc;
@@ -31,6 +32,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.motechproject.testing.utils.rest.RestTestUtil.jsonMatcher;
@@ -91,10 +94,67 @@ public class EnrollmentControllerTest {
     }
 
     @Test
+    public void shouldUpdateUserEnrollmentWithExtId() throws Exception {
+        controller.perform(
+            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+        ).andExpect(
+            status().is(HttpStatus.OK.value())
+        );
+
+        ArgumentCaptor<CampaignRequest> captor = ArgumentCaptor.forClass(CampaignRequest.class);
+        verify(messageCampaignService).updateEnrollment(captor.capture(), eq("couchId"));
+
+        assertEquals(new Time(20, 1), captor.getValue().deliverTime());
+        assertEquals(new LocalDate(2013, 8, 14), captor.getValue().referenceDate());
+        assertEquals(USER_ID, captor.getValue().externalId());
+        assertEquals(CAMPAIGN_NAME, captor.getValue().campaignName());
+    }
+
+    @Test
+    public void shouldReturn404WhenUpdatingNonexistentEnrollment() throws Exception {
+        final String expectedResponse = "Enrollment with id couchId not found";
+
+        doThrow(new EnrollmentNotFoundException(expectedResponse))
+                .when(messageCampaignService).updateEnrollment(any(CampaignRequest.class), eq("couchId"));
+
+        controller.perform(
+            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+        ).andExpect(
+            status().is(HttpStatus.NOT_FOUND.value())
+        ).andExpect(
+            content().string(expectedResponse)
+        );
+    }
+
+    @Test
+    public void shouldReturn400WhenCreatingADuplicate() throws Exception {
+        final String expectedResponse = String.format("%s is already enrolled in %s campaign, enrollmentId: %s",
+                USER_ID, CAMPAIGN_NAME, "couchId2");
+
+        doThrow(new IllegalArgumentException(expectedResponse))
+                .when(messageCampaignService).updateEnrollment(any(CampaignRequest.class), eq("couchId"));
+
+        controller.perform(
+            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+        ).andExpect(
+            status().is(HttpStatus.BAD_REQUEST.value())
+        ).andExpect(
+            content().string(expectedResponse)
+        );
+    }
+
+    @Test
     public void shouldReturnUserEnrollmentDetails() throws Exception {
         CampaignEnrollment enrollment = new CampaignEnrollment(USER_ID, CAMPAIGN_NAME);
         enrollment.setReferenceDate(new LocalDate(2013, 3, 10));
         enrollment.setDeliverTime(new Time(20, 30));
+        enrollment.setId("couchId");
 
         when(enrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(enrollment));
 
@@ -139,12 +199,15 @@ public class EnrollmentControllerTest {
         CampaignEnrollment enrollment1 = new CampaignEnrollment("47sf6a", CAMPAIGN_NAME);
         enrollment1.setDeliverTime(new Time(20, 1));
         enrollment1.setReferenceDate(new LocalDate(2013, 4, 1));
+        enrollment1.setId("enrollmentId1");
         CampaignEnrollment enrollment2 = new CampaignEnrollment("d6gt40", CAMPAIGN_NAME);
         enrollment2.setDeliverTime(new Time(10, 0));
         enrollment2.setReferenceDate(new LocalDate(2013, 8, 18));
+        enrollment2.setId("enrollmentId2");
         CampaignEnrollment enrollment3 = new CampaignEnrollment("o34j6f", CAMPAIGN_NAME);
         enrollment3.setDeliverTime(new Time(10, 0));
         enrollment3.setReferenceDate(new LocalDate(2013, 1, 25));
+        enrollment3.setId("enrollmentId3");
 
         when(enrollmentService.search(any(CampaignEnrollmentsQuery.class)))
                 .thenReturn(asList(enrollment1, enrollment2, enrollment3));
@@ -191,9 +254,11 @@ public class EnrollmentControllerTest {
         CampaignEnrollment enrollment1 = new CampaignEnrollment(USER_ID, CAMPAIGN_NAME);
         enrollment1.setDeliverTime(new Time(20, 1));
         enrollment1.setReferenceDate(new LocalDate(2013, 4, 1));
+        enrollment1.setId("enrollmentId1");
         CampaignEnrollment enrollment2 = new CampaignEnrollment(USER_ID, "CHILD_DEVELOPMENT");
         enrollment2.setDeliverTime(new Time(10, 0));
         enrollment2.setReferenceDate(new LocalDate(2013, 8, 18));
+        enrollment2.setId("enrollmentId2");
 
         when(enrollmentService.search(any(CampaignEnrollmentsQuery.class)))
                 .thenReturn(asList(enrollment1, enrollment2));
@@ -238,12 +303,15 @@ public class EnrollmentControllerTest {
         CampaignEnrollment enrollment1 = new CampaignEnrollment(USER_ID, CAMPAIGN_NAME);
         enrollment1.setDeliverTime(new Time(20, 1));
         enrollment1.setReferenceDate(new LocalDate(2012, 1, 2));
+        enrollment1.setId("enrollmentId1");
         CampaignEnrollment enrollment2 = new CampaignEnrollment("d6gt40", CAMPAIGN_NAME);
         enrollment2.setDeliverTime(new Time(10, 0));
         enrollment2.setReferenceDate(new LocalDate(2012, 2, 15));
+        enrollment2.setId("enrollmentId2");
         CampaignEnrollment enrollment3 = new CampaignEnrollment("o34j6f", "CHILD_DEVELOPMENT");
         enrollment3.setDeliverTime(new Time(10, 0));
         enrollment3.setReferenceDate(new LocalDate(2012, 3, 13));
+        enrollment3.setId("enrollmentId3");
 
         when(enrollmentService.search(any(CampaignEnrollmentsQuery.class)))
                 .thenReturn(asList(enrollment1, enrollment2, enrollment3));

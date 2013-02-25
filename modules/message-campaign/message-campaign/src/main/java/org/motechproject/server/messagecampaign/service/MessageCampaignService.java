@@ -32,6 +32,8 @@ public interface MessageCampaignService {
 
     Map<String, List<DateTime>> getCampaignTimings(String externalId, String campaignName, DateTime startDate, DateTime endDate);
 
+    void updateEnrollment(CampaignRequest enrollRequest, String enrollmentId);
+
     void stopAll(CampaignEnrollmentsQuery query);
 
     void saveCampaign(CampaignRecord campaign);

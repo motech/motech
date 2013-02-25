@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
@@ -27,7 +28,15 @@ public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollm
     }
 
     public void saveOrUpdate(CampaignEnrollment enrollment) {
-        CampaignEnrollment existingEnrollment = findByExternalIdAndCampaignName(enrollment.getExternalId(), enrollment.getCampaignName());
+        CampaignEnrollment existingEnrollment;
+
+        // find by id if given, else by externalId and campaignName
+        if (StringUtils.isNotBlank(enrollment.getId())) {
+            existingEnrollment = get(enrollment.getId());
+        } else {
+            existingEnrollment = findByExternalIdAndCampaignName(enrollment.getExternalId(), enrollment.getCampaignName());
+        }
+
         if (existingEnrollment != null) {
             update(existingEnrollment.copyFrom(enrollment));
         } else {
