@@ -48,12 +48,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.couch.mrs.service;version=${project.version},
                             org.motechproject.couch.mrs.model;version=${project.version},
                             org.motechproject.couch.mrs.repository;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
