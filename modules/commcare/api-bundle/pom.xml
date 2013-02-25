@@ -41,10 +41,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.WebUIBundleActivator
-                        </Bundle-Activator>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-File>META-INF/osgi/applicationCommcareAPIBundle.xml</Context-File>
                         <Context-Path>commcare</Context-Path>
+                        <Resource-Path>commcare/resources</Resource-Path>
+                        <!--<Bundle-Activator>-->
+                            <!--org.motechproject.osgi.web.WebUIBundleActivator-->
+                        <!--</Bundle-Activator>-->
                         <Export-Package>
                             org.motechproject.commcare.service;version=${project.version},
                             org.motechproject.commcare.domain;version=${project.version},

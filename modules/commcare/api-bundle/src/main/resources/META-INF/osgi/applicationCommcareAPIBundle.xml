@@ -5,24 +5,5 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <import resource="classpath*:META-INF/motech/*.xml"/>
-
-    <osgi:service id="commcareUserServiceOsgi" ref="commcareUserServiceImpl"
-                  interface="org.motechproject.commcare.service.CommcareUserService"/>
-
-    <osgi:service id="commcareFixtureServiceOsgi" ref="commcareFixtureServiceImpl"
-                  interface="org.motechproject.commcare.service.CommcareFixtureService"/>
-
-    <osgi:service id="commcareCaseServiceOsgi" ref="commcareCaseServiceImpl"
-                  interface="org.motechproject.commcare.service.CommcareCaseService"/>
-
-    <osgi:service id="commcareFormServiceOsgi" ref="commcareFormServiceImpl"
-                  interface="org.motechproject.commcare.service.CommcareFormService"/>
-
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
-
-    <osgi:reference id="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
-    <osgi:reference id="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
 </beans>
