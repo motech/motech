@@ -64,7 +64,7 @@ public class CaseResponseJson {
     }
 
     @SerializedName("indices")
-    private Map<String, String> indices;
+    private Map<String, Map<String, String>> indices;
 
     public String getServerDateOpened() {
         return this.serverDateOpened;
@@ -122,11 +122,11 @@ public class CaseResponseJson {
         this.closed = closed;
     }
 
-    public Map<String, String> getIndices() {
+    public Map<String, Map<String, String>> getIndices() {
         return this.indices;
     }
 
-    public void setIndices(Map<String, String> indices) {
+    public void setIndices(Map<String, Map<String, String>> indices) {
         this.indices = indices;
     }
 }
