@@ -45,6 +45,7 @@ public class KooKooIVRContext {
 
     /**
      * Get Current user input (dtmf digit pressed on phone)
+     *
      * @return return DTMF value as String
      */
     public String userInput() {
@@ -62,6 +63,7 @@ public class KooKooIVRContext {
 
     /**
      * Get current call id
+     *
      * @return
      */
     public String callId() {
@@ -82,7 +84,9 @@ public class KooKooIVRContext {
     }
 
     public void callDetailRecordId(String kooKooCallDetailRecordId) {
-        cookies.add(CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
+        if (StringUtils.isNotBlank(kooKooCallDetailRecordId)) {
+            cookies.add(CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
+        }
     }
 
     public String callDetailRecordId() {

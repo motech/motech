@@ -87,7 +87,7 @@ public class KooKooIVRContextTest {
         kooKooIVRContext.initialize();
         verify(request).setAttribute(KooKooIVRContext.CALL_ID, "sid");
         ArgumentCaptor<Cookie> cookieArgumentCaptor = ArgumentCaptor.forClass(Cookie.class);
-        verify(response, times(2)).addCookie(cookieArgumentCaptor.capture());
+        verify(response, times(1)).addCookie(cookieArgumentCaptor.capture());
         assertEquals(KooKooIVRContext.CALL_ID, cookieArgumentCaptor.getAllValues().get(0).getName());
         assertEquals("sid", cookieArgumentCaptor.getAllValues().get(0).getValue());
     }
