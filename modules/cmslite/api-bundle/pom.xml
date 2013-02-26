@@ -41,13 +41,14 @@
                 <configuration>
                     <instructions>
                         <Context-Path>cmsliteapi</Context-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-File>META-INF/osgi/applicationCmsLiteApiBundle.xml</Context-File>
                         <Export-Package>
                             org.motechproject.cmslite.api.model;version=${project.version},
                             org.motechproject.cmslite.api.repository;version=${project.version},
                             org.motechproject.cmslite.api.service;version=${project.version},
                             org.motechproject.cmslite.api.web;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>org.motechproject.osgi.web.Activator</Bundle-Activator>
                         <Import-Package>
                             javax.servlet.*;resolution:=optional,
                             org.ektorp.impl,
