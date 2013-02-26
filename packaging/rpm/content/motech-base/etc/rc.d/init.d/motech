@@ -58,7 +58,7 @@ fi
 CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
 
 # Path to the tomcat launch script
-TOMCAT_SCRIPT="/usr/sbin/tomcat"
+TOMCAT_SCRIPT="/usr/sbin/dtomcat7"
 
 # Tomcat program name
 TOMCAT_PROG="${NAME}"
