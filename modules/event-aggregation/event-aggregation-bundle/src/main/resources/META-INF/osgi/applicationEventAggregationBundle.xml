@@ -6,14 +6,5 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <import resource="classpath*:META-INF/motech/applicationEventAggregation.xml" />
-
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" cardinality="0..1" />
-
-    <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
-    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" cardinality="0..1" />
 
 </beans>

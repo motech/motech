@@ -54,14 +54,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-Path>/event-aggregation/api</Context-Path>
+                        <Context-Path>event-aggregation/api</Context-Path>
                         <Context-File>META-INF/osgi/applicationEventAggregationBundle.xml</Context-File>
+                        <Resource-Path>/event-aggregation</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.event.aggregation.model.schedule;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.event.aggregation.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
