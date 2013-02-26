@@ -23,10 +23,9 @@ public final class DayOfWeekSchedulableJob implements Serializable {
     private final LocalDate end;
     private final List<DayOfWeek> days;
     private Time time;
-    private boolean intervening;
+    private boolean ignorePastFiresAtStart;
 
-    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean intervening) {
-        this.intervening = intervening;
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean ignorePastFiresAtStart) {
         if (motechEvent == null || hasNoDates(start, end) || isEmpty(days)) {
             throw new IllegalArgumentException("null/empty arguments");
         }
@@ -35,6 +34,11 @@ public final class DayOfWeekSchedulableJob implements Serializable {
         this.end = end;
         this.time = time;
         this.days = days;
+        this.ignorePastFiresAtStart = ignorePastFiresAtStart;
+    }
+
+    public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time) {
+        this(motechEvent, start, end, days, time, false);
     }
 
     private boolean hasNoDates(LocalDate start, LocalDate end) {
@@ -57,8 +61,8 @@ public final class DayOfWeekSchedulableJob implements Serializable {
         return time;
     }
 
-    public boolean isIntervening() {
-        return intervening;
+    public boolean isIgnorePastFiresAtStart() {
+        return ignorePastFiresAtStart;
     }
 
     public List<Integer> getCronDays() {

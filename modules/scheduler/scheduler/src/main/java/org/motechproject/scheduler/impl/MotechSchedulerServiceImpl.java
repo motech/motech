@@ -120,6 +120,22 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             unscheduleJob(jobId.value());
         }
 
+        DateTime now = now();
+        if (cronSchedulableJob.isIgnorePastFiresAtStart() && newDateTime(cronSchedulableJob.getStartTime()).isBefore(now)) {
+
+            Date newStartTime = trigger.getFireTimeAfter(now.toDate());
+            if (newStartTime == null) {
+                newStartTime = now.toDate();
+            }
+            trigger = newTrigger()
+                .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
+                .forJob(jobDetail)
+                .withSchedule(cronSchedule)
+                .startAt(newStartTime)
+                .endAt(cronSchedulableJob.getEndTime())
+                .build();
+        }
+
         scheduleJob(jobDetail, trigger);
     }
 
@@ -309,15 +325,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             List<Date> pastTriggers = TriggerUtils.computeFireTimesBetween((OperableTrigger) trigger, null, jobStartTime, now.toDate());
 
             if (pastTriggers.size() > 0) {
-
                 if (scheduleBuilder instanceof SimpleScheduleBuilder && repeatingSchedulableJob.getRepeatCount() != null) {
                     ((SimpleScheduleBuilder) scheduleBuilder).withRepeatCount(repeatingSchedulableJob.getRepeatCount() - pastTriggers.size());
                 }
-
-                List<Date> pastTriggersPlusOne = TriggerUtils.computeFireTimes((OperableTrigger) trigger, null, pastTriggers.size() + 1);
-
-                Date newStartTime = new Date(pastTriggersPlusOne.get(pastTriggersPlusOne.size() - 1).getTime());
-
+                Date newStartTime = getFirstTriggerInFuture(trigger, now);
                 trigger = newTrigger()
                         .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                         .forJob(jobDetail)
@@ -330,6 +341,13 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         scheduleJob(jobDetail, trigger);
     }
 
+    private Date getFirstTriggerInFuture(Trigger trigger, DateTime now) {   // extracted away because of checkstyle :(
+        Date newStartTime = trigger.getFireTimeAfter(now.toDate());
+        if (newStartTime == null) {
+            newStartTime = now.toDate();
+        }
+        return newStartTime;
+    }
 
     private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
         Integer misfirePolicy = SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT;
@@ -439,15 +457,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         LocalDate start = dayOfWeekSchedulableJob.getStartDate();
         LocalDate end = dayOfWeekSchedulableJob.getEndDate();
         Time time = dayOfWeekSchedulableJob.getTime();
-        DateTime now = now();
-
-        if (dayOfWeekSchedulableJob.isIntervening() && newDateTime(start, time).isBefore(now)) {
-            start = now.toLocalDate();
-        }
 
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(), time.getMinute(), dayOfWeekSchedulableJob.getCronDays().toArray(new Integer[0]));
         CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(), start.toDate(), end.toDate());
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(), start.toDate(), end.toDate(), dayOfWeekSchedulableJob.isIgnorePastFiresAtStart());
 
         scheduleJob(cronSchedulableJob);
     }
