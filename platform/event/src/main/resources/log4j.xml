@@ -15,11 +15,11 @@
     </logger>
 
     <logger name="org.motechproject">
-        <level value="INFO" />
+        <level value="ERROR" />
     </logger>
 
     <root>
-        <priority value="INFO" />
+        <priority value="ERROR" />
         <appender-ref ref="CONSOLE" />
     </root>
 

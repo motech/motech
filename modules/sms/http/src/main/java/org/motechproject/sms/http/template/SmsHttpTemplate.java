@@ -80,7 +80,7 @@ public class SmsHttpTemplate {
         return outgoing.getRequest().getAuthentication();
     }
 
-    public String getResponseSuccessCode() {
+    public String getSuccessfulResponsePattern() {
         return outgoing.getResponse().getSuccess();
     }
 }

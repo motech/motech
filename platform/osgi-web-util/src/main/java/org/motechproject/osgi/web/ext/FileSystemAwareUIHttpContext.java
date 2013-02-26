@@ -32,7 +32,7 @@ public class FileSystemAwareUIHttpContext extends UiHttpContext {
         LOGGER.info("Using FileSystemAwareUIHttpContext to deliver resource " + resourcePath);
         if (resourceFile.exists()) {
             try {
-                if (resourcePath.endsWith(".js")) {
+                if (LOGGER.isDebugEnabled()) {
                     print(resourceFile);
                 }
                 return resourceFile.toURI().toURL();
@@ -45,17 +45,17 @@ public class FileSystemAwareUIHttpContext extends UiHttpContext {
     }
 
     private void print(File resourceFile) {
-        LOGGER.info("Dumping " + resourceFile.getName());
+        LOGGER.debug("Dumping " + resourceFile.getName());
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(resourceFile));
-            String currentLine = "";
+            String currentLine;
             while ((currentLine = bufferedReader.readLine()) != null) {
-                LOGGER.error(currentLine);
+                LOGGER.debug(currentLine);
             }
         } catch (Exception e) {
-            throw new MotechException("File could not be read " + resourceFile.getName(), e);
+            LOGGER.warn(String.format("%s could not be written to logs ", resourceFile.getName()));
         }
-        LOGGER.info("Done ");
+        LOGGER.debug("Done ");
     }
 
     public String getResourceRootDirectoryPath() {

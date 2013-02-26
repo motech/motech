@@ -39,12 +39,12 @@ public class TemplateReaderTest {
         assertEquals("$message", queryParameters.get("message"));
 
         Response response = smsHttpTemplate.getOutgoing().getResponse();
-        assertEquals("sent", (String) getField(response, "success"));
+        assertEquals(".*\\bsent\\b.*", (String) getField(response, "success"));
 
         Incoming incoming = smsHttpTemplate.getIncoming();
-        assertEquals("$sender",incoming.getSenderKey());
-        assertEquals("$message",incoming.getMessageKey());
-        assertEquals("$time",incoming.getTimestampKey());
+        assertEquals("$sender", incoming.getSenderKey());
+        assertEquals("$message", incoming.getMessageKey());
+        assertEquals("$time", incoming.getTimestampKey());
     }
 
 }

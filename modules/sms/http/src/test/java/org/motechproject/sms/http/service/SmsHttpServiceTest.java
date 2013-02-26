@@ -47,7 +47,7 @@ public class SmsHttpServiceTest {
         GetMethod httpMethod = mock(GetMethod.class);
 
         when(template.generateRequestFor(Arrays.asList("0987654321"), "foo bar")).thenReturn(httpMethod);
-        when(template.getResponseSuccessCode()).thenReturn("sent");
+        when(template.getSuccessfulResponsePattern()).thenReturn("sent");
         when(templateReader.getTemplate()).thenReturn(template);
         when(httpMethod.getResponseBodyAsString()).thenReturn("sent");
 
@@ -62,8 +62,8 @@ public class SmsHttpServiceTest {
         SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
+        when(template.getSuccessfulResponsePattern()).thenReturn("\\w+\\s+(?i)sent successfully");
         when(httpMethod.getResponseBodyAsString()).thenReturn("message senT successfully");
-        when(template.getResponseSuccessCode()).thenReturn("sent successfully");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
         when(templateReader.getTemplate()).thenReturn(template);
 
@@ -76,8 +76,8 @@ public class SmsHttpServiceTest {
         SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
+        when(template.getSuccessfulResponsePattern()).thenReturn("\\w+\\s+(?i)sent successfully");
         when(httpMethod.getResponseBodyAsString()).thenReturn("boom");
-        when(template.getResponseSuccessCode()).thenReturn("sent");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
         when(templateReader.getTemplate()).thenReturn(template);
 
@@ -134,7 +134,7 @@ public class SmsHttpServiceTest {
         HttpState httpClientState = mock(HttpState.class);
 
         when(httpMethod.getResponseBodyAsString()).thenReturn("success");
-        when(smsHttpTemplate.getResponseSuccessCode()).thenReturn("success");
+        when(smsHttpTemplate.getSuccessfulResponsePattern()).thenReturn("success");
         when(smsHttpTemplate.generateRequestFor(Arrays.asList("123"), "message")).thenReturn(httpMethod);
         when(smsHttpTemplate.getAuthentication()).thenReturn(new Authentication("username", "password"));
         when(templateReader.getTemplate()).thenReturn(smsHttpTemplate);
@@ -148,22 +148,6 @@ public class SmsHttpServiceTest {
         verify(httpClientState).setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("username", "password"));
     }
 
-    @Test
-    public void shouldMatchRegexSuccessMessage() throws IOException, SmsDeliveryFailureException {
-        HttpMethod httpMethod = mock(HttpMethod.class);
-        SmsHttpTemplate smsHttpTemplate = mock(SmsHttpTemplate.class);
-        HttpClientParams httpClientParams = mock(HttpClientParams.class);
-        HttpState httpClientState = mock(HttpState.class);
 
-        when(httpMethod.getResponseBodyAsString()).thenReturn("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<string xmlns=\"http://yellowpepper.com/webservices/literalTypes\">64a0f3a016084c52</string>");
-        when(smsHttpTemplate.getResponseSuccessCode()).thenReturn("\\w*<\\?xml version=\"1.0\" encoding=\"utf-8\"\\?>\\w*\\r\\n<string xmlns=\"http://yellowpepper.com/webservices/literalTypes\">+(?!9989|9969)*\\w+</string>");
-        when(smsHttpTemplate.generateRequestFor(Arrays.asList("123"), "message")).thenReturn(httpMethod);
-        when(smsHttpTemplate.getAuthentication()).thenReturn(new Authentication("username", "password"));
-        when(templateReader.getTemplate()).thenReturn(smsHttpTemplate);
-        when(httpClient.getParams()).thenReturn(httpClientParams);
-        when(httpClient.getState()).thenReturn(httpClientState);
 
-        SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
-        smsHttpService.sendSms(Arrays.asList("123"), "message");
-    }
 }

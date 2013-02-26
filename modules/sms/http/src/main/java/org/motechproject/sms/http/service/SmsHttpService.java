@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.sms.api.SmsDeliveryFailureException;
+import org.motechproject.sms.http.SMSGatewayResponse;
 import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.template.Authentication;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
@@ -46,9 +47,10 @@ public class SmsHttpService {
 
         String response = null;
         HttpMethod httpMethod = null;
+        SmsHttpTemplate smsHttpTemplate = template();
         try {
-            httpMethod = template().generateRequestFor(recipients, message);
-            setAuthenticationInfo(template().getAuthentication());
+            httpMethod = smsHttpTemplate.generateRequestFor(recipients, message);
+            setAuthenticationInfo(smsHttpTemplate.getAuthentication());
             int status = commonsHttpClient.executeMethod(httpMethod);
             response = httpMethod.getResponseBodyAsString();
             log.info("HTTP Status:" + status + "|Response:" + response);
@@ -61,9 +63,7 @@ public class SmsHttpService {
             }
         }
 
-        if (response == null ||
-                (!response.toLowerCase().contains(template().getResponseSuccessCode().toLowerCase())
-                        && !response.matches(template().getResponseSuccessCode()))) {
+        if (!new SMSGatewayResponse(template(), response).isSuccess()) {
             log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
             throw new SmsDeliveryFailureException(response);
         }

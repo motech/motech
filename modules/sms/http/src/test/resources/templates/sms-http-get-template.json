@@ -14,7 +14,7 @@
             }
         },
         "response":{
-            "success":"<status>success</status>"
+            "success":".*(<status>success</status>).*"
         }
     },
     "incoming":{
