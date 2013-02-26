@@ -2,12 +2,12 @@ package org.motechproject.event.aggregation.web;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.validator.ValidatorFactoryBean;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.aggregation.service.AggregationRule;
 import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.aggregation.service.impl.AggregationRuleRequest;
-import org.hibernate.validator.ValidatorFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;

@@ -30,7 +30,7 @@ public class ImportExportResolver {
 
         for (ExportedPackage exportedPackage : allExportedPackages) {
             if (isImportedByBundle(exportedPackage, bundle)) {
-                PackageInfo importInfo = new PackageInfo(exportedPackage) ;
+                PackageInfo importInfo = new PackageInfo(exportedPackage);
                 imports.add(importInfo);
             }
 

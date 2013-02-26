@@ -5,8 +5,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
-import org.motechproject.server.api.BundleInformation;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.api.BundleIcon;
+import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 @Controller
 public class BundleAdminController {
 
@@ -35,32 +38,38 @@ public class BundleAdminController {
     private StatusMessageService statusMessageService;
 
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
-    @ResponseBody public List<BundleInformation> getBundles() {
+    @ResponseBody
+    public List<BundleInformation> getBundles() {
         return moduleAdminService.getBundles();
     }
 
     @RequestMapping(value = "/bundles/{bundleId}", method = RequestMethod.GET)
-    @ResponseBody public BundleInformation getBundle(@PathVariable long bundleId) {
+    @ResponseBody
+    public BundleInformation getBundle(@PathVariable long bundleId) {
         return moduleAdminService.getBundleInfo(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/detail")
-    @ResponseBody public ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
+    @ResponseBody
+    public ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
         return moduleAdminService.getBundleDetails(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/start", method = RequestMethod.POST)
-    @ResponseBody public BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody
+    public BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.startBundle(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/stop", method = RequestMethod.POST)
-    @ResponseBody public BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody
+    public BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.stopBundle(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/restart", method = RequestMethod.POST)
-    @ResponseBody public BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody
+    public BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.restartBundle(bundleId);
     }
 
@@ -72,10 +81,20 @@ public class BundleAdminController {
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
-    @ResponseBody public BundleInformation uploadBundle(@RequestParam MultipartFile bundleFile,
-                                                        @RequestParam(required = false) String startBundle) {
-        boolean start = (StringUtils.isBlank(startBundle) ?  false : "on".equals(startBundle));
-        return moduleAdminService.installBundle(bundleFile, start);
+    @ResponseBody
+    public BundleInformation uploadBundle(@RequestParam String moduleSource,
+                                          @RequestParam(required = false) String moduleId,
+                                          @RequestParam(required = false) MultipartFile bundleFile,
+                                          @RequestParam(required = false) String startBundle) {
+        boolean start = (StringUtils.isBlank(startBundle) ? false : "on".equals(startBundle));
+        if ("File".equals(moduleSource)) {
+            return moduleAdminService.installBundle(bundleFile, start);
+        } else {
+            if (isBlank(moduleId)) {
+                throw new MotechException("No module selected.");
+            }
+            return moduleAdminService.installFromRepository(moduleId, start);
+        }
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/icon", method = RequestMethod.GET)

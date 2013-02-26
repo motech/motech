@@ -637,6 +637,11 @@
             </dependency>
             <!-- Others -->
             <dependency>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>aether-api</artifactId>
+                <version>1.13.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>com.springsource.org.aspectj.runtime</artifactId>
                 <version>1.6.8.RELEASE</version>
@@ -698,6 +703,11 @@
                 <artifactId>commons-codec</artifactId>
                 <version>1.7</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>org.motechproject.aether-api</artifactId>
+                <version>1.13.1-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
@@ -1088,7 +1098,7 @@
             <dependency>
                 <groupId>org.motechproject</groupId>
                 <artifactId>org.motechproject.osgi.it</artifactId>
-                <version>1.0.2.RELEASE-r008</version>
+                <version>1.0.2.RELEASE-r009</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>

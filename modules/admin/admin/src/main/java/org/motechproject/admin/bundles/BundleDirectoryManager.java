@@ -28,19 +28,25 @@ public class BundleDirectoryManager {
         }
     }
 
-    public File saveBundleFile(MultipartFile bundleFile) throws IOException {
-        String destFileName = bundleFile.getOriginalFilename();
-        File destFile = new File(bundleDir + destFileName);
-
-        OutputStream os = null;
+    public File saveBundleFile(MultipartFile multipartFile) throws IOException {
+        String destFileName = multipartFile.getOriginalFilename();
         InputStream is = null;
         try {
-            is = bundleFile.getInputStream();
+            is = multipartFile.getInputStream();
+            return saveBundleStreamToFile(destFileName, is);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
+    public File saveBundleStreamToFile(String destFileName, InputStream is) throws IOException {
+        File destFile = new File(bundleDir + destFileName);
+        OutputStream os = null;
+        try {
             os = FileUtils.openOutputStream(destFile);
             IOUtils.copy(is, os);
             return destFile;
         } finally {
-            IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(os);
         }
     }

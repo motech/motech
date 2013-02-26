@@ -38,4 +38,6 @@ public interface ModuleAdminService {
 
     @PreAuthorize("hasAnyRole('manageBundles', 'installBundle')")
     BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle);
+
+    BundleInformation installFromRepository(String featureId, boolean start);
 }

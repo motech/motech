@@ -121,12 +121,12 @@ public class BundleAdminControllerTest {
         when(moduleAdminService.installBundle(bundleFile, true)).thenReturn(bundleInformation);
         when(moduleAdminService.installBundle(bundleFile, false)).thenReturn(bundleInformation);
 
-        BundleInformation result = controller.uploadBundle(bundleFile, "on");
+        BundleInformation result = controller.uploadBundle("File", null, bundleFile, "on");
 
         assertEquals(bundleInformation, result);
         verify(moduleAdminService).installBundle(bundleFile, true);
 
-        result = controller.uploadBundle(bundleFile, null);
+        result = controller.uploadBundle("File", null, bundleFile, null);
 
         assertEquals(bundleInformation, result);
         verify(moduleAdminService).installBundle(bundleFile, false);

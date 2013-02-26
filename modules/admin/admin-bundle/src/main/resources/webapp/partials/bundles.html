@@ -1,115 +1,140 @@
 <div class="box-header">{{msg('bundles')}}</div>
 <div class="table-content lightblue-2">
 
-<div class="row-fluid">
+    <div class="row-fluid">
 
-    <div class="span4 filter">
-        <form class="inside form-inline">
-            <label for="filter"><span><b>{{msg('filter')}}</b></span>
-                <input class="search-query" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
-            </label>
+        <div class="span4 filter">
+            <form class="inside form-inline">
+                <label for="filter"><span><b>{{msg('filter')}}</b></span>
+                    <input class="search-query" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
+                </label>
+            </form>
+        </div>
+
+        <div class="span8 statistics">
+            <div class="inline">
+                <span><b>{{msg('bundles.statistics')}}:</b></span>
+                <span><b>{{msg('bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
+                <span class="param"><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="inside inline top-line">
+        <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
+            <div class="form-inline">
+                <div class="fileupload fileupload-new" data-provides="fileupload">
+                    <span><b>{{msg('bundles.upload')}} {{msg('import.from')}} </b></span>
+
+                    <select name="moduleSource" ng-model="moduleSource" ng-options="k as v for (k,v) in moduleSources"/>
+
+                    <select name="moduleId" ng-model="module" ng-options="k as v for (k,v) in modules" ng-show="moduleSource=='Repository'">
+                        <option value="">Select a module</option>
+                    </select>
+
+                    <div class="input-append" ng-show="moduleSource=='File'">
+                        <input type="file" id="bundleFile" name="bundleFile" class="input-file"
+                               placeholder="{{msg('bundles.file')}}" style="display: none;"/>
+                        <div class="uneditable-input span4">
+                            <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
+                        </div>
+                    <span class="btn btn-file"><span class="fileupload-new">{{msg('selectFile')}}</span>
+                    <span class="fileupload-exists">{{msg('bundles.change')}}</span><input type="file"/>
+                    </span><a href="#" class="btn fileupload-exists"
+                              data-dismiss="fileupload">{{msg('bundles.remove')}}</a>
+                    </div>
+
+                    <div class="btn-group" data-toggle="buttons-checkbox">
+                        <button type="button" class="btn btn-primary start-on-upload" ng-click="startOnUpload()">
+                            <i class="icon-white icon-ban-circle"></i> {{msg('bundles.startOnInstall')}}
+                        </button>
+                        <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload"
+                               style="display: none;"/>
+                    </div>
+                    <div class="btn-group">
+                        <span ng-click="submitBundle()"
+                              class="btn btn-success">{{msg('bundles.installOrUpdate')}}</span>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
-
-    <div class="span8 statistics">
-        <div class="inline">
-            <span><b>{{msg('bundles.statistics')}}:</b></span>
-            <span><b>{{msg('bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
-            <span class="param"><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
-            <span class="param"><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
-            <span class="param"><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
-        </div>
-    </div>
-</div>
-
-<div class="inside inline top-line">
-    <form id="bundleUploadForm" action="../admin/api/bundles/upload" enctype="multipart/form-data" method="POST">
-        <div class="form-inline">
-            <div class="fileupload fileupload-new" data-provides="fileupload"><span><b>{{msg('bundles.upload')}} </b></span>
-                <div class="input-append">
-                    <input type="file" id="bundleFile" name="bundleFile" class="input-file"  placeholder="{{msg('bundles.file')}}" style="display: none;"/>
-                    <div class="uneditable-input span4">
-                        <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
-                    </div>
-                    <span class="btn btn-file"><span class="fileupload-new">{{msg('selectFile')}}</span>
-                    <span class="fileupload-exists">{{msg('bundles.change')}}</span><input type="file" />
-                    </span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{msg('bundles.remove')}}</a>
+    <div class="clearfix"></div>
+    <table class="table table-bundles table-bordered table-striped table-lightblue">
+        <thead>
+        <tr>
+            <th ng-click="setOrder('bundleId')">
+                <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingId')}}" title="{{msg('bundles.sortingId')}}"
+                     ng-class="getSortClass('bundleId')" class="sorting-no"/>{{msg('bundles.id')}}
+            </th>
+            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('bundles.icon')}}</th>
+            <th ng-click="setOrder('name')">
+                <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingName')}}"
+                     title="{{msg('bundles.sortingName')}}"
+                     ng-class="getSortClass('name')" class="sorting-no"/>{{msg('bundles.name')}}
+            </th>
+            <th ng-click="setOrder(versionOrder)">
+                <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingVersion')}}"
+                     title="{{msg('bundles.sortingVersion')}}"
+                     ng-class="getSortClass(versionOrder)" class="sorting-no"/>{{msg('bundles.version')}}
+            </th>
+            <th ng-click="setOrder('state')">
+                <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingState')}}"
+                     title="{{msg('bundles.sortingState')}}"
+                     ng-class="getSortClass('state')" class="sorting-no"/>{{msg('bundles.state')}}
+            </th>
+            <th><img src='../admin/img/trans.gif' class="sorting-no-img"/>{{msg('bundles.actions')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
+            <td>{{bundle.bundleId}}</td>
+            <td>
+                <div ng-class="getIconClass(bundle)">
+                    <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
                 </div>
-                <div class="btn-group" data-toggle="buttons-checkbox">
-                    <button type="button" class="btn btn-primary start-on-upload" ng-click="startOnUpload()"><i class="icon-white icon-ban-circle"></i> {{msg('bundles.startOnInstall')}}</button>
-                    <input type="checkbox" id="startBundle" name="startBundle" ng-checked="startUpload" style="display: none;"/>
-                </div>
-                <div class="btn-group">
-                    <span ng-click="submitBundle()" class="btn btn-success">{{msg('bundles.installOrUpdate')}}</span>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
-<div class="clearfix"></div>
-<table class="table table-bundles table-bordered table-striped table-lightblue">
-    <thead>
-    <tr>
-        <th ng-click="setOrder('bundleId')">
-            <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingId')}}" title="{{msg('bundles.sortingId')}}"
-                 ng-class="getSortClass('bundleId')" class="sorting-no" />{{msg('bundles.id')}}</th>
-        <th><img src='../admin/img/trans.gif' class="sorting-no-img" />{{msg('bundles.icon')}}</th>
-        <th ng-click="setOrder('name')">
-            <img src=../admin/img/trans.gif alt="{{msg('bundles.sortingName')}}" title="{{msg('bundles.sortingName')}}"
-                 ng-class="getSortClass('name')" class="sorting-no" />{{msg('bundles.name')}}</th>
-        <th ng-click="setOrder(versionOrder)">
-            <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingVersion')}}" title="{{msg('bundles.sortingVersion')}}"
-                 ng-class="getSortClass(versionOrder)" class="sorting-no" />{{msg('bundles.version')}}</th>
-        <th ng-click="setOrder('state')">
-            <img src='../admin/img/trans.gif' alt="{{msg('bundles.sortingState')}}" title="{{msg('bundles.sortingState')}}"
-                 ng-class="getSortClass('state')" class="sorting-no" />{{msg('bundles.state')}}</th>
-        <th><img src='../admin/img/trans.gif' class="sorting-no-img" />{{msg('bundles.actions')}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
-        <td>{{bundle.bundleId}}</td>
-        <td>
-            <div ng-class="getIconClass(bundle)">
-                <img ng-src="../admin/api/bundles/{{bundle.bundleId}}/icon" class="small-icon"/>
-            </div>
-        </td>
-        <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a></td>
-        <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
-        <td><span ng-show="bundleStable(bundle)">{{msg('bundle.state.' + bundle.state.toLowerCase())}}</span></td>
-        <td>
-            <div id="commandLinks" ng-show="bundleStable(bundle)">
+            </td>
+            <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name | moduleName }}</a></td>
+            <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
+            <td><span ng-show="bundleStable(bundle)">{{msg('bundle.state.' + bundle.state.toLowerCase())}}</span></td>
+            <td>
+                <div id="commandLinks" ng-show="bundleStable(bundle)">
                 <span ng-hide="bundle.isActive()">
                     <a ng-click="startBundle(bundle)">
-                        <img src='../admin/img/trans.gif' alt="{{msg('bundles.start')}}" title="{{msg('bundles.start')}}"
-                            class="action action-start"/>
+                        <img src='../admin/img/trans.gif' alt="{{msg('bundles.start')}}"
+                             title="{{msg('bundles.start')}}"
+                             class="action action-start"/>
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">
                     <a ng-click="stopBundle(bundle)">
-                        <img src="../admin/img/trans.gif"  alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
-                            class="action action-stop"/>
+                        <img src="../admin/img/trans.gif" alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
+                             class="action action-stop"/>
                     </a>
                     <a ng-click="restartBundle(bundle)">
-                        <img src="../admin/img/trans.gif" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}"
-                            class="action action-restart"/>
+                        <img src="../admin/img/trans.gif" alt="{{msg('bundles.restart')}}"
+                             title="{{msg('bundles.restart')}}"
+                             class="action action-restart"/>
                     </a>
                 </span>
-                <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
-                    <img src="../admin/img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
-                         class="action action-settings"/>
-                </a>
-                <a ng-click="uninstallBundle(bundle)">
-                    <img src="../admin/img/trans.gif" alt="{{msg('bundles.uninstall')}}" title="{{msg('bundles.uninstall')}}"
-                         class="action action-remove"/>
-                </a>
-            </div>
-            <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
-                <img class="small-icon" src="../admin/img/load.gif" alt="loading"/>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                    <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
+                        <img src="../admin/img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
+                             class="action action-settings"/>
+                    </a>
+                    <a ng-click="uninstallBundle(bundle)">
+                        <img src="../admin/img/trans.gif" alt="{{msg('bundles.uninstall')}}"
+                             title="{{msg('bundles.uninstall')}}"
+                             class="action action-remove"/>
+                    </a>
+                </div>
+                <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
+                    <img class="small-icon" src="../admin/img/load.gif" alt="loading"/>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 

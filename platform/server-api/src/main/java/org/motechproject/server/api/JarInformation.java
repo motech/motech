@@ -49,6 +49,7 @@ public class JarInformation {
     private void readManifestFromJar(File file) throws IOException {
         JarFile jarFile = new JarFile(file, false, JarFile.OPEN_READ);
         Manifest manifest = jarFile.getManifest();
+        jarFile.close();
         getManifestData(file, manifest);
     }
 

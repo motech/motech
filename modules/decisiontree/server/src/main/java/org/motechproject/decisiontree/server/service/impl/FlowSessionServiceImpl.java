@@ -7,6 +7,7 @@ import org.motechproject.decisiontree.server.repository.AllFlowSessionRecords;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class FlowSessionServiceImpl implements FlowSessionService {
         return allFlowSessionRecords.findOrCreate(flowSessionId, phoneNumber);
     }
 
+    @ResponseBody
     @Override
     public FlowSession getSession(String sessionId) {
         return allFlowSessionRecords.findBySessionId(sessionId);

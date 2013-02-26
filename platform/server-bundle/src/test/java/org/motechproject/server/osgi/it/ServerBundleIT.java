@@ -30,9 +30,10 @@ public class ServerBundleIT extends BaseOsgiIT {
         assertEquals(registrationData, service.getModuleData(registrationData.getModuleName()));
     }
 
-    public void testThatControllerIsUp() throws IOException {
+    public void testThatControllerIsUp() throws IOException, InterruptedException {
+        waitForLocalPortToListen(HTTP_PORT, 30);
         HttpClient client = new DefaultHttpClient();
-        final String response = client.execute(new HttpGet("http://localhost:8080/server/lang/list"), new BasicResponseHandler());
+        final String response = client.execute(new HttpGet("http://localhost:" + HTTP_PORT + "/server/lang/list"), new BasicResponseHandler());
         assertTrue(response.contains("en"));
     }
 
