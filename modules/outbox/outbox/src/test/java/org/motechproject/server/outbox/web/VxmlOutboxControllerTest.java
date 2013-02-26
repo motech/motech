@@ -14,6 +14,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.outbox.server.web.VxmlOutboxController;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.web.servlet.ModelAndView;
 
