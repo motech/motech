@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagementDataProviderTest {
+    private static final String TASK_DATA_PROVIDER_NAME = "test";
+    private static final String TASK_DATA_PROVIDER_ID = "12345";
 
     @Mock
     TaskTriggerHandler taskTriggerHandler;
@@ -28,36 +30,89 @@ public class ManagementDataProviderTest {
     @Mock
     DataProvider dataProvider;
 
-    ManagementDataProvider managementDataProvider;
-
     @Before
     public void setup() throws Exception {
         initMocks(this);
-
-        managementDataProvider = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
     }
 
     @Test
-    public void testBind() throws IOException {
-        TaskDataProvider taskDataProvider = new TaskDataProvider();
-        taskDataProvider.setId("12345");
+    public void shouldRegisterProvider() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskDataProviderService);
+        TaskDataProvider provider = new TaskDataProvider();
+        provider.setId(TASK_DATA_PROVIDER_ID);
 
-        String body = taskDataProvider.toString();
+        String json = String.format("{ name: '%s', objects: []", TASK_DATA_PROVIDER_NAME);
 
-        when(dataProvider.toJSON()).thenReturn(body);
-        when(taskDataProviderService.registerProvider(body)).thenReturn(taskDataProvider);
+        when(dataProvider.toJSON()).thenReturn(json);
+        when(taskDataProviderService.registerProvider(json)).thenReturn(provider);
 
-        managementDataProvider.bind(dataProvider, null);
+        mgr.bind(dataProvider, null);
 
-        verify(taskDataProviderService).registerProvider(body);
-        verify(taskTriggerHandler).addDataProvider(taskDataProvider.getId(), dataProvider);
+        verify(taskDataProviderService).registerProvider(json);
+        verify(taskTriggerHandler, never()).addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
     }
 
     @Test
-    public void testBindNoRegistered() throws IOException {
-        managementDataProvider.bind(new Object(), null);
+    public void shouldRegisterProviderAndAddToHandler() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        TaskDataProvider provider = new TaskDataProvider();
+        provider.setId(TASK_DATA_PROVIDER_ID);
+
+        String json = String.format("{ name: '%s', objects: []", TASK_DATA_PROVIDER_NAME);
+
+        when(dataProvider.toJSON()).thenReturn(json);
+        when(taskDataProviderService.registerProvider(json)).thenReturn(provider);
+
+        mgr.bind(dataProvider, null);
+
+        verify(taskDataProviderService).registerProvider(json);
+        verify(taskTriggerHandler).addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
+    }
+
+    @Test
+    public void shouldRemoveProviderFromHandler() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+        TaskDataProvider provider = new TaskDataProvider();
+        provider.setId(TASK_DATA_PROVIDER_ID);
+
+        when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
+        when(taskDataProviderService.getProvider(TASK_DATA_PROVIDER_NAME)).thenReturn(provider);
+
+        mgr.unbind(dataProvider, null);
+
+        verify(taskTriggerHandler).removeDataProvider(TASK_DATA_PROVIDER_ID);
+    }
+
+    @Test
+    public void shouldNotRemoveProviderFromHandler() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskDataProviderService);
+        TaskDataProvider provider = new TaskDataProvider();
+        provider.setId(TASK_DATA_PROVIDER_ID);
+
+        when(taskDataProviderService.getProvider(TASK_DATA_PROVIDER_NAME)).thenReturn(provider);
+
+        mgr.unbind(dataProvider, null);
+
+        verify(taskTriggerHandler, never()).removeDataProvider(TASK_DATA_PROVIDER_NAME);
+    }
+
+    @Test
+    public void shouldNotBindForObjectOtherThanDataProvider() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+
+        mgr.bind(new Object(), null);
 
         verify(taskDataProviderService, never()).registerProvider(anyString());
         verify(taskTriggerHandler, never()).addDataProvider(anyString(), any(DataProvider.class));
+    }
+
+    @Test
+    public void shouldNotUnbindForObjectOtherThanDataProvider() throws IOException {
+        ManagementDataProvider mgr = new ManagementDataProvider(taskTriggerHandler, taskDataProviderService);
+
+        mgr.unbind(new Object(), null);
+
+        verify(taskDataProviderService, never()).getProvider(anyString());
+        verify(taskTriggerHandler, never()).removeDataProvider(anyString());
     }
 }

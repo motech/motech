@@ -10,6 +10,7 @@ import java.util.Objects;
 @TypeDiscriminator("doc.type == 'TaskDataProvider'")
 public class TaskDataProvider extends MotechBaseDataObject {
     private static final long serialVersionUID = -5427486904165895928L;
+
     private String name;
     private List<TaskDataProviderObject> objects;
 
@@ -39,26 +40,23 @@ public class TaskDataProvider extends MotechBaseDataObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        TaskDataProvider that = (TaskDataProvider) o;
+        final TaskDataProvider other = (TaskDataProvider) obj;
 
-        return Objects.equals(name, that.name) && Objects.equals(objects, that.objects);
+        return Objects.equals(this.name, other.name) && Objects.equals(this.objects, other.objects);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (objects != null ? objects.hashCode() : 0);
-
-        return result;
+        return Objects.hash(name, objects);
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.util.List;
 public class AllChannels extends MotechBaseRepository<Channel> {
 
     @Autowired
-    public AllChannels(final @Qualifier("taskDbConnector") CouchDbConnector connector) {
+    public AllChannels(@Qualifier("taskDbConnector") final CouchDbConnector connector) {
         super(Channel.class, connector);
     }
 

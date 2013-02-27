@@ -1,32 +1,40 @@
 package org.motechproject.tasks.ex;
 
+import java.util.Arrays;
+
 public class TaskException extends Exception {
+    private static final long serialVersionUID = 5637713166842511095L;
+
     private String messageKey;
-    private String field;
+    private String[] fields;
 
     public TaskException(String messageKey) {
-        this(messageKey, null, null);
+        this(messageKey, (Throwable) null);
     }
 
     public TaskException(String messageKey, Throwable cause) {
-        this(messageKey, null, cause);
-    }
+        super(messageKey, cause);
 
-    public TaskException(String messageKey, String field) {
-        this(messageKey, field, null);
-    }
-
-    public TaskException(String messageKey, String field, Throwable cause) {
-        super(cause);
         this.messageKey = messageKey;
-        this.field = field;
+        this.fields = new String[0];
+    }
+
+    public TaskException(String messageKey, String... fields) {
+        this(messageKey, null, fields);
+    }
+
+    public TaskException(String messageKey, Throwable cause, String... fields) {
+        super(messageKey, cause);
+
+        this.messageKey = messageKey;
+        this.fields = Arrays.copyOf(fields, fields.length);
     }
 
     public String getMessageKey() {
         return messageKey;
     }
 
-    public String getField() {
-        return field;
+    public String[] getFields() {
+        return Arrays.copyOf(fields, fields.length);
     }
 }

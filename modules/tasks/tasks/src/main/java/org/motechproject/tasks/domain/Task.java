@@ -41,13 +41,13 @@ public class Task extends MotechBaseDataObject {
     }
 
     @JsonIgnore
-    public List<TaskAdditionalData> getAdditionalData(String dataProviderId) {
-        return additionalData.get(dataProviderId);
+    public boolean containsAdditionalData(String dataProviderId) {
+        return additionalData.containsKey(dataProviderId);
     }
 
     @JsonIgnore
-    public boolean hasFilters() {
-        return filters != null && !filters.isEmpty();
+    public List<TaskAdditionalData> getAdditionalData(String dataProviderId) {
+        return additionalData.get(dataProviderId);
     }
 
     public String getName() {
@@ -146,16 +146,7 @@ public class Task extends MotechBaseDataObject {
 
     @Override
     public int hashCode() {
-        int result = (enabled ? 1 : 0);
-        result = 31 * result + (actionInputFields != null ? actionInputFields.hashCode() : 0);
-        result = 31 * result + (additionalData != null ? additionalData.hashCode() : 0);
-        result = 31 * result + (filters != null ? filters.hashCode() : 0);
-        result = 31 * result + (action != null ? action.hashCode() : 0);
-        result = 31 * result + (trigger != null ? trigger.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-
-        return result;
+        return Objects.hash(filters, additionalData, description, name, action, trigger, enabled, actionInputFields);
     }
 
     @Override

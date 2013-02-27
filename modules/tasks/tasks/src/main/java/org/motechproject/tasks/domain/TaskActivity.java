@@ -6,13 +6,16 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'TaskActivity'")
 public class TaskActivity extends MotechBaseDataObject {
+    private static final long serialVersionUID = 4700697701096557098L;
+
     private String message;
     private String task;
-    private String field;
+    private String[] fields;
     private DateTime date;
     private TaskActivityType activityType;
 
@@ -21,12 +24,16 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     public TaskActivity(String message, String task, TaskActivityType activityType) {
-        this(message, null, task, activityType);
+        this(message, (String[]) null, task, activityType);
     }
 
     public TaskActivity(String message, String field, String task, TaskActivityType activityType) {
+        this(message, new String[]{field}, task, activityType);
+    }
+
+    public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType) {
         this.message = message;
-        this.field = field;
+        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : null;
         this.task = task;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
@@ -48,12 +55,22 @@ public class TaskActivity extends MotechBaseDataObject {
         this.task = task;
     }
 
-    public String getField() {
-        return field;
+    public String[] getFields() {
+        String[] results = null;
+
+        if (fields != null) {
+            results = Arrays.copyOf(fields, fields.length);
+        }
+
+        return results;
+    }
+
+    public void setFields(String[] fields) {
+        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : null;
     }
 
     public void setField(String field) {
-        this.field = field;
+        this.fields = field != null ? new String[]{field} : null;
     }
 
     public DateTime getDate() {
@@ -73,36 +90,32 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        TaskActivity that = (TaskActivity) o;
+        final TaskActivity other = (TaskActivity) obj;
 
-        return Objects.equals(getDate(), that.getDate()) && Objects.equals(activityType, that.activityType)
-                && Objects.equals(field, that.field) && Objects.equals(message, that.message)
-                && Objects.equals(task, that.task);
+        return Objects.equals(this.message, other.message) &&
+                Objects.equals(this.task, other.task) &&
+                Arrays.equals(this.fields, other.fields) &&
+                Objects.equals(getDate(), other.getDate()) &&
+                Objects.equals(this.activityType, other.activityType);
     }
 
     @Override
     public int hashCode() {
-        int result = message != null ? message.hashCode() : 0;
-        result = 31 * result + (task != null ? task.hashCode() : 0);
-        result = 31 * result + (field != null ? field.hashCode() : 0);
-        result = 31 * result + (getDate() != null ? getDate().hashCode() : 0);
-        result = 31 * result + (activityType != null ? activityType.hashCode() : 0);
-
-        return result;
+        return Objects.hash(message, task, fields, getDate(), activityType);
     }
 
     @Override
     public String toString() {
         return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s}",
-                message, task, field, date, activityType);
+                message, task, Arrays.toString(fields), date, activityType);
     }
 }

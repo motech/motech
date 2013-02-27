@@ -25,7 +25,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -56,13 +55,11 @@ public class ChannelServiceImplTest {
         initMocks(this);
 
         channelService = new ChannelServiceImpl(allChannels, motechJsonReader);
-        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
     }
 
     @Test
     public void shouldRegisterChannel() {
-        Type type = new TypeToken<Channel>() {
-        }.getType();
+        Type type = new TypeToken<Channel>() { }.getType();
         Channel channel = new Channel();
 
         when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(channel);
@@ -105,11 +102,64 @@ public class ChannelServiceImplTest {
         assertEquals(expected, actual);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenBundleContextNotSet() throws IOException {
+        whenGetChannelIcon(getDefaultIconUrl());
+
+        channelService.getChannelIcon(MODULE_NAME, VERSION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenBundleContextNotContainBundles() {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+        when(bundleContext.getBundles()).thenReturn(new Bundle[]{});
+
+        channelService.getChannelIcon(MODULE_NAME, VERSION);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenBundleNotFound() throws IOException {
+        String fakeModuleName = "testing";
+
+        whenGetChannelIcon(getDefaultIconUrl());
+
+        channelService.getChannelIcon(fakeModuleName, VERSION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenVersionNotMatch() throws IOException {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+
+        whenGetChannelIcon(getDefaultIconUrl());
+
+        channelService.getChannelIcon(MODULE_NAME, "0.15");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenSymbolicNameNotMatch() throws IOException {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+
+        whenGetChannelIcon(getDefaultIconUrl());
+
+        channelService.getChannelIcon("faceModule", VERSION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenSymbolicNameAndVersionNotMatch() throws IOException {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+
+        whenGetChannelIcon(getDefaultIconUrl());
+
+        channelService.getChannelIcon("faceModule", "0.15");
+    }
+
     @Test
     public void shouldGetChannelIcon() throws IOException {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
         byte[] image = readDefaultIcon();
 
-        whenGetChannelIcon();
+        whenGetChannelIcon(getDefaultIconUrl());
 
         BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
 
@@ -120,36 +170,20 @@ public class ChannelServiceImplTest {
     }
 
     @Test
-    public void shouldReturnNullWhenBundleHaveNotIcon() throws IOException {
-        whenGetChannelIcon();
-        when(bundle.getResource(anyString())).thenReturn(null);
+    public void shouldReturnNullWhenBundleNotContainIcon() throws IOException {
+        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+
+        whenGetChannelIcon(null);
 
         BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
 
         assertNull(bundleIcon);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenBundleNotFound() throws IOException {
-        String fakeModuleName = "testing";
-
-        whenGetChannelIcon();
-
-        channelService.getChannelIcon(fakeModuleName, VERSION);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenBundleContextNotSet() throws IOException {
-        whenGetChannelIcon();
-        ((ChannelServiceImpl) channelService).setBundleContext(null);
-
-        channelService.getChannelIcon(MODULE_NAME, VERSION);
-    }
-
-    private void whenGetChannelIcon() throws IOException {
+    private void whenGetChannelIcon(URL iconUrl) throws IOException {
         when(bundle.getSymbolicName()).thenReturn(String.format("org.motechproject.%s", MODULE_NAME));
         when(bundle.getVersion()).thenReturn(Version.parseVersion(VERSION));
-        when(bundle.getResource(BundleIcon.ICON_LOCATIONS[0])).thenReturn(getDefaultIconUrl());
+        when(bundle.getResource(BundleIcon.ICON_LOCATIONS[0])).thenReturn(iconUrl);
 
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{bundle});
     }

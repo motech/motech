@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.List;
 
 @Service("taskDataProviderService")
@@ -30,7 +31,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider registerProvider(final String body) {
-        byte[] bytes = body.getBytes();
+        byte[] bytes = body.getBytes(Charset.forName("UTF-8"));
         InputStream stream = new ByteArrayInputStream(bytes);
 
         return registerProvider(stream);
@@ -38,7 +39,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider registerProvider(final InputStream stream) {
-        Type type = new TypeToken<TaskDataProvider>() { }.getType();
+        Type type = new TypeToken<TaskDataProvider>() {}.getType();
         TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
         allTaskDataProviders.addOrUpdate(provider);

@@ -3,6 +3,8 @@ package org.motechproject.tasks.domain;
 import java.util.Objects;
 
 public class EventParameter extends Parameter {
+    private static final long serialVersionUID = 2564446352940524099L;
+
     private String eventKey;
 
     public EventParameter() {
@@ -27,30 +29,27 @@ public class EventParameter extends Parameter {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (!(o instanceof EventParameter)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        if (!super.equals(o)) {
+        if (!super.equals(obj)) {
             return false;
         }
 
-        EventParameter that = (EventParameter) o;
+        final EventParameter other = (EventParameter) obj;
 
-        return Objects.equals(eventKey, that.eventKey);
+        return Objects.equals(this.eventKey, other.eventKey);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (eventKey != null ? eventKey.hashCode() : 0);
-
-        return result;
+        return Objects.hash(eventKey);
     }
 
     @Override

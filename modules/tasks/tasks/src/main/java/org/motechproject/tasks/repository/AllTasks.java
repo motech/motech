@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class AllTasks extends MotechBaseRepository<Task> {
 
     @Autowired
-    public AllTasks(final @Qualifier("taskDbConnector") CouchDbConnector connector) {
+    public AllTasks(@Qualifier("taskDbConnector") final CouchDbConnector connector) {
         super(Task.class, connector);
     }
 

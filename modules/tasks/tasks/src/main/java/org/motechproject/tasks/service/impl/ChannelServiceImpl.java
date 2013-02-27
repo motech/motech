@@ -4,7 +4,6 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.commons.couchdb.dao.BusinessIdNotUniqueException;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.repository.AllChannels;
@@ -47,16 +46,12 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public void registerChannel(final InputStream stream) {
-        Type type = new TypeToken<Channel>() { }.getType();
+        Type type = new TypeToken<Channel>() {}.getType();
         Channel channel = (Channel) motechJsonReader.readFromStream(stream, type);
         LOG.debug("Read channel definition from json file.");
 
-        try {
-            allChannels.addOrUpdate(channel);
-            LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
-        } catch (BusinessIdNotUniqueException e) {
-            LOG.error("Cant save channel: ", e);
-        }
+        allChannels.addOrUpdate(channel);
+        LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
     }
 
     @Override

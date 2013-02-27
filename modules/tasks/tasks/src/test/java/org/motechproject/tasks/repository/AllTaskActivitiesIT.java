@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
@@ -22,7 +23,7 @@ import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
 public class AllTaskActivitiesIT extends SpringIntegrationTest {
     private static final String TASK_ID_1 = "12345";
-    private static final String FIELD = "phone";
+    private static final String[] FIELD = new String[]{"phone"};
     private static final String TASK_ID_2 = "54321";
 
     @Autowired
@@ -51,13 +52,11 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
         assertEquals(ERROR, messages.get(0).getActivityType());
         assertEquals(TASK_ID_1, messages.get(0).getTask());
         assertEquals(ERROR.getValue(), messages.get(0).getMessage());
-        assertEquals(FIELD, messages.get(0).getField());
+        assertArrayEquals(FIELD, messages.get(0).getFields());
 
         assertEquals(SUCCESS, messages.get(1).getActivityType());
         assertEquals(TASK_ID_1, messages.get(1).getTask());
         assertEquals(SUCCESS.getValue(), messages.get(1).getMessage());
-
-        markForDeletion(messages);
 
         messages = allTaskActivities.byTaskId(TASK_ID_2);
 
@@ -67,7 +66,7 @@ public class AllTaskActivitiesIT extends SpringIntegrationTest {
         assertEquals(TASK_ID_2, messages.get(0).getTask());
         assertEquals(WARNING.getValue(), messages.get(0).getMessage());
 
-        markForDeletion(messages);
+        markForDeletion(allTaskActivities.getAll());
     }
 
     @Override

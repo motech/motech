@@ -15,7 +15,7 @@ import java.util.List;
 public class AllTaskActivities extends MotechBaseRepository<TaskActivity> {
 
     @Autowired
-    public AllTaskActivities(@Qualifier("taskDbConnector") CouchDbConnector db) {
+    public AllTaskActivities(@Qualifier("taskDbConnector") final CouchDbConnector db) {
         super(TaskActivity.class, db);
     }
 
