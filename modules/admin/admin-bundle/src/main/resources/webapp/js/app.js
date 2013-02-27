@@ -3,7 +3,7 @@
 /* App Module */
 
 angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'platformSettingsServices',
-    'moduleSettingsServices', 'ngCookies', 'bootstrap']).config(['$routeProvider', function($routeProvider) {
+    'moduleSettingsServices', 'logService', 'ngCookies', 'bootstrap']).config(['$routeProvider', function($routeProvider) {
       $routeProvider.
           when('/bundles', {templateUrl: '../admin/partials/bundles.html', controller: BundleListCtrl}).
           when('/messages', {templateUrl: '../admin/partials/messages.html', controller: StatusMsgCtrl}).
@@ -13,6 +13,7 @@ angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageSe
           when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
           when('/operations', {templateUrl: '../admin/partials/operations.html', controller: OperationsCtrl}).
           when('/log', {templateUrl: '../admin/partials/log.html', controller: ServerLogCtrl}).
+          when('/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: ServerLogOptionsCtrl}).
           otherwise({redirectTo: '/bundles'});
 }]).filter('moduleName', function () {
     return function (input) {

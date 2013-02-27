@@ -1,0 +1,69 @@
+<div class="well2">
+    <div class="box-header">
+        {{msg('log.options')}}
+        <a href="#/log" class="btn btn-primary btn-in-header pull-right">
+            {{msg('back')}}
+        </a>
+    </div>
+    <div class="box-content log-options">
+        <form id="changeLogLevels" class="form-vertical">
+            <div class="control-group log">
+                <div class="form-inline">
+                    <span class="label-logAll">{{ msg('log.setForAll') }}</span>
+                    <div id="changeForAll" class="btn-group" data-toggle="buttons-radio">
+                        <button class="btn" ng-class="levelsCss(level)" ng-repeat="level in availableLevels" ng-click="forAll(level)">{{ msg('log.level.' + level) | uppercase }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="form-inline">
+                    <a class="btn btn-hidden"><i class="icon-minus-sign icon-white"></i></a>
+                    <div class="btn-group">
+                        <a id="rootLevel" class="btn btn-log dropdown-toggle" ng-class="levelsCss(config.root.logLevel)" data-toggle="dropdown" href="#">
+                            {{ config.root.logLevel | uppercase }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="level in availableLevels" ng-click="changeRoot(level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                        </ul>
+                    </div>
+                    <label class="control-label">{{config.root.logName}}</label>
+                </div>
+            </div>
+            <div class="control-group" ng-repeat="logger in config.loggers">
+                <div class="form-inline">
+                    <a ng-click="remove(logger)" class="btn btn-danger"><i class="icon-minus-sign icon-white"></i></a>
+                    <div class="btn-group">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(logger.logLevel)" data-toggle="dropdown" href="#">
+                            {{ logger.logLevel | uppercase }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="level in availableLevels" ng-click="change(logger, level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                        </ul>
+                    </div>
+                    <label class="control-label">{{logger.logName}}</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="form-inline">
+                    <button ng-disabled="!validate()" ng-click="add()" class="btn btn-inverse"><i class="icon-plus-sign icon-white"></i></button>
+                    <div class="btn-group">
+                        <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(entry.level)" data-toggle="dropdown" href="#">
+                            {{ entry.level | uppercase }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="level in availableLevels" ng-click="changeEntry(level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                        </ul>
+                    </div>
+                    <input class="input-xxlarge" ng-model="entry.name"/>
+                </div>
+            </div>
+            <div class="form-actions">
+                <input type="button" class="btn btn-primary" ng-click="save()" value="{{msg('save')}}"/>
+                <a class="btn" href="#/log">{{msg('back')}}</a>
+            </div>
+        </form>
+    </div>
+</div>

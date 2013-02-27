@@ -234,14 +234,72 @@ h4.settings-section {
     margin-bottom: 0;
 }
 
+.log-line {
+     border-bottom: 1px solid #D4E1F9;
+}
+
+.log-line .log-change {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.log-line .log-download {
+     border-left: 1px solid #D4E1F9;
+     padding-left: 10px;
+     text-align: right;
+}
+
 .log-content {
     background-color: white;
-    padding: 5px;
+    padding: 10px;
     font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
     font-size: 12px;
     word-wrap: break-word;
 }
 
 div.sidebar-container {
-    height: 90px !important
+    height: 90px !important;
+}
+
+#changeLogLevels .control-group {
+    margin: 0;
+    margin-bottom: 2px;
+    background-color: #E4F1F9;
+    padding: 2px 5px 2px 45px;
+    border-top: 1px solid #e5e5e5;
+}
+
+#changeLogLevels .control-group.log {
+    padding: 10px 5px 2px 15px;
+}
+
+#changeLogLevels .label-logAll {
+    width: 155px;
+    float: left;
+    margin-top: 6px;
+    text-align: right;
+}
+
+#changeForAll {
+    margin: 1px 1px 1px 9px;
+}
+
+#changeLogLevels .btn-log {
+    width: 60px;
+}
+
+#changeLogLevels .btn-hidden {
+    visibility: hidden;
+}
+
+.form-actions {
+    background: #E4F1F9;
+    padding: 19px 20px 20px 45px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.log-options {
+    background: #DBEDF7;
+    background-image: none;
 }
