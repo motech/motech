@@ -73,7 +73,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!--<Bundle-Activator>org.motechproject.ivr.osgi.Activator</Bundle-Activator>-->
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>ivr</Resource-Path>
                         <Context-Path>ivr/api</Context-Path>
