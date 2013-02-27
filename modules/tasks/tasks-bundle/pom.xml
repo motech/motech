@@ -34,6 +34,31 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                        <configuration>
+                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
+                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
+                            <requireUseStrict>true</requireUseStrict>
+                            <predefinedVars>
+                                $, jQuery, angular, DashboardCtrl, ManageTaskCtrl, LogCtrl, moment,
+                                dummyHandler, handleResponse, jConfirm, alertHandler, window,
+                                blockUI, unblockUI, motechAlert, motechConfirm
+                            </predefinedVars>
+                            <excludes>
+                                <exclude>rangy-core.js</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.4</version>

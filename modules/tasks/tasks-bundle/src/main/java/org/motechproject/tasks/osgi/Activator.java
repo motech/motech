@@ -2,9 +2,9 @@ package org.motechproject.tasks.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.ServletRegistrationException;
-import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.UiHttpContext;
 import org.osgi.framework.BundleActivator;

@@ -1,5 +1,5 @@
 <!------------------------  Create Task  ------------------------>
-    <div ng-hide="task._id" class="box-header" xmlns="http://www.w3.org/1999/html">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+<div ng-hide="task._id" class="box-header">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div ng-show="task._id" class="box-header">{{msg('section.editTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div class="box-content">
     <h3 class="centered" ng-hide="task.trigger && task.action">{{msg('section.selectEvents')}}</h3>
@@ -682,17 +682,17 @@
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.negationOperator)" class="">
-                                                        <select ng-disabled="isDisabled(filter.eventParameter)" ng-model="filter.negationOperator" ng-options="msg(c.key) for c in negationOperators" class="input-medium">
+                                                        <select ng-disabled="!filter.eventParameter" ng-model="filter.negationOperator" ng-options="msg(c.key) for c in negationOperators" class="input-medium">
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.operator)" class="">
-                                                        <select ng-disabled="isDisabled(filter.negationOperator)" ng-model="filter.operator" class="input-medium" ng-options="msg(c) for c in operators(filter.eventParameter)" >
+                                                        <select ng-disabled="!filter.negationOperator" ng-model="filter.operator" class="input-medium" ng-options="msg(c) for c in operators(filter.eventParameter)" >
                                                             <option value="">{{msg('info.filter.select')}}</option>
                                                         </select>
                                                     </span>
                                                     <span ng-class="cssClass(filter.expression)">
-                                                        <input ng-disabled="isDisabled(filter.operator)" ng-model="filter.expression" class="input-medium" ng-show="filter.operator!='exist'" type="text" value=""/>
+                                                        <input ng-disabled="!filter.operator" ng-model="filter.expression" class="input-medium" ng-show="filter.operator!='exist'" type="text" value=""/>
                                                     </span>
                                                      <a ng-click="removeNode(filter)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a>
                                                 </div>
