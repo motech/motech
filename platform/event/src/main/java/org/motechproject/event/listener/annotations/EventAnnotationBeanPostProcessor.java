@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -16,16 +16,22 @@ import java.util.Map;
 
 /**
  * Responsible for registering handlers based on annotations
- *
+ * <p/>
  * Create a bean only when module has MotechEvent annotations.
  *
  * @author yyonkov
  */
-@Component
 public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private EventListenerRegistryService eventListenerRegistry;
+
+    public EventAnnotationBeanPostProcessor() {
+    }
+
+    public EventAnnotationBeanPostProcessor(EventListenerRegistryService eventListenerRegistryService) {
+        this.eventListenerRegistry = eventListenerRegistryService;
+    }
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
@@ -44,7 +50,15 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         return bean;
     }
 
-    private void processAnnotations(final Object bean, final String beanName) {
+
+    public void processAnnotations(ApplicationContext applicationContext) {
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            Object bean = applicationContext.getBean(beanName);
+            processAnnotations(bean, beanName);
+        }
+    }
+
+    public void processAnnotations(final Object bean, final String beanName) {
         ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
 
             @Override
@@ -56,7 +70,6 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                     if (annotation != null) {
                         final List<String> subjects = Arrays.asList(annotation.subjects());
                         MotechListenerAbstractProxy proxy = null;
-
                         switch (annotation.type()) {
                             case ORDERED_PARAMETERS:
                                 proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
@@ -70,7 +83,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                             default:
                         }
 
-                        logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
+                        logger.error(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
 
                         if (eventListenerRegistry != null) {
                             eventListenerRegistry.registerListener(proxy, subjects);
@@ -95,13 +108,24 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
 
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) {
+        clearListenerForBean(beanName);
+    }
+
+
+    public void clearListenerForBean(String beanName) {
         if (eventListenerRegistry != null) {
             eventListenerRegistry.clearListenersForBean(beanName);
         }
     }
 
+    public void clearListeners(ApplicationContext applicationContext) {
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            clearListenerForBean(beanName);
+        }
+    }
+
     //TODO:keeping required false for now, should be removed.
-    @Autowired (required = false)
+    @Autowired(required = false)
     public void setEventListenerRegistry(EventListenerRegistryService eventListenerRegistry) {
         this.eventListenerRegistry = eventListenerRegistry;
     }

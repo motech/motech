@@ -32,5 +32,4 @@
         <constructor-arg value="motech-openmrs-atomfeed"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 </beans>

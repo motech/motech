@@ -3,14 +3,18 @@ package org.motechproject.sms.api.service;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 import org.motechproject.sms.api.exceptions.SendSmsException;
-import org.motechproject.testing.utils.TestEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -55,6 +59,33 @@ public class SmsServiceImplIT {
             assertEquals(0, listener.getReceivedEvents().size());
         } finally {
             eventListenerRegistry.clearListenersForBean("listener");
+        }
+    }
+
+    class TestEventListener implements EventListener {
+
+        private String id;
+        private List<MotechEvent> receivedEvents = new ArrayList<>();
+
+        public TestEventListener(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public void handle(MotechEvent event) {
+            synchronized (receivedEvents) {
+                receivedEvents.add(event);
+                receivedEvents.notifyAll();
+            }
+        }
+
+        @Override
+        public String getIdentifier() {
+            return id;
+        }
+
+        public List<MotechEvent> getReceivedEvents() {
+            return receivedEvents;
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.testing.utils;
 
 public class Wait {
+    private static final int DEFAULT_WAIT_DURATION = 100;
     private final Object lock;
     private final WaitCondition condition;
     private int maxWaitTime;
@@ -10,7 +11,7 @@ public class Wait {
         this.lock = lock;
         this.condition = condition;
         this.maxWaitTime = maxWaitTime;
-        this.waitDurationBetweenChecks = waitDurationBetweenChecks;
+        this.waitDurationBetweenChecks = recalibrateWaitDurationBetweenChecks(waitDurationBetweenChecks, maxWaitTime);
     }
 
     public Wait(Object lock, int waitTime) {
@@ -22,6 +23,10 @@ public class Wait {
         }, waitTime, waitTime);
     }
 
+    public Wait(WaitCondition waitCondition, int waitTime) {
+        this(new Object(), waitCondition, waitTime, waitTime);
+    }
+
     public void start() throws InterruptedException {
         int waitingFor = 0;
         synchronized (lock) {
@@ -30,5 +35,13 @@ public class Wait {
                 waitingFor = waitingFor + waitDurationBetweenChecks;
             }
         }
+    }
+
+    private int recalibrateWaitDurationBetweenChecks(int waitDurationBetweenChecks, int maxWaitTime) {
+        return waitDurationBetweenChecks >= maxWaitTime ? getWaitDurationBetweenChecks(maxWaitTime) : maxWaitTime;
+    }
+
+    private int getWaitDurationBetweenChecks(int maxWaitTime) {
+        return maxWaitTime < DEFAULT_WAIT_DURATION ? maxWaitTime : 100;
     }
 }

@@ -21,6 +21,5 @@
         <constructor-arg ref="treesDatabase"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
 </beans>

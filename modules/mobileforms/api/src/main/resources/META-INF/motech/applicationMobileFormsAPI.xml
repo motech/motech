@@ -18,7 +18,6 @@
 
     <bean id="motechJsonReader" class="org.motechproject.commons.api.json.MotechJsonReader"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean id="mobileFormsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="mobileforms"/>

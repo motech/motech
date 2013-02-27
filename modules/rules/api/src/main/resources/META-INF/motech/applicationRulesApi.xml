@@ -23,6 +23,5 @@
 
     <bean id="rulesService" class="org.motechproject.rules.service.KnowledgeBaseManager"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
 </beans>

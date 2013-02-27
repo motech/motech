@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
@@ -33,13 +34,22 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -66,9 +76,6 @@
                         <Export-Package>
                             org.motechproject.testing.utils.*;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.osgi.web.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             *
                         </Import-Package>
@@ -86,7 +93,8 @@
                         <exclude>NONE</exclude>
                     </excludes>
                     <fork>true</fork>
-                    <compilerArgument>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar</compilerArgument>
+                    <compilerArgument>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar
+                    </compilerArgument>
                 </configuration>
             </plugin>
         </plugins>
@@ -111,7 +119,9 @@
                                 <phase>compile</phase>
                                 <configuration>
                                     <fork>true</fork>
-                                    <compilerArgument>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar</compilerArgument>
+                                    <compilerArgument>
+                                        -Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar
+                                    </compilerArgument>
                                     <excludes>
                                         <exclude>NONE</exclude>
                                     </excludes>

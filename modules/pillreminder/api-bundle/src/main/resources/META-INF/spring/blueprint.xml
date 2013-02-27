@@ -13,9 +13,7 @@
         <constructor-arg value="classpath:task-channel.json"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
-        <property name="eventListenerRegistry" ref="eventListenerRegistryServiceOsgi"/>
-    </bean>
+
 
     <bean id="bundleWrapper" class="org.motechproject.osgi.web.BundleContextWrapper"/>
 

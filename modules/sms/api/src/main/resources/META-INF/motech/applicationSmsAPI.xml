@@ -13,7 +13,6 @@
 
     <bean id="smsService" class="org.motechproject.sms.api.service.SmsServiceImpl"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
     <bean id="smsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">

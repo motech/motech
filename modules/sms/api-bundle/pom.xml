@@ -111,6 +111,7 @@
                             org.aopalliance.aop,
                             org.springframework.context.config,
                             org.springframework.security.config,
+                            org.eclipse.gemini.blueprint.config,
                             net.sf.cglib.proxy,
                             net.sf.cglib.core,
                             net.sf.cglib.reflect,

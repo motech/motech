@@ -35,6 +35,5 @@
         <property name="exposeSpringMacroHelpers" value="true" />
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
 </beans>

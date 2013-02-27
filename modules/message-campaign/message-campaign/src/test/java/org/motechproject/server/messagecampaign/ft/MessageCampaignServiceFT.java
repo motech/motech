@@ -11,7 +11,6 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
-import org.motechproject.testing.utils.faketime.EventCaptor;
 import org.motechproject.testing.utils.faketime.JvmFakeTime;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;

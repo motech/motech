@@ -11,7 +11,5 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
-        <property name="eventListenerRegistry" ref="eventListenerRegistryServiceOsgi"/>
-    </bean>
+
 </beans>
