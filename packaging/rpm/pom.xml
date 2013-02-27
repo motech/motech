@@ -180,8 +180,8 @@
                             </defineStatements>
 
                             <requires>
-                                <require>tomcat &gt;= 7.0</require>
-                                <require>java &gt;= 1.7</require>
+                                <require>tomcat7 &gt;= 7.0</require>
+                                <require>java7</require>
                             </requires>
 
                             <mappings>
@@ -303,6 +303,33 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <executions>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <id>copy-test-resources</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>testResources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>2.9</version>
                         <configuration>
@@ -317,12 +344,14 @@
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
+                                <phase>package</phase>
                             </execution>
                             <execution>
                                 <id>verify</id>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>
+                                <phase>package</phase>
                             </execution>
                         </executions>
                     </plugin>
