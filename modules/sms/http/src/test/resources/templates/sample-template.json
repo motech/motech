@@ -10,7 +10,7 @@
             }
         },
         "response":{
-            "success":"sent"
+            "success":".*\\bsent\\b.*"
         }
     },
     "incoming":{

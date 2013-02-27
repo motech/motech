@@ -17,7 +17,7 @@
             }
         },
         "response":{
-            "success":"success msg=\"accepted\""
+            "success":".*(success msg=\"accepted\").*"
         }
     },
     "incoming":{
