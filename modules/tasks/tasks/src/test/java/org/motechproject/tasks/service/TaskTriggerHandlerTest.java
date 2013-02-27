@@ -14,15 +14,21 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskAdditionalData;
-import org.motechproject.tasks.domain.TaskEvent;
+import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,7 +63,6 @@ import static org.motechproject.tasks.domain.ParameterType.DATE;
 import static org.motechproject.tasks.domain.ParameterType.NUMBER;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
-import static org.motechproject.tasks.util.TaskUtil.getSubject;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -82,6 +87,16 @@ public class TaskTriggerHandlerTest {
         }
     }
 
+    private class TestService {
+        public void throwException(Map<String, Object> param) throws IllegalAccessException {
+            throw new IllegalAccessException();
+        }
+
+        public void execute(Map<String, Object> param) {
+
+        }
+    }
+
     @Mock
     TaskService taskService;
 
@@ -100,14 +115,20 @@ public class TaskTriggerHandlerTest {
     @Mock
     DataProvider dataProvider;
 
+    @Mock
+    BundleContext bundleContext;
+
+    @Mock
+    ServiceReference serviceReference;
+
     TaskTriggerHandler handler;
 
     List<Task> tasks = new ArrayList<>(1);
     List<TaskActivity> taskActivities;
 
     Task task;
-    TaskEvent triggerEvent;
-    TaskEvent actionEvent;
+    TriggerEvent triggerEvent;
+    ActionEvent actionEvent;
 
     @Before
     public void setup() throws Exception {
@@ -119,9 +140,10 @@ public class TaskTriggerHandlerTest {
 
         handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, settingsFacade);
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
+        handler.setBundleContext(null);
 
         verify(taskService).getAllTasks();
-        verify(registryService).registerListener(any(EventListener.class), eq(getSubject(task.getTrigger())));
+        verify(registryService).registerListener(any(EventListener.class), eq(task.getTrigger().getSubject()));
     }
 
     @Test
@@ -644,32 +666,205 @@ public class TaskTriggerHandlerTest {
         assertEquals("test: 6789", motechEvent.getParameters().get("dataSourceObject"));
     }
 
+    @Test
+    public void shouldNotExecuteServiceMethodIfBundleContextIsNull() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("throwException");
+        actionEvent.setSubject(null);
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.cantExecuteAction", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldNotExecuteServiceMethodIfServiceReferenceIsNull() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("throwException");
+        actionEvent.setSubject(null);
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        when(bundleContext.getServiceReference(anyString())).thenReturn(null);
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addWarning(task, "warning.serviceUnavailable", "TestService");
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.cantExecuteAction", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldThrowTaskExceptionWhenServiceMethodThrowException() throws Exception {
+        TestService testService = new TestService();
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("throwException");
+        actionEvent.setSubject(null);
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        when(bundleContext.getServiceReference("TestService")).thenReturn(serviceReference);
+        when(bundleContext.getService(serviceReference)).thenReturn(testService);
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.serviceMethodInvokeError", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldThrowTaskExceptionWhenServiceMethodNotFound() throws Exception {
+        TestService testService = new TestService();
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+        actionEvent.setSubject(null);
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        when(bundleContext.getServiceReference("TestService")).thenReturn(serviceReference);
+        when(bundleContext.getService(serviceReference)).thenReturn(testService);
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.notFoundMethodForService", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldExecuteServiceMethod() throws Exception {
+        TestService testService = new TestService();
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("execute");
+        actionEvent.setSubject(null);
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        when(bundleContext.getServiceReference("TestService")).thenReturn(serviceReference);
+        when(bundleContext.getService(serviceReference)).thenReturn(testService);
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addSuccess(task);
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+    }
+
+    @Test
+    public void shouldSendEventIfServiceIsNotAvailable() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        actionEvent.setServiceInterface("TestService");
+        actionEvent.setServiceMethod("abc");
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+        when(bundleContext.getServiceReference("TestService")).thenReturn(null);
+
+        handler.setBundleContext(bundleContext);
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addWarning(task, "warning.serviceUnavailable", actionEvent.getServiceInterface());
+        verify(eventRelay).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService).addSuccess(task);
+    }
+
     private void initTask() throws Exception {
+        TaskEventInformation trigger = new TaskEventInformation("Appointments", "appointments-bundle", "0.15", TRIGGER_SUBJECT);
+        TaskActionInformation action = new TaskActionInformation("SMS", "sms-bundle", "0.15", ACTION_SUBJECT);
+
         Map<String, String> actionInputFields = new HashMap<>();
         actionInputFields.put("phone", "123456");
         actionInputFields.put("message", "Hello {{trigger.externalId}}, You have an appointment on {{trigger.startDate}}");
 
-        task = new Task("Appointments:appointments-bundle:0.15:" + TRIGGER_SUBJECT, "SMS:sms-bundle:0.15" + ACTION_SUBJECT, actionInputFields, "name");
+        task = new Task(trigger, action, actionInputFields, "name");
         task.setId("taskId1");
         tasks.add(task);
     }
 
     private void setManipulation() {
         task.getActionInputFields().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
-        actionEvent.getEventParameters().add(new EventParameter("Manipulations", "manipulations", TEXTAREA));
+        actionEvent.getActionParameters().add(new ActionParameter("Manipulations", "manipulations", TEXTAREA));
     }
 
     private void setDateField() {
         task.getActionInputFields().put("date", "2012-12-21 21:21 +0100");
-        actionEvent.getEventParameters().add(new EventParameter("Date", "date", DATE));
+        actionEvent.getActionParameters().add(new ActionParameter("Date", "date", DATE));
     }
 
     private void setAdditionalData() {
         task.getActionInputFields().put("dataSourceTrigger", "test: {{ad.12345.TestObjectField#1.id}}");
         task.getActionInputFields().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
 
-        actionEvent.getEventParameters().add(new EventParameter("Data source by trigger", "dataSourceTrigger"));
-        actionEvent.getEventParameters().add(new EventParameter("Data source by data source object", "dataSourceObject"));
+        actionEvent.getActionParameters().add(new ActionParameter("Data source by trigger", "dataSourceTrigger"));
+        actionEvent.getActionParameters().add(new ActionParameter("Data source by data source object", "dataSourceObject"));
 
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
         additionalData.put("12345", Arrays.asList(
@@ -690,19 +885,19 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
         triggerEventParameters.add(new EventParameter("EventName", "eventName"));
 
-        triggerEvent = new TaskEvent();
+        triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(TRIGGER_SUBJECT);
         triggerEvent.setEventParameters(triggerEventParameters);
     }
 
     private void setActionEvent() {
-        List<EventParameter> actionEventParameters = new ArrayList<>();
-        actionEventParameters.add(new EventParameter("Phone", "phone", NUMBER));
-        actionEventParameters.add(new EventParameter("Message", "message", TEXTAREA));
+        List<ActionParameter> actionEventParameters = new ArrayList<>();
+        actionEventParameters.add(new ActionParameter("Phone", "phone", NUMBER));
+        actionEventParameters.add(new ActionParameter("Message", "message", TEXTAREA));
 
-        actionEvent = new TaskEvent();
+        actionEvent = new ActionEvent();
         actionEvent.setSubject(ACTION_SUBJECT);
-        actionEvent.setEventParameters(actionEventParameters);
+        actionEvent.setActionParameters(actionEventParameters);
     }
 
     private void setTaskActivities() {

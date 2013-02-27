@@ -61,7 +61,7 @@
                                 <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
                                 <img ng-show="activity.activityType == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
                             </td>
-                            <td>{{msg(activity.message, activity.field)}}</td>
+                            <td>{{msg(activity.message, activity.fields)}}</td>
                             <td>{{ activity.date | fromNow }}</td>
                         </tr>
                         </tbody>

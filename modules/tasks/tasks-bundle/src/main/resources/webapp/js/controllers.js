@@ -94,20 +94,6 @@
             });
         });
 
-        $scope.get = function (taskEvent, prop) {
-            var index;
-
-            switch (prop) {
-                case 'displayName': index = 0; break;
-                case 'moduleName': index = 1; break;
-                case 'moduleVersion': index = 2; break;
-                case 'subject': index = 3; break;
-                default: index = 0; break;
-            }
-
-            return taskEvent.split(':')[index];
-        };
-
         $scope.enableTask = function (item, enabled) {
             item.task.enabled = enabled;
 
@@ -130,9 +116,7 @@
 
         $scope.search = function () {
             $scope.filteredItems = $filter('filter')($scope.allTasks, function (item) {
-                if (item) {
-                    return searchMatch(item, $scope.currentFilter, $scope.query);
-                }
+                return item && searchMatch(item, $scope.currentFilter, $scope.query);
             });
 
             $scope.setCurrentPage(0);
@@ -205,10 +189,17 @@
         $scope.channels = Channels.query(function () {
             if ($routeParams.taskId !== undefined) {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                    var trigger = $scope.task.trigger.split(':'),
-                        action = $scope.task.action.split(':'),
+                    var trigger = $scope.task.trigger,
+                        action = $scope.task.action,
                         regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
                         rgx = new RegExp('ad\\.(.+?)\\.(.+?)\\#(.+?)\\.(.+)', "g"),
+                        accept = function (action, info) {
+                            var subject = action.subject === info.subject,
+                                serviceInterface = action.serviceInterface === info.serviceInterface,
+                                serviceMethod = action.serviceMethod === info.serviceMethod;
+
+                            return subject || (serviceInterface && serviceMethod);
+                        },
                         replaced = [],
                         lookupDS,
                         lookupObj,
@@ -219,25 +210,25 @@
                         ds,
                         object,
                         obj,
-                        eventKey,
+                        key,
                         value,
                         i,
                         j;
 
-                    $scope.setTaskEvent('trigger', trigger[0], trigger[1], trigger[2]);
-                    $scope.setTaskEvent('action', action[0], action[1], action[2]);
+                    $scope.setTaskEvent('trigger', trigger.channelName, trigger.moduleName, trigger.moduleVersion);
+                    $scope.setTaskEvent('action', action.channelName, action.moduleName, action.moduleVersion);
 
-                    for (i = 0; i < $scope.draggedTrigger.events.length; i += 1) {
-                        if ($scope.draggedTrigger.events[i].subject === trigger[3]) {
-                            $scope.selectedTrigger = $scope.draggedTrigger.events[i];
+                    for (i = 0; i < $scope.draggedTrigger.triggers.length; i += 1) {
+                        if ($scope.draggedTrigger.triggers[i].subject === trigger.subject) {
+                            $scope.selectedTrigger = $scope.draggedTrigger.triggers[i];
                             $scope.draggedTrigger.display = $scope.selectedTrigger.displayName;
                             break;
                         }
                     }
 
-                    for (i = 0; i < $scope.draggedAction.events.length; i += 1) {
-                        if ($scope.draggedAction.events[i].subject === action[3]) {
-                            $scope.selectedAction = $scope.draggedAction.events[i];
+                    for (i = 0; i < $scope.draggedAction.actions.length; i += 1) {
+                        if (accept($scope.draggedAction.actions[i], action)) {
+                            $scope.selectedAction = $scope.draggedAction.actions[i];
                             $scope.draggedAction.display = $scope.selectedAction.displayName;
                             break;
                         }
@@ -286,9 +277,9 @@
                         });
                     });
 
-                    for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
-                        eventKey = $scope.selectedAction.eventParameters[i].eventKey;
-                        value = $scope.task.actionInputFields[eventKey];
+                    for (i = 0; i < $scope.selectedAction.actionParameters.length; i += 1) {
+                        key = $scope.selectedAction.actionParameters[i].key;
+                        value = $scope.task.actionInputFields[key];
 
                         if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
                             while ((found = regex.exec(value)) !== null) {
@@ -302,9 +293,9 @@
                                 value = value.replace(replaced[j].find, replaced[j].value);
                             }
 
-                            $scope.selectedAction.eventParameters[i].value = value;
+                            $scope.selectedAction.actionParameters[i].value = value;
                         } else {
-                            $scope.selectedAction.eventParameters[i].value = $scope.createDraggableElement(value);
+                            $scope.selectedAction.actionParameters[i].value = $scope.createDraggableElement(value);
                         }
                     }
 
@@ -355,14 +346,14 @@
 
                     if (taskEventType === 'trigger') {
                         $scope.draggedTrigger = selected;
-                        $scope.draggedTrigger.events = channel.triggerTaskEvents;
+                        $scope.draggedTrigger.triggers = channel.triggerTaskEvents;
                     } else if (taskEventType === 'action') {
                         for (j = 0; j < channel.actionTaskEvents.length; j += 1) {
                             delete channel.actionTaskEvents[j].value;
                         }
 
                         $scope.draggedAction = selected;
-                        $scope.draggedAction.events = channel.actionTaskEvents;
+                        $scope.draggedAction.actions = channel.actionTaskEvents;
                     }
 
                     break;
@@ -375,12 +366,29 @@
 
             if (taskEventType === 'trigger') {
                 $scope.draggedTrigger.display = taskEvent.displayName;
-                $scope.task.trigger = "{0}:{1}:{2}:{3}".format($scope.draggedTrigger.channel, $scope.draggedTrigger.module, $scope.draggedTrigger.version, taskEvent.subject);
-
+                $scope.task.trigger = {
+                    channelName: $scope.draggedTrigger.channel,
+                    moduleName: $scope.draggedTrigger.module,
+                    moduleVersion: $scope.draggedTrigger.version,
+                    subject: taskEvent.subject
+                };
                 $scope.selectedTrigger = taskEvent;
             } else if (taskEventType === 'action') {
                 $scope.draggedAction.display = taskEvent.displayName;
-                $scope.task.action = "{0}:{1}:{2}:{3}".format($scope.draggedAction.channel, $scope.draggedAction.module, $scope.draggedAction.version, taskEvent.subject);
+                $scope.task.action = {
+                    channelName: $scope.draggedAction.channel,
+                    moduleName: $scope.draggedAction.module,
+                    moduleVersion: $scope.draggedAction.version
+                };
+
+                if (taskEvent.subject !== undefined) {
+                    $scope.task.action.subject = taskEvent.subject;
+                }
+
+                if (taskEvent.serviceInterface !== undefined && taskEvent.serviceMethod !== undefined) {
+                    $scope.task.action.serviceInterface = taskEvent.serviceInterface;
+                    $scope.task.action.serviceMethod = taskEvent.serviceMethod;
+                }
 
                 $scope.selectedAction = taskEvent;
             }
@@ -388,8 +396,8 @@
             delete $scope.task.actionInputFields;
 
             if ($scope.selectedAction !== undefined) {
-                for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
-                    delete $scope.selectedAction.eventParameters[i].value;
+                for (i = 0; i < $scope.selectedAction.actionParameters.length; i += 1) {
+                    delete $scope.selectedAction.actionParameters[i].value;
                 }
             }
         };
@@ -399,7 +407,7 @@
         };
 
         $scope.save = function (enabled) {
-            var action = $scope.selectedAction, regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"), eventKey, value, found, replaced = [], i, j;
+            var action = $scope.selectedAction, regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"), key, value, found, replaced = [], i, j;
 
             $scope.task.actionInputFields = {};
             $scope.task.enabled = enabled;
@@ -414,11 +422,11 @@
                 }
             }
 
-            angular.forEach(action.eventParameters, function (eventParameter) {
+            angular.forEach(action.actionParameters, function (actionParameters) {
                 if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
                     var regex = new RegExp("\\{\\{ad\\..*?\\}\\}", "g"), spans = [], r;
 
-                    while ((r = regex.exec(eventParameter.value)) !== null) {
+                    while ((r = regex.exec(actionParameters.value)) !== null) {
                         $.merge(spans, r);
                     }
 
@@ -461,9 +469,10 @@
                                 lookupValue: object.lookup.by
                             });
                         }
+
                     });
                 } else {
-                    $('<div>' + eventParameter.value + "</div>").find('span[data-prefix="ad"]').each(function (index, value) {
+                    $('<div>' + actionParameters.value + "</div>").find('span[data-prefix="ad"]').each(function (index, value) {
                         var span = $(value), source = span.data('source'),
                             objectType = span.data('object-type'), objectId = span.data('object-id'),
                             dataSource, exists = false, object, i;
@@ -516,8 +525,8 @@
                             $scope.task.additionalData[ds._id] = [];
                         }
 
-                        for (i = 0; i < $scope.task.additionalData[dataSource._id].length; i += 1) {
-                            if ($scope.task.additionalData[dataSource._id][i].id === obj.id) {
+                        for (i = 0; i < $scope.task.additionalData[ds._id].length; i += 1) {
+                            if ($scope.task.additionalData[ds._id][i].id === obj.id) {
                                 exists = true;
                                 break;
                             }
@@ -535,13 +544,13 @@
                 });
             });
 
-            for (i = 0; i < action.eventParameters.length; i += 1) {
-                eventKey = action.eventParameters[i].eventKey;
+            for (i = 0; i < action.actionParameters.length; i += 1) {
+                key = action.actionParameters[i].key;
 
                 if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                    value = action.eventParameters[i].value || '';
+                    value = action.actionParameters[i].value || '';
                 } else {
-                    value = $scope.refactorDivEditable(action.eventParameters[i].value  || '');
+                    value = $scope.refactorDivEditable(action.actionParameters[i].value  || '');
                 }
 
                 while ((found = regex.exec(value)) !== null) {
@@ -555,7 +564,7 @@
                     value = value.replace(replaced[j].find, replaced[j].value);
                 }
 
-                $scope.task.actionInputFields[eventKey] = value;
+                $scope.task.actionInputFields[key] = value;
             }
 
             blockUI();
@@ -754,11 +763,11 @@
             var i, param;
 
             if ($scope.selectedAction !== undefined && $scope.selectedTrigger !== undefined) {
-                for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
+                for (i = 0; i < $scope.selectedAction.actionParameters.length; i += 1) {
                     if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                        param = $scope.selectedAction.eventParameters[i].value;
+                        param = $scope.selectedAction.actionParameters[i].value;
                     } else {
-                        param = $scope.refactorDivEditable($scope.selectedAction.eventParameters[i].value || '');
+                        param = $scope.refactorDivEditable($scope.selectedAction.actionParameters[i].value || '');
                     }
                     if (param === null || param === undefined || param === "\n" || !param.trim().length) {
                         return false;
@@ -838,7 +847,7 @@
                 };
 
             if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
+                angular.forEach($scope.selectedAction.actionParameters, function (param) {
                     var count;
 
                     while ((count = regex.exec(param.value)) !== null) {
@@ -853,7 +862,7 @@
                 motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (r) {
                     if (r) {
                         if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                            angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
+                            angular.forEach($scope.selectedAction.actionParameters, function (param) {
                                 if (param.value !== undefined) {
                                     param.value = param.value.replace(regex, '');
                                 }
@@ -886,7 +895,7 @@
                 };
 
             if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                angular.forEach($scope.selectedAction.eventParameters, function (param) {
+                angular.forEach($scope.selectedAction.actionParameters, function (param) {
                     var count;
 
                     while ((count = regex.exec(param.value)) !== null) {
@@ -901,7 +910,7 @@
                 motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (r) {
                     if (r) {
                         if ($scope.BrowserDetect.browser !== 'Chrome' && $scope.BrowserDetect.browser !== 'Explorer') {
-                            angular.forEach($scope.selectedAction.eventParameters, function (param) {
+                            angular.forEach($scope.selectedAction.actionParameters, function (param) {
                                 if (param.value !== undefined) {
                                     param.value = param.value.replace(regex, '');
                                 }
@@ -1125,15 +1134,15 @@
                 }, 30 * 1000);
 
                 $scope.trigger = {
-                    display: $scope.get(task.trigger, 'displayName'),
-                    module: $scope.get(task.trigger, 'moduleName'),
-                    version: $scope.get(task.trigger, 'moduleVersion')
+                    display: task.trigger.channelName,
+                    module: task.trigger.moduleName,
+                    version: task.trigger.moduleVersion
                 };
 
                 $scope.action = {
-                    display: $scope.get(task.action, 'displayName'),
-                    module: $scope.get(task.action, 'moduleName'),
-                    version: $scope.get(task.action, 'moduleVersion')
+                    display: task.action.channelName,
+                    module: task.action.moduleName,
+                    version: task.action.moduleVersion
                 };
 
                 $scope.description = task.description;
@@ -1141,20 +1150,6 @@
                 $scope.name = task.name;
             });
         }
-
-        $scope.get = function (taskEvent, prop) {
-            var index;
-
-            switch (prop) {
-                case 'displayName': index = 0; break;
-                case 'moduleName': index = 1; break;
-                case 'moduleVersion': index = 2; break;
-                case 'subject': index = 3; break;
-                default: index = 0; break;
-            }
-
-            return taskEvent.split(':')[index];
-        };
 
         $scope.changeItemsPerPage = function () {
             $scope.setCurrentPage(0);
@@ -1167,9 +1162,7 @@
 
         $scope.search = function () {
             $scope.filteredItems = $filter('filter')($scope.activities, function (activity) {
-                if (activity) {
-                    return searchMatch(activity, $scope.filterHistory);
-                }
+                return activity && searchMatch(activity, $scope.filterHistory);
             });
 
             $scope.setCurrentPage(0);

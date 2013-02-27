@@ -1,7 +1,8 @@
 package org.motechproject.tasks.service;
 
+import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskEvent;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
@@ -11,13 +12,13 @@ public interface TaskService {
 
     void save(final Task task);
 
-    TaskEvent getActionEventFor(Task task) throws ActionNotFoundException;
+    ActionEvent getActionEventFor(Task task) throws ActionNotFoundException;
 
     List<Task> getAllTasks();
 
-    List<Task> findTasksForTrigger(final TaskEvent trigger);
+    List<Task> findTasksForTrigger(final TriggerEvent trigger);
 
-    TaskEvent findTrigger(String subject) throws TriggerNotFoundException;
+    TriggerEvent findTrigger(String subject) throws TriggerNotFoundException;
 
     Task getTask(String taskId);
 

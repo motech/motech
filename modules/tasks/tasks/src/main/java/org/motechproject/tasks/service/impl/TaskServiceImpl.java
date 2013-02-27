@@ -1,8 +1,10 @@
 package org.motechproject.tasks.service.impl;
 
+import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskEvent;
+import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.repository.AllTasks;
@@ -17,14 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.tasks.util.TaskUtil.getChannelName;
-import static org.motechproject.tasks.util.TaskUtil.getModuleName;
-import static org.motechproject.tasks.util.TaskUtil.getModuleVersion;
-import static org.motechproject.tasks.util.TaskUtil.getSubject;
 
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
-    private static final int TASK_EVENT_FIELD_COUNT = 4;
     private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private AllTasks allTasks;
@@ -38,12 +35,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void save(final Task task) {
-        if (task.getAction().split(":").length != TASK_EVENT_FIELD_COUNT) {
-            throw new IllegalArgumentException("Task action must contains channel.displayName:channel.moduleName:channel.moduleVersion:action.subject");
+        if (task.getTrigger() == null) {
+            throw new IllegalArgumentException("Task must contains information about trigger");
         }
 
-        if (task.getTrigger().split(":").length != TASK_EVENT_FIELD_COUNT) {
-            throw new IllegalArgumentException("Task trigger must contains channel.displayName:channel.moduleName:channel.moduleVersion:trigger.subject");
+        if (task.getAction() == null) {
+            throw new IllegalArgumentException("Task must contains information about action");
         }
 
         if (task.getActionInputFields() == null) {
@@ -59,15 +56,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskEvent getActionEventFor(final Task task) throws ActionNotFoundException {
-        Channel channel = channelService.getChannel(getChannelName(task.getAction()), getModuleName(task.getAction()),
-                getModuleVersion(task.getAction()));
-        String taskActionSubject = getSubject(task.getAction());
-        TaskEvent event = null;
+    public ActionEvent getActionEventFor(final Task task) throws ActionNotFoundException {
+        TaskActionInformation actionInfo = task.getAction();
+        Channel channel = channelService.getChannel(actionInfo.getChannelName(), actionInfo.getModuleName(), actionInfo.getModuleVersion());
+        ActionEvent event = null;
 
         if (channel.getActionTaskEvents() != null) {
-            for (TaskEvent action : channel.getActionTaskEvents()) {
-                if (action.getSubject() != null && action.getSubject().equalsIgnoreCase(taskActionSubject)) {
+            for (ActionEvent action : channel.getActionTaskEvents()) {
+                if (action.accept(actionInfo)) {
                     event = action;
                     break;
                 }
@@ -75,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (event == null) {
-            throw new ActionNotFoundException(String.format("Cant find action for subject: %s", taskActionSubject));
+            throw new ActionNotFoundException(String.format("Cant find action for task: %s", task.getId()));
         }
 
         return event;
@@ -87,12 +83,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> findTasksForTrigger(final TaskEvent trigger) {
+    public List<Task> findTasksForTrigger(final TriggerEvent trigger) {
         List<Task> tasks = allTasks.getAll();
         List<Task> result = new ArrayList<>(tasks.size());
 
         for (Task t : tasks) {
-            if (getSubject(t.getTrigger()).equalsIgnoreCase(trigger.getSubject())) {
+            if (t.getTrigger().getSubject().equalsIgnoreCase(trigger.getSubject())) {
                 result.add(t);
             }
         }
@@ -101,12 +97,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskEvent findTrigger(String subject) throws TriggerNotFoundException {
+    public TriggerEvent findTrigger(String subject) throws TriggerNotFoundException {
         List<Channel> channels = channelService.getAllChannels();
-        TaskEvent trigger = null;
+        TriggerEvent trigger = null;
 
         for (Channel c : channels) {
-            for (TaskEvent t : c.getTriggerTaskEvents()) {
+            for (TriggerEvent t : c.getTriggerTaskEvents()) {
                 if (t.getSubject().equalsIgnoreCase(subject)) {
                     trigger = t;
                     break;

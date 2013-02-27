@@ -13,13 +13,16 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskAdditionalData;
-import org.motechproject.tasks.domain.TaskEvent;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +42,6 @@ import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getKeys;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
-import static org.motechproject.tasks.util.TaskUtil.getSubject;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 @Service
@@ -56,6 +58,7 @@ public class TaskTriggerHandler {
     private EventRelay eventRelay;
     private SettingsFacade settingsFacade;
     private Map<String, DataProvider> dataProviders;
+    private BundleContext bundleContext;
 
     @Autowired
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
@@ -88,15 +91,15 @@ public class TaskTriggerHandler {
     }
 
     public void handle(MotechEvent triggerEvent) {
-        TaskEvent trigger = getTriggerEvent(triggerEvent.getSubject());
+        TriggerEvent trigger = getTriggerEvent(triggerEvent.getSubject());
 
         if (trigger != null) {
             for (Task task : selectTasks(trigger, triggerEvent.getParameters())) {
                 try {
-                    TaskEvent action = getActionEvent(task);
-                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), triggerEvent);
+                    ActionEvent action = getActionEvent(task);
+                    Map<String, Object> parameters = createParameters(task, action.getActionParameters(), triggerEvent);
 
-                    eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
+                    executeAction(task, action, parameters);
                     activityService.addSuccess(task);
                 } catch (TaskException e) {
                     registerError(task, e);
@@ -110,13 +113,13 @@ public class TaskTriggerHandler {
             List<Task> tasks = taskService.getAllTasks();
 
             for (Task t : tasks) {
-                registerHandlerFor(getSubject(t.getTrigger()));
+                registerHandlerFor(t.getTrigger().getSubject());
             }
         }
     }
 
-    private TaskEvent getTriggerEvent(String subject) {
-        TaskEvent trigger = null;
+    private TriggerEvent getTriggerEvent(String subject) {
+        TriggerEvent trigger = null;
 
         try {
             trigger = taskService.findTrigger(subject);
@@ -128,8 +131,8 @@ public class TaskTriggerHandler {
         return trigger;
     }
 
-    private TaskEvent getActionEvent(Task task) throws TaskException {
-        TaskEvent action;
+    private ActionEvent getActionEvent(Task task) throws TaskException {
+        ActionEvent action;
 
         try {
             action = taskService.getActionEventFor(task);
@@ -141,7 +144,7 @@ public class TaskTriggerHandler {
         return action;
     }
 
-    private List<Task> selectTasks(TaskEvent trigger, Map<String, Object> triggerParameters) {
+    private List<Task> selectTasks(TriggerEvent trigger, Map<String, Object> triggerParameters) {
         List<Task> tasks = new ArrayList<>();
 
         for (Task task : taskService.findTasksForTrigger(trigger)) {
@@ -153,20 +156,66 @@ public class TaskTriggerHandler {
         return tasks;
     }
 
-    private Map<String, Object> createParameters(Task task, List<EventParameter> actionParameters, MotechEvent event) throws TaskException {
+    private void executeAction(Task task, ActionEvent action, Map<String, Object> parameters) throws TaskException {
+        boolean invokeMethod = action.hasService() && bundleContext != null;
+        boolean serviceAvailable = false;
+
+        if (invokeMethod) {
+            serviceAvailable = callActionServiceMethod(action, parameters);
+
+            if (!serviceAvailable) {
+                activityService.addWarning(task, "warning.serviceUnavailable", action.getServiceInterface());
+            }
+        }
+
+        boolean sendEvent = (!invokeMethod || !serviceAvailable) && action.hasSubject();
+
+        if (sendEvent) {
+            eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
+        }
+
+        if ((!invokeMethod || !serviceAvailable) && !sendEvent) {
+            throw new TaskException("error.cantExecuteAction");
+        }
+    }
+
+    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters) throws TaskException {
+        ServiceReference reference = bundleContext.getServiceReference(action.getServiceInterface());
+        boolean serviceAvailable = reference != null;
+
+        if (serviceAvailable) {
+            Object service = bundleContext.getService(reference);
+
+            try {
+                Method serviceMethod = service.getClass().getMethod(action.getServiceMethod(), Map.class);
+
+                try {
+                    serviceMethod.invoke(service, parameters);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new TaskException("error.serviceMethodInvokeError", e, action.getServiceMethod(), action.getServiceInterface());
+                }
+            } catch (NoSuchMethodException e) {
+                throw new TaskException("error.notFoundMethodForService", e, action.getServiceMethod(), action.getServiceInterface());
+            }
+        }
+
+        return serviceAvailable;
+    }
+
+    private Map<String, Object> createParameters(Task task, List<ActionParameter> actionParameters, MotechEvent event) throws TaskException {
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
-        for (EventParameter param : actionParameters) {
-            String eventKey = param.getEventKey();
+        for (ActionParameter param : actionParameters) {
+            String key = param.getKey();
 
-            if (!task.getActionInputFields().containsKey(eventKey)) {
-                throw new TaskException("error.taskNotContainsField", eventKey);
+            if (!task.getActionInputFields().containsKey(key)) {
+                throw new TaskException("error.taskNotContainsField", key);
             }
 
-            String template = task.getActionInputFields().get(eventKey);
+            String template = task.getActionInputFields().get(key);
 
             if (template == null) {
-                throw new TaskException("error.templateNull", eventKey);
+                throw new TaskException("error.templateNull", key);
             }
 
             String userInput = replaceAll(template, event, task);
@@ -178,21 +227,21 @@ public class TaskTriggerHandler {
                     try {
                         value = convertToNumber(userInput);
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToNumber", e, eventKey);
+                        throw new TaskException("error.convertToNumber", e, key);
                     }
                     break;
                 case DATE:
                     try {
                         value = convertToDate(userInput);
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToDate", e, eventKey);
+                        throw new TaskException("error.convertToDate", e, key);
                     }
                     break;
                 default:
                     value = userInput;
             }
 
-            parameters.put(eventKey, value);
+            parameters.put(key, value);
         }
 
         return parameters;
@@ -333,5 +382,10 @@ public class TaskTriggerHandler {
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
+    }
+
+    @Autowired(required = false)
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }

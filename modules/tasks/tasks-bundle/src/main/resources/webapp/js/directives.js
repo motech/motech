@@ -85,6 +85,7 @@
         };
     });
 
+
     widgetModule.directive('droppable', function ($compile) {
         return {
             restrict: 'A',
@@ -144,7 +145,7 @@
                             }
 
                             if (dropElement.data('type') === 'DATE') {
-                                delete scope.selectedAction.eventParameters[dropElement.data('index')].value;
+                                delete scope.selectedAction.actionParameters[dropElement.data('index')].value;
                             }
 
                             if (browser !== 'Chrome' && browser !== 'Explorer') {
@@ -155,9 +156,9 @@
                                 }
 
                                 pos = element.caret();
-                                value = scope.selectedAction.eventParameters[dropElement.data('index')].value || '';
+                                value = scope.selectedAction.actionParameters[dropElement.data('index')].value || '';
 
-                                scope.selectedAction.eventParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
+                                scope.selectedAction.actionParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
                             } else {
                                 dropElement.find('em').remove();
 
@@ -495,7 +496,7 @@
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
                     onSelect: function (dateTex) {
-                        scope.selectedAction.eventParameters[$(this).data('index')].value = dateTex;
+                        scope.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
                         scope.$apply();
                     }
                 });

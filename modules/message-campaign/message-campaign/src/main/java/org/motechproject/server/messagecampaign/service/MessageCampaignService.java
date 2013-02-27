@@ -43,4 +43,6 @@ public interface MessageCampaignService {
     CampaignRecord getCampaignRecord(String campaignName);
 
     List<CampaignRecord> getAllCampaignRecords();
+
+    void campaignCompleted(Map<String, Object> parameters);
 }

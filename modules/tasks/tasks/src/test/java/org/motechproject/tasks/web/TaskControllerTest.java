@@ -6,6 +6,8 @@ import org.mockito.Mock;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
@@ -50,10 +52,13 @@ public class TaskControllerTest {
 
     @Test
     public void shouldGetAllTasks() {
+        TaskActionInformation action = new TaskActionInformation("action1", "action", "0.15", "receive");
+        TaskEventInformation trigger = new TaskEventInformation("trigger1", "trigger", "0.16", "send");
+
         List<Task> expected = new ArrayList<>();
-        expected.add(new Task("trigger1", "action1", new HashMap<String, String>(), "name"));
-        expected.add(new Task("trigger2", "action2", new HashMap<String, String>(), "name"));
-        expected.add(new Task("trigger3", "action3", new HashMap<String, String>(), "name"));
+        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
+        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
+        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
 
         when(taskService.getAllTasks()).thenReturn(expected);
 
@@ -110,9 +115,12 @@ public class TaskControllerTest {
     @Test
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
-        Task expected = new Task(String.format("channel1:module1:0.15:%s", subject), "action1", new HashMap<String, String>(), "name");
+        TaskActionInformation action = new TaskActionInformation("action1", "action", "0.15", "send");
+        TaskEventInformation trigger = new TaskEventInformation("trigger1", "trigger", "0.16", subject);
+        Task expected = new Task(trigger, action, new HashMap<String, String>(), "name");
 
         when(eventListenerRegistryService.getListeners(subject)).thenReturn(new HashSet<EventListener>());
+
 
         controller.save(expected);
 
