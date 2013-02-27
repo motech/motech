@@ -1,3 +1,6 @@
-<span>{{msg('date.time')}}</span>
+<span unselectable="on">{{msg('date.time')}}</span>
 </br>
-<input id="dateFormat" setmanipulation="dateTime" type="text"/>
+<div unselectable="on" class="input-append">
+    <input id="dateFormat" setmanipulation="dateTime" type="text"/>
+</div>
+<button role="button" onclick="$('#helpModalDate').modal()" class="btn btn-primary" data-toggle="modal">{{msg('help')}}</button>

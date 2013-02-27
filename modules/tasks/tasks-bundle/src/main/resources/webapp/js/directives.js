@@ -81,37 +81,38 @@ widgetModule.directive('droppable', function ($compile) {
         link: function (scope, element, attrs) {
             element.droppable({
                 drop: function (event, ui) {
-                    var channelName, moduleName, moduleVersion, parent, value, pos, eventKey, dropElement, dragElement, browser,
-                        position = function(dropElement, dragElement) {
-                            var sel, range;
-                            var space = document.createTextNode(' ');
-                            if (window.getSelection) {
-                                sel = window.getSelection();
-                                if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentElement.tagName.toLowerCase() != 'span') {
-                                    range = sel.getRangeAt(0);
-                                    if (range.commonAncestorContainer.parentNode == dropElement[0] || range.commonAncestorContainer == dropElement[0] || range.commonAncestorContainer.parentNode.parentNode ==dropElement[0]) {
-                                        var el = document.createElement("div");
-                                        el.innerHTML = dragElement[0].outerHTML;
-                                        var frag = document.createDocumentFragment(), node, lastNode;
+                    var channelName, moduleName, moduleVersion, parent, value, pos, eventKey, dropElement, dragElement, browser;
 
-                                        while ( (node = el.firstChild) ) {
-                                            lastNode = frag.appendChild(node);
-                                        }
+                    var position = function(dropElement, dragElement) {
+                       var sel, range;
+                       var space = document.createTextNode(' ');
+                       if (window.getSelection) {
+                           sel = window.getSelection();
+                           if (sel.getRangeAt && sel.rangeCount && sel.anchorNode.parentNode.tagName.toLowerCase() != 'span') {
+                               range = sel.getRangeAt(0);
+                               if (range.commonAncestorContainer.parentNode == dropElement[0] || range.commonAncestorContainer == dropElement[0] || range.commonAncestorContainer.parentNode.parentNode ==dropElement[0]) {
+                                   var el = document.createElement("div");
+                                   el.innerHTML = dragElement[0].outerHTML;
+                                   var frag = document.createDocumentFragment(), node, lastNode;
 
-                                        $compile(frag)(scope);
-                                        range.insertNode(frag);
-                                        range.insertNode(space);
-                                        if (lastNode) {
-                                            range = range.cloneRange();
-                                            range.setStartAfter(lastNode);
-                                            range.collapse(true);
-                                            sel.removeAllRanges();
-                                            sel.addRange(range);
-                                        }
-                                    } else {
-                                        $compile(dragElement)(scope);
-                                        dropElement.append(dragElement);
-                                        dropElement.append(space);
+                                   while ( (node = el.firstChild) ) {
+                                       lastNode = frag.appendChild(node);
+                                   }
+
+                                   $compile(frag)(scope);
+                                   range.insertNode(frag);
+                                   range.insertNode(space);
+                                   if (lastNode) {
+                                       range = range.cloneRange();
+                                       range.setStartAfter(lastNode);
+                                       range.collapse(true);
+                                       sel.removeAllRanges();
+                                       sel.addRange(range);
+                                   }
+                               } else {
+                                   $compile(dragElement)(scope);
+                                   dropElement.append(dragElement);
+                                   dropElement.append(space);
                                     }
                                 }
                             } else if (document.selection && document.selection.type != "Control") {
@@ -134,7 +135,7 @@ widgetModule.directive('droppable', function ($compile) {
                             delete scope.selectedAction.eventParameters[dropIndex].value;
                         }
 
-                        if (browser != 'Chrome') {
+                        if (browser != 'Chrome' && browser != 'Explorer') {
                             if (dragElement.data('prefix') === 'trigger') {
                                 eventKey = '{{trigger.' + scope.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
                             } else if (dragElement.data('prefix') === 'ad') {
@@ -152,7 +153,7 @@ widgetModule.directive('droppable', function ($compile) {
                             dragElement.css("position", "relative");
                             dragElement.css("left", "0px");
                             dragElement.css("top", "0px");
-
+                            dragElement.attr("unselectable", "on");
                             if (dragElement.data('type') != 'NUMBER') {
                                 dragElement.attr("manipulationpopover", "");
                             }
@@ -250,9 +251,41 @@ widgetModule.directive('contenteditable', function($compile) {
                 return element.html(container);
             };
 
-            element.bind('blur keyup change mouseleave', function() {
-                if (ngModel.$viewValue !== $.trim(element.html())) {
+            element.bind('focusin', function(event) {
+            event.stopPropagation();
+            var el = this;
+                window.setTimeout(function() {
+                    var sel, range;
+                    if (window.getSelection && document.createRange) {
+                        range = document.createRange();
+                        range.selectNodeContents(el);
+                        if (el.childNodes.length!=0) {
+                            range.setStartAfter(el.childNodes[el.childNodes.length-1]);
+                        }
+                        range.collapse(true);
+                        sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    } else if (document.body.createTextRange) {
+                        range = document.body.createTextRange();
+                        if (el.childNodes.length!=0) {
+                            range.moveToElementText(el.childNodes[el.childNodes.length-1]);
+                        }
+                        range.collapse(true);
+                        range.select();
+                    }
+                }, 1);
+            });
 
+            element.bind('keypress', function(event) {
+                if ($(this).data('type')!='TEXTAREA') {
+                    return event.which != 13;
+                }
+            })
+
+            element.bind('blur keyup change mouseleave', function(event) {
+                event.stopPropagation();
+                if (ngModel.$viewValue !== $.trim(element.html())) {
                     return scope.$apply(read);
                 }
             });
@@ -346,7 +379,7 @@ widgetModule.directive('manipulationpopover', function($compile, $timeout, $temp
 
             if (elType == 'UNICODE' || elType == 'TEXTAREA' || elType == 'DATE') {
                 el.popover({
-                    template : '<div contenteditable="false" class="popover dragpopover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+                    template : '<div unselectable="on" contenteditable="false" class="popover dragpopover"><div unselectable="on" class="arrow"></div><div unselectable="on" class="popover-inner"><h3 unselectable="on" class="popover-title"></h3><div unselectable="on" class="popover-content"><p unselectable="on"></p></div></div></div>',
                     title: title,
                     html: true,
                     content: function() {
@@ -373,7 +406,7 @@ widgetModule.directive('manipulationpopover', function($compile, $timeout, $temp
                            if (manipulation != undefined) {
                                elem.first().append('<span class="icon-remove" style="float: right"></span>');
                                elem.first().append('<span class="icon-ok" style="float: right"></span>');
-                               elem.last().val(manipulation.slice(manipulation.indexOf("dateTime")+9, manipulation.indexOf(")")));
+                               elem[4].children[0].value = manipulation.slice(manipulation.indexOf("dateTime")+9, manipulation.indexOf(")"));
                            } else {
                                elem.find('input').val("");
                            }
@@ -488,7 +521,8 @@ widgetModule.directive('setmanipulation', function() {
                 }
             });
 
-            el.bind("focusout focusin keyup", function() {
+            el.bind("focusout focusin keyup", function(event) {
+                event.stopPropagation();
                 var dateFormat = this.value;
                 var manipulateElement = $("[ismanipulate=true]");
                 if (manipulateElement.data("type") == 'DATE') {
@@ -497,12 +531,12 @@ widgetModule.directive('setmanipulation', function() {
                         manipulateElement.removeAttr("manipulate");
                     if (dateFormat.length != 0) {
                         manipulateElement.attr("manipulate", manipulation);
-                        if (this.parentElement.firstChild.children.length == 0) {
-                            $(this.parentElement.firstChild).append(deleteButton);
-                            $(this.parentElement.firstChild).append('<span class="icon-ok" style="float: right"></span>');
+                        if (this.parentElement.parentElement.firstChild.children.length == 0) {
+                            $(this.parentElement.parentElement.firstChild).append(deleteButton);
+                            $(this.parentElement.parentElement.firstChild).append('<span class="icon-ok" style="float: right"></span>');
                         }
                     } else if (dateFormat.length == 0) {
-                        $(this.parentElement.firstChild).children().remove();
+                        $(this.parentElement.parentElement.firstChild).children().remove();
                     }
                     $('span.icon-remove').click(function() {
                         $(this.parentElement).children().remove();
@@ -520,7 +554,8 @@ widgetModule.directive('joinUpdate', function() {
           restrict : 'A',
           require: '?ngModel',
           link : function (scope, el, attrs, ngModel) {
-              el.bind("focusout focusin keyup", function() {
+              el.bind("focusout focusin keyup", function(event) {
+                  event.stopPropagation();
                   var manipulateElement = $("[ismanipulate=true]");
                   var manipulation = "join("+ $("#joinSeparator").val() + ")";
                   var elementManipulation = manipulateElement.attr("manipulate") ;

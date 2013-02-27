@@ -284,7 +284,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     eventKey = $scope.selectedAction.eventParameters[i].eventKey;
                     value = $scope.task.actionInputFields[eventKey];
 
-                    if ($scope.BrowserDetect.browser != 'Chrome') {
+                    if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                         while ((found = regex.exec(value)) !== null) {
                             replaced.push({
                                 find: '{{ad.' + found[1] + found[2] + '}}',
@@ -297,6 +297,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                         };
 
                         $scope.selectedAction.eventParameters[i].value = value;
+
                     } else {
                         $scope.selectedAction.eventParameters[i].value = $scope.createDraggableElement(value);
                     }
@@ -407,7 +408,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
         $scope.task.additionalData = {};
         for (i = 0; i < action.eventParameters.length; i += 1) {
-            if ($scope.BrowserDetect.browser != 'Chrome') {
+            if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                 angular.forEach($scope.selectedAction.eventParameters, function (param, index) {
                     var regex = new RegExp("\\{\\{ad\\..*?\\}\\}", "g"),
                         spans = [], r;
@@ -520,8 +521,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
         for (i = 0; i < action.eventParameters.length; i += 1) {
             eventKey = action.eventParameters[i].eventKey;
-
-            if ($scope.BrowserDetect.browser != 'Chrome') {
+            if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                 value = action.eventParameters[i].value || '';
             } else {
                 value = $scope.refactorDivEditable(action.eventParameters[i].value  || '');
@@ -614,7 +614,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                     eventKey = eventKey + "?" + manipulation;
                 }
             }
-
+            eventKey = eventKey.replace(/\?+(?=\?)/g, '');
             if (prefix === 'trigger') {
                 val = '{{' + prefix + '.' + eventKey + '}}';
             } else if (prefix === 'ad') {
@@ -626,23 +626,22 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
         result.find('em').remove();
 
-        if ($.browser.webkit) {
-          result.find("div").replaceWith(function () { return "\n" + this.innerHTML; });
+        if ($scope.BrowserDetect.browser == 'Chrome' && $scope.BrowserDetect.browser != 'Explorer' )
+          result.find("div").replaceWith(function() { return "\n" + this.innerHTML; });
+        if ($scope.BrowserDetect.browser == 'Explorer') {
+          result.find("p").replaceWith(function() { return this.innerHTML + "<br>"; });
+          result.find("br").last().remove();
         }
-
-        if ($.browser.msie) {
-          result.find("p").replaceWith(function () { return this.innerHTML + "<br>"; });
+        if ($scope.BrowserDetect.browser == 'Chrome' || $scope.BrowserDetect.browser == 'Explorer'){
+            if (result[0].childNodes[result[0].childNodes.length-1]=='<br>') result[0].childNodes[result[0].childNodes.length-1].remove()
+            result.find("br").replaceWith("\n");
         }
-
-        if ($.browser.mozilla || $.browser.opera || $.browser.msie || $.browser.webkit) {
-          result.find("br").replaceWith("\n");
-        }
-
         return result.text();
     }
 
     $scope.createDraggableElement = function (value) {
         value = value.replace(/{{.*?}}/g, $scope.buildSpan);
+        value = value.replace(/\\n/g, "<br>")
         return value;
     }
 
@@ -657,7 +656,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
 
         if (prefix === 'trigger') {
             param = $scope.findTriggerEventParameter(eventParameterKey);
-            span = '<span ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer"' +
+            span = '<span unselectable="on" ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer"' +
                    '" data-prefix="' + prefix + '" data-type="' + param.type + '" style="position: relative;" ' +
                    (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + $scope.msg(param.displayName) + '</span>';
         } else if (prefix === 'ad') {
@@ -677,7 +676,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
             object = $scope.findObject(dataSource, type);
             param = $scope.findObjectField(object, field);
 
-            span = '<span ' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
+            span = '<span unselectable="on"' + (param.type != 'NUMBER' ? 'manipulationpopover' : '') +' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
                    '" data-prefix="' + prefix + '" data-source="' + dataSource.name + '" data-object="' + param.displayName +'" data-object-type="' + type + '" data-field="' + field +
                    '" data-object-id="' + id + '" style="position: relative;" ' + (manipulation.length == 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' +
                    $scope.msg(dataSource.name) + '.' + $scope.msg(object.displayName) + '#' + id + '.' + $scope.msg(param.displayName) + '</span>';
@@ -712,9 +711,9 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     $scope.validateForm = function () {
         var i, param;
 
-        if ($scope.selectedAction !== undefined) {
+        if ($scope.selectedAction !== undefined && $scope.selectedTrigger !== undefined) {
             for (i = 0; i < $scope.selectedAction.eventParameters.length; i += 1) {
-                if ($scope.BrowserDetect.browser != 'Chrome') {
+                if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                     param = $scope.selectedAction.eventParameters[i].value;
                 } else {
                     param = $scope.refactorDivEditable($scope.selectedAction.eventParameters[i].value || '');
@@ -763,12 +762,14 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
     }
 
     $scope.actionCssClass = function (prop) {
-        var msg = "control-group", value = $scope.refactorDivEditable(prop.value || '');
+        var msg = "control-group";
+        if ($scope.selectedTrigger !== undefined) {
+            var value = $scope.refactorDivEditable(prop.value || '');
 
-        if (value.length === 0 || value==="\n") {
-            msg = msg.concat(' error');
+            if (value.length === 0 || value==="\n") {
+                msg = msg.concat(' error');
+            }
         }
-
         return msg;
     }
 
@@ -797,7 +798,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                 ds.available = a.objects;
             };
 
-        if ($scope.BrowserDetect.browser != 'Chrome') {
+        if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
             angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
                 var count;
 
@@ -812,7 +813,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         if (spans > 0) {
             motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (r) {
                 if (r) {
-                    if ($scope.BrowserDetect.browser != 'Chrome') {
+                    if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                         angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
                             if (param.value !== undefined) {
                                 param.value = param.value.replace(regex, '');
@@ -845,7 +846,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
                 obj.lookup.displayName = $scope.msg($scope.selectedTrigger.eventParameters[0].displayName);
             };
 
-        if ($scope.BrowserDetect.browser != 'Chrome') {
+        if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
             angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
                 var count;
 
@@ -860,7 +861,7 @@ function ManageTaskCtrl($scope, Channels, Tasks, DataSources, $routeParams, $htt
         if (spans > 0) {
             motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (r) {
                 if (r) {
-                    if ($scope.BrowserDetect.browser != 'Chrome') {
+                    if ($scope.BrowserDetect.browser != 'Chrome' && $scope.BrowserDetect.browser != 'Explorer') {
                         angular.forEach($scope.selectedAction.eventParameters, function (param, key) {
                             if (param.value !== undefined) {
                                 param.value = param.value.replace(regex, '');
