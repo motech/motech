@@ -4,19 +4,22 @@
        "campaignName": "PREGNANCY",
        "externalId": "47sf6a",
        "startTime": "20:01:00",
-       "referenceDate" : "2012-01-02"
+       "referenceDate" : "2012-01-02",
+       "enrollmentId":"enrollmentId1"
    },
    {
        "campaignName": "PREGNANCY",
        "externalId": "d6gt40",
        "startTime": "10:00:00",
-       "referenceDate" : "2012-02-15"
+       "referenceDate" : "2012-02-15",
+       "enrollmentId":"enrollmentId2"
    },
    {
        "campaignName": "CHILD_DEVELOPMENT",
        "externalId": "o34j6f",
        "startTime": "10:00:00",
-       "referenceDate" : "2012-03-13"
+       "referenceDate" : "2012-03-13",
+       "enrollmentId":"enrollmentId3"
    }
    ]
 }

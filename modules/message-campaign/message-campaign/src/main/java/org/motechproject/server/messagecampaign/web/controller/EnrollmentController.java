@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.web.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.CampaignNotFoundException;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
@@ -44,10 +45,17 @@ public class EnrollmentController {
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
     public void enrollUser(@PathVariable String campaignName, @PathVariable String userId,
                            @RequestBody EnrollmentRequest enrollmentRequest) {
+
         CampaignRequest campaignRequest = new CampaignRequest(userId, campaignName,
                 enrollmentRequest.getReferenceDate(), null, enrollmentRequest.getStartTime());
 
-        messageCampaignService.startFor(campaignRequest);
+        String enrollmentId = enrollmentRequest.getEnrollmentId();
+
+        if (StringUtils.isNotBlank(enrollmentId)) {
+            messageCampaignService.updateEnrollment(campaignRequest, enrollmentId);
+        } else {
+            messageCampaignService.startFor(campaignRequest);
+        }
     }
 
     @RequestMapping(value = "/{campaignName}/users/{userId}", method = RequestMethod.GET)
@@ -60,7 +68,7 @@ public class EnrollmentController {
         List<CampaignEnrollment> enrollments = enrollmentService.search(query);
 
         if (enrollments.isEmpty()) {
-            throw subscriptionsNotFoundException(userId);
+            throw enrollmentsNotFoundException(userId);
         } else {
             return new EnrollmentDto(enrollments.get(0));
         }
@@ -88,7 +96,7 @@ public class EnrollmentController {
         List<CampaignEnrollment> enrollments = enrollmentService.search(query);
 
         if (enrollments.isEmpty()) {
-            throw subscriptionsNotFoundException(externalId);
+            throw enrollmentsNotFoundException(externalId);
         } else {
             CampaignRequest campaignRequest = new CampaignRequest();
             campaignRequest.setCampaignName(campaignName);
@@ -119,7 +127,7 @@ public class EnrollmentController {
         List<CampaignEnrollment> enrollments = enrollmentService.search(query);
 
         if (enrollments.isEmpty()) {
-            throw subscriptionsNotFoundException(userId);
+            throw enrollmentsNotFoundException(userId);
         } else {
             EnrollmentList enrollmentList = new EnrollmentList(enrollments);
             enrollmentList.setCommonExternalId(userId);
@@ -156,7 +164,13 @@ public class EnrollmentController {
         return e.getMessage();
     }
 
-    private EnrollmentNotFoundException subscriptionsNotFoundException(String userId) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody String handleIllegalArgException(Exception e) {
+        return e.getMessage();
+    }
+
+    private EnrollmentNotFoundException enrollmentsNotFoundException(String userId) {
         return new EnrollmentNotFoundException("No enrollments found for user " + userId);
     }
 }

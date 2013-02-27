@@ -9,6 +9,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
+import org.motechproject.server.messagecampaign.web.ex.EnrollmentNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,30 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
             return new HashMap<>();
         }
         return campaignSchedulerFactory.getCampaignScheduler(campaignName).getCampaignTimings(startDate, endDate, enrollment);
+    }
+
+    @Override
+    public void updateEnrollment(CampaignRequest enrollRequest, String enrollmentId) {
+        CampaignEnrollment existingEnrollment = allCampaignEnrollments.get(enrollmentId);
+
+        if (existingEnrollment == null) {
+            throw new EnrollmentNotFoundException("Enrollment with id " + enrollmentId + " not found");
+        } else {
+            CampaignEnrollment byIdAndName = allCampaignEnrollments.findByExternalIdAndCampaignName(
+                    enrollRequest.externalId(), enrollRequest.campaignName());
+            if (byIdAndName != null && !byIdAndName.getId().equals(enrollmentId)) {
+                throw new IllegalArgumentException(String.format("%s is already enrolled in %s campaign, enrollmentId: %s",
+                        enrollRequest.externalId(), enrollRequest.campaignName(), byIdAndName.getId()));
+            }
+        }
+
+        campaignSchedulerFactory.getCampaignScheduler(existingEnrollment.getCampaignName()).stop(existingEnrollment);
+
+        existingEnrollment.setExternalId(enrollRequest.externalId()).setDeliverTime(enrollRequest.deliverTime())
+                .setReferenceDate(enrollRequest.referenceDate()).setReferenceTime(enrollRequest.referenceTime());
+        allCampaignEnrollments.saveOrUpdate(existingEnrollment);
+
+        campaignSchedulerFactory.getCampaignScheduler(existingEnrollment.getCampaignName()).start(existingEnrollment);
     }
 
     @Override

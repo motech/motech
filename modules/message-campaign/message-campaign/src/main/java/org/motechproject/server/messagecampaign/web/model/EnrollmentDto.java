@@ -13,6 +13,9 @@ import java.util.Objects;
 public class EnrollmentDto {
 
     @JsonProperty
+    private String enrollmentId;
+
+    @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     private String externalId;
 
@@ -27,6 +30,14 @@ public class EnrollmentDto {
     @JsonProperty
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate referenceDate;
+
+    public String getEnrollmentId() {
+        return enrollmentId;
+    }
+
+    public void setEnrollmentId(String enrollmentId) {
+        this.enrollmentId = enrollmentId;
+    }
 
     public String getExternalId() {
         return externalId;
@@ -64,6 +75,7 @@ public class EnrollmentDto {
     }
 
     public EnrollmentDto(CampaignEnrollment enrollment) {
+        enrollmentId = enrollment.getId();
         externalId = enrollment.getExternalId();
         campaignName = enrollment.getCampaignName();
         referenceDate = enrollment.getReferenceDate();
@@ -82,7 +94,8 @@ public class EnrollmentDto {
         EnrollmentDto that = (EnrollmentDto) o;
 
         return Objects.equals(externalId, that.externalId) && Objects.equals(campaignName, that.campaignName)
-                && Objects.equals(referenceDate, that.referenceDate) && Objects.equals(startTime, that.startTime);
+                && Objects.equals(referenceDate, that.referenceDate) && Objects.equals(startTime, that.startTime)
+                && Objects.equals(enrollmentId, that.enrollmentId);
     }
 
     @Override
@@ -91,6 +104,7 @@ public class EnrollmentDto {
         result = 31 * result + (campaignName != null ? campaignName.hashCode() : 0);
         result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
         result = 31 * result + (referenceDate != null ? referenceDate.hashCode() : 0);
+        result = 31 * result + (enrollmentId != null ? enrollmentId.hashCode() : 0);
         return result;
     }
 }

@@ -14,12 +14,23 @@ public class EnrollmentRequest implements Serializable {
     private static final long serialVersionUID = 8082316095036755730L;
 
     @JsonProperty
+    private String enrollmentId;
+
+    @JsonProperty
     @JsonSerialize(using = TimeSerializer.class)
     private Time startTime;
 
     @JsonProperty
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate referenceDate;
+
+    public String getEnrollmentId() {
+        return enrollmentId;
+    }
+
+    public void setEnrollmentId(String enrollmentId) {
+        this.enrollmentId = enrollmentId;
+    }
 
     public Time getStartTime() {
         return startTime;
@@ -37,12 +48,12 @@ public class EnrollmentRequest implements Serializable {
         this.referenceDate = referenceDate;
     }
 
-    public EnrollmentRequest(Time startTime, LocalDate referenceDate) {
+    public EnrollmentRequest(String enrollmentId, Time startTime, LocalDate referenceDate) {
+        this.enrollmentId = enrollmentId;
         this.startTime = startTime;
         this.referenceDate = referenceDate;
     }
 
     public EnrollmentRequest() {
-        this(null, null);
     }
 }

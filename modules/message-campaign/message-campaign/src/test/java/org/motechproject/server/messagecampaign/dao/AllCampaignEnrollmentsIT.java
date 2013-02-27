@@ -17,6 +17,7 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -104,6 +105,21 @@ public class AllCampaignEnrollmentsIT {
 
         List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByCampaignName(campaignName);
         assertEquals(asList(new String[]{campaignName, campaignName}), extract(filteredEnrollments, on(CampaignEnrollment.class).getCampaignName()));
+    }
+
+    @Test
+    public void shouldUpdateEnrollmentsWhenGivenId() {
+        CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName);
+
+        allCampaignEnrollments.saveOrUpdate(enrollment);
+
+        enrollment.setExternalId("otherId");
+        allCampaignEnrollments.saveOrUpdate(enrollment);
+
+        CampaignEnrollment found = allCampaignEnrollments.findByExternalId("otherId").get(0);
+
+        assertEquals("otherId", found.getExternalId());
+        assertTrue(allCampaignEnrollments.findByExternalId(externalId).isEmpty());
     }
 
     @After

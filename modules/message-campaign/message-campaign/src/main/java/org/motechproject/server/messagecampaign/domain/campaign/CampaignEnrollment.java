@@ -53,6 +53,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
         this.referenceDate = enrollment.getReferenceDate();
         this.status = enrollment.getStatus();
         this.deliverTime = enrollment.getDeliverTime();
+        this.externalId = enrollment.getExternalId();
         return this;
     }
 
@@ -89,6 +90,11 @@ public class CampaignEnrollment extends MotechBaseDataObject {
 
     public CampaignEnrollment setReferenceTime(Time referenceTime) {
         this.referenceTime = referenceTime;
+        return this;
+    }
+
+    public CampaignEnrollment setExternalId(String externalId) {
+        this.externalId = externalId;
         return this;
     }
 
