@@ -3,12 +3,12 @@
     <groupId>org.motechproject</groupId>
     <artifactId>callLog</artifactId>
     <name>Call Log</name>
-    <version>0.18</version>
+    <version>0.18-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.18</version>
+        <version>0.18-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <properties>
