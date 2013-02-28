@@ -13,9 +13,11 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 
 import java.io.IOException;
 
+import static org.motechproject.testing.utils.HttpServiceCheck.waitForLocalPortToListen;
+
 public class CMSLiteBundleIT extends BaseOsgiIT {
 
-    public void testCMSLiteApiBundle() throws CMSLiteException, ContentNotFoundException, IOException {
+    public void testCMSLiteApiBundle() throws CMSLiteException, ContentNotFoundException, IOException, InterruptedException {
         assertNotNull(bundleContext.getServiceReference("org.motechproject.event.listener.EventListenerRegistryService"));
         assertNotNull(bundleContext.getServiceReference("org.motechproject.server.config.SettingsFacade"));
         assertNotNull(bundleContext.getServiceReference("org.motechproject.server.config.service.PlatformSettingsService"));
@@ -29,7 +31,9 @@ public class CMSLiteBundleIT extends BaseOsgiIT {
         assertEquals("Test content", content.getValue());
 
         HttpClient client = new DefaultHttpClient();
+        waitForLocalPortToListen(8080, 30);
         final String response = client.execute(new HttpGet("http://localhost:8080/cmsliteapi/string/en/title"), new BasicResponseHandler());
+
         assertEquals("Test content", response);
     }
 
