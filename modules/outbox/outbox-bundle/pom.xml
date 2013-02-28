@@ -31,6 +31,17 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -57,7 +68,32 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -67,6 +103,7 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>outbox</Context-Path>
+                        <Resource-Path>outbox/resources</Resource-Path>
                         <Export-Package>
                             org.motechproject.outbox.api;version=${project.version},
                             org.motechproject.outbox.api.domain;version=${project.version},
@@ -77,6 +114,8 @@
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
+                            org.motechproject.tasks.service,
+                            org.motechproject.tasks.util,
                             org.springframework.context.support,
                             org.springframework.web.context.support,
                             org.springframework.web.servlet.config,

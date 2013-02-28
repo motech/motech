@@ -14,14 +14,8 @@
         <constructor-arg value="classpath:task-channel.json"/>
     </bean>
 
-    <bean id="bundleWrapper" class="org.motechproject.osgi.web.BundleContextWrapper"/>
 
-    <bean id="messagecampaignUIServiceTracker" class="org.motechproject.osgi.web.UIServiceTracker">
-        <constructor-arg name="wrapper" ref="bundleWrapper"/>
-        <constructor-arg name="moduleRegistrationData" ref="messagecampaignRegistrationData"/>
-    </bean>
-
-    <bean id="messagecampaignRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="messageCampaign"/>
         <constructor-arg name="url" value="../messagecampaign/resources/index.html"/>
         <constructor-arg name="angularModules">

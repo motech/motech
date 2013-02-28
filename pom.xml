@@ -568,6 +568,11 @@
                 <artifactId>org.motechproject.org.hibernate.validator</artifactId>
                 <version>4.1.0.Final-${external.dependency.release.tag}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>3.2</version>
+            </dependency>
             <!-- SLF4J -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -1169,6 +1174,7 @@
         <module>modules/sms/http</module>
         <module>modules/sms/smpp</module>
         <module>modules/tasks/tasks</module>
+        <module>modules/tasks/tasks-test-utils</module>
         <module>modules/testing-utils/testing-utils</module>
 
         <module>utils/http-agent/http-agent</module>

@@ -31,6 +31,17 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -56,7 +67,32 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -79,6 +115,8 @@
                             org.motechproject.server.config.service,
                             org.motechproject.sms.api,
                             org.motechproject.sms.api.service,
+                            org.motechproject.tasks.service,
+                            org.motechproject.tasks.util,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.scheduling.quartz,

@@ -65,9 +65,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.tasks.osgi.Activator
-                        </Bundle-Activator>
+                        <Context-Path>tasks/api</Context-Path>
+                        <Resource-Path>tasks</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.tasks.*;version=${project.version}
                         </Export-Package>

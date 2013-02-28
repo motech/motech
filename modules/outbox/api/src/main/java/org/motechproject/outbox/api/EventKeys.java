@@ -25,8 +25,8 @@ public final class EventKeys {
     public static final String UNSCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.unschedule-execution";
     public static final String EXECUTE_OUTBOX_SUBJECT = "org.motechproject.server.outbox.execute";
 
-    public static final String INCOMPLETE_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.completed";
-    public static final String COMPLETED_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.incomplete";
+    public static final String INCOMPLETE_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.incomplete";
+    public static final String COMPLETED_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.completed";
 
     public static String getScheduleJobIdKey(MotechEvent event) {
         return getStringValue(event, EventKeys.SCHEDULE_JOB_ID_KEY);

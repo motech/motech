@@ -1,0 +1,91 @@
+{
+  "displayName" : "scheduleTracking",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "scheduleTracking.milestoneAlert",
+      "subject" : "org.motechproject.scheduletracking.api.milestone.alert",
+      "eventParameters" : [
+        {
+          "eventKey" : "window_name",
+          "displayName" : "scheduleTracking.windowName"
+        },
+        {
+          "eventKey" : "milestone_name",
+          "displayName" : "scheduleTracking.milestoneName"
+        },
+        {
+          "eventKey" : "earliest_date_time",
+          "displayName" : "scheduleTracking.earliestDateTime"
+        },
+        {
+          "eventKey" : "due_date_time",
+          "displayName" : "scheduleTracking.dueDateTime"
+        },
+        {
+          "eventKey" : "late_date_time",
+          "displayName" : "scheduleTracking.lateDateTime"
+        },
+        {
+          "eventKey" : "defaultment_date_time",
+          "displayName" : "scheduleTracking.defaultmentDateTime"
+        },
+        {
+          "eventKey" : "schedule_name",
+          "displayName" : "scheduleTracking.scheduleName"
+        },
+        {
+          "eventKey" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "eventKey" : "reference_date",
+          "displayName" : "scheduleTracking.referenceDate"
+        },
+        {
+          "eventKey" : "milestone_data",
+          "displayName" : "scheduleTracking.milestoneData"
+        }
+      ]
+    },
+    {
+      "displayName" : "scheduleTracking.defaultmentCapture",
+      "subject" : "org.motechproject.scheduletracking.api.defaultment.capture",
+      "eventParameters" : [
+        {
+          "eventKey" : "enrollment_id",
+          "displayName" : "scheduleTracking.enrollmentId"
+        },
+        {
+          "eventKey" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "eventKey" : "JobID",
+          "displayName" : "scheduleTracking.jobId"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "scheduleTracking.defaultmentCapture",
+      "subject" : "org.motechproject.scheduletracking.api.defaultment.capture",
+      "actionParameters" : [
+        {
+          "key" : "enrollment_id",
+          "displayName" : "scheduleTracking.enrollmentId"
+        },
+        {
+          "key" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "key" : "JobID",
+          "displayName" : "scheduleTracking.jobId"
+        }
+      ]
+    }
+  ]
+}

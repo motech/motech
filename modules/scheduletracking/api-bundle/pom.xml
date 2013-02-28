@@ -26,6 +26,17 @@
             <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -61,7 +72,32 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -69,6 +105,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-Path>scheduletracking</Context-Path>
+                        <Resource-Path>scheduletracking/resources</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.scheduletracking.api.service;version=${project.version},
                             org.motechproject.scheduletracking.api.service.impl;version=${project.version},
@@ -80,6 +119,8 @@
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
+                            org.motechproject.tasks.service,
+                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-scheduletracking-api;inline=true</Embed-Dependency>

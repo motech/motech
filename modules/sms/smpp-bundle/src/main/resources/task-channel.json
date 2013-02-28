@@ -1,0 +1,77 @@
+{
+  "displayName" : "sms.smpp",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "sms.failureNotification",
+      "subject" : "sms_failure_notification",
+      "eventParameters" : [
+        {
+          "eventKey" : "recipient",
+          "displayName" : "sms.recipients"
+        },
+        {
+          "eventKey" : "message",
+          "displayName" : "sms.message"
+        }
+      ]
+    },
+    {
+      "displayName" : "sms.inboundSms",
+      "subject" : "inbound_sms",
+      "eventParameters" : [
+        {
+          "eventKey" : "sender",
+          "displayName" : "sms.sender"
+        },
+        {
+          "eventKey" : "inbound_message",
+          "displayName" : "sms.inboundMessage"
+        },
+        {
+          "eventKey" : "timestamp",
+          "displayName" : "sms.timestamp"
+        }
+      ]
+    },
+    {
+      "displayName" : "sms.deliveryReport",
+      "subject" : "sms_delivery_report",
+      "eventParameters" : [
+        {
+          "eventKey" : "sender",
+          "displayName" : "sms.sender"
+        },
+        {
+          "eventKey" : "status_message",
+          "displayName" : "sms.statusMessage"
+        },
+        {
+          "eventKey" : "timestamp",
+          "displayName" : "sms.timestamp"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "sms.send",
+      "subject" : "SendSMS",
+      "actionParameters" : [
+        {
+          "key" : "number",
+          "displayName" : "sms.recipients"
+        },
+        {
+          "key" : "message",
+          "displayName" : "sms.message"
+        },
+        {
+          "key" : "delivery_time",
+          "displayName" : "sms.deliveryTime"
+        }
+      ]
+    }
+  ]
+}

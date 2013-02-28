@@ -1,0 +1,27 @@
+{
+  "displayName" : "sms.api",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "sms.send",
+      "subject" : "SendSMS",
+      "eventParameters" : [
+        {
+          "eventKey" : "number",
+          "displayName" : "Recipients"
+        },
+        {
+          "eventKey" : "message",
+          "displayName" : "sms.message"
+        },
+        {
+          "eventKey" : "delivery_time",
+          "displayName" : "sms.deliveryTime"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+  ]
+}

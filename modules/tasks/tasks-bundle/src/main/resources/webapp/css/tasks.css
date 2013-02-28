@@ -287,7 +287,6 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .arrow-drop2 {
-    margin-left: 240px;
     margin-top: -30px;
 }
 
@@ -485,7 +484,6 @@ font-weight: bold;
     text-align: center;
     top: 68%;
     width: 122px;
-    z-index: 1;
 }
 
 .section-input .imgArrow {
@@ -633,7 +631,6 @@ font-weight: bold;
     position: relative;
     text-align: center;
     cursor: move;
-    z-index: 4;
     border: 1px solid #A3A4AF;
     color: #FFFFFF;
     border-radius: 4px;

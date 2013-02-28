@@ -1,0 +1,113 @@
+{
+  "displayName" : "outbox",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "outbox.executeOutbox",
+      "subject" : "org.motechproject.server.outbox.execute",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        },
+        {
+          "eventKey" : "Language",
+          "displayName" : "outbox.language"
+        },
+        {
+          "eventKey" : "PhoneNumber",
+          "displayName" : "outbox.phoneNumber"
+        }
+      ]
+    },
+    {
+      "displayName" : "outbox.incompleteCall",
+      "subject" : "org.motechproject.server.outbox.call.incomplete",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        }
+      ]
+    },
+    {
+      "displayName" : "outbox.completedCall",
+      "subject" : "org.motechproject.server.outbox.call.completed",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        }
+      ]
+    },
+    {
+      "displayName" : "outbox.maxPendingMessages",
+      "subject" : "org.motechproject.server.outbox.max-pending-messages",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "outbox.executeOutbox",
+      "subject" : "org.motechproject.server.outbox.execute",
+      "actionParameters" : [
+        {
+          "key" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        },
+        {
+          "key" : "Language",
+          "displayName" : "outbox.language"
+        },
+        {
+          "key" : "PhoneNumber",
+          "displayName" : "outbox.phoneNumber"
+        }
+      ]
+    },
+    {
+      "displayName" : "outbox.scheduleExecution",
+      "subject" : "org.motechproject.server.outbox.schedule-execution",
+      "actionParameters" : [
+        {
+          "key" : "CallHour",
+          "displayName" : "outbox.callHour",
+          "type" : "INTEGER"
+        },
+        {
+          "key" : "CallMinute",
+          "displayName" : "outbox.callMinute",
+          "type" : "INTEGER"
+        },
+        {
+          "key" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        },
+        {
+          "key" : "Language",
+          "displayName" : "outbox.language"
+        },
+        {
+          "key" : "PhoneNumber",
+          "displayName" : "outbox.phoneNumber"
+        }
+      ]
+    },
+    {
+      "displayName" : "outbox.unscheduleExecution",
+      "subject" : "org.motechproject.server.outbox.unschedule-execution",
+      "actionParameters" : [
+        {
+          "key" : "JobID",
+          "displayName" : "outbox.jobId"
+        }
+      ]
+    }
+  ]
+}

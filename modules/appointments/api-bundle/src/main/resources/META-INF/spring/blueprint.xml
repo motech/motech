@@ -9,6 +9,20 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
+    <context:annotation-config/>
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="moduleName" value="appointments"/>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../appointments/resources/bundles/"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <osgi:service ref="appointmentServiceImpl"
+                  interface="org.motechproject.appointments.api.service.AppointmentService"/>
+
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="schedulerServiceOsgi" interface="org.motechproject.scheduler.MotechSchedulerService"/>
@@ -19,9 +33,14 @@
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay" />
+    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/>
 
-    <osgi:service ref="appointmentServiceImpl"
-                  interface="org.motechproject.appointments.api.service.AppointmentService"/>
+    <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
+        <constructor-arg value="classpath:task-channel.json"/>
+    </bean>
+
+    <osgi:reference id="channelServiceOsgi" availability="optional" interface="org.motechproject.tasks.service.ChannelService">
+        <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered"/>
+    </osgi:reference>
 
 </beans>

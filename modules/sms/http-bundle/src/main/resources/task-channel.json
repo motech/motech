@@ -1,0 +1,41 @@
+{
+  "displayName" : "sms.http",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "sms.inboundSms",
+      "subject" : "inbound_sms",
+      "eventParameters" : [
+        {
+          "eventKey" : "sender",
+          "displayName" : "sms.sender"
+        },
+        {
+          "eventKey" : "inbound_message",
+          "displayName" : "sms.inboundSms"
+        },
+        {
+          "eventKey" : "timestamp",
+          "displayName" : "sms.timestamp"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "sms.send",
+      "subject" : "SendSMS",
+      "actionParameters" : [
+        {
+          "key" : "number",
+          "displayName" : "sms.recipients"
+        },
+        {
+          "key" : "message",
+          "displayName" : "sms.message"
+        }
+      ]
+    }
+  ]
+}

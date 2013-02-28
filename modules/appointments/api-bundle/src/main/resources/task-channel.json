@@ -1,0 +1,37 @@
+{
+  "displayName" : "appointments",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "appointments.visitReminder",
+      "subject" : "org.motechproject.appointments.api.Visit.Reminder",
+      "eventParameters" : [
+        {
+          "eventKey" : "external.id",
+          "displayName" : "appointments.externalId"
+        },
+        {
+          "eventKey" : "VisitName",
+          "displayName" : "appointments.visitName"
+        }
+      ]
+    },
+    {
+      "displayName" : "appointments.appointmentReminder",
+      "subject" : "org.motechproject.appointments.api.Appointment.Reminder",
+      "eventParameters" : [
+        {
+          "eventKey" : "external.id",
+          "displayName" : "appointments.externalId"
+        },
+        {
+          "eventKey" : "VisitName",
+          "displayName" : "appointments.visitName"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+  ]
+}

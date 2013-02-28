@@ -31,6 +31,22 @@
             <artifactId>motech-scheduler-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -42,7 +58,32 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -51,6 +92,8 @@
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-Path>appointments</Context-Path>
+                        <Resource-Path>appointments/resources</Resource-Path>
                         <Export-Package>
                             org.motechproject.appointments.api;version=${project.version},
                             org.motechproject.appointments.api.model;version=${project.version},
@@ -62,6 +105,8 @@
                             org.motechproject.event.listener,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.tasks.service,
+                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-appointments-api;inline=true</Embed-Dependency>
