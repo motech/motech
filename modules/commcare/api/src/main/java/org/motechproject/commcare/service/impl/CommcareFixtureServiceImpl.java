@@ -1,11 +1,14 @@
 package org.motechproject.commcare.service.impl;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commcare.domain.CommcareFixture;
 import org.motechproject.commcare.domain.CommcareFixturesJson;
 import org.motechproject.commcare.service.CommcareFixtureService;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.List;
 
 @Service
 public class CommcareFixtureServiceImpl implements CommcareFixtureService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private MotechJsonReader motechJsonReader;
 
@@ -42,7 +46,13 @@ public class CommcareFixtureServiceImpl implements CommcareFixtureService {
         String returnJson = commcareHttpClient.fixtureRequest(id);
 
         Type commcareFixtureType = new TypeToken<CommcareFixture>() { } .getType();
-        CommcareFixture fixture = (CommcareFixture) motechJsonReader.readFromString(returnJson, commcareFixtureType);
+        CommcareFixture fixture = null;
+
+        try {
+            fixture = (CommcareFixture) motechJsonReader.readFromString(returnJson, commcareFixtureType);
+        } catch (JsonParseException e) {
+            logger.info("Unable to parse JSON from Commcare: " + returnJson);
+        }
 
         return fixture;
     }
