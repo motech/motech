@@ -1,16 +1,19 @@
 package org.motechproject.tasks.domain;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Parameter {
+public abstract class Parameter implements Serializable {
+    private static final long serialVersionUID = 7685217883414590275L;
+
     private String displayName;
     private ParameterType type;
 
-    public Parameter() {
+    protected Parameter() {
         this(null, null);
     }
 
-    public Parameter(final String displayName, final ParameterType type) {
+    protected Parameter(final String displayName, final ParameterType type) {
         this.displayName = displayName;
         this.type = type;
     }
@@ -41,9 +44,11 @@ public abstract class Parameter {
         if (this == obj) {
             return true;
         }
+
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+
         final Parameter other = (Parameter) obj;
 
         return Objects.equals(this.displayName, other.displayName) && Objects.equals(this.type, other.type);

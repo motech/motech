@@ -1,7 +1,6 @@
 package org.motechproject.tasks.service;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
@@ -15,9 +14,6 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.OperatorType;
-import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskEvent;
@@ -26,30 +22,31 @@ import org.motechproject.tasks.ex.TaskException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
+import static org.motechproject.tasks.service.HandlerUtil.convertToDate;
+import static org.motechproject.tasks.service.HandlerUtil.convertToNumber;
+import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
+import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
+import static org.motechproject.tasks.service.HandlerUtil.getKeys;
+import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 import static org.motechproject.tasks.util.TaskUtil.getSubject;
+import static org.springframework.util.ReflectionUtils.findMethod;
 
 @Service
 public class TaskTriggerHandler {
-    public static final String TRIGGER_PREFIX = "trigger";
-    public static final String ADDITIONAL_DATA_PREFIX = "ad";
-
-    private static final String SERVICE_NAME = "taskTriggerHandler";
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
+    private static final int JOIN_PATTERN_BEGIN_INDEX = 5;
+    private static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskTriggerHandler.class);
 
@@ -61,9 +58,9 @@ public class TaskTriggerHandler {
     private Map<String, DataProvider> dataProviders;
 
     @Autowired
-    public TaskTriggerHandler(final TaskService taskService, final TaskActivityService activityService,
-                              final EventListenerRegistryService registryService, final EventRelay eventRelay,
-                              final SettingsFacade settingsFacade) {
+    public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
+                              EventListenerRegistryService registryService, EventRelay eventRelay,
+                              SettingsFacade settingsFacade) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;
@@ -73,156 +70,138 @@ public class TaskTriggerHandler {
         registerHandler();
     }
 
-    public void handle(final MotechEvent triggerEvent) {
-        TaskEvent trigger = null;
+    public final void registerHandlerFor(String subject) {
+        String serviceName = "taskTriggerHandler";
+        Method method = findMethod(this.getClass(), "handle", MotechEvent.class);
+        Object obj = CollectionUtils.find(registryService.getListeners(subject), new HandlerPredicate(serviceName));
 
         try {
-            String subject = triggerEvent.getSubject();
-            trigger = taskService.findTrigger(subject);
-            LOG.info("Found trigger for subject: " + subject);
-        } catch (TriggerNotFoundException e) {
-            LOG.error(e.getMessage());
-        }
+            if (method != null && obj == null) {
+                EventListener proxy = new MotechListenerEventProxy(serviceName, this, method);
 
-        if (trigger != null) {
-            for (Task task : taskService.findTasksForTrigger(trigger)) {
-                if (!task.isEnabled()) {
-                    logOmittedTask(task, new Exception("Task is disabled"));
-                    continue;
-                }
-
-                TaskEvent action;
-
-                try {
-                    action = taskService.getActionEventFor(task);
-                    LOG.info("Found action for task: " + task);
-                } catch (ActionNotFoundException e) {
-                    TaskException exception = new TaskException("error.actionNotFound", e);
-                    registerError(task, exception);
-                    logOmittedTask(task, exception);
-                    continue;
-                }
-
-                String subject = action.getSubject();
-
-                if (StringUtils.isBlank(subject)) {
-                    TaskException exception = new TaskException("error.actionWithoutSubject");
-                    registerError(task, exception);
-                    logOmittedTask(task, exception);
-                    continue;
-                }
-
-                if (task.hasFilters() && !checkFilters(task.getFilters(), triggerEvent.getParameters())) {
-                    logOmittedTask(task, new Exception("Filter criteria not met"));
-                    continue;
-                }
-
-                try {
-                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), triggerEvent);
-                    eventRelay.sendEventMessage(new MotechEvent(subject, parameters));
-                    activityService.addSuccess(task);
-                } catch (TaskException e) {
-                    registerError(task, e);
-                    logOmittedTask(task, e);
-                }
-            }
-        }
-    }
-
-    public final void registerHandlerFor(final String subject) {
-        Method method = ReflectionUtils.findMethod(AopUtils.getTargetClass(this), "handle", MotechEvent.class);
-
-        try {
-            if (method != null) {
-                EventListener proxy = new MotechListenerEventProxy(SERVICE_NAME, this, method);
-                Object obj = CollectionUtils.find(registryService.getListeners(subject), new Predicate() {
-                    @Override
-                    public boolean evaluate(Object object) {
-                        return object instanceof MotechListenerEventProxy && ((MotechListenerEventProxy) object).getIdentifier().equalsIgnoreCase(SERVICE_NAME);
-                    }
-                });
-
-                if (obj == null) {
-                    registryService.registerListener(proxy, subject);
-                    LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
-                }
+                registryService.registerListener(proxy, subject);
+                LOG.info(String.format("Register TaskTriggerHandler for subject: '%s'", subject));
             }
         } catch (Exception e) {
             LOG.error(String.format("Cant register TaskTriggerHandler for subject: %s", subject), e);
         }
     }
 
-    private void registerHandler() {
-        List<Task> tasks = taskService.getAllTasks();
+    public void handle(MotechEvent triggerEvent) {
+        TaskEvent trigger = getTriggerEvent(triggerEvent.getSubject());
 
-        for (Task t : tasks) {
-            registerHandlerFor(getSubject(t.getTrigger()));
+        if (trigger != null) {
+            for (Task task : selectTasks(trigger, triggerEvent.getParameters())) {
+                try {
+                    TaskEvent action = getActionEvent(task);
+                    Map<String, Object> parameters = createParameters(task, action.getEventParameters(), triggerEvent);
+
+                    eventRelay.sendEventMessage(new MotechEvent(action.getSubject(), parameters));
+                    activityService.addSuccess(task);
+                } catch (TaskException e) {
+                    registerError(task, e);
+                }
+            }
         }
     }
 
-    private void registerError(final Task task, final TaskException e) {
-        activityService.addError(task, e);
+    private void registerHandler() {
+        if (taskService != null) {
+            List<Task> tasks = taskService.getAllTasks();
 
-        int errorRunsCount = activityService.errorsFromLastRun(task).size();
-        int possibleErrorRun = Integer.valueOf(settingsFacade.getProperty(TASK_POSSIBLE_ERRORS_KEY));
-
-        if (errorRunsCount >= possibleErrorRun) {
-            task.setEnabled(false);
-            taskService.save(task);
-            activityService.addWarning(task);
+            for (Task t : tasks) {
+                registerHandlerFor(getSubject(t.getTrigger()));
+            }
         }
+    }
+
+    private TaskEvent getTriggerEvent(String subject) {
+        TaskEvent trigger = null;
+
+        try {
+            trigger = taskService.findTrigger(subject);
+            LOG.info("Found trigger for subject: " + subject);
+        } catch (TriggerNotFoundException e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        return trigger;
+    }
+
+    private TaskEvent getActionEvent(Task task) throws TaskException {
+        TaskEvent action;
+
+        try {
+            action = taskService.getActionEventFor(task);
+            LOG.info("Found action for task: " + task);
+        } catch (ActionNotFoundException e) {
+            throw new TaskException("error.actionNotFound", e);
+        }
+
+        return action;
+    }
+
+    private List<Task> selectTasks(TaskEvent trigger, Map<String, Object> triggerParameters) {
+        List<Task> tasks = new ArrayList<>();
+
+        for (Task task : taskService.findTasksForTrigger(trigger)) {
+            if (task.isEnabled() && checkFilters(task.getFilters(), triggerParameters)) {
+                tasks.add(task);
+            }
+        }
+
+        return tasks;
     }
 
     private Map<String, Object> createParameters(Task task, List<EventParameter> actionParameters, MotechEvent event) throws TaskException {
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
         for (EventParameter param : actionParameters) {
-            final String key = param.getEventKey();
-            String template = task.getActionInputFields().get(key);
+            String eventKey = param.getEventKey();
+
+            if (!task.getActionInputFields().containsKey(eventKey)) {
+                throw new TaskException("error.taskNotContainsField", eventKey);
+            }
+
+            String template = task.getActionInputFields().get(eventKey);
 
             if (template == null) {
-                throw new TaskException("error.templateNull", key);
+                throw new TaskException("error.templateNull", eventKey);
             }
 
             String userInput = replaceAll(template, event, task);
 
             Object value;
 
-            if (param.getType().isNumber()) {
-                BigDecimal decimal;
-
-                try {
-                    decimal = new BigDecimal(userInput);
-                } catch (Exception e) {
-                    throw new TaskException("error.convertToNumber", key, e);
-                }
-
-                if (decimal.signum() == 0 || decimal.scale() <= 0 || decimal.stripTrailingZeros().scale() <= 0) {
-                    value = decimal.intValueExact();
-                } else {
-                    value = decimal.doubleValue();
-                }
-            } else if (param.getType().isDate()) {
-                try {
-                    value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
-                } catch (IllegalArgumentException e) {
-                    throw new TaskException("error.convertToDate", key, e);
-                }
-            } else {
-                value = userInput;
+            switch (param.getType()) {
+                case NUMBER:
+                    try {
+                        value = convertToNumber(userInput);
+                    } catch (Exception e) {
+                        throw new TaskException("error.convertToNumber", e, eventKey);
+                    }
+                    break;
+                case DATE:
+                    try {
+                        value = convertToDate(userInput);
+                    } catch (Exception e) {
+                        throw new TaskException("error.convertToDate", e, eventKey);
+                    }
+                    break;
+                default:
+                    value = userInput;
             }
 
-            parameters.put(key, value);
+            parameters.put(eventKey, value);
         }
 
         return parameters;
     }
 
-    private String replaceAll(final String template, final MotechEvent event, final Task task) throws TaskException {
+    private String replaceAll(String template, MotechEvent event, Task task) throws TaskException {
         String conversionTemplate = template;
-        List<KeyInformation> keys = getKeys(template);
 
-        for (KeyInformation key : keys) {
+        for (KeyInformation key : getKeys(template)) {
             String value = "";
 
             if (key.fromTrigger()) {
@@ -231,27 +210,11 @@ public class TaskTriggerHandler {
                 value = getAdditionalDataKey(event, task, key);
             }
 
-            String replacedValue = manipulateValue(value, key.getManipulations(), task);
+            String replacedValue = key.getManipulations() != null ? manipulateValue(value, key.getManipulations(), task) : value;
             conversionTemplate = conversionTemplate.replace(String.format("{{%s}}", key.getOriginalKey()), replacedValue);
         }
 
         return conversionTemplate;
-    }
-
-    private String getTriggerKey(MotechEvent event, KeyInformation key) throws TaskException {
-        String value = "";
-
-        if (event.getParameters().containsKey(key.getEventKey())) {
-            Object obj = event.getParameters().get(key.getEventKey());
-
-            if (obj == null) {
-                obj = "";
-            }
-
-            value = String.valueOf(obj);
-        }
-
-        return value;
     }
 
     private String getAdditionalDataKey(MotechEvent event, Task task, KeyInformation key) throws TaskException {
@@ -283,129 +246,42 @@ public class TaskTriggerHandler {
             throw new TaskException("error.notFoundObjectForType", key.getObjectType());
         }
 
-        return getValueFromObject(found, key.getEventKey());
-    }
+        String value;
 
-    private List<KeyInformation> getKeys(String templateText) {
-        List<KeyInformation> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\{\\{(.*?)\\}\\}");
-        Matcher matcher = pattern.matcher(templateText);
-
-        while (matcher.find()) {
-            keys.add(new KeyInformation(matcher.group(1)));
+        try {
+            value = getFieldValue(found, key.getEventKey());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new TaskException("error.objectNotContainsField", e, key.getEventKey());
         }
 
-        return keys;
+        return value;
     }
 
-    private boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
-        boolean filterCheck = false;
-
-        for (Filter filter : filters) {
-            EventParameter eventParameter = filter.getEventParameter();
-
-            if (triggerParameters.containsKey(eventParameter.getEventKey())) {
-                ParameterType type = eventParameter.getType();
-                Object object = triggerParameters.get(eventParameter.getEventKey());
-
-                if (type.isString()) {
-                    filterCheck = checkFilterForString(filter, (String) object);
-                } else if (type.isNumber()) {
-                    filterCheck = checkFilterForNumber(filter, new BigDecimal(object.toString()));
-                }
-
-                if (!filter.isNegationOperator()) {
-                    filterCheck = !filterCheck;
-                }
-            }
-
-            if (!filterCheck) {
-                break;
-            }
-        }
-
-        return filterCheck;
-    }
-
-    private boolean checkFilterForString(Filter filter, String param) {
-        String expression = filter.getExpression();
-
-        switch (OperatorType.fromString(filter.getOperator())) {
-            case EQUALS:
-                return param.equals(expression);
-            case CONTAINS:
-                return param.contains(expression);
-            case EXIST:
-                return true;
-            case STARTSWITH:
-                return param.startsWith(expression);
-            case ENDSWITH:
-                return param.endsWith(expression);
-            default:
-                return false;
-        }
-    }
-
-    private boolean checkFilterForNumber(Filter filter, BigDecimal param) {
-        if (OperatorType.fromString(filter.getOperator()) == OperatorType.EXIST) {
-            return true;
-        }
-
-        int compare = param.compareTo(new BigDecimal(filter.getExpression()));
-
-        switch (OperatorType.fromString(filter.getOperator())) {
-            case EQUALS:
-                return compare == 0;
-            case GT:
-                return compare == 1;
-            case LT:
-                return compare == -1;
-            default:
-                return false;
-        }
-    }
-
-    private String getValueFromObject(Object object, String eventKey) throws TaskException {
-        String[] fields = eventKey.split("\\.");
-        Object current = object;
-
-        for (String f : fields) {
-            try {
-                Method method = current.getClass().getMethod("get" + WordUtils.capitalize(f));
-                current = method.invoke(current);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                throw new TaskException("error.objectNotContainsField", eventKey, e);
-            }
-        }
-
-        return current.toString();
-    }
-
-    private TaskAdditionalData findAdditionalData(Task t, KeyInformation key) {
-        List<TaskAdditionalData> taskAdditionalDatas = t.getAdditionalData(key.getDataProviderId());
-        TaskAdditionalData taskAdditionalData = null;
-
-        for (TaskAdditionalData ad : taskAdditionalDatas) {
-            if (ad.getId().equals(key.getObjectId()) && ad.getType().equalsIgnoreCase(key.getObjectType())) {
-                taskAdditionalData = ad;
-                break;
-            }
-        }
-
-        return taskAdditionalData;
-    }
-
-    private void logOmittedTask(Task task, Throwable e) {
+    private void registerError(Task task, TaskException e) {
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Omitted task with ID: %s because: ", task.getId()), e);
+        }
+
+        activityService.addError(task, e);
+
+        int errorRunsCount = activityService.errorsFromLastRun(task).size();
+        int possibleErrorRun = Integer.valueOf(settingsFacade.getProperty(TASK_POSSIBLE_ERRORS_KEY));
+
+        if (errorRunsCount >= possibleErrorRun) {
+            task.setEnabled(false);
+            taskService.save(task);
+            activityService.addWarning(task);
         }
     }
 
     private String manipulateValue(String value, List<String> manipulations, Task task) throws TaskException {
         String manipulateValue = value;
-        for (String man : manipulations) {
-            if (!man.toLowerCase().contains("join") && !man.toLowerCase().contains("datetime")) {
-                switch (man.toLowerCase()) {
+
+        for (String manipulation : manipulations) {
+            String lowerCase = manipulation.toLowerCase();
+
+            if (!lowerCase.startsWith("join") && !lowerCase.startsWith("datetime")) {
+                switch (lowerCase) {
                     case "toupper":
                         manipulateValue = manipulateValue.toUpperCase();
                         break;
@@ -416,26 +292,28 @@ public class TaskTriggerHandler {
                         manipulateValue = WordUtils.capitalize(manipulateValue);
                         break;
                     default:
-                        activityService.addWarning(task, "warning.manipulation", man);
+                        activityService.addWarning(task, "warning.manipulation", manipulation);
                         break;
                 }
-            } else if (man.toLowerCase().contains("join")) {
+            } else if (lowerCase.contains("join")) {
                 String[] splitValue = manipulateValue.split(" ");
-                man = man.substring(5, man.length() - 1);
-                manipulateValue = StringUtils.join(splitValue, man);
-            } else if (man.toLowerCase().contains("datetime")) {
+                String pattern = manipulation.substring(JOIN_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+
+                manipulateValue = StringUtils.join(splitValue, pattern);
+            } else if (lowerCase.contains("datetime")) {
                 try {
-                    man = man.substring(9, man.length() - 1);
-                    DateTimeFormatter format = DateTimeFormat.forPattern(man);
-                    DateTime date = new DateTime(manipulateValue);
-                    manipulateValue = format.print(date);
+                    String pattern = manipulation.substring(DATETIME_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+                    DateTimeFormatter format = DateTimeFormat.forPattern(pattern);
+
+                    manipulateValue = format.print(new DateTime(manipulateValue));
                 } catch (IllegalArgumentException e) {
-                    throw new TaskException("error.date.format", man, e);
+                    throw new TaskException("error.date.format", e, manipulation);
                 }
             } else {
-                activityService.addWarning(task, "warning.manipulation", man);
+                activityService.addWarning(task, "warning.manipulation", manipulation);
             }
         }
+
         return manipulateValue;
     }
 

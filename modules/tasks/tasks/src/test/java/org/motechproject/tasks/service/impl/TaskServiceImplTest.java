@@ -13,13 +13,15 @@ import org.motechproject.tasks.repository.AllTasks;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.never;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -48,8 +50,6 @@ public class TaskServiceImplTest {
         Task t = new Task("test:SEND", "test:test:0.14:RECEIVE", map, "name");
 
         taskService.save(t);
-
-        verify(allTasks, never()).addOrUpdate(t);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -60,17 +60,27 @@ public class TaskServiceImplTest {
         Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", map, "name");
 
         taskService.save(t);
-
-        verify(allTasks, never()).addOrUpdate(t);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldNotSaveTaskWithNullActionInputFields() {
-        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", null, "name");
+    public void shouldNotSaveTaskWithoutActionInputFields() {
+        Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", null, "name");
 
         taskService.save(t);
+    }
 
-        verify(allTasks, never()).addOrUpdate(t);
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotSaveTaskWithoutName() {
+        Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", null, null);
+
+        taskService.save(t);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotSaveTaskWithNameWithContainsOnlyWhitespaces() {
+        Task t = new Task("test:test:0.15:SEND", "test:test:RECEIVE", null, "     ");
+
+        taskService.save(t);
     }
 
     @Test
@@ -81,7 +91,6 @@ public class TaskServiceImplTest {
 
         verify(allTasks).addOrUpdate(t);
     }
-
 
     @Test
     public void shouldSaveTask() {
@@ -96,18 +105,35 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = ActionNotFoundException.class)
-    public void shouldThrowExceptionWhenActionNotFound() throws ActionNotFoundException {
-        String trigger = "Test 1:test-1:0.15:SEND";
-        String action = "Test 3:test-3:0.15:RECEIVE";
-        Map<String, String> map = new HashMap<>();
-        map.put("phone", "12345");
-
-        Task t = new Task(trigger, action, map, "name");
+    public void shouldThrowActionNotFoundExceptionWhenChannelNotContainsActions() throws ActionNotFoundException {
         Channel c = new Channel();
 
-        when(channelService.getChannel("Test 3", "test-3", "0.15")).thenReturn(c);
+        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
 
-        taskService.getActionEventFor(t);
+        taskService.getActionEventFor(new Task(null, "test:test:0.14:RECEIVE", null, null));
+    }
+
+    @Test(expected = ActionNotFoundException.class)
+    public void shouldThrowActionNotFoundExceptionWhenChannelContainsEmptyActionList() throws ActionNotFoundException {
+        Channel c = new Channel();
+        c.setActionTaskEvents(new ArrayList<TaskEvent>());
+
+        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+
+        taskService.getActionEventFor(new Task(null, "test:test:0.14:RECEIVE", null, null));
+    }
+
+    @Test(expected = ActionNotFoundException.class)
+    public void shouldThrowActionNotFoundException() throws ActionNotFoundException {
+        List<TaskEvent> actionEvents = new ArrayList<>();
+        actionEvents.add(new TaskEvent());
+
+        Channel c = new Channel();
+        c.setActionTaskEvents(actionEvents);
+
+        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+
+        taskService.getActionEventFor(new Task(null, "test:test:0.14:RECEIVE", null, null));
     }
 
     @Test
@@ -135,19 +161,40 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldFindTasksForGivenTrigger() {
-        String trigger = "Test 1:test-1:0.15:SEND";
-        String action = "Test 3:test-3:0.15:RECEIVE";
-        Map<String, String> map = new HashMap<>();
-        map.put("phone", "12345");
+    public void shouldGetAllTasks() {
+        ArrayList<Task> expected = new ArrayList<>();
+        expected.add(new Task());
+        expected.add(new Task());
 
-        Task t = new Task(trigger, action, map, "name");
+        when(allTasks.getAll()).thenReturn(expected);
+
+        List<Task> actual = taskService.getAllTasks();
+
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldNotFindTasksForGivenTrigger() {
+        Task t = new Task("test:test:0.15:SEND", null, new HashMap<String, String>(), "name");
+
+        TaskEvent triggerEvent = new TaskEvent();
+        triggerEvent.setSubject("RECEIVE");
+
+        when(allTasks.getAll()).thenReturn(asList(t));
+
+        List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
+
+        assertNotNull(tasks);
+        assertTrue(tasks.isEmpty());
+    }
+
+    @Test
+    public void shouldFindTasksForGivenTrigger() {
+        Task t = new Task("test:test:0.15:SEND", "test:test:0.14:RECEIVE", new HashMap<String, String>(), "name");
 
         TaskEvent triggerEvent = new TaskEvent();
         triggerEvent.setSubject("SEND");
-
-        Channel c = new Channel();
-        c.setActionTaskEvents(asList(triggerEvent));
 
         when(allTasks.getAll()).thenReturn(asList(t));
 
@@ -157,7 +204,24 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = TriggerNotFoundException.class)
-    public void shouldThrowExceptionWhenTriggerNotFound() throws TriggerNotFoundException {
+    public void shouldThrowTriggerNotFoundExceptionWhenChannelListIsEmpty() throws TriggerNotFoundException {
+        when(channelService.getAllChannels()).thenReturn(new ArrayList<Channel>());
+
+        taskService.findTrigger("SEND");
+    }
+
+    @Test(expected = TriggerNotFoundException.class)
+    public void shouldThrowTriggerNotFoundExceptionWhenChannelContainsEmptyTriggerList() throws TriggerNotFoundException {
+        Channel c = new Channel();
+        c.setTriggerTaskEvents(new ArrayList<TaskEvent>());
+
+        when(channelService.getAllChannels()).thenReturn(asList(c));
+
+        taskService.findTrigger("SEND");
+    }
+
+    @Test(expected = TriggerNotFoundException.class)
+    public void shouldThrowTriggerNotFoundException() throws TriggerNotFoundException {
         TaskEvent triggerEvent = new TaskEvent();
         triggerEvent.setSubject("RECEIVE");
 
@@ -182,6 +246,20 @@ public class TaskServiceImplTest {
         TaskEvent actual = taskService.findTrigger("RECEIVE");
 
         assertEquals(triggerEvent, actual);
+    }
+
+    @Test
+    public void shouldGetTaskById() {
+        String taskId = "12345";
+
+        Task expected = new Task();
+        expected.setId(taskId);
+
+        when(allTasks.get(taskId)).thenReturn(expected);
+
+        Task actual = taskService.getTask(taskId);
+
+        assertEquals(expected, actual);
     }
 
     @Test

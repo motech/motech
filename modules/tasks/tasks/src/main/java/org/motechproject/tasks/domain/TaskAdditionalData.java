@@ -1,8 +1,13 @@
 package org.motechproject.tasks.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class TaskAdditionalData {
+public class TaskAdditionalData implements Serializable {
+    private static final long serialVersionUID = 6652124746431496660L;
+
     private Long id;
     private String type;
     private String lookupField;
@@ -17,6 +22,11 @@ public class TaskAdditionalData {
         this.type = type;
         this.lookupField = lookupField;
         this.lookupValue = lookupValue;
+    }
+
+    @JsonIgnore
+    public boolean objectEquals(Long id, String type) {
+        return Objects.equals(this.id, id) && Objects.equals(this.type, type);
     }
 
     public Long getId() {
@@ -68,7 +78,7 @@ public class TaskAdditionalData {
 
         final TaskAdditionalData other = (TaskAdditionalData) obj;
 
-        return Objects.equals(this.id, other.id) && Objects.equals(this.type, other.type) &&
+        return objectEquals(other.id, other.type) &&
                 Objects.equals(this.lookupField, other.lookupField) &&
                 Objects.equals(this.lookupValue, other.lookupValue);
     }

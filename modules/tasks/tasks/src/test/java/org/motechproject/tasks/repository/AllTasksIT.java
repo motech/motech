@@ -47,7 +47,7 @@ public class AllTasksIT extends SpringIntegrationTest {
 
         assertEquals(asList(actual), tasks);
 
-        markForDeletion(actual);
+        markForDeletion(allTasks.getAll());
     }
 
     @Override

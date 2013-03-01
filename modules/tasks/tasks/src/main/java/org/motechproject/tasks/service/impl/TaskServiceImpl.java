@@ -1,6 +1,5 @@
 package org.motechproject.tasks.service.impl;
 
-import org.motechproject.commons.couchdb.dao.BusinessIdNotUniqueException;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskEvent;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.tasks.util.TaskUtil.getChannelName;
 import static org.motechproject.tasks.util.TaskUtil.getModuleName;
 import static org.motechproject.tasks.util.TaskUtil.getModuleVersion;
@@ -50,16 +50,12 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException("Task must contains action input fields");
         }
 
-        if (task.getName() == null) {
-            throw new IllegalArgumentException("Task must contain name input");
+        if (isBlank(task.getName())) {
+            throw new IllegalArgumentException("Task must contains name");
         }
 
-        try {
-            allTasks.addOrUpdate(task);
-            LOG.info(String.format("Saved task: %s", task.getId()));
-        } catch (BusinessIdNotUniqueException e) {
-            LOG.error(e.getMessage(), e);
-        }
+        allTasks.addOrUpdate(task);
+        LOG.info(String.format("Saved task: %s", task.getId()));
     }
 
     @Override
@@ -71,7 +67,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (channel.getActionTaskEvents() != null) {
             for (TaskEvent action : channel.getActionTaskEvents()) {
-                if (action.getSubject().equalsIgnoreCase(taskActionSubject)) {
+                if (action.getSubject() != null && action.getSubject().equalsIgnoreCase(taskActionSubject)) {
                     event = action;
                     break;
                 }

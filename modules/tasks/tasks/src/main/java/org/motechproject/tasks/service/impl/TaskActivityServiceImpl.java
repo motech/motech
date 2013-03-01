@@ -31,7 +31,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     public void addError(Task task, TaskException e) {
-        allTaskActivities.add(new TaskActivity(e.getMessageKey(), e.getField(), task.getId(), TaskActivityType.ERROR));
+        allTaskActivities.add(new TaskActivity(e.getMessageKey(), e.getFields(), task.getId(), TaskActivityType.ERROR));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     }
 
     @Override
-    public void addWarning(Task task, String key , String field) {
+    public void addWarning(Task task, String key, String field) {
         allTaskActivities.add(new TaskActivity(key, field, task.getId(), TaskActivityType.WARNING));
     }
 

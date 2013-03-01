@@ -2,29 +2,28 @@ package org.motechproject.tasks.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
-import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(TaskTriggerHandler.class)
 public class TaskControllerTest {
     private static final String TASK_ID = "12345";
 
@@ -35,6 +34,8 @@ public class TaskControllerTest {
     TaskActivityService messageService;
 
     @Mock
+    EventListenerRegistryService eventListenerRegistryService;
+
     TaskTriggerHandler taskTriggerHandler;
 
     TaskController controller;
@@ -43,6 +44,7 @@ public class TaskControllerTest {
     public void setup() throws Exception {
         initMocks(this);
 
+        taskTriggerHandler = new TaskTriggerHandler(null, null, eventListenerRegistryService, null, null);
         controller = new TaskController(taskService, messageService, taskTriggerHandler);
     }
 
@@ -88,7 +90,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldSaveExistingTask() {
-        Task expected = new Task("trigger1", "action1", new HashMap<String, String>(), "name");
+        Task expected = new Task(null, null, new HashMap<String, String>(), "name");
         expected.setId(TASK_ID);
 
         controller.saveTask(expected);
@@ -98,7 +100,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldNotSaveNewTask() {
-        Task expected = new Task("trigger1", "action1", new HashMap<String, String>(), "name");
+        Task expected = new Task(null, null, new HashMap<String, String>(), "name");
 
         controller.saveTask(expected);
 
@@ -108,11 +110,14 @@ public class TaskControllerTest {
     @Test
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
-        Task expected = new Task(format("channel1:module1:0.15:%s", subject), "action1", new HashMap<String, String>(), "name");
+        Task expected = new Task(String.format("channel1:module1:0.15:%s", subject), "action1", new HashMap<String, String>(), "name");
+
+        when(eventListenerRegistryService.getListeners(subject)).thenReturn(new HashSet<EventListener>());
 
         controller.save(expected);
 
         verify(taskService).save(expected);
-        verify(taskTriggerHandler).registerHandlerFor(subject);
+        verify(eventListenerRegistryService).getListeners(subject);
+        verify(eventListenerRegistryService).registerListener(any(EventListener.class), eq(subject));
     }
 }

@@ -3,6 +3,8 @@ package org.motechproject.tasks.domain;
 import java.util.Objects;
 
 public class FieldParameter extends Parameter {
+    private static final long serialVersionUID = -2789552939112269521L;
+
     private String fieldKey;
 
     public FieldParameter() {
@@ -27,30 +29,27 @@ public class FieldParameter extends Parameter {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof FieldParameter)) {
-            return false;
-        }
-
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        FieldParameter that = (FieldParameter) o;
-
-        return Objects.equals(fieldKey, that.fieldKey);
+    public int hashCode() {
+        return Objects.hash(fieldKey);
     }
 
     @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (fieldKey != null ? fieldKey.hashCode() : 0);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
 
-        return result;
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        if (!super.equals(obj)) {
+            return false;
+        }
+
+        final FieldParameter other = (FieldParameter) obj;
+
+        return Objects.equals(this.fieldKey, other.fieldKey);
     }
 
     @Override

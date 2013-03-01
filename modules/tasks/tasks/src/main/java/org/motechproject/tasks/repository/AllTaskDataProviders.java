@@ -15,7 +15,7 @@ import java.util.List;
 public class AllTaskDataProviders extends MotechBaseRepository<TaskDataProvider> {
 
     @Autowired
-    public AllTaskDataProviders(final @Qualifier("taskDbConnector") CouchDbConnector connector) {
+    public AllTaskDataProviders(@Qualifier("taskDbConnector") final CouchDbConnector connector) {
         super(TaskDataProvider.class, connector);
     }
 

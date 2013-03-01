@@ -69,7 +69,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
 
         assertEquals(channel, actual);
 
-        markForDeletion(channelList);
+        markForDeletion(allChannels.getAll());
     }
 
     private List<Channel> loadChannels() {
@@ -78,8 +78,7 @@ public class AllChannelsIT extends SpringIntegrationTest {
         InputStream messageCampaignChannelStream = classLoader.getResourceAsStream("message-campaign-test-channel.json");
         InputStream pillReminderChannelStream = classLoader.getResourceAsStream("pillreminder-test-channel.json");
 
-        Type type = new TypeToken<Channel>() {
-        }.getType();
+        Type type = new TypeToken<Channel>() { }.getType();
         Channel messageCampaignChannel = (Channel) motechJsonReader.readFromStream(messageCampaignChannelStream, type);
         Channel pillReminderChannel = (Channel) motechJsonReader.readFromStream(pillReminderChannelStream, type);
 

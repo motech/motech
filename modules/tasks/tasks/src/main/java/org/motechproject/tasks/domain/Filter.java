@@ -1,7 +1,12 @@
 package org.motechproject.tasks.domain;
 
 
-public class Filter {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Filter implements Serializable {
+    private static final long serialVersionUID = 7811400954352375064L;
+
     private EventParameter eventParameter;
     private boolean negationOperator;
     private String operator;
@@ -47,5 +52,34 @@ public class Filter {
 
     public void setExpression(String expression) {
         this.expression = expression;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventParameter, negationOperator, operator, expression);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final Filter other = (Filter) obj;
+
+        return Objects.equals(this.eventParameter, other.eventParameter) &&
+                Objects.equals(this.negationOperator, other.negationOperator) &&
+                Objects.equals(this.operator, other.operator) &&
+                Objects.equals(this.expression, other.expression);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Filter{eventParameter=%s, negationOperator=%s, operator='%s', expression='%s'}",
+                eventParameter, negationOperator, operator, expression);
     }
 }

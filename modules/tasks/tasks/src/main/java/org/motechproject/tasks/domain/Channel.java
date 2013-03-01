@@ -8,6 +8,8 @@ import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'Channel'")
 public class Channel extends MotechBaseDataObject {
+    private static final long serialVersionUID = -5528351408863732084L;
+
     private List<TaskEvent> actionTaskEvents;
     private List<TaskEvent> triggerTaskEvents;
     private String description;
@@ -64,33 +66,28 @@ public class Channel extends MotechBaseDataObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        Channel channel = (Channel) o;
+        final Channel other = (Channel) obj;
 
-        return Objects.equals(actionTaskEvents, channel.actionTaskEvents) &&
-                Objects.equals(description, channel.description) && Objects.equals(displayName, channel.displayName) &&
-                Objects.equals(moduleName, channel.moduleName) && Objects.equals(moduleVersion, channel.moduleVersion) &&
-                Objects.equals(triggerTaskEvents, channel.triggerTaskEvents);
+        return Objects.equals(this.actionTaskEvents, other.actionTaskEvents) &&
+                Objects.equals(this.triggerTaskEvents, other.triggerTaskEvents) &&
+                Objects.equals(this.description, other.description) &&
+                Objects.equals(this.displayName, other.displayName) &&
+                Objects.equals(this.moduleName, other.moduleName) &&
+                Objects.equals(this.moduleVersion, other.moduleVersion);
     }
 
     @Override
     public int hashCode() {
-        int result = actionTaskEvents != null ? actionTaskEvents.hashCode() : 0;
-        result = 31 * result + (triggerTaskEvents != null ? triggerTaskEvents.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (moduleName != null ? moduleName.hashCode() : 0);
-        result = 31 * result + (moduleVersion != null ? moduleVersion.hashCode() : 0);
-        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
-
-        return result;
+        return Objects.hash(actionTaskEvents, triggerTaskEvents, description, displayName, moduleName, moduleVersion);
     }
 
     @Override

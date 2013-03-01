@@ -1,9 +1,12 @@
 package org.motechproject.tasks.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class TaskEvent {
+public class TaskEvent implements Serializable {
+    private static final long serialVersionUID = 5631056137997502252L;
+
     private List<EventParameter> eventParameters;
     private String description;
     private String displayName;
@@ -25,14 +28,6 @@ public class TaskEvent {
         this.description = description;
     }
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -41,35 +36,40 @@ public class TaskEvent {
         this.displayName = displayName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+    public String getSubject() {
+        return subject;
+    }
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        TaskEvent taskEvent = (TaskEvent) o;
-
-        return Objects.equals(description, taskEvent.description) && Objects.equals(displayName, taskEvent.displayName) &&
-                Objects.equals(subject, taskEvent.subject) && Objects.equals(eventParameters, taskEvent.eventParameters);
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     @Override
     public int hashCode() {
-        int result = eventParameters != null ? eventParameters.hashCode() : 0;
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (subject != null ? subject.hashCode() : 0);
-        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+        return Objects.hash(description, displayName, subject);
+    }
 
-        return result;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final TaskEvent other = (TaskEvent) obj;
+
+        return Objects.equals(this.description, other.description) &&
+                Objects.equals(this.displayName, other.displayName) &&
+                Objects.equals(this.subject, other.subject);
     }
 
     @Override
     public String toString() {
-        return String.format("TaskEvent{eventParameters=%s, description='%s', subject='%s', displayName='%s'}",
-                eventParameters, description, subject, displayName);
+        return String.format("TaskEvent{description='%s', displayName='%s', subject='%s'}",
+                description, displayName, subject);
     }
+
 }

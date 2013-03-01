@@ -1,10 +1,13 @@
 package org.motechproject.tasks.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TaskDataProviderObject {
+public class TaskDataProviderObject implements Serializable {
+    private static final long serialVersionUID = 1767818631190935233L;
+
     private String displayName;
     private String type;
     private List<String> lookupFields;
@@ -54,29 +57,26 @@ public class TaskDataProviderObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        TaskDataProviderObject that = (TaskDataProviderObject) o;
+        final TaskDataProviderObject other = (TaskDataProviderObject) obj;
 
-        return Objects.equals(displayName, that.displayName) && Objects.equals(fields, that.fields) &&
-                Objects.equals(type, that.type) && Objects.equals(lookupFields, that.lookupFields);
+        return Objects.equals(this.displayName, other.displayName) &&
+                Objects.equals(this.type, other.type) &&
+                Objects.equals(this.lookupFields, other.lookupFields) &&
+                Objects.equals(this.fields, other.fields);
     }
 
     @Override
     public int hashCode() {
-        int result = displayName != null ? displayName.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (lookupFields != null ? lookupFields.hashCode() : 0);
-        result = 31 * result + (fields != null ? fields.hashCode() : 0);
-
-        return result;
+        return Objects.hash(displayName, type, lookupFields, fields);
     }
 
     @Override
