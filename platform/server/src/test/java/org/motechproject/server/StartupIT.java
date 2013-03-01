@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 public class StartupIT {
 
     Logger log = Logger.getLogger(StartupIT.class.getName());
+    private String HOST = "localhost";
 
     @Test
     public void shouldStartServerAndMakeAllBundlesActive() throws IOException, JSONException, InterruptedException{
@@ -75,7 +76,7 @@ public class StartupIT {
         JSONArray bundles;
         login(httpClient); /* BugCard #208 remove this once we fix web authentication issue, currently
          till security modules started in osgi env there is not authentication for admin console. */
-        String response = httpClient.execute(new HttpGet("http://localhost:9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
+        String response = httpClient.execute(new HttpGet("http://" + HOST + ":9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
         bundles = (JSONArray) new JSONArray(response);
         return bundles;
     }
