@@ -335,6 +335,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             assertArgumentNotNull("ScheduledJobID", jobId);
             schedulerFactoryBean.getScheduler().unscheduleJob(jobId, JOB_GROUP_NAME);
         } catch (SchedulerException ignored) {
+            logError(String.format("Can not unschedule the job: %s %s", jobId, ignored.getMessage()), ignored);
         }
     }
 
