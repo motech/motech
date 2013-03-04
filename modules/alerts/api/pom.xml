@@ -3,14 +3,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.18</version>
+        <version>0.18-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-alerts-api</artifactId>
     <name>MOTECH Alerts API</name>
     <description>MOTECH Alerts API</description>
-    <version>0.18</version>
+    <version>0.18-SNAPSHOT</version>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
