@@ -12,7 +12,7 @@
 			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 			">
-    <context:property-placeholder location="classpath:activemq.properties"/>
+    <context:property-placeholder location="classpath:activemq.properties" ignore-unresolvable="true"/>
     <jms:message-driven-channel-adapter id="jmsin"
                                         destination="eventQueue"
                                         channel="eventChannel" acknowledge="transacted" concurrent-consumers= "${concurrentConsumers:1}" max-concurrent-consumers="${maxConcurrentConsumers:10}"/>
