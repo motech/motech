@@ -62,6 +62,11 @@
             <groupId>javax.validation</groupId>
             <artifactId>com.springsource.javax.validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
