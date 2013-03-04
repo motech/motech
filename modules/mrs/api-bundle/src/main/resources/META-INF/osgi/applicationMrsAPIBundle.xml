@@ -7,23 +7,4 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <context:annotation-config/>
-
-    <import resource="classpath*:META-INF/motech/*.xml"/>
-
-    <osgi:service id="mrsDataProviderOSGi" auto-export="interfaces" ref="mrsDataProvider"
-                  interface="org.motechproject.commons.api.DataProvider"/>
-
-    <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.PatientAdapter" cardinality="0..N"/>
-
-    <osgi:list id="facilityAdapterList" interface="org.motechproject.mrs.services.FacilityAdapter" cardinality="0..N"/>
-
-    <osgi:list id="personAdapterList" interface="org.motechproject.mrs.services.PersonAdapter" cardinality="0..N"/>
-
-    <bean id="mrsDataProvider" class="org.motechproject.mrs.MRSDataProvider">
-        <property name="patientAdapters" ref="patientAdapterList"/>
-        <property name="facilityAdapters" ref="facilityAdapterList"/>
-        <property name="personAdapters" ref="personAdapterList"/>
-    </bean>
-
 </beans>
