@@ -7,13 +7,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.18</version>
+        <version>0.18.1-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-api-bundle</artifactId>
-    <version>0.18</version>
+    <version>0.18.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <name>MOTECH SMS API Bundle</name>
