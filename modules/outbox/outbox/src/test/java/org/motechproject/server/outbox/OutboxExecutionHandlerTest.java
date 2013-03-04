@@ -13,6 +13,7 @@ import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.server.OutboxExecutionHandler;
+import org.motechproject.outbox.server.service.RetrievedMessagesService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
@@ -37,6 +38,9 @@ public class OutboxExecutionHandlerTest {
     @Mock
     private MotechSchedulerService motechSchedulerService;
 
+    @Mock
+    private RetrievedMessagesService retrievedMessagesService;
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
@@ -51,6 +55,7 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.execute(event);
 
+        verify(retrievedMessagesService).scheduleJob(EventKeys.getExternalID(event), EventKeys.getLanguageKey(event));
         verify(ivrServiceMock).initiateCall(any(CallRequest.class));
     }
 

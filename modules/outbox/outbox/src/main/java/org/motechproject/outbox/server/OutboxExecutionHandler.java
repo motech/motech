@@ -6,6 +6,7 @@ import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.outbox.server.service.RetrievedMessagesService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
@@ -33,6 +34,9 @@ public class OutboxExecutionHandler {
 
     @Autowired
     private Properties outboxProperties;
+
+    @Autowired
+    private RetrievedMessagesService retrievedMessagesService;
 
     @MotechListener(subjects = {EventKeys.EXECUTE_OUTBOX_SUBJECT})
     public void execute(MotechEvent event) {
@@ -74,6 +78,7 @@ public class OutboxExecutionHandler {
                     messageParameters);
 
             callRequest.setOnSuccessEvent(successEvent);
+            retrievedMessagesService.scheduleJob(externalID, language);
 
             ivrService.initiateCall(callRequest);
         } catch (CallInitiationException e) {

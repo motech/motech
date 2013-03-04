@@ -50,6 +50,20 @@
           "displayName" : "outbox.externalId"
         }
       ]
+    },
+    {
+      "displayName" : "outbox.notRetrivedMessage",
+      "subject" : "org.motechproject.server.outbox.not.retrieved.message",
+      "eventParameters" : [
+        {
+          "eventKey" : "ExternalID",
+          "displayName" : "outbox.externalId"
+        },
+        {
+          "eventKey" : "JobID",
+          "displayName" : "outbox.jobId"
+        }
+      ]
     }
   ],
   "actionTaskEvents" : [

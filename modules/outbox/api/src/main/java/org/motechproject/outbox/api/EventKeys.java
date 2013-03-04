@@ -27,6 +27,7 @@ public final class EventKeys {
 
     public static final String INCOMPLETE_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.incomplete";
     public static final String COMPLETED_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.completed";
+    public static final String NOT_RETRIEVED_MESSAGE_SUBJECT = "org.motechproject.server.outbox.not.retrieved.message";
 
     public static String getScheduleJobIdKey(MotechEvent event) {
         return getStringValue(event, EventKeys.SCHEDULE_JOB_ID_KEY);

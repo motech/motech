@@ -5,6 +5,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.outbox.server.service.RetrievedMessagesService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,9 @@ public class VxmlOutboxController extends MultiActionController {
     @Autowired
     private PlatformSettingsService platformSettingsService;
 
+    @Autowired
+    private RetrievedMessagesService retrievedMessagesService;
+
     /**
      * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
      * The HTTP request may contain an optional 'mId' parameter with value of ID of the message for which
@@ -69,6 +73,8 @@ public class VxmlOutboxController extends MultiActionController {
         //Interim implementation. Party ID will be obtained from the Authentication context
         //String externalId = "1";
         String externalId = request.getParameter("pId");
+
+        retrievedMessagesService.unscheduleJob(externalId);
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);

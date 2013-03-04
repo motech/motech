@@ -14,6 +14,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.outbox.server.service.RetrievedMessagesService;
 import org.motechproject.outbox.server.web.VxmlOutboxController;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,6 +50,9 @@ public class VxmlOutboxControllerTest {
     @Mock
     private PlatformSettingsService platformSettingsService;
 
+    @Mock
+    private RetrievedMessagesService retrievedMessagesService;
+
     @Before
     public void initMocks() {
 
@@ -72,7 +76,7 @@ public class VxmlOutboxControllerTest {
         when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
-
+        verify(retrievedMessagesService).unscheduleJob(externalId);
         Assert.assertEquals(voiceMessageTypeName, modelAndView.getViewName());
 
 
