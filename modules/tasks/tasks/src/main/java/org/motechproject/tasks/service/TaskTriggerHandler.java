@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
-import static org.motechproject.tasks.service.HandlerUtil.convertToDate;
-import static org.motechproject.tasks.service.HandlerUtil.convertToNumber;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getKeys;
@@ -223,16 +221,23 @@ public class TaskTriggerHandler {
             Object value;
 
             switch (param.getType()) {
-                case NUMBER:
+                case DOUBLE:
                     try {
-                        value = convertToNumber(userInput);
+                        value = Double.valueOf(userInput);
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToNumber", e, key);
+                        throw new TaskException("error.convertToDouble", e, key);
+                    }
+                    break;
+                case INTEGER:
+                    try {
+                        value = Integer.valueOf(userInput);
+                    } catch (Exception e) {
+                        throw new TaskException("error.convertToInteger", e, key);
                     }
                     break;
                 case DATE:
                     try {
-                        value = convertToDate(userInput);
+                        value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
                     } catch (Exception e) {
                         throw new TaskException("error.convertToDate", e, key);
                     }

@@ -705,7 +705,7 @@
 
             if (prefix === 'trigger') {
                 param = $scope.findTriggerEventParameter(eventParameterKey);
-                span = '<span unselectable="on" ' + (param.type !== 'NUMBER' ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer"' +
+                span = '<span unselectable="on" ' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer"' +
                        '" data-prefix="' + prefix + '" data-type="' + param.type + '" style="position: relative;" ' +
                        (manipulation.length === 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + $scope.msg(param.displayName) + '</span>';
             } else if (prefix === 'ad') {
@@ -725,7 +725,7 @@
                 object = $scope.findObject(dataSource, type);
                 param = $scope.findObjectField(object, field);
 
-                span = '<span unselectable="on"' + (param.type !== 'NUMBER' ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
+                span = '<span unselectable="on"' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
                        '" data-prefix="' + prefix + '" data-source="' + dataSource.name + '" data-object="' + param.displayName + '" data-object-type="' + type + '" data-field="' + field +
                        '" data-object-id="' + id + '" style="position: relative;" ' + (manipulation.length === 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' +
                        $scope.msg(dataSource.name) + '.' + $scope.msg(object.displayName) + '#' + id + '.' + $scope.msg(param.displayName) + '</span>';
@@ -742,7 +742,7 @@
                 operator.push("contains");
                 operator.push("startsWith");
                 operator.push("endsWith");
-            } else if (event && event.type === 'NUMBER') {
+            } else if (event && (event.type === 'INTEGER' || event.type === 'DOUBLE')) {
                 operator.push("gt");
                 operator.push("lt");
                 operator.push("equal");

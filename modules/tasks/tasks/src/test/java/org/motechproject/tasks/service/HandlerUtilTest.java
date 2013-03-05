@@ -1,6 +1,5 @@
 package org.motechproject.tasks.service;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
@@ -27,11 +26,9 @@ import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.NUMBER;
+import static org.motechproject.tasks.domain.ParameterType.INTEGER;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
-import static org.motechproject.tasks.service.HandlerUtil.convertToDate;
-import static org.motechproject.tasks.service.HandlerUtil.convertToNumber;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getKeys;
@@ -138,19 +135,6 @@ public class HandlerUtilTest {
     }
 
     @Test
-    public void testConvertToNumber() {
-        assertEquals(123, convertToNumber("123"));
-        assertEquals(2.5, (Double) convertToNumber("2.5"), 0.0001);
-        assertEquals(2000.75, (Double) convertToNumber("2000.75"), 0.0001);
-    }
-
-    @Test
-    public void testConvertToDate() {
-        DateTime now = new DateTime(2013, 2, 25, 10, 15);
-        assertEquals(now, convertToDate(now.toString("yyyy-MM-dd HH:mm Z")));
-    }
-
-    @Test
     public void testCheckFilters() {
         assertTrue(checkFilters(null, null));
         assertTrue(checkFilters(new ArrayList<Filter>(), null));
@@ -162,13 +146,13 @@ public class HandlerUtilTest {
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
 
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, GT.getValue(), "19"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, GT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, LT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, LT.getValue(), "123"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EQUALS.getValue(), "123456789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, EQUALS.getValue(), "789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EXIST.getValue(), ""));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, GT.getValue(), "19"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, LT.getValue(), "1234567891"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, LT.getValue(), "123"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EQUALS.getValue(), "123456789"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EQUALS.getValue(), "789"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
 
         assertFalse(checkFilters(filters, new HashMap<String, Object>()));
 
@@ -189,7 +173,7 @@ public class HandlerUtilTest {
         assertFalse(checkFilters(filters, triggerParameters));
 
         filters.remove(filter);
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, "abc", ""));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, "abc", ""));
 
         assertFalse(checkFilters(filters, triggerParameters));
     }

@@ -8,7 +8,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public enum ParameterType {
     UNICODE("UNICODE"),
     TEXTAREA("TEXTAREA"),
-    NUMBER("NUMBER"),
+    INTEGER("INTEGER"),
+    DOUBLE("DOUBLE"),
     DATE("DATE");
 
     private final String value;
@@ -25,7 +26,7 @@ public enum ParameterType {
 
     @JsonIgnore
     public boolean isNumber() {
-        return value.equalsIgnoreCase(NUMBER.getValue());
+        return value.equalsIgnoreCase(INTEGER.getValue()) || value.equalsIgnoreCase(DOUBLE.getValue());
     }
 
     private ParameterType(String value) {

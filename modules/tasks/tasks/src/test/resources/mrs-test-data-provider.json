@@ -61,7 +61,7 @@
                 {
                     "displayName": "Age",
                     "fieldKey": "age",
-                    "type": "NUMBER"
+                    "type": "INTEGER"
                 },
                 {
                     "displayName": "Gender",

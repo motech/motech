@@ -245,7 +245,8 @@
                             <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.actionParameters">
                                 <label>{{msg(i.displayName)}}</label>
                                 <textarea ui-if="i.type == 'TEXTAREA'" rows="5" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
-                                <input ui-if="i.type == 'NUMBER'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
+                                <input ui-if="i.type == 'INTEGER'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
+                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
                                 <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"/>
                                 <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" datetime-picker-input placeholder="{{msg('placeholder.dateOnly')}}" readonly="readonly" style="background:white;"/>
                             </div>
@@ -472,7 +473,8 @@
                                     <label>{{msg(i.displayName)}}</label>
                                     <editable-content ui-if="i.type=='UNICODE'" data="i" index="$index" type="UNICODE"></editable-content>
                                     <editable-content ui-if="i.type=='TEXTAREA'" data="i" index="$index" type="TEXTAREA"></editable-content>
-                                    <editable-content ui-if="i.type=='NUMBER'" data="i" index="$index" type="NUMBER"></editable-content>
+                                    <editable-content ui-if="i.type=='INTEGER'" data="i" index="$index" type="INTEGER"></editable-content>
+                                    <editable-content ui-if="i.type=='DOUBLE'" data="i" index="$index" type="DOUBLE"></editable-content>
                                     <editable-content ui-if="i.type=='DATE'" data="i" index="$index" type="DATE"></editable-content>
                                 </div>
                                 <div id="helpModalDate" class="modal hide fade" tabindex="-1" role="dialog">

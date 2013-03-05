@@ -60,7 +60,8 @@ import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.NUMBER;
+import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
+import static org.motechproject.tasks.domain.ParameterType.INTEGER;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
@@ -283,7 +284,7 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
-    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToNumber() throws Exception {
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToInteger() throws Exception {
         setTriggerEvent();
         setActionEvent();
 
@@ -304,7 +305,33 @@ public class TaskTriggerHandlerTest {
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("error.convertToNumber", captor.getValue().getMessageKey());
+        assertEquals("error.convertToInteger", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToDouble() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setDoubleField();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("double", "1234   d");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("error.convertToDouble", captor.getValue().getMessageKey());
     }
 
     @Test
@@ -596,7 +623,7 @@ public class TaskTriggerHandlerTest {
         setActionEvent();
         setFilters();
 
-        task.getFilters().add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, EXIST.getValue(), ""));
+        task.getFilters().add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EXIST.getValue(), ""));
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
@@ -619,6 +646,7 @@ public class TaskTriggerHandlerTest {
         setDateField();
         setFilters();
         setAdditionalData();
+        setDoubleField();
 
         Map<String, String> testObjectLookup = new HashMap<>();
         testObjectLookup.put("id", "6789");
@@ -656,7 +684,7 @@ public class TaskTriggerHandlerTest {
         assertNotNull(motechEvent.getSubject());
         assertNotNull(motechEvent.getParameters());
 
-        assertEquals(6, motechEvent.getParameters().size());
+        assertEquals(7, motechEvent.getParameters().size());
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
         assertEquals(task.getActionInputFields().get("phone"), motechEvent.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEvent.getParameters().get("message"));
@@ -859,6 +887,11 @@ public class TaskTriggerHandlerTest {
         actionEvent.getActionParameters().add(new ActionParameter("Date", "date", DATE));
     }
 
+    private void setDoubleField() {
+        task.getActionInputFields().put("double", "123.5");
+        actionEvent.getActionParameters().add(new ActionParameter("Double", "double", DOUBLE));
+    }
+
     private void setAdditionalData() {
         task.getActionInputFields().put("dataSourceTrigger", "test: {{ad.12345.TestObjectField#1.id}}");
         task.getActionInputFields().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
@@ -892,7 +925,7 @@ public class TaskTriggerHandlerTest {
 
     private void setActionEvent() {
         List<ActionParameter> actionEventParameters = new ArrayList<>();
-        actionEventParameters.add(new ActionParameter("Phone", "phone", NUMBER));
+        actionEventParameters.add(new ActionParameter("Phone", "phone", INTEGER));
         actionEventParameters.add(new ActionParameter("Message", "message", TEXTAREA));
 
         actionEvent = new ActionEvent();
@@ -916,11 +949,11 @@ public class TaskTriggerHandlerTest {
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, EQUALS.getValue(), "event name"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, STARTSWITH.getValue(), "ev"));
         filters.add(new Filter(new EventParameter("EventName", "eventName"), true, ENDSWITH.getValue(), "me"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, GT.getValue(), "19"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, LT.getValue(), "1234567891"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EQUALS.getValue(), "123456789"));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), true, EXIST.getValue(), ""));
-        filters.add(new Filter(new EventParameter("ExternalID", "externalId", NUMBER), false, GT.getValue(), "1234567891"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, GT.getValue(), "19"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, LT.getValue(), "1234567891"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EQUALS.getValue(), "123456789"));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
+        filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
 
         task.setFilters(filters);
     }

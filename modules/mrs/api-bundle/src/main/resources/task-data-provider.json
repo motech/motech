@@ -61,7 +61,7 @@
                 {
                     "displayName": "data.provider.mrs.person.field.age",
                     "fieldKey": "age",
-                    "type": "NUMBER"
+                    "type": "INTEGER"
                 },
                 {
                     "displayName": "data.provider.mrs.person.field.gender",

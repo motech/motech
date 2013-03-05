@@ -11,7 +11,7 @@
     </appender>
 
     <logger name="org.motechproject.scheduler.impl.MotechScheduler">
-        <level value="ALL"/>
+        <level value="ERROR"/>
     </logger>
     <logger name="org.springframework.web">
         <level value="ERROR"/>

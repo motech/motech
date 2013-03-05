@@ -18,17 +18,17 @@
         {
           "eventKey" : "times-reminders-sent",
           "displayName" : "pillreminder.times.sent",
-          "type": "NUMBER"
+          "type": "INTEGER"
         },
         {
           "eventKey" :  "times-reminders-to-be-sent",
           "displayName" : "pillreminder.total.times.sent",
-          "type": "NUMBER"
+          "type": "INTEGER"
         },
         {
           "eventKey" :  "retry-interval",
           "displayName" : "pillreminder.retry.interval",
-          "type": "NUMBER"
+          "type": "INTEGER"
         }
       ]
     }
@@ -49,17 +49,17 @@
         {
           "key" : "times-reminders-sent",
           "displayName" : "pillreminder.times.sent",
-          "type": "NUMBER"
+          "type": "INTEGER"
         },
         {
           "key" :  "times-reminders-to-be-sent",
           "displayName" : "pillreminder.total.times.sent",
-          "type": "NUMBER"
+          "type": "INTEGER"
         },
         {
           "key" :  "retry-interval",
           "displayName" : "pillreminder.retry.interval",
-          "type": "NUMBER"
+          "type": "INTEGER"
         }
       ]
     }

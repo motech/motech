@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="org.motechproject.sms">
-        <level value="INFO"/>
+        <level value="ERROR"/>
     </logger>
     <logger name="org.springframework.web">
         <level value="ERROR"/>

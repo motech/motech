@@ -1,8 +1,6 @@
 package org.motechproject.tasks.service;
 
 import org.apache.commons.lang.WordUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
@@ -83,23 +81,6 @@ final class HandlerUtil {
         }
 
         return keys;
-    }
-
-    public static Object convertToNumber(String number) {
-        Object value;
-        BigDecimal decimal = new BigDecimal(number);
-
-        if (decimal.signum() == 0 || decimal.scale() <= 0 || decimal.stripTrailingZeros().scale() <= 0) {
-            value = decimal.intValueExact();
-        } else {
-            value = decimal.doubleValue();
-        }
-
-        return value;
-    }
-
-    public static DateTime convertToDate(String date) {
-        return DateTime.parse(date, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
     }
 
     public static boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
