@@ -37,27 +37,27 @@
     {
       "displayName" : "pillreminder.event.subject.scheduler",
       "subject" : "org.motechproject.server.pillreminder.scheduler-reminder",
-      "eventParameters" : [
+      "actionParameters" : [
         {
-          "eventKey" : "DosageID",
+          "key" : "DosageID",
           "displayName" : "pillreminder.dossageID"
         },
         {
-          "eventKey" : "ExternalID",
+          "key" : "ExternalID",
           "displayName" : "pillreminder.externalID"
         },
         {
-          "eventKey" : "times-reminders-sent",
+          "key" : "times-reminders-sent",
           "displayName" : "pillreminder.times.sent",
           "type": "NUMBER"
         },
         {
-          "eventKey" :  "times-reminders-to-be-sent",
+          "key" :  "times-reminders-to-be-sent",
           "displayName" : "pillreminder.total.times.sent",
           "type": "NUMBER"
         },
         {
-          "eventKey" :  "retry-interval",
+          "key" :  "retry-interval",
           "displayName" : "pillreminder.retry.interval",
           "type": "NUMBER"
         }

@@ -149,4 +149,13 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     public List<CampaignRecord> getAllCampaignRecords() {
         return allMessageCampaigns.getAll();
     }
+
+    @Override
+    public void campaignCompleted(Map<String, Object> parameters) {
+        CampaignRequest request = new CampaignRequest();
+        request.setExternalId((String) parameters.get(EventKeys.EXTERNAL_ID_KEY));
+        request.setCampaignName((String) parameters.get(EventKeys.CAMPAIGN_NAME_KEY));
+
+        stopAll(request);
+    }
 }

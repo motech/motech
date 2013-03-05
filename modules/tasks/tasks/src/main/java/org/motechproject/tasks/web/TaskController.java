@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
-import static org.motechproject.tasks.util.TaskUtil.getSubject;
-
 @Controller
 public class TaskController {
     private TaskService taskService;
@@ -61,9 +59,7 @@ public class TaskController {
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody Task task) {
-        String subject = getSubject(task.getTrigger());
-
         taskService.save(task);
-        triggerHandler.registerHandlerFor(subject);
+        triggerHandler.registerHandlerFor(task.getTrigger().getSubject());
     }
 }

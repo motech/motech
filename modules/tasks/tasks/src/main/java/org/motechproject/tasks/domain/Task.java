@@ -12,25 +12,25 @@ import java.util.Objects;
 public class Task extends MotechBaseDataObject {
     private static final long serialVersionUID = -8754186387983558616L;
 
-    private Map<String, String> actionInputFields;
-    private Map<String, List<TaskAdditionalData>> additionalData;
     private List<Filter> filters;
-    private String action;
+    private Map<String, List<TaskAdditionalData>> additionalData;
     private String description;
-    private String trigger;
     private String name;
+    private TaskActionInformation action;
+    private TaskEventInformation trigger;
     private boolean enabled;
+    private Map<String, String> actionInputFields;
 
     public Task() {
         this(null, null, null, null);
     }
 
-    public Task(String trigger, String action, Map<String, String> actionInputFields, String name) {
+    public Task(TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields, String name) {
         this(true, actionInputFields, null, null, action, trigger, name);
     }
 
     public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, List<TaskAdditionalData>> additionalData,
-                List<Filter> filters, String action, String trigger, String name) {
+                List<Filter> filters, TaskActionInformation action, TaskEventInformation trigger, String name) {
         this.enabled = enabled;
         this.actionInputFields = actionInputFields;
         this.additionalData = additionalData;
@@ -58,19 +58,19 @@ public class Task extends MotechBaseDataObject {
         this.name = name;
     }
 
-    public String getTrigger() {
+    public TaskEventInformation getTrigger() {
         return trigger;
     }
 
-    public void setTrigger(final String trigger) {
+    public void setTrigger(final TaskEventInformation trigger) {
         this.trigger = trigger;
     }
 
-    public String getAction() {
+    public TaskActionInformation getAction() {
         return action;
     }
 
-    public void setAction(final String action) {
+    public void setAction(final TaskActionInformation action) {
         this.action = action;
     }
 

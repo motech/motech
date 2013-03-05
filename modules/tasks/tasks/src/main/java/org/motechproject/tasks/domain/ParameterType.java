@@ -28,11 +28,6 @@ public enum ParameterType {
         return value.equalsIgnoreCase(NUMBER.getValue());
     }
 
-    @JsonIgnore
-    public boolean isDate() {
-        return value.equalsIgnoreCase(DATE.getValue());
-    }
-
     private ParameterType(String value) {
         this.value = value;
     }

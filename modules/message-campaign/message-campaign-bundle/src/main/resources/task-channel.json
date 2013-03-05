@@ -41,31 +41,33 @@
     {
       "displayName" : "messagecampaign.send.message",
       "subject" : "org.motechproject.server.messagecampaign.fired-campaign-message",
-      "eventParameters" : [
+      "actionParameters" : [
         {
-          "eventKey" : "CampaignName",
+          "key" : "CampaignName",
           "displayName" : "messagecampaign.campaign.name"
         },
         {
-          "eventKey" :  "ExternalID",
+          "key" :  "ExternalID",
           "displayName" : "messagecampaign.externalID"
         },
         {
-          "eventKey" :  "MessageKey",
+          "key" :  "MessageKey",
           "displayName" : "messagecampaign.message.key"
         }
       ]
     },
     {
       "displayName" : "messagecampaign.campaign.completed",
+      "serviceInterface": "org.motechproject.server.messagecampaign.service.MessageCampaignService",
+      "serviceMethod": "campaignCompleted",
       "subject" : "org.motechproject.server.messagecampaign.campaign-completed",
-      "eventParameters" : [
+      "actionParameters" : [
         {
-          "eventKey" : "ExternalID",
+          "key" : "ExternalID",
           "displayName" : "messagecampaign.externalID"
         },
         {
-          "eventKey" : "CampaignName",
+          "key" : "CampaignName",
           "displayName" : "messagecampaign.campaign.name"
         }
       ]

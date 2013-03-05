@@ -4,6 +4,8 @@ import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +31,9 @@ public class AllTasksIT extends SpringIntegrationTest {
 
     @Test
     public void shouldAddAndUpdateTask() {
-        Task expected = new Task("test:test:15:SEND", "test:test:14:RECEIVE", new HashMap<String, String>(),"name");
+        TaskActionInformation action = new TaskActionInformation("test", "test", "0.15", "SEND");
+        TaskEventInformation trigger = new TaskEventInformation("test", "test", "0.14", "RECEIVE");
+        Task expected = new Task(trigger, action, new HashMap<String, String>(),"name");
 
         allTasks.addOrUpdate(expected);
 

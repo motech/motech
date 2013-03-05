@@ -10,26 +10,26 @@ import java.util.Objects;
 public class Channel extends MotechBaseDataObject {
     private static final long serialVersionUID = -5528351408863732084L;
 
-    private List<TaskEvent> actionTaskEvents;
-    private List<TaskEvent> triggerTaskEvents;
+    private List<ActionEvent> actionTaskEvents;
+    private List<TriggerEvent> triggerTaskEvents;
     private String description;
     private String displayName;
     private String moduleName;
     private String moduleVersion;
 
-    public List<TaskEvent> getActionTaskEvents() {
+    public List<ActionEvent> getActionTaskEvents() {
         return actionTaskEvents;
     }
 
-    public void setActionTaskEvents(List<TaskEvent> actionTaskEvents) {
+    public void setActionTaskEvents(List<ActionEvent> actionTaskEvents) {
         this.actionTaskEvents = actionTaskEvents;
     }
 
-    public List<TaskEvent> getTriggerTaskEvents() {
+    public List<TriggerEvent> getTriggerTaskEvents() {
         return triggerTaskEvents;
     }
 
-    public void setTriggerTaskEvents(List<TaskEvent> triggerTaskEvents) {
+    public void setTriggerTaskEvents(List<TriggerEvent> triggerTaskEvents) {
         this.triggerTaskEvents = triggerTaskEvents;
     }
 

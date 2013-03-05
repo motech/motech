@@ -22,14 +22,14 @@
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.trigger, 'moduleName')}}&moduleVersion={{get(item.task.trigger, 'moduleVersion')}}" class="task-list-img" /></li>
+                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}&moduleVersion={{item.task.trigger.moduleVersion}}" class="task-list-img" /></li>
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{get(item.task.action, 'moduleName')}}&moduleVersion={{get(item.task.action, 'moduleVersion')}}" class="task-list-img"/></li>
+                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.action.moduleName}}&moduleVersion={{item.task.action.moduleVersion}}" class="task-list-img"/></li>
                                     <li class="divider-vertical"></li>
                                     <li class="task-element task-name">
                                         <i class="icon-chevron-right i-name"></i>
                                         <span class="name-first">&nbsp;{{item.task.name}}</span>
-                                        <span class="name-second">{{msg(get(item.task.trigger, 'displayName'))}} - {{msg(get(item.task.action, 'displayName'))}}</span>
+                                        <span class="name-second">{{msg(item.task.trigger.channelName)}} - {{msg(item.task.action.channelName)}}</span>
                                     </li>
                                 </ul>
                             </a>
@@ -130,7 +130,7 @@
                     <tr ng-repeat="activity in activities">
                         <td>
                             <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{get(activity.trigger, 'moduleName')}}&moduleVersion={{get(activity.trigger, 'moduleVersion')}}" class="recent-activity-img"/>
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}&moduleVersion={{activity.trigger.moduleVersion}}" class="recent-activity-img"/>
                             </div>
                         </td>
                         <td>
@@ -140,7 +140,7 @@
                         </td>
                         <td>
                             <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{get(activity.action, 'moduleName')}}&moduleVersion={{get(activity.action, 'moduleVersion')}}" class="recent-activity-img"/>
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}&moduleVersion={{activity.action.moduleVersion}}" class="recent-activity-img"/>
                             </div>
                         </td>
                         <td><span class="recent-name-first">{{ activity.name }}<br></span>

@@ -15,7 +15,7 @@
                             <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectTrigger')}}</h3>
                             <div class="content-task popover-content">
                                 <ul>
-                                    <li ng-repeat="t in draggedTrigger.events">
+                                    <li ng-repeat="t in draggedTrigger.triggers">
                                         <a ng-click="selectTaskEvent('trigger', t)">{{msg(t.displayName)}}</a>
                                     </li>
                                 </ul>
@@ -37,7 +37,7 @@
                             <h3 class="popover-title" style="display: block;">{{msg('tooltip.selectAction')}}</h3>
                             <div class="content-task popover-content">
                                 <ul>
-                                    <li ng-repeat="a in draggedAction.events">
+                                    <li ng-repeat="a in draggedAction.actions">
                                         <a ng-click="selectTaskEvent('action', a)">{{msg(a.displayName)}}</a>
                                     </li>
                                 </ul>
@@ -82,7 +82,7 @@
     </div>
 
     <!------------------------  Build Task  ------------------------>
-    <div ng-show="task.trigger && task.action">
+    <div ng-show="task.trigger != undefined && task.action != undefined">
         <div class="well2 container-fluid margin-center margin-before">
             <h3 ng-hide="task._id" class="centered">{{msg('section.buildAction')}}</h3>
             <h3 ng-show="task._id" class="centered">{{msg('section.editAction')}}</h3>
@@ -242,7 +242,7 @@
                                 <label>{{msg(i.selectedAction.description)}}</label>
                             </div>
                             <span ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'">
-                            <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
+                            <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.actionParameters">
                                 <label>{{msg(i.displayName)}}</label>
                                 <textarea ui-if="i.type == 'TEXTAREA'" rows="5" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
                                 <input ui-if="i.type == 'NUMBER'" type="text" ng-model="i.value" droppable class="actionField input-block-level" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
@@ -468,7 +468,7 @@
                             </div>
                             </span>
                             <span ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'">
-                                <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.eventParameters">
+                                <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.actionParameters">
                                     <label>{{msg(i.displayName)}}</label>
                                     <editable-content ui-if="i.type=='UNICODE'" data="i" index="$index" type="UNICODE"></editable-content>
                                     <editable-content ui-if="i.type=='TEXTAREA'" data="i" index="$index" type="TEXTAREA"></editable-content>
