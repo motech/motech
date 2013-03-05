@@ -22,13 +22,20 @@
     </bean>
 
     <bean id="messagecampaignRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="moduleName" value="messagecampaign"/>
+        <constructor-arg name="moduleName" value="messageCampaign"/>
+        <constructor-arg name="url" value="../messagecampaign/resources/index.html"/>
+        <constructor-arg name="angularModules">
+            <list>
+                <value>messageCampaign</value>
+            </list>
+        </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../messagecampaign/resource/bundles/"/>
+                <entry key="messages" value="../messagecampaign/resources/messages/"/>
             </map>
         </constructor-arg>
+        <constructor-arg name="header">
+            <bean class="org.motechproject.osgi.web.Header"/>
+        </constructor-arg>
     </bean>
-
-
 </beans>

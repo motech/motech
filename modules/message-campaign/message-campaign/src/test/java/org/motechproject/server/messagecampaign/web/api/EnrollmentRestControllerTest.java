@@ -1,4 +1,4 @@
-package org.motechproject.server.messagecampaign.web.controller;
+package org.motechproject.server.messagecampaign.web.api;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDate;
@@ -44,7 +44,7 @@ import static org.springframework.test.web.server.request.MockMvcRequestBuilders
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
-public class EnrollmentControllerTest {
+public class EnrollmentRestControllerTest {
 
     private static final String USER_ID = "47sf6a";
     private static final String CAMPAIGN_NAME = "PREGNANCY";
@@ -54,7 +54,7 @@ public class EnrollmentControllerTest {
     private MockMvc controller;
 
     @InjectMocks
-    private EnrollmentController enrollmentController = new EnrollmentController();
+    private EnrollmentRestController enrollmentController = new EnrollmentRestController();
 
     @Mock
     private MessageCampaignService messageCampaignService;
@@ -145,7 +145,7 @@ public class EnrollmentControllerTest {
         ).andExpect(
             status().is(HttpStatus.BAD_REQUEST.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
     }
 

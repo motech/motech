@@ -1,4 +1,4 @@
-package org.motechproject.server.messagecampaign.web.controller;
+package org.motechproject.server.messagecampaign.web.api;
 
 import org.motechproject.server.messagecampaign.domain.CampaignNotFoundException;
 import org.motechproject.server.messagecampaign.service.MessageCampaignService;
@@ -6,6 +6,7 @@ import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.server.messagecampaign.web.model.CampaignDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class CampaignController {
+@RequestMapping(value = "web-api")
+public class CampaignRestController {
+
+    private static final String HAS_MANAGE_CAMPAIGNS_ROLE = "hasRole('manageCampaigns')";
 
     @Autowired
     private MessageCampaignService messageCampaignService;
 
     @RequestMapping(value = "/campaigns/{campaignName}", method = RequestMethod.GET)
+    @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
     public @ResponseBody CampaignDto getCampaign(@PathVariable String campaignName) {
         CampaignRecord campaignRecord = messageCampaignService.getCampaignRecord(campaignName);
 
@@ -37,12 +42,14 @@ public class CampaignController {
 
     @RequestMapping(value = "/campaigns", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
     public void createCampaign(@RequestBody CampaignDto campaign) {
         CampaignRecord campaignRecord = campaign.toCampaignRecord();
         messageCampaignService.saveCampaign(campaignRecord);
     }
 
     @RequestMapping(value = "/campaigns", method = RequestMethod.GET)
+    @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
     public @ResponseBody List<CampaignDto> getAllCampaigns() {
         List<CampaignRecord> campaignRecords = messageCampaignService.getAllCampaignRecords();
 
@@ -56,6 +63,7 @@ public class CampaignController {
 
     @RequestMapping(value = "/campaigns/{campaignName}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
     public void deleteCampaign(@PathVariable String campaignName) {
         messageCampaignService.deleteCampaign(campaignName);
     }
