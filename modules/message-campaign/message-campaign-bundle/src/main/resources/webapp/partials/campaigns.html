@@ -1,0 +1,16 @@
+<div ng-controller="CampaignsCtrl">
+    <table class="table table-bundles table-bordered table-striped table-lightblue">
+        <thead>
+        <tr>
+            <th>{{msg('msgCampaign.campaign.name')}}</th>
+            <th>{{msg('msgCampaign.campaign.type')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="campaign in campaigns">
+            <td><a href="#/enrollments/{{campaign.name}}">{{campaign.name}}</a></td>
+            <td>{{campaign.type}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

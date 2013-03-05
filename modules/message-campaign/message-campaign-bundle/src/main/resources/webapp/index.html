@@ -1,0 +1,16 @@
+<div class="box-header">{{ msg('msgCampaign.title')}}</div>
+<div>
+    <ul id="content-tabs" class="nav nav-tabs">
+        <li class="active">
+            <a data-target="main-content" href="#/campaigns" data-toggle="tab">{{msg('msgCampaign.campaigns')}}</a>
+        </li>
+        <li>
+            <a data-target="main-content" href="#/admin" data-toggle="tab">{{msg('msgCampaign.admin')}}</a>
+        </li>
+    </ul>
+    <div id="tab-content" class="tab-content">
+        <div id="main-content" class="tab-pane active">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>

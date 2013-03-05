@@ -1,14 +1,10 @@
 package org.motechproject.server.messagecampaign.search;
 
-import ch.lambdaj.Lambda;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static org.hamcrest.Matchers.equalTo;
 
 public class ExternalIdCriterion implements Criterion {
     private String externalId;
@@ -24,6 +20,12 @@ public class ExternalIdCriterion implements Criterion {
 
     @Override
     public List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments) {
-        return Lambda.filter(having(on(CampaignEnrollment.class).getExternalId(), equalTo(externalId)), campaignEnrollments);
+        List<CampaignEnrollment> filteredEnrollment = new ArrayList<>();
+        for (CampaignEnrollment enrollment : campaignEnrollments) {
+            if (externalId.equals(enrollment.getExternalId())) {
+                filteredEnrollment.add(enrollment);
+            }
+        }
+        return filteredEnrollment;
     }
 }

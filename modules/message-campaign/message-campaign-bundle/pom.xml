@@ -87,13 +87,13 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
+                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Context-File>META-INF/osgi/applicationMessageCampaignBundle.xml</Context-File>
                         <Context-Path>messagecampaign</Context-Path>
-                        <Resource-Path>messagecampaign/resource</Resource-Path>
+                        <Resource-Path>messagecampaign/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.server.messagecampaign;version=${project.version},

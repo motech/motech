@@ -1,4 +1,4 @@
-package org.motechproject.server.messagecampaign.web.controller;
+package org.motechproject.server.messagecampaign.web.api;
 
 
 import org.apache.commons.io.IOUtils;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.server.request.MockMvcRequestBuilders
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
-public class CampaignControllerTest {
+public class CampaignRestControllerTest {
 
     private static final MediaType APPLICATION_JSON_UTF8 = new MediaType("application", "json", Charset.forName("UTF-8"));
 
@@ -43,7 +43,7 @@ public class CampaignControllerTest {
     private MockMvc controller;
 
     @InjectMocks
-    private CampaignController campaignController = new CampaignController();
+    private CampaignRestController campaignRestController = new CampaignRestController();
 
     @Mock
     private MessageCampaignService messageCampaignService;
@@ -54,7 +54,7 @@ public class CampaignControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        controller = MockMvcBuilders.standaloneSetup(campaignController).build();
+        controller = MockMvcBuilders.standaloneSetup(campaignRestController).build();
     }
 
     @Test
