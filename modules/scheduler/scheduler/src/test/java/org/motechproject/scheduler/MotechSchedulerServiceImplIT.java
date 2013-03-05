@@ -19,15 +19,13 @@ import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerUtils;
-import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,18 +93,19 @@ public class MotechSchedulerServiceImplIT {
 
     @Test
     public void shouldIgnoreFiresInPastWhenSchedulingCronJob() throws InterruptedException, SchedulerException {
+        String subject = "cron_ignore_misfire";
         try {
             TestEventListener listener = new TestEventListener();
-            eventListenerRegistryService.registerListener(listener, "eve");
+            eventListenerRegistryService.registerListener(listener, subject);
 
             DateTime now;
-            for (now = now(); now.getSecondOfMinute() > 56 || now.getSecondOfMinute() < 3; now = now()) {   // we don't want triggers now, only misfires
+            for (now = now(); now.getSecondOfMinute() > 55 || now.getSecondOfMinute() < 5; now = now()) {   // we don't want triggers now, only misfires
                 Thread.sleep(1000);
             }
             DateTime jobStartTime = now.minusMinutes(3);
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
-            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("eve", params), "0 0/1 * 1/1 * ? *", jobStartTime.toDate(), null, true));
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent(subject, params), "0 0/1 * 1/1 * ? *", jobStartTime.toDate(), null, true));
 
             synchronized (listener.getReceivedEvents()) {
                 listener.getReceivedEvents().wait(2000);
@@ -114,7 +113,7 @@ public class MotechSchedulerServiceImplIT {
             assertTrue(listener.getReceivedEvents().size() == 0);
         } finally {
             eventListenerRegistryService.clearListenersForBean("test");
-            schedulerService.unscheduleAllJobs("test-job_id");
+            schedulerService.unscheduleAllJobs(subject);
         }
     }
 
