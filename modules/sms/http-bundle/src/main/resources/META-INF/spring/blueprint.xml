@@ -7,6 +7,11 @@
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
 
+    <import resource="classpath*:META-INF/motech/applicationSmsHttp.xml"/>
+
+    <osgi:service id="smsAuditServiceOsgi" auto-export="interfaces" ref="smsAuditService"
+                  interface="org.motechproject.sms.api.service.SmsAuditService"/>
+
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
@@ -15,6 +20,5 @@
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay"/>
-
 
 </beans>

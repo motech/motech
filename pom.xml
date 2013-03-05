@@ -1416,6 +1416,7 @@
                                         <include>**/**/*BundleIT.java</include>
                                     </includes>
                                     <summaryFile>target/failsafe-reports/failsafe-summary-it-osgi.xml</summaryFile>
+                                    <forkMode>always</forkMode>
                                 </configuration>
                             </execution>
                             <execution>

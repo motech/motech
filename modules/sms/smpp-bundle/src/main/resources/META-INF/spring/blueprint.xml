@@ -6,6 +6,8 @@
 
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
+    <import resource="classpath*:META-INF/motech/applicationSmsSmpp.xml"/>
+
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
@@ -16,6 +18,5 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
 
 </beans>
