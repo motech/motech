@@ -1,5 +1,14 @@
 <div ng-controller="EnrollmentsCtrl">
     <table id="enrollmentsTable"></table>
-    <a href="javascript:void(0)" id="addEnrollment">Add row</a>
-    <a href="javascript:void(0)" id="deleteEnrollments">Delete row</a>
+
+    <div class="btn-group margin-before">
+        <button id='deleteEnrollments' type="submit" class="btn">
+            {{msg('msgCampaign.enrollment.delete')}}
+        </button>
+    </div>
+    <div class="btn-group margin-before offset9">
+        <button id='addEnrollment' type="submit" class="btn">
+            {{msg('msgCampaign.enrollment.add')}}
+        </button>
+    </div>
 </div>
