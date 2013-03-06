@@ -24,7 +24,7 @@ public class AllReminderJobs {
         List<Reminder> reminders = visit.appointmentReminders();
         for (int i = 0; i < reminders.size(); i++) {
             String jobId = AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i);
-            schedulerService.safeScheduleJob(new AppointmentReminderJob(externalId, jobId, reminders.get(i), visit.name()));
+            schedulerService.safeScheduleRepeatingJob(new AppointmentReminderJob(externalId, jobId, reminders.get(i), visit.name()));
         }
     }
 

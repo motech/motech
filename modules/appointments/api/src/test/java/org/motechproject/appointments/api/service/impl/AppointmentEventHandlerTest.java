@@ -97,7 +97,7 @@ public class AppointmentEventHandlerTest {
 
         assertEquals(visitName, visitRequest.getVisitName());
         assertEquals(now, visitRequest.getAppointmentDueDate());
-        assertEquals(10, visitRequest.getAppointmentReminderConfigurations().get(0).getRemindFrom());
+        assertEquals(864000, visitRequest.getAppointmentReminderConfigurations().get(0).getRemindFrom());
         assertEquals(1, visitRequest.getAppointmentReminderConfigurations().get(0).getIntervalCount());
         assertEquals(ReminderConfiguration.IntervalUnit.DAYS, visitRequest.getAppointmentReminderConfigurations().get(0).getIntervalUnit());
         assertEquals(20, visitRequest.getAppointmentReminderConfigurations().get(0).getRepeatCount());

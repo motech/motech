@@ -50,8 +50,8 @@ public class AllReminderJobsTest {
         AppointmentReminderJob expectedJobForAppointment2 = new AppointmentReminderJob(externalId, AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 1),
                 visit.appointmentReminders().get(1), visit.name());
         allReminderJobs.addAppointmentJob(externalId, visit);
-        verify(schedulerService).safeScheduleJob(expectedJobForAppointment1);
-        verify(schedulerService).safeScheduleJob(expectedJobForAppointment2);
+        verify(schedulerService).safeScheduleRepeatingJob(expectedJobForAppointment1);
+        verify(schedulerService).safeScheduleRepeatingJob(expectedJobForAppointment2);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class AllReminderJobsTest {
         AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId, jobId, visit.appointmentReminders().get(0), visit.name());
         allReminderJobs.rescheduleAppointmentJob(externalId, visit);
         verify(schedulerService).unscheduleAllJobs(AppointmentReminderJob.SUBJECT + externalId + "visit");
-        verify(schedulerService).safeScheduleJob(expectedJobForAppointment);
+        verify(schedulerService).safeScheduleRepeatingJob(expectedJobForAppointment);
     }
 
     @Test
