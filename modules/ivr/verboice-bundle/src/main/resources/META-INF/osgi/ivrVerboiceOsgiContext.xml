@@ -2,11 +2,21 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+       ">
+
 
     <import resource="classpath*:META-INF/motech/ivrVerboiceContext.xml"/>
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.server.verboice"/>
+    <mvc:annotation-driven/>
+
 
     <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="verboiceIVRService"
                   interface="org.motechproject.ivr.service.IVRService">
@@ -16,13 +26,5 @@
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:reference id="flowSessionServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.decisiontree.server.service.FlowSessionService"/>
 
-    <osgi:reference id="decisionTreeServerServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.decisiontree.server.service.DecisionTreeServer" />
-
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1" interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
-    <osgi:reference id="eventListenerRegistryServiceOsgi" cardinality="0..1" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 </beans>

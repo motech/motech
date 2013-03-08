@@ -22,7 +22,6 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 
 @Controller
-@RequestMapping("/verboice")
 public class VerboiceIVRController {
 
     @Autowired

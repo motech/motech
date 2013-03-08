@@ -11,9 +11,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 abstract public class VerboiceTest extends SpringIntegrationTest{
 
     static private Server server;
-    public static final String CONTEXT_PATH = "/motech";
-    static final String VERBOICE_URL = "/verboice/ivr";
-    static final String SERVER_URL = "http://localhost:7080" + CONTEXT_PATH + VERBOICE_URL;
+    public static final String CONTEXT_PATH = "/verboice";
+    static final String VERBOICE_IVR_URL = "/ivr";
+    static final String SERVER_URL = "http://localhost:7080" + CONTEXT_PATH + VERBOICE_IVR_URL;
 
     @BeforeClass
     public static void startServer() throws Exception {
