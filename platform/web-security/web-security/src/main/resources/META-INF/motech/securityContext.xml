@@ -10,25 +10,25 @@
 
     <security:global-method-security pre-post-annotations="enabled"/>
 
-    <security:http pattern="/**/*.css*" security="none" />
-    <security:http pattern="/**/*.gif" security="none" />
-    <security:http pattern="/**/*.jpg" security="none" />
-    <security:http pattern="/**/*.png" security="none" />
-    <security:http pattern="/**/*.js" security="none" />
-    <security:http pattern="/**/*.html" security="none" />
-    <security:http pattern="/**/*.properties" security="none" />
-    <security:http pattern="/**/login*" security="none" />
-    <security:http pattern="/**/forgot*" security="none" />
-    <security:http pattern="/**/reset*" security="none" />
-    <security:http pattern="/**/onetimetoken*" security="none" />
-    <security:http pattern="/**/lang*" security="none" />
-    <security:http pattern="/**/list*" security="none" />
-    <security:http pattern="/**/locate*" security="none" />
-    <security:http pattern="/**/startup*" security="none" />
+    <security:http pattern="/**/*.css*" security="none"/>
+    <security:http pattern="/**/*.gif" security="none"/>
+    <security:http pattern="/**/*.jpg" security="none"/>
+    <security:http pattern="/**/*.png" security="none"/>
+    <security:http pattern="/**/*.js" security="none"/>
+    <security:http pattern="/**/*.html" security="none"/>
+    <security:http pattern="/**/*.properties" security="none"/>
+    <security:http pattern="/**/login*" security="none"/>
+    <security:http pattern="/**/forgot*" security="none"/>
+    <security:http pattern="/**/reset*" security="none"/>
+    <security:http pattern="/**/onetimetoken*" security="none"/>
+    <security:http pattern="/**/lang*" security="none"/>
+    <security:http pattern="/**/list*" security="none"/>
+    <security:http pattern="/**/locate*" security="none"/>
+    <security:http pattern="/**/startup*" security="none"/>
 
     <!-- This should be removed once modules can register urls with the web security system for protection
 under different authorization schemes.  i.e. no security, api key, etc. -->
-    <security:http pattern="/**/commcare/**" security="none" />
+    <security:http pattern="/**/commcare/**" security="none"/>
 
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
 
@@ -39,18 +39,20 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
 
     <bean id="basicAuthenticationEntryPoint" class="org.motechproject.security.authentication.ChallengelessBasicAuthenticationEntryPoint"/>
 
-    <security:http auto-config="false" pattern="/**/web-api/**" entry-point-ref="basicAuthenticationEntryPoint" create-session="stateless" use-expressions="true">
-        <security:custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthenticationFilter" />
+
+    <security:http auto-config="false" pattern="/**/web-api/**" entry-point-ref="basicAuthenticationEntryPoint" use-expressions="true">
+        <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter"/>
+        <security:custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthenticationFilter"/>
         <security:intercept-url pattern="/**/web-api/**" access="isFullyAuthenticated()"/>
     </security:http>
 
     <bean id="loginFormAuthentication" class="org.motechproject.security.authentication.MotechLoginUrlAuthenticationEntryPoint">
-        <property name="loginFormUrl" value="/module/server/login" />
+        <property name="loginFormUrl" value="/module/server/login"/>
     </bean>
 
     <security:http auto-config="false" entry-point-ref="loginFormAuthentication" use-expressions="true">
-        <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter" />
-        <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter" />
+        <security:custom-filter position="LOGOUT_FILTER" ref="logoutFilter"/>
+        <security:custom-filter position="FORM_LOGIN_FILTER" ref="userAuthenticationProcessingFilter"/>
         <security:custom-filter position="OPENID_FILTER" ref="openIdAuthenticationProcessingFilter"/>
         <security:intercept-url pattern="/**" access="isFullyAuthenticated()"/>
     </security:http>
@@ -61,7 +63,7 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
     </security:authentication-manager>
 
     <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <constructor-arg value="/module/server/login" />
+        <constructor-arg value="/module/server/login"/>
         <constructor-arg>
             <list>
                 <bean class="org.motechproject.security.authentication.MotechLogoutSuccessHandler"/>
@@ -73,16 +75,16 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
 
     <bean id="userAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
         <property name="filterProcessesUrl" value="/j_spring_security_check"/>
-        <property name="authenticationManager" ref="authenticationManager" />
-        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler" />
-        <property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler"/>
+        <property name="authenticationSuccessHandler" ref="loginSuccessHandler"/>
     </bean>
 
     <bean id="openIdAuthenticationProcessingFilter" class="org.springframework.security.openid.OpenIDAuthenticationFilter">
         <property name="filterProcessesUrl" value="/j_spring_openid_security_check"/>
-        <property name="authenticationManager" ref="authenticationManager" />
-        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler" />
-        <property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler" ref="loginMappingFailureHandler"/>
+        <property name="authenticationSuccessHandler" ref="loginSuccessHandler"/>
         <property name="consumer">
             <bean class="org.springframework.security.openid.OpenID4JavaConsumer">
                 <constructor-arg index="0">
@@ -104,13 +106,13 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
                         </bean>
                         <bean class="org.springframework.security.openid.OpenIDAttribute">
                             <constructor-arg index="0" value="aeGuid"/>
-                            <constructor-arg index="1" value="http://openid.net/schema/person/guid" />
+                            <constructor-arg index="1" value="http://openid.net/schema/person/guid"/>
                             <property name="required" value="true"/>
                             <property name="count" value="1"/>
                         </bean>
                         <bean class="org.springframework.security.openid.OpenIDAttribute">
                             <constructor-arg index="0" value="aeAlias"/>
-                            <constructor-arg index="1" value="http://openid.net/schema/namePerson/friendly" />
+                            <constructor-arg index="1" value="http://openid.net/schema/namePerson/friendly"/>
                             <property name="required" value="true"/>
                             <property name="count" value="1"/>
                         </bean>
@@ -127,14 +129,14 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
         <property name="authenticationUserDetailsService" ref="motechUserDetailsService"/>
     </bean>
 
-    <bean id="motechUserDetailsService" class="org.motechproject.security.authentication.MotechOpenIdUserDetailsService" />
+    <bean id="motechUserDetailsService" class="org.motechproject.security.authentication.MotechOpenIdUserDetailsService"/>
 
-    <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler" >
-        <property name="defaultTargetUrl" value="/module/server/home"  />
+    <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler">
+        <property name="defaultTargetUrl" value="/module/server/home"/>
     </bean>
 
     <bean id="loginMappingFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-        <property name="defaultFailureUrl" value="/module/server/login?error=true" />
+        <property name="defaultFailureUrl" value="/module/server/login?error=true"/>
     </bean>
 
 </beans>
