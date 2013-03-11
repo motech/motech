@@ -41,7 +41,7 @@
     {
       "displayName" : "Send Message",
       "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
-      "eventParameters" : [
+      "actionParameters" : [
         {
           "eventKey" : "CampaignName",
           "displayName" : "Campaign name"
@@ -59,7 +59,7 @@
     {
       "displayName" : "Campaign completed",
       "subject" : "org.motechproject.messagecampaign.campaign-completed",
-      "eventParameters" : [
+      "actionParameters" : [
         {
           "eventKey" : "ExternalID",
           "displayName" : "External ID"

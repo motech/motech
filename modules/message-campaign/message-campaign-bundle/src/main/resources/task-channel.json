@@ -41,7 +41,7 @@
     {
       "displayName" : "messagecampaign.send.message",
       "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
-      "eventParameters" : [
+      "actionParameters" : [
         {
           "key" : "CampaignName",
           "displayName" : "messagecampaign.campaign.name"
@@ -58,7 +58,7 @@
     },
     {
       "displayName" : "messagecampaign.campaign.completed",
-      "serviceInterface": "org.motechproject.server.messagecampaign.service.MessageCampaignService",
+      "serviceInterface": "org.motechproject.messagecampaign.service.MessageCampaignService",
       "serviceMethod": "campaignCompleted",
       "subject" : "org.motechproject.messagecampaign.campaign-completed",
       "actionParameters" : [
