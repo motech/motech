@@ -1,0 +1,159 @@
+<div ng-show="showPatientsView" class="row-fluid tab-frame"><!------------------------  All Patients  ------------------------------------->
+    <div class="span12 margin-after mrs">
+        <div class="inside clearfix">
+            <h4>{{msg('mrs.all.patients')}}</h4>
+            <div class="control-group form-inline">
+                <span class="margin-right2"><a href="#/mrs/new" role="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('mrs.add.patient')}}</a></span>
+                <label>{{msg('mrs.search.patient')}}</label>
+                <input type="text" ng-model="query" ng-change="search()" class="input-medium search-query" placeholder="{{msg('mrs.searchByIdOrName')}}">
+                <span ng-show="filteredItems.length &gt; 10">
+                    <label class="help-inline">&nbsp;{{msg('mrs.search.patientsPerPage')}}</label>
+                    <div class="btn-group">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            {{itemsPerPage}}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="itemsPerPage in limitPages">
+                                <a ng-click="changeItemsPerPage(itemsPerPage)"> {{itemsPerPage}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+            </div>
+            <div class="margin-before">
+                <table class="table table-condensed table-bordered table-striped table-lightblue table-mrs">
+                    <thead>
+                        <tr>
+                            <th class="motechId" ng-click="sort_by('motechId')">
+                                <img src=../mrs/resources/img/trans.gif alt="{{msg('mrs.sortingId')}}" title="{{msg('mrs.sortingId')}}"
+                                     class="sorting-asc" />{{msg('mrs.patient.lookupField.id')}} </a></th>
+                            <th class="firstName" ng-click="sort_by('person.firstName')">
+                                <img src=../mrs/resources/img/trans.gif alt="{{msg('mrs.sortingFirstName')}}" title="{{msg('mrs.sortingFirstName')}}"
+                                     class="sorting-no" />{{msg('mrs.person.field.firstName')}} </th>
+                            <th class="lastName" ng-click="sort_by('person.lastName')">
+                                <img src=../mrs/resources/img/trans.gif alt="{{msg('mrs.sortingLastName')}}" title="{{msg('mrs.sortingLastName')}}"
+                                     class="sorting-no" />{{msg('mrs.person.field.lastName')}} </th>
+                            <th class="age" ng-click="sort_by('person.age')">
+                                <img src=../mrs/resources/img/trans.gif alt="{{msg('mrs.sortingAge')}}" title="{{msg('mrs.sortingAge')}}"
+                                     class="sorting-no" />{{msg('mrs.person.field.age')}} </th>
+                            <th class="gender" ng-click="sort_by('person.gender')">
+                                <img src=../mrs/resources/img/trans.gif alt="{{msg('mrs.sortingGender')}}" title="{{msg('mrs.sortingGender')}}"
+                                     class="sorting-no" />{{msg('mrs.person.field.gender')}} </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-click="getPatient(patient.motechId)" ng-repeat="patient in pagedItems[currentPage] | orderBy:sortingOrder:reverse">
+                        <td>{{patient.motechId}}</td>
+                        <td>{{patient.person.firstName}}</td>
+                        <td>{{patient.person.lastName}}</td>
+                        <td>{{patient.person.age}}</td>
+                        <td>{{patient.person.gender}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
+                <ul>
+                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('pagination.first')}}</a></li>
+                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('pagination.prev')}}</a></li>
+                    <li ng-repeat="number in range(pagedItems.length)"
+                        ng-hide="hidePages(number)"
+                        ng-class="{active: number == currentPage}"
+                        ng-click="setPage()">
+                        <a href ng-bind="number + 1">1</a>
+                    </li>
+                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('pagination.next')}}</a></li>
+                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('pagination.last')}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-hide="selectedPatientView" class="row-fluid tab-frame"><!------------------------  Patient  ------------------------------------->
+    <div class="span10 margin-after mrs">
+        <div class="inside clearfix">
+            <h4>{{msg('mrs.patient.name')}} {{patientDto.person.firstName}} {{patientDto.person.lastName}}</h4>
+            <span class="pull-right"><a class="btn btn-primary" href="#/patients/"> {{msg('mrs.button.back')}}</a></span>
+            <div class="control-group clearfix">
+                <span class="pull-left"><h5>{{msg('mrs.patient.motechId')}}: {{patientDto.motechId}}</h5></span>
+            </div>
+
+            <div class="details-panel">
+                <fieldset>
+                    <legend>{{msg('mrs.patientDetails')}}</legend>
+                    <div class="control-group inside pull-right">
+                        <a class="btn btn-success" href="#/mrs/{{patientDto.motechId}}/edit">{{msg('mrs.edit.patientDetails')}}</a>
+                    </div>
+                    <table class="table table-patient">
+                        <tbody>
+                            <tr>
+                                <td>{{msg('mrs.person.field.firstName')}}</td>
+                                <td>{{patientDto.person.firstName}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.middleName')}}</td>
+                                <td>{{patientDto.person.middleName}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.lastName')}}</td>
+                                <td>{{patientDto.person.lastName}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.preferredName')}}</td>
+                                <td>{{patientDto.person.preferredName}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.address')}}</td>
+                                <td>{{patientDto.person.address}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.gender')}}</td>
+                                <td>{{patientDto.person.gender}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.dateOfBirth')}}</td>
+                                <td>{{patientDto.person.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                <td><strong>{{msg('mrs.person.field.birthDateEstimated')}}</strong>&nbsp;&nbsp;{{msg(birthDateEstimated)}}</td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.person.field.dead')}}</td>
+                                <td>{{msg(dead)}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{msg('mrs.facility.field.facilityId')}}</td>
+                                <td>{{patientDto.person.facilityId}}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+            <div class="details-panel margin-before3">
+                <fieldset>
+                    <legend>{{msg('mrs.customAttributes')}}</legend>
+                <div class="control-group inside pull-right">
+                    <a class="btn btn-success" href="#/mrs/{{patientDto.motechId}}/editAttributes">{{msg('mrs.edit.customAttributes')}}</a>
+                </div>
+                    <table class="table table-patient">
+                        <tbody>
+                            <tr ng-repeat="attribute in patientDto.person.attributes">
+                                <td>{{attribute.name}}</td>
+                                <td>{{attribute.value}}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
@@ -211,6 +212,48 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
 
         Patient actualPatient = patientService.getPatient(Integer.valueOf(savedPatient.getPatientId()));
         assertThat(actualPatient.isDead(), is(true));
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    public void shouldGetAllPatientsList() {
+
+        final String motechId1 = "423546";
+        final String firstName1 = "Amesh";
+        final String middleName1 = "Ben";
+        final String lastName1 = "Doug";
+
+        final String motechId2 = "12356";
+        final String firstName2 = "Amet";
+        final String middleName2 = "Brit";
+        final String lastName2 = "Cathey";
+
+        final String motechId3 = "7890";
+        final String firstName3 = null;
+        final String middleName3 = "nullFirstNameCheck1";
+        final String lastName3 = "Douglas";
+
+        final String motechId4 = "7891";
+        final String firstName4 = null;
+        final String middleName4 = "nullFirstNameCheck1";
+        final String lastName4 = "Catherina";
+
+        final String address = "a good street in ghana";
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
+        final String gender = "M";
+        Boolean birthDateEstimated = true;
+
+        final OpenMRSFacility savedFacility = (OpenMRSFacility) facilityAdapter.saveFacility(new OpenMRSFacility("name", "country", "region", "district", "province"));
+
+        createPatientInOpenMrs(motechId1, firstName1, middleName1, lastName1, address, birthDate, gender, birthDateEstimated, savedFacility);
+        createPatientInOpenMrs(motechId2, firstName2, middleName2, lastName2, address, birthDate, gender, birthDateEstimated, savedFacility);
+        createPatientInOpenMrs(motechId3, firstName3, middleName3, lastName3, address, birthDate, gender, birthDateEstimated, savedFacility);
+        createPatientInOpenMrs(motechId4, firstName4, middleName4, lastName4, address, birthDate, gender, birthDateEstimated, savedFacility);
+
+        List<org.motechproject.mrs.domain.Patient> returnedPatients = patientAdapter.getAllPatients();
+
+        assertThat(returnedPatients.size(), is(equalTo(4)));
+        assertThat(returnedPatients.get(0).getPerson().getAddress(), is(equalTo(address)));
     }
 
 

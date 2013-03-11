@@ -12,12 +12,13 @@ var angularHandler = function(title, defaultMsg) {
 }
 
 var handleResponse = function(title, defaultMsg, response) {
+        var msg = "error";
+        var responseData = (typeof(response) == 'string') ? response : response.data;
+
         unblockUI();
 
-        var msg = "error";
-
-        if (response && response.startsWith('key:') && !response.endsWith('key')) {
-            msg = response.split(':')[1];
+        if (responseData && responseData.startsWith('key:') && !responseData.endsWith('key')) {
+            msg = responseData.split(':')[1];
         } else if (defaultMsg) {
             msg = defaultMsg;
         }

@@ -374,13 +374,25 @@ select {
     border: 1px solid #D4E1F9;
     padding: 0;
     background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
-    -webkit-box-shadow: 0 0 4px #bec9de;
-       -moz-box-shadow: 0 0 4px #bec9de;
-            box-shadow: 0 0 4px #bec9de;
+    -webkit-box-shadow: 0 1px 2px #bec9de;
+       -moz-box-shadow: 0 1px 2px #bec9de;
+            box-shadow: 0 1px 2px #bec9de;
 }
 
 .box-content form {
     margin:0;
+}
+
+.tab-frame {
+    margin: -10px 0 0 0;
+    padding: 30px 0 10px;
+    border: 1px solid #D4E1F9;
+    border-radius: 4px 4px 4px 4px;
+    padding: 0;
+    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
+    -webkit-box-shadow: 0 1px 2px #bec9de;
+       -moz-box-shadow: 0 1px 2px #bec9de;
+            box-shadow: 0 1px 2px #bec9de;
 }
 
 .inside {

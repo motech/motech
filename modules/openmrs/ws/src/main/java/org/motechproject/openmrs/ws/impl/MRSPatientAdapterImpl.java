@@ -1,11 +1,5 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.motechproject.mrs.exception.PatientNotFoundException;
@@ -27,6 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 @Component("patientAdapter")
 public class MRSPatientAdapterImpl implements PatientAdapter {
@@ -269,5 +269,10 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         }
 
         personAdapter.savePersonCauseOfDeath(patient.getPatientId(), dateOfDeath, conceptName);
+    }
+
+    @Override
+    public List<org.motechproject.mrs.domain.Patient> getAllPatients(){
+        throw new UnsupportedOperationException();
     }
 }

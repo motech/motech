@@ -1,0 +1,130 @@
+.mrs.tab-content {
+    padding-left: 0;
+}
+
+.mrs.nav.nav-tabs {
+    border-bottom: none;
+    margin-left: 0;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.mrs .form-horizontal .control-label {
+    width: 200px;
+}
+
+.mrs .form-horizontal .controls {
+    margin-left: 220px;
+}
+
+.mrs .form-actions {
+    margin: 0 -20px 0 -20px;
+    padding-left: 240px;
+    background-color: #E3EDF8;
+}
+
+.mrs .control-group.centered .form-actions {
+    padding-left: 40px;
+}
+
+.mrs .table-mrs tbody tr {
+    cursor: pointer;
+}
+
+.mrs .table-mrs tbody tr > td:first-child {
+    min-width: 7%;
+    width: 90px;
+}
+
+.mrs .table-mrs tbody tr > td:nth-child(2) {
+    width: 20%;
+}
+
+.mrs .table-mrs tbody tr > td:nth-child(3) {
+    width: 20%;
+}
+
+.mrs .table-mrs thead .sorting-no {
+    float: right;
+    width: 15px;
+    height: 24px;
+    background: url("../img/sort.png")no-repeat center right;
+}
+
+.mrs .table-mrs thead .sorting-asc {
+    float: right;
+    width: 15px;
+    height: 24px;
+    background: url("../img/sort-asc.png")no-repeat center right;
+}
+
+.mrs .table-mrs thead .sorting-desc {
+    float: right;
+    width: 15px;
+    height: 24px;
+    background: url("../img/sort-desc.png")no-repeat center right;
+}
+
+.mrs .table-mrs thead .sorting-no-img {
+    float: right;
+    width: 1px;
+    height: 24px;
+    background: none;
+}
+
+.mrs .table-mrs th {
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.mrs .table-patient {
+    background: #E4F1F9;
+    border-radius: 0 0 6px 6px;
+    border: none;
+    font-size: 14px;
+    margin: 0;
+}
+
+.table-patient tbody tr > td:first-child {
+    text-align: right;
+    width: 220px;
+    font-weight: bold;
+}
+
+.mrs .table-patient tbody tr > td:nth-child(2) {
+    width: 220px;
+}
+
+.mrs .table-patient tbody tr:nth-child(2n+1) td {
+    background-color: #F3FBFE;
+}
+
+.mrs .table-mrs tbody > tr:first-child {
+    border: none;
+}
+
+.details-panel {
+    border: none;
+    position: relative;
+    padding: 0;
+}
+
+fieldset {
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+}
+
+legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 16px;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+legend + .control-group {
+    margin-top: 2px;
+}

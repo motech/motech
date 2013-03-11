@@ -1,10 +1,7 @@
 package org.motechproject.couch.mrs.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.joda.time.DateTime;
+import org.motechproject.couch.mrs.model.CouchAttribute;
 import org.motechproject.couch.mrs.model.CouchFacility;
 import org.motechproject.couch.mrs.model.CouchPatient;
 import org.motechproject.couch.mrs.model.CouchPatientImpl;
@@ -12,6 +9,7 @@ import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.couch.mrs.repository.AllCouchPatients;
+import org.motechproject.mrs.domain.Attribute;
 import org.motechproject.mrs.domain.Facility;
 import org.motechproject.mrs.domain.Patient;
 import org.motechproject.mrs.domain.Person;
@@ -19,6 +17,10 @@ import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.services.PatientAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class CouchPatientAdapter implements PatientAdapter {
@@ -31,14 +33,8 @@ public class CouchPatientAdapter implements PatientAdapter {
 
     @Override
     public Patient savePatient(Patient patient) {
-        Facility facility = patient.getFacility();
-
-        String facilityId = null;
-        if (facility != null) {
-            facilityId = facility.getFacilityId();
-        }
-
-        CouchPatientImpl couchPatient = new CouchPatientImpl(patient.getPatientId(), patient.getMotechId(), patient.getPerson(), facilityId);
+        CouchPatientImpl couchPatient = (patient instanceof CouchPatientImpl) ? (CouchPatientImpl) patient :
+                createPatient(patient);
 
         try {
             allCouchPatients.addPatient(couchPatient);
@@ -54,17 +50,14 @@ public class CouchPatientAdapter implements PatientAdapter {
         List<CouchPatientImpl> patients = allCouchPatients.findByMotechId(patient.getMotechId());
 
         if (patients != null && patients.get(0) != null) {
-
             CouchPatientImpl patientToUpdate = patients.get(0);
-            Facility updatedFacility = patient.getFacility();
-
-            if (updatedFacility != null) {
-                patientToUpdate.setFacilityId(updatedFacility.getFacilityId());
-            }
+            CouchPatientImpl patientTemp = createPatient(patient);
 
             patientToUpdate.setMotechId(patient.getMotechId());
             patientToUpdate.setPatientId(patient.getPatientId());
-            patientToUpdate.setPerson((CouchPerson) patient.getPerson());
+            patientToUpdate.setFacilityId(patientTemp.getFacilityId());
+            patientToUpdate.setPerson(patientTemp.getPerson());
+
             allCouchPatients.update(patientToUpdate);
         }
 
@@ -120,6 +113,12 @@ public class CouchPatientAdapter implements PatientAdapter {
         allCouchPatients.update(patients.get(0));
     }
 
+
+    @Override
+    public List<Patient> getAllPatients(){
+        return generatePatientList(allCouchPatients.findAllPatients());
+    }
+
     private Patient returnPatient(List<CouchPatientImpl> couchPatients) {
 
         if (couchPatients != null && couchPatients.size() > 0) {
@@ -148,5 +147,43 @@ public class CouchPatientAdapter implements PatientAdapter {
         }
 
         return patientsList;
+    }
+
+    private CouchPatientImpl createPatient (Patient patient) {
+        List<Attribute> attributeList = new ArrayList<>();
+
+        if (patient.getPerson() != null) {
+            for (Attribute attribute : patient.getPerson().getAttributes()){
+                CouchAttribute couchAttribute = new CouchAttribute();
+                couchAttribute.setName(attribute.getName());
+                couchAttribute.setValue(attribute.getValue());
+
+                attributeList.add(couchAttribute);
+            }
+        }
+
+        CouchPerson person = new CouchPerson();
+        person.setAddress(patient.getPerson().getAddress());
+        person.setFirstName(patient.getPerson().getFirstName());
+        person.setLastName(patient.getPerson().getLastName());
+        person.setAge(patient.getPerson().getAge());
+        person.setBirthDateEstimated(patient.getPerson().getBirthDateEstimated());
+        person.setDateOfBirth(patient.getPerson().getDateOfBirth());
+        person.setDead(patient.getPerson().isDead());
+        person.setDeathDate(patient.getPerson().getDeathDate());
+        person.setGender(patient.getPerson().getGender());
+        person.setMiddleName(patient.getPerson().getMiddleName());
+        person.setPersonId(patient.getPerson().getPersonId());
+        person.setPreferredName(patient.getPerson().getPreferredName());
+        person.setAttributes(attributeList);
+
+        Facility facility = patient.getFacility();
+
+        String facilityId = null;
+        if (facility != null) {
+            facilityId = facility.getFacilityId();
+        }
+
+        return new CouchPatientImpl(patient.getPatientId(), patient.getMotechId(), person, facilityId);
     }
 }

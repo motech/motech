@@ -54,6 +54,8 @@ public interface PatientAdapter {
      */
     List<Patient> search(String name, String motechId);
 
+    List<Patient> getAllPatients();
+
     /**
      * Gets the age of a patient by MOTECH id
      * Deprecated: The caller should instead get Patient and get the age from that
