@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -89,11 +91,11 @@ public class TaskTriggerHandlerTest {
     }
 
     private class TestService {
-        public void throwException(Map<String, Object> param) throws IllegalAccessException {
+        public void throwException(Integer phone, String message) throws IllegalAccessException {
             throw new IllegalAccessException();
         }
 
-        public void execute(Map<String, Object> param) {
+        public void execute(Integer phone, String message) {
 
         }
     }
@@ -879,25 +881,25 @@ public class TaskTriggerHandlerTest {
 
     private void setManipulation() {
         task.getActionInputFields().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
-        actionEvent.getActionParameters().add(new ActionParameter("Manipulations", "manipulations", TEXTAREA));
+        actionEvent.addParameter(new ActionParameter("Manipulations", "manipulations", TEXTAREA), true);
     }
 
     private void setDateField() {
         task.getActionInputFields().put("date", "2012-12-21 21:21 +0100");
-        actionEvent.getActionParameters().add(new ActionParameter("Date", "date", DATE));
+        actionEvent.addParameter(new ActionParameter("Date", "date", DATE), true);
     }
 
     private void setDoubleField() {
         task.getActionInputFields().put("double", "123.5");
-        actionEvent.getActionParameters().add(new ActionParameter("Double", "double", DOUBLE));
+        actionEvent.addParameter(new ActionParameter("Double", "double", DOUBLE), true);
     }
 
     private void setAdditionalData() {
         task.getActionInputFields().put("dataSourceTrigger", "test: {{ad.12345.TestObjectField#1.id}}");
         task.getActionInputFields().put("dataSourceObject", "test: {{ad.12345.TestObject#2.field.id}}");
 
-        actionEvent.getActionParameters().add(new ActionParameter("Data source by trigger", "dataSourceTrigger"));
-        actionEvent.getActionParameters().add(new ActionParameter("Data source by data source object", "dataSourceObject"));
+        actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
+        actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
         additionalData.put("12345", Arrays.asList(
@@ -924,9 +926,9 @@ public class TaskTriggerHandlerTest {
     }
 
     private void setActionEvent() {
-        List<ActionParameter> actionEventParameters = new ArrayList<>();
-        actionEventParameters.add(new ActionParameter("Phone", "phone", INTEGER));
-        actionEventParameters.add(new ActionParameter("Message", "message", TEXTAREA));
+        SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
+        actionEventParameters.add(new ActionParameter("Phone", "phone", INTEGER, 0));
+        actionEventParameters.add(new ActionParameter("Message", "message", TEXTAREA, 1));
 
         actionEvent = new ActionEvent();
         actionEvent.setSubject(ACTION_SUBJECT);

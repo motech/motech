@@ -44,5 +44,5 @@ public interface MessageCampaignService {
 
     List<CampaignRecord> getAllCampaignRecords();
 
-    void campaignCompleted(Map<String, Object> parameters);
+    void campaignCompleted(String externalId, String campaignName);
 }

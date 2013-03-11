@@ -10,7 +10,7 @@ public interface ChannelService {
 
     void registerChannel(InputStream stream);
 
-    void registerChannel(Channel channel);
+    void addOrUpdate(Channel channel);
 
     List<Channel> getAllChannels();
 

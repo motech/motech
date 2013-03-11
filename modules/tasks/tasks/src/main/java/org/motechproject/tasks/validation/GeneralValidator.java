@@ -39,6 +39,7 @@ public abstract class GeneralValidator {
         if (parameter != null) {
             String name = objectName + "." + field;
 
+            result.addError(checkNullValue(name, "order", parameter.getOrder()));
             result.addError(checkBlankValue(name, "key", parameter.getKey()));
         }
 

@@ -5,8 +5,10 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.api.BundleIcon;
+import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.ex.ValidationException;
+import org.motechproject.tasks.json.ActionEventDeserializer;
 import org.motechproject.tasks.repository.AllChannels;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.validation.ChannelValidator;
@@ -21,10 +23,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 
@@ -32,32 +37,40 @@ import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 public class ChannelServiceImpl implements ChannelService {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceImpl.class);
 
+    private static Map<Type, Object> typeAdapters = new HashMap<>();
+
     private AllChannels allChannels;
     private MotechJsonReader motechJsonReader;
 
     private BundleContext bundleContext;
 
-    @Autowired
-    public ChannelServiceImpl(final AllChannels allChannels) {
-        this(allChannels, new MotechJsonReader());
+    static {
+        typeAdapters.put(ActionEvent.class, new ActionEventDeserializer());
     }
 
-    public ChannelServiceImpl(AllChannels allChannels, MotechJsonReader motechJsonReader) {
+    @Autowired
+    public ChannelServiceImpl(final AllChannels allChannels) {
         this.allChannels = allChannels;
-        this.motechJsonReader = motechJsonReader;
+        this.motechJsonReader = new MotechJsonReader();
     }
 
     @Override
     public void registerChannel(final InputStream stream) {
         Type type = new TypeToken<Channel>() {}.getType();
-        Channel channel = (Channel) motechJsonReader.readFromStream(stream, type);
-        LOG.debug("Read channel definition from json file.");
+        StringWriter writer = new StringWriter();
 
-        registerChannel(channel);
+        try {
+            IOUtils.copy(stream, writer);
+            Channel channel = (Channel) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+
+            addOrUpdate(channel);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 
     @Override
-    public void registerChannel(Channel channel) {
+    public void addOrUpdate(Channel channel) {
         ValidationResult result = ChannelValidator.validate(channel);
 
         if (!result.isValid()) {
@@ -123,6 +136,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private BundleIcon loadBundleIcon(URL iconURL) {
         InputStream is = null;
+
         try {
             URLConnection urlConn = iconURL.openConnection();
             is = urlConn.getInputStream();

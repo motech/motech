@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
@@ -159,7 +160,7 @@ public class TaskTriggerHandler {
         boolean serviceAvailable = false;
 
         if (invokeMethod) {
-            serviceAvailable = callActionServiceMethod(action, parameters);
+            serviceAvailable = callActionServiceMethod(action, new MethodHandler(action, parameters));
 
             if (!serviceAvailable) {
                 activityService.addWarning(task, "warning.serviceUnavailable", action.getServiceInterface());
@@ -177,30 +178,34 @@ public class TaskTriggerHandler {
         }
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, Map<String, Object> parameters) throws TaskException {
-        ServiceReference reference = bundleContext.getServiceReference(action.getServiceInterface());
+    private boolean callActionServiceMethod(ActionEvent action, MethodHandler methodHandler) throws TaskException {
+        String serviceInterface = action.getServiceInterface();
+        ServiceReference reference = bundleContext.getServiceReference(serviceInterface);
         boolean serviceAvailable = reference != null;
 
         if (serviceAvailable) {
             Object service = bundleContext.getService(reference);
+            String serviceMethod = action.getServiceMethod();
+            Class[] classes = methodHandler.isParametrized() ? methodHandler.getClasses() : null;
+            Object[] objects = methodHandler.isParametrized() ? methodHandler.getObjects() : null;
 
             try {
-                Method serviceMethod = service.getClass().getMethod(action.getServiceMethod(), Map.class);
+                Method method = service.getClass().getMethod(serviceMethod, classes);
 
                 try {
-                    serviceMethod.invoke(service, parameters);
+                    method.invoke(service, objects);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new TaskException("error.serviceMethodInvokeError", e, action.getServiceMethod(), action.getServiceInterface());
+                    throw new TaskException("error.serviceMethodInvokeError", e, serviceMethod, serviceInterface);
                 }
             } catch (NoSuchMethodException e) {
-                throw new TaskException("error.notFoundMethodForService", e, action.getServiceMethod(), action.getServiceInterface());
+                throw new TaskException("error.notFoundMethodForService", e, serviceMethod, serviceInterface);
             }
         }
 
         return serviceAvailable;
     }
 
-    private Map<String, Object> createParameters(Task task, List<ActionParameter> actionParameters, MotechEvent event) throws TaskException {
+    private Map<String, Object> createParameters(Task task, SortedSet<ActionParameter> actionParameters, MotechEvent event) throws TaskException {
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
         for (ActionParameter param : actionParameters) {

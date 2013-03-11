@@ -1,72 +1,75 @@
 {
-  "displayName" : "Message Campaign Test",
+  "displayName" : "messagecampaign.name",
   "moduleName" : "message-campaign-test",
   "moduleVersion" : "0.15",
-  "description" : "The Message Campaign module is used to enroll users into campaigns. A campaign is a course of informational messages that are sent to the user on an assigned date or schedule. Campaign messages follow a clearly defined schedule and are automatically triggered by the scheduling system.",
+  "description" : "messagecampaign.description",
   "triggerTaskEvents" : [
     {
-      "displayName" : "Send Message",
+      "displayName" : "messagecampaign.send.message",
       "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
       "eventParameters" : [
         {
           "eventKey" : "CampaignName",
-          "displayName" : "Campaign name"
+          "displayName" : "messagecampaign.campaign.name"
         },
         {
           "eventKey" :  "ExternalID",
-          "displayName" : "External ID"
+          "displayName" : "messagecampaign.externalID"
         },
         {
           "eventKey" :  "MessageKey",
-          "displayName" : "Message key"
+          "displayName" : "messagecampaign.message.key"
         }
       ]
     },
     {
-      "displayName" : "Campaign completed",
+      "displayName" : "messagecampaign.campaign.completed",
       "subject" : "org.motechproject.messagecampaign.campaign-completed",
       "eventParameters" : [
         {
           "eventKey" : "ExternalID",
-          "displayName" : "External ID"
+          "displayName" : "messagecampaign.externalID"
         },
         {
           "eventKey" : "CampaignName",
-          "displayName" : "Campaign name"
+          "displayName" : "messagecampaign.campaign.name"
         }
       ]
     }
   ],
   "actionTaskEvents" : [
     {
-      "displayName" : "Send Message",
+      "displayName" : "messagecampaign.send.message",
       "subject" : "org.motechproject.messagecampaign.fired-campaign-message",
       "actionParameters" : [
         {
-          "eventKey" : "CampaignName",
-          "displayName" : "Campaign name"
+          "key" : "CampaignName",
+          "displayName" : "messagecampaign.campaign.name"
         },
         {
-          "eventKey" :  "ExternalID",
-          "displayName" : "External ID"
+          "key" :  "ExternalID",
+          "displayName" : "messagecampaign.externalID"
         },
         {
-          "eventKey" :  "MessageKey",
-          "displayName" : "Message key"
+          "key" :  "MessageKey",
+          "displayName" : "messagecampaign.message.key",
+          "order" : 2
         }
       ]
     },
     {
-      "displayName" : "Campaign completed",
+      "displayName" : "messagecampaign.campaign.completed",
+      "serviceInterface": "org.motechproject.messagecampaign.service.MessageCampaignService",
+      "serviceMethod": "campaignCompleted",
       "subject" : "org.motechproject.messagecampaign.campaign-completed",
       "actionParameters" : [
         {
-          "eventKey" : "ExternalID",
-          "displayName" : "External ID"
+          "key" : "ExternalID",
+          "displayName" : "messagecampaign.externalID"
         },
         {
-          "eventKey" : "CampaignName",
-          "displayName" : "Campaign name"
+          "key" : "CampaignName",
+          "displayName" : "messagecampaign.campaign.name"
         }
       ]
     }

@@ -13,7 +13,7 @@ public class ActionEventTest {
         String serviceMethod = "method";
 
         TaskActionInformation information = new TaskActionInformation(null, null, null, serviceInterface, serviceMethod);
-        ActionEvent actionEvent = new ActionEvent(null, null, null, serviceInterface, serviceMethod);
+        ActionEvent actionEvent = new ActionEvent(null, null, serviceInterface, serviceMethod, null);
 
         assertTrue(actionEvent.accept(information));
     }
@@ -70,7 +70,7 @@ public class ActionEventTest {
         String subject = "subject";
 
         TaskActionInformation information = new TaskActionInformation(null, null, null, subject);
-        ActionEvent actionEvent = new ActionEvent(null, null, subject, null);
+        ActionEvent actionEvent = new ActionEvent(null, subject, null, null);
 
         assertTrue(actionEvent.accept(information));
     }

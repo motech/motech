@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Component("managementDataProvider")
 public class ManagementDataProvider implements OsgiServiceLifecycleListener {
-    private static final Logger LOG = LoggerFactory.getLogger(ChannelRegister.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ManagementDataProvider.class);
     private TaskTriggerHandler handler;
     private TaskDataProviderService taskDataProviderService;
 
