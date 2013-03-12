@@ -40,6 +40,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class AppointmentServiceImplTest {
 
     public static final int REMIND_FROM = 10;
+    public static final int REMIND_FROM_HOURS = 240;
     @Mock
     private AllAppointmentCalendars allAppointmentCalendars;
     @Mock
@@ -128,7 +129,7 @@ public class AppointmentServiceImplTest {
         final String externalId = "externalId";
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId);
         final DateTime now = DateUtil.now();
-        ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM_HOURS).setIntervalCount(24).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
         CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).addAppointmentReminderConfiguration(reminderConfiguration);
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
@@ -145,7 +146,7 @@ public class AppointmentServiceImplTest {
 
         assertEquals(visitName, visitName);
         assertEquals(now, visitCaptor.getValue().appointment().dueDate());
-        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
+        assertEquals(now.minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
         assertEquals(EventKeys.CREATED_VISIT_EVENT_SUBJECT, event.getSubject());
         assertEquals(visitName, event.getParameters().get(EventKeys.VISIT_NAME));
         assertEquals(visitCaptor.getValue().visitDate(), event.getParameters().get(EventKeys.VISIT_DATE));

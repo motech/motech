@@ -4,17 +4,16 @@ import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AppointmentReminderJob extends CronSchedulableJob {
+public class AppointmentReminderJob extends RepeatingSchedulableJob {
 
     public static final String SUBJECT = EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT;
 
     public AppointmentReminderJob(String externalId, String jobId, Reminder reminder, String visitName) {
-        super(createMotechEvent(externalId, visitName, jobId), "0 0 0 ? * *", reminder.startDate(), reminder.endDate());
+        super(createMotechEvent(externalId, visitName, jobId), reminder.startDate(), reminder.endDate(), reminder.repeatCount(), reminder.intervalSeconds() * 1000, true);
     }
 
     private static MotechEvent createMotechEvent(String externalId, String visitName, String jobId) {

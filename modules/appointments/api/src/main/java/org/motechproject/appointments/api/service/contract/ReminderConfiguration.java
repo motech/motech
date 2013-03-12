@@ -22,6 +22,19 @@ public class ReminderConfiguration {
     private int repeatCount;
 
     public int getRemindFrom() {
+        if (intervalUnit == null) {
+            return remindFrom;
+        }
+
+        if (this.intervalUnit.equals(IntervalUnit.MINUTES)) {
+            return remindFrom * 60;
+        } else if (this.intervalUnit.equals(IntervalUnit.HOURS)) {
+            return remindFrom * 60 * 60;
+        } else if (this.intervalUnit.equals(IntervalUnit.DAYS)) {
+            return remindFrom * 60 * 60 * 24;
+        } else if (this.intervalUnit.equals(IntervalUnit.WEEKS)) {
+            return remindFrom * 60 * 60 * 24 * 7;
+        }
         return remindFrom;
     }
 

@@ -17,7 +17,7 @@ public class ReminderMapperTest {
 
     @Before
     public void setUp() {
-        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        reminderConfiguration = new ReminderConfiguration().setRemindFrom(240).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
         today = DateTime.now();
         reminderMapper = new ReminderMapper();
     }

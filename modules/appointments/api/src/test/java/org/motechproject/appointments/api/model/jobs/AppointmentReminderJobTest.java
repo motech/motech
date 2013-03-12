@@ -30,11 +30,6 @@ public class AppointmentReminderJobTest {
     }
 
     @Test
-    public void shouldRunEveryDay() {
-        assertEquals("0 0 0 ? * *", appointmentReminderJob.getCronExpression());
-    }
-
-    @Test
     public void shouldAddVisitNameToParameters() {
         assertEquals(visit.name(), appointmentReminderJob.getMotechEvent().getParameters().get(EventKeys.VISIT_NAME));
     }
