@@ -1,12 +1,15 @@
 package org.motechproject.tasks.web;
 
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.validation.TaskError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -61,5 +65,12 @@ public class TaskController {
     public void save(@RequestBody Task task) {
         taskService.save(task);
         triggerHandler.registerHandlerFor(task.getTrigger().getSubject());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public List<TaskError> handleException(ValidationException e) throws IOException {
+        return e.getTaskErrors();
     }
 }

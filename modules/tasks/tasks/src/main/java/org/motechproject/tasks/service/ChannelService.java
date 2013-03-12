@@ -10,6 +10,8 @@ public interface ChannelService {
 
     void registerChannel(InputStream stream);
 
+    void registerChannel(Channel channel);
+
     List<Channel> getAllChannels();
 
     Channel getChannel(String displayName, String moduleName, String moduleVersion);

@@ -8,6 +8,9 @@ import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllChannels;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.Bundle;
@@ -21,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,10 +61,21 @@ public class ChannelServiceImplTest {
         channelService = new ChannelServiceImpl(allChannels, motechJsonReader);
     }
 
+    @Test(expected = ValidationException.class)
+    public void shouldNotRegisterChannelWhenValidationExceptionIsAppeared() {
+        Type type = new TypeToken<Channel>() { }.getType();
+        Channel channel = new Channel();
+
+        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(channel);
+
+        channelService.registerChannel(inputStream);
+    }
+
     @Test
     public void shouldRegisterChannel() {
         Type type = new TypeToken<Channel>() { }.getType();
-        Channel channel = new Channel();
+        Channel channel = new Channel("displayName", MODULE_NAME, VERSION);
+        channel.setTriggerTaskEvents(asList(new TriggerEvent(null, "displayName", "subject", asList(new EventParameter("displayName", "eventKey")))));
 
         when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(channel);
 

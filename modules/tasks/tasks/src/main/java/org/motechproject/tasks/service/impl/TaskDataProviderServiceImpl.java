@@ -3,8 +3,11 @@ package org.motechproject.tasks.service.impl;
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.validation.TaskDataProviderValidator;
+import org.motechproject.tasks.validation.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,9 +45,15 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
         Type type = new TypeToken<TaskDataProvider>() {}.getType();
         TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
+        ValidationResult result = TaskDataProviderValidator.validate(provider);
+
+        if (!result.isValid()) {
+            throw new ValidationException(result.getTaskErrors());
+        }
+
         allTaskDataProviders.addOrUpdate(provider);
 
-        return provider;
+        return getProvider(provider.getName());
     }
 
     @Override

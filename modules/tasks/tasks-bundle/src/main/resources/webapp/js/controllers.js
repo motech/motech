@@ -582,11 +582,18 @@
 
                             window.location = loc.substring(0, indexOf) + "#/dashboard";
                         });
-                    }).error(function () {
+                    }).error(function (response) {
+                        var msg = $scope.msg('task.error.saved') + '\n', i;
+
+                        for (i = 0; i < response.length; i += 1) {
+                            msg += ' - ' + $scope.msg(response[i].message, [response[i].field, response[i].objectName]) + '\n';
+                        }
+
                         delete $scope.task.actionInputFields;
                         delete $scope.task.enabled;
+                        delete $scope.task.additionalData;
 
-                        alertHandler('task.error.saved', 'header.error');
+                        jAlert(msg, jQuery.i18n.prop('header.error'));
                     });
             } else {
                 $scope.task.$save(function () {
@@ -600,12 +607,18 @@
 
                         window.location = loc.substring(0, indexOf) + "#/dashboard";
                     });
-                }, function () {
+                }, function (response) {
+                    var msg = $scope.msg('task.error.saved') + '\n', i;
+
+                    for (i = 0; i < response.length; i += 1) {
+                        msg += ' - ' + $scope.msg(response[i].message, [response[i].field, response[i].objectName]) + '\n';
+                    }
+
                     delete $scope.task.actionInputFields;
                     delete $scope.task.enabled;
                     delete $scope.task.additionalData;
 
-                    alertHandler('task.error.saved', 'header.error');
+                    jAlert(msg, jQuery.i18n.prop('header.error'));
                 });
             }
         };
