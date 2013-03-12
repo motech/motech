@@ -56,15 +56,11 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
 
     @Override
     public CaseInfo getCaseByCaseId(String caseId) {
-        NameValuePair[] queryParams = new NameValuePair[1];
-        queryParams[0] = new NameValuePair("case_id", caseId);
-        String response = commcareHttpClient.casesRequest(queryParams);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
-        if (cases.size() == 0) {
-            return null;
-        }
-        return cases.get(0);
+        String response = commcareHttpClient.singleCaseRequest(caseId);
+
+        CaseResponseJson caseResponses = parseSingleCaseFromResponse(response);
+
+        return generateCaseFromCaseResponse(caseResponses);
     }
 
     @Override
@@ -77,7 +73,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
     @Override
     public List<CaseInfo> getAllCasesByType(String type) {
         NameValuePair[] queryParams = new NameValuePair[1];
-        queryParams[0] = new NameValuePair("properties/case_type", type);
+        queryParams[0] = new NameValuePair("type", type);
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
         return generateCasesFromCaseResponse(caseResponses);
@@ -96,7 +92,7 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
     public List<CaseInfo> getAllCasesByUserIdAndType(String userId, String type) {
         NameValuePair[] queryParams = new NameValuePair[2];
         queryParams[0] = new NameValuePair("user_id", type);
-        queryParams[1] = new NameValuePair("properties/case_type=", type);
+        queryParams[1] = new NameValuePair("type", type);
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
         return generateCasesFromCaseResponse(caseResponses);
@@ -118,6 +114,19 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         return allCases;
     }
 
+    private CaseResponseJson parseSingleCaseFromResponse(String response) {
+        CaseResponseJson caseReturned = null;
+
+        try {
+            caseReturned = (CaseResponseJson) motechJsonReader
+                    .readFromString(response, CaseResponseJson.class);
+        } catch (Exception e) {
+            logger.warn("Exception while trying to read in case JSON: " + e.getMessage());
+        }
+
+        return caseReturned; 
+    }
+
     private List<CaseInfo> generateCasesFromCaseResponse(
             List<CaseResponseJson> caseResponses) {
         List<CaseInfo> caseList = new ArrayList<CaseInfo>();
@@ -127,42 +136,53 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         }
 
         for (CaseResponseJson caseResponse : caseResponses) {
-            CaseInfo caseInfo = new CaseInfo();
-
-            Map<String, String> properties = caseResponse.getProperties();
-
-            String caseType = properties.get("case_type");
-            String dateOpened = properties.get("date_opened");
-            String ownerId = properties.get("owner_id)");
-            String caseName = properties.get("case_name");
-
-            caseInfo.setCaseType(caseType);
-            caseInfo.setDateOpened(dateOpened);
-            caseInfo.setOwnerId(ownerId);
-            caseInfo.setCaseName(caseName);
-
-            properties.remove("case_type");
-            properties.remove("date_opened");
-            properties.remove("owner_id");
-            properties.remove("case_name");
-
-            caseInfo.setFieldValues(properties);
-            caseInfo.setClosed(caseResponse.isClosed());
-            caseInfo.setDateClosed(caseResponse.getDateClosed());
-            caseInfo.setDomain(caseResponse.getDomain());
-            caseInfo.setIndices(caseResponse.getIndices());
-            caseInfo.setServerDateModified(caseResponse.getServerDateModified());
-            caseInfo.setServerDateOpened(caseResponse.getServerDateOpened());
-            caseInfo.setVersion(caseResponse.getVersion());
-            caseInfo.setXformIds(caseResponse.getXformIds());
-            caseInfo.setCaseId(caseResponse.getCaseId());
-            caseInfo.setUserId(caseResponse.getUserId());
-
-            caseList.add(caseInfo);
-
+            caseList.add(populateCaseInfo(caseResponse));
         }
 
         return caseList;
+    }
+
+    private CaseInfo generateCaseFromCaseResponse(CaseResponseJson caseResponse) {
+        return populateCaseInfo(caseResponse);
+    }
+
+    private CaseInfo populateCaseInfo(CaseResponseJson caseResponse) {
+        if (caseResponse == null) {
+            return null;
+        }
+
+        CaseInfo caseInfo = new CaseInfo();
+
+        Map<String, String> properties = caseResponse.getProperties();
+
+        String caseType = properties.get("case_type");
+        String dateOpened = properties.get("date_opened");
+        String ownerId = properties.get("owner_id)");
+        String caseName = properties.get("case_name");
+
+        caseInfo.setCaseType(caseType);
+        caseInfo.setDateOpened(dateOpened);
+        caseInfo.setOwnerId(ownerId);
+        caseInfo.setCaseName(caseName);
+
+        properties.remove("case_type");
+        properties.remove("date_opened");
+        properties.remove("owner_id");
+        properties.remove("case_name");
+
+        caseInfo.setFieldValues(properties);
+        caseInfo.setClosed(caseResponse.isClosed());
+        caseInfo.setDateClosed(caseResponse.getDateClosed());
+        caseInfo.setDomain(caseResponse.getDomain());
+        caseInfo.setIndices(caseResponse.getIndices());
+        caseInfo.setServerDateModified(caseResponse.getServerDateModified());
+        caseInfo.setServerDateOpened(caseResponse.getServerDateOpened());
+        caseInfo.setVersion(caseResponse.getVersion());
+        caseInfo.setXformIds(caseResponse.getXformIds());
+        caseInfo.setCaseId(caseResponse.getCaseId());
+        caseInfo.setUserId(caseResponse.getUserId());
+
+        return caseInfo;
     }
 
     @Override
