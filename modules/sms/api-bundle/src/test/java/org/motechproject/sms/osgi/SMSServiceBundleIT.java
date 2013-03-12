@@ -6,7 +6,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
@@ -18,6 +17,7 @@ import org.motechproject.sms.api.constants.EventSubjects;
 import org.motechproject.sms.api.service.SendSmsRequest;
 import org.motechproject.sms.api.service.SmsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.Wait;
 import org.osgi.framework.ServiceReference;
 
@@ -83,20 +83,19 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
     }
 
     public void testSmsWebServiceAsAnonymousUser() throws InterruptedException, IOException {
-        waitForPortToListen(HOST,PORT,30);
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST , PORT , "/smsapi/web-api/messages"));
+        PollingHttpClient motechHttpClient = new PollingHttpClient();
+        String url = String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages");
+        HttpPost request = new HttpPost(url);
         request.setHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity("{\"recipients\" : [\"123\"], \"message\": \"foo\"}"));
-        HttpResponse response = httpClient.execute(request);
+        HttpResponse response = motechHttpClient.execute(request);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
     public void testSmsWebServiceAsUnauthenticatedUser() throws InterruptedException, IOException {
-        waitForPortToListen(HOST,PORT,30);
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient();
         httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("mal", "icious"));
-        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST , PORT , "/smsapi/web-api/messages"));
+        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));
         request.setHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity("{\"recipients\" : [\"123\"], \"message\": \"foo\"}"));
         HttpResponse response = httpClient.execute(request);
@@ -108,9 +107,8 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
         motechUserService.register("fuu", "bar", "fuubar@a.com", "fuubar", asList("Admin User"));
 
-        waitForPortToListen(HOST,PORT,30);
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST , PORT , "/smsapi/web-api/messages"));
+        PollingHttpClient httpClient = new PollingHttpClient();
+        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Authorization", "Basic " + encodeBase64String("fuu:bar".getBytes("UTF-8")));
         request.setEntity(new StringEntity("{\"recipients\" : [\"123\"], \"message\": \"hello\"}"));
@@ -123,8 +121,8 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
         motechUserService.register("foo", "bar", "foobar@a.com", "foobar", asList("Sms-api Bundle"));
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST , PORT , "/smsapi/web-api/messages"));
+        PollingHttpClient httpClient = new PollingHttpClient();
+        HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Authorization", "Basic " + encodeBase64String("foo:bar".getBytes("UTF-8")));
         request.setEntity(new StringEntity("{\"recipients\" : [\"123\"], \"message\": \"hello\"}"));

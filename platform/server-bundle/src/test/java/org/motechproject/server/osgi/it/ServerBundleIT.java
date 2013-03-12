@@ -4,6 +4,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
@@ -13,11 +14,8 @@ import java.util.List;
 
 public class ServerBundleIT extends BaseOsgiIT {
 
-    private static final int HTTP_PORT = 8080;
-    public static final String LOCALHOST = "localhost";
 
     public void testUIFrameworkService() throws IOException, InterruptedException {
-        waitForPortToListen(LOCALHOST, HTTP_PORT, 30);
         ServiceReference serviceReference = bundleContext.getServiceReference(UIFrameworkService.class.getName());
         assertNotNull(serviceReference);
         UIFrameworkService service = (UIFrameworkService) bundleContext.getService(serviceReference);
@@ -28,7 +26,7 @@ public class ServerBundleIT extends BaseOsgiIT {
     }
 
     public void testThatControllerIsUp() throws IOException, InterruptedException {
-        final String response = executeHttpCall(LOCALHOST, HTTP_PORT, "/server/lang/list", new BasicResponseHandler());
+        String response = new PollingHttpClient().get("http://localhost:8080/server/lang/list", new BasicResponseHandler());
         assertTrue(response.contains("en"));
     }
 

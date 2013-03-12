@@ -1,20 +1,17 @@
 package org.motechproject.commcare.osgi.it;
 
 import com.google.gson.JsonParser;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.motechproject.commcare.service.CommcareCaseService;
 import org.motechproject.commcare.service.CommcareFormService;
 import org.motechproject.commcare.service.CommcareUserService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.PollingHttpClient;
 
 import java.io.IOException;
 
 public class CommcareBundleIT extends BaseOsgiIT {
 
-    private String HOST = "localhost";
-    private int PORT = 8080;
 
     public void testCommcareUserService() {
         CommcareUserService service = (CommcareUserService) verifyServiceAvailable(CommcareUserService.class.getName());
@@ -32,7 +29,7 @@ public class CommcareBundleIT extends BaseOsgiIT {
     }
 
     public void testSettingsController() throws IOException, InterruptedException {
-        final String response = executeHttpCall(HOST , PORT , "/commcare/settings", new BasicResponseHandler());
+        final String response = new PollingHttpClient().get("http://localhost:8080/commcare/settings", new BasicResponseHandler());
         assertNotNull(response);
         assertTrue(new JsonParser().parse(response).isJsonObject());
     }
