@@ -9,13 +9,17 @@ import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.messagecampaign.domain.CampaignNotFoundException;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.messagecampaign.loader.CampaignJsonLoader;
 import org.motechproject.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.messagecampaign.scheduler.CampaignSchedulerService;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.messagecampaign.web.ex.EnrollmentNotFoundException;
+import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +28,16 @@ import java.util.Map;
 @Service("messageCampaignService")
 public class MessageCampaignServiceImpl implements MessageCampaignService {
 
+    public static final String MESSAGE_CAMPAIGNS_JSON_FILENAME = "message-campaigns.json";
+
     private CampaignEnrollmentService campaignEnrollmentService;
     private CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper;
     private AllCampaignEnrollments allCampaignEnrollments;
     private CampaignSchedulerFactory campaignSchedulerFactory;
     private AllMessageCampaigns allMessageCampaigns;
     private EventRelay relay;
+    @Autowired
+    private SettingsFacade settingsFacade;
 
     @Autowired
     public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory,
@@ -157,5 +165,16 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         request.setCampaignName((String) parameters.get(EventKeys.CAMPAIGN_NAME_KEY));
 
         stopAll(request);
+    }
+
+    @PostConstruct
+    void loadCampaigns() {
+        InputStream inputStream = settingsFacade.getRawConfig(MESSAGE_CAMPAIGNS_JSON_FILENAME);
+        if (inputStream != null) {
+            List<CampaignRecord> records = new CampaignJsonLoader().loadCampaigns(inputStream);
+            for (CampaignRecord record : records) {
+                allMessageCampaigns.saveOrUpdate(record);
+            }
+        }
     }
 }

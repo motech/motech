@@ -14,6 +14,7 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
         var createOrUpdateEnrollementUrl = "../messagecampaign/enrollments/" + $scope.campaignName + "/users";
         var getEnrollementsUrl = "../messagecampaign/enrollments/users?campaignName=" + $scope.campaignName;
         var deleteEnrollementUrl = "../messagecampaign/enrollments/" + $scope.campaignName + "/users/";
+        var newRowPrefix = "NEW_ROW_";
 
         jQuery("#enrollmentsTable").jqGrid({
             caption:"Enrollments for Campaign - " + $scope.campaignName,
@@ -28,47 +29,105 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
             colModel:[
                 {name:'enrollmentId', index:'enrollmentId', hidden:true, editable:true},
                 {name:'externalId', index:'externalId', sortable:false, editable:true},
-                {name:'edit', formatter:'actions',
-                    formatoptions:{keys:true, editbutton:true, delbutton:false, url:createOrUpdateEnrollementUrl, mtype:"POST" }},
-                {name:'delete', formatter:'actions',
-                    formatoptions:{editbutton:false, delbutton:true, delOptions:{
-                        url:deleteEnrollementUrl,
-                        mtype:"DELETE",
-                        reloadAfterSubmit:true,
-                        onclickSubmit: function(colModel, postdata) {
-                            var rowdata = jQuery('#enrollmentsTable').getRowData(postdata);
-                            colModel.url = colModel.url + encodeURIComponent(rowdata.externalId);
+                {
+                    name:'edit',
+                    formatter:'actions',
+                    formatoptions:{
+                        keys:true,
+                        editbutton:true,
+                        delbutton:false,
+                        url:createOrUpdateEnrollementUrl,
+                        mtype:"POST",
+                        onSuccess:function () {
+                            jQuery("#enrollmentsTable").trigger('reloadGrid');
+                        },
+                        afterRestore:function (rowId) {
+                            var grid = jQuery("#enrollmentsTable");
+                            var externalId = grid.jqGrid('getRowData', rowId).externalId;
+                            if (!externalId) {
+                                grid.jqGrid('delRowData', rowId);
+                            }
                         }
-                    }}}
+                    }
+                },
+                {
+                    name:'delete',
+                    formatter:deleteFormatter
+                }
             ],
             autowidth:true,
-            height: "auto",
+            height:"auto",
             multiselect:true
         });
+
+        function deleteFormatter(cellvalue, options, rowObject) {
+            return "" +
+                "<div style='margin-left:8px;'>" +
+                "<div " +
+                "class='ui-pg-div ui-inline-del'" +
+                "onmouseout='jQuery(this).removeClass(\"ui-state-hover\");'" +
+                "onmouseover='jQuery(this).addClass(\"ui-state-hover\");'" +
+                "onclick='deleteRows([\"" + rowObject.enrollmentId + "\"]);'" +
+                "style='float:left;margin-left:5px;'" +
+                "title='Delete selected row'>" +
+                "<span class='ui-icon ui-icon-trash'></span>" +
+                "</div>" +
+                "</div>";
+        }
 
         jQuery("#deleteEnrollments").click(function () {
             var grid = jQuery("#enrollmentsTable");
             var rowIds = grid.jqGrid('getGridParam', 'selarrrow');
-            if (rowIds.length > 0) {
-                for (i = 0; rowIds[i]; i++) {
-                    var refresh = (i == rowIds.length - 1);
-                    var rowdata = grid.jqGrid("getRowData", rowIds[i]);
-                    jQuery.ajax({
-                        type:"DELETE",
-                        url:deleteEnrollementUrl + rowdata.externalId,
-                        success: function() {
-                            if (refresh)
-                                jQuery("#enrollmentsTable").trigger('reloadGrid');
-                        }
-                    });
-                }
-            }
+            deleteRows(rowIds);
         });
 
+        this.deleteRows = function (rowIds) {
+            if (rowIds.length == 0) {
+                motechAlert("msgCampaign.enrollment.noUserSelected", "msgCampaign.enrollment.invalidAction");
+                return;
+            }
+            motechConfirm("msgCampaign.enrollment.deleteConfirmMsg", "msgCampaign.enrollment.deleteConfirmTitle",
+                function (response) {
+                    if (!response) {
+                        return;
+                    }
+                    var grid = jQuery("#enrollmentsTable");
+                    for (var i = 0; i < rowIds.length; i++) {
+                        var refresh = (i == rowIds.length - 1);
+                        var rowId = rowIds[i];
+                        if (isNewRow(rowId)) {
+                            grid.jqGrid('delRowData', rowId);
+                            continue;
+                        }
+                        var rowData = grid.jqGrid("getRowData", rowId);
+                        jQuery.ajax({
+                            type:"DELETE",
+                            url:deleteEnrollementUrl + rowData.externalId,
+                            success:function () {
+                                if (refresh)
+                                    jQuery("#enrollmentsTable").trigger('reloadGrid');
+                            }
+                        });
+                    }
+                });
+        }
+
         jQuery("#addEnrollment").click(function () {
-            var rowId = Math.round(Math.random()*10000);
-            jQuery("#enrollmentsTable").jqGrid('addRowData', rowId, {});
-            jQuery(jQuery("#enrollmentsTable").jqGrid('getInd', rowId, true)).find('.ui-inline-edit').click();
+            var grid = jQuery("#enrollmentsTable");
+            var rowIds = grid.jqGrid('getDataIDs');
+            for (var i = 0; i < rowIds.length; i++) {
+                if (isNewRow(rowIds[i])) {
+                    motechAlert("msgCampaign.enrollment.unsavedEnrollement", "msgCampaign.enrollment.invalidAction");
+                    return;
+                }
+            }
+            var rowId = newRowPrefix + Math.round(Math.random() * 10000);
+            grid.jqGrid('addRowData', rowId, {});
+            jQuery(grid.jqGrid('getInd', rowId, true)).find('.ui-inline-edit').click();
         });
+
+        var isNewRow = function (rowId) {
+            return rowId.startsWith(newRowPrefix);
+        };
     });
 }
