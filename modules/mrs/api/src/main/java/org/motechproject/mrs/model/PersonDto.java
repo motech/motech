@@ -28,6 +28,25 @@ public class PersonDto implements Person {
     private List<Attribute> attributes = new ArrayList<Attribute>();
     private DateTime deathDate;
 
+    public PersonDto() {
+    }
+
+    public PersonDto(String personId, String firstName, String middleName, String lastName, String preferredName, String address, DateTime dateOfBirth, Boolean birthDateEstimated, Integer age, String gender, boolean dead, List<Attribute> attributes, DateTime deathDate) {
+        this.personId = personId;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.preferredName = preferredName;
+        this.address = address;
+        this.dateOfBirth = dateOfBirth;
+        this.birthDateEstimated = birthDateEstimated;
+        this.age = age;
+        this.gender = gender;
+        this.dead = dead;
+        this.attributes = attributes;
+        this.deathDate = deathDate;
+    }
+
     public String getPersonId() {
         return personId;
     }
@@ -96,7 +115,6 @@ public class PersonDto implements Person {
         if (this.dateOfBirth != null) {
             this.age = Years.yearsBetween(this.dateOfBirth, new DateTime(now())).getYears();
         }
-
         return age;
     }
 

@@ -8,8 +8,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSConcept;
 import org.motechproject.mrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
@@ -67,6 +71,8 @@ public class OpenMRSObservationAdapterTest {
     private OpenMRSPatientAdapter mockOpenMRSPatientAdapter;
     @Mock
     private User creator;
+    @Mock
+    EventRelay eventRelay;
 
     @Before
     public void setUp() {
@@ -76,6 +82,7 @@ public class OpenMRSObservationAdapterTest {
         ReflectionTestUtils.setField(observationAdapter, "obsService", mockObservationService);
         ReflectionTestUtils.setField(observationAdapter, "openMRSUserAdapter", mockOpenMRSUserAdapter);
         ReflectionTestUtils.setField(observationAdapter, "openMRSPatientAdapter", mockOpenMRSPatientAdapter);
+        ReflectionTestUtils.setField(observationAdapter, "eventRelay", eventRelay);
     }
 
     @Test
@@ -322,6 +329,7 @@ public class OpenMRSObservationAdapterTest {
         doReturn(savedMRSObservation).when(observationAdapterSpy).convertOpenMRSToMRSObservation(savedOpenMRSObservation);
 
         OpenMRSObservation returnedMRSObservation = observationAdapterSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(returnedMRSObservation)));
         Assert.assertThat(returnedMRSObservation, Matchers.is(equalTo(savedMRSObservation)));
     }
 
@@ -360,6 +368,8 @@ public class OpenMRSObservationAdapterTest {
 
     @Test
     public void shouldVoidObservation() throws ObservationNotFoundException {
+        OpenMRSObservationAdapter spyOpenMrsObservationAdapter = spy(observationAdapter);
+        final OpenMRSObservation mockMrsObs = mock(OpenMRSObservation.class);
         String observationId = "34";
         String mrsUserId="userId";
         OpenMRSObservation mrsObservation = new OpenMRSObservation(observationId, new Date(), "name", Integer.valueOf("34"));
@@ -370,11 +380,19 @@ public class OpenMRSObservationAdapterTest {
 
         when(mockObservationService.getObs(Integer.valueOf(observationId))).thenReturn(expectedOpenmRSObs);
         when(mockOpenMRSUserAdapter.getOpenMrsUserByUserName(mrsUserId)).thenReturn(user);
+        Obs copyExpectedOpenmRSObs = expectedOpenmRSObs;
+        copyExpectedOpenmRSObs.setVoided(true);
+        copyExpectedOpenmRSObs.setVoidReason(reason);
+        copyExpectedOpenmRSObs.setDateVoided(new Date());
+        copyExpectedOpenmRSObs.setVoidedBy(user);
+        doReturn(mockMrsObs).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(copyExpectedOpenmRSObs);
 
-        observationAdapter.voidObservation(mrsObservation, reason, mrsUserId);
+        spyOpenMrsObservationAdapter.voidObservation(mrsObservation, reason, mrsUserId);
 
         ArgumentCaptor<Obs> captor = ArgumentCaptor.forClass(Obs.class);
         verify(mockObservationService).voidObs(captor.capture(), eq(reason));
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.DELETED_OBSERVATION_SUBJECT, EventHelper.observationParameters(mockMrsObs)));
+
         Obs actualOpenMRSObservation = captor.getValue();
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

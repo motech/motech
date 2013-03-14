@@ -1,7 +1,11 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSConcept;
 import org.motechproject.mrs.model.OpenMRSObservation;
 import org.motechproject.mrs.services.ObservationAdapter;
@@ -17,11 +21,13 @@ import org.openmrs.User;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
 @Service
@@ -38,6 +44,9 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
 
     @Autowired
     private OpenMRSPatientAdapter openMRSPatientAdapter;
+
+    @Autowired
+    private EventRelay eventRelay;
 
     /**
      * Voids an observation for the `MOTECH user, with the given reason
@@ -58,6 +67,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
         obs.setDateVoided(new Date());
         obs.setVoidedBy(openMRSUserAdapter.getOpenMrsUserByUserName(userMotechId));
         obsService.voidObs(obs, reason);
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_OBSERVATION_SUBJECT, EventHelper.observationParameters(convertOpenMRSToMRSObservation(obs))));
     }
 
     /**
@@ -125,7 +135,9 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
     }
 
     private Obs saveObs(Observation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
-        return obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null);
+        Obs obs = obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null);
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(convertOpenMRSToMRSObservation(obs))));
+        return obs;
     }
 
     Set<OpenMRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
@@ -176,6 +188,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
                 mrsObservation.addDependantObservation(convertOpenMRSToMRSObservation(observation));
             }
         }
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(mrsObservation)));
         return mrsObservation;
     }
 

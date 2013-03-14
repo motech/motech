@@ -3,12 +3,24 @@ package org.motechproject.mrs.model;
 import org.motechproject.mrs.domain.Facility;
 
 public class FacilityDto implements Facility {
+
     private String facilityId;
     private String name;
     private String country;
     private String region;
     private String countyDistrict;
     private String stateProvince;
+
+    public FacilityDto() {
+    }
+
+    public FacilityDto(String name, String country, String region, String countyDistrict, String stateProvince) {
+        this.name = name;
+        this.country = country;
+        this.region = region;
+        this.countyDistrict = countyDistrict;
+        this.stateProvince = stateProvince;
+    }
 
     public String getFacilityId() {
         return facilityId;

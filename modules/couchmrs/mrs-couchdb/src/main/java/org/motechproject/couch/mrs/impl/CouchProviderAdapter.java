@@ -1,20 +1,27 @@
 package org.motechproject.couch.mrs.impl;
 
-import java.util.List;
-
 import org.motechproject.couch.mrs.model.CouchProvider;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchProviders;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Provider;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.services.ProviderAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class CouchProviderAdapter implements ProviderAdapter {
 
     @Autowired
     private AllCouchProviders allCouchProviders;
+
+    @Autowired
+    private EventRelay eventRelay;
 
     @Override
     public Provider saveProvider(Provider provider) {
@@ -23,6 +30,7 @@ public class CouchProviderAdapter implements ProviderAdapter {
 
         try {
             allCouchProviders.addProvider(couchProvider);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PROVIDER_SUBJECT, EventHelper.providerParameters(provider)));
         } catch (MRSCouchException e) {
             return null;
         }

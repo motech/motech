@@ -5,13 +5,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <context:annotation-config />
-    <context:component-scan base-package="org.motechproject.openmrs.ws" />
+    <context:property-placeholder location="classpath:activemq.properties, classpath:openmrs19.properties" system-properties-mode="OVERRIDE" />
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
-    <context:property-placeholder location="openmrs19.properties" />
-    
     <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"
-        init-method="afterPropertiesSet">
+        >
         <property name="configFiles">
             <list>
                 <value>classpath:openmrs19.properties</value>
@@ -20,21 +18,4 @@
         <property name="moduleName" value="openmrs-ws" />
     </bean>
 
-    <bean id="openMrshttpClient" init-method="readSettings" depends-on="openmrsWsSettings"
-        class="org.motechproject.openmrs.ws.HttpClientFactoryBean">
-        <constructor-arg ref="openmrsWsSettings" />
-    </bean>
-
-    <bean id="requestFactory" class="org.springframework.http.client.CommonsClientHttpRequestFactory">
-        <constructor-arg ref="openMrshttpClient" />
-    </bean>
-
-    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <constructor-arg ref="requestFactory" />
-        <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
-            </list>
-        </property>
-    </bean>
 </beans>

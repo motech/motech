@@ -9,7 +9,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.exception.PatientNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSAttribute;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.motechproject.mrs.model.OpenMRSPatient;
@@ -26,11 +30,13 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -55,6 +61,8 @@ public class OpenMRSPatientAdapterTest {
     private OpenMRSFacilityAdapter mockFacilityAdapter;
     @Mock
     private OpenMRSConceptAdapter mockOpenMRSConceptAdapter;
+    @Mock
+    private EventRelay eventRelay;
 
     OpenMRSPatientAdapter openMRSPatientAdapter;
     PatientTestUtil patientTestUtil;
@@ -72,6 +80,7 @@ public class OpenMRSPatientAdapterTest {
         ReflectionTestUtils.setField(openMRSPatientAdapter, "patientHelper", new PatientHelper());
         ReflectionTestUtils.setField(openMRSPatientAdapter, "personAdapter", mockPersonAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "openMrsConceptAdapter", mockOpenMRSConceptAdapter);
+        ReflectionTestUtils.setField(openMRSPatientAdapter, "eventRelay", eventRelay);
     }
 
     @Test
@@ -101,6 +110,7 @@ public class OpenMRSPatientAdapterTest {
         OpenMRSPatient mrsPatient = new OpenMRSPatient(motechId, mrsPerson, facility);
         final OpenMRSPatient actualPatient = openMRSPatientAdapter.savePatient(mrsPatient);
 
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(actualPatient)));
         verify(mockPersonAdapter).openMRSToMRSPerson(openMRSPatient);
 
         ArgumentCaptor<org.openmrs.Patient> openMrsPatientArgumentCaptor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
@@ -257,6 +267,7 @@ public class OpenMRSPatientAdapterTest {
 
         openMRSPatientAdapter.deceasePatient(patientId, conceptName, dateOfDeath, null);
 
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.PATIENT_DECEASED_SUBJECT, EventHelper.patientParameters(openMRSPatientAdapter.getMrsPatient(patient))));
         InOrder order = inOrder(mockPatientService);
         order.verify(mockPatientService).savePatient(patient);
         order.verify(mockPatientService).saveCauseOfDeathObs(patient, dateOfDeath, concept, null);
@@ -326,6 +337,8 @@ public class OpenMRSPatientAdapterTest {
         final OpenMRSPatientAdapter spyPatientAdapter = spy(openMRSPatientAdapter);
         doReturn(mockPatient).when(spyPatientAdapter).getOpenmrsPatientByMotechId(mrsPatient.getMotechId());
         spyPatientAdapter.updatePatient(mrsPatient);
+
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(openMRSPatientAdapter.getMrsPatient(mockPatient))));
 
         final ArgumentCaptor<Patient> captor = ArgumentCaptor.forClass(Patient.class);
         verify(mockPatientService).savePatient(captor.capture());

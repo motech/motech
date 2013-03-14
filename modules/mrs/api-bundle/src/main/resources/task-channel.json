@@ -1,0 +1,740 @@
+{
+  "displayName" : "mrs.name",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "description" : "mrs.description",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "mrs.patient.created",
+      "subject" : "org.motechproject.mrs.api.Patient.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.patient.updated",
+      "subject" : "org.motechproject.mrs.api.Patient.Updated",
+      "eventParameters" : [
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.patient.deceased",
+      "subject" : "org.motechproject.mrs.api.Patient.Deceased",
+      "eventParameters" : [
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.observation.created",
+      "subject" : "org.motechproject.mrs.api.Observaion.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "ObservationDate",
+          "type" : "DATE",
+          "displayName" : "mrs.observation.field.observationDate"
+        },
+        {
+          "eventKey" : "ObservationConceptName",
+          "displayName" : "mrs.observation.field.observationConceptName"
+        },
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "ObservationValue",
+          "displayName" : "mrs.observation.field.value"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.observation.deleted",
+      "subject" : "org.motechproject.mrs.api.Observation.Deleted",
+      "eventParameters" : [
+        {
+          "eventKey" : "ObservationDate",
+          "type" : "DATE",
+          "displayName" : "mrs.observation.field.observationDate"
+        },
+        {
+          "eventKey" : "ObservationConceptName",
+          "displayName" : "mrs.observation.field.observationConceptName"
+        },
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "ObservationValue",
+          "displayName" : "mrs.observation.field.value"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.encounter.created",
+      "subject" : "org.motechproject.mrs.api.Encounter.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "ProviderId",
+          "displayName" : "mrs.provider.field.providerId"
+        },
+        {
+          "eventKey" : "UserId",
+          "displayName" : "mrs.user.field.userId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "EncounterDate",
+          "type" : "DATE",
+          "displayName" : "mrs.encounter.field.encounterDate"
+        },
+        {
+          "eventKey" : "ObservationDate",
+          "type" : "DATE",
+          "displayName" : "mrs.observation.field.observationDate"
+        },
+        {
+          "eventKey" : "ObservationConceptName",
+          "displayName" : "mrs.observation.field.observationConceptName"
+        },
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "ObservationValue",
+          "displayName" : "mrs.observation.field.value"
+        },
+        {
+          "eventKey" : "EncounterType",
+          "displayName" : "mrs.encounter.field.encounterType"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.encounter.updated",
+      "subject" : "org.motechproject.mrs.api.Encounter.Updated",
+      "eventParameters" : [
+        {
+          "eventKey" : "ProviderId",
+          "displayName" : "mrs.provider.field.providerId"
+        },
+        {
+          "eventKey" : "UserId",
+          "displayName" : "mrs.user.field.userId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "EncounterDate",
+          "type" : "DATE",
+          "displayName" : "mrs.encounter.field.encounterDate"
+        },
+        {
+          "eventKey" : "ObservationDate",
+          "type" : "DATE",
+          "displayName" : "mrs.observation.field.observationDate"
+        },
+        {
+          "eventKey" : "ObservationConceptName",
+          "displayName" : "mrs.observation.field.observationConceptName"
+        },
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "ObservationValue",
+          "displayName" : "mrs.observation.field.value"
+        },
+        {
+          "eventKey" : "EncounterType",
+          "displayName" : "mrs.encounter.field.encounterType"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.facility.created",
+      "subject" : "org.motechproject.mrs.api.Facility.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "FacilityName",
+          "displayName" : "mrs.facility.field.name"
+        },
+        {
+          "eventKey" : "FacilityCountry",
+          "displayName" : "mrs.facility.field.country"
+        },
+        {
+          "eventKey" : "FacilityRegion",
+          "displayName" : "mrs.facility.field.region"
+        },
+        {
+          "eventKey" : "FacilityCountyDistrict",
+          "displayName" : "mrs.facility.field.countyDistrict"
+        },
+        {
+          "eventKey" : "FacilityStateProvince",
+          "displayName" : "mrs.facility.field.stateProvince"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.person.created",
+      "subject" : "org.motechproject.mrs.api.Person.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        },
+        {
+          "eventKey" : "PersonFirsName",
+          "displayName" : "mrs.person.field.firstName"
+        },
+        {
+          "eventKey" : "PersonMiddleName",
+          "displayName" : "mrs.person.field.middleName"
+        },
+        {
+          "eventKey" : "PersonLastName",
+          "displayName" : "mrs.person.field.lastName"
+        },
+        {
+          "eventKey" : "PersonPreferredName",
+          "displayName" : "mrs.person.field.preferredName"
+        },
+        {
+          "eventKey" : "PersonAddress",
+          "displayName" : "mrs.person.field.address"
+        },
+        {
+          "eventKey" : "PersonDateOfBirth",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.dateOfBirth"
+        },
+        {
+          "eventKey" : "PersonBirthDateEstimated",
+          "displayName" : "mrs.person.field.birthDateEstimated"
+        },
+        {
+          "eventKey" : "PersonAge",
+          "type" : "INTEGER",
+          "displayName" : "mrs.person.field.age"
+        },
+        {
+          "eventKey" : "PersonGender",
+          "displayName" : "mrs.person.field.gender"
+        },
+        {
+          "eventKey" : "PersonDead",
+          "displayName" : "mrs.person.field.dead"
+        },
+        {
+          "eventKey" : "PersonDeadDate",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.deathDate"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.person.updated",
+      "subject" : "org.motechproject.mrs.api.Person.Updated",
+      "eventParameters" : [
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        },
+        {
+          "eventKey" : "PersonFirsName",
+          "displayName" : "mrs.person.field.firstName"
+        },
+        {
+          "eventKey" : "PersonMiddleName",
+          "displayName" : "mrs.person.field.middleName"
+        },
+        {
+          "eventKey" : "PersonLastName",
+          "displayName" : "mrs.person.field.lastName"
+        },
+        {
+          "eventKey" : "PersonPreferredName",
+          "displayName" : "mrs.person.field.preferredName"
+        },
+        {
+          "eventKey" : "PersonAddress",
+          "displayName" : "mrs.person.field.address"
+        },
+        {
+          "eventKey" : "PersonDateOfBirth",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.dateOfBirth"
+        },
+        {
+          "eventKey" : "PersonBirthDateEstimated",
+          "displayName" : "mrs.person.field.birthDateEstimated"
+        },
+        {
+          "eventKey" : "PersonAge",
+          "type" : "INTEGER",
+          "displayName" : "mrs.person.field.age"
+        },
+        {
+          "eventKey" : "PersonGender",
+          "displayName" : "mrs.person.field.gender"
+        },
+        {
+          "eventKey" : "PersonDead",
+          "displayName" : "mrs.person.field.dead"
+        },
+        {
+          "eventKey" : "PersonDeadDate",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.deathDate"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.person.deleted",
+      "subject" : "org.motechproject.mrs.api.Person.Deleted",
+      "eventParameters" : [
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        },
+        {
+          "eventKey" : "PersonFirsName",
+          "displayName" : "mrs.person.field.firstName"
+        },
+        {
+          "eventKey" : "PersonMiddleName",
+          "displayName" : "mrs.person.field.middleName"
+        },
+        {
+          "eventKey" : "PersonLastName",
+          "displayName" : "mrs.person.field.lastName"
+        },
+        {
+          "eventKey" : "PersonPreferredName",
+          "displayName" : "mrs.person.field.preferredName"
+        },
+        {
+          "eventKey" : "PersonAddress",
+          "displayName" : "mrs.person.field.address"
+        },
+        {
+          "eventKey" : "PersonDateOfBirth",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.dateOfBirth"
+        },
+        {
+          "eventKey" : "PersonBirthDateEstimated",
+          "displayName" : "mrs.person.field.birthDateEstimated"
+        },
+        {
+          "eventKey" : "PersonAge",
+          "type" : "INTEGER",
+          "displayName" : "mrs.person.field.age"
+        },
+        {
+          "eventKey" : "PersonGender",
+          "displayName" : "mrs.person.field.gender"
+        },
+        {
+          "eventKey" : "PersonDead",
+          "displayName" : "mrs.person.field.dead"
+        },
+        {
+          "eventKey" : "PersonDeadDate",
+          "type" : "DATE",
+          "displayName" : "mrs.person.field.deathDate"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.provider.created",
+      "subject" : "org.motechproject.mrs.api.Provider.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "ProviderId",
+          "displayName" : "mrs.provider.field.providerId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+    {
+      "displayName" : "mrs.create.patient",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "createPatient",
+      "actionParameters" : [
+        {
+          "key" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "key" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "key" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "key" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.update.patient",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "updatePatient",
+      "actionParameters" : [
+        {
+          "key" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "key" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "key" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "key" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.decease.patient",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "deceasePatient",
+      "actionParameters" : [
+         {
+           "key" : "MotechId",
+           "displayName" : "mrs.motechId"
+         },
+         {
+           "key" : "ConceptName",
+           "displayName" : "mrs.conceptName"
+         },
+         {
+           "key" : "DateOfDeath",
+           "type" : "DATE",
+           "displayName" : "mrs.dateOfDeath"
+         },
+         {
+           "key" : "Comment",
+           "displayName" : "mrs.comment"
+         }
+      ]
+    },
+    {
+      "displayName" : "mrs.create.encounter",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "createEncounter",
+      "actionParameters" : [
+          {
+             "key" : "MotechId",
+             "displayName" : "mrs.motechId"
+           },
+           {
+             "key" : "FacilityId",
+             "displayName" : "mrs.facility.field.facilityId"
+           },
+           {
+             "key" : "UserId",
+             "displayName" : "mrs.user.field.userId"
+           },
+           {
+             "key" : "ProviderId",
+             "displayName" : "mrs.provider.field.providerId"
+           },
+           {
+             "key" : "EncounterName",
+             "displayName" : "mrs.encounter.field.name"
+           },
+           {
+             "key" : "EncounterType",
+             "displayName" : "mrs.encounter.field.encounterType"
+           },
+           {
+             "key" : "ObservationDate",
+             "type" : "DATE",
+             "displayName" : "mrs.observation.field.observationDate"
+           },
+           {
+             "key" : "ObservationConceptName",
+             "displayName" : "mrs.observation.field.observationConceptName"
+           },
+           {
+             "key" : "PatientId",
+             "displayName" : "mrs.patient.field.patientId"
+           },
+           {
+             "key" : "ObservationValue",
+             "displayName" : "mrs.observation.field.value"
+           }
+      ]
+    },
+    {
+      "displayName" : "mrs.create.facility",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "createFacility",
+      "actionParameters" : [
+         {
+           "key" : "FacilityName",
+           "displayName" : "mrs.facility.field.name"
+         },
+         {
+           "key" : "FacilityCountry",
+           "displayName" : "mrs.facility.field.country"
+         },
+         {
+           "key" : "FacilityRegion",
+           "displayName" : "mrs.facility.field.region"
+         },
+         {
+           "key" : "FacilityCountyDistrict",
+           "displayName" : "mrs.facility.field.countyDistrict"
+         },
+         {
+           "key" : "FacilityStateProvince",
+           "displayName" : "mrs.facility.field.stateProvince"
+         }
+      ]
+    },
+    {
+    "displayName" : "mrs.create.person",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "createPerson",
+      "actionParameters" : [
+         {
+           "key" : "PersonId",
+           "displayName" : "mrs.person.field.personId"
+         },
+         {
+           "key" : "PersonFirsName",
+           "displayName" : "mrs.person.field.firstName"
+         },
+         {
+           "key" : "PersonMiddleName",
+           "displayName" : "mrs.person.field.middleName"
+         },
+         {
+           "key" : "PersonLastName",
+           "displayName" : "mrs.person.field.lastName"
+         },
+         {
+           "key" : "PersonPreferredName",
+           "displayName" : "mrs.person.field.preferredName"
+         },
+         {
+           "key" : "PersonAddress",
+           "displayName" : "mrs.person.field.address"
+         },
+         {
+           "key" : "PersonDateOfBirth",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.dateOfBirth"
+         },
+         {
+           "key" : "PersonBirthDateEstimated",
+           "displayName" : "mrs.person.field.birthDateEstimated"
+         },
+         {
+           "key" : "PersonAge",
+           "type" : "INTEGER",
+           "displayName" : "mrs.person.field.age"
+         },
+         {
+           "key" : "PersonGender",
+           "displayName" : "mrs.person.field.gender"
+         },
+         {
+           "key" : "PersonDead",
+           "displayName" : "mrs.person.field.dead"
+         },
+         {
+           "key" : "PersonDeadDate",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.deathDate"
+         }
+      ]
+    },
+    {
+      "displayName" : "mrs.update.person",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "updatePerson",
+      "actionParameters" : [
+         {
+           "key" : "PersonId",
+           "displayName" : "mrs.person.field.personId"
+         },
+         {
+           "key" : "PersonFirsName",
+           "displayName" : "mrs.person.field.firstName"
+         },
+         {
+           "key" : "PersonMiddleName",
+           "displayName" : "mrs.person.field.middleName"
+         },
+         {
+           "key" : "PersonLastName",
+           "displayName" : "mrs.person.field.lastName"
+         },
+         {
+           "key" : "PersonPreferredName",
+           "displayName" : "mrs.person.field.preferredName"
+         },
+         {
+           "key" : "PersonAddress",
+           "displayName" : "mrs.person.field.address"
+         },
+         {
+           "key" : "PersonDateOfBirth",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.dateOfBirth"
+         },
+         {
+           "key" : "PersonBirthDateEstimated",
+           "displayName" : "mrs.person.field.birthDateEstimated"
+         },
+         {
+           "key" : "PersonAge",
+           "type" : "INTEGER",
+           "displayName" : "mrs.person.field.age"
+         },
+         {
+           "key" : "PersonGender",
+           "displayName" : "mrs.person.field.gender"
+         },
+         {
+           "key" : "PersonDead",
+           "displayName" : "mrs.person.field.dead"
+         },
+         {
+           "key" : "PersonDeadDate",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.deathDate"
+         }
+      ]
+    },
+    {
+      "displayName" : "mrs.delete.person",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "removePerson",
+      "actionParameters" : [
+         {
+           "key" : "PersonId",
+           "displayName" : "mrs.person.field.personId"
+         },
+         {
+           "key" : "PersonFirsName",
+           "displayName" : "mrs.person.field.firstName"
+         },
+         {
+           "key" : "PersonMiddleName",
+           "displayName" : "mrs.person.field.middleName"
+         },
+         {
+           "key" : "PersonLastName",
+           "displayName" : "mrs.person.field.lastName"
+         },
+         {
+           "key" : "PersonPreferredName",
+           "displayName" : "mrs.person.field.preferredName"
+         },
+         {
+           "key" : "PersonAddress",
+           "displayName" : "mrs.person.field.address"
+         },
+         {
+           "key" : "PersonDateOfBirth",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.dateOfBirth"
+         },
+         {
+           "key" : "PersonBirthDateEstimated",
+           "displayName" : "mrs.person.field.birthDateEstimated"
+         },
+         {
+           "key" : "PersonAge",
+           "type" : "INTEGER",
+           "displayName" : "mrs.person.field.age"
+         },
+         {
+           "key" : "PersonGender",
+           "displayName" : "mrs.person.field.gender"
+         },
+         {
+           "key" : "PersonDead",
+           "displayName" : "mrs.person.field.dead"
+         },
+         {
+           "key" : "PersonDeadDate",
+           "type" : "DATE",
+           "displayName" : "mrs.person.field.deathDate"
+         }
+      ]
+    }
+  ]
+}

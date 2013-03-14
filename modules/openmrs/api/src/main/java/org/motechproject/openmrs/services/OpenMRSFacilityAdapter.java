@@ -5,7 +5,11 @@ import ch.lambdaj.function.matcher.LambdaJMatcher;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.motechproject.mrs.services.FacilityAdapter;
 import org.openmrs.Location;
@@ -27,6 +31,9 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private EventRelay eventRelay;
 
     /**
      * Saves a MRSFacility into OpenMRS
@@ -55,7 +62,9 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
         location.setCountyDistrict(facility.getCountyDistrict());
 
         Location savedLocation = this.locationService.saveLocation(location);
-        return convertLocationToFacility(savedLocation);
+        Facility facilityInst = convertLocationToFacility(savedLocation);
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityInst)));
+        return facilityInst;
     }
 
     private LambdaJMatcher<Location> locationMatcher(final OpenMRSFacility facility) {

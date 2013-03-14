@@ -1,16 +1,12 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSEncounter;
 import org.motechproject.mrs.model.OpenMRSEncounter.MRSEncounterBuilder;
 import org.motechproject.mrs.model.OpenMRSObservation;
@@ -37,6 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @Component("encounterAdapter")
 public class MRSEncounterAdapterImpl implements EncounterAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MRSEncounterAdapterImpl.class);
@@ -45,14 +50,16 @@ public class MRSEncounterAdapterImpl implements EncounterAdapter {
     private final MRSPersonAdapterImpl personAdapter;
     private final MRSConceptAdapterImpl conceptAdapter;
     private final EncounterResource encounterResource;
+    private final EventRelay eventRelay;
 
     @Autowired
     public MRSEncounterAdapterImpl(EncounterResource encounterResource, PatientAdapter patientAdapter,
-            MRSPersonAdapterImpl personAdapter, MRSConceptAdapterImpl conceptAdapter) {
+            MRSPersonAdapterImpl personAdapter, MRSConceptAdapterImpl conceptAdapter, EventRelay eventRelay) {
         this.encounterResource = encounterResource;
         this.patientAdapter = patientAdapter;
         this.personAdapter = personAdapter;
         this.conceptAdapter = conceptAdapter;
+        this.eventRelay = eventRelay;
     }
 
     @Override
@@ -73,6 +80,7 @@ public class MRSEncounterAdapterImpl implements EncounterAdapter {
         Encounter saved = null;
         try {
             saved = encounterResource.createEncounter(converted);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(encounter)));
         } catch (HttpException e) {
             LOGGER.error("Could not create encounter: " + e.getMessage());
             return null;

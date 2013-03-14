@@ -42,9 +42,6 @@
         <constructor-arg name="header" ref="header"/>
     </bean>
 
-    <osgi:service id="mrsDataProviderOSGi" auto-export="interfaces" ref="mrsDataProvider"
-                  interface="org.motechproject.commons.api.DataProvider"/>
-
     <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.PatientAdapter" cardinality="0..N">
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
@@ -58,5 +55,30 @@
     </osgi:list>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
+    <osgi:list id="observationAdapterList" interface="org.motechproject.mrs.services.ObservationAdapter" cardinality="0..N"/>
+
+    <osgi:list id="encounterAdapterList" interface="org.motechproject.mrs.services.EncounterAdapter" cardinality="0..N"/>
+
+    <osgi:list id="userAdapterList" interface="org.motechproject.mrs.services.UserAdapter" cardinality="0..N"/>
+
+    <osgi:list id="providerAdapterList" interface="org.motechproject.mrs.services.ProviderAdapter" cardinality="0..N"/>
+
+    <bean id="mrsEventHandlerImpl" class="org.motechproject.mrs.services.impl.MrsActionProxyServiceImpl">
+        <property name="patientAdapters" ref="patientAdapterList"/>
+        <property name="encounterAdapters" ref="encounterAdapterList"/>
+        <property name="facilityAdapters" ref="facilityAdapterList"/>
+        <property name="userAdapters" ref="userAdapterList"/>
+        <property name="providerAdapters" ref="providerAdapterList"/>
+        <property name="personAdapters" ref="personAdapterList"/>
+    </bean>
+
+    <osgi:service id="mrsDataProviderOSGi" auto-export="interfaces" ref="mrsDataProvider"
+                  interface="org.motechproject.commons.api.DataProvider"/>
+
+    <osgi:service id="mrsEventHandlerOsgi" auto-export="interfaces" ref="mrsEventHandlerImpl"
+                  interface="org.motechproject.mrs.services.MrsActionProxyService"/>
+
+    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay" />
 
 </beans>

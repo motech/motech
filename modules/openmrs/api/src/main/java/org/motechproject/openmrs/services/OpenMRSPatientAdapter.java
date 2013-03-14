@@ -3,9 +3,13 @@ package org.motechproject.openmrs.services;
 import ch.lambdaj.function.convert.Converter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Attribute;
 import org.motechproject.mrs.domain.Person;
 import org.motechproject.mrs.exception.PatientNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.motechproject.mrs.model.OpenMRSPatient;
 import org.motechproject.mrs.model.OpenMRSPerson;
@@ -24,6 +28,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,6 +62,9 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
 
     @Autowired
     private OpenMRSConceptAdapter openMrsConceptAdapter;
+
+    @Autowired
+    private EventRelay eventRelay;
 
     /**
      * Finds a patient by patient id
@@ -109,7 +117,9 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
             org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
                     getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
                     facilityAdapter.getLocation(patient.getFacility().getFacilityId()), getAllPersonAttributeTypes());
-            return getMrsPatient(patientService.savePatient(openMRSPatient));
+            OpenMRSPatient patientInst = getMrsPatient(patientService.savePatient(openMRSPatient));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(patientInst)));
+            return patientInst;
         }
     }
 
@@ -153,8 +163,9 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
         if (person.getDeathDate() != null) {
             openMrsPatient.setDeathDate(person.getDeathDate().toDate());
         }
-
-        return getMrsPatient(patientService.savePatient(openMrsPatient));
+        OpenMRSPatient patientInst = getMrsPatient(patientService.savePatient(openMrsPatient));
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(patientInst)));
+        return patientInst;
     }
 
     private void updatePersonName(Patient openMrsPatient, Person person) {
@@ -213,11 +224,11 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
     public List<org.motechproject.mrs.domain.Patient> search(String name, String motechId) {
         List<OpenMRSPatient> patients = convert(patientService.getPatients(name, motechId, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
                 new Converter<Patient, OpenMRSPatient>() {
-            @Override
-            public OpenMRSPatient convert(Patient patient) {
-                return getMrsPatient(patient);
-            }
-        });
+                    @Override
+                    public OpenMRSPatient convert(Patient patient) {
+                        return getMrsPatient(patient);
+                    }
+                });
         Collections.sort(patients, new Comparator<OpenMRSPatient>() {
             @Override
             public int compare(OpenMRSPatient personToBeCompared1, OpenMRSPatient personToBeCompared2) {
@@ -262,6 +273,7 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
         patient.setCauseOfDeath(concept);
         patientService.savePatient(patient);
         patientService.saveCauseOfDeathObs(patient, dateOfDeath, concept, comment);
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.PATIENT_DECEASED_SUBJECT, EventHelper.patientParameters(getMrsPatient(patient))));
     }
 
     private List<PersonAttributeType> getAllPersonAttributeTypes() {

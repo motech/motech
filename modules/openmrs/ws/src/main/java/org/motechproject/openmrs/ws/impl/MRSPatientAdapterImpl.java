@@ -2,7 +2,11 @@ package org.motechproject.openmrs.ws.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.exception.PatientNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.motechproject.mrs.model.OpenMRSPatient;
 import org.motechproject.mrs.model.OpenMRSPerson;
@@ -36,13 +40,15 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     private final PatientResource patientResource;
     private final MRSPersonAdapterImpl personAdapter;
     private final FacilityAdapter facilityAdapter;
+    private final EventRelay eventRelay;
 
     @Autowired
     public MRSPatientAdapterImpl(PatientResource patientResource, MRSPersonAdapterImpl personAdapter,
-            FacilityAdapter facilityAdapter) {
+            FacilityAdapter facilityAdapter, EventRelay eventRelay) {
         this.patientResource = patientResource;
         this.personAdapter = personAdapter;
         this.facilityAdapter = facilityAdapter;
+        this.eventRelay = eventRelay;
     }
 
     @Override
@@ -133,6 +139,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         Patient created = null;
         try {
             created = patientResource.createPatient(converted);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
         } catch (HttpException e) {
             logger.error("Failed to create a patient in OpenMRS with MoTeCH Id: " + patient.getMotechId());
             return null;
@@ -253,7 +260,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         // create any attributes attached to the patient
         personAdapter.deleteAllAttributes(person);
         personAdapter.saveAttributesForPerson(person);
-
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
         return (OpenMRSPatient) patient;
     }
 
@@ -269,6 +276,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         }
 
         personAdapter.savePersonCauseOfDeath(patient.getPatientId(), dateOfDeath, conceptName);
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.PATIENT_DECEASED_SUBJECT, EventHelper.patientParameters(patient)));
     }
 
     @Override

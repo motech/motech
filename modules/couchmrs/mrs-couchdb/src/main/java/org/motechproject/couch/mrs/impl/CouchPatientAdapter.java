@@ -10,10 +10,14 @@ import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.couch.mrs.repository.AllCouchPatients;
 import org.motechproject.mrs.domain.Attribute;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
 import org.motechproject.mrs.domain.Patient;
 import org.motechproject.mrs.domain.Person;
 import org.motechproject.mrs.exception.PatientNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.services.PatientAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,6 +35,9 @@ public class CouchPatientAdapter implements PatientAdapter {
     @Autowired
     private AllCouchFacilities allCouchFacilities;
 
+    @Autowired
+    private EventRelay eventRelay;
+
     @Override
     public Patient savePatient(Patient patient) {
         CouchPatientImpl couchPatient = (patient instanceof CouchPatientImpl) ? (CouchPatientImpl) patient :
@@ -38,6 +45,7 @@ public class CouchPatientAdapter implements PatientAdapter {
 
         try {
             allCouchPatients.addPatient(couchPatient);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
         } catch (MRSCouchException e) {
             return null;
         }
@@ -59,6 +67,7 @@ public class CouchPatientAdapter implements PatientAdapter {
             patientToUpdate.setPerson(patientTemp.getPerson());
 
             allCouchPatients.update(patientToUpdate);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
         }
 
         return patient;
@@ -111,6 +120,7 @@ public class CouchPatientAdapter implements PatientAdapter {
         personToUpdate.setDeathDate(new DateTime(dateOfDeath));
 
         allCouchPatients.update(patients.get(0));
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.PATIENT_DECEASED_SUBJECT, EventHelper.patientParameters(returnPatient(patients))));
     }
 
 

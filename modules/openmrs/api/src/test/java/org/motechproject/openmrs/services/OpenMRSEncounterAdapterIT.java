@@ -6,19 +6,24 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.EventListenerRegistry;
+import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
 import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.domain.Patient;
 import org.motechproject.mrs.domain.Person;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.OpenMRSEncounter;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.model.OpenMRSUser;
 import org.motechproject.mrs.model.OpenMRSFacility;
+import org.motechproject.mrs.model.OpenMRSObservation;
 import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.model.OpenMRSUser;
 import org.motechproject.mrs.services.EncounterAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
-import org.motechproject.commons.date.util.DateUtil;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -26,15 +31,20 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
@@ -42,8 +52,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.openmrs.TestIdGenerator.newGUID;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
+import static org.motechproject.openmrs.TestIdGenerator.newGUID;
 
 public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
 
@@ -61,9 +71,15 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
     ConceptService conceptService;
     @Autowired
     OpenMRSUserAdapter userAdapter;
+    @Autowired
+    EventListenerRegistry eventListenerRegistry;
 
     Facility facility;
     Patient patientAlan;
+    MrsListener mrsListener;
+
+    final Object lock = new Object();
+
     @Autowired
     private OpenMRSObservationAdapter openMRSObservationAdapter;
 
@@ -73,7 +89,9 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Test
     @Transactional(readOnly = true)
-    public void shouldSaveEncounterWithObservationsAndReturn() throws UserAlreadyExistsException {
+    public void shouldSaveEncounterWithObservationsAndReturn() throws UserAlreadyExistsException, InterruptedException {
+        mrsListener = new MrsListener();
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventKeys.UPDATED_ENCOUNTER_SUBJECT));
 
         Person personCreator = new OpenMRSPerson();
         personCreator.setFirstName("SampleTest");
@@ -91,16 +109,29 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         observations.add(new OpenMRSObservation<Boolean>(new Date(), "PREGNANCY STATUS", false));
         final String encounterType = "PEDSRETURN";
         OpenMRSEncounter expectedEncounter = new OpenMRSEncounter.MRSEncounterBuilder().withProviderId(provider.getPersonId()).withCreatorId(userCreator.getUserId()).withFacilityId(facility.getFacilityId()).withDate(new Date()).withPatientId(patientAlan.getPatientId()).withObservations(observations).withEncounterType(encounterType).build();
-        OpenMRSEncounter actualMRSEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(expectedEncounter);
+        OpenMRSEncounter actualMRSEncounter;
+
+        synchronized (lock) {
+            actualMRSEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(expectedEncounter);
+            lock.wait(60000);
+        }
+
         assertEncounter(expectedEncounter, actualMRSEncounter);
 
         final OpenMRSEncounter mrsEncounter = (OpenMRSEncounter) mrsEncounterAdapter.getLatestEncounterByPatientMotechId(patientAlan.getMotechId(), encounterType);
         assertEncounter(expectedEncounter, mrsEncounter);
+
+        assertEquals(actualMRSEncounter.getEncounterId(), mrsListener.eventParameters.get(EventKeys.ENCOUNTER_ID));
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.updated);
+        eventListenerRegistry.clearListenersForBean("mrsTestListener");
     }
 
     @Test
     @Transactional(readOnly = true)
-    public void creationOfEncounterShouldHappenInIdempotentWay() throws UserAlreadyExistsException {
+    public void creationOfEncounterShouldHappenInIdempotentWay() throws UserAlreadyExistsException, InterruptedException {
+        mrsListener = new MrsListener();
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventKeys.UPDATED_ENCOUNTER_SUBJECT));
 
         Person personCreator = new OpenMRSPerson().firstName("SampleTest");
         Person personJohn = new OpenMRSPerson().firstName("John");
@@ -123,8 +154,29 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
             add(new OpenMRSObservation(observationDate, "PREGNANCY STATUS", false));
         }}).withEncounterType(encounterType).build();
 
-        OpenMRSEncounter oldEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(expectedEncounter);
-        OpenMRSEncounter newEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(duplicateEncounter);
+        OpenMRSEncounter oldEncounter;
+        OpenMRSEncounter newEncounter;
+
+        synchronized (lock) {
+            oldEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(expectedEncounter);
+            lock.wait(60000);
+        }
+
+        assertEquals(oldEncounter.getEncounterId(), mrsListener.eventParameters.get(EventKeys.ENCOUNTER_ID));
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.updated);
+
+
+
+        synchronized (lock) {
+            newEncounter = (OpenMRSEncounter) mrsEncounterAdapter.createEncounter(duplicateEncounter);
+            lock.wait(60000);
+        }
+
+        assertEquals(newEncounter.getEncounterId(), mrsListener.eventParameters.get(EventKeys.ENCOUNTER_ID));
+        assertFalse(mrsListener.created);
+        assertTrue(mrsListener.updated);
+
         assertEncounter(expectedEncounter, oldEncounter);
         assertEncounter(duplicateEncounter, newEncounter);
         assertThat(newEncounter.getId(), not(is(oldEncounter.getId())));
@@ -140,6 +192,7 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         for (String observationId : oldObservationIds) {
             assertNull("[" + observationId + "]," + newEncounter.getObservations(), obsService.getObs(Integer.parseInt(observationId)));
         }
+        eventListenerRegistry.clearListenersForBean("mrsTestListener");
     }
 
     private void assertEncounter(OpenMRSEncounter expectedEncounter, OpenMRSEncounter actualMRSEncounter) {
@@ -175,5 +228,32 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         return new EqualsBuilder().append(expected.getConceptName(), actual.getConceptName())
                 .append(expected.getDate(), actual.getDate())
                 .append(expected.getValue(), actual.getValue()).isEquals();
+    }
+
+    public class MrsListener implements EventListener {
+
+        private boolean created = false;
+        private boolean updated = false;
+        private Map<String, Object> eventParameters;
+
+        @MotechListener(subjects = {EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventKeys.UPDATED_ENCOUNTER_SUBJECT})
+        public void handle(MotechEvent event) {
+            if (event.getSubject().equals(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT)) {
+                created = true;
+                updated = false;
+            } else if (event.getSubject().equals(EventKeys.UPDATED_ENCOUNTER_SUBJECT)) {
+                created = false;
+                updated = true;
+            }
+            eventParameters = event.getParameters();
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "mrsTestListener";
+        }
     }
 }

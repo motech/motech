@@ -1,6 +1,10 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSEncounter;
 import org.motechproject.mrs.model.OpenMRSEncounter.MRSEncounterBuilder;
 import org.motechproject.mrs.model.OpenMRSObservation;
@@ -19,10 +23,12 @@ import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
 import static java.util.Arrays.asList;
@@ -38,15 +44,17 @@ public class OpenMRSEncounterAdapter implements EncounterAdapter {
     private OpenMRSPatientAdapter openMRSPatientAdapter;
     private OpenMRSObservationAdapter openMRSObservationAdapter;
     private OpenMRSPersonAdapter openMRSPersonAdapter;
+    private EventRelay eventRelay;
 
     @Autowired
-    public OpenMRSEncounterAdapter(EncounterService encounterService, OpenMRSUserAdapter openMRSUserAdapter, OpenMRSFacilityAdapter openMRSFacilityAdapter, OpenMRSPatientAdapter openMRSPatientAdapter, OpenMRSObservationAdapter openMRSObservationAdapter, OpenMRSPersonAdapter openMRSPersonAdapter) {
+    public OpenMRSEncounterAdapter(EncounterService encounterService, OpenMRSUserAdapter openMRSUserAdapter, OpenMRSFacilityAdapter openMRSFacilityAdapter, OpenMRSPatientAdapter openMRSPatientAdapter, OpenMRSObservationAdapter openMRSObservationAdapter, OpenMRSPersonAdapter openMRSPersonAdapter, EventRelay eventRelay) {
         this.encounterService = encounterService;
         this.openMRSUserAdapter = openMRSUserAdapter;
         this.openMRSFacilityAdapter = openMRSFacilityAdapter;
         this.openMRSPatientAdapter = openMRSPatientAdapter;
         this.openMRSObservationAdapter = openMRSObservationAdapter;
         this.openMRSPersonAdapter = openMRSPersonAdapter;
+        this.eventRelay = eventRelay;
     }
 
     /**
@@ -59,10 +67,14 @@ public class OpenMRSEncounterAdapter implements EncounterAdapter {
     public OpenMRSEncounter createEncounter(org.motechproject.mrs.domain.Encounter mrsEncounter) {
         Encounter existingOpenMrsEncounter = findDuplicateOpenMrsEncounter(mrsEncounter);
         if (existingOpenMrsEncounter == null) {
-            return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
+            OpenMRSEncounter encounter = openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(encounter)));
+            return encounter;
         } else {
             encounterService.purgeEncounter(existingOpenMrsEncounter);
-            return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
+            OpenMRSEncounter encounter = openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(encounter)));
+            return encounter;
         }
     }
 

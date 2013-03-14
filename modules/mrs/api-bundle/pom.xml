@@ -41,7 +41,37 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+
+                <excludes>
+                    <exclude>**/*.json</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -58,7 +88,8 @@
                             org.motechproject.mrs.exception;version=${project.version},
                             org.motechproject.mrs.security;version=${project.version},
                             org.motechproject.mrs.services;version=${project.version},
-                            org.motechproject.mrs.domain;version=${project.version}
+                            org.motechproject.mrs.domain;version=${project.version},
+                            org.motechproject.mrs.helper;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,

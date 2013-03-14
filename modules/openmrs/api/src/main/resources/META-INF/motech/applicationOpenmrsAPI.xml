@@ -58,6 +58,4 @@
 
     <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 
-
-
 </beans>

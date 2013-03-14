@@ -16,6 +16,16 @@ public class PatientDto implements Patient {
     @JsonDeserialize(as = FacilityDto.class)
     private Facility facility;
 
+    public PatientDto() {
+    }
+
+    public PatientDto(String patientId, Facility facility, Person person, String motechId) {
+        this.patientId = patientId;
+        this.facility = facility;
+        this.person = person;
+        this.motechId = motechId;
+    }
+
     public String getPatientId() {
         return patientId;
     }

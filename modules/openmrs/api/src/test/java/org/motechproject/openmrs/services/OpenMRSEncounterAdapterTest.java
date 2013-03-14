@@ -4,15 +4,18 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Observation;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSEncounter;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.model.OpenMRSProvider;
-import org.motechproject.mrs.model.OpenMRSUser;
 import org.motechproject.mrs.model.OpenMRSFacility;
+import org.motechproject.mrs.model.OpenMRSObservation;
 import org.motechproject.mrs.model.OpenMRSPatient;
 import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.model.OpenMRSProvider;
+import org.motechproject.mrs.model.OpenMRSUser;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
@@ -57,11 +60,13 @@ public class OpenMRSEncounterAdapterTest {
     private EncounterService mockEncounterService;
     @Mock
     private OpenMRSPersonAdapter mockOpenMRSPersonAdapter;
+    @Mock
+    private EventRelay eventRelay;
 
     @Before
     public void setUp() {
         initMocks(this);
-        encounterAdapter = new OpenMRSEncounterAdapter(mockEncounterService, mockOpenMrsUserAdapter, mockOpenMrsFacilityAdapter, mockOpenMrsPatientAdapter,mockOpenMrsObservationAdapter,mockOpenMRSPersonAdapter);
+        encounterAdapter = new OpenMRSEncounterAdapter(mockEncounterService, mockOpenMrsUserAdapter, mockOpenMrsFacilityAdapter, mockOpenMrsPatientAdapter,mockOpenMrsObservationAdapter,mockOpenMRSPersonAdapter,eventRelay);
     }
 
     @Test
@@ -195,6 +200,7 @@ public class OpenMRSEncounterAdapterTest {
         when(mockEncounterService.getEncounters(patient, null, encounterDate, encounterDate, null, asList(encounterType), null, false)).thenReturn(null);
 
         OpenMRSEncounter returnedMRSEncounterAfterSaving = encounterAdapterSpy.createEncounter(mrsEncounter);
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(returnedMRSEncounterAfterSaving)));
         assertThat(returnedMRSEncounterAfterSaving, is(equalTo(savedMrsEncounter)));
     }
 

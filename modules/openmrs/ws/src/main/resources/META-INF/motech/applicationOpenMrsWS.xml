@@ -8,7 +8,7 @@
     <context:component-scan base-package="org.motechproject.openmrs" />
 
     <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"
-        init-method="afterPropertiesSet">
+        >
         <property name="configFiles">
             <list>
                 <value>classpath:openmrs.properties</value>

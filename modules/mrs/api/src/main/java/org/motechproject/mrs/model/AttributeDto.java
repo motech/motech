@@ -1,11 +1,21 @@
 package org.motechproject.mrs.model;
 
 import org.motechproject.mrs.domain.Attribute;
+
 import java.lang.String;
 
 public class AttributeDto implements Attribute {
+
     private String name;
     private String value;
+
+    public AttributeDto() {
+    }
+
+    public AttributeDto(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
     public String getName() {
         return name;

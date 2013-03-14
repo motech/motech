@@ -1,12 +1,13 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Patient;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSObservation;
 import org.motechproject.mrs.services.ObservationAdapter;
 import org.motechproject.mrs.services.PatientAdapter;
@@ -19,17 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Component("observationAdapter")
 public class MRSObservationAdapterImpl implements ObservationAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSObservationAdapterImpl.class);
 
     private final PatientAdapter patientAdapter;
     private final ObservationResource obsResource;
+    private final EventRelay eventRelay;
 
     @Autowired
-    public MRSObservationAdapterImpl(ObservationResource obsResource, PatientAdapter patientAdapter) {
+    public MRSObservationAdapterImpl(ObservationResource obsResource, PatientAdapter patientAdapter, EventRelay eventRelay) {
         this.obsResource = obsResource;
         this.patientAdapter = patientAdapter;
+        this.eventRelay = eventRelay;
     }
 
     @Override
@@ -68,6 +75,7 @@ public class MRSObservationAdapterImpl implements ObservationAdapter {
 
         try {
             obsResource.deleteObservation(mrsObservation.getObservationId(), reason);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(mrsObservation)));
         } catch (HttpException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 LOGGER.warn("No Observation found with uuid: " + mrsObservation.getObservationId());

@@ -5,7 +5,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
@@ -27,6 +31,8 @@ public class OpenMRSFacilityAdapterTest {
 
     @Mock
     LocationService mockLocationService;
+    @Mock
+    EventRelay eventRelay;
 
     OpenMRSFacilityAdapter mrsFacilityAdapter = new OpenMRSFacilityAdapter();
 
@@ -34,6 +40,7 @@ public class OpenMRSFacilityAdapterTest {
     public void setUp() {
         initMocks(this);
         ReflectionTestUtils.setField(mrsFacilityAdapter, "locationService", mockLocationService);
+        ReflectionTestUtils.setField(mrsFacilityAdapter, "eventRelay", eventRelay);
     }
 
     @Test
@@ -52,6 +59,7 @@ public class OpenMRSFacilityAdapterTest {
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(mockLocationService).saveLocation(locationCaptor.capture());
         Location actualLocation = locationCaptor.getValue();
+        verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(mrsFacilityAdapter.convertLocationToFacility(location))));
         assertEquals(province, actualLocation.getStateProvince());
         assertEquals(name, actualLocation.getName());
         assertEquals(country, actualLocation.getCountry());

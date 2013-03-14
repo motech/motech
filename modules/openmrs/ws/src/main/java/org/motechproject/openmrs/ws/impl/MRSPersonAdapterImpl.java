@@ -1,12 +1,11 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.Validate;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.exception.MRSException;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.PersonResource;
@@ -23,6 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class MRSPersonAdapterImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(MRSPersonAdapterImpl.class);
@@ -30,10 +34,12 @@ public class MRSPersonAdapterImpl {
     private final Map<String, String> attributeTypeUuidCache = new HashMap<String, String>();
 
     private final PersonResource personResource;
+    private final EventRelay eventRelay;
 
     @Autowired
-    public MRSPersonAdapterImpl(PersonResource personResource) {
+    public MRSPersonAdapterImpl(PersonResource personResource, EventRelay eventRelay) {
         this.personResource = personResource;
+        this.eventRelay = eventRelay;
     }
 
     public OpenMRSPerson getPerson(String uuid) {
@@ -61,7 +67,7 @@ public class MRSPersonAdapterImpl {
         person.id(saved.getUuid());
 
         saveAttributesForPerson(person);
-
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
         return person;
     }
 
@@ -146,6 +152,7 @@ public class MRSPersonAdapterImpl {
 
             converted.setUuid(saved.getUuid());
             personResource.updatePerson(converted);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PERSON_SUBJECT, EventHelper.personParameters(person)));
         } catch (HttpException e) {
             LOGGER.error("Failed to update a person in OpenMRS with id: " + person.getId());
             throw new MRSException(e);

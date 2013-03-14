@@ -1,11 +1,12 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.model.OpenMRSFacility;
 import org.motechproject.mrs.services.FacilityAdapter;
 import org.motechproject.openmrs.ws.HttpException;
@@ -16,15 +17,21 @@ import org.motechproject.openmrs.ws.util.ConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Component("facilityAdapter")
 public class MRSFacilityAdapterImpl implements FacilityAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSFacilityAdapterImpl.class);
 
     private final LocationResource locationResource;
+    private final EventRelay eventRelay;
 
     @Autowired
-    public MRSFacilityAdapterImpl(LocationResource locationResource) {
+    public MRSFacilityAdapterImpl(LocationResource locationResource, EventRelay eventRelay) {
         this.locationResource = locationResource;
+        this.eventRelay = eventRelay;
     }
 
     @Override
@@ -87,6 +94,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
         Location saved = null;
         try {
             saved = locationResource.createLocation(location);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facility)));
         } catch (HttpException e) {
             LOGGER.error("Could not create location with name: " + location.getName());
             return null;

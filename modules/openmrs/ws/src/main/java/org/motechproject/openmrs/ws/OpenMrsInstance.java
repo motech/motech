@@ -1,19 +1,20 @@
 package org.motechproject.openmrs.ws;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.annotation.PostConstruct;
-
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriTemplate;
+
+import javax.annotation.PostConstruct;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Represents a single OpenMRS Web Application instance
  */
+
 @Component
 public class OpenMrsInstance {
 
@@ -27,7 +28,7 @@ public class OpenMrsInstance {
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public OpenMrsInstance(SettingsFacade settingsFacade) {
+    public OpenMrsInstance(@Qualifier("openmrsWsSettings")SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 
