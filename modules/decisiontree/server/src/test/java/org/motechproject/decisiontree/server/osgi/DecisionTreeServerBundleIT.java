@@ -7,6 +7,9 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DecisionTreeServerBundleIT extends BaseOsgiIT {
 
     public void testDecisionTreeServer() {
@@ -32,5 +35,10 @@ public class DecisionTreeServerBundleIT extends BaseOsgiIT {
         } finally {
             flowSessionService.removeCallSession(sessionId);
         }
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.decisiontree.server.service");
     }
 }
