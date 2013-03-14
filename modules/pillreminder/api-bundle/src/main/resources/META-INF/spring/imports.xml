@@ -22,8 +22,4 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="channelServiceOsgi" cardinality="0..1" interface="org.motechproject.tasks.service.ChannelService">
-        <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered"/>
-    </osgi:reference>
-
 </beans>

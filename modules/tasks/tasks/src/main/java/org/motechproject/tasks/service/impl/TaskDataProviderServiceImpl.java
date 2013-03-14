@@ -48,7 +48,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
         ValidationResult result = TaskDataProviderValidator.validate(provider);
 
         if (!result.isValid()) {
-            throw new ValidationException(result.getTaskErrors());
+            throw new ValidationException(TaskDataProviderValidator.TASK_DATA_PROVIDER, result.getTaskErrors());
         }
 
         allTaskDataProviders.addOrUpdate(provider);

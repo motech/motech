@@ -97,6 +97,7 @@
                             </div>
                             <div class="control-group">
                                 <h4>{{msg(selectedTrigger.displayName)}} <img class="pull-right arrow-drop2" src="../tasks/img/arrow-drop2.png" width="85" height="57"></h4>
+                                <div ng-show="selectedAction.description">{{msg(selectedTrigger.description)}}</div>
                                 <p>{{msg('info.dragFieldBuildAction')}}</p>
                             </div>
                             <div class="control-group move-element">
@@ -239,7 +240,7 @@
                                 <h4>{{msg(selectedAction.displayName)}}</h4>
                             </div>
                             <div class="control-group" ng-show="selectedAction.description">
-                                <label>{{msg(i.selectedAction.description)}}</label>
+                                <label>{{msg(selectedAction.description)}}</label>
                             </div>
                             <span ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'">
                             <div ng-class="actionCssClass(i)" ng-repeat="i in selectedAction.actionParameters">

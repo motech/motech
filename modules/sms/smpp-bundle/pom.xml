@@ -34,11 +34,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-tasks-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -126,8 +121,6 @@
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config.service,
                             org.motechproject.sms.api,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             org.osgi.framework;version="0.0.0",
                             org.osgi.util.tracker;version="0.0.0",
                             org.springframework.beans.factory.xml,

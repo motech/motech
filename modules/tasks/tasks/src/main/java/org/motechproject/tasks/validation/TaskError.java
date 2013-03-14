@@ -28,4 +28,10 @@ public abstract class TaskError {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{message='%s', objectName='%s', field='%s', type='%s'}",
+                message, objectName, field, type);
+    }
 }

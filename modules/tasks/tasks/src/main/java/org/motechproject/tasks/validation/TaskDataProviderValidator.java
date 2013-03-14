@@ -4,7 +4,7 @@ import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 
 public final class TaskDataProviderValidator extends GeneralValidator {
-    private static final String TASK_DATA_PROVIDER = "taskDataProvider";
+    public static final String TASK_DATA_PROVIDER = "taskDataProvider";
 
     private TaskDataProviderValidator() {
     }

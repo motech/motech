@@ -74,7 +74,7 @@ public class ChannelServiceImpl implements ChannelService {
         ValidationResult result = ChannelValidator.validate(channel);
 
         if (!result.isValid()) {
-            throw new ValidationException(result.getTaskErrors());
+            throw new ValidationException(ChannelValidator.CHANNEL, result.getTaskErrors());
         }
 
         allChannels.addOrUpdate(channel);

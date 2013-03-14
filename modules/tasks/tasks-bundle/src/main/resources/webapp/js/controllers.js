@@ -195,7 +195,7 @@
                         rgx = new RegExp('ad\\.(.+?)\\.(.+?)\\#(.+?)\\.(.+)', "g"),
                         accept = function (action, info) {
                             var subject = action.subject && (action.subject === info.subject),
-                                serviceInterface = action.serviceInteface && (action.serviceInterface === info.serviceInterface),
+                                serviceInterface = action.serviceInterface && (action.serviceInterface === info.serviceInterface),
                                 serviceMethod = action.serviceMethod && (action.serviceMethod === info.serviceMethod);
 
                             return subject || (serviceInterface && serviceMethod);

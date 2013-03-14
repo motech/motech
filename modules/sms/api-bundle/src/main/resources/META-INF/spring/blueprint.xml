@@ -50,12 +50,4 @@
 
     <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
 
-    <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
-        <constructor-arg value="classpath:task-channel.json" />
-    </bean>
-
-    <osgi:reference id="channelServiceOsgi" availability="optional" interface="org.motechproject.tasks.service.ChannelService">
-        <osgi:reference-listener ref="channelRegister" bind-method="registered" unbind-method="unregistered" />
-    </osgi:reference>
-
 </beans>

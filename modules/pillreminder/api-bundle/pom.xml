@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -99,8 +99,6 @@
                             org.motechproject.event.listener,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-pillreminder-api;inline=true</Embed-Dependency>

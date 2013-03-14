@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class TaskValidator extends GeneralValidator {
-    private static final String TASK = "task";
+    public static final String TASK = "task";
+
     private static final String MODULE_VERSION = "moduleVersion";
 
     private TaskValidator() {

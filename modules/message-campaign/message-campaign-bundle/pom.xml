@@ -24,12 +24,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
+            <artifactId>motech-platform-web-security-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -120,8 +120,6 @@
                             org.motechproject.security.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             org.quartz.simpl,
                             *
                         </Import-Package>

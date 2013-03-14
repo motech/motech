@@ -39,7 +39,7 @@ public class TaskServiceImpl implements TaskService {
         ValidationResult result = TaskValidator.validate(task);
 
         if (!result.isValid()) {
-            throw new ValidationException(result.getTaskErrors());
+            throw new ValidationException(TaskValidator.TASK, result.getTaskErrors());
         }
 
         allTasks.addOrUpdate(task);

@@ -33,11 +33,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-tasks-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -114,8 +109,6 @@
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             org.springframework.context.support,
                             org.springframework.web.context.support,
                             org.springframework.web.servlet.config,

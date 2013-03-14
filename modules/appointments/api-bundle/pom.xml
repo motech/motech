@@ -38,11 +38,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-tasks-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -105,8 +100,6 @@
                             org.motechproject.event.listener,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-appointments-api;inline=true</Embed-Dependency>

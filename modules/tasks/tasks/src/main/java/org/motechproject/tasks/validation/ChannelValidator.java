@@ -8,7 +8,7 @@ import org.motechproject.tasks.domain.TriggerEvent;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 public final class ChannelValidator extends GeneralValidator {
-    private static final String CHANNEL = "channel";
+    public static final String CHANNEL = "channel";
 
     private ChannelValidator() {
     }

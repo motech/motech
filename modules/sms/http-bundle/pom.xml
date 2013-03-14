@@ -33,11 +33,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-tasks-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -115,8 +110,6 @@
                             org.motechproject.server.config.service,
                             org.motechproject.sms.api,
                             org.motechproject.sms.api.service,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.scheduling.quartz,

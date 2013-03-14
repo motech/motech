@@ -9,12 +9,6 @@
 
     <context:annotation-config/>
 
-    <bean id="channelRegister" class="org.motechproject.tasks.util.ChannelRegister">
-        <constructor-arg value="classpath:task-channel.json"/>
-    </bean>
-
-
-
     <bean id="bundleWrapper" class="org.motechproject.osgi.web.BundleContextWrapper"/>
 
     <bean id="messagecampaignUIServiceTracker" class="org.motechproject.osgi.web.UIServiceTracker">

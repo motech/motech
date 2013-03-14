@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks</artifactId>
+            <artifactId>motech-tasks-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

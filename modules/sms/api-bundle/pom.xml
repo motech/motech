@@ -42,11 +42,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-tasks-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-tasks-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -161,8 +156,6 @@
                             net.sf.cglib.core,
                             net.sf.cglib.reflect,
                             org.motechproject.scheduler,
-                            org.motechproject.tasks.service,
-                            org.motechproject.tasks.util,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-sms-api</Embed-Dependency>
