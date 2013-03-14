@@ -1,13 +1,17 @@
 package org.motechproject.appointments.api.mapper;
 
 import org.joda.time.DateTime;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 import org.motechproject.commons.date.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
 public class ReminderMapperTest {
 
@@ -15,10 +19,21 @@ public class ReminderMapperTest {
     private ReminderMapper reminderMapper;
     private ReminderConfiguration reminderConfiguration;
 
+    @BeforeClass
+    public static void startTimeFaking() {
+        fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
+    }
+
+    @AfterClass
+    public static void stopTimeFaking() {
+        stopFakingTime();
+    }
+
+
     @Before
     public void setUp() {
         reminderConfiguration = new ReminderConfiguration().setRemindFrom(240).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
-        today = DateTime.now();
+        today = DateUtil.now();
         reminderMapper = new ReminderMapper();
     }
 
@@ -40,4 +55,6 @@ public class ReminderMapperTest {
         assertEquals(604800, reminderMapper.intervalSeconds(ReminderConfiguration.IntervalUnit.WEEKS, 1));
         assertEquals(-1, reminderMapper.intervalSeconds(null, 0));
     }
+
+
 }

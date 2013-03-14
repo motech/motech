@@ -85,6 +85,7 @@
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.web.servlet.mvc,
+                            org.springframework.security.config,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.web.servlet.config,
                             *

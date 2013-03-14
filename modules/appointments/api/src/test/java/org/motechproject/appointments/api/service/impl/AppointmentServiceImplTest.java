@@ -1,7 +1,9 @@
 package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
@@ -53,6 +55,16 @@ public class AppointmentServiceImplTest {
     private EventRelay eventRelay;
 
     AppointmentService appointmentService;
+
+    @BeforeClass
+    public static void startTimeFaking() {
+        fakeNow(new DateTime(2010, 10, 1, 10, 20, 0));
+    }
+
+    @AfterClass
+    public static void stopTimeFaking() {
+        stopFakingTime();
+    }
 
     @Before
     public void setUp() {
@@ -128,36 +140,32 @@ public class AppointmentServiceImplTest {
 
     @Test
     public void shouldAddAVisit() {
-        try {
-            fakeNow(new DateTime(2010, 10, 1, 10, 20, 0));
 
-            final String externalId = "externalId";
-            AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId);
-            final DateTime now = DateUtil.now();
-            ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM_HOURS).setIntervalCount(24).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
-            CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).addAppointmentReminderConfiguration(reminderConfiguration);
-            when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+        final String externalId = "externalId";
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId);
+        final DateTime now = DateUtil.now();
+        ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM_HOURS).setIntervalCount(24).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).addAppointmentReminderConfiguration(reminderConfiguration);
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-            String visitName = appointmentService.addVisit(externalId, createVisitRequest).getName();
+        String visitName = appointmentService.addVisit(externalId, createVisitRequest).getName();
 
-            ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
-            ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 
-            verify(allReminderJobs).addAppointmentJob(eq(externalId), visitCaptor.capture());
-            verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
-            verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
+        verify(allReminderJobs).addAppointmentJob(eq(externalId), visitCaptor.capture());
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
-            MotechEvent event = motechEventArgumentCaptor.getValue();
+        MotechEvent event = motechEventArgumentCaptor.getValue();
 
-            assertEquals(visitName, visitName);
-            assertEquals(now, visitCaptor.getValue().appointment().dueDate());
-            assertEquals(now.minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
-            assertEquals(EventKeys.CREATED_VISIT_EVENT_SUBJECT, event.getSubject());
-            assertEquals(visitName, event.getParameters().get(EventKeys.VISIT_NAME));
-            assertEquals(visitCaptor.getValue().visitDate(), event.getParameters().get(EventKeys.VISIT_DATE));
-        } finally {
-            stopFakingTime();
-        }
+        assertEquals(visitName, visitName);
+        assertEquals(now, visitCaptor.getValue().appointment().dueDate());
+        assertEquals(now.minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
+        assertEquals(EventKeys.CREATED_VISIT_EVENT_SUBJECT, event.getSubject());
+        assertEquals(visitName, event.getParameters().get(EventKeys.VISIT_NAME));
+        assertEquals(visitCaptor.getValue().visitDate(), event.getParameters().get(EventKeys.VISIT_DATE));
+
     }
 
     @Test
@@ -289,7 +297,7 @@ public class AppointmentServiceImplTest {
     }
 
     @Test
-    public void addingCustomDataToVisit_SetsDataOnDataMap(){
+    public void addingCustomDataToVisit_SetsDataOnDataMap() {
         String externalId = "externalId";
         String visitName = "visit";
         Visit visit = new Visit().name(visitName).appointment(new Appointment());
