@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
@@ -13,6 +12,7 @@ import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllTasks;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
@@ -49,7 +49,7 @@ public class TaskServiceImplTest {
         taskService = new TaskServiceImpl(allTasks, channelService);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutTrigger() {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
@@ -59,7 +59,7 @@ public class TaskServiceImplTest {
         taskService.save(t);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutAction() {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
@@ -69,21 +69,21 @@ public class TaskServiceImplTest {
         taskService.save(t);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutActionInputFields() {
         Task t = new Task(trigger, action, null, "name");
 
         taskService.save(t);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutName() {
         Task t = new Task(trigger, action, null, null);
 
         taskService.save(t);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithNameWithContainsOnlyWhitespaces() {
         Task t = new Task(trigger, action, null, "     ");
 

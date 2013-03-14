@@ -7,9 +7,12 @@ import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllTasks;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskService;
+import org.motechproject.tasks.validation.TaskValidator;
+import org.motechproject.tasks.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
@@ -35,20 +36,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void save(final Task task) {
-        if (task.getTrigger() == null) {
-            throw new IllegalArgumentException("Task must contains information about trigger");
-        }
+        ValidationResult result = TaskValidator.validate(task);
 
-        if (task.getAction() == null) {
-            throw new IllegalArgumentException("Task must contains information about action");
-        }
-
-        if (task.getActionInputFields() == null) {
-            throw new IllegalArgumentException("Task must contains action input fields");
-        }
-
-        if (isBlank(task.getName())) {
-            throw new IllegalArgumentException("Task must contains name");
+        if (!result.isValid()) {
+            throw new ValidationException(result.getTaskErrors());
         }
 
         allTasks.addOrUpdate(task);

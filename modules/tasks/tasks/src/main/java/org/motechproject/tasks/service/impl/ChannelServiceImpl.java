@@ -6,8 +6,11 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllChannels;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.validation.ChannelValidator;
+import org.motechproject.tasks.validation.ValidationResult;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -49,6 +52,17 @@ public class ChannelServiceImpl implements ChannelService {
         Type type = new TypeToken<Channel>() {}.getType();
         Channel channel = (Channel) motechJsonReader.readFromStream(stream, type);
         LOG.debug("Read channel definition from json file.");
+
+        registerChannel(channel);
+    }
+
+    @Override
+    public void registerChannel(Channel channel) {
+        ValidationResult result = ChannelValidator.validate(channel);
+
+        if (!result.isValid()) {
+            throw new ValidationException(result.getTaskErrors());
+        }
 
         allChannels.addOrUpdate(channel);
         LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));

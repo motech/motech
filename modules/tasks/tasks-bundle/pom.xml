@@ -49,7 +49,7 @@
                             <predefinedVars>
                                 $, jQuery, angular, DashboardCtrl, ManageTaskCtrl, LogCtrl, moment,
                                 dummyHandler, handleResponse, jConfirm, alertHandler, window,
-                                blockUI, unblockUI, motechAlert, motechConfirm
+                                blockUI, unblockUI, motechAlert, motechConfirm, jAlert
                             </predefinedVars>
                             <excludes>
                                 <exclude>rangy-core.js</exclude>

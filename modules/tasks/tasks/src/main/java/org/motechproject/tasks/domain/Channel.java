@@ -17,6 +17,16 @@ public class Channel extends MotechBaseDataObject {
     private String moduleName;
     private String moduleVersion;
 
+    public Channel() {
+        this(null, null, null);
+    }
+
+    public Channel(String displayName, String moduleName, String moduleVersion) {
+        this.displayName = displayName;
+        this.moduleName = moduleName;
+        this.moduleVersion = moduleVersion;
+    }
+
     public List<ActionEvent> getActionTaskEvents() {
         return actionTaskEvents;
     }
