@@ -11,6 +11,8 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
     <bean id="testHandler" class="org.motechproject.event.osgi.TestHandler"/>
 
 </beans>

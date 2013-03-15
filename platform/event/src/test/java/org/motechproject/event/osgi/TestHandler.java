@@ -7,9 +7,11 @@ import org.motechproject.event.listener.annotations.MotechParam;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 @Component
 public class TestHandler {
@@ -17,6 +19,8 @@ public class TestHandler {
 
     public final static List<String> EVENTS_HANDLED = Collections.synchronizedList(new ArrayList<String>());
     public static final String TEST_SUBJECT = "test-subject";
+    public static final String SUBJECT_READ = "read";
+    public static final Properties PROPERTIES = new Properties();
 
     @MotechListener(subjects = {TEST_SUBJECT})
     public void handle(MotechEvent event) {
@@ -44,6 +48,16 @@ public class TestHandler {
 
     @MotechListener(subjects = {"named"}, type = MotechListenerType.NAMED_PARAMETERS)
     public void namedParams(@MotechParam("id") String id, @MotechParam("key") String key) {
+    }
+
+    @MotechListener(subjects = {SUBJECT_READ})
+    public void read(MotechEvent event) {
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.properties");
+        try {
+            PROPERTIES.load(inputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void add(MotechEvent event) {

@@ -8,4 +8,6 @@
 
     <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.UIFrameworkService"/>
 
+    <osgi:reference id="uiFrameworkService" interface="org.motechproject.osgi.web.UIFrameworkService"/>
+
 </beans>
