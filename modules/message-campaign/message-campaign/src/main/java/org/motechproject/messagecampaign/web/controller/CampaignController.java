@@ -6,6 +6,7 @@ import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.messagecampaign.web.model.CampaignDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +22,12 @@ import java.util.List;
 @Controller
 public class CampaignController {
 
+    public static final String HAS_ROLE_MANAGECAMPAIGNS = "hasRole('manageCampaigns')";
     @Autowired
     private MessageCampaignService messageCampaignService;
 
     @RequestMapping(value = "/campaigns/{campaignName}", method = RequestMethod.GET)
+    @PreAuthorize(HAS_ROLE_MANAGECAMPAIGNS)
     public @ResponseBody CampaignDto getCampaign(@PathVariable String campaignName) {
         CampaignRecord campaignRecord = messageCampaignService.getCampaignRecord(campaignName);
 
@@ -36,6 +39,7 @@ public class CampaignController {
     }
 
     @RequestMapping(value = "/campaigns", method = RequestMethod.POST)
+    @PreAuthorize(HAS_ROLE_MANAGECAMPAIGNS)
     @ResponseStatus(HttpStatus.OK)
     public void createCampaign(@RequestBody CampaignDto campaign) {
         CampaignRecord campaignRecord = campaign.toCampaignRecord();
@@ -43,6 +47,7 @@ public class CampaignController {
     }
 
     @RequestMapping(value = "/campaigns", method = RequestMethod.GET)
+    @PreAuthorize(HAS_ROLE_MANAGECAMPAIGNS)
     public @ResponseBody List<CampaignDto> getAllCampaigns() {
         List<CampaignRecord> campaignRecords = messageCampaignService.getAllCampaignRecords();
 
@@ -56,6 +61,7 @@ public class CampaignController {
 
     @RequestMapping(value = "/campaigns/{campaignName}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize(HAS_ROLE_MANAGECAMPAIGNS)
     public void deleteCampaign(@PathVariable String campaignName) {
         messageCampaignService.deleteCampaign(campaignName);
     }
