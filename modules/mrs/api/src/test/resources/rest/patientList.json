@@ -1,0 +1,56 @@
+[
+    {
+        "patientId":null,
+        "motechId":"id1",
+        "person":{
+            "personId": null,
+            "firstName": "Patient",
+            "middleName":"MiddleName",
+            "lastName":"One",
+            "preferredName":null,
+            "address": "Addr1",
+            "dateOfBirth": null,
+            "birthDateEstimated": false,
+            "age": null,
+            "gender": "male",
+            "dead": false,
+            "attributes": [],
+            "deathDate":null
+        },
+       "facility": {
+           "facilityId": "fid1",
+           "name": "Facility1",
+           "country" :"PL",
+           "region":null,
+           "countyDistrict":null,
+           "stateProvince":null
+       }
+    },
+    {
+        "patientId":null,
+        "motechId":"id2",
+        "person":{
+            "personId": null,
+            "firstName": "Patient",
+            "middleName":null,
+            "lastName":"Two",
+            "preferredName":null,
+            "address": "Addr2",
+            "dateOfBirth": null,
+            "birthDateEstimated": false,
+            "age": null,
+            "gender": "female",
+            "dead": true,
+            "attributes": [],
+            "deathDate":null
+        },
+        "facility": {
+            "facilityId": "fid2",
+            "name": "Facility2",
+            "country" :"US",
+            "region":null,
+            "countyDistrict":null,
+            "stateProvince":null
+        }
+    }
+]

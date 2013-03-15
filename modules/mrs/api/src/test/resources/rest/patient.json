@@ -1,0 +1,27 @@
+{
+    "patientId":null,
+    "motechId":"id1",
+    "person":{
+        "personId": null,
+        "firstName": "Patient",
+        "middleName":"MiddleName",
+        "lastName":"One",
+        "preferredName":null,
+        "address": "Addr1",
+        "dateOfBirth": null,
+        "birthDateEstimated": false,
+        "age": null,
+        "gender": "male",
+        "dead": false,
+        "attributes": [],
+        "deathDate":null
+    },
+   "facility": {
+       "facilityId": "fid1",
+       "name": "Facility1",
+       "country" :"PL",
+       "region":null,
+       "countyDistrict":null,
+       "stateProvince":null
+   }
+}

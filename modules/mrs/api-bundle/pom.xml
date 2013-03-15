@@ -35,6 +35,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -46,8 +50,8 @@
                 <configuration>
                     <instructions>
                         <Context-File>META-INF/osgi/applicationMrsAPIBundle.xml</Context-File>
-                        <Context-Path>mrs</Context-Path>
-                        <Resource-Path>mrs/resource</Resource-Path>
+                        <Context-Path>mrs/api</Context-Path>
+                        <Resource-Path>mrs/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.mrs;version=${project.version},

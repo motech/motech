@@ -1,0 +1,114 @@
+<div class="row-fluid tab-frame"><!------------------------  Edit Patient Details  ------------------------------------->
+    <div class="span12 margin-after mrs">
+        <div class="inside clearfix">
+            <h4>{{msg('mrs.patient.name')}} {{patientDto.person.firstName}} {{patientDto.person.lastName}}</h4>
+            <div class="control-group clearfix">
+                <span ng-show="hasValue('motechId','1')" class="controls"><span class="span8"><h5 class="pull-left">{{msg('mrs.patient.motechId')}}: {{patientDto.motechId}}</h5></span></span>
+                <span ng-show="!hasValue('motechId','1')" class="controls"><span class="span8"><h5 class="pull-left">&#160;&#160;</h5></span></span>
+            </div>
+
+            <form name="form" class="form-horizontal inside">
+                <div class="control-group">
+                    <label class="control-label"></label>
+                    <div class="form-actions">
+                        <input class="btn btn-primary" ng-disabled="!validateForm()" type="button" ng-click="save()" value="{{msg('save')}}" >
+                        <input class="btn" type="button" ng-click="cancel()" value="{{msg('cancel')}}" >
+                        <span class="loader.wrapper" ng-hide="!inProgress">
+                        <img src="../mrs/resources/img/load.gif" alt="loading"/>
+                    </span>
+                    </div>
+                </div>
+                <div ng-class="cssClass('motechId','1')">
+                    <label class="control-label">{{msg('mrs.patient.motechId')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" id="inputMotechId"  ng-model="patientDto.motechId" required />
+                        <span ng-hide="motechIdValidate" class="form-hint">{{msg('mrs.error.patient.exist')}}</span>
+                        <span ng-hide="hasValue('motechId','1')" class="form-hint">{{msg('mrs.error.motechId')}}</span>
+                    </div>
+                </div>
+                <div ng-class="cssClass('firstName','2')">
+                    <label class="control-label">{{msg('mrs.person.field.firstName')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" ng-model="patientDto.person.firstName" required />
+                        <span ng-hide="hasValue('firstName','2')" class="form-hint">{{msg('mrs.error.firstName')}}</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{msg('mrs.person.field.middleName')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" ng-model="patientDto.person.middleName" />
+                    </div>
+                </div>
+                <div ng-class="cssClass('lastName','2')">
+                    <label class="control-label">{{msg('mrs.person.field.lastName')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" ng-model="patientDto.person.lastName" required />
+                        <span ng-hide="hasValue('lastName','2')" class="form-hint">{{msg('mrs.error.lastName')}}</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label span4">{{msg('mrs.person.field.preferredName')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" ng-model="patientDto.person.preferredName" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="message">{{msg('mrs.person.field.address')}}</label>
+                    <div class="controls">
+                        <textarea class="span8" rows="3" ng-model="patientDto.person.address" id="message" placeholder="eg. 111 1st St Seattle, WA USA"></textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{msg('mrs.person.field.gender')}}</label>
+                    <div class="controls" data-role="content">
+                        <label class="radio inline">
+                            <input type="radio" ng-model='patientDto.person.gender' id="optionsRadios1" value="male" >
+                            {{msg('mrs.person.field.gender.male')}}
+                        </label>
+                        <label class="radio inline">
+                            <input type="radio" ng-model='patientDto.person.gender' id="optionsRadios2" value="female" >
+                            {{msg('mrs.person.field.gender.female')}}
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{msg('mrs.person.field.dateOfBirth')}}</label>
+                    <div class="controls">
+                        <div class="input-append span11">
+                            <input type='text' ng-model='patientDto.person.dateOfBirth' datepicker placeholder="eg. 30/02/2000"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{msg('mrs.person.field.birthDateEstimated')}}</label>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input ng-model="patientDto.person.birthDateEstimated" type="checkbox" value="">
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{msg('mrs.person.field.dead')}}</label>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input ng-model="patientDto.person.dead" type="checkbox" value="">
+                        </label>
+                    </div>
+                </div>
+                <div ng-class="control-group">
+                    <label class="control-label">{{msg('mrs.facility.field.facilityId')}}</label>
+                    <div class="controls">
+                        <input class="span8" type="text" ng-model="patientDto.facility.facilityId" />
+                    </div>
+                </div>
+                <div class="control-group margin-before2">
+                    <label class="control-label"></label>
+                    <div class="form-actions">
+                        <input class="btn btn-primary" ng-disabled="!validateForm()" type="button" ng-click="save()" value="{{msg('save')}}" >
+                        <input class="btn" type="button" ng-click="cancel()" value="{{msg('cancel')}}" >
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

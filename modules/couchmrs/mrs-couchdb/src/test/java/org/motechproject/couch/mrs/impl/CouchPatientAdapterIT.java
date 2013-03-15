@@ -28,7 +28,10 @@ import java.util.List;
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -105,6 +108,26 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
 
         assertEquals(asList("456"), extract(patientsRetrieved, on(Patient.class).getMotechId()));
         assertEquals(asList("John Doe"), extract(patientsRetrieved, on(Patient.class).getPerson().getPreferredName()));
+    }
+
+    @Test
+    public void shouldGetAllPatientsList() throws MRSCouchException, PatientNotFoundException {
+        CouchPerson person = init.initializePerson1();
+
+        CouchFacility facility = new CouchFacility();
+        facility.setFacilityId("facilityId");
+        allFacilities.addFacility(facility);
+        CouchPatient patient = new CouchPatient("1", "11", person, facility);
+        patientAdapter.savePatient(patient);
+
+        CouchPatient patient2 = new CouchPatient("2", "22", person, facility);
+        patientAdapter.savePatient(patient2);
+
+        List<Patient> patientsRetrieved = patientAdapter.getAllPatients();
+
+
+        assertThat(patientsRetrieved.size(), is(equalTo(2)));
+        assertEquals(patientsRetrieved.get(0).getFacility().getFacilityId(), "facilityId");
     }
 
     @Override

@@ -1,0 +1,41 @@
+<div class="row-fluid tab-frame"><!------------------------  Edit Custom Attributes  ------------------------------------->
+    <div class="span12 margin-after mrs">
+        <div class="inside clearfix">
+            <h4>{{msg('mrs.patient.name')}} {{personDto.firstName}} {{personDto.lastName}}</h4>
+            <div class="control-group clearfix">
+                <span class="pull-left"><h5>{{msg('mrs.patient.motechId')}}: {{patientDto.motechId}}</h5></span>
+            </div>
+            <ng-form name="form" class="form-inline">
+                <div class="control-group inside centered">
+                    <div class="form-actions">
+                        <input class="btn btn-primary" ng-disabled="!validateFilterForm()" type="button" ng-click="save()" value="{{msg('save')}}" >
+                        <input class="btn" type="button" ng-click="cancel()" value="{{msg('cancel')}}" >
+                    </div>
+                </div>
+                <div ng-repeat="attribute in patientDto.person.attributes">
+                <div class="control-group centered">
+                    <span>
+                        <label class="control-label">{{msg('mrs.attribute')}}</label>
+                        <input class="span3" type="text" ng-model="attribute.name" required>
+                    </span>
+                    <span>
+                        <label class="">{{msg('mrs.value')}}</label>
+                        <input class="span3" type="text" ng-model="attribute.value" required>
+                    </span>
+                    <a ng-click="removeAttribute(attribute)" class="btn btn-small btn-danger"><i class="icon-remove icon-white"></i></a>
+                </div>
+                </div>
+
+                <div class="control-group centered">
+                    <button ui-if="patientDto.person.attributes.length==0" type="button" class="btn btn-success" ng-click="addAttribute()"><i class="icon-plus icon-white"></i>{{msg('mrs.patient.addAttribute')}}</button>
+                    <button ui-if="patientDto.person.attributes.length!=0" type="button" class="btn btn-success" ng-click="addAttribute()"><i class="icon-plus icon-white"></i>{{msg('mrs.patient.addAnotherAttribute')}}</button>
+                </div>
+            </ng-form>
+
+        </div>
+    </div>
+</div>
+
+
+
+

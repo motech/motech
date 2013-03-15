@@ -3,12 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-
     <context:annotation-config/>
+    <mvc:annotation-driven/>
+    <context:component-scan base-package="org.motechproject.mrs"/>
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
@@ -20,23 +23,40 @@
 
     <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 
+    <bean id="header" class="org.motechproject.osgi.web.Header" />
+
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="mrs"/>
+        <constructor-arg name="url" value="../mrs/resources/index.html"/>
+        <constructor-arg name="moduleName" value="mrs.name"/>
+        <constructor-arg name="angularModules">
+            <list>
+                <value>motech-mrs</value>
+            </list>
+        </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../mrs/resource/bundles/"/>
+                <entry key="messages" value="../mrs/resources/bundles/"/>
             </map>
         </constructor-arg>
+        <constructor-arg name="header" ref="header"/>
     </bean>
 
     <osgi:service id="mrsDataProviderOSGi" auto-export="interfaces" ref="mrsDataProvider"
                   interface="org.motechproject.commons.api.DataProvider"/>
 
-    <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.PatientAdapter" cardinality="0..N"/>
+    <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.PatientAdapter" cardinality="0..N">
+        <osgi:reference-listener ref="mrsImplementationManager"/>
+    </osgi:list>
 
-    <osgi:list id="facilityAdapterList" interface="org.motechproject.mrs.services.FacilityAdapter" cardinality="0..N"/>
+    <osgi:list id="personAdapterList" interface="org.motechproject.mrs.services.PersonAdapter" cardinality="0..N">
+        <osgi:reference-listener ref="mrsImplementationManager"/>
+    </osgi:list>
 
-    <osgi:list id="personAdapterList" interface="org.motechproject.mrs.services.PersonAdapter" cardinality="0..N"/>
+    <osgi:list id="facilityAdapterList" interface="org.motechproject.mrs.services.FacilityAdapter" cardinality="0..N">
+        <osgi:reference-listener ref="mrsImplementationManager"/>
+    </osgi:list>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
 </beans>

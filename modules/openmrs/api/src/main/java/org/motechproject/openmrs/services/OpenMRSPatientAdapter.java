@@ -275,4 +275,16 @@ public class OpenMRSPatientAdapter implements PatientAdapter {
         List<org.openmrs.Patient> patients = patientService.getPatients(null, motechId, idTypes, true);
         return (CollectionUtils.isNotEmpty(patients)) ? patients.get(0) : null;
     }
+
+    @Override
+    public List<org.motechproject.mrs.domain.Patient> getAllPatients() {
+        List<org.openmrs.Patient> patientsOpenMRS =  patientService.getAllPatients();
+        List<org.motechproject.mrs.domain.Patient> patiensMRS = new ArrayList<org.motechproject.mrs.domain.Patient>();
+
+        for (org.openmrs.Patient patient : patientsOpenMRS) {
+            patiensMRS.add(getMrsPatient(patient));
+        }
+
+        return patiensMRS;
+    }
 }

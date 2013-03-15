@@ -1,0 +1,12 @@
+<div> <!-- Only required for left/right tabs -->
+    <ul id="content-tabs" class="nav nav-tabs mrs">
+        <li class="active"><a data-target="main-content" href="#/patients" data-toggle="tab">{{msg('mrs.patients')}}</a></li>
+        <li><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('mrs.settings')}}</a></li>
+    </ul>
+
+    <div class="tab-content mrs" id="tab-content">
+        <div id="main-content" class="tab-pane active">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>
