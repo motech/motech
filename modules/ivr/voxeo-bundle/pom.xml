@@ -38,6 +38,13 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -74,9 +81,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.server.voxeo.osgi.Activator
-                        </Bundle-Activator>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-Path>voxeo</Context-Path>
+                        <Context-File>META-INF/osgi/voxeoResourcesBundle.xml</Context-File>
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,

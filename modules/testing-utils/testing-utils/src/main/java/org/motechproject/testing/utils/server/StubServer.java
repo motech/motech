@@ -1,5 +1,6 @@
 package org.motechproject.testing.utils.server;
 
+import org.apache.commons.lang.StringUtils;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -75,7 +76,9 @@ public class StubServer {
                 String[] queryParameters = queryString.split("&");
                 for (String queryParam : queryParameters) {
                     String[] keyValuePair = queryParam.split("=");
-                    map.put(keyValuePair[0], keyValuePair[1]);
+                    String key = keyValuePair[0];
+                    String value = (keyValuePair.length == 2) ? keyValuePair[1] : StringUtils.EMPTY;
+                    map.put(key, value);
                 }
                 return new RequestInfo(request.getContextPath(), map);
             }
