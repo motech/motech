@@ -51,15 +51,15 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 $('.accordion').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right;").addClass('icon-chevron-down');
                 });
 
                 $('.tasks-list').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right").addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right;").addClass('icon-chevron-down');
                 });
 
                 $('.accordion').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right");
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right;");
                 });
 
                 $('.tasks-list').on('hide', function (e) {
@@ -418,31 +418,58 @@
                         html: true,
                         content: function () {
                             var elem = $(manipulationOptions), element, manipulation;
+                            scope.sortableArrayTemp = [];
                             $compile(elem)(msgScope);
                             msgScope.$apply(elem);
+                            element = $("[ismanipulate=true]");
+                            manipulation = element.attr('manipulate');
 
-                            elem.find('span').replaceWith(function () {
-                                var element = $("[ismanipulate=true]"), manipulation = element.attr('manipulate');
-
-                                if (manipulation !== undefined && manipulation.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
-                                    $(this).append('<span class="icon-ok" style="float: right"></span>');
-
-                                    if (manipulation.indexOf("join") !== -1) {
-                                        $(this.nextElementSibling).css({ 'display' : '' });
-                                        elem.find('input').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")")));
-                                    } else {
-                                        elem.find('input').val("");
-                                    }
-                                }
+                            elem.find("span").replaceWith(function () {
                                 return $(this)[0].outerHTML;
                             });
-                            if (elem.is('span')) {
+
+                            if (manipulation !== undefined && manipulation.indexOf('date') === -1) {
+
+                                scope.cleanArray = function() {
+                                    var indexArray = scope.sortableArrayTemp.indexOf("");
+                                    if (indexArray !== -1) {
+                                        scope.sortableArrayTemp.splice(indexArray,1);
+                                    }
+                                };
+
+                                scope.setSortable = function(elemen, index) {
+                                    if(elemen.indexOf('join') !== -1) {
+                                        elemen = elemen.replace(elemen, 'join');
+                                    }
+                                    elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
+                                        if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
+                                            $(this).append('<span class="icon-ok" style="float: right;"></span>');
+                                            $(this).parent().addClass('active');
+                                            if (manipulation.indexOf("join") !== -1) {
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")")));
+                                            } else {
+                                                elem.find('input').val("");
+                                            }
+                                            $(elem[0]).append($(this).parent().clone().end());
+                                        }
+                                        return $(this)[0].outerHTML;
+                                    });
+
+                                };
+
+                            scope.sortableArrayTemp = manipulation.split(" ");
+                            scope.sortableArrayTemp.forEach(scope.cleanArray);
+                            scope.sortableArrayTemp.forEach(scope.setSortable);
+                            }
+
+                            if ($(elem).children().is("input[id='dateFormat']")) {
                                 element = $("[ismanipulate=true]");
                                 manipulation = element.attr('manipulate');
 
                                 if (manipulation !== undefined) {
-                                    elem.first().append('<span class="icon-remove" style="float: right"></span>');
-                                    elem.first().append('<span class="icon-ok" style="float: right"></span>');
+                                    elem.first().append('<span class="icon-remove" style="float: right;"></span>');
+                                    elem.first().append('<span class="icon-ok" style="float: right;"></span>');
 
                                     elem[4].children[0].value = manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")"));
                                 } else {
@@ -452,7 +479,7 @@
 
                             return $compile(elem)(msgScope);
                         },
-                        placement: "top",
+                        placement: "left",
                         trigger: 'manual'
                     }).click(function (event) {
                         event.stopPropagation();
@@ -525,6 +552,57 @@
             require: '?ngModel',
             link : function (scope, el, attrs) {
 
+                var manipulateElement = $("[ismanipulate=true]"), sortableElement, manipulateAttr;
+                scope.sortableArray = [];
+                scope.manipulations = '';
+
+                scope.cleanArray = function() {
+                    var indexArray = scope.sortableArray.indexOf("");
+                    if (indexArray !== -1) {
+                        scope.sortableArray.splice(indexArray,1);
+                    }
+                };
+
+                scope.normalizeArray = function(element, index) {
+                    scope.sortableArray.splice(index, 1, element + ' ');
+                };
+
+                scope.setSortableArray = function() {
+                manipulateAttr = manipulateElement.attr("manipulate");
+                    if (manipulateAttr !== undefined) {
+                        scope.sortableArray = manipulateAttr.split(" ");
+                        scope.sortableArray.forEach(scope.cleanArray);
+                        scope.sortableArray.forEach(scope.normalizeArray);
+                    }
+                };
+
+                scope.setSortableArray();
+
+                el.bind('mouseenter mousedown', function() {
+
+                    scope.dragStart = function(e, ui) {
+                        scope.setSortableArray();
+                        ui.item.data('start', ui.item.index());
+                    };
+
+                    scope.dragEnd = function(e, ui) {
+                        var start = ui.item.data('start'),
+                        end = ui.item.index();
+                        scope.sortableArray.splice(end, 0,
+                        scope.sortableArray.splice(start, 1)[0]);
+                        if(scope.sortableArray.length) {
+                            scope.manipulations = scope.sortableArray.join(" ");
+                        }
+                        manipulateElement.attr('manipulate', scope.manipulations);
+                        scope.$apply();
+                    };
+
+                    sortableElement = $('#sortable').sortable({
+                        start: scope.dragStart,
+                        update: scope.dragEnd
+                    });
+                });
+
                 el.bind("click", function () {
                     var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex;
 
@@ -555,14 +633,19 @@
                         }
 
                         manipulateElement.attr('manipulate', manipulateAttributes);
+                        scope.setSortableArray();
                     }
 
                     if (this.children.length === 0) {
-                        $(this).append('<span class="icon-ok" style="float: right"></span>');
+                        $(this).append('<span class="icon-ok" style="float: right;"></span>');
                         $(this.nextElementSibling).css({ 'display' : '' });
+                        $(this).parent().addClass('active');
+                        $('#sortable').append($(this.parentElement).clone().end());
                     } else {
                         $(this).children().remove();
                         $(this.nextElementSibling).css({ 'display' : 'none' });
+                        $(this).parent().removeClass("active");
+                        $('#sortable-no').append($(this.parentElement).clone().end());
                     }
                 });
 
@@ -571,7 +654,7 @@
                     var dateFormat = this.value, manipulateElement = $("[ismanipulate=true]"), deleteButton, manipulation;
 
                     if (manipulateElement.data("type") === 'DATE') {
-                        deleteButton = $('<span class="icon-remove" style="float: right"></span>');
+                        deleteButton = $('<span class="icon-remove" style="float: right;"></span>');
                         manipulation = this.getAttribute("setManipulation") + "(" + dateFormat + ")";
                         manipulateElement.removeAttr("manipulate");
 
@@ -580,7 +663,7 @@
 
                             if (this.parentElement.parentElement.firstChild.children.length === 0) {
                                 $(this.parentElement.parentElement.firstChild).append(deleteButton);
-                                $(this.parentElement.parentElement.firstChild).append('<span class="icon-ok" style="float: right"></span>');
+                                $(this.parentElement.parentElement.firstChild).append('<span class="icon-ok" style="float: right;"></span>');
                             }
                         } else if (dateFormat.length === 0) {
                             $(this.parentElement.parentElement.firstChild).children().remove();
