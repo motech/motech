@@ -194,9 +194,9 @@
                         regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
                         rgx = new RegExp('ad\\.(.+?)\\.(.+?)\\#(.+?)\\.(.+)', "g"),
                         accept = function (action, info) {
-                            var subject = action.subject === info.subject,
-                                serviceInterface = action.serviceInterface === info.serviceInterface,
-                                serviceMethod = action.serviceMethod === info.serviceMethod;
+                            var subject = action.subject && (action.subject === info.subject),
+                                serviceInterface = action.serviceInteface && (action.serviceInterface === info.serviceInterface),
+                                serviceMethod = action.serviceMethod && (action.serviceMethod === info.serviceMethod);
 
                             return subject || (serviceInterface && serviceMethod);
                         },
