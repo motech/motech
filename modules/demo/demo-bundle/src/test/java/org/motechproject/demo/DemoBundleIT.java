@@ -3,6 +3,7 @@ package org.motechproject.demo;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.model.Tree;
@@ -25,7 +26,7 @@ public class DemoBundleIT extends BaseOsgiIT {
 
         decisionTreeService.saveDecisionTree(tree);
 
-        PollingHttpClient httpClient = new PollingHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
         String response = httpClient.get("http://localhost:8080/demo/api/trees", new BasicResponseHandler());
 
