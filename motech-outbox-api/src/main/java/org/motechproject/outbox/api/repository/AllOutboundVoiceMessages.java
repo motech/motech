@@ -44,6 +44,13 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         return messages;
     }
 
+    public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName) {
+        ComplexKey startKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, new Date());
+        ComplexKey endKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, ComplexKey.emptyObject());
+        ViewQuery q = createQuery("getMessagesWithTypeName").startKey(startKey).endKey(endKey).includeDocs(true);
+        return db.queryView(q, OutboundVoiceMessage.class);
+    }
+
     public int getMessagesCount(String externalId, OutboundVoiceMessageStatus messageStatus) {
         ComplexKey startKey = ComplexKey.of(externalId, messageStatus, new Date());
         ComplexKey endKey = ComplexKey.of(externalId, messageStatus, ComplexKey.emptyObject());

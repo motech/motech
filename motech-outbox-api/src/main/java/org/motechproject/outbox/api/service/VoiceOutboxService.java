@@ -143,4 +143,14 @@ public interface VoiceOutboxService {
      * @return - the next pending message
      */
     public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId);
+
+    /**
+     * Retrieves the next pending message marking the lastMessage as PLAYED
+     *
+     * @param lastMessageId - the MessageId of the last message that has been PLAYED
+     * @param externalId    - unique identifier of the party
+     * @param voiceMessageTypeName    - type of voice message
+     * @return - the next pending message
+     */
+    public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId, String voiceMessageTypeName);
 }

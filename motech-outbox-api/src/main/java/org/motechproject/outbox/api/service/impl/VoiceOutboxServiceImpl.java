@@ -160,4 +160,13 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
             setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
         return getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING);
     }
+
+    @Override
+    public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId, String voiceMessageTypeName) {
+        if (StringUtils.isNotEmpty(lastMessageId)) {
+            setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
+        }
+        List<OutboundVoiceMessage> voiceMessages = allOutboundVoiceMessages.getMessages(externalId, OutboundVoiceMessageStatus.PENDING, voiceMessageTypeName);
+        return voiceMessages.size() > 0 ? voiceMessages.get(0) : null;
+    }
 }

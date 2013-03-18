@@ -378,6 +378,27 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test
+    public void shouldGetNextMessageByType() {
+        OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
+        String externalId = "123";
+        String voiceMessageType = "voiceMessageType";
+
+        when(allOutboundVoiceMessages.getMessages(externalId, OutboundVoiceMessageStatus.PENDING, voiceMessageType)).thenReturn(Arrays.asList(outboundVoiceMessage));
+        OutboundVoiceMessage nextMessage = voiceOutboxService.nextMessage(null, externalId, voiceMessageType);
+        assertEquals(outboundVoiceMessage, nextMessage);
+    }
+
+    @Test
+    public void shouldMarkPreviousMessageAsRead() {
+        String lastMessageId = "lastMessageId";
+        OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
+        when(allOutboundVoiceMessages.get(lastMessageId)).thenReturn(outboundVoiceMessage);
+
+        voiceOutboxService.nextMessage(lastMessageId, null, null);
+        verify(allOutboundVoiceMessages).update(outboundVoiceMessage);
+    }
+
+    @Test
     public void markMessageAsRead() {
         String externalId = "123";
         OutboundVoiceMessage currentMessage = mock(OutboundVoiceMessage.class);

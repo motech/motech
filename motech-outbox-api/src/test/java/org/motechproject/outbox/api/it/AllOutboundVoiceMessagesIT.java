@@ -120,6 +120,12 @@ public class AllOutboundVoiceMessagesIT {
     }
 
     @Test
+    public void shouldGetMessageGivenStatusAndExternalIdAndType() {
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(externalId1, OutboundVoiceMessageStatus.PENDING, type1.getVoiceMessageTypeName());
+        assertThat(messages.size(), is(1));
+    }
+
+    @Test
     public void getAllMessagesForGivenExternalIdStatusAndMessageType() {
         int pendingMessagesCount = outboundVoiceMessageDao.getMessagesCount(externalId1, OutboundVoiceMessageStatus.PENDING, type1.getVoiceMessageTypeName());
         assertThat(pendingMessagesCount, is(1));
