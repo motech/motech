@@ -8,6 +8,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
@@ -15,6 +17,8 @@ import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
+import org.motechproject.scheduletracking.api.events.EnrolledUserEvent;
+import org.motechproject.scheduletracking.api.events.UnenrolledUserEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
@@ -30,12 +34,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.now;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
-import static org.motechproject.commons.date.util.DateUtil.newDateTime;
-import static org.motechproject.commons.date.util.DateUtil.now;
 
 public class EnrollmentServiceTest extends BaseUnitTest {
     private EnrollmentService enrollmentService;
@@ -48,11 +52,13 @@ public class EnrollmentServiceTest extends BaseUnitTest {
     private EnrollmentAlertService enrollmentAlertService;
     @Mock
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
+    @Mock
+    private EventRelay eventRelay;
 
     @Before
     public void setup() {
         initMocks(this);
-        enrollmentService = new EnrollmentService(allSchedules, allEnrollments, enrollmentAlertService, enrollmentDefaultmentService);
+        enrollmentService = new EnrollmentService(allSchedules, allEnrollments, enrollmentAlertService, enrollmentDefaultmentService, eventRelay);
     }
 
     @Test
@@ -80,14 +86,19 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         verify(allEnrollments, times(0)).update(Matchers.<Enrollment>any());
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
         verify(allEnrollments, times(1)).add(enrollmentArgumentCaptor.capture());
-        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
 
+        Enrollment enrollment = enrollmentArgumentCaptor.getValue();
+
+        assertEnrollment(enrollment, externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+
+        MotechEvent event = new EnrolledUserEvent(enrollment.getExternalId(), enrollment.getScheduleName(), enrollment.getPreferredAlertTime(), referenceDate, enrollmentDate, enrollment.getCurrentMilestoneName()).toMotechEvent();
+        verify(eventRelay).sendEventMessage(event);
 
         verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollmentArgumentCaptor.capture());
-        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+        assertEnrollment(enrollment, externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
 
-        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollmentArgumentCaptor.getValue());
-        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollment);
+        assertEnrollment(enrollment, externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
 
         verify(enrollmentAlertService, times(0)).unscheduleAllAlerts(Matchers.<Enrollment>any());
         verify(enrollmentDefaultmentService, times(0)).unscheduleDefaultmentCaptureJob(Matchers.<Enrollment>any());
@@ -120,6 +131,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         verify(allEnrollments, times(1)).update(enrollmentArgumentCaptor.capture());
         assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
         verify(allEnrollments, times(0)).add(Matchers.<Enrollment>any());
+
 
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollmentArgumentCaptor.capture());
         assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, new Milestone("milestone", null, null, null, null), EnrollmentStatus.ACTIVE, schedule, metadata);
@@ -292,6 +304,10 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         verify(allEnrollments).update(enrollmentCaptor.capture());
 
         enrollment = enrollmentCaptor.getValue();
+
+        MotechEvent event = new UnenrolledUserEvent(enrollment.getExternalId(), enrollment.getScheduleName()).toMotechEvent();
+        verify(eventRelay).sendEventMessage(event);
+
         Assert.assertEquals("entity_1", enrollment.getExternalId());
         Assert.assertEquals(scheduleName, enrollment.getScheduleName());
         assertEquals(false, enrollment.isActive());

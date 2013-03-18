@@ -66,6 +66,60 @@
           "displayName" : "scheduleTracking.jobId"
         }
       ]
+    },
+    {
+      "displayName" : "scheduleTracking.userEnrolled",
+      "subject" : "org.motechproject.scheduletracking.api.user.enrolled",
+      "eventParameters" : [
+        {
+          "eventKey" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "eventKey" :  "schedule_name",
+          "displayName" : "scheduleTracking.scheduleName"
+        },
+        {
+          "eventKey" :  "preferred_alert_time",
+          "displayName" : "scheduleTracking.preferredAlertTime"
+        },
+        {
+          "eventKey" :  "reference_date",
+          "type" : "DATE",
+          "displayName" : "scheduleTracking.referenceDate"
+        },
+        {
+          "eventKey" :  "reference_time",
+          "displayName" : "scheduletracking.referenceTime"
+        },
+        {
+          "eventKey" :  "enrollment_date",
+          "type" : "DATE",
+          "displayName" : "scheduleTracking.enrollmentDate"
+        },
+        {
+           "eventKey" :  "enrollment_time",
+           "displayName" : "scheduleTracking.enrollmentTime"
+        },
+        {
+           "eventKey" :  "milestone_name",
+           "displayName" : "scheduleTracking.milestoneName"
+        }
+      ]
+    },
+    {
+      "displayName" : "scheduleTracking.userUnenrolled",
+      "subject" : "org.motechproject.scheduletracking.api.user.unenrolled",
+      "eventParameters" : [
+        {
+          "eventKey" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "eventKey" :  "schedule_name",
+          "displayName" : "scheduleTracking.scheduleName"
+        }
+      ]
     }
   ],
   "actionTaskEvents" : [
@@ -84,6 +138,62 @@
         {
           "key" : "JobID",
           "displayName" : "scheduleTracking.jobId"
+        }
+      ]
+    },
+    {
+      "displayName" : "scheduleTracking.enrollUser",
+      "serviceInterface" : "org.motechproject.scheduletracking.api.service.impl.EnrollmentActionService",
+      "serviceMethod" : "enroll",
+      "actionParameters" : [
+        {
+          "key" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "key" :  "schedule_name",
+          "displayName" : "scheduleTracking.scheduleName"
+        },
+        {
+          "key" :  "preferred_alert_time",
+          "displayName" : "scheduleTracking.preferredAlertTime"
+        },
+        {
+          "key" :  "reference_date",
+          "type" : "DATE",
+          "displayName" : "scheduleTracking.referenceDate"
+        },
+        {
+          "key" :  "reference_time",
+          "displayName" : "scheduletracking.referenceTime"
+        },
+        {
+          "key" :  "enrollment_date",
+          "type" : "DATE",
+          "displayName" : "scheduleTracking.enrollmentDate"
+        },
+        {
+           "key" :  "enrollment_time",
+           "displayName" : "scheduleTracking.enrollmentTime"
+        },
+        {
+           "key" :  "milestone_name",
+           "displayName" : "scheduleTracking.milestoneName"
+        }
+      ]
+    },
+    {
+      "displayName" : "scheduleTracking.unenrollUser",
+      "serviceInterface": "org.motechproject.scheduletracking.api.service.impl.EnrollmentActionService",
+      "serviceMethod": "unenroll",
+      "actionParameters" : [
+        {
+          "key" : "external_id",
+          "displayName" : "scheduleTracking.externalId"
+        },
+        {
+          "key" :  "schedule_name",
+          "displayName" : "scheduleTracking.scheduleName"
         }
       ]
     }

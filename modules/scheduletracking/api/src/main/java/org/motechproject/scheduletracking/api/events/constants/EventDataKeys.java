@@ -20,6 +20,13 @@ public final class EventDataKeys {
     // DefaultmentCaptureEvent
     public static final String ENROLLMENT_ID = "enrollment_id";
 
+    // Enroll and Unenroll event
+    public static final String PREFERRED_ALERT_TIME = "preferred_alert_time";
+    public static final String METADATA = "metadata";
+    public static final String REFERENCE_TIME = "reference_time";
+    public static final String ENROLLMENT_DATE = "enrollment_date";
+    public static final String ENROLLMENT_TIME = "enrollment_time";
+
     private EventDataKeys() {
     }
 }

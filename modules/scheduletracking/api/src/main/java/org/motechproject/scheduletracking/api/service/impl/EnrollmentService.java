@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;
@@ -10,6 +11,8 @@ import org.motechproject.scheduletracking.api.domain.MilestoneWindow;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
+import org.motechproject.scheduletracking.api.events.EnrolledUserEvent;
+import org.motechproject.scheduletracking.api.events.UnenrolledUserEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
@@ -18,9 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.UNENROLLED;
-import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 
 @Component
 public class EnrollmentService {
@@ -29,13 +32,15 @@ public class EnrollmentService {
     private AllEnrollments allEnrollments;
     private EnrollmentAlertService enrollmentAlertService;
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
+    private EventRelay eventRelay;
 
     @Autowired
-    public EnrollmentService(AllSchedules allSchedules, AllEnrollments allEnrollments, EnrollmentAlertService enrollmentAlertService, EnrollmentDefaultmentService enrollmentDefaultmentService) {
+    public EnrollmentService(AllSchedules allSchedules, AllEnrollments allEnrollments, EnrollmentAlertService enrollmentAlertService, EnrollmentDefaultmentService enrollmentDefaultmentService, EventRelay eventRelay) {
         this.allSchedules = allSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentAlertService = enrollmentAlertService;
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
+        this.eventRelay = eventRelay;
     }
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String, String> metadata) {
@@ -49,6 +54,9 @@ public class EnrollmentService {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         if (activeEnrollment == null) {
             allEnrollments.add(enrollment);
+            eventRelay.sendEventMessage(new EnrolledUserEvent(enrollment.getExternalId(),
+                    enrollment.getScheduleName(), enrollment.getPreferredAlertTime(), referenceDateTime,
+                    enrollmentDateTime, enrollment.getCurrentMilestoneName()).toMotechEvent());
         } else {
             unscheduleJobs(activeEnrollment);
             enrollment = activeEnrollment.copyFrom(enrollment);
@@ -83,6 +91,7 @@ public class EnrollmentService {
         unscheduleJobs(enrollment);
         enrollment.setStatus(UNENROLLED);
         allEnrollments.update(enrollment);
+        eventRelay.sendEventMessage(new UnenrolledUserEvent(enrollment.getExternalId(), enrollment.getScheduleName()).toMotechEvent());
     }
 
     public WindowName getCurrentWindowAsOf(Enrollment enrollment, DateTime asOf) {
