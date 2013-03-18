@@ -11,7 +11,7 @@
         <constructor-arg value="${queue.for.events}"/>
     </bean>
 
-    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <bean id="connectionFactory" class="org.motechproject.event.MotechCachingConnectionFactory">
         <property name="targetConnectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
                 <property name="brokerURL" value="${broker.url}"/>
@@ -22,6 +22,8 @@
         </property>
         <property name="sessionCacheSize" value="${jms.session.cache.size:10}"/>
         <property name="cacheProducers" value="${jms.cache.producers:false}"/>
-    </bean>
 
+        <property name="username" value="${jms.username:}"/>
+        <property name="password" value="${jms.password:}"/>
+    </bean>
 </beans>
