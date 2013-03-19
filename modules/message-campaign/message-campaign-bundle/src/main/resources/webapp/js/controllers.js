@@ -28,7 +28,16 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
             colNames:['Enrollment ID', 'ID', 'Edit', 'Delete'],
             colModel:[
                 {name:'enrollmentId', index:'enrollmentId', hidden:true, editable:true},
-                {name:'externalId', index:'externalId', sortable:false, editable:true},
+                {
+                    name:'externalId',
+                    index:'externalId',
+                    sortable:false,
+                    editable:true,
+                    editrules:{
+                        custom:true,
+                        custom_func:validateExternalId
+                    }
+                },
                 {
                     name:'edit',
                     formatter:'actions',
@@ -60,6 +69,13 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
             multiselect:true
         });
 
+        function validateExternalId(value, columnName) {
+            if (value.length > 0) {
+                return [true, ""];
+            }
+            return [false, "msgCampaign.enrollment.emptyExternalId"];
+        }
+
         function deleteFormatter(cellvalue, options, rowObject) {
             return "" +
                 "<div style='margin-left:8px;'>" +
@@ -67,7 +83,7 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
                 "class='ui-pg-div ui-inline-del'" +
                 "onmouseout='jQuery(this).removeClass(\"ui-state-hover\");'" +
                 "onmouseover='jQuery(this).addClass(\"ui-state-hover\");'" +
-                "onclick='deleteRows([\"" + rowObject.enrollmentId + "\"]);'" +
+                "onclick='deleteRows([\"" + options.rowId + "\"]);'" +
                 "style='float:left;margin-left:5px;'" +
                 "title='Delete selected row'>" +
                 "<span class='ui-icon ui-icon-trash'></span>" +
@@ -123,11 +139,22 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
             }
             var rowId = newRowPrefix + Math.round(Math.random() * 10000);
             grid.jqGrid('addRowData', rowId, {});
-            jQuery(grid.jqGrid('getInd', rowId, true)).find('.ui-inline-edit').click();
+            var row = jQuery(grid.jqGrid('getInd', rowId, true));
+            row.find('.ui-inline-edit').click();
+            row.find('input').focus();
         });
 
         var isNewRow = function (rowId) {
             return rowId.startsWith(newRowPrefix);
         };
+
+        $.extend($.jgrid, {
+            info_dialog:function (caption, content, c_b, modalopt) {
+                setTimeout(function () {
+                    motechAlert(content.trim(), "msgCampaign.enrollment.invalidAction");
+                }, 0)
+
+            }
+        });
     });
 }
