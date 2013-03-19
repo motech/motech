@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class TriggerEvent extends TaskEvent {
 
     public TriggerEvent(String description, String displayName, String subject, List<EventParameter> eventParameters) {
         super(description, displayName, subject);
-        this.eventParameters = eventParameters;
+        this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
     }
 
     public List<EventParameter> getEventParameters() {
@@ -22,7 +23,10 @@ public class TriggerEvent extends TaskEvent {
     }
 
     public void setEventParameters(List<EventParameter> eventParameters) {
-        this.eventParameters = eventParameters;
+        if (eventParameters != null) {
+            this.eventParameters.clear();
+            this.eventParameters.addAll(eventParameters);
+        }
     }
 
     @Override

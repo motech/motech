@@ -1,4 +1,4 @@
-package org.motechproject.event.osgi;
+package org.motechproject.commons.api;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -7,17 +7,13 @@ import org.springframework.context.ApplicationContext;
 import static java.util.Arrays.asList;
 import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
-public class ApplicationContextServiceReference {
-
-
+public final class ApplicationContextServiceReferenceUtils {
     public static final String SERVICE_NAME = "org.springframework.context.service.name";
-    private ServiceReference serviceReference;
 
-    public ApplicationContextServiceReference(ServiceReference serviceReference) {
-        this.serviceReference = serviceReference;
+    private ApplicationContextServiceReferenceUtils() {
     }
 
-    public Boolean isValid() {
+    public static boolean isValid(ServiceReference serviceReference) {
         String[] objectClasses = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
 
         if (objectClasses.length == 0) {
@@ -31,9 +27,10 @@ public class ApplicationContextServiceReference {
         String serviceName = (String) serviceReference.getProperty(SERVICE_NAME);
 
 
-        if (!nullSafeSymbolicName(serviceReference.getBundle()).equals(serviceName)) {
-            return false;
-        }
-        return true;
+        return nullSafeSymbolicName(serviceReference.getBundle()).equals(serviceName);
+    }
+
+    public static boolean isNotValid(ServiceReference serviceReference) {
+        return !isValid(serviceReference);
     }
 }

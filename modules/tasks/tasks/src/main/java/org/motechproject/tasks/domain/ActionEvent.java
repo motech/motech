@@ -2,15 +2,16 @@ package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class ActionEvent extends TaskEvent {
     private static final long serialVersionUID = 8362330377208460896L;
 
-    private List<ActionParameter> actionParameters;
+    private SortedSet<ActionParameter> actionParameters;
     private String serviceInterface;
     private String serviceMethod;
 
@@ -18,20 +19,20 @@ public class ActionEvent extends TaskEvent {
         this(null, null, null, null, null, null);
     }
 
-    public ActionEvent(String description, String displayName, String subject, List<ActionParameter> actionParameters) {
-        this(description, displayName, subject, actionParameters, null, null);
+    public ActionEvent(String displayName, String subject, String description, SortedSet<ActionParameter> actionParameters) {
+        this(displayName, subject, description, null, null, actionParameters);
     }
 
-    public ActionEvent(String description, String displayName, List<ActionParameter> actionParameters,
-                       String serviceInterface, String serviceMethod) {
-        this(description, displayName, null, actionParameters, serviceInterface, serviceMethod);
+    public ActionEvent(String displayName, String description, String serviceInterface, String serviceMethod,
+                       SortedSet<ActionParameter> actionParameters) {
+        this(displayName, null, description, serviceInterface, serviceMethod, actionParameters);
     }
 
-    public ActionEvent(String description, String displayName, String subject, List<ActionParameter> actionParameters,
-                       String serviceInterface, String serviceMethod) {
+    public ActionEvent(String displayName, String subject, String description, String serviceInterface,
+                       String serviceMethod, SortedSet<ActionParameter> actionParameters) {
         super(description, displayName, subject);
 
-        this.actionParameters = actionParameters;
+        this.actionParameters = actionParameters == null ? new TreeSet<ActionParameter>() : actionParameters;
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
     }
@@ -49,16 +50,31 @@ public class ActionEvent extends TaskEvent {
         return result;
     }
 
+    public void addParameter(ActionParameter parameter, boolean changeOrder) {
+        if (changeOrder) {
+            if (actionParameters.isEmpty()) {
+                parameter.setOrder(0);
+            } else {
+                parameter.setOrder(actionParameters.last().getOrder() + 1);
+            }
+        }
+
+        actionParameters.add(parameter);
+    }
+
     public boolean hasService() {
         return isNotBlank(serviceInterface) && isNotBlank(serviceMethod);
     }
 
-    public List<ActionParameter> getActionParameters() {
+    public SortedSet<ActionParameter> getActionParameters() {
         return actionParameters;
     }
 
-    public void setActionParameters(List<ActionParameter> actionParameters) {
-        this.actionParameters = actionParameters;
+    public void setActionParameters(SortedSet<ActionParameter> actionParameters) {
+        if (actionParameters != null) {
+            this.actionParameters.clear();
+            this.actionParameters.addAll(actionParameters);
+        }
     }
 
     public String getServiceInterface() {

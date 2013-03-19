@@ -1,11 +1,10 @@
 package org.motechproject.tasks.service.impl;
 
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.EventParameter;
@@ -17,10 +16,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,40 +49,41 @@ public class ChannelServiceImplTest {
     @Mock
     InputStream inputStream;
 
-    @Mock
-    MotechJsonReader motechJsonReader;
-
     ChannelService channelService;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(allChannels, motechJsonReader);
+        channelService = new ChannelServiceImpl(allChannels);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldNotRegisterChannelWhenValidationExceptionIsAppeared() {
-        Type type = new TypeToken<Channel>() { }.getType();
-        Channel channel = new Channel();
+        String channel = String.format("{displayName: %s, moduleName: %s, moduleVersion: %s}", MODULE_NAME, MODULE_NAME, VERSION);
+        InputStream stream = new ByteArrayInputStream(channel.getBytes(Charset.forName("UTF-8")));
 
-        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(channel);
-
-        channelService.registerChannel(inputStream);
+        channelService.registerChannel(stream);
     }
 
     @Test
     public void shouldRegisterChannel() {
-        Type type = new TypeToken<Channel>() { }.getType();
-        Channel channel = new Channel("displayName", MODULE_NAME, VERSION);
-        channel.setTriggerTaskEvents(asList(new TriggerEvent(null, "displayName", "subject", asList(new EventParameter("displayName", "eventKey")))));
+        String triggerEvent = "{ displayName: 'displayName', subject: 'subject', eventParameters: [{ displayName: 'displayName', eventKey: 'eventKey' }] }";
+        String channel = String.format("{displayName: %s, moduleName: %s, moduleVersion: %s, triggerTaskEvents: [%s]}", MODULE_NAME, MODULE_NAME, VERSION, triggerEvent);
+        InputStream stream = new ByteArrayInputStream(channel.getBytes(Charset.forName("UTF-8")));
 
-        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(channel);
+        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
+        channelService.registerChannel(stream);
 
-        channelService.registerChannel(inputStream);
+        verify(allChannels).addOrUpdate(captor.capture());
 
-        verify(motechJsonReader).readFromStream(inputStream, type);
-        verify(allChannels).addOrUpdate(channel);
+        Channel c = captor.getValue();
+
+        assertEquals(MODULE_NAME, c.getDisplayName());
+        assertEquals(MODULE_NAME, c.getModuleName());
+        assertEquals(VERSION, c.getModuleVersion());
+        assertEquals(1, c.getTriggerTaskEvents().size());
+        assertEquals(new TriggerEvent(null, "displayName", "subject", asList(new EventParameter("displayName", "eventKey"))), c.getTriggerTaskEvents().get(0));
     }
 
     @Test
@@ -190,9 +191,7 @@ public class ChannelServiceImplTest {
 
         whenGetChannelIcon(null);
 
-        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
-
-        assertNull(bundleIcon);
+        assertNull(channelService.getChannelIcon(MODULE_NAME, VERSION));
     }
 
     private void whenGetChannelIcon(URL iconUrl) throws IOException {

@@ -49,7 +49,7 @@ class KeyInformation {
                 objectType = matcher.group(OBJECT_TYPE_IDX);
                 objectId = Long.valueOf(matcher.group(OBJECT_ID_IDX));
                 eventKey = matcher.group(EVENTK_KEY_IDX);
-            }  else {
+            } else {
                 throw new IllegalArgumentException("Incorrect format for key from additional data");
             }
         } else {

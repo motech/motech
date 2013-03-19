@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.SortedSet;
 
 public class AbstractTaskBundleIT extends BaseOsgiIT {
 
@@ -77,7 +78,7 @@ public class AbstractTaskBundleIT extends BaseOsgiIT {
         return found;
     }
 
-    protected boolean hasActionParameterKey(String externalIdKey, List<ActionParameter> actionParameters) {
+    protected boolean hasActionParameterKey(String externalIdKey, SortedSet<ActionParameter> actionParameters) {
         boolean found = false;
         for (ActionParameter param : actionParameters) {
             if (externalIdKey.equals(param.getKey())) {

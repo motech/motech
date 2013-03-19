@@ -1,5 +1,6 @@
 package org.motechproject.event.osgi;
 
+import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleContext;
@@ -30,7 +31,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
         LOGGER.debug("Staring to process " + applicationContext.getDisplayName());
 
-        if (!new ApplicationContextServiceReference(serviceReference).isValid()) {
+        if (ApplicationContextServiceReferenceUtils.isNotValid(serviceReference)) {
             return applicationContext;
         }
 
@@ -52,7 +53,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         super.removedService(reference, service);
         ApplicationContext applicationContext = (ApplicationContext) service;
 
-        if (new ApplicationContextServiceReference(reference).isValid()) {
+        if (ApplicationContextServiceReferenceUtils.isValid(reference)) {
             eventAnnotationBeanPostProcessor.clearListeners(applicationContext);
             contextsProcessed.remove(applicationContext.getId());
         }

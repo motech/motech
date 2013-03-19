@@ -78,7 +78,7 @@
                 <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>drop DB =&gt; motech-tasks</id>
+                        <id>drop DB =&gt; motech-admin</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>

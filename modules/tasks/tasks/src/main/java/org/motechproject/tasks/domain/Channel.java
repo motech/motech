@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,9 +23,22 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public Channel(String displayName, String moduleName, String moduleVersion) {
+        this(displayName, moduleName, moduleVersion, null, null, null);
+    }
+
+    public Channel(String displayName, String moduleName, String moduleVersion, String description,
+                   List<TriggerEvent> triggerTaskEvents, List<ActionEvent> actionTaskEvents) {
         this.displayName = displayName;
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
+        this.description = description;
+
+        this.actionTaskEvents = actionTaskEvents == null ? new ArrayList<ActionEvent>() : actionTaskEvents;
+        this.triggerTaskEvents = triggerTaskEvents == null ? new ArrayList<TriggerEvent>() : triggerTaskEvents;
+    }
+
+    public void addActionTaskEvent(ActionEvent actionEvent) {
+        actionTaskEvents.add(actionEvent);
     }
 
     public List<ActionEvent> getActionTaskEvents() {
@@ -32,7 +46,10 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public void setActionTaskEvents(List<ActionEvent> actionTaskEvents) {
-        this.actionTaskEvents = actionTaskEvents;
+        if (actionTaskEvents != null) {
+            this.actionTaskEvents.clear();
+            this.actionTaskEvents.addAll(actionTaskEvents);
+        }
     }
 
     public List<TriggerEvent> getTriggerTaskEvents() {
@@ -40,7 +57,10 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public void setTriggerTaskEvents(List<TriggerEvent> triggerTaskEvents) {
-        this.triggerTaskEvents = triggerTaskEvents;
+        if (triggerTaskEvents != null) {
+            this.triggerTaskEvents.clear();
+            this.triggerTaskEvents.addAll(triggerTaskEvents);
+        }
     }
 
     public String getDescription() {
