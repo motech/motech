@@ -5,7 +5,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder  location="classpath*:activemq.properties"/>
+    <bean id="eventConfigManager" class="org.motechproject.event.config.EventConfigManagerImpl"/>
+
+    <bean id="activemqConfig" class="java.util.Properties" factory-bean="eventConfigManager"
+          factory-method="getActivemqConfig"/>
+
+    <context:property-placeholder properties-ref="activemqConfig"/>
 
     <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg value="${queue.for.events}"/>
