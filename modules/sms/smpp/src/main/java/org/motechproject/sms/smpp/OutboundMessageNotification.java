@@ -58,7 +58,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     }
 
     private void raiseFailureEvent(OutboundMessage msg, DateTime sentTime) {
-        HashMap<String, Object> parameters = new HashMap<String, Object>();
+        HashMap<String, Object> parameters = new HashMap<>();
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
         eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));

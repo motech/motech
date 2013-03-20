@@ -9,7 +9,7 @@
       "eventParameters" : [
         {
           "eventKey" : "number",
-          "displayName" : "Recipients"
+          "displayName" : "sms.recipients"
         },
         {
           "eventKey" : "message",
@@ -20,8 +20,44 @@
           "displayName" : "sms.deliveryTime"
         }
       ]
+    },
+    {
+      "displayName" : "sms.inboundSms",
+      "subject" : "inbound_sms",
+      "eventParameters" : [
+        {
+          "eventKey" : "sender",
+          "displayName" : "sms.sender"
+        },
+        {
+          "eventKey" : "inbound_message",
+          "displayName" : "sms.inboundMessage"
+        },
+        {
+          "eventKey" : "timestamp",
+          "displayName" : "sms.timestamp"
+        }
+      ]
     }
   ],
   "actionTaskEvents" : [
+    {
+      "displayName" : "sms.send",
+      "subject" : "SendSMS",
+      "actionParameters" : [
+        {
+          "key" : "number",
+          "displayName" : "sms.recipients"
+        },
+        {
+          "key" : "message",
+          "displayName" : "sms.message"
+        },
+        {
+          "key" : "delivery_time",
+          "displayName" : "sms.deliveryTime"
+        }
+      ]
+    }
   ]
 }
