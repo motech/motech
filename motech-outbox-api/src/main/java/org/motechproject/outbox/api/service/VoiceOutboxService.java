@@ -5,6 +5,7 @@ import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -96,6 +97,16 @@ public interface VoiceOutboxService {
      */
     public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName);
 
+    /**
+     * Returns number of  messages in the outbox of the party with the given ExternalId, VoiceMessageTypeName and
+     * {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus}
+     *
+     * @param externalId           - unique identifier of the party
+     * @param voiceMessageTypeName - name of the {@link org.motechproject.outbox.api.domain.VoiceMessageType VoiceMessageType}
+     * @param from                 - The start date from which to query for the messages
+     * @return - count of messages found in outbox
+     */
+    public int getNumberOfMessages(String externalId, String voiceMessageTypeName, Date from);
 
     /**
      * Returns messages in the outbox of the party with the given ExternalId and {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} sorted by the given {@link org.motechproject.outbox.api.contract.SortKey SortKey}
@@ -147,9 +158,9 @@ public interface VoiceOutboxService {
     /**
      * Retrieves the next pending message marking the lastMessage as PLAYED
      *
-     * @param lastMessageId - the MessageId of the last message that has been PLAYED
-     * @param externalId    - unique identifier of the party
-     * @param voiceMessageTypeName    - type of voice message
+     * @param lastMessageId        - the MessageId of the last message that has been PLAYED
+     * @param externalId           - unique identifier of the party
+     * @param voiceMessageTypeName - type of voice message
      * @return - the next pending message
      */
     public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId, String voiceMessageTypeName);

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 //TODO: The API of VoiceOutboxService is anemic (exposes the domain model, just a wrapper over the dao)
@@ -127,6 +128,14 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         assertArgumentNotEmpty("ExternalID", externalId);
         assertArgumentNotNull("OutboundVoiceMessageStatus", messageStatus);
         return allOutboundVoiceMessages.getMessagesCount(externalId, messageStatus, voiceMessageTypeName);
+    }
+
+    @Override
+    public int getNumberOfMessages(String externalId, String voiceMessageTypeName, Date from) {
+        logInfo("Get number of pending messages for the external ID: %s", externalId);
+        assertArgumentNotEmpty("ExternalID", externalId);
+        assertArgumentNotNull("VoiceMessageTypeName", voiceMessageTypeName);
+        return allOutboundVoiceMessages.getMessagesCount(externalId, voiceMessageTypeName, from);
     }
 
     @Override

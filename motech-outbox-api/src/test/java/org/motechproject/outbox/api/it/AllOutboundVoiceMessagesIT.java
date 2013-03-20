@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
@@ -93,7 +93,7 @@ public class AllOutboundVoiceMessagesIT {
         messageWithAudioFiles.setVoiceMessageType(messageType);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
-        List<String> sequenceOfFilesToPlay = Arrays.asList("file1.wav", "file2.wav", "file3.wav");
+        List<String> sequenceOfFilesToPlay = asList("file1.wav", "file2.wav", "file3.wav");
         parameters.put("audioFiles", sequenceOfFilesToPlay);
         messageWithAudioFiles.setParameters(parameters);
         messageWithAudioFiles.setStatus(OutboundVoiceMessageStatus.PENDING);
@@ -132,5 +132,33 @@ public class AllOutboundVoiceMessagesIT {
 
         pendingMessagesCount = outboundVoiceMessageDao.getMessagesCount(externalId2, OutboundVoiceMessageStatus.PENDING, type2.getVoiceMessageTypeName());
         assertThat(pendingMessagesCount, is(2));
+    }
+
+    @Test
+    public void shouldGetCountOfAllMessagesWithTypeAndCreationTime() {
+        DateTime now = DateUtil.now();
+        VoiceMessageType type = new VoiceMessageType();
+        type.setVoiceMessageTypeName("typeName");
+
+        List<OutboundVoiceMessage> messages = asList(
+                outboundVoiceMessage(externalId1, type, now),
+                outboundVoiceMessage(externalId1, type, now.plusDays(1)),
+                outboundVoiceMessage(externalId1, type, now.plusDays(2))
+        );
+
+        for (OutboundVoiceMessage message : messages) {
+            outboundVoiceMessageDao.add(message);
+        }
+
+        assertEquals(2, outboundVoiceMessageDao.getMessagesCount(externalId1, "typeName", now.plusDays(1).toDate()));
+    }
+
+    private OutboundVoiceMessage outboundVoiceMessage(String externalId, VoiceMessageType type, DateTime creationTime) {
+        OutboundVoiceMessage message = new OutboundVoiceMessage();
+        message.setExternalId(externalId);
+        message.setVoiceMessageType(type);
+        message.setCreationTime(creationTime.toDate());
+        message.setExpirationDate(creationTime.plusDays(1).toDate());
+        return message;
     }
 }

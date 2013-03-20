@@ -18,6 +18,7 @@ import java.util.*;
 @Repository
 @Views({
         @View(name = "getMessagesWithTypeName", map = "function(doc) { if (doc.partyId && doc.voiceMessageType) { emit([doc.partyId, doc.status, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
+        @View(name = "getMessagesFrom", map = "function(doc) { if (doc.partyId) { emit([doc.partyId, doc.voiceMessageType.voiceMessageTypeName, doc.creationTime], doc._id); } }"),
         @View(name = "getMessages", map = "function(doc) { if (doc.partyId) { emit([doc.partyId, doc.status, doc.expirationDate], doc._id); } }"),
 })
 public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
@@ -62,6 +63,13 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         ComplexKey startKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, new Date());
         ComplexKey endKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, ComplexKey.emptyObject());
         ViewQuery q = createQuery("getMessagesWithTypeName").startKey(startKey).endKey(endKey);
+        return db.queryView(q).getSize();
+    }
+
+    public int getMessagesCount(String externalId, String voiceMessageTypeName, Date from) {
+        ComplexKey startKey = ComplexKey.of(externalId, voiceMessageTypeName, from);
+        ComplexKey endKey = ComplexKey.of(externalId, voiceMessageTypeName, ComplexKey.emptyObject());
+        ViewQuery q = createQuery("getMessagesFrom").startKey(startKey).endKey(endKey);
         return db.queryView(q).getSize();
     }
 }
