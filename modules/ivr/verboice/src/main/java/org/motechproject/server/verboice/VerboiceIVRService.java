@@ -25,6 +25,7 @@ import static java.lang.String.format;
 public class VerboiceIVRService implements IVRService {
     private static Logger log = LoggerFactory.getLogger(VerboiceIVRService.class);
     private static final String CALLBACK_URL = "callback_url";
+    private static final String CALLBACK_STATUS_URL = "status_callback_url";
 
     private SettingsFacade settings;
     private HttpClient commonsHttpClient;
@@ -66,16 +67,20 @@ public class VerboiceIVRService implements IVRService {
 
     private String outgoingCallUri(CallRequest callRequest) {
         String callbackUrlParameter = "";
+        String callbackStatusUrlParameter = "";
         if (callRequest.getPayload() != null && !callRequest.getPayload().isEmpty() && callRequest.getPayload().containsKey(CALLBACK_URL)) {
             callbackUrlParameter = "&" + CALLBACK_URL + "=" + callRequest.getPayload().get(CALLBACK_URL);
         }
+        if (callRequest.getPayload() != null && !callRequest.getPayload().isEmpty() && callRequest.getPayload().containsKey(CALLBACK_STATUS_URL)) {
+            callbackStatusUrlParameter = "&" + CALLBACK_STATUS_URL + "=" + callRequest.getPayload().get(CALLBACK_STATUS_URL);
+        }
         return format(
-            "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s",
+            "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s%s",
             settings.getProperty("host"),
             settings.getProperty("port"),
             callRequest.getCallId(),
             callRequest.getCallBackUrl(),
-            callRequest.getPhone(), callbackUrlParameter
+            callRequest.getPhone(), callbackUrlParameter, callbackStatusUrlParameter
         );
     }
 }

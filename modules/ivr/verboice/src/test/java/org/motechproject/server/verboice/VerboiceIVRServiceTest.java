@@ -62,10 +62,11 @@ public class VerboiceIVRServiceTest {
         callRequest.setPayload(new HashMap<String, String>() {{
             put("callback_url", "key");
             put("not_callback_url", "foo");
+            put("status_callback_url", "key2");
         }});
         ivrService.initiateCall(callRequest);
 
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher(format("http://verboice:3000/api/call?motech_call_id=%s&channel=foobar&address=1234567890&callback_url=key", callRequest.getCallId()))));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher(format("http://verboice:3000/api/call?motech_call_id=%s&channel=foobar&address=1234567890&callback_url=key&status_callback_url=key2", callRequest.getCallId()))));
     }
 
     @Test
