@@ -21,7 +21,7 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import static java.lang.String.format;
 import static junit.framework.Assert.fail;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
@@ -57,7 +57,7 @@ public class VerboiceIVRControllerEndOfCallIT extends SpringIntegrationTest {
             String phoneNumber = "12345";
             flowSessionService.findOrCreate(motechCallId, phoneNumber);
             String url = String.format("/ivr/callstatus?CallStatus=no-answer&CallSid=123A&motech_call_id=%s&From=%s", motechCallId, phoneNumber);
-            mockVerboiceIvrController.perform(post(url));
+            mockVerboiceIvrController.perform(get(url));
 
             Object lock = listener.getLock();
             while (!listener.isEventReceived()) {

@@ -66,7 +66,7 @@ public class VerboiceIVRController {
         return view;
     }
 
-    @RequestMapping(value = "/ivr/callstatus", method = RequestMethod.POST)
+    @RequestMapping(value = "/ivr/callstatus", method = RequestMethod.GET)
     public void handleMissedCall(HttpServletRequest request) {
         String callStatus = request.getParameter("CallStatus");
         List<String> missedCallStatuses = Arrays.asList("busy", "failed", "no-answer");
