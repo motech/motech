@@ -18,7 +18,7 @@
     </bean>
 
     <bean id="callDetailRecord" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="callDetailRecords"/>
+        <constructor-arg value="motech-calllog"/>
     </bean>
 
     <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>

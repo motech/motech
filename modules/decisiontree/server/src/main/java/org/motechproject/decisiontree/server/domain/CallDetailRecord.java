@@ -2,6 +2,7 @@ package org.motechproject.decisiontree.server.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.decisiontree.core.CallDetail;
 
@@ -160,6 +161,7 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
 
     public CallDetailRecord setEndDate(DateTime endDate) {
         this.endDate = endDate;
+        duration = new Period(startDate, endDate).toStandardSeconds().getSeconds();
         return this;
     }
 
