@@ -143,7 +143,7 @@
     },
     {
       "displayName" : "scheduleTracking.enrollUser",
-      "serviceInterface" : "org.motechproject.scheduletracking.api.service.impl.EnrollmentActionService",
+      "serviceInterface" : "org.motechproject.scheduletracking.api.service.EnrollmentActionService",
       "serviceMethod" : "enroll",
       "actionParameters" : [
         {
@@ -184,7 +184,7 @@
     },
     {
       "displayName" : "scheduleTracking.unenrollUser",
-      "serviceInterface": "org.motechproject.scheduletracking.api.service.impl.EnrollmentActionService",
+      "serviceInterface": "org.motechproject.scheduletracking.api.service.EnrollmentActionService",
       "serviceMethod": "unenroll",
       "actionParameters" : [
         {

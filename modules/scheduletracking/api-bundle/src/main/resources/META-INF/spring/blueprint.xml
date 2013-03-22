@@ -24,7 +24,7 @@
                   interface="org.motechproject.scheduletracking.api.service.ScheduleTrackingService"/>
 
     <osgi:service id="enrollmentActionServiceOsgi" ref="enrollmentActionService"
-                  interface="org.motechproject.scheduletracking.api.service.impl.EnrollmentActionService"/>
+                  interface="org.motechproject.scheduletracking.api.service.EnrollmentActionService"/>
 
     <osgi:reference cardinality="0..1" id="schedulerServiceOsgi"
                     interface="org.motechproject.scheduler.MotechSchedulerService"/>

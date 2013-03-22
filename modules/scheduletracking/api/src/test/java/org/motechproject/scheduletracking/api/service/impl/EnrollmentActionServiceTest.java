@@ -1,19 +1,17 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
+import org.motechproject.scheduletracking.api.service.EnrollmentActionService;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -23,7 +21,7 @@ import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 public class EnrollmentActionServiceTest {
 
     @InjectMocks
-    private EnrollmentActionService enrollmentActionService = new EnrollmentActionService();
+    private EnrollmentActionService enrollmentActionService = new EnrollmentActionServiceImpl();
 
     @Mock
     ScheduleTrackingService scheduleTrackingService;
@@ -37,26 +35,14 @@ public class EnrollmentActionServiceTest {
     public void shouldEnrollFromEvent() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        Time preferredAlertTime = new Time(12, 20);
-        LocalDate referenceDate = new LocalDate();
-        Time referenceTime = new Time(16, 10);
-        LocalDate enrollmentDate = new LocalDate();
-        Time enrollmentTime = new Time(20, 30);
+        String preferredAlertTime = "12:20";
+        DateTime referenceDate = DateTime.now();
+        String referenceTime = "16:10";
+        DateTime enrollmentDate = DateTime.now();
+        String enrollmentTime = "20:30";
         String startingMilestoneName = "startingMilestoneName";
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("key", "value");
 
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put(EventDataKeys.EXTERNAL_ID, externalId);
-        eventData.put(EventDataKeys.SCHEDULE_NAME, scheduleName);
-        eventData.put(EventDataKeys.PREFERRED_ALERT_TIME, preferredAlertTime);
-        eventData.put(EventDataKeys.REFERENCE_DATE, referenceDate);
-        eventData.put(EventDataKeys.REFERENCE_TIME, referenceTime);
-        eventData.put(EventDataKeys.ENROLLMENT_DATE, enrollmentDate);
-        eventData.put(EventDataKeys.ENROLLMENT_TIME, enrollmentTime);
-        eventData.put(EventDataKeys.MILESTONE_NAME, startingMilestoneName);
-
-        enrollmentActionService.enroll(eventData);
+        enrollmentActionService.enroll(externalId, scheduleName, preferredAlertTime, referenceDate, referenceTime, enrollmentDate, enrollmentTime, startingMilestoneName);
 
         ArgumentCaptor<EnrollmentRequest> captor = ArgumentCaptor.forClass(EnrollmentRequest.class);
 
@@ -64,13 +50,13 @@ public class EnrollmentActionServiceTest {
 
         EnrollmentRequest enrollmentRequest = captor.getValue();
 
-        assertEquals(eventData.get(EventDataKeys.EXTERNAL_ID), enrollmentRequest.getExternalId());
-        assertEquals(eventData.get(EventDataKeys.SCHEDULE_NAME), enrollmentRequest.getScheduleName());
-        assertEquals(eventData.get(EventDataKeys.PREFERRED_ALERT_TIME), enrollmentRequest.getPreferredAlertTime());
-        assertEquals(eventData.get(EventDataKeys.REFERENCE_DATE), enrollmentRequest.getReferenceDate());
-        assertEquals(eventData.get(EventDataKeys.REFERENCE_TIME), enrollmentRequest.getReferenceTime());
-        assertEquals(newDateTime(enrollmentDate, enrollmentTime), enrollmentRequest.getEnrollmentDateTime());
-        assertEquals(eventData.get(EventDataKeys.MILESTONE_NAME), enrollmentRequest.getStartingMilestoneName());
+        assertEquals(externalId, enrollmentRequest.getExternalId());
+        assertEquals(scheduleName, enrollmentRequest.getScheduleName());
+        assertEquals(new Time(preferredAlertTime), enrollmentRequest.getPreferredAlertTime());
+        assertEquals(referenceDate.toLocalDate(), enrollmentRequest.getReferenceDate());
+        assertEquals(new Time(referenceTime), enrollmentRequest.getReferenceTime());
+        assertEquals(newDateTime(enrollmentDate.toLocalDate(), new Time(enrollmentTime)), enrollmentRequest.getEnrollmentDateTime());
+        assertEquals(startingMilestoneName, enrollmentRequest.getStartingMilestoneName());
 
     }
 
@@ -79,11 +65,7 @@ public class EnrollmentActionServiceTest {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
 
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put(EventDataKeys.EXTERNAL_ID, externalId);
-        eventData.put(EventDataKeys.SCHEDULE_NAME, scheduleName);
-
-        enrollmentActionService.unenroll(eventData);
+        enrollmentActionService.unenroll(externalId, scheduleName);
 
         verify(scheduleTrackingService).unenroll(externalId, Arrays.asList(scheduleName));
     }

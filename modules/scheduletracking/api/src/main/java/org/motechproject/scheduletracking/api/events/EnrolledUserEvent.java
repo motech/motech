@@ -42,17 +42,6 @@ public class EnrolledUserEvent {
         this.startingMilestoneName = startingMilestoneName;
     }
 
-    public EnrolledUserEvent(Map<String, Object> parameters) {
-        this.externalId = parameters.get(EventDataKeys.EXTERNAL_ID).toString();
-        this.scheduleName = parameters.get(EventDataKeys.SCHEDULE_NAME).toString();
-        this.preferredAlertTime = (Time)parameters.get(EventDataKeys.PREFERRED_ALERT_TIME);
-        this.referenceDate = (LocalDate)parameters.get(EventDataKeys.REFERENCE_DATE);
-        this.referenceTime = (Time)parameters.get(EventDataKeys.REFERENCE_TIME);
-        this.enrollmentDate = (LocalDate)parameters.get(EventDataKeys.ENROLLMENT_DATE);
-        this.enrollmentTime = (Time)parameters.get(EventDataKeys.ENROLLMENT_TIME);
-        this.startingMilestoneName = parameters.get(EventDataKeys.MILESTONE_NAME).toString();
-    }
-
     public String getExternalId() {
         return externalId;
     }
