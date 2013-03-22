@@ -2,13 +2,13 @@ package org.motechproject.couch.mrs.model;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.mrs.domain.Attribute;
+import org.motechproject.mrs.domain.MRSAttribute;
 
 /**
  * Used for storing user attributes in property => value format
  */
 
-public class CouchAttribute implements Attribute {
+public class CouchAttribute implements MRSAttribute {
 
     private static final long serialVersionUID = -220219868470497301L;
 
@@ -44,10 +44,10 @@ public class CouchAttribute implements Attribute {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Attribute)) {
+        if (!(o instanceof MRSAttribute)) {
             return false;
         }
-        Attribute a = (Attribute) o;
+        MRSAttribute a = (MRSAttribute) o;
         if (!ObjectUtils.equals(name, a.getName())) {
             return false;
         }

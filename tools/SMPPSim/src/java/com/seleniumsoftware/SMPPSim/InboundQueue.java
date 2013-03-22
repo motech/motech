@@ -30,8 +30,10 @@ package com.seleniumsoftware.SMPPSim;
 import com.seleniumsoftware.SMPPSim.exceptions.InboundQueueFullException;
 import com.seleniumsoftware.SMPPSim.pdu.*;
 import com.seleniumsoftware.SMPPSim.util.*;
-import java.util.logging.*;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InboundQueue implements Runnable {
 

@@ -5,12 +5,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.MotechObject;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
-import org.motechproject.mrs.services.PersonAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSPersonAdapter;
 import org.springframework.core.io.ResourceLoader;
 
 import java.util.ArrayList;
@@ -32,22 +32,22 @@ public class MRSDataProviderTest {
 
 
     @Mock
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
 
     @Mock
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
 
     @Mock
-    private PersonAdapter personAdapter;
+    private MRSPersonAdapter personAdapter;
 
     @Mock
-    private Patient patient;
+    private MRSPatient patient;
 
     @Mock
-    private Facility facility;
+    private MRSFacility facility;
 
     @Mock
-    private Person person;
+    private MRSPerson person;
 
     @Mock
     private ResourceLoader resourceLoader;
@@ -88,7 +88,7 @@ public class MRSDataProviderTest {
     @Test
     public void shouldReturnNullWhenMapNotContainsSupportedField() {
         // given
-        String clazz = Facility.class.getSimpleName();
+        String clazz = MRSFacility.class.getSimpleName();
         HashMap<String, String> fields = new HashMap<>();
 
         // when
@@ -101,9 +101,9 @@ public class MRSDataProviderTest {
     @Test
     public void shouldReturnNullWhenListIsNull() {
         // given
-        String patientClass = Patient.class.getSimpleName();
-        String facilityClass = Facility.class.getSimpleName();
-        String personClass = Person.class.getSimpleName();
+        String patientClass = MRSPatient.class.getSimpleName();
+        String facilityClass = MRSFacility.class.getSimpleName();
+        String personClass = MRSPerson.class.getSimpleName();
 
         // when
         Object patient = provider.lookup(patientClass, lookupFields);
@@ -119,13 +119,13 @@ public class MRSDataProviderTest {
     @Test
     public void shouldReturnNullWhenListIsEmpty() {
         // given
-        String patientClass = Patient.class.getSimpleName();
-        String facilityClass = Facility.class.getSimpleName();
-        String personClass = Person.class.getSimpleName();
+        String patientClass = MRSPatient.class.getSimpleName();
+        String facilityClass = MRSFacility.class.getSimpleName();
+        String personClass = MRSPerson.class.getSimpleName();
 
-        provider.setFacilityAdapters(new ArrayList<FacilityAdapter>());
-        provider.setPatientAdapters(new ArrayList<PatientAdapter>());
-        provider.setPersonAdapters(new ArrayList<PersonAdapter>());
+        provider.setFacilityAdapters(new ArrayList<MRSFacilityAdapter>());
+        provider.setPatientAdapters(new ArrayList<MRSPatientAdapter>());
+        provider.setPersonAdapters(new ArrayList<MRSPersonAdapter>());
 
         // when
         Object patient = provider.lookup(patientClass, lookupFields);
@@ -141,18 +141,18 @@ public class MRSDataProviderTest {
     @Test
     public void shouldReturnObject() {
         // given
-        String patientClass = Patient.class.getSimpleName();
-        String facilityClass = Facility.class.getSimpleName();
-        String personClass = Person.class.getSimpleName();
+        String patientClass = MRSPatient.class.getSimpleName();
+        String facilityClass = MRSFacility.class.getSimpleName();
+        String personClass = MRSPerson.class.getSimpleName();
 
         provider.setPatientAdapters(Arrays.asList(patientAdapter));
         provider.setFacilityAdapters(Arrays.asList(facilityAdapter));
         provider.setPersonAdapters(Arrays.asList(personAdapter));
 
         // when
-        Patient patient = (Patient) provider.lookup(patientClass, lookupFields);
-        Facility facility = (Facility) provider.lookup(facilityClass, lookupFields);
-        Person person = (Person) provider.lookup(personClass, lookupFields);
+        MRSPatient patient = (MRSPatient) provider.lookup(patientClass, lookupFields);
+        MRSFacility facility = (MRSFacility) provider.lookup(facilityClass, lookupFields);
+        MRSPerson person = (MRSPerson) provider.lookup(personClass, lookupFields);
 
         // then
         assertEquals(this.patient, patient);

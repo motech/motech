@@ -2,10 +2,10 @@ package org.motechproject.messagecampaign.builder;
 
 import org.joda.time.LocalDate;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.JodaFormatter;
 import org.motechproject.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.commons.date.util.JodaFormatter;
 
 import java.util.Arrays;
 

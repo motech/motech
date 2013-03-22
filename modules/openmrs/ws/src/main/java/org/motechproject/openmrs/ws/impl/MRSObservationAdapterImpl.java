@@ -5,12 +5,12 @@ import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Patient;
+import org.motechproject.mrs.domain.MRSObservation;
+import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.services.ObservationAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.services.MRSObservationAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.ObservationResource;
 import org.motechproject.openmrs.ws.resource.model.Observation;
@@ -25,27 +25,27 @@ import java.util.Collections;
 import java.util.List;
 
 @Component("observationAdapter")
-public class MRSObservationAdapterImpl implements ObservationAdapter {
+public class MRSObservationAdapterImpl implements MRSObservationAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSObservationAdapterImpl.class);
 
-    private final PatientAdapter patientAdapter;
+    private final MRSPatientAdapter patientAdapter;
     private final ObservationResource obsResource;
     private final EventRelay eventRelay;
 
     @Autowired
-    public MRSObservationAdapterImpl(ObservationResource obsResource, PatientAdapter patientAdapter, EventRelay eventRelay) {
+    public MRSObservationAdapterImpl(ObservationResource obsResource, MRSPatientAdapter patientAdapter, EventRelay eventRelay) {
         this.obsResource = obsResource;
         this.patientAdapter = patientAdapter;
         this.eventRelay = eventRelay;
     }
 
     @Override
-    public List<org.motechproject.mrs.domain.Observation> findObservations(String motechId, String conceptName) {
+    public List<MRSObservation> findObservations(String motechId, String conceptName) {
         Validate.notEmpty(motechId, "Motech id cannot be empty");
         Validate.notEmpty(conceptName, "Concept name cannot be empty");
 
-        List<org.motechproject.mrs.domain.Observation> obs = new ArrayList<org.motechproject.mrs.domain.Observation>();
-        Patient patient = patientAdapter.getPatientByMotechId(motechId);
+        List<MRSObservation> obs = new ArrayList<>();
+        MRSPatient patient = patientAdapter.getPatientByMotechId(motechId);
         if (patient == null) {
             return obs;
         }
@@ -68,7 +68,7 @@ public class MRSObservationAdapterImpl implements ObservationAdapter {
     }
 
     @Override
-    public void voidObservation(org.motechproject.mrs.domain.Observation mrsObservation, String reason, String mrsUserMotechId)
+    public void voidObservation(MRSObservation mrsObservation, String reason, String mrsUserMotechId)
             throws ObservationNotFoundException {
         Validate.notNull(mrsObservation);
         Validate.notEmpty(mrsObservation.getObservationId());
@@ -87,20 +87,20 @@ public class MRSObservationAdapterImpl implements ObservationAdapter {
     }
 
     @Override
-    public OpenMRSObservation findObservation(String patientMotechId, String conceptName) {
+    public MRSObservation findObservation(String patientMotechId, String conceptName) {
         Validate.notEmpty(patientMotechId, "MoTeCH Id cannot be empty");
         Validate.notEmpty(conceptName, "Concept name cannot be empty");
 
-        List<org.motechproject.mrs.domain.Observation> observations = findObservations(patientMotechId, conceptName);
+        List<MRSObservation> observations = findObservations(patientMotechId, conceptName);
         if (observations.size() == 0) {
             return null;
         }
 
-        return (OpenMRSObservation) observations.get(0);
+        return observations.get(0);
     }
 
     @Override
-    public OpenMRSObservation getObservationById(String id) {
+    public MRSObservation getObservationById(String id) {
         try {
             Observation obs = obsResource.getObservationById(id);
             return ConverterUtils.convertObservationToMrsObservation(obs);

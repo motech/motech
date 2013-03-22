@@ -1,8 +1,6 @@
 package org.motechproject.messagecampaign.domain.campaign;
 
 import org.junit.Test;
-import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
-import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 
 import static junit.framework.Assert.assertEquals;
 

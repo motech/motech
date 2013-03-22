@@ -26,9 +26,10 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim.pdu;
+
 import com.seleniumsoftware.SMPPSim.pdu.util.*;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
 
 abstract public class Response extends Pdu implements Marshaller {
 

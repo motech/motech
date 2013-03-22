@@ -12,9 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
-import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {

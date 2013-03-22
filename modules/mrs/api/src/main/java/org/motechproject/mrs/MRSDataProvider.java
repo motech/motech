@@ -1,12 +1,12 @@
 package org.motechproject.mrs;
 
 import org.motechproject.commons.api.AbstractDataProvider;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
-import org.motechproject.mrs.services.PersonAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSPersonAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -18,9 +18,9 @@ import java.util.Map;
 public class MRSDataProvider extends AbstractDataProvider {
     private static final String SUPPORT_FIELD = "id";
 
-    private List<PatientAdapter> patientAdapters;
-    private List<FacilityAdapter> facilityAdapters;
-    private List<PersonAdapter> personAdapters;
+    private List<MRSPatientAdapter> patientAdapters;
+    private List<MRSFacilityAdapter> facilityAdapters;
+    private List<MRSPersonAdapter> personAdapters;
 
     @Autowired
     public MRSDataProvider(ResourceLoader resourceLoader) {
@@ -46,11 +46,11 @@ public class MRSDataProvider extends AbstractDataProvider {
             try {
                 Class<?> cls = getClassForType(type);
 
-                if (Patient.class.isAssignableFrom(cls)) {
+                if (MRSPatient.class.isAssignableFrom(cls)) {
                     obj = getPatient(id);
-                } else if (Person.class.isAssignableFrom(cls)) {
+                } else if (MRSPerson.class.isAssignableFrom(cls)) {
                     obj = getPerson(id);
-                } else if (Facility.class.isAssignableFrom(cls)) {
+                } else if (MRSFacility.class.isAssignableFrom(cls)) {
                     obj = getFacility(id);
                 }
             } catch (ClassNotFoundException e) {
@@ -63,7 +63,7 @@ public class MRSDataProvider extends AbstractDataProvider {
 
     @Override
     public List<Class<?>> getSupportClasses() {
-        return Arrays.asList(Person.class, Patient.class, Facility.class);
+        return Arrays.asList(MRSPerson.class, MRSPatient.class, MRSFacility.class);
     }
 
     @Override
@@ -71,15 +71,15 @@ public class MRSDataProvider extends AbstractDataProvider {
         return "org.motechproject.mrs.domain";
     }
 
-    public void setPatientAdapters(List<PatientAdapter> patientAdapters) {
+    public void setPatientAdapters(List<MRSPatientAdapter> patientAdapters) {
         this.patientAdapters = patientAdapters;
     }
 
-    public void setFacilityAdapters(List<FacilityAdapter> facilityAdapters) {
+    public void setFacilityAdapters(List<MRSFacilityAdapter> facilityAdapters) {
         this.facilityAdapters = facilityAdapters;
     }
 
-    public void setPersonAdapters(List<PersonAdapter> personAdapters) {
+    public void setPersonAdapters(List<MRSPersonAdapter> personAdapters) {
         this.personAdapters = personAdapters;
     }
 
@@ -87,7 +87,7 @@ public class MRSDataProvider extends AbstractDataProvider {
         Object obj = null;
 
         if (patientAdapters != null && !patientAdapters.isEmpty()) {
-            for (PatientAdapter adapter : patientAdapters) {
+            for (MRSPatientAdapter adapter : patientAdapters) {
                 obj = adapter.getPatient(patientId);
             }
         }
@@ -95,11 +95,11 @@ public class MRSDataProvider extends AbstractDataProvider {
         return obj;
     }
 
-    private Facility getFacility(String facilityId) {
-        Facility facility = null;
+    private MRSFacility getFacility(String facilityId) {
+        MRSFacility facility = null;
 
         if (facilityAdapters != null && !facilityAdapters.isEmpty()) {
-            for (FacilityAdapter adapter : facilityAdapters) {
+            for (MRSFacilityAdapter adapter : facilityAdapters) {
                 facility = adapter.getFacility(facilityId);
             }
         }
@@ -107,12 +107,12 @@ public class MRSDataProvider extends AbstractDataProvider {
         return facility;
     }
 
-    private Person getPerson(String personId) {
-        Person person = null;
+    private MRSPerson getPerson(String personId) {
+        MRSPerson person = null;
 
         if (personAdapters != null && !personAdapters.isEmpty()) {
-            for (PersonAdapter adapter : personAdapters) {
-                List<? extends Person> byPersonId = adapter.findByPersonId(personId);
+            for (MRSPersonAdapter adapter : personAdapters) {
+                List<? extends MRSPerson> byPersonId = adapter.findByPersonId(personId);
                 person = byPersonId.isEmpty() ? null : byPersonId.get(0);
             }
         }

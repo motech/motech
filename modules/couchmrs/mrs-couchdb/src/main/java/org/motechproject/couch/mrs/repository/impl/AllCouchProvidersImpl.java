@@ -1,7 +1,5 @@
 package org.motechproject.couch.mrs.repository.impl;
 
-import java.util.Collections;
-import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
@@ -12,6 +10,9 @@ import org.motechproject.couch.mrs.repository.AllCouchProviders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collections;
+import java.util.List;
 
 @Repository
 public class AllCouchProvidersImpl extends MotechBaseRepository<CouchProvider> implements AllCouchProviders {

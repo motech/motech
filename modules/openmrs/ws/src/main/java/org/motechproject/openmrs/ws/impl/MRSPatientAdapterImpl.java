@@ -7,11 +7,12 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.model.OpenMRSPatient;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.openmrs.model.OpenMRSPatient;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.PatientResource;
 import org.motechproject.openmrs.ws.resource.model.Identifier;
@@ -33,18 +34,18 @@ import java.util.Date;
 import java.util.List;
 
 @Component("patientAdapter")
-public class MRSPatientAdapterImpl implements PatientAdapter {
+public class MRSPatientAdapterImpl implements MRSPatientAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(MRSPatientAdapterImpl.class);
 
     private final PatientResource patientResource;
     private final MRSPersonAdapterImpl personAdapter;
-    private final FacilityAdapter facilityAdapter;
+    private final MRSFacilityAdapter facilityAdapter;
     private final EventRelay eventRelay;
 
     @Autowired
     public MRSPatientAdapterImpl(PatientResource patientResource, MRSPersonAdapterImpl personAdapter,
-            FacilityAdapter facilityAdapter, EventRelay eventRelay) {
+            MRSFacilityAdapter facilityAdapter, EventRelay eventRelay) {
         this.patientResource = patientResource;
         this.personAdapter = personAdapter;
         this.facilityAdapter = facilityAdapter;
@@ -57,7 +58,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     }
 
     @Override
-    public OpenMRSPatient getPatientByMotechId(String motechId) {
+    public MRSPatient getPatientByMotechId(String motechId) {
         Validate.notEmpty(motechId, "Motech Id cannot be empty");
 
         PatientListResult patientList = null;
@@ -78,7 +79,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     }
 
     @Override
-    public OpenMRSPatient getPatient(String patientId) {
+    public MRSPatient getPatient(String patientId) {
         Validate.notEmpty(patientId, "Patient Id cannot be empty");
 
         Patient patient = null;
@@ -108,7 +109,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         // this is a guard against this situation
         if (identifier != null && identifier.getLocation() != null) {
             String facililtyUuid = identifier.getLocation().getUuid();
-            return convertToMrsPatient(patient, identifier.getIdentifier(), (OpenMRSFacility) facilityAdapter.getFacility(facililtyUuid));
+            return convertToMrsPatient(patient, identifier.getIdentifier(), facilityAdapter.getFacility(facililtyUuid));
         } else {
             String motechId = null;
             if (identifier != null) {
@@ -119,19 +120,19 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         }
     }
 
-    private OpenMRSPatient convertToMrsPatient(Patient patient, String identifier, OpenMRSFacility facility) {
-        OpenMRSPatient converted = new OpenMRSPatient(patient.getUuid(), identifier, ConverterUtils.convertToMrsPerson(patient
+    private MRSPatient convertToMrsPatient(Patient patient, String identifier, MRSFacility facility) {
+        MRSPatient converted = new OpenMRSPatient(patient.getUuid(), identifier, ConverterUtils.convertToMrsPerson(patient
                 .getPerson()), facility);
         return converted;
     }
 
     @Override
-    public OpenMRSPatient savePatient(org.motechproject.mrs.domain.Patient patient) {
-        validatePatientBeforeSave((OpenMRSPatient) patient);
+    public MRSPatient savePatient(MRSPatient patient) {
+        validatePatientBeforeSave(patient);
 
-        OpenMRSPerson savedPerson = personAdapter.savePerson((OpenMRSPerson) patient.getPerson());
+        MRSPerson savedPerson = personAdapter.savePerson(patient.getPerson());
 
-        Patient converted = fromMrsPatient((OpenMRSPatient) patient, savedPerson);
+        Patient converted = fromMrsPatient(patient, savedPerson);
         if (converted == null) {
             return null;
         }
@@ -145,25 +146,25 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
             return null;
         }
 
-        return new OpenMRSPatient(created.getUuid(), patient.getMotechId(), savedPerson, (OpenMRSFacility) patient.getFacility());
+        return new OpenMRSPatient(created.getUuid(), patient.getMotechId(), savedPerson, patient.getFacility());
     }
 
-    private void validatePatientBeforeSave(OpenMRSPatient patient) {
+    private void validatePatientBeforeSave(MRSPatient patient) {
         Validate.notNull(patient, "Patient cannot be null");
         Validate.isTrue(StringUtils.isNotEmpty(patient.getMotechId()), "You must provide a motech id to save a patient");
         Validate.notNull(patient.getPerson(), "Person cannot be null when saving a patient");
     }
 
-    private Patient fromMrsPatient(OpenMRSPatient patient, OpenMRSPerson savedPerson) {
+    private Patient fromMrsPatient(MRSPatient patient, MRSPerson savedPerson) {
         Patient converted = new Patient();
         Person person = new Person();
-        person.setUuid(savedPerson.getId());
+        person.setUuid(savedPerson.getPersonId());
         converted.setPerson(person);
 
         Location location = null;
-        if (patient.getFacility() != null && StringUtils.isNotBlank(patient.getFacility().getId())) {
+        if (patient.getFacility() != null && StringUtils.isNotBlank(patient.getFacility().getFacilityId())) {
             location = new Location();
-            location.setUuid(patient.getFacility().getId());
+            location.setUuid(patient.getFacility().getFacilityId());
         }
 
         String motechPatientIdentiferTypeUuid = null;
@@ -195,7 +196,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     }
 
     @Override
-    public List<org.motechproject.mrs.domain.Patient> search(String name, String id) {
+    public List<MRSPatient> search(String name, String id) {
         Validate.notEmpty(name, "Name cannot be empty");
 
         PatientListResult result = null;
@@ -206,10 +207,10 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
             return Collections.emptyList();
         }
 
-        List<OpenMRSPatient> searchResults = new ArrayList<>();
+        List<MRSPatient> searchResults = new ArrayList<>();
 
         for (Patient partialPatient : result.getResults()) {
-            OpenMRSPatient patient = getPatient(partialPatient.getUuid());
+            MRSPatient patient = getPatient(partialPatient.getUuid());
             if (id == null) {
                 searchResults.add(patient);
             } else {
@@ -224,17 +225,17 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         }
 
 
-        List<org.motechproject.mrs.domain.Patient> patientList = new ArrayList<org.motechproject.mrs.domain.Patient>();
+        List<MRSPatient> patientList = new ArrayList<>();
 
         patientList.addAll(searchResults);
 
         return patientList;
     }
 
-    private void sortResults(List<OpenMRSPatient> searchResults) {
-        Collections.sort(searchResults, new Comparator<OpenMRSPatient>() {
+    private void sortResults(List<MRSPatient> searchResults) {
+        Collections.sort(searchResults, new Comparator<MRSPatient>() {
             @Override
-            public int compare(OpenMRSPatient patient1, OpenMRSPatient patient2) {
+            public int compare(MRSPatient patient1, MRSPatient patient2) {
                 if (StringUtils.isNotEmpty(patient1.getMotechId()) && StringUtils.isNotEmpty(patient2.getMotechId())) {
                     return patient1.getMotechId().compareTo(patient2.getMotechId());
                 } else if (StringUtils.isNotEmpty(patient1.getMotechId())) {
@@ -248,11 +249,11 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     }
 
     @Override
-    public OpenMRSPatient updatePatient(org.motechproject.mrs.domain.Patient patient) {
+    public MRSPatient updatePatient(MRSPatient patient) {
         Validate.notNull(patient, "Patient cannot be null");
         Validate.notEmpty(patient.getPatientId(), "Patient Id may not be empty");
 
-        OpenMRSPerson person = (OpenMRSPerson) patient.getPerson();
+        MRSPerson person = patient.getPerson();
 
         personAdapter.updatePerson(person);
         // the openmrs web service requires an explicit delete request to remove
@@ -261,7 +262,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
         personAdapter.deleteAllAttributes(person);
         personAdapter.saveAttributesForPerson(person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
-        return (OpenMRSPatient) patient;
+        return patient;
     }
 
     @Override
@@ -269,7 +270,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
             throws PatientNotFoundException {
         Validate.notEmpty(motechId, "MoTeCh id cannot be empty");
 
-        OpenMRSPatient patient = getPatientByMotechId(motechId);
+        MRSPatient patient = getPatientByMotechId(motechId);
         if (patient == null) {
             logger.error("Cannot decease patient because no patient exist with motech id: " + motechId);
             throw new PatientNotFoundException("No Patient found with Motech Id: " + motechId);
@@ -280,7 +281,7 @@ public class MRSPatientAdapterImpl implements PatientAdapter {
     }
 
     @Override
-    public List<org.motechproject.mrs.domain.Patient> getAllPatients(){
+    public List<MRSPatient> getAllPatients(){
         throw new UnsupportedOperationException();
     }
 }

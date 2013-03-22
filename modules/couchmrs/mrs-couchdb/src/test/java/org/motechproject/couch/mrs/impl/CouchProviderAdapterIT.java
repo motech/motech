@@ -16,7 +16,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Provider;
+import org.motechproject.mrs.domain.MRSProvider;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,7 +68,7 @@ public class CouchProviderAdapterIT extends SpringIntegrationTest {
             lock.wait(60000);
         }
 
-        Provider retrievedProvider = providerAdapter.getProviderByProviderId("providerId");
+        MRSProvider retrievedProvider = providerAdapter.getProviderByProviderId("providerId");
 
         assertEquals(retrievedProvider.getProviderId(), "providerId");
         assertNotNull(retrievedProvider.getPerson());

@@ -4,9 +4,10 @@ import org.apache.commons.lang.Validate;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSPerson;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.PersonResource;
 import org.motechproject.openmrs.ws.resource.model.Attribute;
@@ -42,7 +43,7 @@ public class MRSPersonAdapterImpl {
         this.eventRelay = eventRelay;
     }
 
-    public OpenMRSPerson getPerson(String uuid) {
+    public MRSPerson getPerson(String uuid) {
         Person person = null;
         try {
             person = personResource.getPersonById(uuid);
@@ -53,34 +54,34 @@ public class MRSPersonAdapterImpl {
         return ConverterUtils.convertToMrsPerson(person);
     }
 
-    OpenMRSPerson savePerson(OpenMRSPerson person) {
+    MRSPerson savePerson(MRSPerson person) {
         Validate.notNull(person, "Person canont be null");
         Person converted = ConverterUtils.convertToPerson(person, true);
         Person saved = null;
         try {
             saved = personResource.createPerson(converted);
         } catch (HttpException e) {
-            LOGGER.error("Failed to create person for: " + person.getFullName());
+            LOGGER.error("Failed to create person for: " + person.getFirstName() + " " + person.getMiddleName() + " " + person.getLastName());
             throw new MRSException(e);
         }
 
-        person.id(saved.getUuid());
+        person.setPersonId(saved.getUuid());
 
         saveAttributesForPerson(person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
         return person;
     }
 
-    void saveAttributesForPerson(OpenMRSPerson person) {
-        for (org.motechproject.mrs.domain.Attribute attribute : person.getAttributes()) {
+    void saveAttributesForPerson(MRSPerson person) {
+        for (MRSAttribute attribute : person.getAttributes()) {
             Attribute attr = new Attribute();
             attr.setValue(attribute.getValue());
             attr.setAttributeType(getAttributeTypeUuid(attribute.getName()));
 
             try {
-                personResource.createPersonAttribute(person.getId(), attr);
+                personResource.createPersonAttribute(person.getPersonId(), attr);
             } catch (HttpException e) {
-                LOGGER.warn("Unable to add attribute to person with id: " + person.getId());
+                LOGGER.warn("Unable to add attribute to person with id: " + person.getPersonId());
             }
         }
     }
@@ -110,12 +111,12 @@ public class MRSPersonAdapterImpl {
         return type;
     }
 
-    void deleteAllAttributes(OpenMRSPerson person) {
+    void deleteAllAttributes(MRSPerson person) {
         Person saved = null;
         try {
-            saved = personResource.getPersonById(person.getId());
+            saved = personResource.getPersonById(person.getPersonId());
         } catch (HttpException e) {
-            LOGGER.error("Failed to retrieve person when deleting attributes with uuid: " + person.getId());
+            LOGGER.error("Failed to retrieve person when deleting attributes with uuid: " + person.getPersonId());
             throw new MRSException(e);
         }
 
@@ -129,12 +130,12 @@ public class MRSPersonAdapterImpl {
         }
     }
 
-    void updatePerson(OpenMRSPerson person) {
+    void updatePerson(MRSPerson person) {
         Person converted = ConverterUtils.convertToPerson(person, false);
         try {
             // Must update the name and address separately when updating a
             // person.
-            Person saved = personResource.getPersonById(person.getId());
+            Person saved = personResource.getPersonById(person.getPersonId());
 
             PreferredName name = saved.getPreferredName();
             name.setGivenName(person.getFirstName());
@@ -154,7 +155,7 @@ public class MRSPersonAdapterImpl {
             personResource.updatePerson(converted);
             eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PERSON_SUBJECT, EventHelper.personParameters(person)));
         } catch (HttpException e) {
-            LOGGER.error("Failed to update a person in OpenMRS with id: " + person.getId());
+            LOGGER.error("Failed to update a person in OpenMRS with id: " + person.getPersonId());
             throw new MRSException(e);
         }
     }

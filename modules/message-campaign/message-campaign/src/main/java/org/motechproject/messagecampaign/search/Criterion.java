@@ -1,7 +1,7 @@
 package org.motechproject.messagecampaign.search;
 
-import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
+import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 
 import java.util.List;
 

@@ -2,12 +2,12 @@ package org.motechproject.couch.mrs.model;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
 
 @TypeDiscriminator("doc.type === 'Patient'")
-public class CouchPatient extends MotechBaseDataObject implements Patient {
+public class CouchPatient extends MotechBaseDataObject implements MRSPatient {
 
     private static final long serialVersionUID = 1L;
 
@@ -67,12 +67,12 @@ public class CouchPatient extends MotechBaseDataObject implements Patient {
     }
 
     @Override
-    public void setFacility(Facility facility) {
+    public void setFacility(MRSFacility facility) {
         this.facility = (CouchFacility) facility;
     }
 
     @Override
-    public void setPerson(Person person) {
+    public void setPerson(MRSPerson person) {
        this.person = (CouchPerson) person;
     }
 }

@@ -31,9 +31,11 @@ import com.seleniumsoftware.SMPPSim.exceptions.InvalidHexStringlException;
 import com.seleniumsoftware.SMPPSim.pdu.*;
 import com.seleniumsoftware.SMPPSim.util.Utilities;
 
-import java.util.*;
-import java.util.logging.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 public class MoMessagePool {
 

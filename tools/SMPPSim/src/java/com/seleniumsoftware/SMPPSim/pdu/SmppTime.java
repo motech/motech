@@ -26,10 +26,11 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim.pdu;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.*;
+import java.util.Date;
+import java.util.logging.Logger;
 
 public class SmppTime {
 

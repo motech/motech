@@ -10,7 +10,6 @@ import org.motechproject.messagecampaign.EventKeys;
 import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
-import org.motechproject.messagecampaign.scheduler.EndOfCampaignNotifier;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 

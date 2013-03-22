@@ -2,12 +2,12 @@ package org.motechproject.mrs.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.motechproject.mrs.domain.Patient;
+import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.exception.InvalidFacilityException;
 import org.motechproject.mrs.exception.PatientNotFoundException;
-import org.motechproject.mrs.helper.PatientHelper;
-import org.motechproject.mrs.model.PatientDto;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.helper.MRSDtoHelper;
+import org.motechproject.mrs.model.MRSPatientDto;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.mrs.util.ImplementationException;
 import org.motechproject.mrs.util.ImplementationNotAvailableException;
 import org.motechproject.mrs.util.MrsImplementationManager;
@@ -36,23 +36,23 @@ public class PatientsController {
 
     @RequestMapping(value = "/patients", method = RequestMethod.GET)
     @ResponseBody
-    public List<PatientDto> getPatients() throws ImplementationException {
-        List<Patient> patients = mrsImplementationManager.getPatientAdapter().getAllPatients();
-        return PatientHelper.createPatientDtoList(patients);
+    public List<MRSPatientDto> getPatients() throws ImplementationException {
+        List<MRSPatient> patients = mrsImplementationManager.getPatientAdapter().getAllPatients();
+        return MRSDtoHelper.createPatientDtoList(patients);
     }
 
     @RequestMapping(value = "/patients/{motechId}", method = RequestMethod.GET)
     @ResponseBody
-    public PatientDto getPatientById(@PathVariable String motechId)
+    public MRSPatientDto getPatientById(@PathVariable String motechId)
             throws PatientNotFoundException, ImplementationException {
 
-        PatientAdapter patientAdapter = mrsImplementationManager.getPatientAdapter();
-        return PatientHelper.createPatientDto(patientAdapter.getPatientByMotechId(motechId));
+        MRSPatientAdapter patientAdapter = mrsImplementationManager.getPatientAdapter();
+        return MRSDtoHelper.createPatientDto(patientAdapter.getPatientByMotechId(motechId));
     }
 
     @RequestMapping(value = "/patients/{motechId}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void updatePatient(@PathVariable String motechId, @RequestBody PatientDto patientDto)
+    public void updatePatient(@PathVariable String motechId, @RequestBody MRSPatientDto patientDto)
             throws PatientNotFoundException, ImplementationException {
 
         validateFacility(patientDto);
@@ -62,7 +62,7 @@ public class PatientsController {
 
     @RequestMapping(value = "/patients/{motechId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void savePatient(@PathVariable String motechId, @RequestBody PatientDto patientDto)
+    public void savePatient(@PathVariable String motechId, @RequestBody MRSPatientDto patientDto)
             throws PatientNotFoundException, ImplementationException {
 
         validateFacility(patientDto);
@@ -107,7 +107,7 @@ public class PatientsController {
         }
     }
 
-    private void validateFacility(Patient patient) throws ImplementationException {
+    private void validateFacility(MRSPatient patient) throws ImplementationException {
         if (patient.getFacility() != null) {
             String facilityId = patient.getFacility().getFacilityId();
             if (StringUtils.isNotBlank(facilityId) && !facilityExists(facilityId)) {

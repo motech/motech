@@ -3,7 +3,7 @@ package org.motechproject.couch.mrs.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.Person;
+import org.motechproject.mrs.domain.MRSPerson;
 
 @TypeDiscriminator("doc.type === 'Patient'")
 public class CouchPatientImpl extends MotechBaseDataObject {
@@ -26,7 +26,7 @@ public class CouchPatientImpl extends MotechBaseDataObject {
         this.setType(type);
     }
 
-    public CouchPatientImpl(String patientId, String motechId, Person person, String facilityId) {
+    public CouchPatientImpl(String patientId, String motechId, MRSPerson person, String facilityId) {
         this();
         this.patientId = patientId;
         this.motechId = motechId;

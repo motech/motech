@@ -40,12 +40,15 @@ V1.00 16/06/2001
 */
 
 package com.seleniumsoftware.SMPPSim;
+
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.Socket;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SMPPSim {
     private static final String version = "2.6.8";

@@ -4,11 +4,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.domain.Provider;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.domain.MRSProvider;
 
 @TypeDiscriminator("doc.type === 'Provider'")
-public class CouchProvider extends MotechBaseDataObject implements Provider {
+public class CouchProvider extends MotechBaseDataObject implements MRSProvider {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,19 +22,19 @@ public class CouchProvider extends MotechBaseDataObject implements Provider {
 
     CouchProvider() { }
 
-    public CouchProvider(String providerId, Person person) {
+    public CouchProvider(String providerId, MRSPerson person) {
         super();
         this.setType(type);
         this.providerId = providerId;
         this.person = (CouchPerson) person;
     }
 
-    public Person getPerson() {
+    public MRSPerson getPerson() {
         return person;
     }
 
     @Override
-    public void setPerson(Person person) {
+    public void setPerson(MRSPerson person) {
         this.person = (CouchPerson) person;
     }
 

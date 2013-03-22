@@ -27,10 +27,10 @@
 
 package com.seleniumsoftware.SMPPSim.pdu;
 
+import com.seleniumsoftware.SMPPSim.pdu.util.*;
+
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
-import com.seleniumsoftware.SMPPSim.pdu.util.*;
 
 public class SubmitSM extends Request implements Demarshaller {
 

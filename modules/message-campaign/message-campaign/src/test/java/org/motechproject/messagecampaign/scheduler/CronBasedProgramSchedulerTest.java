@@ -5,16 +5,16 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.messagecampaign.builder.EnrollRequestBuilder;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
 import org.motechproject.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.messagecampaign.service.CampaignEnrollmentService;
-import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
 
 import java.util.List;
 

@@ -26,9 +26,10 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim.pdu;
-import java.io.Serializable;
 
 import com.seleniumsoftware.SMPPSim.pdu.util.*;
+
+import java.io.Serializable;
 
 public class Tlv implements Serializable {
 

@@ -1,12 +1,12 @@
 package com.seleniumsoftware.SMPPSim.pdu;
 
+import com.seleniumsoftware.SMPPSim.*;
+import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
-import com.seleniumsoftware.SMPPSim.*;
 
 /****************************************************************************
  * DataSMResp

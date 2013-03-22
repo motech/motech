@@ -1,12 +1,14 @@
 package tests;
-import tests.exceptions.*;
-import junit.framework.*;
 
-import java.io.IOException;
-import java.net.*;
-import java.util.logging.*;
 import com.logica.smpp.*;
 import com.logica.smpp.pdu.*;
+import junit.framework.TestCase;
+import tests.exceptions.*;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SmppsimDeliverSmTests extends TestCase {
 

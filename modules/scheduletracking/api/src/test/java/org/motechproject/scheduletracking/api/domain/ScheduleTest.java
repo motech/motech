@@ -7,9 +7,9 @@ import org.motechproject.testing.utils.BaseUnitTest;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.hours;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
-import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 public class ScheduleTest extends BaseUnitTest {
     @Test

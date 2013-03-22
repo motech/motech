@@ -20,7 +20,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Patient;
+import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +89,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
             lock.wait(60000);
         }
 
-        Patient patientRetrieved = patientAdapter.getPatientByMotechId("456");
+        MRSPatient patientRetrieved = patientAdapter.getPatientByMotechId("456");
 
         assertEquals(patientRetrieved.getMotechId(), "456");
         assertEquals(patientRetrieved.getFacility().getFacilityId(), "facilityId");
@@ -118,7 +118,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
             lock.wait(60000);
         }
 
-        Patient patientRetrieved = patientAdapter.getPatientByMotechId("456");
+        MRSPatient patientRetrieved = patientAdapter.getPatientByMotechId("456");
 
         assertEquals(patientRetrieved.getMotechId(), "456");
         assertTrue(patientRetrieved.getPerson().isDead());
@@ -142,10 +142,10 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
         CouchPatient patient = new CouchPatient("123", "456", person, facility);
         patientAdapter.savePatient(patient);
 
-        List<Patient> patientsRetrieved = patientAdapter.search("John Doe", "456");
+        List<MRSPatient> patientsRetrieved = patientAdapter.search("John Doe", "456");
 
-        assertEquals(asList("456"), extract(patientsRetrieved, on(Patient.class).getMotechId()));
-        assertEquals(asList("John Doe"), extract(patientsRetrieved, on(Patient.class).getPerson().getPreferredName()));
+        assertEquals(asList("456"), extract(patientsRetrieved, on(MRSPatient.class).getMotechId()));
+        assertEquals(asList("John Doe"), extract(patientsRetrieved, on(MRSPatient.class).getPerson().getPreferredName()));
     }
 
     @Test
@@ -161,7 +161,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
         CouchPatient patient2 = new CouchPatient("2", "22", person, facility);
         patientAdapter.savePatient(patient2);
 
-        List<Patient> patientsRetrieved = patientAdapter.getAllPatients();
+        List<MRSPatient> patientsRetrieved = patientAdapter.getAllPatients();
 
 
         assertThat(patientsRetrieved.size(), is(equalTo(2)));

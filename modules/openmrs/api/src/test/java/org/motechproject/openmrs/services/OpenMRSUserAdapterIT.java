@@ -2,15 +2,17 @@ package org.motechproject.openmrs.services;
 
 import org.junit.Test;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.OpenMRSAttribute;
-import org.motechproject.mrs.model.OpenMRSUser;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.services.UserAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
+import org.motechproject.openmrs.model.OpenMRSAttribute;
+import org.motechproject.openmrs.model.OpenMRSPerson;
+import org.motechproject.openmrs.model.OpenMRSUser;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Map;
+
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.selectUnique;
@@ -20,7 +22,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 public class OpenMRSUserAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Autowired
-    UserAdapter mrsUserAdapter;
+    MRSUserAdapter mrsUserAdapter;
     @Autowired
     UserService userService;
 

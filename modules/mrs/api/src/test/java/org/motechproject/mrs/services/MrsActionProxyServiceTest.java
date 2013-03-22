@@ -5,18 +5,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.mrs.domain.Encounter;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.domain.Provider;
-import org.motechproject.mrs.domain.User;
+import org.motechproject.mrs.domain.MRSEncounter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.domain.MRSProvider;
+import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.PatientNotFoundException;
-import org.motechproject.mrs.model.FacilityDto;
-import org.motechproject.mrs.model.PatientDto;
-import org.motechproject.mrs.model.PersonDto;
-import org.motechproject.mrs.model.ProviderDto;
-import org.motechproject.mrs.model.UserDto;
+import org.motechproject.mrs.model.MRSFacilityDto;
+import org.motechproject.mrs.model.MRSPatientDto;
+import org.motechproject.mrs.model.MRSPersonDto;
+import org.motechproject.mrs.model.MRSProviderDto;
+import org.motechproject.mrs.model.MRSUserDto;
 import org.motechproject.mrs.services.impl.MrsActionProxyServiceImpl;
 
 import java.util.ArrayList;
@@ -61,25 +61,25 @@ public class MrsActionProxyServiceTest {
     private MrsActionProxyServiceImpl mrsEventHandler;
 
     @Mock
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
     @Mock
-    private PersonAdapter personAdapter;
+    private MRSPersonAdapter personAdapter;
     @Mock
-    private EncounterAdapter encounterAdapter;
+    private MRSEncounterAdapter encounterAdapter;
     @Mock
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
     @Mock
-    private ProviderAdapter providerAdapter;
+    private MRSProviderAdapter providerAdapter;
     @Mock
-    private UserAdapter userAdapter;
+    private MRSUserAdapter userAdapter;
 
 
-    private List<Person> persons = new ArrayList<>();
-    private Facility facility;
-    private Person person;
-    private Provider provider;
-    private Patient patient;
-    private User user;
+    private List<MRSPerson> persons = new ArrayList<>();
+    private MRSFacility facility;
+    private MRSPerson person;
+    private MRSProvider provider;
+    private MRSPatient patient;
+    private MRSUser user;
 
     @Before
     public void setUp() throws Exception {
@@ -99,9 +99,9 @@ public class MrsActionProxyServiceTest {
         when(facilityAdapter.getFacility(FACILITY_ID)).thenReturn(facility);
         doReturn(persons).when(personAdapter).findByPersonId(PERSON_ID);
         mrsEventHandler.createPatient(PATIENT_ID, MOTECH_ID, FACILITY_ID, PERSON_ID);
-        ArgumentCaptor<Patient> patientArgumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        ArgumentCaptor<MRSPatient> patientArgumentCaptor = ArgumentCaptor.forClass(MRSPatient.class);
         verify(patientAdapter).savePatient(patientArgumentCaptor.capture());
-        Patient patient = patientArgumentCaptor.getValue();
+        MRSPatient patient = patientArgumentCaptor.getValue();
         assertEquals(FACILITY_ID, patient.getFacility().getFacilityId());
         assertEquals(MOTECH_ID, patient.getMotechId());
         assertEquals(PATIENT_ID, patient.getPatientId());
@@ -114,9 +114,9 @@ public class MrsActionProxyServiceTest {
         when(facilityAdapter.getFacility(FACILITY_ID)).thenReturn(facility);
         doReturn(persons).when(personAdapter).findByPersonId(PERSON_ID);
         mrsEventHandler.updatePatient(PATIENT_ID, MOTECH_ID, FACILITY_ID, PERSON_ID);
-        ArgumentCaptor<Patient> patientArgumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        ArgumentCaptor<MRSPatient> patientArgumentCaptor = ArgumentCaptor.forClass(MRSPatient.class);
         verify(patientAdapter).updatePatient(patientArgumentCaptor.capture());
-        Patient patient = patientArgumentCaptor.getValue();
+        MRSPatient patient = patientArgumentCaptor.getValue();
         assertEquals(FACILITY_ID, patient.getFacility().getFacilityId());
         assertEquals(MOTECH_ID, patient.getMotechId());
         assertEquals(PATIENT_ID, patient.getPatientId());
@@ -137,9 +137,9 @@ public class MrsActionProxyServiceTest {
         when(userAdapter.getUserByUserName(USER_NAME)).thenReturn(user);
         when(providerAdapter.getProviderByProviderId(PROVIDER_ID)).thenReturn(provider);
         mrsEventHandler.createEncounter(MOTECH_ID, FACILITY_ID, USER_NAME, PROVIDER_ID, DATE, TYPE, null, null, null, null);
-        ArgumentCaptor<Encounter> captor = ArgumentCaptor.forClass(Encounter.class);
+        ArgumentCaptor<MRSEncounter> captor = ArgumentCaptor.forClass(MRSEncounter.class);
         verify(encounterAdapter).createEncounter(captor.capture());
-        Encounter encounter = captor.getValue();
+        MRSEncounter encounter = captor.getValue();
         assertEquals(PROVIDER_ID, encounter.getProvider().getProviderId());
         assertEquals(USER_ID, encounter.getCreator().getUserId());
         assertEquals(FACILITY_ID, encounter.getFacility().getFacilityId());
@@ -151,9 +151,9 @@ public class MrsActionProxyServiceTest {
     @Test
     public void shouldCreateFacilityFromEvent() {
         mrsEventHandler.createFacility(NAME, COUNTRY, REGION, COUNTRY_DISTRICT, STATE_PROVINCE);
-        ArgumentCaptor<Facility> captor = ArgumentCaptor.forClass(Facility.class);
+        ArgumentCaptor<MRSFacility> captor = ArgumentCaptor.forClass(MRSFacility.class);
         verify(facilityAdapter).saveFacility(captor.capture());
-        Facility fac = captor.getValue();
+        MRSFacility fac = captor.getValue();
         assertEquals(NAME, fac.getName());
         assertEquals(COUNTRY, fac.getCountry());
         assertEquals(REGION, fac.getRegion());
@@ -164,9 +164,9 @@ public class MrsActionProxyServiceTest {
     @Test
     public void shouldCreatePersonFromEvent() {
         mrsEventHandler.createPerson(PERSON_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PREFERRED_NAME, ADDRESS, DATE, BIRTH_DATE_ESTIMATED, AGE, GENDER, DEAD, DATE);
-        ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
+        ArgumentCaptor<MRSPerson> captor = ArgumentCaptor.forClass(MRSPerson.class);
         verify(personAdapter).addPerson(captor.capture());
-        Person p = captor.getValue();
+        MRSPerson p = captor.getValue();
         assertEquals(PERSON_ID, p.getPersonId());
         assertEquals(FIRST_NAME, p.getFirstName());
         assertEquals(MIDDLE_NAME, p.getMiddleName());
@@ -183,9 +183,9 @@ public class MrsActionProxyServiceTest {
     @Test
     public void shouldRemovePersonFromEvent() {
         mrsEventHandler.removePerson(PERSON_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PREFERRED_NAME, ADDRESS, DATE, BIRTH_DATE_ESTIMATED, AGE, GENDER, DEAD, DATE);
-        ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
+        ArgumentCaptor<MRSPerson> captor = ArgumentCaptor.forClass(MRSPerson.class);
         verify(personAdapter).removePerson(captor.capture());
-        Person p = captor.getValue();
+        MRSPerson p = captor.getValue();
         assertEquals(PERSON_ID, p.getPersonId());
         assertEquals(FIRST_NAME, p.getFirstName());
         assertEquals(MIDDLE_NAME, p.getMiddleName());
@@ -202,9 +202,9 @@ public class MrsActionProxyServiceTest {
     @Test
     public void shouldUpdatePersonFromEvent() {
         mrsEventHandler.updatePerson(PERSON_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PREFERRED_NAME, ADDRESS, DATE, BIRTH_DATE_ESTIMATED, AGE, GENDER, DEAD, DATE);
-        ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
+        ArgumentCaptor<MRSPerson> captor = ArgumentCaptor.forClass(MRSPerson.class);
         verify(personAdapter).updatePerson(captor.capture());
-        Person p = captor.getValue();
+        MRSPerson p = captor.getValue();
         assertEquals(PERSON_ID, p.getPersonId());
         assertEquals(FIRST_NAME, p.getFirstName());
         assertEquals(MIDDLE_NAME, p.getMiddleName());
@@ -219,13 +219,13 @@ public class MrsActionProxyServiceTest {
     }
 
     private void setAllData() {
-        person = new PersonDto(PERSON_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PREFERRED_NAME, ADDRESS, DATE, Boolean.valueOf(BIRTH_DATE_ESTIMATED), AGE, GENDER, Boolean.parseBoolean(DEAD), null, null);
+        person = new MRSPersonDto(PERSON_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PREFERRED_NAME, ADDRESS, DATE, Boolean.valueOf(BIRTH_DATE_ESTIMATED), AGE, GENDER, Boolean.parseBoolean(DEAD), null, null);
         persons.add(person);
-        facility = new FacilityDto(NAME, COUNTRY, REGION, COUNTRY_DISTRICT, STATE_PROVINCE);
+        facility = new MRSFacilityDto(NAME, COUNTRY, REGION, COUNTRY_DISTRICT, STATE_PROVINCE);
         facility.setFacilityId(FACILITY_ID);
-        user = new UserDto(USER_ID, MOTECH_ID, "Admin", USER_NAME, person);
-        provider = new ProviderDto(PROVIDER_ID, person);
-        patient = new PatientDto(PATIENT_ID, facility, person, MOTECH_ID);
+        user = new MRSUserDto(USER_ID, MOTECH_ID, "Admin", USER_NAME, person);
+        provider = new MRSProviderDto(PROVIDER_ID, person);
+        patient = new MRSPatientDto(PATIENT_ID, facility, person, MOTECH_ID);
     }
 
 }

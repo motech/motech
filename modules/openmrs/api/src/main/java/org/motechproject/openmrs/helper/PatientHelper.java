@@ -1,8 +1,9 @@
 package org.motechproject.openmrs.helper;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mrs.domain.Attribute;
-import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -13,8 +14,10 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.selectUnique;
@@ -22,7 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Component
 public class PatientHelper {
-    public Patient buildOpenMrsPatient(org.motechproject.mrs.domain.Patient patient,
+    public Patient buildOpenMrsPatient(MRSPatient patient,
                                        PatientIdentifierType patientIdentifierType, Location location,
                                        List<PersonAttributeType> allPersonAttributeTypes) {
 
@@ -40,7 +43,7 @@ public class PatientHelper {
         return openMRSPatient;
     }
 
-    private Person createPersonWithNames(org.motechproject.mrs.domain.Patient patient) {
+    private Person createPersonWithNames(MRSPatient patient) {
         final Person person = new Person();
         for (PersonName name : getAllNames(patient)) {
             person.addName(name);
@@ -48,9 +51,9 @@ public class PatientHelper {
         return person;
     }
 
-    private List<PersonName> getAllNames(org.motechproject.mrs.domain.Patient patient) {
+    private List<PersonName> getAllNames(MRSPatient patient) {
         final List<PersonName> personNames = new ArrayList<PersonName>();
-        OpenMRSPerson mrsPerson = (OpenMRSPerson) patient.getPerson();
+        MRSPerson mrsPerson = patient.getPerson();
         personNames.add(new PersonName(mrsPerson.getFirstName(), mrsPerson.getMiddleName(), mrsPerson.getLastName()));
         return personNames;
     }
@@ -63,11 +66,11 @@ public class PatientHelper {
         }
     }
 
-    private void setPersonAttributes(org.motechproject.mrs.domain.Patient patient, Patient openMRSPatient,
+    private void setPersonAttributes(MRSPatient patient, Patient openMRSPatient,
                                      List<PersonAttributeType> allPersonAttributeTypes) {
-        OpenMRSPerson mrsPerson = (OpenMRSPerson) patient.getPerson();
+        MRSPerson mrsPerson = patient.getPerson();
         if (CollectionUtils.isNotEmpty(mrsPerson.getAttributes())) {
-            for (Attribute attribute : mrsPerson.getAttributes()) {
+            for (MRSAttribute attribute : mrsPerson.getAttributes()) {
                 PersonAttributeType attributeType = (PersonAttributeType) selectUnique(allPersonAttributeTypes,
                         having(on(PersonAttributeType.class).getName(), equalTo(attribute.getName())));
                 openMRSPatient.addAttribute(new PersonAttribute(attributeType, attribute.getValue()));

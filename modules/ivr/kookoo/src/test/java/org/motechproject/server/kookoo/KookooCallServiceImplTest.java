@@ -12,7 +12,6 @@ import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;

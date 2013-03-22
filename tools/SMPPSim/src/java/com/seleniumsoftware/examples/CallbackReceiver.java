@@ -1,6 +1,5 @@
 package com.seleniumsoftware.examples;
 
-import java.net.ServerSocket;
 import java.util.logging.Logger;
 
 public class CallbackReceiver implements CallbackReceivable {

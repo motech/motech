@@ -1,17 +1,18 @@
 package tests;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.logging.*;
-
 import com.logica.smpp.*;
 import com.logica.smpp.pdu.*;
 import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 import com.seleniumsoftware.SMPPSim.util.LoggingUtilities;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OutbindTest {
 

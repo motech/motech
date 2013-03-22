@@ -5,6 +5,7 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+
 import java.util.HashMap;
 import java.util.Map;
 

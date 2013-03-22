@@ -1,8 +1,9 @@
 package org.motechproject.couch.mrs.repository;
 
-import java.util.List;
 import org.motechproject.couch.mrs.model.CouchPatientImpl;
 import org.motechproject.couch.mrs.model.MRSCouchException;
+
+import java.util.List;
 
 public interface AllCouchPatients {
 

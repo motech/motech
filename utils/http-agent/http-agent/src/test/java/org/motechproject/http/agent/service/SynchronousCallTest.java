@@ -2,9 +2,9 @@ package org.motechproject.http.agent.service;
 
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.http.agent.components.SynchronousCall;
 import org.motechproject.http.agent.listener.HttpClientEventListener;
-import org.motechproject.event.MotechEvent;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;

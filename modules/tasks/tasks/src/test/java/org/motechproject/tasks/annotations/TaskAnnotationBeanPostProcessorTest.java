@@ -29,7 +29,6 @@ import java.util.TreeSet;
 import static org.apache.commons.collections.CollectionUtils.find;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;

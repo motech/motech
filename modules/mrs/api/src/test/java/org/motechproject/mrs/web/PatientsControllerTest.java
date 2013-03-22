@@ -6,12 +6,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.model.PatientDto;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.model.MRSPatientDto;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.mrs.util.MrsImplementationManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,31 +44,31 @@ public class PatientsControllerTest {
     private MockMvc controller;
 
     @Mock
-    private Patient patient1;
+    private MRSPatient patient1;
 
     @Mock
-    private Patient patient2;
+    private MRSPatient patient2;
 
     @Mock
-    private Person person1;
+    private MRSPerson person1;
 
     @Mock
-    private Person person2;
+    private MRSPerson person2;
 
     @Mock
-    private Facility facility1;
+    private MRSFacility facility1;
 
     @Mock
-    private Facility facility2;
+    private MRSFacility facility2;
 
     @Mock
     private MrsImplementationManager mrsImplementationDataProvider;
 
     @Mock
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
 
     @Mock
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
 
     @InjectMocks
     private PatientsController patientsController = new PatientsController();
@@ -140,7 +140,7 @@ public class PatientsControllerTest {
         verify(mrsImplementationDataProvider).getFacilityAdapter();
         verify(facilityAdapter).getFacility("fid1");
 
-        ArgumentCaptor<PatientDto> captor = ArgumentCaptor.forClass(PatientDto.class);
+        ArgumentCaptor<MRSPatientDto> captor = ArgumentCaptor.forClass(MRSPatientDto.class);
         verify(patientAdapter).updatePatient(captor.capture());
         assertPatient(captor.getValue());
     }
@@ -163,7 +163,7 @@ public class PatientsControllerTest {
         verify(mrsImplementationDataProvider).getFacilityAdapter();
         verify(facilityAdapter).getFacility("fid1");
 
-        ArgumentCaptor<PatientDto> captor = ArgumentCaptor.forClass(PatientDto.class);
+        ArgumentCaptor<MRSPatientDto> captor = ArgumentCaptor.forClass(MRSPatientDto.class);
         verify(patientAdapter).savePatient(captor.capture());
         assertPatient(captor.getValue());
     }
@@ -187,10 +187,10 @@ public class PatientsControllerTest {
         verify(mrsImplementationDataProvider).getFacilityAdapter();
         verify(mrsImplementationDataProvider, never()).getPatientAdapter();
         verify(facilityAdapter).getFacility("fid1");
-        verify(patientAdapter, never()).savePatient(any(Patient.class));
+        verify(patientAdapter, never()).savePatient(any(MRSPatient.class));
     }
 
-    private void assertPatient(Patient patient) {
+    private void assertPatient(MRSPatient patient) {
         assertEquals("id1", patient.getMotechId());
         assertEquals("Patient", patient.getPerson().getFirstName());
         assertEquals("One", patient.getPerson().getLastName());

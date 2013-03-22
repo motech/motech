@@ -11,11 +11,11 @@ import org.mockito.Mockito;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Observation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSConcept;
-import org.motechproject.mrs.model.OpenMRSObservation;
+import org.motechproject.mrs.domain.MRSObservation;
+import org.motechproject.openmrs.model.OpenMRSConcept;
+import org.motechproject.openmrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
@@ -245,7 +245,7 @@ public class OpenMRSObservationAdapterTest {
             add(obs1);
             add(obs2);
         }};
-        Set<OpenMRSObservation> actualMrsObservations = observationAdapter.convertOpenMRSToMRSObservations(openMRSObservations);
+        Set<? extends MRSObservation> actualMrsObservations = observationAdapter.convertOpenMRSToMRSObservations(openMRSObservations);
 
         assertThat(actualMrsObservations.size(), Matchers.is(equalTo(2)));
         final OpenMRSObservation expectedObservation1 = new OpenMRSObservation(obs1.getObsDatetime(), conceptName1.getName(), obs1.getValueText());
@@ -255,7 +255,7 @@ public class OpenMRSObservationAdapterTest {
                 new OpenMRSObservation(obs2.getObsDatetime(), conceptName2.getName(), obs2.getValueNumeric()), false);
     }
 
-    private OpenMRSObservation observationBy(ConceptName conceptName1, Set<? extends Observation> actualMrsObservations) {
+    private OpenMRSObservation observationBy(ConceptName conceptName1, Set<? extends MRSObservation> actualMrsObservations) {
         return (OpenMRSObservation) selectFirst(actualMrsObservations, having(on(OpenMRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
     }
 
@@ -314,8 +314,8 @@ public class OpenMRSObservationAdapterTest {
     @Test
     public void shouldSaveObservation() {
         OpenMRSObservationAdapter observationAdapterSpy = Mockito.spy(observationAdapter);
-        OpenMRSObservation mrsObservation = mock(OpenMRSObservation.class);
-        OpenMRSObservation savedMRSObservation = mock(OpenMRSObservation.class);
+        MRSObservation mrsObservation = mock(OpenMRSObservation.class);
+        MRSObservation savedMRSObservation = mock(OpenMRSObservation.class);
         Obs openMRSObservation = Mockito.mock(Obs.class);
         Obs savedOpenMRSObservation = Mockito.mock(Obs.class);
 
@@ -328,7 +328,7 @@ public class OpenMRSObservationAdapterTest {
         when(mockObservationService.saveObs(openMRSObservation, null)).thenReturn(savedOpenMRSObservation);
         doReturn(savedMRSObservation).when(observationAdapterSpy).convertOpenMRSToMRSObservation(savedOpenMRSObservation);
 
-        OpenMRSObservation returnedMRSObservation = observationAdapterSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
+        MRSObservation returnedMRSObservation = observationAdapterSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
         verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(returnedMRSObservation)));
         Assert.assertThat(returnedMRSObservation, Matchers.is(equalTo(savedMRSObservation)));
     }
@@ -420,7 +420,7 @@ public class OpenMRSObservationAdapterTest {
             add(mockObs2);
         }};
 
-        List<Observation> expectedMRSObservations = new ArrayList<Observation>(){{
+        List<MRSObservation> expectedMRSObservations = new ArrayList<MRSObservation>(){{
             add(mockMrsObs1);
             add(mockMrsObs2);
         }};
@@ -431,7 +431,7 @@ public class OpenMRSObservationAdapterTest {
         doReturn(mockMrsObs1).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs1);
         doReturn(mockMrsObs2).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs2);
 
-        List<Observation> actualObservations = spyOpenMrsObservationAdapter.findObservations(patientMotechId, conceptName);
+        List<MRSObservation> actualObservations = spyOpenMrsObservationAdapter.findObservations(patientMotechId, conceptName);
         ArgumentCaptor<Obs> obsArgumentCaptor=ArgumentCaptor.forClass(Obs.class);
         verify(spyOpenMrsObservationAdapter,times(2)).convertOpenMRSToMRSObservation(obsArgumentCaptor.capture());
 

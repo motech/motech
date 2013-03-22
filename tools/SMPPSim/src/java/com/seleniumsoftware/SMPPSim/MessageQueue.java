@@ -26,10 +26,11 @@
  ****************************************************************************
 */
 package com.seleniumsoftware.SMPPSim;
+
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 public class MessageQueue {
     private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");

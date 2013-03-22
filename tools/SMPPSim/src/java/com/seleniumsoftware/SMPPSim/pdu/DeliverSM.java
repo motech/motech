@@ -26,11 +26,12 @@
  ****************************************************************************/
  
 package com.seleniumsoftware.SMPPSim.pdu;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import com.seleniumsoftware.SMPPSim.Smsc;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class DeliverSM extends Response implements Marshaller, Cloneable {
 

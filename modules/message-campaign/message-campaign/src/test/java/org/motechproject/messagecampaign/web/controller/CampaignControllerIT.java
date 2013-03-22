@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.messagecampaign.web.model.CampaignDto;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechRoleServiceImpl;
@@ -20,7 +19,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static java.util.Arrays.asList;
 

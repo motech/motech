@@ -1,10 +1,11 @@
 package tests;
+
+import com.logica.smpp.*;
+import com.logica.smpp.pdu.*;
 import tests.exceptions.*;
 
 import java.io.IOException;
-import java.net.*;
-import com.logica.smpp.*;
-import com.logica.smpp.pdu.*;
+import java.net.SocketException;
 
 public class ReceiverLogger {
 

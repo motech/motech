@@ -1,22 +1,22 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
 import org.motechproject.openmrs.ws.RestClient;
-import org.motechproject.openmrs.ws.resource.model.Observation;
 import org.motechproject.openmrs.ws.resource.ObservationResource;
+import org.motechproject.openmrs.ws.resource.model.Observation;
 import org.motechproject.openmrs.ws.resource.model.Observation.ObservationValue;
 import org.motechproject.openmrs.ws.resource.model.Observation.ObservationValueDeserializer;
 import org.motechproject.openmrs.ws.resource.model.ObservationListResult;
 import org.motechproject.openmrs.ws.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class ObservationResourceImpl implements ObservationResource {

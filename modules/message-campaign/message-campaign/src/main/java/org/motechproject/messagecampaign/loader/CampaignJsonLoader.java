@@ -5,8 +5,8 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
-import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.messagecampaign.web.model.CampaignDto;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;
 import java.io.InputStream;

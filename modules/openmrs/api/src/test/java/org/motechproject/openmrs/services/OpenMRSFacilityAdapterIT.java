@@ -6,10 +6,10 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.services.FacilityAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
+import org.motechproject.openmrs.model.OpenMRSFacility;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     @Autowired
-    FacilityAdapter mrsFacilityAdapter;
+    MRSFacilityAdapter mrsFacilityAdapter;
 
     @Autowired
     LocationService mrsLocationService;
@@ -44,8 +44,8 @@ public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     public void testSaveLocation() throws InterruptedException {
         mrsListener = new MrsListener();
         eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_FACILITY_SUBJECT));
-        Facility facility = new OpenMRSFacility("my facility", "ghana", "region", "district", "kaseena");
-        final Facility savedFacility;
+        MRSFacility facility = new OpenMRSFacility("my facility", "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility;
 
         synchronized (lock) {
             savedFacility = mrsFacilityAdapter.saveFacility(facility);
@@ -72,10 +72,10 @@ public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void testIdempotencyWhileSavingLocation() {
-        Facility facility = new OpenMRSFacility("my facility", "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = mrsFacilityAdapter.saveFacility(facility);
+        MRSFacility facility = new OpenMRSFacility("my facility", "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
         assertNotNull(savedFacility);
-        final Facility duplicateFacility = mrsFacilityAdapter.saveFacility(facility);
+        final MRSFacility duplicateFacility = mrsFacilityAdapter.saveFacility(facility);
 
         assertEquals(savedFacility.getFacilityId(), duplicateFacility.getFacilityId());
     }
@@ -85,11 +85,11 @@ public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     public void testGetLocations() {
         int size = mrsFacilityAdapter.getFacilities().size();
         String facilityName = "my facility";
-        Facility facility = new OpenMRSFacility(facilityName, "ghana", "region", "district", "kaseena");
+        MRSFacility facility = new OpenMRSFacility(facilityName, "ghana", "region", "district", "kaseena");
         final OpenMRSFacility savedFacility = (OpenMRSFacility) mrsFacilityAdapter.saveFacility(facility);
-        List<? extends Facility> facilities = mrsFacilityAdapter.getFacilities();
+        List<? extends MRSFacility> facilities = mrsFacilityAdapter.getFacilities();
         int alteredSize = facilities.size();
-        List<? extends Facility> addedFacilities = select(facilities, having(on(OpenMRSFacility.class).getName(), equalTo(facilityName)));
+        List<? extends MRSFacility> addedFacilities = select(facilities, having(on(OpenMRSFacility.class).getName(), equalTo(facilityName)));
         assertEquals(size + 1, alteredSize);
         assertEquals(Arrays.asList(savedFacility), addedFacilities);
 
@@ -99,9 +99,9 @@ public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     @Transactional(readOnly = true)
     public void testGetLocationsByName() {
         String facilityName = "my facility";
-        Facility facility = new OpenMRSFacility(facilityName, "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = mrsFacilityAdapter.saveFacility(facility);
-        final List<? extends Facility> facilities = mrsFacilityAdapter.getFacilities(facilityName);
+        MRSFacility facility = new OpenMRSFacility(facilityName, "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
+        final List<? extends MRSFacility> facilities = mrsFacilityAdapter.getFacilities(facilityName);
         assertEquals(Arrays.asList(savedFacility), facilities);
     }
 

@@ -2,21 +2,23 @@ package org.motechproject.couch.mrs.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.motechproject.couch.mrs.util.CouchAttributeDeserializer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.Attribute;
-import org.motechproject.mrs.domain.Person;
+import org.motechproject.couch.mrs.util.CouchAttributeDeserializer;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSPerson;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type === 'Person'")
-public class CouchPerson extends MotechBaseDataObject implements Person {
+public class CouchPerson extends MotechBaseDataObject implements MRSPerson {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,7 +48,7 @@ public class CouchPerson extends MotechBaseDataObject implements Person {
     private Boolean dead;
     @JsonProperty
     @JsonDeserialize(using = CouchAttributeDeserializer.class)
-    private List<Attribute> attributes = new ArrayList<Attribute>();
+    private List<MRSAttribute> attributes = new ArrayList<MRSAttribute>();
     @JsonProperty
     private DateTime deathDate;
 
@@ -143,11 +145,11 @@ public class CouchPerson extends MotechBaseDataObject implements Person {
         this.dead = dead;
     }
 
-    public List<Attribute> getAttributes() {
+    public List<MRSAttribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(List<Attribute> attributes) {
+    public void setAttributes(List<MRSAttribute> attributes) {
         this.attributes = attributes;
     }
 
@@ -160,8 +162,8 @@ public class CouchPerson extends MotechBaseDataObject implements Person {
     }
 
     public String attrValue(String key) {
-        List<Attribute> atts = new ArrayList<Attribute>();
-        for (Attribute att : attributes) {
+        List<MRSAttribute> atts = new ArrayList<MRSAttribute>();
+        for (MRSAttribute att : attributes) {
             if ((att.getName().matches(key))) {
                 atts.add(att);
             }

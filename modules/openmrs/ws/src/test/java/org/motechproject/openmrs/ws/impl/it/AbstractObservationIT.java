@@ -7,10 +7,10 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Observation;
+import org.motechproject.mrs.domain.MRSObservation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.services.ObservationAdapter;
+import org.motechproject.mrs.services.MRSObservationAdapter;
+import org.motechproject.openmrs.model.OpenMRSObservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractObservationIT {
 
     @Autowired
-    private ObservationAdapter obsAdapter;
+    private MRSObservationAdapter obsAdapter;
 
     @Autowired
     EventListenerRegistry eventListenerRegistry;
@@ -42,7 +42,7 @@ public abstract class AbstractObservationIT {
 
     @Test
     public void shouldFindListOfObservations() {
-        List<Observation> obs = obsAdapter.findObservations("700", "Search Concept");
+        List<MRSObservation> obs = obsAdapter.findObservations("700", "Search Concept");
 
         assertNotNull(obs);
         assertTrue(obs.size() > 0);

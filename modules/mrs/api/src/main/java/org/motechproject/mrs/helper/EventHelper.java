@@ -1,12 +1,12 @@
 package org.motechproject.mrs.helper;
 
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Encounter;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Observation;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
-import org.motechproject.mrs.domain.Provider;
+import org.motechproject.mrs.domain.MRSEncounter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSObservation;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.domain.MRSProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public final class EventHelper {
     private EventHelper() {
     }
 
-    public static Map<String, Object> patientParameters(Patient patient) {
+    public static Map<String, Object> patientParameters(MRSPatient patient) {
         Map<String, Object> patientParameters = new HashMap<>();
         patientParameters.put(EventKeys.PATIENT_ID, patient.getPatientId());
         if (patient.getFacility() != null) {
@@ -33,7 +33,7 @@ public final class EventHelper {
         return patientParameters;
     }
 
-    public static Map<String, Object> personParameters(Person person) {
+    public static Map<String, Object> personParameters(MRSPerson person) {
         Map<String, Object> personParameters = new HashMap<>();
         personParameters.put(EventKeys.PERSON_ID, person.getPersonId());
         personParameters.put(EventKeys.PERSON_FIRST_NAME, person.getFirstName());
@@ -50,7 +50,7 @@ public final class EventHelper {
         return personParameters;
     }
 
-    public static Map<String, Object> encounterParameters(Encounter encounter) {
+    public static Map<String, Object> encounterParameters(MRSEncounter encounter) {
         Map<String, Object> encounterParameters = new HashMap<>();
         encounterParameters.put(EventKeys.ENCOUNTER_ID, encounter.getEncounterId());
         if (encounter.getProvider() != null) {
@@ -70,7 +70,7 @@ public final class EventHelper {
         }
         encounterParameters.put(EventKeys.ENCOUNTER_DATE, encounter.getDate());
         if (!encounter.getObservations().isEmpty()) {
-            Observation obs = encounter.getObservations().iterator().next();
+            MRSObservation obs = encounter.getObservations().iterator().next();
             encounterParameters.put(EventKeys.OBSERVATION_DATE, obs.getDate());
             encounterParameters.put(EventKeys.OBSERVATION_CONCEPT_NAME, obs.getConceptName());
             encounterParameters.put(EventKeys.PATIENT_ID, obs.getPatientId());
@@ -86,7 +86,7 @@ public final class EventHelper {
         return encounterParameters;
     }
 
-    public static Map<String, Object> observationParameters(Observation obs) {
+    public static Map<String, Object> observationParameters(MRSObservation obs) {
         Map<String, Object> observationParameters = new HashMap<>();
         observationParameters.put(EventKeys.OBSERVATION_DATE, obs.getDate());
         observationParameters.put(EventKeys.OBSERVATION_CONCEPT_NAME, obs.getConceptName());
@@ -95,7 +95,7 @@ public final class EventHelper {
         return  observationParameters;
     }
 
-    public static Map<String, Object> facilityParameters(Facility facility) {
+    public static Map<String, Object> facilityParameters(MRSFacility facility) {
         Map<String, Object> facilityParameters = new HashMap<>();
         facilityParameters.put(EventKeys.FACILITY_ID, facility.getFacilityId());
         facilityParameters.put(EventKeys.FACILITY_NAME, facility.getName());
@@ -106,7 +106,7 @@ public final class EventHelper {
         return facilityParameters;
     }
 
-    public static Map<String, Object> providerParameters(Provider provider) {
+    public static Map<String, Object> providerParameters(MRSProvider provider) {
         Map<String, Object> providerParameters = new HashMap<>();
         providerParameters.put(EventKeys.PROVIDER_ID, provider.getProviderId());
         if (provider.getPerson() != null) {

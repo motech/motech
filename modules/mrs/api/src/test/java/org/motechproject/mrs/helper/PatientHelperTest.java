@@ -3,11 +3,11 @@ package org.motechproject.mrs.helper;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.mrs.domain.Attribute;
-import org.motechproject.mrs.model.AttributeDto;
-import org.motechproject.mrs.model.FacilityDto;
-import org.motechproject.mrs.model.PatientDto;
-import org.motechproject.mrs.model.PersonDto;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.model.MRSAttributeDto;
+import org.motechproject.mrs.model.MRSFacilityDto;
+import org.motechproject.mrs.model.MRSPatientDto;
+import org.motechproject.mrs.model.MRSPersonDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class PatientHelperTest {
         final String address = "Long street 5/10";
         Boolean birthDateEstimated = true;
 
-        PersonDto personDto = new PersonDto();
+        MRSPersonDto personDto = new MRSPersonDto();
         personDto.setPersonId(patientID);
         personDto.setFirstName(first);
         personDto.setLastName(last);
@@ -44,19 +44,19 @@ public class PatientHelperTest {
         personDto.setDead(dead);
         personDto.setDeathDate(deathDate);
 
-        final FacilityDto facility = new FacilityDto();
+        final MRSFacilityDto facility = new MRSFacilityDto();
         facility.setFacilityId("1000");
 
         final String motechId = "1000";
         final String patientId = "125";
 
-        PatientDto patientDto = new PatientDto();
+        MRSPatientDto patientDto = new MRSPatientDto();
         patientDto.setFacility(facility);
         patientDto.setPerson(personDto);
         patientDto.setMotechId(motechId);
         patientDto.setPatientId(patientId);
 
-        PatientDto returnedPatient = PatientHelper.createPatientDto(patientDto);
+        MRSPatientDto returnedPatient = MRSDtoHelper.createPatientDto(patientDto);
 
         assertThat(returnedPatient.getMotechId(), is(equalTo(motechId)));
         assertThat(returnedPatient.getPatientId(), is(equalTo(patientId)));
@@ -71,19 +71,19 @@ public class PatientHelperTest {
 
     @Test
     public void shouldBuildAttributeListModel() {
-        AttributeDto attributeDto1 = new AttributeDto();
+        MRSAttributeDto attributeDto1 = new MRSAttributeDto();
         attributeDto1.setName("name1");
         attributeDto1.setValue("value1");
 
-        AttributeDto attributeDto2 = new AttributeDto();
+        MRSAttributeDto attributeDto2 = new MRSAttributeDto();
         attributeDto2.setName("name2");
         attributeDto2.setValue("value2");
 
-        final List<AttributeDto> patientAttributes = new ArrayList<>();
+        final List<MRSAttributeDto> patientAttributes = new ArrayList<>();
         patientAttributes.add(attributeDto1);
         patientAttributes.add(attributeDto2);
 
-        List<Attribute> returnedAttributeList = PatientHelper.getAttributesList(patientAttributes);
+        List<MRSAttribute> returnedAttributeList = MRSDtoHelper.getAttributesList(patientAttributes);
 
         assertThat(returnedAttributeList.get(0).getName(), is(equalTo(attributeDto1.getName())));
         assertThat(returnedAttributeList.get(1).getValue(), is(equalTo(attributeDto2.getValue())));

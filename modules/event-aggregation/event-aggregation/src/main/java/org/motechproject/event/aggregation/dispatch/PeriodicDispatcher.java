@@ -1,8 +1,8 @@
 package org.motechproject.event.aggregation.dispatch;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.aggregation.model.event.PeriodicDispatchEvent;
 import org.motechproject.event.aggregation.model.event.EventStrings;
+import org.motechproject.event.aggregation.model.event.PeriodicDispatchEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package org.motechproject.http.agent.components;
 
-import org.motechproject.http.agent.listener.HttpClientEventListener;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.http.agent.listener.HttpClientEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

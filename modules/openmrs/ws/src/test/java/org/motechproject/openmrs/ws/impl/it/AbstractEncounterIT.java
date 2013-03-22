@@ -7,19 +7,20 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
+import org.motechproject.mrs.domain.MRSEncounter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.OpenMRSEncounter;
-import org.motechproject.mrs.model.OpenMRSEncounter.MRSEncounterBuilder;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.model.OpenMRSPatient;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.model.OpenMRSProvider;
-import org.motechproject.mrs.model.OpenMRSUser;
-import org.motechproject.mrs.services.EncounterAdapter;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
-import org.motechproject.mrs.services.UserAdapter;
+import org.motechproject.mrs.services.MRSEncounterAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.openmrs.model.OpenMRSEncounter;
+import org.motechproject.openmrs.model.OpenMRSEncounter.MRSEncounterBuilder;
+import org.motechproject.openmrs.model.OpenMRSObservation;
+import org.motechproject.openmrs.model.OpenMRSProvider;
+import org.motechproject.openmrs.model.OpenMRSUser;
 import org.motechproject.openmrs.ws.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,19 +36,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractEncounterIT {
     @Autowired
-    private UserAdapter userAdapter;
+    private MRSUserAdapter userAdapter;
 
     @Autowired
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
 
     @Autowired
-    private EncounterAdapter encounterAdapter;
+    private MRSEncounterAdapter encounterAdapter;
 
     @Autowired
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
 
     @Autowired
     private EventListenerRegistryService eventListenerRegistryService;
@@ -66,13 +68,13 @@ public abstract class AbstractEncounterIT {
         Set<OpenMRSObservation> obs = new HashSet<>();
         obs.add(ob);
         
-        OpenMRSPerson person = user.getPerson();
+        MRSPerson person = user.getPerson();
         OpenMRSProvider provider = new OpenMRSProvider(person);
         provider.setProviderId(person.getPersonId());
 
-        OpenMRSFacility facility = (OpenMRSFacility) facilityAdapter.getFacilities("Clinic 1").get(0);
-        OpenMRSPatient patient = (OpenMRSPatient) patientAdapter.getPatientByMotechId("700");
-        OpenMRSEncounter encounter = new MRSEncounterBuilder().withDate(format.parse(obsDate))
+        MRSFacility facility =  facilityAdapter.getFacilities("Clinic 1").get(0);
+        MRSPatient patient =  patientAdapter.getPatientByMotechId("700");
+        MRSEncounter encounter = new MRSEncounterBuilder().withDate(format.parse(obsDate))
                 .withEncounterType("ADULTINITIAL").withFacility(facility).withObservations(obs).withPatient(patient)
                 .withProvider(provider).build();
 
@@ -90,8 +92,6 @@ public abstract class AbstractEncounterIT {
         assertEquals(saved.getFacility().getFacilityId(), mrsListener.eventParameters.get(EventKeys.FACILITY_ID));
         assertEquals(saved.getDate(), mrsListener.eventParameters.get(EventKeys.ENCOUNTER_DATE));
         assertEquals(saved.getEncounterType(), mrsListener.eventParameters.get(EventKeys.ENCOUNTER_TYPE));
-        assertNotNull(saved);
-        assertNotNull(saved.getId());
     }
 
     @Test

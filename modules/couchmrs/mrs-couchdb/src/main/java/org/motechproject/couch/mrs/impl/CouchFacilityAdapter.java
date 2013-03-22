@@ -6,16 +6,16 @@ import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.services.FacilityAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class CouchFacilityAdapter implements FacilityAdapter {
+public class CouchFacilityAdapter implements MRSFacilityAdapter {
 
     @Autowired
     private AllCouchFacilities allFacilities;
@@ -24,7 +24,7 @@ public class CouchFacilityAdapter implements FacilityAdapter {
     private EventRelay eventRelay;
 
     @Override
-    public Facility saveFacility(Facility facility) {
+    public MRSFacility saveFacility(MRSFacility facility) {
 
         try {
             allFacilities.addFacility((CouchFacility) facility);
@@ -47,7 +47,7 @@ public class CouchFacilityAdapter implements FacilityAdapter {
     }
 
     @Override
-    public Facility getFacility(String facilityId) {
+    public MRSFacility getFacility(String facilityId) {
 
         List<CouchFacility> facilities = allFacilities.findByFacilityId(facilityId);
 

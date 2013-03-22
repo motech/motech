@@ -28,7 +28,7 @@ package com.seleniumsoftware.SMPPSim.pdu.util;
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 public class PduUtilities {
     /*

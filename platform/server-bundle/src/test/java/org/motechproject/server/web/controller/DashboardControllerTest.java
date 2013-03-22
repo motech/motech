@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.server.ui.LocaleSettings;
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.ModelAndView;
 

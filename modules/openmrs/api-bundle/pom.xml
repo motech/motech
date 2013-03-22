@@ -68,6 +68,7 @@
                             javassist.util.proxy,
                             com.mysql.jdbc,
                             org.hibernate.hql.ast,
+                            org.motechproject.openmrs.model,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,

@@ -2,7 +2,6 @@ package org.motechproject.messagecampaign.search;
 
 import org.junit.Test;
 import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
-import org.motechproject.messagecampaign.search.CampaignNameCriterion;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 
 import java.util.ArrayList;

@@ -4,8 +4,8 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.testing.utils.BaseUnitTest;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +14,10 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 
 public class EnrollmentTest extends BaseUnitTest {
     @Test

@@ -9,16 +9,16 @@ import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.couch.mrs.repository.AllCouchPatients;
-import org.motechproject.mrs.domain.Attribute;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
-import org.motechproject.mrs.domain.Person;
 import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class CouchPatientAdapter implements PatientAdapter {
+public class CouchPatientAdapter implements MRSPatientAdapter {
 
     @Autowired
     private AllCouchPatients allCouchPatients;
@@ -39,7 +39,7 @@ public class CouchPatientAdapter implements PatientAdapter {
     private EventRelay eventRelay;
 
     @Override
-    public Patient savePatient(Patient patient) {
+    public MRSPatient savePatient(MRSPatient patient) {
         CouchPatientImpl couchPatient = (patient instanceof CouchPatientImpl) ? (CouchPatientImpl) patient :
                 createPatient(patient);
 
@@ -54,7 +54,7 @@ public class CouchPatientAdapter implements PatientAdapter {
     }
 
     @Override
-    public Patient updatePatient(Patient patient) {
+    public MRSPatient updatePatient(MRSPatient patient) {
         List<CouchPatientImpl> patients = allCouchPatients.findByMotechId(patient.getMotechId());
 
         if (patients != null && patients.get(0) != null) {
@@ -74,29 +74,29 @@ public class CouchPatientAdapter implements PatientAdapter {
     }
 
     @Override
-    public Patient getPatient(String patientId) {
+    public MRSPatient getPatient(String patientId) {
 
         return returnPatient(allCouchPatients.findByPatientId(patientId));
 
     }
 
     @Override
-    public Patient getPatientByMotechId(String motechId) {
+    public MRSPatient getPatientByMotechId(String motechId) {
 
         return returnPatient(allCouchPatients.findByMotechId(motechId));
 
     }
 
     @Override
-    public List<Patient> search(String name, String motechId) {
+    public List<MRSPatient> search(String name, String motechId) {
         return generatePatientList(allCouchPatients.findByNameAndMotechId(name, motechId));
     }
 
     @Override
     public Integer getAgeOfPatientByMotechId(String motechId) {
-        Patient patient = getPatientByMotechId(motechId);
+        MRSPatient patient = getPatientByMotechId(motechId);
 
-        Person person = patient.getPerson();
+        MRSPerson person = patient.getPerson();
 
         if (person != null) {
             return person.getAge();
@@ -114,7 +114,7 @@ public class CouchPatientAdapter implements PatientAdapter {
             throw new PatientNotFoundException("The patient by motech Id: " + motechId + " was not found in the database.");
         }
 
-        Person personToUpdate = patients.get(0).getPerson();
+        MRSPerson personToUpdate = patients.get(0).getPerson();
 
         personToUpdate.setDead(true);
         personToUpdate.setDeathDate(new DateTime(dateOfDeath));
@@ -125,11 +125,11 @@ public class CouchPatientAdapter implements PatientAdapter {
 
 
     @Override
-    public List<Patient> getAllPatients(){
+    public List<MRSPatient> getAllPatients(){
         return generatePatientList(allCouchPatients.findAllPatients());
     }
 
-    private Patient returnPatient(List<CouchPatientImpl> couchPatients) {
+    private MRSPatient returnPatient(List<CouchPatientImpl> couchPatients) {
 
         if (couchPatients != null && couchPatients.size() > 0) {
             CouchPatientImpl couchPatient = couchPatients.get(0);
@@ -145,12 +145,12 @@ public class CouchPatientAdapter implements PatientAdapter {
         return null;
     }
 
-    private List<Patient> generatePatientList(List<CouchPatientImpl> patients) {
+    private List<MRSPatient> generatePatientList(List<CouchPatientImpl> patients) {
 
-        List<Patient> patientsList = new ArrayList<Patient>();
+        List<MRSPatient> patientsList = new ArrayList<>();
 
         for (CouchPatientImpl couchPatient : patients) {
-            Patient patient = getPatientByMotechId(couchPatient.getMotechId());
+            MRSPatient patient = getPatientByMotechId(couchPatient.getMotechId());
             if (patient != null) {
                 patientsList.add(patient);
             }
@@ -159,11 +159,11 @@ public class CouchPatientAdapter implements PatientAdapter {
         return patientsList;
     }
 
-    private CouchPatientImpl createPatient (Patient patient) {
-        List<Attribute> attributeList = new ArrayList<>();
+    private CouchPatientImpl createPatient (MRSPatient patient) {
+        List<MRSAttribute> attributeList = new ArrayList<>();
 
         if (patient.getPerson() != null) {
-            for (Attribute attribute : patient.getPerson().getAttributes()){
+            for (MRSAttribute attribute : patient.getPerson().getAttributes()){
                 CouchAttribute couchAttribute = new CouchAttribute();
                 couchAttribute.setName(attribute.getName());
                 couchAttribute.setValue(attribute.getValue());
@@ -187,7 +187,7 @@ public class CouchPatientAdapter implements PatientAdapter {
         person.setPreferredName(patient.getPerson().getPreferredName());
         person.setAttributes(attributeList);
 
-        Facility facility = patient.getFacility();
+        MRSFacility facility = patient.getFacility();
 
         String facilityId = null;
         if (facility != null) {

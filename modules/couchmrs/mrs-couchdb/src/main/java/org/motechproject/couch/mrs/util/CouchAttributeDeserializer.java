@@ -1,9 +1,5 @@
 package org.motechproject.couch.mrs.util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
@@ -11,12 +7,17 @@ import org.codehaus.jackson.ObjectCodec;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.motechproject.couch.mrs.model.CouchAttribute;
-import org.motechproject.mrs.domain.Attribute;
+import org.motechproject.mrs.domain.MRSAttribute;
 
-public class CouchAttributeDeserializer extends JsonDeserializer<List<Attribute>> {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class CouchAttributeDeserializer extends JsonDeserializer<List<MRSAttribute>> {
 
     @Override
-    public List<Attribute> deserialize(JsonParser jsonParser, DeserializationContext arg1) throws IOException,
+    public List<MRSAttribute> deserialize(JsonParser jsonParser, DeserializationContext arg1) throws IOException,
             JsonProcessingException {
 
         ObjectCodec oc = jsonParser.getCodec();
@@ -24,7 +25,7 @@ public class CouchAttributeDeserializer extends JsonDeserializer<List<Attribute>
 
         Iterator<JsonNode> nodes = node.getElements();
 
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        List<MRSAttribute> attributes = new ArrayList<MRSAttribute>();
 
         while (nodes.hasNext()) {
 
@@ -34,7 +35,7 @@ public class CouchAttributeDeserializer extends JsonDeserializer<List<Attribute>
 
             String value = localnode.get("value").getTextValue();
 
-            Attribute couchAttribute = new CouchAttribute();
+            MRSAttribute couchAttribute = new CouchAttribute();
 
             couchAttribute.setName(name);
             couchAttribute.setValue(value);

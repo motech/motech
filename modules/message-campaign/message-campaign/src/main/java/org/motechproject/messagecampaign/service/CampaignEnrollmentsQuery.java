@@ -1,10 +1,10 @@
 package org.motechproject.messagecampaign.service;
 
+import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
+import org.motechproject.messagecampaign.search.CampaignNameCriterion;
 import org.motechproject.messagecampaign.search.Criterion;
 import org.motechproject.messagecampaign.search.ExternalIdCriterion;
 import org.motechproject.messagecampaign.search.StatusCriterion;
-import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
-import org.motechproject.messagecampaign.search.CampaignNameCriterion;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commcare.domain.CommcareFixture;
-import org.motechproject.commcare.domain.CommcareUser;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
 
 import java.util.List;

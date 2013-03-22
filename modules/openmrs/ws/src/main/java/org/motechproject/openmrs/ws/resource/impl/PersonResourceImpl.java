@@ -1,8 +1,7 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.log4j.Logger;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
@@ -21,8 +20,8 @@ import org.motechproject.openmrs.ws.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Component
 public class PersonResourceImpl implements PersonResource {

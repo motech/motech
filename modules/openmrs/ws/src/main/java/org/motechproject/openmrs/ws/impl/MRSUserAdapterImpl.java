@@ -1,19 +1,12 @@
 package org.motechproject.openmrs.ws.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.Validate;
-import org.motechproject.mrs.domain.Person;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.model.OpenMRSUser;
-import org.motechproject.mrs.model.Password;
-import org.motechproject.mrs.services.UserAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.openmrs.model.Password;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.UserResource;
 import org.motechproject.openmrs.ws.resource.model.Role;
@@ -27,8 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component("userAdapter")
-public class MRSUserAdapterImpl implements UserAdapter {
+public class MRSUserAdapterImpl implements MRSUserAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MRSUserAdapterImpl.class);
 
@@ -53,7 +52,7 @@ public class MRSUserAdapterImpl implements UserAdapter {
     }
 
     @Override
-    public List<org.motechproject.mrs.domain.User> getAllUsers() {
+    public List<MRSUser> getAllUsers() {
         UserListResult result = null;
         try {
             result = userResource.getAllUsers();
@@ -63,7 +62,7 @@ public class MRSUserAdapterImpl implements UserAdapter {
         }
 
         List<User> users = result.getResults();
-        List<org.motechproject.mrs.domain.User> mrsUsers = new ArrayList<org.motechproject.mrs.domain.User>();
+        List<MRSUser> mrsUsers = new ArrayList<>();
         for (User u : users) {
             // OpenMRS provides 2 default users (admin/daemon)
             // Intentionally filtering out these users as they have missing
@@ -74,26 +73,26 @@ public class MRSUserAdapterImpl implements UserAdapter {
             // the user response does not include the full person name or
             // address
             // must retrieve these separately
-            OpenMRSPerson person = personAdapter.getPerson(u.getPerson().getUuid());
+            MRSPerson person = personAdapter.getPerson(u.getPerson().getUuid());
             mrsUsers.add(convertToMrsUser(u, person));
         }
 
         return mrsUsers;
     }
 
-    private OpenMRSUser convertToMrsUser(User u, OpenMRSPerson person) {
-        OpenMRSUser user = new OpenMRSUser();
-        user.id(u.getUuid());
-        user.person(person);
-        user.securityRole(u.getFirstRole());
-        user.systemId(u.getSystemId());
-        user.userName(u.getUsername());
+    private MRSUser convertToMrsUser(User u, MRSPerson person) {
+        MRSUser user = new org.motechproject.openmrs.model.OpenMRSUser();
+        user.setUserId(u.getUuid());
+        user.setPerson(person);
+        user.setSecurityRole(u.getFirstRole());
+        user.setSystemId(u.getSystemId());
+        user.setUserName(u.getUsername());
 
         return user;
     }
 
     @Override
-    public OpenMRSUser getUserByUserName(String username) {
+    public MRSUser getUserByUserName(String username) {
         Validate.notEmpty(username, "Username cannot be empty");
 
         UserListResult results = null;
@@ -113,14 +112,14 @@ public class MRSUserAdapterImpl implements UserAdapter {
         // User response json does not include person name or address
         // must retrieve these separately
         User u = results.getResults().get(0);
-        Person person = personAdapter.getPerson(u.getPerson().getUuid());
-        OpenMRSUser user = convertToMrsUser(u, (OpenMRSPerson) person);
+        MRSPerson person = personAdapter.getPerson(u.getPerson().getUuid());
+        MRSUser user = convertToMrsUser(u, person);
 
         return user;
     }
 
     @Override
-    public Map<String, Object> saveUser(org.motechproject.mrs.domain.User user) throws UserAlreadyExistsException {
+    public Map<String, Object> saveUser(MRSUser user) throws UserAlreadyExistsException {
         Validate.notNull(user, "User cannot be null");
         Validate.notEmpty(user.getUserName(), "Username cannot be empty");
         Validate.notNull(user.getPerson(), "Person cannot be null");
@@ -138,8 +137,8 @@ public class MRSUserAdapterImpl implements UserAdapter {
         // otherwise it would leave the OpenMRS in an inconsistent state
         getRoleUuidByRoleName(user);
 
-        Person savedPerson = personAdapter.savePerson((OpenMRSPerson) user.getPerson());
-        user.setPerson((OpenMRSPerson) savedPerson);
+        MRSPerson savedPerson = personAdapter.savePerson(user.getPerson());
+        user.setPerson(savedPerson);
 
         String generatedPassword = password.create();
         User converted = convertToUser(user, generatedPassword);
@@ -160,10 +159,10 @@ public class MRSUserAdapterImpl implements UserAdapter {
         return values;
     }
 
-    private User convertToUser(org.motechproject.mrs.domain.User user, String password) {
+    private User convertToUser(MRSUser user, String password) {
         User converted = new User();
         converted.setPassword(password);
-        converted.setPerson(ConverterUtils.convertToPerson((OpenMRSPerson) user.getPerson(), false));
+        converted.setPerson(ConverterUtils.convertToPerson(user.getPerson(), false));
         converted.setRoles(convertRoles(user));
         converted.setUsername(user.getUserName());
         converted.setSystemId(user.getSystemId());
@@ -171,7 +170,7 @@ public class MRSUserAdapterImpl implements UserAdapter {
         return converted;
     }
 
-    private List<Role> convertRoles(org.motechproject.mrs.domain.User user) {
+    private List<Role> convertRoles(MRSUser user) {
         List<Role> roles = new ArrayList<Role>();
         Role role = new Role();
         role.setUuid(getRoleUuidByRoleName(user));
@@ -179,7 +178,7 @@ public class MRSUserAdapterImpl implements UserAdapter {
         return roles;
     }
 
-    private String getRoleUuidByRoleName(org.motechproject.mrs.domain.User user) {
+    private String getRoleUuidByRoleName(MRSUser user) {
         if (!roleIsPresentInOpenMrs(user.getSecurityRole())) {
             LOGGER.error("Could not find a role in OpenMRS with name: " + user.getSecurityRole());
             throw new MRSException("No OpenMRS role found with name: " + user.getSecurityRole());
@@ -222,7 +221,7 @@ public class MRSUserAdapterImpl implements UserAdapter {
     public String setNewPasswordForUser(String username) {
         Validate.notEmpty(username, "Username cannot be empty");
 
-        OpenMRSUser user = getUserByUserName(username);
+        MRSUser user = getUserByUserName(username);
         if (user == null) {
             LOGGER.warn("No user foudn with username: " + username);
             throw new UsernameNotFoundException("No user found with username: " + username);
@@ -245,13 +244,13 @@ public class MRSUserAdapterImpl implements UserAdapter {
     }
 
     @Override
-    public Map<String, Object> updateUser(org.motechproject.mrs.domain.User user) {
+    public Map<String, Object> updateUser(MRSUser user) {
         Validate.notNull(user, "User cannot be null");
         Validate.notEmpty(user.getUserId(), "User id cannot be empty");
         Validate.notNull(user.getPerson(), "User Person cannot be null");
         Validate.notEmpty(user.getPerson().getPersonId(), "User person id cannot be empty");
 
-        personAdapter.updatePerson((OpenMRSPerson) user.getPerson());
+        personAdapter.updatePerson(user.getPerson());
 
         String generatedPassword = password.create();
         User converted = convertToUser(user, generatedPassword);

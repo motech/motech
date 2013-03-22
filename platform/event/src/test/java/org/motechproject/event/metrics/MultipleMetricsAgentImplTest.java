@@ -6,10 +6,10 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.commons.date.util.datetime.DateTimeSource;
+import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 

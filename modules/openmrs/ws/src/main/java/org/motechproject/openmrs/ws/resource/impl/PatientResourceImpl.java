@@ -1,5 +1,7 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
@@ -17,9 +19,6 @@ import org.motechproject.openmrs.ws.resource.model.Person.PersonSerializer;
 import org.motechproject.openmrs.ws.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @Component
 public class PatientResourceImpl implements PatientResource {

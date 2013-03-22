@@ -41,7 +41,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.mrs.model;version=${project.version}
+                            org.motechproject.openmrs.model;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             *

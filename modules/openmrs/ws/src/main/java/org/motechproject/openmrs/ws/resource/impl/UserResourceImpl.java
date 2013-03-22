@@ -1,5 +1,7 @@
 package org.motechproject.openmrs.ws.resource.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
 import org.motechproject.openmrs.ws.RestClient;
@@ -14,9 +16,6 @@ import org.motechproject.openmrs.ws.resource.model.UserListResult;
 import org.motechproject.openmrs.ws.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @Component
 public class UserResourceImpl implements UserResource {

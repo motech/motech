@@ -26,9 +26,10 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim;
+
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 public class LifeCycleManager {
 

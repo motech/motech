@@ -26,9 +26,10 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim.pdu;
+
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 
-import java.util.*;
+import java.util.Date;
 
 public class QuerySMResp extends Response implements Marshaller {
 

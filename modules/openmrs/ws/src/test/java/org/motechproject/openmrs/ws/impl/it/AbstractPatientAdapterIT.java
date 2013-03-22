@@ -7,14 +7,14 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Patient;
+import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.exception.PatientNotFoundException;
-import org.motechproject.mrs.model.OpenMRSAttribute;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.model.OpenMRSPatient;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.openmrs.model.OpenMRSAttribute;
+import org.motechproject.openmrs.model.OpenMRSFacility;
+import org.motechproject.openmrs.model.OpenMRSPatient;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -36,10 +36,10 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractPatientAdapterIT {
 
     @Autowired
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
 
     @Autowired
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
 
     @Autowired
     private EventListenerRegistry eventListenerRegistry;
@@ -83,16 +83,16 @@ public abstract class AbstractPatientAdapterIT {
         mrsListener = new MrsListener();
         eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT));
 
-        OpenMRSPatient patient = (OpenMRSPatient) patientAdapter.getPatientByMotechId("750");
-        patient.getPerson().firstName("Changed Name");
-        patient.getPerson().address("Changed Address");
+        MRSPatient patient = patientAdapter.getPatientByMotechId("750");
+        patient.getPerson().setFirstName("Changed Name");
+        patient.getPerson().setAddress("Changed Address");
 
         synchronized (lock) {
             patientAdapter.updatePatient(patient);
             lock.wait(60000);
         }
 
-        Patient fetched = patientAdapter.getPatientByMotechId("750");
+        MRSPatient fetched = patientAdapter.getPatientByMotechId("750");
 
         assertEquals("Changed Name", fetched.getPerson().getFirstName());
         // Bug in OpenMRS Web Services does not currently allow updating address
@@ -110,15 +110,15 @@ public abstract class AbstractPatientAdapterIT {
 
     @Test
     public void shouldGetPatientByMotechId() {
-        Patient patient = patientAdapter.getPatientByMotechId("700");
+        MRSPatient patient = patientAdapter.getPatientByMotechId("700");
         assertNotNull(patient);
     }
 
     @Test
     public void shouldSearchForPatient() {
-        List<Patient> found = patientAdapter.search("Bill", null);
+        List<MRSPatient> found = patientAdapter.search("Bill", null);
 
-        assertEquals(asList("Bill"), extract(found, on(Patient.class).getPerson().getFirstName()));
+        assertEquals(asList("Bill"), extract(found, on(MRSPatient.class).getPerson().getFirstName()));
     }
 
     @Test
@@ -131,7 +131,7 @@ public abstract class AbstractPatientAdapterIT {
             lock.wait(60000);
         }
 
-        Patient patient = patientAdapter.getPatientByMotechId("750");
+        MRSPatient patient = patientAdapter.getPatientByMotechId("750");
         assertTrue(patient.getPerson().isDead());
 
         assertFalse(mrsListener.created);

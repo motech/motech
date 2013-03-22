@@ -2,9 +2,9 @@ package org.motechproject.mrs.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
-import org.motechproject.mrs.services.PersonAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSPersonAdapter;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -16,9 +16,9 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
 
     private String currentImplName;
 
-    private Map<String, PatientAdapter> patientAdapterMap = new HashMap<>();
-    private Map<String, FacilityAdapter> facilityAdapterMap = new HashMap<>();
-    private Map<String, PersonAdapter> personAdapterMap = new HashMap<>();
+    private Map<String, MRSPatientAdapter> patientAdapterMap = new HashMap<>();
+    private Map<String, MRSFacilityAdapter> facilityAdapterMap = new HashMap<>();
+    private Map<String, MRSPersonAdapter> personAdapterMap = new HashMap<>();
 
     public String getCurrentImplName() {
         return currentImplName;
@@ -40,12 +40,12 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
             currentImplName = bundleSymbolicName;
         }
 
-        if (service instanceof PatientAdapter) {
-            patientAdapterMap.put(bundleSymbolicName, (PatientAdapter) service);
-        } else if (service instanceof FacilityAdapter) {
-            facilityAdapterMap.put(bundleSymbolicName, (FacilityAdapter) service);
-        } else if (service instanceof PersonAdapter) {
-            personAdapterMap.put(bundleSymbolicName, (PersonAdapter) service);
+        if (service instanceof MRSPatientAdapter) {
+            patientAdapterMap.put(bundleSymbolicName, (MRSPatientAdapter) service);
+        } else if (service instanceof MRSFacilityAdapter) {
+            facilityAdapterMap.put(bundleSymbolicName, (MRSFacilityAdapter) service);
+        } else if (service instanceof MRSPersonAdapter) {
+            personAdapterMap.put(bundleSymbolicName, (MRSPersonAdapter) service);
         }
     }
 
@@ -53,17 +53,17 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
     public void unbind(Object service, Map serviceProperties) {
         String bundleSymbolicName = serviceProperties.get("Bundle-SymbolicName").toString();
 
-        if (service instanceof PatientAdapter) {
+        if (service instanceof MRSPatientAdapter) {
             patientAdapterMap.remove(bundleSymbolicName);
-        } else if (service instanceof FacilityAdapter) {
+        } else if (service instanceof MRSFacilityAdapter) {
             facilityAdapterMap.remove(bundleSymbolicName);
-        } else if (service instanceof PersonAdapter) {
+        } else if (service instanceof MRSPersonAdapter) {
             personAdapterMap.remove(bundleSymbolicName);
         }
     }
 
-    public PatientAdapter getPatientAdapter() throws ImplementationException {
-        PatientAdapter patientAdapter = patientAdapterMap.get(currentImplName);
+    public MRSPatientAdapter getPatientAdapter() throws ImplementationException {
+        MRSPatientAdapter patientAdapter = patientAdapterMap.get(currentImplName);
 
         if (patientAdapter == null) {
             changeToNextImpl();
@@ -73,8 +73,8 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
         return patientAdapter;
     }
 
-    public FacilityAdapter getFacilityAdapter() throws ImplementationException {
-        FacilityAdapter facilityAdapter = facilityAdapterMap.get(currentImplName);
+    public MRSFacilityAdapter getFacilityAdapter() throws ImplementationException {
+        MRSFacilityAdapter facilityAdapter = facilityAdapterMap.get(currentImplName);
 
         if (facilityAdapter == null) {
             changeToNextImpl();
@@ -84,8 +84,8 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
         return facilityAdapter;
     }
 
-    public PersonAdapter getPersonAdapter() throws ImplementationException {
-        PersonAdapter personAdapter = personAdapterMap.get(currentImplName);
+    public MRSPersonAdapter getPersonAdapter() throws ImplementationException {
+        MRSPersonAdapter personAdapter = personAdapterMap.get(currentImplName);
 
         if (personAdapter == null) {
             changeToNextImpl();

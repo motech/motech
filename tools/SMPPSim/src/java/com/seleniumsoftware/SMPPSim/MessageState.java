@@ -30,8 +30,8 @@ package com.seleniumsoftware.SMPPSim;
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
 import java.text.ParseException;
-import java.util.*;
-import java.util.logging.*;
+import java.util.Date;
+import java.util.logging.Logger;
 
 public class MessageState {
     private static Logger logger = Logger

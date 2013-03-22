@@ -26,11 +26,13 @@
  ****************************************************************************
 */
 package com.seleniumsoftware.SMPPSim;
+
 import com.seleniumsoftware.SMPPSim.exceptions.*;
 import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
 
-import java.util.logging.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Martin Woolley

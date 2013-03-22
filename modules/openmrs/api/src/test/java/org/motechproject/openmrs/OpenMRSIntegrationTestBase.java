@@ -4,16 +4,15 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.domain.Patient;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.model.OpenMRSPatient;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.model.OpenMRSUser;
-import org.motechproject.mrs.services.FacilityAdapter;
-import org.motechproject.mrs.services.PatientAdapter;
-import org.motechproject.mrs.services.UserAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.openmrs.model.OpenMRSPatient;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,13 +33,13 @@ public class OpenMRSIntegrationTestBase {
     OpenMRSSession openMRSSession;
 
     @Autowired
-    protected UserAdapter userAdapter;
+    protected MRSUserAdapter userAdapter;
 
     @Autowired
-    protected PatientAdapter patientAdapter;
+    protected MRSPatientAdapter patientAdapter;
 
     @Autowired
-    protected FacilityAdapter facilityAdapter;
+    protected MRSFacilityAdapter facilityAdapter;
 
     boolean doOnce = false;
 
@@ -62,7 +61,7 @@ public class OpenMRSIntegrationTestBase {
         openMRSSession.authenticate();
     }
 
-    protected Patient createPatient(Facility facility) {
+    protected MRSPatient createPatient(MRSFacility facility) {
         final String first = "AlanTest";
         final String middle = "Wilkinson";
         final String last = "no";
@@ -74,14 +73,13 @@ public class OpenMRSIntegrationTestBase {
 
         OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).lastName(last).middleName(middle).preferredName("prefName").
                 birthDateEstimated(birthDateEstimated).dateOfBirth(new DateTime(birthDate)).address(address1).gender(gender);
-        final OpenMRSPatient patient = new OpenMRSPatient(patientSystemId, mrsPerson, (OpenMRSFacility) facility);
+        final OpenMRSPatient patient = new OpenMRSPatient(patientSystemId, mrsPerson, facility);
         return patientAdapter.savePatient(patient);
     }
 
 
-    protected OpenMRSUser createUser(OpenMRSUser userCreator) throws UserAlreadyExistsException {
-        userCreator = (OpenMRSUser) userAdapter.saveUser(userCreator).get(USER_KEY);
-        return userCreator;
+    protected MRSUser createUser(MRSUser user) throws UserAlreadyExistsException {
+        return (MRSUser) userAdapter.saveUser(user).get(USER_KEY);
     }
 
 

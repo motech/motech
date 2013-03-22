@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
-import org.motechproject.messagecampaign.search.StatusCriterion;
 
 import java.util.ArrayList;
 import java.util.List;

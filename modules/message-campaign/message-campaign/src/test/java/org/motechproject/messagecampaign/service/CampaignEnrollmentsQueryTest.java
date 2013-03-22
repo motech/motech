@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.motechproject.messagecampaign.search.CampaignNameCriterion;
-import org.motechproject.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.messagecampaign.search.Criterion;
 import org.motechproject.messagecampaign.search.ExternalIdCriterion;
 import org.motechproject.messagecampaign.search.StatusCriterion;

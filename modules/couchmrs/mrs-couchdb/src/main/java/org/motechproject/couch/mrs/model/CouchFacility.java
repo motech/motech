@@ -2,10 +2,10 @@ package org.motechproject.couch.mrs.model;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.domain.MRSFacility;
 
 @TypeDiscriminator("doc.type === 'Facility'")
-public class CouchFacility extends MotechBaseDataObject implements Facility {
+public class CouchFacility extends MotechBaseDataObject implements MRSFacility {
 
     private static final long serialVersionUID = 1L;
 

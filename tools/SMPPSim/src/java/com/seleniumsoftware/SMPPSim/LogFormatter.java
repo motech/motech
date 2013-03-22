@@ -26,9 +26,10 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim;
-import java.util.logging.*;
-import java.text.*;
-import java.util.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.LogRecord;
 
 
 public class LogFormatter extends java.util.logging.Formatter {

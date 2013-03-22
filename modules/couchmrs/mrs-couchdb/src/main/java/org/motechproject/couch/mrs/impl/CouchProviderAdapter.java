@@ -6,16 +6,16 @@ import org.motechproject.couch.mrs.repository.AllCouchProviders;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Provider;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.services.ProviderAdapter;
+import org.motechproject.mrs.domain.MRSProvider;
+import org.motechproject.mrs.services.MRSProviderAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class CouchProviderAdapter implements ProviderAdapter {
+public class CouchProviderAdapter implements MRSProviderAdapter {
 
     @Autowired
     private AllCouchProviders allCouchProviders;
@@ -24,7 +24,7 @@ public class CouchProviderAdapter implements ProviderAdapter {
     private EventRelay eventRelay;
 
     @Override
-    public Provider saveProvider(Provider provider) {
+    public MRSProvider saveProvider(MRSProvider provider) {
 
         CouchProvider couchProvider = new CouchProvider(provider.getProviderId(), provider.getPerson());
 
@@ -39,7 +39,7 @@ public class CouchProviderAdapter implements ProviderAdapter {
     }
 
     @Override
-    public Provider getProviderByProviderId(String motechId) {
+    public MRSProvider getProviderByProviderId(String motechId) {
         List<CouchProvider> providers = allCouchProviders.findByProviderId(motechId);
 
         if (providers != null && providers.size() > 0) {

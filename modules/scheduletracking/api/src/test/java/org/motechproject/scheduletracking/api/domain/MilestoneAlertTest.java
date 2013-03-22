@@ -6,8 +6,8 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 
 public class MilestoneAlertTest {
 

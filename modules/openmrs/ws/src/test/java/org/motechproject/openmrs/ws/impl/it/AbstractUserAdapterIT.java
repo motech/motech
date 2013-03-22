@@ -1,27 +1,27 @@
 package org.motechproject.openmrs.ws.impl.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.mrs.domain.MRSUser;
+import org.motechproject.mrs.exception.UserAlreadyExistsException;
+import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.openmrs.model.OpenMRSPerson;
+import org.motechproject.openmrs.model.OpenMRSUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.motechproject.mrs.domain.User;
-import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.motechproject.mrs.model.OpenMRSUser;
-import org.motechproject.mrs.services.UserAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractUserAdapterIT {
 
     @Autowired
-    private UserAdapter userAdapter;
+    private MRSUserAdapter userAdapter;
 
     @Test
     public void shouldCreateUser() throws UserAlreadyExistsException {
@@ -33,7 +33,7 @@ public abstract class AbstractUserAdapterIT {
         user.person(person);
 
         Map<String, Object> result = userAdapter.saveUser(user);
-        OpenMRSUser saved = (OpenMRSUser) result.get(UserAdapter.USER_KEY);
+        OpenMRSUser saved = (OpenMRSUser) result.get(MRSUserAdapter.USER_KEY);
 
         assertNotNull(saved);
         assertNotNull(saved.getUserId());
@@ -55,7 +55,7 @@ public abstract class AbstractUserAdapterIT {
 
     @Test
     public void shouldGetAllUsers() throws UserAlreadyExistsException {
-        List<User> users = userAdapter.getAllUsers();
+        List<MRSUser> users = userAdapter.getAllUsers();
 
         assertTrue(users.size() > 0);
     }
@@ -63,7 +63,8 @@ public abstract class AbstractUserAdapterIT {
     @Test
     public void shouldUpdateUser() throws UserAlreadyExistsException {
         OpenMRSUser saved = (OpenMRSUser) userAdapter.getUserByUserName("chuck");
-        saved.getPerson().firstName("John2");
+        OpenMRSPerson person = (OpenMRSPerson)saved.getPerson();
+        person.firstName("John2");
         userAdapter.updateUser(saved);
 
         OpenMRSUser updated = (OpenMRSUser) userAdapter.getUserByUserName("john2");

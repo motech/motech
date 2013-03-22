@@ -1,5 +1,7 @@
 package org.motechproject.server.config.settings;
 
+import org.motechproject.server.config.service.PlatformSettingsService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,8 +11,6 @@ import java.net.URL;
 import java.security.DigestInputStream;
 import java.util.Arrays;
 import java.util.Properties;
-
-import org.motechproject.server.config.service.PlatformSettingsService;
 
 public class ConfigFileSettings implements MotechSettings {
 

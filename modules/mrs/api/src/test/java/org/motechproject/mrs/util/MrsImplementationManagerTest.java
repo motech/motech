@@ -3,7 +3,7 @@ package org.motechproject.mrs.util;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mrs.services.PatientAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,10 +19,10 @@ public class MrsImplementationManagerTest {
     private static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
 
     @Mock
-    private PatientAdapter patientAdapter;
+    private MRSPatientAdapter patientAdapter;
 
     @Mock
-    private PatientAdapter patientAdapter2;
+    private MRSPatientAdapter patientAdapter2;
 
     private Map<String, String> serviceProperties = new HashMap<>();
 

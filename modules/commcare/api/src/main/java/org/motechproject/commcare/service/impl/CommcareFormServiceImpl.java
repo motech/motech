@@ -1,12 +1,12 @@
 package org.motechproject.commcare.service.impl;
 
+import com.google.gson.JsonParseException;
 import org.motechproject.commcare.domain.CommcareForm;
 import org.motechproject.commcare.parser.FormAdapter;
 import org.motechproject.commcare.service.CommcareFormService;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.gson.JsonParseException;
 
 @Service
 public class CommcareFormServiceImpl implements CommcareFormService {

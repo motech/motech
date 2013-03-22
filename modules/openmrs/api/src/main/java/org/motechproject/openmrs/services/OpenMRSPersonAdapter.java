@@ -2,10 +2,10 @@ package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
-import org.motechproject.mrs.domain.Attribute;
-import org.motechproject.mrs.model.OpenMRSAttribute;
-import org.motechproject.mrs.model.OpenMRSPerson;
-import org.openmrs.Person;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.openmrs.model.OpenMRSAttribute;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
@@ -34,7 +34,7 @@ public class OpenMRSPersonAdapter {
         this.personService = personService;
     }
 
-    OpenMRSPerson openMRSToMRSPerson(Person person) {
+    MRSPerson openMRSToMRSPerson(org.openmrs.Person person) {
 
         Set<PersonName> personNames = person.getNames();
         PersonName personName = getFirstName(personNames);
@@ -42,21 +42,21 @@ public class OpenMRSPersonAdapter {
         final List<OpenMRSAttribute> attributes = project(person.getAttributes(), OpenMRSAttribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
 
-        List<Attribute> personAttributes = new ArrayList<Attribute>();
+        List<MRSAttribute> personAttributes = new ArrayList<>();
 
         personAttributes.addAll(attributes);
 
-        OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+        MRSPerson mrsPerson = new OpenMRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
                 .lastName(personName.getFamilyName()).birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender()).age(person.getAge())
                 .address(getAddress(person)).attributes(personAttributes).dateOfBirth(new DateTime(person.getBirthdate())).dead(person.isDead()).deathDate(new DateTime(person.getDeathDate()));
 
         if (person.getId() != null) {
-            mrsPerson.id(Integer.toString(person.getId()));
+            mrsPerson.setPersonId(Integer.toString(person.getId()));
         }
         return mrsPerson;
     }
 
-    private String getAddress(Person person) {
+    private String getAddress(org.openmrs.Person person) {
         String address = null;
         final Set<PersonAddress> addresses = person.getAddresses();
         if (!addresses.isEmpty()) {
@@ -65,7 +65,7 @@ public class OpenMRSPersonAdapter {
         return address;
     }
 
-    Person getPersonById(String id) {
+    org.openmrs.Person getPersonById(String id) {
         return personService.getPerson(Integer.valueOf(id));
     }
 

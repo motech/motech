@@ -3,12 +3,12 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
+import org.motechproject.commons.date.util.JodaFormatter;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
-import org.motechproject.commons.date.util.JodaFormatter;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

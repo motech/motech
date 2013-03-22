@@ -10,11 +10,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.outbox.api.builder.OutboundVoiceMessageBuilder;
 import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
-import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;

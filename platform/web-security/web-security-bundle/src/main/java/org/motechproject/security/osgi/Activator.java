@@ -2,12 +2,12 @@ package org.motechproject.security.osgi;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.felix.http.api.ExtHttpService;
+import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.ServletRegistrationException;
-import org.motechproject.security.filter.MotechDelegatingFilterProxy;
-import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.UiHttpContext;
+import org.motechproject.security.filter.MotechDelegatingFilterProxy;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

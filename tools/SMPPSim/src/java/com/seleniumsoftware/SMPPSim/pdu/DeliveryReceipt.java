@@ -27,11 +27,10 @@
 
 package com.seleniumsoftware.SMPPSim.pdu;
 
-import java.util.*;
-import java.util.logging.Logger;
-
 import com.seleniumsoftware.SMPPSim.SMPPSim;
-import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
+
+import java.util.Date;
+import java.util.logging.Logger;
 
 public class DeliveryReceipt extends DeliverSM {
     private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");

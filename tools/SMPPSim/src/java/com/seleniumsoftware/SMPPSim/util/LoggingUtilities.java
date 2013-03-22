@@ -25,10 +25,11 @@
  * $Header: /var/cvsroot/SMPPSim2/src/java/com/seleniumsoftware/SMPPSim/util/LoggingUtilities.java,v 1.5 2011/01/31 08:00:24 martin Exp $
  ****************************************************************************/
 package com.seleniumsoftware.SMPPSim.util;
+
 import com.seleniumsoftware.SMPPSim.pdu.*;
 
 import java.util.StringTokenizer;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 
 public class LoggingUtilities {

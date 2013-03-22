@@ -8,10 +8,10 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.services.FacilityAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.openmrs.model.OpenMRSFacility;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import static ch.lambdaj.Lambda.on;
  * Manages OpenMRS Facilities
  */
 @Service
-public class OpenMRSFacilityAdapter implements FacilityAdapter {
+public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
 
     @Autowired
     private LocationService locationService;
@@ -38,13 +38,13 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
     /**
      * Saves a MRSFacility into OpenMRS
      *
-     * @param facility Object to be saved
+     * @param theFacility Object to be saved
      * @return The saved Facility
      */
     @Override
-    public Facility saveFacility(final Facility theFacility) {
-        OpenMRSFacility facility = (OpenMRSFacility) theFacility;
-        String facilityId = facility.getId();
+    public MRSFacility saveFacility(final MRSFacility theFacility) {
+        MRSFacility facility = theFacility;
+        String facilityId = facility.getFacilityId();
         Location location = new Location();
         if (facilityId != null) {
             location = locationService.getLocation(Integer.parseInt(facilityId));
@@ -62,12 +62,12 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
         location.setCountyDistrict(facility.getCountyDistrict());
 
         Location savedLocation = this.locationService.saveLocation(location);
-        Facility facilityInst = convertLocationToFacility(savedLocation);
+        MRSFacility facilityInst = convertLocationToFacility(savedLocation);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityInst)));
         return facilityInst;
     }
 
-    private LambdaJMatcher<Location> locationMatcher(final OpenMRSFacility facility) {
+    private LambdaJMatcher<Location> locationMatcher(final MRSFacility facility) {
         return new LambdaJMatcher<Location>() {
             @Override
             public boolean matches(Object o) {
@@ -88,9 +88,9 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
      * @return List of all Facilities
      */
     @Override
-    public List<Facility> getFacilities() {
+    public List<MRSFacility> getFacilities() {
         List<Location> locations = locationService.getAllLocations();
-        List<Facility> facilities = new ArrayList<Facility>();
+        List<MRSFacility> facilities = new ArrayList<MRSFacility>();
         for (Location location : locations) {
             facilities.add(convertLocationToFacility(location));
         }
@@ -104,9 +104,9 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
      * @return List of matches Facilities, else empty list
      */
     @Override
-    public List<Facility> getFacilities(String locationName) {
+    public List<MRSFacility> getFacilities(String locationName) {
         final List<Location> locations = locationService.getLocations(locationName);
-        final ArrayList<Facility> facilities = new ArrayList<Facility>();
+        final ArrayList<MRSFacility> facilities = new ArrayList<MRSFacility>();
         for (Location location : locations) {
             facilities.add(convertLocationToFacility(location));
         }
@@ -120,7 +120,7 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
      * @return Facility Object if found, else null
      */
     @Override
-    public Facility getFacility(String facilityId) {
+    public MRSFacility getFacility(String facilityId) {
         if (StringUtils.isEmpty(facilityId)) {
             return null;
         }
@@ -132,7 +132,7 @@ public class OpenMRSFacilityAdapter implements FacilityAdapter {
         return locationService.getLocation(Integer.parseInt(facilityId));
     }
 
-    Facility convertLocationToFacility(Location savedLocation) {
+    MRSFacility convertLocationToFacility(Location savedLocation) {
         return new OpenMRSFacility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }

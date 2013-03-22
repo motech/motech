@@ -1,9 +1,9 @@
 package org.motechproject.commcare.domain;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Map;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A domain class that represents the information and properties of a user from

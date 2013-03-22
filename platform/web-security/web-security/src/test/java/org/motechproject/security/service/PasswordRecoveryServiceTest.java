@@ -18,12 +18,7 @@ import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
 import org.motechproject.testing.utils.BaseUnitTest;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.openid.OpenIDAuthenticationProvider;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 

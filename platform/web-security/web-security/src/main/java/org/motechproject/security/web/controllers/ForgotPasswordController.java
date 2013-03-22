@@ -1,7 +1,7 @@
 package org.motechproject.security.web.controllers;
 
-import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.ex.UserNotFoundException;
+import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.service.PasswordRecoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

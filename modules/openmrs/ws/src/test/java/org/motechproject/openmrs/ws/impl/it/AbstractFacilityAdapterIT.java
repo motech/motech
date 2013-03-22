@@ -7,9 +7,9 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.services.FacilityAdapter;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.openmrs.model.OpenMRSFacility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractFacilityAdapterIT {
 
     @Autowired
-    private FacilityAdapter facilityAdapter;
+    private MRSFacilityAdapter facilityAdapter;
 
     @Autowired
     EventListenerRegistry eventListenerRegistry;
@@ -59,14 +59,14 @@ public abstract class AbstractFacilityAdapterIT {
 
     @Test
     public void shouldFindMultipleFacilities() {
-        List<? extends Facility> facilities = facilityAdapter.getFacilities();
+        List<? extends MRSFacility> facilities = facilityAdapter.getFacilities();
 
         assertTrue(facilities.size() > 0);
     }
 
     @Test
     public void shouldFindSingleFacilityByName() {
-        List<? extends Facility> facilities = facilityAdapter.getFacilities("Clinic 1");
+        List<? extends MRSFacility> facilities = facilityAdapter.getFacilities("Clinic 1");
 
         assertEquals(1, facilities.size());
     }
@@ -74,7 +74,7 @@ public abstract class AbstractFacilityAdapterIT {
     @Test
     public void shouldFindFacilityById() {
         OpenMRSFacility facility = (OpenMRSFacility) facilityAdapter.getFacility("Clinic 2");
-        OpenMRSFacility persisted = (OpenMRSFacility) facilityAdapter.getFacility(facility.getId());
+        OpenMRSFacility persisted = (OpenMRSFacility) facilityAdapter.getFacility(facility.getFacilityId());
 
         assertNotNull(persisted);
     }

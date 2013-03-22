@@ -5,16 +5,18 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.domain.MRSPerson;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -66,7 +68,7 @@ public class OpenMRSPersonAdapterTest {
         Person person = new Person();
 
         String expectedAddress = "Expected Patient Address";
-        Set<PersonAddress> personAddresses = new HashSet<PersonAddress>();
+        Set<PersonAddress> personAddresses = new HashSet<>();
         PersonAddress personAddress = new PersonAddress();
         personAddress.setAddress1(expectedAddress);
         personAddresses.add(personAddress);
@@ -102,7 +104,7 @@ public class OpenMRSPersonAdapterTest {
 
         person.setAttributes(personAttributes(staffType, phoneNo, email));
 
-        OpenMRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(person);
+        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(person);
 
         assertThat(mrsPerson.getFirstName(), is(equalTo(firstName)));
         assertThat(mrsPerson.getMiddleName(), is(equalTo(middleName)));
@@ -111,12 +113,13 @@ public class OpenMRSPersonAdapterTest {
         assertThat(mrsPerson.getAddress(), is(equalTo(address)));
         assertThat(mrsPerson.getBirthDateEstimated(), is(equalTo(birthdateEstimated)));
         assertThat(mrsPerson.getDateOfBirth().toDate(), is(equalTo(birthdate)));
+        assertThat(mrsPerson.isDead(), is(equalTo(dead)));
+        assertNotNull(mrsPerson.getAge());
+        /* OpenMRSPersonAdapter returns Person. So test only Person APIs.
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_EMAIL), is(equalTo(email)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER), is(equalTo(phoneNo)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE), is(equalTo(staffType)));
-        assertThat(mrsPerson.isDead(), is(equalTo(dead)));
-        assertNotNull(mrsPerson.getAge());
-        assertThat(mrsPerson.deathDate().toDate(), is(equalTo(deathDate)));
+        assertThat(mrsPerson.deathDate().toDate(), is(equalTo(deathDate)));*/
     }
 
     @Test

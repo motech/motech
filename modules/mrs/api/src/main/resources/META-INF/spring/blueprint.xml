@@ -42,27 +42,30 @@
         <constructor-arg name="header" ref="header"/>
     </bean>
 
-    <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.PatientAdapter" cardinality="0..N">
+    <osgi:service id="mrsDataProviderOSGi" auto-export="interfaces" ref="mrsDataProvider"
+                  interface="org.motechproject.commons.api.DataProvider"/>
+
+    <osgi:list id="patientAdapterList" interface="org.motechproject.mrs.services.MRSPatientAdapter" cardinality="0..N">
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
 
-    <osgi:list id="personAdapterList" interface="org.motechproject.mrs.services.PersonAdapter" cardinality="0..N">
+    <osgi:list id="personAdapterList" interface="org.motechproject.mrs.services.MRSPersonAdapter" cardinality="0..N">
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
 
-    <osgi:list id="facilityAdapterList" interface="org.motechproject.mrs.services.FacilityAdapter" cardinality="0..N">
+    <osgi:list id="facilityAdapterList" interface="org.motechproject.mrs.services.MRSFacilityAdapter" cardinality="0..N">
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:list id="observationAdapterList" interface="org.motechproject.mrs.services.ObservationAdapter" cardinality="0..N"/>
+    <osgi:list id="observationAdapterList" interface="org.motechproject.mrs.services.MRSObservationAdapter" cardinality="0..N"/>
 
-    <osgi:list id="encounterAdapterList" interface="org.motechproject.mrs.services.EncounterAdapter" cardinality="0..N"/>
+    <osgi:list id="encounterAdapterList" interface="org.motechproject.mrs.services.MRSEncounterAdapter" cardinality="0..N"/>
 
-    <osgi:list id="userAdapterList" interface="org.motechproject.mrs.services.UserAdapter" cardinality="0..N"/>
+    <osgi:list id="userAdapterList" interface="org.motechproject.mrs.services.MRSUserAdapter" cardinality="0..N"/>
 
-    <osgi:list id="providerAdapterList" interface="org.motechproject.mrs.services.ProviderAdapter" cardinality="0..N"/>
+    <osgi:list id="providerAdapterList" interface="org.motechproject.mrs.services.MRSProviderAdapter" cardinality="0..N"/>
 
     <bean id="mrsEventHandlerImpl" class="org.motechproject.mrs.services.impl.MrsActionProxyServiceImpl">
         <property name="patientAdapters" ref="patientAdapterList"/>

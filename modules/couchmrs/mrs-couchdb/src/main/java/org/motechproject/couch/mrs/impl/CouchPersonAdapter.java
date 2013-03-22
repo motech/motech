@@ -8,17 +8,17 @@ import org.motechproject.couch.mrs.repository.impl.AllCouchPersonsImpl;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Attribute;
-import org.motechproject.mrs.domain.Person;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.services.PersonAdapter;
+import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.mrs.services.MRSPersonAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CouchPersonAdapter implements PersonAdapter {
+public class CouchPersonAdapter implements MRSPersonAdapter {
 
     @Autowired
     private AllCouchPersons allCouchMRSPersons;
@@ -28,7 +28,7 @@ public class CouchPersonAdapter implements PersonAdapter {
 
     @Override
     public void addPerson(String personId, String firstName, String lastName, DateTime dateOfBirth, String gender,
-            String address, List<Attribute> attributes) throws MRSCouchException {
+            String address, List<MRSAttribute> attributes) throws MRSCouchException {
         CouchPerson person = new CouchPerson();
         person.setPersonId(personId);
         person.setFirstName(firstName);
@@ -42,19 +42,19 @@ public class CouchPersonAdapter implements PersonAdapter {
     }
 
     @Override
-    public void addPerson(Person person) throws MRSCouchException {
+    public void addPerson(MRSPerson person) throws MRSCouchException {
         allCouchMRSPersons.addPerson((CouchPerson) person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
     }
 
     @Override
-    public void updatePerson(Person person) {
+    public void updatePerson(MRSPerson person) {
         allCouchMRSPersons.update((CouchPerson) person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PERSON_SUBJECT, EventHelper.personParameters(person)));
     }
 
     @Override
-    public void removePerson(Person person) {
+    public void removePerson(MRSPerson person) {
         allCouchMRSPersons.remove((CouchPerson) person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_PERSON_SUBJECT, EventHelper.personParameters(person)));
     }

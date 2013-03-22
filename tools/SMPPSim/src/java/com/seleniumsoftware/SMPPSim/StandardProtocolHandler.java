@@ -31,8 +31,9 @@ import com.seleniumsoftware.SMPPSim.exceptions.*;
 import com.seleniumsoftware.SMPPSim.pdu.*;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 import com.seleniumsoftware.SMPPSim.util.*;
-import java.util.logging.*;
 import org.apache.regexp.*;
+
+import java.util.logging.Logger;
 
 public class StandardProtocolHandler {
     static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");

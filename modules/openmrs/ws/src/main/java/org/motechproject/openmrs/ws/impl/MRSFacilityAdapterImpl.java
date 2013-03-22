@@ -5,10 +5,9 @@ import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Facility;
+import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.services.FacilityAdapter;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.LocationResource;
 import org.motechproject.openmrs.ws.resource.model.Location;
@@ -22,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component("facilityAdapter")
-public class MRSFacilityAdapterImpl implements FacilityAdapter {
+public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
     private static final Logger LOGGER = Logger.getLogger(MRSFacilityAdapterImpl.class);
 
     private final LocationResource locationResource;
@@ -35,7 +34,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
     }
 
     @Override
-    public List<OpenMRSFacility> getFacilities() {
+    public List<? extends MRSFacility> getFacilities() {
         LocationListResult result = null;
         try {
             result = locationResource.getAllLocations();
@@ -47,8 +46,8 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
         return mapLocationToMrsFacility(result.getResults());
     }
 
-    private List<OpenMRSFacility> mapLocationToMrsFacility(List<Location> facilities) {
-        List<OpenMRSFacility> mrsFacilities = new ArrayList<OpenMRSFacility>();
+    private List<? extends MRSFacility> mapLocationToMrsFacility(List<Location> facilities) {
+        List<MRSFacility> mrsFacilities = new ArrayList<>();
         for (Location location : facilities) {
             mrsFacilities.add(ConverterUtils.convertLocationToMrsLocation(location));
         }
@@ -56,7 +55,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
     }
 
     @Override
-    public List<OpenMRSFacility> getFacilities(String locationName) {
+    public List<? extends MRSFacility> getFacilities(String locationName) {
         Validate.notEmpty(locationName, "Location name cannot be empty");
         LocationListResult result = null;
         try {
@@ -70,7 +69,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
     }
 
     @Override
-    public OpenMRSFacility getFacility(String facilityId) {
+    public MRSFacility getFacility(String facilityId) {
         Validate.notEmpty(facilityId, "Facility id cannot be empty");
         Location location = null;
         try {
@@ -84,7 +83,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
     }
 
     @Override
-    public OpenMRSFacility saveFacility(Facility facility) {
+    public MRSFacility saveFacility(MRSFacility facility) {
         Validate.notNull(facility, "Facility cannot be null");
 
         // The uuid cannot be included with the request, otherwise OpenMRS will
@@ -103,7 +102,7 @@ public class MRSFacilityAdapterImpl implements FacilityAdapter {
         return ConverterUtils.convertLocationToMrsLocation(saved);
     }
 
-    private Location convertMrsFacilityToLocation(Facility facility) {
+    private Location convertMrsFacilityToLocation(MRSFacility facility) {
         Location location = new Location();
         location.setAddress6(facility.getRegion());
         location.setDescription(facility.getName());

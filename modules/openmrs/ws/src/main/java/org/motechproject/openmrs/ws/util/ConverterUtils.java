@@ -1,12 +1,13 @@
 package org.motechproject.openmrs.ws.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.model.OpenMRSFacility;
-import org.motechproject.mrs.model.OpenMRSPerson;
+import org.motechproject.mrs.domain.MRSFacility;
+import org.motechproject.mrs.domain.MRSObservation;
+import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.openmrs.model.OpenMRSFacility;
+import org.motechproject.openmrs.model.OpenMRSObservation;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.resource.model.Attribute;
 import org.motechproject.openmrs.ws.resource.model.Location;
 import org.motechproject.openmrs.ws.resource.model.Observation;
@@ -14,18 +15,21 @@ import org.motechproject.openmrs.ws.resource.model.Person;
 import org.motechproject.openmrs.ws.resource.model.Person.PreferredAddress;
 import org.motechproject.openmrs.ws.resource.model.Person.PreferredName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ConverterUtils {
 
     private ConverterUtils() {
     }
 
-    public static OpenMRSPerson convertToMrsPerson(Person person) {
+    public static MRSPerson convertToMrsPerson(Person person) {
         OpenMRSPerson converted = new OpenMRSPerson();
         converted.id(person.getUuid()).birthDateEstimated(person.isBirthdateEstimated())
-        .dead(person.isDead()).firstName(person.getPreferredName().getGivenName())
-        .middleName(person.getPreferredName().getMiddleName())
-        .lastName(person.getPreferredName().getFamilyName()).gender(person.getGender())
-        .preferredName(person.getPreferredName().getDisplay());
+                .dead(person.isDead()).firstName(person.getPreferredName().getGivenName())
+                .middleName(person.getPreferredName().getMiddleName())
+                .lastName(person.getPreferredName().getFamilyName()).gender(person.getGender())
+                .preferredName(person.getPreferredName().getDisplay());
 
         if (person.getPreferredAddress() != null) {
             converted.address(person.getPreferredAddress().getAddress1());
@@ -47,15 +51,15 @@ public final class ConverterUtils {
             int index = display.indexOf('=');
             String name = display.substring(0, index).trim();
 
-            converted.addAttribute(new org.motechproject.mrs.model.OpenMRSAttribute(name, attr.getValue()));
+            converted.addAttribute(new org.motechproject.openmrs.model.OpenMRSAttribute(name, attr.getValue()));
         }
 
         return converted;
     }
 
-    public static Person convertToPerson(OpenMRSPerson person, boolean includeNames) {
+    public static Person convertToPerson(MRSPerson person, boolean includeNames) {
         Person converted = new Person();
-        converted.setUuid(person.getId());
+        converted.setUuid(person.getPersonId());
         if (person.getDateOfBirth() != null) {
             converted.setBirthdate(person.getDateOfBirth().toDate());
         }
@@ -85,13 +89,13 @@ public final class ConverterUtils {
         return converted;
     }
 
-    public static OpenMRSFacility convertLocationToMrsLocation(Location location) {
+    public static MRSFacility convertLocationToMrsLocation(Location location) {
         return new OpenMRSFacility(location.getUuid(), location.getName(), location.getCountry(), location.getAddress6(),
                 location.getCountyDistrict(), location.getStateProvince());
     }
 
-    public static OpenMRSObservation convertObservationToMrsObservation(Observation ob) {
-        OpenMRSObservation obs =  new OpenMRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
+    public static MRSObservation convertObservationToMrsObservation(Observation ob) {
+        MRSObservation obs = new OpenMRSObservation(ob.getUuid(), ob.getObsDatetime(), ob.getConcept().getDisplay(), ob.getValue()
                 .getDisplay());
         if (ob.getEncounter() != null && ob.getEncounter().getPatient() != null) {
             obs.setPatientId(ob.getEncounter().getPatient().getUuid());

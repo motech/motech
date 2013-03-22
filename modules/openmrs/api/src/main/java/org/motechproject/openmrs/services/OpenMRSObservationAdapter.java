@@ -3,13 +3,13 @@ package org.motechproject.openmrs.services;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
-import org.motechproject.mrs.domain.Observation;
+import org.motechproject.mrs.domain.MRSObservation;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
-import org.motechproject.mrs.model.OpenMRSConcept;
-import org.motechproject.mrs.model.OpenMRSObservation;
-import org.motechproject.mrs.services.ObservationAdapter;
+import org.motechproject.mrs.services.MRSObservationAdapter;
 import org.motechproject.openmrs.IdentifierType;
+import org.motechproject.openmrs.model.OpenMRSConcept;
+import org.motechproject.openmrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Encounter;
@@ -31,7 +31,7 @@ import java.util.Set;
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
 @Service
-public class OpenMRSObservationAdapter implements ObservationAdapter {
+public class OpenMRSObservationAdapter implements MRSObservationAdapter {
 
     @Autowired
     private OpenMRSConceptAdapter openMRSConceptAdapter;
@@ -57,7 +57,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
      * @throws ObservationNotFoundException Exception when the expected Observation does not exist
      */
     @Override
-    public void voidObservation(Observation mrsObservation, String reason, String userMotechId) throws ObservationNotFoundException {
+    public void voidObservation(MRSObservation mrsObservation, String reason, String userMotechId) throws ObservationNotFoundException {
         Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getObservationId()));
         if (obs == null) {
             throw new ObservationNotFoundException("Observation not found for MOTECH id :" + userMotechId + " and with MRS observation id :" + mrsObservation.getObservationId());
@@ -78,7 +78,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
      * @return MRSObservation if present, else null.
      */
     @Override
-    public OpenMRSObservation findObservation(String patientMotechId, String conceptName) {
+    public MRSObservation findObservation(String patientMotechId, String conceptName) {
         Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
         Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
         List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
@@ -89,7 +89,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
         return null;
     }
 
-    <T> Obs createOpenMRSObservationForEncounter(Observation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
+    <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
         openMrsObservation.setConcept(openMRSConceptAdapter.getConceptByName(mrsObservation.getConceptName()));
         openMrsObservation.setPerson(patient);
@@ -98,7 +98,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
         openMrsObservation.setEncounter(encounter);
         openMrsObservation.setObsDatetime(mrsObservation.getDate().toDate());
         if (mrsObservation.getDependantObservations() != null && !mrsObservation.getDependantObservations().isEmpty()) {
-            for (Observation observation : mrsObservation.getDependantObservations()) {
+            for (MRSObservation observation : mrsObservation.getDependantObservations()) {
                 openMrsObservation.addGroupMember(createOpenMRSObservationForEncounter(observation, encounter, patient, location, staff));
             }
         }
@@ -122,33 +122,33 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
         }
     }
 
-    Set<Obs> createOpenMRSObservationsForEncounter(Set<? extends Observation> mrsObservations, Encounter encounter, Patient patient, Location facility, User staff) {
-        Set<Obs> openMrsObservations = new HashSet<Obs>();
-        for (Observation observation : mrsObservations) {
+    Set<Obs> createOpenMRSObservationsForEncounter(Set<? extends MRSObservation> mrsObservations, Encounter encounter, Patient patient, Location facility, User staff) {
+        Set<Obs> openMrsObservations = new HashSet<>();
+        for (MRSObservation observation : mrsObservations) {
             openMrsObservations.add(createOpenMRSObservationForEncounter(observation, encounter, patient, facility, staff));
         }
         return openMrsObservations;
     }
 
-    OpenMRSObservation saveObservation(Observation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+    MRSObservation saveObservation(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
         return convertOpenMRSToMRSObservation(saveObs(mrsObservation, encounter, patient, facility, creator));
     }
 
-    private Obs saveObs(Observation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+    private Obs saveObs(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
         Obs obs = obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_OBSERVATION_SUBJECT, EventHelper.observationParameters(convertOpenMRSToMRSObservation(obs))));
         return obs;
     }
 
-    Set<OpenMRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
-        Set<OpenMRSObservation> mrsObservations = new HashSet<OpenMRSObservation>();
+    Set<MRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
+        Set<MRSObservation> mrsObservations = new HashSet<>();
         for (Obs obs : openMrsObservations) {
             mrsObservations.add(convertOpenMRSToMRSObservation(obs));
         }
         return mrsObservations;
     }
 
-    OpenMRSObservation convertOpenMRSToMRSObservation(Obs obs) {
+    MRSObservation convertOpenMRSToMRSObservation(Obs obs) {
         ConceptDatatype datatype = obs.getConcept().getDatatype();
         if (datatype.isAnswerOnly()) {
             return createMRSObservation(obs, null);
@@ -167,7 +167,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
         }
     }
 
-    private OpenMRSObservation createMRSObservation(Obs obs, Object value) {
+    private MRSObservation createMRSObservation(Obs obs, Object value) {
         final OpenMRSObservation mrsObservation = new OpenMRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),
                 obs.getConcept().getName().getName(), value);
 
@@ -176,6 +176,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
 
             if (patientIdentifiers != null) {
                 for (PatientIdentifier patientId : patientIdentifiers) {
+                    // TODO: Equality among incompatible types?
                     if (IdentifierType.IDENTIFIER_MOTECH_ID.getName().equals(patientId.getIdentifierType())) {
                         mrsObservation.setPatientId(patientId.getIdentifier());
                     }
@@ -193,11 +194,11 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
     }
 
     @Override
-    public List<Observation> findObservations(String patientMotechId, String conceptName) {
+    public List<MRSObservation> findObservations(String patientMotechId, String conceptName) {
         Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
         Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
         List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
-        List<Observation> mrsObservations = new ArrayList<Observation>();
+        List<MRSObservation> mrsObservations = new ArrayList<>();
         for (Obs observation : observations) {
             mrsObservations.add(convertOpenMRSToMRSObservation(observation));
         }
@@ -205,7 +206,7 @@ public class OpenMRSObservationAdapter implements ObservationAdapter {
     }
 
     @Override
-    public OpenMRSObservation getObservationById(String observationId) {
+    public MRSObservation getObservationById(String observationId) {
         Obs obs = obsService.getObsByUuid(observationId);
         if (obs == null) {
             return null;
