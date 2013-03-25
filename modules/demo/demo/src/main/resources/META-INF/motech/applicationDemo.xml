@@ -10,7 +10,6 @@
     <bean id="demoEventHandler" class="org.motechproject.server.demo.service.DemoEventHandler"/>
 
     <context:annotation-config/>
-    <mvc:annotation-driven/>
     <context:component-scan base-package="org.motechproject.server"/>
 
     <bean id="demoService" class="org.motechproject.server.demo.service.impl.DemoServiceImpl"/>

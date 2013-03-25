@@ -36,7 +36,7 @@ public class CallMeController implements InitializingBean {
     @Qualifier("demoEventHandler")
     private DemoEventHandler demoEventHandler;
 
-    private List<IVRService> ivrServices;
+    private List<IVRService> ivrServices = new ArrayList<>();
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public void home(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -76,25 +76,29 @@ public class CallMeController implements InitializingBean {
     public ModelAndView jspPage() {
         ModelAndView mav = new ModelAndView("service");
 
-        mav.addObject("services", ivrServices);
-        mav.addObject("current", demoEventHandler.getIvrService());
+        List<String> ivrServiceNames = new ArrayList<>();
+
+        for (IVRService service : ivrServices) {
+            String serviceName = getServiceName(service);
+            ivrServiceNames.add(serviceName);
+        }
+        mav.addObject("services", ivrServiceNames);
+        mav.addObject("current", getServiceName(demoEventHandler.getIvrService()));
 
         return mav;
     }
 
-    @RequestMapping(value = "/home", method = RequestMethod.POST)
-    public void homeSubmitForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/homeJsp", method = RequestMethod.POST)
+    public void homeJspSubmitForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
         int id = Integer.parseInt(request.getParameter("service"));
         IVRService service = ivrServices.get(id);
-        int dot = service.toString().lastIndexOf('.');
-        int at = service.toString().lastIndexOf('@');
 
         demoEventHandler.setIvrService(service);
 
-        response.getWriter().write("Selected IVR Service: " + service.toString().substring(dot + 1, at));
+        response.getWriter().write("Selected IVR Service: " + getServiceName(service));
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -116,7 +120,7 @@ public class CallMeController implements InitializingBean {
     }
 
     public void setIvrServices(List<IVRService> ivrServices) {
-        this.ivrServices = ivrServices;
+        this.ivrServices.addAll(ivrServices);
     }
 
     @RequestMapping(value = "/ivrservices", method = RequestMethod.GET)
@@ -154,6 +158,13 @@ public class CallMeController implements InitializingBean {
         if (!ivrServices.isEmpty()) {
             demoEventHandler.setIvrService(ivrServices.get(0));
         }
+    }
+
+    private String getServiceName(IVRService service) {
+        String name = service.toString();
+        int dot = name.lastIndexOf('.');
+        int at = name.lastIndexOf('@');
+        return name.substring(dot + 1, at);
     }
 }
 
