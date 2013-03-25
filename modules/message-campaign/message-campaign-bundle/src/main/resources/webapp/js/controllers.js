@@ -9,6 +9,10 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
 
     $scope.campaignName = $routeParams.campaignName;
 
+    jQuery(window).bind('resize', function() {
+        jQuery("#enrollmentsTable").jqGrid('setGridWidth', getPanelWidth());
+    }).trigger('resize');
+
     $scope.$on('$viewContentLoaded', function () {
 
         var createOrUpdateEnrollementUrl = "../messagecampaign/enrollments/" + $scope.campaignName + "/users";
@@ -64,7 +68,7 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
                     formatter:deleteFormatter
                 }
             ],
-            autowidth:true,
+            width:getPanelWidth(),
             height:"auto",
             multiselect:true
         });
@@ -157,4 +161,7 @@ function EnrollmentsCtrl($scope, $routeParams, Enrollments) {
             }
         });
     });
+    function getPanelWidth() {
+        return document.getElementById("main-content").offsetWidth-20;
+    }
 }
