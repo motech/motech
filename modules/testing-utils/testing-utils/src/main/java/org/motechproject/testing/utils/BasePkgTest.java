@@ -61,11 +61,11 @@ public abstract class BasePkgTest {
         installScript(scriptName);
 
         String[] arguments = (String[]) ArrayUtils.addAll(new String[] { script, "-d", chrootDir, "-b", buildDir,
-                                                                        "-e", errorFile }, attrs);
+                "-e", errorFile }, attrs);
 
         ProcessBuilder pb = new ProcessBuilder(arguments)
-                                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                                .redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT);
         Process proc = pb.start();
         proc.waitFor();
 

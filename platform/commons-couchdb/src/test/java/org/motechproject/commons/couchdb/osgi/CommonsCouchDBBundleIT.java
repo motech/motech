@@ -25,7 +25,7 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
         CouchDbManager service = (CouchDbManager) bundleContext.getService(registryReference);
         assertNotNull(service);
         CouchDbConnector dbConnector = service.getConnector("foo");
-        assertEquals("foo", dbConnector.getDatabaseName());
+        assertEquals(System.getProperty("user.name") + "_"+"foo", dbConnector.getDatabaseName());
     }
 
     public void testCommonsCouchDB() throws Exception {

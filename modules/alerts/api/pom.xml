@@ -147,7 +147,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-alert" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-alert" />
                                         </exec>
                                     </target>
                                 </configuration>

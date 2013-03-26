@@ -191,7 +191,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/test-appointments" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}test-appointments" />
                                         </exec>
                                     </target>
                                 </configuration>
@@ -209,7 +209,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-appointments" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-appointments" />
                                         </exec>
                                     </target>
                                 </configuration>

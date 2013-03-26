@@ -1,2 +1,2 @@
 /etc/init.d/motech
-/etc/motech/motech.conf
+/etc/motech/motech-default/motech.conf

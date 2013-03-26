@@ -69,17 +69,21 @@ cp $MOTECH_WAR $TMP_DIR
 cd $TMP_DIR
 
 # Create empty dirs if missing
-mkdir -p motech-base/var/cache/motech/work/Catalina/localhost
-mkdir -p motech-base/var/cache/motech/temp
-mkdir -p motech-base/var/cache/motech/felix-cache
-mkdir -p motech-base/var/lib/motech/webapps
-mkdir -p motech-base/var/log/motech
-mkdir -p motech-base/usr/share/motech/.motech/bundles
-mkdir -p motech-base/usr/share/motech/.motech/rules
+mkdir -p motech-base/var/cache/motech/motech-default/work/Catalina/localhost
+mkdir -p motech-base/var/cache/motech/motech-default/temp
+mkdir -p motech-base/var/cache/motech/motech-default/felix-cache
+mkdir -p motech-base/var/lib/motech/motech-default/webapps
+mkdir -p motech-base/var/lib/motech/motech-default/data/bundles
+mkdir -p motech-base/var/lib/motech/motech-default/data/rules
+mkdir -p motech-base/var/log/motech/motech-default
+mkdir -p motech-base/usr/share/motech/motech-default/
+
+# copy manage-tenant script
+cp $MOTECH_BASE/packaging/motech-manage-tenants motech-base/usr/share/motech/
 
 # copy motech-base
 cp -r $CONTENT_DIR/motech-base .
-mv $WARNAME ./motech-base/var/lib/motech/webapps/ROOT.war
+mv $WARNAME ./motech-base/var/lib/motech/motech-default/webapps/ROOT.war
 
 # handle changelogs
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/usr/share/doc/motech-base/changelog
@@ -92,17 +96,17 @@ gzip --best ./motech-base/usr/share/doc/motech-base/changelog.Debian
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
 
 #Copy config
-cp -r $CONFIG_DIR ./motech-base/usr/share/motech/.motech
+cp -r $CONFIG_DIR ./motech-base/var/lib/motech/motech-default/data
+rm -f ./motech-base/var/lib/motech/motech-default/data/config/motech-settings.conf
 
-mkdir -p ./motech-base/usr/share/motech/.motech/bundles
 
 # Platofrm bundles
-cp -r $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 # Include motech-admin
-cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
+cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # Include dependencies
-cp -r $DEPENDENCY_DIR/* ./motech-base/usr/share/motech/.motech/bundles
+cp -r $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories

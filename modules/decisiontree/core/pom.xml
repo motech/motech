@@ -138,7 +138,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/trees" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}trees" />
                                         </exec>
                                     </target>
                                 </configuration>

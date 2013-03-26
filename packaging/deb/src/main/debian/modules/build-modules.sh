@@ -3,7 +3,7 @@
 # Exit on non-zero exit code
 set -e
 
-export BUNDLE_DIR=usr/share/motech/.motech/bundles
+export BUNDLE_DIR=usr/share/motech/motech-default/.motech/bundles
 
 export TMP_DIR=/tmp/motech-packaging-$$
 mkdir $TMP_DIR

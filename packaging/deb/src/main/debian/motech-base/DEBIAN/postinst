@@ -4,23 +4,23 @@
 set -e
 
 # Create the motech user, if he doesn't exist
-if [ `grep -c motech: /etc/passwd` -eq 0 ]; then
-    useradd -r -c "Motech user" -d /usr/share/motech motech
+if [ `grep -c motech-default: /etc/passwd` -eq 0 ]; then
+    useradd -r -c "Motech-default user" -d /usr/share/motech/motech-default motech-default
 fi
 
 # Make motech the owner of relevant directories
-if [ -d /var/log/motech ]; then
-    chown -R motech:motech /var/log/motech
+if [ -d /var/log/motech/motech-default ]; then
+    chown -R motech-default:motech-default /var/log/motech/motech-default
 fi
-if [ -d /var/cache/motech ]; then
-    chown -R motech:motech /var/cache/motech
+if [ -d /var/cache/motech/motech-default ]; then
+    chown -R motech-default:motech-default /var/cache/motech/motech-default
 fi
-if [ -d /var/lib/motech ]; then
-    chown -R motech:motech /var/lib/motech
+if [ -d /var/lib/motech/motech-default ]; then
+    chown -R motech-default:motech-default /var/lib/motech/motech-default
 fi
-if [ -d /usr/share/motech/.motech ]; then
-    chown -R motech:motech /usr/share/motech/.motech
-fi
+
+chmod 755 /usr/share/motech/motech-manage-tenants
 
 # Register motech service with udpate-rc.d
 update-rc.d motech defaults 1>/dev/null
+

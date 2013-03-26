@@ -20,6 +20,6 @@ public class CouchDbManagerIT {
     @Test
     public void testConnectorRetrieval() throws DbConnectionException {
         CouchDbConnector dbConnector = couchDbManager.getConnector("foo");
-        assertEquals("foo", dbConnector.getDatabaseName());
+        assertEquals(System.getProperty("user.name") + "_"+"foo", dbConnector.getDatabaseName());
     }
 }

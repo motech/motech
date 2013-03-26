@@ -3,20 +3,26 @@
 # Exit on non-zero exit code
 set -e
 
-# Remove cache
-rm -rf /var/cache/motech/*
-
-# Clean up the webapp
-rm -rf /var/lib/motech/webapps/ROOT
+# Stop the motech server
+if [ -f /etc/init.d/motech ]; then
+    invoke-rc.d motech stop
+fi
 
 # Remove fragment dir if empty
-FRAGMENT_DIR=/usr/share/motech/.motech/bundles/fragments
+FRAGMENT_DIR=/var/lib/motech/motech-default/data/bundles/fragments
 
 if [ -d $FRAGMENT_DIR ] && [ ! "$(ls -A $FRAGMENT_DIR)" ]; then
     rm -rf $FRAGMENT_DIR
 fi
 
-# Stop the motech server
-if [ -f /etc/init.d/motech ]; then
-    invoke-rc.d motech stop
-fi
+# Remove logs
+rm -rf /var/log/motech/motech-default/
+
+# Remove cache
+rm -rf /var/cache/motech/motech-default/
+
+# Remove lib
+rm -rf /var/lib/motech/motech-default/
+
+
+

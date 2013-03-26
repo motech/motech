@@ -4,6 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
+import org.motechproject.commons.api.TenantIdentity;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.commons.couchdb.service.DbConnectionException;
 import org.springframework.core.io.FileSystemResource;
@@ -65,16 +66,6 @@ public class CouchDbManagerImpl implements CouchDbManager {
     }
 
     private String getDbPrefix() {
-        Properties motechProperties = new Properties();
-        try {
-            motechProperties.load(getClass().getClassLoader().getResourceAsStream("motech.properties"));
-        } catch (Exception ignore) {
-        }
-
-        String appName = motechProperties.getProperty("motech.app.name", null);
-        if (appName == null || appName.trim().isEmpty() ) {
-            return "";
-        }
-        return appName + "_";
+        return TenantIdentity.getTenantId() + "_";
     }
 }

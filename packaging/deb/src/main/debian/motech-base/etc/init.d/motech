@@ -25,9 +25,9 @@
 set -e
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-NAME=motech
+NAME=motech-default
 DESC="Tomcat servlet engine"
-DEFAULT=/etc/motech/motech.conf
+DEFAULT=/etc/motech/motech-default/motech.conf
 JVM_TMP=/tmp/motech-tomcat7-tmp
 
 if [ `id -u` -ne 0 ]; then
@@ -51,8 +51,8 @@ fi
 # The following variables can be overwritten in $DEFAULT
 
 # Run Tomcat 7 as this user ID and group ID
-TOMCAT7_USER=motech
-TOMCAT7_GROUP=motech
+TOMCAT7_USER=motech-default
+TOMCAT7_GROUP=motech-default
 
 # The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
 # defined in $DEFAULT)
@@ -70,7 +70,7 @@ export JAVA_HOME
 CATALINA_HOME=/usr/share/tomcat7
 
 # Directory for per-instance configuration files and webapps
-CATALINA_BASE=/usr/share/motech
+CATALINA_BASE=/usr/share/motech/motech-default
 
 # Use the Java security manager? (yes/no)
 TOMCAT7_SECURITY=no

@@ -29,12 +29,9 @@ fi
 
 DISTRIB_ID=`lsb_release -i -s 2>/dev/null`
 
-NAME="$(basename $0)"
-unset ISBOOT
-if [ "${NAME:0:1}" = "S" -o "${NAME:0:1}" = "K" ]; then
-    NAME="${NAME:3}"
-    ISBOOT="1"
-fi
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+NAME=motech-default
+CATALINA_TMPDIR=/var/cache/motech/motech-default/temp/
 
 # For SELinux we need to use 'runuser' not 'su'
 if [ -x "/sbin/runuser" ]; then
@@ -44,10 +41,7 @@ else
 fi
 
 # Get the tomcat config (use this for environment specific settings)
-TOMCAT_CFG="/etc/motech/motech.conf"
-if [ -r "$TOMCAT_CFG" ]; then
-    . $TOMCAT_CFG
-fi
+TOMCAT_CFG="/etc/motech/motech-default/motech.conf"
 
 # Get instance specific config file
 if [ -r "/etc/sysconfig/${NAME}" ]; then
@@ -55,7 +49,7 @@ if [ -r "/etc/sysconfig/${NAME}" ]; then
 fi
 
 # Define which connector port to use
-CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
+#CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
 
 # Path to the tomcat launch script
 TOMCAT_SCRIPT="/usr/sbin/dtomcat7"
@@ -64,10 +58,19 @@ TOMCAT_SCRIPT="/usr/sbin/dtomcat7"
 TOMCAT_PROG="${NAME}"
         
 # Define the tomcat username
-TOMCAT_USER="${TOMCAT_USER:-tomcat}"
+TOMCAT_USER=motech-default
 
 # Define the tomcat log file
-TOMCAT_LOG="${TOMCAT_LOG:-/var/log/tomcat/catalina.out}"
+TOMCAT_LOG=/var/log/motech/motech-default/catalina.out
+
+# Directory where the Tomcat 7 binary distribution resides
+CATALINA_HOME=/usr/share/tomcat7
+
+# Directory for per-instance configuration files and webapps
+CATALINA_BASE=/usr/share/motech/motech-default
+
+# Time to wait in seconds, before killing process
+SHUTDOWN_WAIT="10"
 
 RETVAL="0"
 
@@ -103,26 +106,6 @@ function findFreePorts() {
     done
 }
 
-function makeHomeDir() {
-    if [ ! -d "$CATALINA_HOME" ]; then
-        echo "$CATALINA_HOME does not exist, creating"
-        if [ ! -d "/usr/share/${NAME}" ]; then
-            mkdir /usr/share/${NAME}
-            cp -pLR /usr/share/tomcat/* /usr/share/${NAME}
-        fi
-        mkdir -p /var/log/${NAME} \
-                 /var/cache/${NAME} \
-                 /var/tmp/${NAME}
-        ln -fs /var/cache/${NAME} ${CATALINA_HOME}/work
-        ln -fs /var/tmp/${NAME} ${CATALINA_HOME}/temp
-        cp -pLR /usr/share/${NAME}/bin $CATALINA_HOME
-        cp -pLR /usr/share/${NAME}/conf $CATALINA_HOME
-        ln -fs /usr/share/java/tomcat ${CATALINA_HOME}/lib
-        ln -fs /usr/share/tomcat/webapps ${CATALINA_HOME}/webapps
-        chown ${TOMCAT_USER}:${TOMCAT_USER} /var/log/${NAME}
-    fi
-}
-
 function parseOptions() {
     options=""
     options="$options $(
@@ -145,7 +128,7 @@ function start() {
     if [ -f "/var/lock/subsys/${NAME}" ] ; then
         if [ -f "/var/run/${NAME}.pid" ]; then
             read kpid < /var/run/${NAME}.pid
-#           if checkpid $kpid 2>&1; then
+
             if [ -d "/proc/${kpid}" ]; then
                 log_success_msg
                 if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
@@ -161,16 +144,7 @@ function start() {
     chown ${TOMCAT_USER}:${TOMCAT_USER} $CATALINA_PID
     touch $TOMCAT_LOG
     chown ${TOMCAT_USER}:${TOMCAT_USER} $TOMCAT_LOG
-    if [ "$CATALINA_HOME" != "/usr/share/tomcat" ]; then
-        # Create a tomcat directory if it doesn't exist
-        makeHomeDir
-        # If CATALINA_HOME doesn't exist modify port number so that
-        # multiple instances don't interfere with each other
-        findFreePorts
-        sed -i -e "s/8005/${randomPort1}/g" -e "s/8080/${CONNECTOR_PORT}/g" \
-            -e "s/8009/${randomPort2}/g" -e "s/8443/${randomPort3}/g" \
-            ${CATALINA_HOME}/conf/server.xml
-    fi
+
     parseOptions
     if [ "$SECURITY_MANAGER" = "true" ]; then
         $SU - $TOMCAT_USER -c "${TOMCAT_SCRIPT} start-security" \

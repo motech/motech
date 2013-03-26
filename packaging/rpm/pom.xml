@@ -186,19 +186,24 @@
 
                             <mappings>
                                 <mapping>
-                                    <directory>/var/log/motech</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/log/motech/motech-default</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/cache/motech/motech-default</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/webapps</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/lib/motech/motech-default</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
+                                </mapping>
+                                <mapping>
+                                    <directory>/var/lib/motech/motech-default/webapps</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                     <sources>
                                         <source>
                                             <location>${project.build.directory}/content/war/</location>
@@ -206,9 +211,9 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/data/bundles</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/lib/motech/motech-default/data/bundles</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                     <sources>
                                         <source>
                                             <location>${project.build.directory}/content/bundles/</location>
@@ -216,22 +221,27 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/temp</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/lib/motech/motech-default/data/config</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/felix-cache</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/cache/motech/motech-default/temp</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/cache/motech/work</directory>
-                                    <username>motech</username>
-                                    <groupname>motech</groupname>
+                                    <directory>/var/cache/motech/motech-default/felix-cache</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
                                 </mapping>
                                 <mapping>
-                                    <directory>/etc/motech</directory>
+                                    <directory>/var/cache/motech/motech-default/work</directory>
+                                    <username>motech-default</username>
+                                    <groupname>motech-default</groupname>
+                                </mapping>
+                                <mapping>
+                                    <directory>/etc/motech/motech-default</directory>
                                     <username>root</username>
                                     <groupname>root</groupname>
                                     <sources>
@@ -252,7 +262,17 @@
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/usr/share/motech</directory>
+                                    <directory>/usr/share/motech/</directory>
+                                    <username>root</username>
+                                    <groupname>root</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>${project.parent.relativePath}/packaging/motech-manage-tenants</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/share/motech/motech-default</directory>
                                     <username>root</username>
                                     <groupname>root</groupname>
                                     <sources>

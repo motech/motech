@@ -50,7 +50,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-platform-startup" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
                                         </exec>
                                     </target>
                                 </configuration>

@@ -171,7 +171,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-pillreminder" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-pillreminder" />
                                         </exec>
                                     </target>
                                 </configuration>
@@ -189,7 +189,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-ivr-kookoo" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-ivr-kookoo" />
                                         </exec>
                                     </target>
                                 </configuration>

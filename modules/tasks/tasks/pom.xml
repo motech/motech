@@ -62,7 +62,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-tasks" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-tasks" />
                                         </exec>
                                     </target>
                                 </configuration>

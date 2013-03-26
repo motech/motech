@@ -47,7 +47,7 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/test-motech-event-logging" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}test-motech-event-logging" />
                                         </exec>
                                     </target>
                                 </configuration>

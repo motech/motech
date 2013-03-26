@@ -203,7 +203,7 @@
                                             <arg value="-S"/>
                                             <arg value="-X"/>
                                             <arg value="DELETE"/>
-                                            <arg value="http://${db.server}:${db.port}/motech-cmslite"/>
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-cmslite" />
                                         </exec>
                                     </target>
                                 </configuration>

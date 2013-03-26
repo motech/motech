@@ -4,16 +4,24 @@
 set -e
 
 # Remove the cache folder, if it still exists
-if [ -d /var/cache/motech ]; then
-    rm -r /var/cache/motech
+if [ -d /var/cache/motech/motech-default ]; then
+    rm -r /var/cache/motech/motech-default
 fi
 
 # Remove the log folder, if it still exists
-if [ -d /var/log/motech ]; then
-    rm -r /var/log/motech
+if [ -d /var/log/motech/motech-default ]; then
+    rm -r /var/log/motech/motech-default
 fi
 
-# Remove the webapps folder, if it still exists
-if [ -d /var/lib/motech/webapps ]; then
-    rm -r /var/lib/motech/webapps
+# Remove the lib folder, if it still exists
+if [ -d /var/lib/motech/motech-default ]; then
+    rm -r /var/lib/motech/motech-default
 fi
+
+#Remove symlinks
+rm -f /usr/share/motech/motech-default/logs
+rm -f /usr/share/motech/motech-default/temp
+rm -f /usr/share/motech/motech-default/work
+rm -f /usr/share/motech/motech-default/webapps
+rm -f /usr/share/motech/motech-default/.motech
+rm -f /usr/share/motech/motech-default/felix-cache

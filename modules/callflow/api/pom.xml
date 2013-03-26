@@ -139,14 +139,14 @@
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/trees" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}trees" />
                                         </exec>
                                         <exec executable="curl">
                                             <arg value="-s" />
                                             <arg value="-S" />
                                             <arg value="-X" />
                                             <arg value="DELETE" />
-                                            <arg value="http://${db.server}:${db.port}/motech-callog" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}calldetailrecords" />
                                         </exec>
                                     </target>
                                 </configuration>
