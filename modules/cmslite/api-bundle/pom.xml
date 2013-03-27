@@ -31,6 +31,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
@@ -40,6 +44,28 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                        <configuration>
+                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
+                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
+                            <requireUseStrict>true</requireUseStrict>
+                            <predefinedVars>
+                                $, angular, blockUI, unblockUI, handleWithStackTrace, alertHandler,
+                                jConfirm, jQuery
+                            </predefinedVars>
+                            <failOnIssues>false</failOnIssues>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.4</version>
@@ -47,6 +73,7 @@
                 <configuration>
                     <instructions>
                         <Context-Path>cmsliteapi</Context-Path>
+                        <Resource-Path>cmsliteapi/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-File>META-INF/osgi/applicationCmsLiteApiBundle.xml</Context-File>
                         <Export-Package>
@@ -57,22 +84,24 @@
                         </Export-Package>
                         <Import-Package>
                             javax.servlet.*;resolution:=optional,
+                            org.apache.commons.fileupload,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.osgi.framework;version="0.0.0",
-                            org.osgi.util.tracker;version="0.0.0",
                             org.osgi.service.http,
-                            org.springframework.web.context,
-                            org.springframework.web.servlet,
+                            org.osgi.util.tracker;version="0.0.0",
                             org.springframework.beans.factory.xml,
                             org.springframework.cache.config,
                             org.springframework.cache.support,
                             org.springframework.context.config,
                             org.springframework.integration.config.xml,
                             org.springframework.integration.jms.config,
+                            org.springframework.web.context,
+                            org.springframework.web.multipart.commons,
+                            org.springframework.web.servlet,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-cmslite-api;inline=true</Embed-Dependency>

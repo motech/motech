@@ -473,11 +473,11 @@ select {
 }
 
 .table-lightblue  tbody tr:nth-child(2n+1) td, .table-lightblue tbody tr:nth-child(2n+1) th {
-    background-color: #F3FBFE;
+    background: #F3FBFE;
 }
 
 .table-lightblue  tbody tr:hover td, .table-lightblue tbody tr:hover th, .table-lightblue tbody tr:hover td a {
-    background-color: #EDF5F9;
+    background: #EDF5F9;
     color: #005580;
 }
 

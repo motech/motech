@@ -2,10 +2,10 @@ package org.motechproject.cmslite.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.AttachmentInputStream;
 import org.ektorp.support.TypeDiscriminator;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * \ingroup cmslite
@@ -13,6 +13,8 @@ import java.io.InputStream;
  */
 @TypeDiscriminator("doc.type === 'StreamContent'")
 public class StreamContent extends Content {
+    private static final long serialVersionUID = 8169367710567919494L;
+
     private InputStream inputStream;
     @JsonProperty
     private String checksum;
@@ -20,6 +22,7 @@ public class StreamContent extends Content {
     private String contentType;
 
     public StreamContent() {
+        this(null, null, null, null, null);
     }
 
     public StreamContent(String language, String name, InputStream inputStream, String checksum, String contentType) {
@@ -38,7 +41,7 @@ public class StreamContent extends Content {
         return checksum;
     }
 
-    public void setInputStream(AttachmentInputStream inputStream) {
+    public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
@@ -52,5 +55,37 @@ public class StreamContent extends Content {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(inputStream, checksum, contentType);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        if (!super.equals(obj)) {
+            return false;
+        }
+
+        final StreamContent other = (StreamContent) obj;
+
+        return Objects.equals(this.inputStream, other.inputStream) &&
+                Objects.equals(this.checksum, other.checksum) &&
+                Objects.equals(this.contentType, other.contentType);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("StreamContent{inputStream=%s, checksum='%s', contentType='%s'} %s",
+                inputStream, checksum, contentType, super.toString());
     }
 }
