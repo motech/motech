@@ -31,7 +31,7 @@ import static org.springframework.test.web.server.request.MockMvcRequestBuilders
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
 
     public static final int EVENT_TIMEOUT = 12000;

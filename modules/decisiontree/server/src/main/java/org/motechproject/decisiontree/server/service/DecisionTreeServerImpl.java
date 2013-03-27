@@ -83,7 +83,7 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
         FlowSession session = flowSessionService.getSession(flowSessionId);
         CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
         flowSessionService.updateSession(session);
-        eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord));
+        eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
     }
 
     private ModelAndView getModelViewForNextNode(FlowSession session, String provider, String tree, String transitionKey) {
@@ -91,7 +91,7 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
         if (CallStatus.Hangup.toString().equals(transitionKey) || CallStatus.Disconnect.toString().equals(transitionKey)) {
             CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
             flowSessionService.updateSession(session);
-            eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord));
+            eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
             return new ModelAndView(templateNameFor(provider, EXIT_TEMPLATE_NAME));
         }
         if (isBlank(session.getLanguage()) || isBlank(tree)) {

@@ -42,7 +42,7 @@ public class DecisionTreeServerImplTest {
 
         decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Hangup.toString(), "en");
 
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
+        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class DecisionTreeServerImplTest {
 
         decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
 
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
+        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DecisionTreeServerImplTest {
 
         decisionTreeServer.handleMissedCall(flowSession.getSessionId());
         verify(flowSessionService).updateSession(flowSession);
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
+        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
     }
 
     @Test
@@ -72,6 +72,6 @@ public class DecisionTreeServerImplTest {
 
         decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
 
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
+        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
     }
 }
