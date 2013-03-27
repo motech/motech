@@ -26,4 +26,6 @@ public interface TaskActivityService {
     List<TaskActivity> getAllActivities();
 
     List<TaskActivity> getTaskActivities(String taskId);
+
+    void addWarning(Task task, String key, String field, Exception e);
 }

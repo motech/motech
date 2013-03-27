@@ -861,3 +861,11 @@ select {
 .form-hint-info:before {
     color: #C08853;
 }
+
+.wrap-paragraph {
+    border: none;
+    word-break: break-all;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+}

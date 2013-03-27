@@ -1,5 +1,7 @@
 package org.motechproject.tasks.validation;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
@@ -8,6 +10,8 @@ import org.motechproject.tasks.domain.TaskEventInformation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class TaskValidator extends GeneralValidator {
     public static final String TASK = "task";
@@ -26,6 +30,9 @@ public final class TaskValidator extends GeneralValidator {
         result.addErrors(validateAction(task.getAction()));
 
         result.addError(checkNullValue(TASK, "actionInputFields", task.getActionInputFields()));
+        if (task.getActionInputFields() != null) {
+            result.addErrors(validateDateFormat(task.getActionInputFields()));
+        }
 
         if (task.getFilters() != null) {
             for (int i = 0; i < task.getFilters().size(); ++i) {
@@ -37,6 +44,29 @@ public final class TaskValidator extends GeneralValidator {
             for (Map.Entry<String, List<TaskAdditionalData>> entry : task.getAdditionalData().entrySet()) {
                 for (int i = 0; i < entry.getValue().size(); ++i) {
                     result.addErrors(validateAdditionalData(entry.getKey(), i, entry.getValue().get(i)));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static ValidationResult validateDateFormat(Map<String, String> actionInputFields) {
+        ValidationResult result = new ValidationResult();
+
+        for (Map.Entry<String, String> entry : actionInputFields.entrySet()) {
+            String entryValue = entry.getValue();
+            if (entryValue.contains("dateTime")) {
+                Pattern pattern = Pattern.compile("\\{\\{(.*?)\\?dateTime\\((.*?)\\)\\}\\}");
+                Matcher matcher = pattern.matcher(entryValue);
+                while (matcher.find()) {
+                    try {
+                        DateTime now = DateTime.now();
+                        DateTimeFormat.forPattern(matcher.group(2)).print(now);
+                    } catch (IllegalArgumentException e) {
+                        String[] objectFields = matcher.group(1).split("\\.");
+                        result.addError(new CustomTaskError(String.format("%s.%s", objectFields[objectFields.length - 2], objectFields[objectFields.length - 1]), entry.getKey(), "validation.error.dateFormat"));
+                    }
                 }
             }
         }
