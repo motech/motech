@@ -39,7 +39,7 @@ public class KookooCallServiceImpl implements IVRService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, HttpClient httpClient, KookooHttpRequestBuilder kookooHttpRequestBuilder, OutboundResponseParser responseParser, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
+    KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, @Qualifier("kookooClient") HttpClient httpClient, KookooHttpRequestBuilder kookooHttpRequestBuilder, OutboundResponseParser responseParser, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.properties = properties;
         this.httpClient = httpClient;
         this.kookooHttpRequestBuilder = kookooHttpRequestBuilder;
@@ -91,7 +91,7 @@ public class KookooCallServiceImpl implements IVRService {
         try {
             String response = getMethod.getResponseBodyAsString();
             log.info("Response for Phonenumber: " + phoneNumber + " from Kookoo : " + response);
-            if(responseParser.isError(response)) {
+            if (responseParser.isError(response)) {
                 kookooCallDetailRecordsService.setCallRecordAsFailed(kooKooCallDetailRecordId, responseParser.getMessage(response));
             }
 
