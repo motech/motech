@@ -5,9 +5,12 @@ import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.sms.api.DeliveryStatus;
+import org.motechproject.sms.api.SMSType;
+import org.motechproject.sms.api.domain.SmsRecord;
+import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.constants.SmsProperties;
-import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 import org.smslib.AGateway;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.OutboundMessage;
@@ -17,12 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
-import static org.motechproject.sms.api.DeliveryStatus.INPROGRESS;
-import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
-import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -32,13 +32,13 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     private final Integer maxRetries;
 
     @Autowired
-    private AllOutboundSMS allOutboundSMS;
+    private SmsAuditService smsAuditService;
 
     @Autowired
     public OutboundMessageNotification(EventRelay eventRelay, @Qualifier("smsApiSettings") SettingsFacade settings) {
         this.eventRelay = eventRelay;
         String maxRetriesAsString = settings.getProperty(SmsProperties.MAX_RETRIES);
-        this.maxRetries = maxRetriesAsString != null? Integer.parseInt(maxRetriesAsString) : 0;
+        this.maxRetries = maxRetriesAsString != null ? Integer.parseInt(maxRetriesAsString) : 0;
     }
 
     @Override
@@ -50,10 +50,10 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
             if (msg.getRetryCount() >= maxRetries) {
                 raiseFailureEvent(msg, sentTime);
             } else if (msg.getRetryCount() < maxRetries) {
-                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, KEEPTRYING));
+                smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.KEEPTRYING, msg.getRefNo()));
             }
         } else {
-            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, INPROGRESS));
+            smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.INPROGRESS, msg.getRefNo()));
         }
     }
 
@@ -62,7 +62,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
         eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
-        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, ABORTED));
+        smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.ABORTED, msg.getRefNo()));
     }
 
     private boolean sendingFailed(OutboundMessage msg) {

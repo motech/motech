@@ -6,12 +6,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.sms.smpp.constants.EventSubjects;
-import org.motechproject.sms.smpp.repository.AllInboundSMS;
-import org.motechproject.sms.smpp.repository.AllOutboundSMS;
-import org.motechproject.commons.date.util.DateUtil;
 import org.smslib.AGateway;
 import org.smslib.InboundMessage;
 import org.smslib.StatusReportMessage;
@@ -36,14 +35,12 @@ public class InboundMessageNotificationTest {
     @Mock
     AGateway gateway;
     @Mock
-    AllInboundSMS allInboundSMS;
-    @Mock
-    AllOutboundSMS allOutboundSMS;
+    SmsAuditService smsAuditService;
 
     @Before
     public void setup() {
         initMocks(this);
-        inboundMessageNotification = new InboundMessageNotification(eventRelay, allInboundSMS, allOutboundSMS);
+        inboundMessageNotification = new InboundMessageNotification(eventRelay, smsAuditService);
     }
 
     @Test
@@ -83,7 +80,7 @@ public class InboundMessageNotificationTest {
 
         inboundMessageNotification.process(gateway, STATUSREPORT, reportMessage);
 
-        verify(allOutboundSMS).updateDeliveryStatus(destAddr, refNo, reportMessage.getStatus().name());
+        verify(smsAuditService).updateDeliveryStatus(destAddr, refNo, reportMessage.getStatus().name());
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(eventCaptor.capture());
         MotechEvent event = eventCaptor.getValue();

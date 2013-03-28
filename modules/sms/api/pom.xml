@@ -51,6 +51,10 @@
             <groupId>net.sourceforge.cglib</groupId>
             <artifactId>com.springsource.net.sf.cglib</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.ldriscoll</groupId>
+            <artifactId>org.motechproject.ektorplucene</artifactId>
+        </dependency>
 
         <!-- test -->
         <dependency>

@@ -21,6 +21,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.collections</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
@@ -49,7 +62,9 @@
                         <Export-Package>
                             org.motechproject.commons.couchdb.model;version=${project.version},
                             org.motechproject.commons.couchdb.dao;version=${project.version},
-                            org.motechproject.commons.couchdb.service;version=${project.version}
+                            org.motechproject.commons.couchdb.service;version=${project.version},
+                            org.motechproject.commons.couchdb.query;version=${project.version},
+                            org.motechproject.commons.couchdb.lucene.query;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

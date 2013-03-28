@@ -8,9 +8,8 @@
 
     <import resource="classpath*:META-INF/motech/applicationSmsSmpp.xml"/>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+    <osgi:reference id="eventRelayOsgi"
                     interface="org.motechproject.event.listener.EventRelay"/>
 
     <osgi:reference id="platformSettingsServiceOsgi"
@@ -19,4 +18,6 @@
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
+    <osgi:reference id="smsAuditService"
+                    interface="org.motechproject.sms.api.service.SmsAuditService"/>
 </beans>

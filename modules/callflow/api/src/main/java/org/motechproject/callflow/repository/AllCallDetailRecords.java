@@ -91,7 +91,14 @@ public class AllCallDetailRecords extends CouchDbRepositorySupportWithLucene<Cal
 
     @FullText({@Index(
             name = "search",
-            index = "function(doc) { var ret=new Document(); ret.add(doc.phoneNumber,{'field':'phoneNumber'}); ret.add(doc.startDate, {'type':'date', 'field':'startDate'});ret.add(doc.duration, {'type':'int', 'field':'duration'}); ret.add(doc.disposition,{'field':'disposition'}); return ret }"
+            index = "function(doc) { " +
+                    "var ret=new Document(); " +
+                    "ret.add(doc.phoneNumber,{'field':'phoneNumber'}); " +
+                    "ret.add(doc.startDate, {'type':'date', 'field':'startDate'});" +
+                    "ret.add(doc.duration, {'type':'int', 'field':'duration'}); " +
+                    "ret.add(doc.disposition,{'field':'disposition'}); " +
+                    "return ret " +
+                    "}"
     )})
     public List<CallDetail> search(String phoneNumber, DateTime startTime, DateTime endTime, Integer minDurationInSeconds, Integer maxDurationInSeconds, List<String> dispositions, int page, int pageSize, String sortby, boolean reverse) {
 

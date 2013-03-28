@@ -8,8 +8,9 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.DeliveryStatus;
+import org.motechproject.sms.api.domain.SmsRecord;
+import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.sms.smpp.constants.SmsProperties;
-import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 import org.smslib.AGateway;
 import org.smslib.OutboundMessage;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -32,7 +33,7 @@ public class OutboundMessageNotificationTest {
 
     private OutboundMessageNotification outboundMessageNotification;
     @Mock
-    private AllOutboundSMS mockAllOutboundSMS;
+    private SmsAuditService smsAuditService;
 
     @Before
     public void setUp() {
@@ -45,7 +46,7 @@ public class OutboundMessageNotificationTest {
         settings.saveConfigProperties("sms.properties", smsProperties);
 
         outboundMessageNotification = new OutboundMessageNotification(eventRelay, settings);
-        ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);
+        ReflectionTestUtils.setField(outboundMessageNotification, "smsAuditService", smsAuditService);
     }
 
     @Test
@@ -102,10 +103,10 @@ public class OutboundMessageNotificationTest {
     }
 
     private void assertAuditMessage(String recipient, String refNo, DeliveryStatus deliveryStatus) {
-        ArgumentCaptor<OutboundSMS> outboundSMSCaptor = ArgumentCaptor.forClass(OutboundSMS.class);
+        ArgumentCaptor<SmsRecord> outboundSMSCaptor = ArgumentCaptor.forClass(SmsRecord.class);
 
-        verify(mockAllOutboundSMS).createOrReplace(outboundSMSCaptor.capture());
-        assertEquals(refNo, outboundSMSCaptor.getValue().getRefNo());
+        verify(smsAuditService).log(outboundSMSCaptor.capture());
+        assertEquals(refNo, outboundSMSCaptor.getValue().getReferenceNumber());
         assertEquals(deliveryStatus, outboundSMSCaptor.getValue().getDeliveryStatus());
         assertEquals(recipient, outboundSMSCaptor.getValue().getPhoneNumber());
     }

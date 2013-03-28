@@ -38,6 +38,8 @@
         <constructor-arg name="header" ref="header"/>
     </bean>
 
+    <osgi:service id="smsAuditServiceOsgi" ref="smsAuditService" auto-export="interfaces" interface="org.motechproject.sms.api.service.SmsAuditService"/>
+
     <osgi:service id="smsServiceOsgi" auto-export="interfaces" ref="smsService" interface="org.motechproject.sms.api.service.SmsService"/>
 
     <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay" />
@@ -49,5 +51,7 @@
     <osgi:reference id="motechPermissionServiceOsgi" interface="org.motechproject.security.service.MotechPermissionService"/>
 
     <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
+
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
 </beans>

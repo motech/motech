@@ -18,8 +18,6 @@
         <constructor-arg ref="multiThreadedHttpConnectionManager"/>
     </bean>
 
-    <bean id="smsAuditService" class="org.motechproject.sms.http.service.SmsAuditServiceImpl"/>
-
     <bean id="smsHttpSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="rawConfigFiles">
             <list>

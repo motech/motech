@@ -28,8 +28,4 @@
 
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
-    <bean id="smppDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
-        <constructor-arg value="motech-sms-audit"/>
-    </bean>
-
 </beans>

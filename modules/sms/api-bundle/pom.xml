@@ -139,9 +139,11 @@
                         <Export-Package>
                             org.motechproject.sms.api;version=${project.version},
                             org.motechproject.sms.api.constants;version=${project.version},
-                            org.motechproject.sms.api.service;version=${project.version}
+                            org.motechproject.sms.api.service;version=${project.version},
+                            org.motechproject.sms.api.domain;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.security.annotations,
                             org.motechproject.security.service,

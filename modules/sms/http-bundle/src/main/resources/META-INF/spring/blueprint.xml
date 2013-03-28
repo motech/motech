@@ -9,9 +9,6 @@
 
     <import resource="classpath*:META-INF/motech/applicationSmsHttp.xml"/>
 
-    <osgi:service id="smsAuditServiceOsgi" auto-export="interfaces" ref="smsAuditService"
-                  interface="org.motechproject.sms.api.service.SmsAuditService"/>
-
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 

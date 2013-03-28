@@ -4,7 +4,6 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.sms.api.service.SendSmsRequest;
-import org.motechproject.sms.api.service.SmsAuditService;
 import org.motechproject.sms.api.service.SmsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.Wait;
@@ -34,7 +33,6 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
 
     public void testThatSMSShouldBeSentToSMSGateway() throws Exception {
 
-        assertNotNull(bundleContext.getServiceReference(SmsAuditService.class.getName()));
         assertNotNull(bundleContext.getServiceReference(EventRelay.class.getName()));
         assertNotNull(bundleContext.getServiceReference(EventListenerRegistryService.class.getName()));
 

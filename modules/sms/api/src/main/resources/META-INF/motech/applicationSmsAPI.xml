@@ -13,6 +13,8 @@
 
     <bean id="smsService" class="org.motechproject.sms.api.service.SmsServiceImpl"/>
 
+    <bean id="smsAuditService" class="org.motechproject.sms.api.service.SmsAuditServiceImpl"/>
+
 
     <bean id="smsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
@@ -25,6 +27,10 @@
 
     <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">
         <property name="moduleName" value="sms-api"/>
+    </bean>
+
+    <bean id="smsDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-sms-audit"/>
     </bean>
 
 </beans>
