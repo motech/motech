@@ -42,9 +42,12 @@ public abstract class BaseFormServlet extends HttpServlet {
     private String marker;
     private FormGroupValidator formGroupValidator;
 
-
     protected BaseFormServlet() {
-        context = new ClassPathXmlApplicationContext("classpath*:META-INF/motech/*.xml");
+        this(new ClassPathXmlApplicationContext("classpath*:META-INF/motech/*.xml"));
+    }
+
+    protected BaseFormServlet(ApplicationContext context) {
+        this.context = context;
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
         formGroupPublisher = context.getBean("formGroupPublisher", FormGroupPublisher.class);
@@ -110,5 +113,9 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     public FormGroupPublisher getFormGroupPublisher() {
         return formGroupPublisher;
+    }
+
+    protected ApplicationContext getContext() {
+        return context;
     }
 }

@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertFalse;
@@ -57,14 +58,16 @@ public class FormDownloadServletTest {
     private UsersService usersService;
     @Mock
     private EpihandyXformSerializer epihandySerializer;
+    @Mock
+    private Properties mobileFormsProperties;
 
     @Before
     public void setUp() {
         initMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
-        formDownloadServlet = spy(new FormDownloadServlet());
-        ReflectionTestUtils.setField(formDownloadServlet, "context", applicationContext);
+        when(applicationContext.getBean("mobileFormsProperties", Properties.class)).thenReturn(mobileFormsProperties);
+        formDownloadServlet = spy(new FormDownloadServlet(applicationContext));
         ReflectionTestUtils.setField(formDownloadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formDownloadServlet, "usersService", usersService);
         doReturn(epihandySerializer).when(formDownloadServlet).serializer();
