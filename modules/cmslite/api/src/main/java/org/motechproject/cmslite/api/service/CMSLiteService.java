@@ -11,6 +11,8 @@ import org.motechproject.cmslite.api.model.StreamContent;
 import org.motechproject.cmslite.api.model.StringContent;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * \ingroup cmslite
  * CMS Lite is lightweight content management based on couchdb storage. It supports storing and retrieving of stream / text along with
@@ -40,6 +42,24 @@ public interface CMSLiteService {
     StringContent getStringContent(String language, String name) throws ContentNotFoundException;
 
     /**
+     * Remove stream content for given language.
+     *
+     * @param language
+     * @param name
+     * @throws ContentNotFoundException
+     */
+    void removeStreamContent(String language, String name) throws ContentNotFoundException;
+
+    /**
+     * Remove Text Content for given tag and language.
+     *
+     * @param language
+     * @param name
+     * @throws ContentNotFoundException
+     */
+    void removeStringContent(String language, String name) throws ContentNotFoundException;
+
+    /**
      * Add content to CMS data-store
      *
      * @param content
@@ -66,4 +86,8 @@ public interface CMSLiteService {
      * @return
      */
     boolean isStringContentAvailable(String language, String name);
+
+    List<Content> getAllContents();
+
+
 }

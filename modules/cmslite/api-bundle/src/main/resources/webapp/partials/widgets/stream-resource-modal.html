@@ -1,0 +1,39 @@
+<div id="streamResourceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="streamResourceLabel" aria-hidden="true" clear-form="streamResourceForm">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 id="streamResourceLabel">{{msg('header.resource')}}: {{select.name}}, {{select.language}}</h4>
+    </div>
+    <div class="modal-body">
+        <form id="streamResourceForm" name="streamResourceForm" class="form-horizontal" action="../cmsliteapi/resource/stream/{{select.language}}/{{select.name}}" enctype="multipart/form-data" method="POST">
+            <div class="control-group">
+                <!-- read mode -->
+                <div class="" ui-if="mode == 'read'">
+                    <a href="../cmsliteapi/stream/{{select.language}}/{{select.name}}">{{msg('button.openRawFile')}}</a>
+                </div>
+
+                <!-- write mode -->
+                <div class="fileupload fileupload-new" ui-if="mode == 'write'" data-provides="fileupload">
+                    {{msg('info.fileChosen')}}
+                    <div class="uneditable-input input-large fileupload-exists"><i class="icon-file"></i><span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">{{msg('button.selectFile')}}</span>
+                        <span class="fileupload-exists">{{msg('button.changeFile')}}</span>
+                        <input type="file" id="contentFile" name="contentFile" class="input-file"/>
+                    </span>
+                    <span class="form-hint stream" style="display: none;">{{msg('error.required.stream')}}</span>
+                    <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('button.remove')}}</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!-- read mode -->
+        <button ui-if="mode == 'read'" class="btn btn-primary" ng-click="changeMode('write')"><i class="icon-edit icon-white"></i> {{msg('button.replace')}}</button>
+        <button ui-if="mode == 'read'" class="btn btn-danger" ng-click="removeResource('stream', select)"><i class="icon-trash icon-white"></i> {{msg('button.delete')}}</button>
+        <button ui-if="mode == 'read'" class="btn" data-dismiss="modal" aria-hidden="true">{{msg('button.close')}}</button>
+
+        <!-- write mode -->
+        <button ui-if="mode == 'write'" class="btn btn-primary" ng-click="editStreamResource()"><i class="icon-ok icon-white"></i> {{msg('button.replace')}}</button>
+        <button ui-if="mode == 'write'" class="btn" ng-click="changeMode('read')">{{msg('button.cancel')}}</button>
+    </div>
+</div>

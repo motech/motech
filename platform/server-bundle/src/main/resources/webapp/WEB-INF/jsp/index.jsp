@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-gentleSelect.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-cron.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css" />
+    <link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.css"/>
     <link rel="stylesheet" type="text/css" href="resources/css/index.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css" />
@@ -56,6 +57,8 @@
     <script src="resources/lib/jquery-cron/jquery-cron.js "></script>
 
     <script src="resources/lib/moment/moment-1.7.2.js "></script>
+
+    <script src="resources/lib/parseuri/parseuri.js"></script>
 
     <script src="resources/js/util.js" type="text/javascript"></script>
     <script src="resources/js/common.js" type="text/javascript"></script>

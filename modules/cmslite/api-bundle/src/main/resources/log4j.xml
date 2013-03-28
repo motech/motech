@@ -11,9 +11,6 @@
     <logger name="org.motechproject">
         <level value="ERROR"/>
     </logger>
-    <logger name="org.springframework.web">
-        <level value="ERROR"/>
-    </logger>
 
     <root>
         <priority value="ERROR"/>

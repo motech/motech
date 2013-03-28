@@ -1,0 +1,62 @@
+<div id="newResourceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newResourceLabel" aria-hidden="true" clear-form="newResourceForm">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 id="newResourceLabel">{{msg('header.addNewResource')}}</h4>
+    </div>
+    <div class="modal-body">
+        <form id="newResourceForm" name="newResourceForm" class="form-horizontal" action="../cmsliteapi/resource" enctype="multipart/form-data" method="POST">
+            <div class="control-group">
+                <label class="control-label" for="name">{{msg('resource.name')}}</label>
+                <div class="controls">
+                    <input type="text" id="name" name="name" auto-complete="name" class="input-xlarge"/>
+                    <span class="form-hint" style="display: none;">{{msg('error.required.name')}}</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="language">{{msg('resource.language')}}</label>
+                <div class="controls">
+                    <input type="text" id="language" name="language" auto-complete="language" class="input-xlarge"/>
+                    <span class="form-hint" style="display: none;">{{msg('error.required.language')}}</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{{msg('resource.type')}}</label>
+                <div class="controls">
+                    <div class="btn-group">
+                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                            {{msg('resource.type.' + resourceType)}} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="pointer" ng-click="changeResourceType('string')">{{msg('resource.type.string')}}</a></li>
+                            <li><a class="pointer" ng-click="changeResourceType('stream')">{{msg('resource.type.stream')}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group" ui-if="resourceType == 'string'">
+                <div class="controls">
+                    <textarea rows="4" id="value" name="value" class="input-xlarge"></textarea>
+                    <span class="form-hint" style="display: none;">{{msg('error.required.string')}}</span>
+                </div>
+            </div>
+            <div class="control-group fileupload fileupload-new" ui-if="resourceType == 'stream'" data-provides="fileupload">
+                <label class="control-label">{{msg('info.fileChosen')}}</label>
+                <div class="controls">
+                    <div class="uneditable-input input-xlarge fileupload-exists"><i class="icon-file"></i><span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">{{msg('button.selectFile')}}</span>
+                        <span class="fileupload-exists">{{msg('button.changeFile')}}</span>
+                        <input type="file" id="contentFile" name="contentFile" class="input-file"/>
+                    </span>
+                    <span class="form-hint stream" style="display: none;">{{msg('error.required.stream')}}</span>
+                    <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('button.remove')}}</a>
+                </div>
+            </div>
+            <input type="hidden" id="type" name="type" value="{{resourceType}}">
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="saveNewResource()"><i class="icon-ok icon-white"></i> {{msg('button.save')}}</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i> {{msg('button.close')}}</button>
+    </div>
+</div>

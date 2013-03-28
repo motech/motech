@@ -9,19 +9,36 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.ivr.calllog"/>
-
     <import resource="classpath*:META-INF/motech/applicationCmsLiteApi.xml"/>
 
-    <osgi:service ref="cmsLiteService" interface="org.motechproject.cmslite.api.service.CMSLiteService" />
-
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
-    <osgi:reference id="settingsFacade" interface="org.motechproject.server.config.SettingsFacade" />
-
+    <context:annotation-config/>
     <mvc:annotation-driven/>
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg value="cmslite"/>
+        <constructor-arg value="../cmsliteapi/resources/index.html"/>
+        <constructor-arg>
+            <list>
+                <value>motech-cmslite</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg>
+            <map>
+                <entry key="messages" value="../cmsliteapi/resources/bundles/"/>
+            </map>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.motechproject.osgi.web.Header"/>
+        </constructor-arg>
+    </bean>
+
+    <osgi:service ref="cmsLiteService" interface="org.motechproject.cmslite.api.service.CMSLiteService"/>
+
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+
+    <osgi:reference id="platformSettingsServiceOsgi"
+                    interface="org.motechproject.server.config.service.PlatformSettingsService"/>
+
+    <osgi:reference id="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>
 
 </beans>
