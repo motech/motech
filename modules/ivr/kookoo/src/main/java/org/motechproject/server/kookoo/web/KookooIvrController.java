@@ -1,10 +1,10 @@
 package org.motechproject.server.kookoo.web;
 
+import org.motechproject.callflow.service.CallFlowServer;
+import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.core.model.DialStatus;
-import org.motechproject.decisiontree.server.service.DecisionTreeServer;
-import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,11 +24,11 @@ import static java.util.Arrays.asList;
 @RequestMapping("/kookoo")
 public class KookooIvrController {
 
-    private DecisionTreeServer decisionTreeServer;
+    private CallFlowServer decisionTreeServer;
     private FlowSessionService flowSessionService;
 
     @Autowired
-    public KookooIvrController(DecisionTreeServer decisionTreeServer, FlowSessionService flowSessionService) {
+    public KookooIvrController(CallFlowServer decisionTreeServer, FlowSessionService flowSessionService) {
         this.decisionTreeServer = decisionTreeServer;
         this.flowSessionService = flowSessionService;
     }

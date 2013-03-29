@@ -1147,7 +1147,7 @@
         <module>modules/cmslite/api</module>
         <module>modules/commcare/api</module>
         <module>modules/decisiontree/core</module>
-        <module>modules/decisiontree/server</module>
+        <module>modules/callflow/api</module>
         <module>modules/demo/demo</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>

@@ -3,10 +3,10 @@ package org.motechproject.server.kookoo.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.callflow.service.CallFlowServer;
+import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
-import org.motechproject.decisiontree.server.service.DecisionTreeServer;
-import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +21,7 @@ public class KookooIvrControllerTest {
     private KookooIvrController kookooIvrController;
 
     @Mock
-    private DecisionTreeServer decisionTreeServer;
+    private CallFlowServer decisionTreeServer;
     @Mock
     private FlowSessionService flowSessionService;
 

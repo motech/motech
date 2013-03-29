@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.callflow.service.CallFlowServer;
+import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
-import org.motechproject.decisiontree.server.service.DecisionTreeServer;
-import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -28,7 +28,7 @@ public class VerboiceIVRControllerTest {
     @Mock
     private FlowSessionService flowSessionService;
     @Mock
-    private DecisionTreeServer decisionTreeServer;
+    private CallFlowServer decisionTreeServer;
 
     @Before
     public void setup() {
