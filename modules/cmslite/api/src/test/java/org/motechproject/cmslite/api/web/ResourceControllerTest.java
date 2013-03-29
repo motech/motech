@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
@@ -44,7 +45,7 @@ public class ResourceControllerTest {
 
     private static final String STREAM_CHECKSUM = "checksum";
     private static final String STREAM_CONTENT_TYPE = "contentType";
-    private static final String STREAM_LANGUAGE = "Spanish";
+    private static final String STREAM_LANGUAGE = Locale.FRANCE.getDisplayLanguage();
     private static final String STREAM_NAME = "valid-stream-name";
 
     private static final String STRING_LANGUAGE = "English";
@@ -94,7 +95,7 @@ public class ResourceControllerTest {
         String expectedResponse = createResponse(Arrays.asList(STREAM_LANGUAGE));
 
         controller.perform(
-                get("/resource/available/{field}?term={term}", "language", "spa")
+                get("/resource/available/{field}?term={term}", "language", STREAM_LANGUAGE.toLowerCase().substring(0,2))
         ).andExpect(
                 status().is(HttpStatus.OK.value())
         ).andExpect(
