@@ -3,6 +3,7 @@ package org.motechproject.tasks.service;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -13,13 +14,16 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.tasks.EventKeys;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.TaskActionException;
 import org.motechproject.tasks.ex.TaskException;
+import org.motechproject.tasks.ex.TaskTriggerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -100,8 +104,19 @@ public class TaskTriggerHandler {
 
                     executeAction(task, action, parameters);
                     activityService.addSuccess(task);
-                } catch (TaskException e) {
+                } catch (TaskActionException e) {
                     registerError(task, e);
+                    Map<String, Object> eventParam = createEventParameters(task, e);
+                    eventRelay.sendEventMessage(new MotechEvent("ACTION_FAILED", eventParam));
+                } catch (TaskTriggerException e) {
+                    registerError(task, e);
+                    Map<String, Object> eventParam = createEventParameters(task, e);
+                    eventRelay.sendEventMessage(new MotechEvent("TRIGGER_FAILED", eventParam));
+                } catch (Exception e) {
+                    TaskException exp = new TaskException("error.unrecognizedError", e);
+                    registerError(task, exp);
+                    Map<String, Object> eventParam = createEventParameters(task, exp);
+                    eventRelay.sendEventMessage(new MotechEvent("TRIGGER_FAILED", eventParam));
                 }
             }
         }
@@ -130,14 +145,14 @@ public class TaskTriggerHandler {
         return trigger;
     }
 
-    private ActionEvent getActionEvent(Task task) throws TaskException {
+    private ActionEvent getActionEvent(Task task) throws TaskTriggerException {
         ActionEvent action;
 
         try {
             action = taskService.getActionEventFor(task);
             LOG.info("Found action for task: " + task);
         } catch (ActionNotFoundException e) {
-            throw new TaskException("error.actionNotFound", e);
+            throw new TaskTriggerException("error.actionNotFound", e);
         }
 
         return action;
@@ -155,7 +170,7 @@ public class TaskTriggerHandler {
         return tasks;
     }
 
-    private void executeAction(Task task, ActionEvent action, Map<String, Object> parameters) throws TaskException {
+    private void executeAction(Task task, ActionEvent action, Map<String, Object> parameters) throws TaskActionException {
         boolean invokeMethod = action.hasService() && bundleContext != null;
         boolean serviceAvailable = false;
 
@@ -174,13 +189,12 @@ public class TaskTriggerHandler {
         }
 
         if ((!invokeMethod || !serviceAvailable) && !sendEvent) {
-            throw new TaskException("error.cantExecuteAction");
+            throw new TaskActionException("error.cantExecuteAction");
         }
     }
 
-    private boolean callActionServiceMethod(ActionEvent action, MethodHandler methodHandler) throws TaskException {
-        String serviceInterface = action.getServiceInterface();
-        ServiceReference reference = bundleContext.getServiceReference(serviceInterface);
+    private boolean callActionServiceMethod(ActionEvent action, MethodHandler methodHandler) throws TaskActionException {
+        ServiceReference reference = bundleContext.getServiceReference(action.getServiceInterface());
         boolean serviceAvailable = reference != null;
 
         if (serviceAvailable) {
@@ -195,30 +209,30 @@ public class TaskTriggerHandler {
                 try {
                     method.invoke(service, objects);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new TaskException("error.serviceMethodInvokeError", e, serviceMethod, serviceInterface);
+                    throw new TaskActionException("error.serviceMethodInvokeError", e, serviceMethod, action.getServiceInterface());
                 }
             } catch (NoSuchMethodException e) {
-                throw new TaskException("error.notFoundMethodForService", e, serviceMethod, serviceInterface);
+                throw new TaskActionException("error.notFoundMethodForService", e, serviceMethod, action.getServiceInterface());
             }
         }
 
         return serviceAvailable;
     }
 
-    private Map<String, Object> createParameters(Task task, SortedSet<ActionParameter> actionParameters, MotechEvent event) throws TaskException {
+    private Map<String, Object> createParameters(Task task, SortedSet<ActionParameter> actionParameters, MotechEvent event) throws TaskTriggerException {
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
         for (ActionParameter param : actionParameters) {
             String key = param.getKey();
 
             if (!task.getActionInputFields().containsKey(key)) {
-                throw new TaskException("error.taskNotContainsField", key);
+                throw new TaskTriggerException("error.taskNotContainsField", key);
             }
 
             String template = task.getActionInputFields().get(key);
 
             if (template == null) {
-                throw new TaskException("error.templateNull", key);
+                throw new TaskTriggerException("error.templateNull", key);
             }
 
             String userInput = replaceAll(template, event, task);
@@ -230,21 +244,21 @@ public class TaskTriggerHandler {
                     try {
                         value = Double.valueOf(userInput);
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToDouble", e, key);
+                        throw new TaskTriggerException("error.convertToDouble", e, key);
                     }
                     break;
                 case INTEGER:
                     try {
                         value = Integer.valueOf(userInput);
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToInteger", e, key);
+                        throw new TaskTriggerException("error.convertToInteger", e, key);
                     }
                     break;
                 case DATE:
                     try {
                         value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
                     } catch (Exception e) {
-                        throw new TaskException("error.convertToDate", e, key);
+                        throw new TaskTriggerException("error.convertToDate", e, key);
                     }
                     break;
                 default:
@@ -257,7 +271,7 @@ public class TaskTriggerHandler {
         return parameters;
     }
 
-    private String replaceAll(String template, MotechEvent event, Task task) throws TaskException {
+    private String replaceAll(String template, MotechEvent event, Task task) throws TaskTriggerException {
         String conversionTemplate = template;
 
         for (KeyInformation key : getKeys(template)) {
@@ -276,15 +290,15 @@ public class TaskTriggerHandler {
         return conversionTemplate;
     }
 
-    private String getAdditionalDataKey(MotechEvent event, Task task, KeyInformation key) throws TaskException {
+    private String getAdditionalDataKey(MotechEvent event, Task task, KeyInformation key) throws TaskTriggerException {
         if (dataProviders == null || dataProviders.isEmpty()) {
-            throw new TaskException("error.notFoundDataProvider", key.getObjectType());
+            throw new TaskTriggerException("error.notFoundDataProvider", key.getObjectType());
         }
 
         DataProvider provider = dataProviders.get(key.getDataProviderId());
 
         if (provider == null) {
-            throw new TaskException("error.notFoundDataProvider", key.getObjectType());
+            throw new TaskTriggerException("error.notFoundDataProvider", key.getObjectType());
         }
 
         TaskAdditionalData ad = findAdditionalData(task, key);
@@ -300,19 +314,32 @@ public class TaskTriggerHandler {
         }
 
         Object found = provider.lookup(key.getObjectType(), lookupFields);
-
+        String value = "";
         if (found == null) {
-            throw new TaskException("error.notFoundObjectForType", key.getObjectType());
+            if (ad.isFailIfDataNotFound()) {
+                throw new TaskTriggerException("error.notFoundObjectForType", key.getObjectType());
+            } else {
+                activityService.addWarning(task, "warning.notFoundObjectForType", key.getObjectType());
+            }
+        } else {
+            value = getAdditionalDataValue(found, key, ad, task);
         }
 
-        String value;
+        return value;
+    }
 
+    private String getAdditionalDataValue(Object found, KeyInformation key, TaskAdditionalData ad, Task task) throws TaskTriggerException {
+        String value;
         try {
             value = getFieldValue(found, key.getEventKey());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new TaskException("error.objectNotContainsField", e, key.getEventKey());
+            if (ad.isFailIfDataNotFound()) {
+                throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
+            } else {
+                activityService.addWarning(task, "warning.objectNotContainsField", key.getEventKey(), e);
+                value = "";
+            }
         }
-
         return value;
     }
 
@@ -333,7 +360,7 @@ public class TaskTriggerHandler {
         }
     }
 
-    private String manipulateValue(String value, List<String> manipulations, Task task) throws TaskException {
+    private String manipulateValue(String value, List<String> manipulations, Task task) throws TaskTriggerException {
         String manipulateValue = value;
 
         for (String manipulation : manipulations) {
@@ -366,7 +393,7 @@ public class TaskTriggerHandler {
 
                     manipulateValue = format.print(new DateTime(manipulateValue));
                 } catch (IllegalArgumentException e) {
-                    throw new TaskException("error.date.format", e, manipulation);
+                    throw new TaskTriggerException("error.date.format", e, manipulation);
                 }
             } else {
                 activityService.addWarning(task, "warning.manipulation", manipulation);
@@ -392,6 +419,18 @@ public class TaskTriggerHandler {
 
     void setDataProviders(Map<String, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
+    }
+
+    private Map<String, Object> createEventParameters(Task task, TaskException e) {
+        Map<String, Object> param = new HashMap<>();
+        param.put(EventKeys.TASK_FAIL_MESSAGE, e.getMessageKey());
+        param.put(EventKeys.TASK_FAIL_STACK_TRACE, ExceptionUtils.getStackTrace(e));
+        param.put(EventKeys.TASK_FAIL_FAILURE_DATE, DateTime.now());
+        param.put(EventKeys.TASK_FAIL_FAILURE_NUMBER, activityService.errorsFromLastRun(task));
+        param.put(EventKeys.TASK_FAIL_TRIGGER_DISABLED, task.isEnabled());
+        param.put(EventKeys.TASK_FAIL_TASK_ID, task.getId());
+        param.put(EventKeys.TASK_FAIL_TASK_NAME, task.getName());
+        return param;
     }
 
     @Autowired(required = false)

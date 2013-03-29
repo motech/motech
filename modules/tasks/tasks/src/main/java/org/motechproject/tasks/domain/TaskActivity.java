@@ -18,6 +18,7 @@ public class TaskActivity extends MotechBaseDataObject {
     private String[] fields;
     private DateTime date;
     private TaskActivityType activityType;
+    private String stackTraceElement;
 
     public TaskActivity() {
         this(null, null, null);
@@ -32,11 +33,16 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType) {
+        this(message, fields, task, activityType, null);
+    }
+
+    public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType, String stackTraceElement) {
         this.message = message;
         this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : null;
         this.task = task;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
+        this.stackTraceElement = stackTraceElement;
     }
 
     public String getMessage() {
@@ -89,6 +95,14 @@ public class TaskActivity extends MotechBaseDataObject {
         this.activityType = activityType;
     }
 
+    public String getStackTraceElement() {
+        return stackTraceElement;
+    }
+
+    public void setStackTraceElement(String stackTraceElement) {
+        this.stackTraceElement = stackTraceElement;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -105,17 +119,18 @@ public class TaskActivity extends MotechBaseDataObject {
                 Objects.equals(this.task, other.task) &&
                 Arrays.equals(this.fields, other.fields) &&
                 Objects.equals(getDate(), other.getDate()) &&
-                Objects.equals(this.activityType, other.activityType);
+                Objects.equals(this.activityType, other.activityType) &&
+                Objects.equals(this.stackTraceElement, other.stackTraceElement);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(message, task, fields, getDate(), activityType);
+        return Objects.hash(message, task, fields, getDate(), activityType, stackTraceElement);
     }
 
     @Override
     public String toString() {
-        return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s}",
-                message, task, Arrays.toString(fields), date, activityType);
+        return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s, stackTrace=%s}",
+                message, task, Arrays.toString(fields), date, activityType, stackTraceElement);
     }
 }

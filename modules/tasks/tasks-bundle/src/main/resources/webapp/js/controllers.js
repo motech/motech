@@ -252,7 +252,8 @@
                                     displayName: object.lookupValue,
                                     by: object.lookupValue,
                                     field: object.lookupField
-                                }
+                                },
+                                failIfDataNotFound : object.failIfDataNotFound
                             });
                         }
 
@@ -455,6 +456,10 @@
                         for (i = 0; i < $scope.task.additionalData[ds._id].length; i += 1) {
                             if ($scope.task.additionalData[ds._id][i].id === id) {
                                 exists = true;
+                                object = $scope.findObject(ds, type, id);
+                                if ($scope.task.additionalData[ds._id][i].failIfDataNotFound !== object.failIfDataNotFound) {
+                                    $scope.task.additionalData[ds._id][i].failIfDataNotFound = object.failIfDataNotFound;
+                                }
                                 break;
                             }
                         }
@@ -466,7 +471,8 @@
                                 id: object.id,
                                 type: object.type,
                                 lookupField: object.lookup.field,
-                                lookupValue: object.lookup.by
+                                lookupValue: object.lookup.by,
+                                failIfDataNotFound: object.failIfDataNotFound
                             });
                         }
 
@@ -490,6 +496,10 @@
                         for (i = 0; i < $scope.task.additionalData[dataSource._id].length; i += 1) {
                             if ($scope.task.additionalData[dataSource._id][i].id === objectId) {
                                 exists = true;
+                                object = $scope.findObject(dataSource, objectType, objectId);
+                                if ($scope.task.additionalData[dataSource._id][i].failIfDataNotFound !== object.failIfDataNotFound) {
+                                    $scope.task.additionalData[dataSource._id][i].failIfDataNotFound = object.failIfDataNotFound;
+                                }
                                 break;
                             }
                         }
@@ -501,7 +511,8 @@
                                 id: object.id,
                                 type: object.type,
                                 lookupField: object.lookup.field,
-                                lookupValue: object.lookup.by
+                                lookupValue: object.lookup.by,
+                                failIfDataNotFound: object.failIfDataNotFound
                             });
                         }
                     });
@@ -537,7 +548,8 @@
                                 id: obj.id,
                                 type: obj.type,
                                 lookupField: obj.lookup.field,
-                                lookupValue: obj.lookup.by
+                                lookupValue: obj.lookup.by,
+                                failIfDataNotFound : obj.failIfDataNotFound
                             });
                         }
                     }
@@ -583,6 +595,7 @@
                             window.location = loc.substring(0, indexOf) + "#/dashboard";
                         });
                     }).error(function (response) {
+                        unblockUI();
                         var msg = $scope.msg('task.error.saved') + '\n', i;
 
                         for (i = 0; i < response.length; i += 1) {
@@ -592,6 +605,8 @@
                         delete $scope.task.actionInputFields;
                         delete $scope.task.enabled;
                         delete $scope.task.additionalData;
+
+
 
                         jAlert(msg, jQuery.i18n.prop('header.error'));
                     });
@@ -609,9 +624,9 @@
                     });
                 }, function (response) {
                     var msg = $scope.msg('task.error.saved') + '\n', i;
-
-                    for (i = 0; i < response.length; i += 1) {
-                        msg += ' - ' + $scope.msg(response[i].message, [response[i].field, response[i].objectName]) + '\n';
+                    unblockUI();
+                    for (i = 0; i < response.data.length; i += 1) {
+                        msg += ' - ' + $scope.msg(response.data[i].message, [response.data[i].field, response.data[i].objectName]) + '\n';
                     }
 
                     delete $scope.task.actionInputFields;
