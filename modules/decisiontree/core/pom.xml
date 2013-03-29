@@ -116,30 +116,40 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>drop DB trees</id>
-                        <phase>pre-integration-test</phase>
-                        <configuration>
-                            <target>
-                                <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
-                                    <arg value="-X" />
-                                    <arg value="DELETE" />
-                                    <arg value="http://${db.server}:${db.port}/trees" />
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>drop DB trees</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/trees" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
