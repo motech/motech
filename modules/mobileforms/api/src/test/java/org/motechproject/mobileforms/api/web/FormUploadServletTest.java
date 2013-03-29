@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -69,6 +70,8 @@ public class FormUploadServletTest {
     private ServletContext mockServletContext;
     @Mock
     private FormOutput formOutput;
+    @Mock
+    private Properties mobileFormsProperties;
 
     private Integer groupIndex = 2;
 
@@ -77,10 +80,10 @@ public class FormUploadServletTest {
         initMocks(this);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
-        formUploadServlet = spy(new FormUploadServlet());
+        when(applicationContext.getBean("mobileFormsProperties", Properties.class)).thenReturn(mobileFormsProperties);
+        formUploadServlet = spy(new FormUploadServlet(applicationContext));
         doReturn(mockServletContext).when(formUploadServlet).getServletContext();
         doReturn(formParser).when(formUploadServlet).createFormProcessor();
-        ReflectionTestUtils.setField(formUploadServlet, "context", applicationContext);
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
         ReflectionTestUtils.setField(formUploadServlet, "formGroupPublisher", formGroupPublisher);

@@ -7,6 +7,7 @@ import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,13 @@ public class FormDownloadServlet extends BaseFormServlet {
 
     public static final byte ACTION_DOWNLOAD_STUDY_LIST = 2;
     public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
+
+    public FormDownloadServlet() {
+    }
+
+    public FormDownloadServlet(ApplicationContext context) {
+        super(context);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
