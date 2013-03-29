@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.CallStatus;
-import org.motechproject.decisiontree.server.service.DecisionTreeServer;
-import org.motechproject.decisiontree.server.service.FlowSessionService;
+import org.motechproject.callflow.service.CallFlowServer;
+import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.ivr.service.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class VerboiceIVRController {
     @Autowired
     private FlowSessionService flowSessionService;
     @Autowired
-    private DecisionTreeServer decisionTreeServer;
+    private CallFlowServer callFlowServer;
 
     public VerboiceIVRController() {
     }
@@ -67,7 +67,7 @@ public class VerboiceIVRController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView view = decisionTreeServer.getResponse(verboiceCallId, phoneNumber, "verboice", tree, digits, language);
+        ModelAndView view = callFlowServer.getResponse(verboiceCallId, phoneNumber, "verboice", tree, digits, language);
         view.addObject("contextPath", request.getContextPath());
         view.addObject("servletPath", request.getServletPath());
         view.addObject("host", request.getHeader("Host"));
@@ -86,7 +86,7 @@ public class VerboiceIVRController {
             String verboiceCallId = request.getParameter(VERBOICE_CALL_SID);
             String phoneNumber = request.getParameter(VERBOICE_FROM_PHONE_PARAM);
             String tree = request.getParameter("tree");
-            decisionTreeServer.getResponse(verboiceCallId, phoneNumber, "verboice",tree, CallStatus.Disconnect.toString(), language);
+            callFlowServer.getResponse(verboiceCallId, phoneNumber, "verboice",tree, CallStatus.Disconnect.toString(), language);
         }
 
         List<String> missedCallStatuses = Arrays.asList("busy", "failed", "no-answer");
@@ -100,7 +100,7 @@ public class VerboiceIVRController {
         }
         String callSid = request.getParameter(VERBOICE_CALL_SID);
         session = flowSessionService.updateSessionId(motechCallId, callSid);
-        decisionTreeServer.handleMissedCall(session.getSessionId());
+        callFlowServer.handleMissedCall(session.getSessionId());
     }
 
     private FlowSession updateOutgoingCallSessionIdWithVerboiceSid(String callId, String verboiceCallId) {

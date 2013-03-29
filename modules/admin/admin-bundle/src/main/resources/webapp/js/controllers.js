@@ -102,7 +102,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
         'org.motechproject:motech-appointments-api-bundle:[0,)':'Appointments',
         'org.motechproject:motech-cmslite-api-bundle:[0,)':'CMS Lite',
         'org.motechproject:motech-commcare-api-bundle:[0,)':'Commcare',
-        'org.motechproject:motech-decisiontree-server:[0,)':'IVR Decision Tree',
+        'org.motechproject:motech-callflow:[0,)':'Call Flow',
         'org.motechproject:motech-event-aggregation-bundle:[0,)':'Event aggregation',
         'org.motechproject:motech-event-logging-bundle:[0,)':'Event logging',
         'org.motechproject:motech-tasks-bundle:[0,)':'Tasks',

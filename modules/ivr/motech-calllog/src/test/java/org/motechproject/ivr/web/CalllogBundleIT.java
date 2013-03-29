@@ -2,7 +2,7 @@ package org.motechproject.ivr.web;
 
 import com.google.gson.JsonParser;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.motechproject.decisiontree.server.service.CalllogSearchService;
+import org.motechproject.callflow.service.CalllogSearchService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.osgi.framework.ServiceReference;

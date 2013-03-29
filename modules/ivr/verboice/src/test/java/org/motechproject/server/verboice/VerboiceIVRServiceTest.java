@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.config.SettingsFacade;
 

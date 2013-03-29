@@ -48,7 +48,7 @@
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
-    <osgi:reference id="calllogSearchService" interface="org.motechproject.decisiontree.server.service.CalllogSearchService" />
+    <osgi:reference id="calllogSearchService" interface="org.motechproject.callflow.service.CalllogSearchService" />
 
     <mvc:annotation-driven/>
 </beans>

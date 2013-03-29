@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-decisiontree-server</artifactId>
+            <artifactId>motech-callflow</artifactId>
             <version>${motech.version}</version>
         </dependency>
         <!-- to send/receive motech events -->

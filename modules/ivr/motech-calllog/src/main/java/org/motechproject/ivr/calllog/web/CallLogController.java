@@ -1,9 +1,9 @@
 package org.motechproject.ivr.calllog.web;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.motechproject.callflow.service.CalllogSearchParameters;
+import org.motechproject.callflow.service.CalllogSearchService;
 import org.motechproject.decisiontree.core.CallDetail;
-import org.motechproject.decisiontree.server.service.CalllogSearchParameters;
-import org.motechproject.decisiontree.server.service.CalllogSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
