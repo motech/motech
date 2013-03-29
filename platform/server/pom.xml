@@ -289,7 +289,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-decisiontree-server</artifactId>
+                    <artifactId>motech-callflow</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>
