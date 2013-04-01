@@ -68,6 +68,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -75,15 +76,13 @@
                 <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>drop DB =&gt; motech-websecurity</id>
-                        <phase>pre-integration-test</phase>
+                        <id>create web-security database</id>
+                        <phase>post-integration-test</phase>
                         <configuration>
                             <target>
                                 <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
                                     <arg value="-X" />
-                                    <arg value="DELETE" />
+                                    <arg value="PUT" />
                                     <arg value="http://${db.server}:${db.port}/motech-web-security" />
                                 </exec>
                             </target>
@@ -91,22 +90,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                    </execution><execution>
-                    <id>create web-security database</id>
-                    <phase>post-integration-test</phase>
-                    <configuration>
-                        <target>
-                            <exec executable="curl">
-                                <arg value="-X" />
-                                <arg value="PUT" />
-                                <arg value="http://${db.server}:${db.port}/motech-web-security" />
-                            </exec>
-                        </target>
-                    </configuration>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                </execution>
+                    </execution>
                     <execution>
                         <id>create admin user</id>
                         <phase>post-integration-test</phase>
@@ -136,4 +120,38 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>drop DB =&gt; motech-websecurity</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

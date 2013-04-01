@@ -28,50 +28,56 @@
             <artifactId>com.springsource.org.hamcrest.core</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>drop DB =&gt; motech-outbox</id>
-                        <phase>pre-integration-test</phase>
-                        <configuration>
-                            <target>
-                                <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
-                                    <arg value="-X" />
-                                    <arg value="DELETE" />
-                                    <arg value="http://${db.server}:${db.port}/motech-outbox" />
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>drop DB =&gt; test-outbox</id>
-                        <phase>post-integration-test</phase>
-                        <configuration>
-                            <target>
-                                <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
-                                    <arg value="-X" />
-                                    <arg value="DELETE" />
-                                    <arg value="http://${db.server}:${db.port}/test-outbox" />
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>drop DB =&gt; motech-outbox</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/motech-outbox" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>drop DB =&gt; test-outbox</id>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/test-outbox" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
