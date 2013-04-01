@@ -11,12 +11,13 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.Map;
 
 public class HttpServiceTracker extends ServiceTracker {
-    private static Logger logger = LoggerFactory.getLogger(ServiceTracker.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ServiceTracker.class);
     private String contextPath;
     private Map<String, String> resourceMapping;
     private BundleContextWrapper bundleContextWrapper;
@@ -37,7 +38,7 @@ public class HttpServiceTracker extends ServiceTracker {
 
     @Override
     public void removedService(ServiceReference ref, Object service) {
-        logger.info("Removed service called for " + OsgiStringUtils.nullSafeSymbolicName(ref.getBundle()));
+        LOGGER.info("Removed service called for " + OsgiStringUtils.nullSafeSymbolicName(ref.getBundle()));
         unregister((HttpService) service);
         super.removedService(ref, service);
     }
@@ -55,7 +56,7 @@ public class HttpServiceTracker extends ServiceTracker {
     private void register(HttpService httpService) {
         if (contextPath == null && httpService != null) {
             try {
-                DispatcherServlet dispatcherServlet = new OsgiDispatcherServlet(context, bundleContextWrapper.getBundleApplicationContext());
+                DispatcherServlet dispatcherServlet = new OsgiDispatcherServlet(context, (ConfigurableWebApplicationContext) bundleContextWrapper.getBundleApplicationContext());
                 contextPath = WebBundleUtil.getContextPath(context.getBundle());
                 dispatcherServlet.setContextClass(MotechOsgiWebApplicationContext.class);
                 dispatcherServlet.setContextConfigLocation(WebBundleUtil.getContextLocation(context.getBundle()));
@@ -67,17 +68,18 @@ public class HttpServiceTracker extends ServiceTracker {
                     httpService.registerServlet(contextPath, dispatcherServlet, null, httpContext);
                     if (resourceMapping != null) {
                         for (String key : resourceMapping.keySet()) {
-                            logger.debug(String.format("Registering %s = %s for bundle %s ", key, resourceMapping.keySet(), bundleContextWrapper.getCurrentBundleSymbolicName()));
+                            LOGGER.debug(String.format("Registering %s = %s for bundle %s ", key, resourceMapping.keySet(), bundleContextWrapper.getCurrentBundleSymbolicName()));
                             httpService.registerResources(key, resourceMapping.get(key), httpContext);
                         }
                     }
-                    logger.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
+                    LOGGER.info(String.format("servlet registered with context path %s for bundle %s", contextPath, OsgiStringUtils.nullSafeSymbolicName(context.getBundle())));
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }
             } catch (Exception e) {
+                LOGGER.error(String.format("Http Service could not be registered for %s due to : %s", bundleContextWrapper.getCurrentBundleSymbolicName(), e.getMessage()), e);
                 throw new ServletRegistrationException(e);
             }
         }
@@ -87,7 +89,7 @@ public class HttpServiceTracker extends ServiceTracker {
         if (contextPath != null && service != null) {
             service.unregister(contextPath);
             contextPath = null;
-            logger.debug("Servlet unregistered");
+            LOGGER.debug("Servlet unregistered");
         }
     }
 

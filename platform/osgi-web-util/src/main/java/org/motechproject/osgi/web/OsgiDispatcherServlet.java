@@ -1,7 +1,6 @@
 package org.motechproject.osgi.web;
 
 import org.osgi.framework.BundleContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -11,16 +10,16 @@ public class OsgiDispatcherServlet extends DispatcherServlet {
 
 
     private BundleContext bundleContext;
-    private ApplicationContext applicationContext;
+    private ConfigurableWebApplicationContext configurableWebApplicationContext;
 
     public OsgiDispatcherServlet(BundleContext bundleContext) {
         this(bundleContext, null);
     }
 
 
-    public OsgiDispatcherServlet(BundleContext bundleContext, ApplicationContext applicationContext) {
+    public OsgiDispatcherServlet(BundleContext bundleContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
         this.bundleContext = bundleContext;
-        this.applicationContext = applicationContext;
+        this.configurableWebApplicationContext = configurableWebApplicationContext;
     }
 
     @Override
@@ -28,8 +27,9 @@ public class OsgiDispatcherServlet extends DispatcherServlet {
         if (wac instanceof MotechOsgiWebApplicationContext) {
             MotechOsgiWebApplicationContext wc = (MotechOsgiWebApplicationContext) wac;
             wc.setBundleContext(bundleContext);
-            if (applicationContext != null) {
-                wac.setParent(applicationContext);
+            if (configurableWebApplicationContext != null) {
+                configurableWebApplicationContext.setServletContext(getServletContext());
+                wac.setParent(configurableWebApplicationContext);
             }
         }
         super.postProcessWebApplicationContext(wac);

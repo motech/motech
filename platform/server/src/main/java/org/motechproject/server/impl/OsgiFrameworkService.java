@@ -139,10 +139,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         } else {
             Class<?> eventHandlerClass = eventAdminCl.loadClass(EventHandler.class.getName());
 
-            Object proxy = Proxy.newProxyInstance(eventAdminCl, new Class[] { eventHandlerClass }, new StartupListener());
+            Object proxy = Proxy.newProxyInstance(eventAdminCl, new Class[]{eventHandlerClass}, new StartupListener());
 
             Dictionary<String, String[]> properties = new Hashtable<>();
-            properties.put(EventConstants.EVENT_TOPIC, new String[] { STARTUP_TOPIC });
+            properties.put(EventConstants.EVENT_TOPIC, new String[]{STARTUP_TOPIC});
 
             bundleContext.registerService(EventHandler.class.getName(), proxy, properties);
         }
