@@ -39,6 +39,7 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
     public static final String NODE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "error";
     public static final String EXIT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "exit";
+    private static final String FLOW_SESSION_ID_FIELD = "flowSessionId";
 
     public static final Integer MAX_INPUT_DIGITS = 50;
     public static final Integer MAX_INPUT_TIMEOUT = 5000;
@@ -124,9 +125,13 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
                 ITransition nextTransition = getTransitionForUserInput(transitionKey, node);
                 autowire(nextTransition);
 
-                treeEventProcessor.sendActionsAfter(node, new HashMap<String, Object>());
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put(FLOW_SESSION_ID_FIELD, session.getSessionId());
+
+                treeEventProcessor.sendActionsAfter(node, params);
+
                 if (nextTransition instanceof Transition) {
-                    treeEventProcessor.sendTransitionActions((Transition) nextTransition, new HashMap<String, Object>());
+                    treeEventProcessor.sendTransitionActions((Transition) nextTransition, params);
                 }
 
                 node = nextTransition.getDestinationNode(transitionKey, session);
@@ -165,7 +170,10 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
     }
 
     private ModelAndView constructModelViewForNode(Node node, FlowSession session, String provider, String tree) {
-        treeEventProcessor.sendActionsBefore(node, new HashMap<String, Object>());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(FLOW_SESSION_ID_FIELD, session.getSessionId());
+
+        treeEventProcessor.sendActionsBefore(node, params);
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName(templateNameFor(provider, NODE_TEMPLATE_NAME));
