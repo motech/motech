@@ -1183,7 +1183,6 @@
         <!-- OSGI modules -->
         <module>platform/server-bundle</module>
         <module>modules/admin/admin-bundle</module>
-        <module>modules/cmslite/api-bundle</module>
         <module>modules/commcare/api-bundle</module>
         <module>modules/demo/demo-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>

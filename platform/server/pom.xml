@@ -286,7 +286,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-cmslite-api-bundle</artifactId>
+                    <artifactId>motech-cmslite-api</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

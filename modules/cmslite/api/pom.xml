@@ -12,6 +12,7 @@
     <artifactId>motech-cmslite-api</artifactId>
     <name>MOTECH CMS lite API</name>
     <version>0.19-SNAPSHOT</version>
+    <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
@@ -38,6 +39,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -60,7 +66,124 @@
             <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                        <configuration>
+                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
+                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
+                            <requireUseStrict>true</requireUseStrict>
+                            <predefinedVars>
+                                $, angular, blockUI, unblockUI, handleWithStackTrace, alertHandler,
+                                jConfirm, jQuery, parseUri
+                            </predefinedVars>
+                            <failOnIssues>true</failOnIssues>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Context-Path>cmsliteapi</Context-Path>
+                        <Resource-Path>cmsliteapi/resources</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
+                        <Export-Package>
+                            org.motechproject.cmslite.api.model;version=${project.version},
+                            org.motechproject.cmslite.api.repository;version=${project.version},
+                            org.motechproject.cmslite.api.service;version=${project.version},
+                            org.motechproject.cmslite.api.web;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            javax.servlet.*;resolution:=optional,
+                            org.apache.commons.fileupload,
+                            org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.motechproject.commons.couchdb.service,
+                            org.motechproject.server.config,
+                            org.motechproject.server.config.service,
+                            org.osgi.framework;version="0.0.0",
+                            org.osgi.service.http,
+                            org.osgi.util.tracker;version="0.0.0",
+                            org.springframework.beans.factory.xml,
+                            org.springframework.cache.config,
+                            org.springframework.cache.support,
+                            org.springframework.context.config,
+                            org.springframework.integration.config.xml,
+                            org.springframework.integration.jms.config,
+                            org.springframework.web.context,
+                            org.springframework.web.multipart.commons,
+                            org.springframework.web.servlet,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-osgi-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <outputDirectory>
+                                ${user.home}/.motech/bundles
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
         <profile>
             <id>IT</id>

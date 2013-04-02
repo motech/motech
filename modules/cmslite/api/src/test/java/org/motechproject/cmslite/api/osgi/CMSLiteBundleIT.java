@@ -11,6 +11,9 @@ import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class CMSLiteBundleIT extends BaseOsgiIT {
 
@@ -33,6 +36,13 @@ public class CMSLiteBundleIT extends BaseOsgiIT {
                 new BasicResponseHandler());
 
         assertEquals("Test content", response);
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.cmslite.api.service"
+        );
     }
 
     @Override

@@ -39,6 +39,7 @@
                 var elem = angular.element(element),
                     table = angular.element('#' + attrs.jqgridSearch),
                     eventType = elem.data('event-type'),
+                    timeoutHnd,
                     filter = function (time) {
                         var field = elem.data('search-field'),
                             type = elem.data('field-type') || 'string',
@@ -100,8 +101,7 @@
                                 url: '../cmsliteapi/resource' + params
                             }).trigger('reloadGrid');
                         }, time || 0);
-                    },
-                    timeoutHnd;
+                    };
 
                 switch (eventType) {
                 case 'keyup':
