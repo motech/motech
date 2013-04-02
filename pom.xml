@@ -1182,7 +1182,6 @@
         <!-- OSGI modules -->
         <module>platform/server-bundle</module>
         <module>modules/admin/admin-bundle</module>
-        <module>modules/alerts/api-bundle</module>
         <module>modules/appointments/api-bundle</module>
         <module>modules/cmslite/api-bundle</module>
         <module>modules/commcare/api-bundle</module>
