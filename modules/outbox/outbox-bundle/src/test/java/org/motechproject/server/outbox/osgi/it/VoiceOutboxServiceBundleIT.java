@@ -5,6 +5,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
@@ -35,7 +36,8 @@ public class VoiceOutboxServiceBundleIT extends BaseOsgiIT {
     }
 
     public void testController() throws IOException, InterruptedException {
-        final String response = new PollingHttpClient().get("http://localhost:8080/outbox/vxml/outboxMessage?pId=123", new BasicResponseHandler());
+        final String response = new PollingHttpClient().get(String.format("http://localhost:%d/outbox/vxml/outboxMessage?pId=123",
+                TestContext.getJettyPort()), new BasicResponseHandler());
         assertTrue(response.contains("There are no pending messages in your outbox"));
     }
 

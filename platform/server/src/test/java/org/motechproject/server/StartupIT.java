@@ -13,19 +13,19 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class StartupIT {
 
-    Logger log = Logger.getLogger(StartupIT.class.getName());
     private String HOST = "localhost";
+    private int PORT = TestContext.getTomcatPort();
 
     @Test
     public void shouldStartServerAndMakeAllBundlesActive() throws IOException, JSONException, InterruptedException{
@@ -76,13 +76,16 @@ public class StartupIT {
         JSONArray bundles;
         login(httpClient); /* BugCard #208 remove this once we fix web authentication issue, currently
          till security modules started in osgi env there is not authentication for admin console. */
-        String response = httpClient.execute(new HttpGet("http://" + HOST + ":9090/motech-platform-server/module/admin/api/bundles"), new BasicResponseHandler());
-        bundles = (JSONArray) new JSONArray(response);
+        String response = httpClient.execute(new HttpGet(String.format("http://%s:%d/motech-platform-server/module/admin/api/bundles",
+                HOST, PORT)), new BasicResponseHandler());
+
+        bundles = new JSONArray(response);
         return bundles;
     }
 
     private void login(DefaultHttpClient defaultHttpClient) throws IOException {
-        final HttpPost loginPost = new HttpPost("http://localhost:9090/motech-platform-server/module/server/motech-platform-server/j_spring_security_check");
+        final HttpPost loginPost = new HttpPost(String.format(
+                "http://%s:%d/motech-platform-server/module/server/motech-platform-server/j_spring_security_check", HOST, PORT));
 
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("j_username", "motech"));

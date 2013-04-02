@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.junit.Test;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import static junit.framework.Assert.assertEquals;
 
 public class RestAPIAuthenticationIT {
 
+    private static final String HOST = "localhost";
+    private static final int PORT = TestContext.getTomcatPort();
 
     @Test
     public void testThatItShouldAllowRestApiAccessAfterFormAuthentication() throws IOException, JSONException, InterruptedException {
@@ -29,7 +32,9 @@ public class RestAPIAuthenticationIT {
         httpClient.setCookieStore(new BasicCookieStore());
 
 
-        HttpGet statusRequest = new HttpGet("http://localhost:9090/motech-platform-server/module/admin/api/web-api/status");
+        HttpGet statusRequest =
+                new HttpGet(String.format("http://%s:%d/motech-platform-server/module/admin/api/web-api/status", HOST, PORT));
+
         HttpResponse response = httpClient.execute(statusRequest);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
 
@@ -43,7 +48,8 @@ public class RestAPIAuthenticationIT {
 
 
     private void login(DefaultHttpClient defaultHttpClient) throws IOException {
-        final HttpPost loginPost = new HttpPost("http://localhost:9090/motech-platform-server/module/server/motech-platform-server/j_spring_security_check");
+        final HttpPost loginPost =
+                new HttpPost(String.format("http://%s:%d/motech-platform-server/module/server/motech-platform-server/j_spring_security_check", HOST, PORT));
 
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("j_username", "motech"));

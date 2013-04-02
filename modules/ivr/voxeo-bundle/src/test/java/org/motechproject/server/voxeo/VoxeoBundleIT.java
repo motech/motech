@@ -6,6 +6,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 import org.motechproject.testing.utils.server.RequestInfo;
 import org.motechproject.testing.utils.server.StubServer;
 
@@ -29,13 +30,15 @@ public class VoxeoBundleIT extends BaseOsgiIT {
 
 
     public void testThatCCXmlGenerationUrlIsAccessible() throws IOException, InterruptedException {
-        String response = new PollingHttpClient().get("http://localhost:8080/voxeo/ccxml", new BasicResponseHandler());
+        String response = new PollingHttpClient().get(String.format("http://localhost:%d/voxeo/ccxml",
+                TestContext.getJettyPort()), new BasicResponseHandler());
         assertTrue(response.contains("<ccxml version=\"1.0\">"));
     }
 
 
     public void testThatFlashUrlIsAccessible() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient().get("http://localhost:8080/voxeo/flash?phoneNumber=1233&applicationName=test");
+        HttpResponse response = new PollingHttpClient().get(
+                String.format("http://localhost:%d/voxeo/flash?phoneNumber=1233&applicationName=test", TestContext.getJettyPort()));
 
         assertThatCallRequestWasMadeToVoxeoServer(voxeoServer.detailForRequest(CONTEXT_PATH));
 

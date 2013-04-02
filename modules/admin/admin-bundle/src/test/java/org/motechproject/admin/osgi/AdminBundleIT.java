@@ -25,6 +25,7 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
@@ -41,9 +42,6 @@ public class AdminBundleIT extends BaseOsgiIT {
     private static final String DEBUG_MSG = "test-debug";
     private static final String WARNING_MSG = "test-warn";
     private static final DateTime TIMEOUT = DateTime.now().plusHours(1);
-
-    private static final String ADMIN_URL = "http://localhost:8080/admin/api/";
-    private static final String LOGIN_URL = "http://localhost:8080/server/motech-platform-server/j_spring_security_check";
 
     private HttpClient httpClient = new DefaultHttpClient();
 
@@ -118,11 +116,13 @@ public class AdminBundleIT extends BaseOsgiIT {
 
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
 
-        return httpClient.execute(new HttpGet(ADMIN_URL + processedPath), new BasicResponseHandler());
+        return httpClient.execute(new HttpGet(String.format("http://localhost:%d/admin/api/", TestContext.getJettyPort())
+                + processedPath), new BasicResponseHandler());
     }
 
     private void login() throws IOException {
-        final HttpPost loginPost = new HttpPost(LOGIN_URL);
+        final HttpPost loginPost = new HttpPost(
+                String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check", TestContext.getJettyPort()));
 
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("j_username", "motech"));

@@ -18,8 +18,6 @@
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
-        <tomcat.port>9090</tomcat.port>
-        <tomcat.shutdown.port>9005</tomcat.shutdown.port>
     </properties>
 
     <dependencies>
@@ -27,6 +25,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- web listener and proxy -->
         <dependency>

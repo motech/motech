@@ -8,6 +8,7 @@ import org.motechproject.commcare.service.CommcareFormService;
 import org.motechproject.commcare.service.CommcareUserService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 
@@ -31,7 +32,7 @@ public class CommcareBundleIT extends BaseOsgiIT {
 
     public void testSettingsController() throws IOException, InterruptedException {
         final String response = new PollingHttpClient(new DefaultHttpClient(), 60)
-                .get("http://localhost:8080/commcare/settings", new BasicResponseHandler());
+                .get(String.format("http://localhost:%d/commcare/settings", TestContext.getJettyPort()), new BasicResponseHandler());
         assertNotNull(response);
         assertTrue(new JsonParser().parse(response).isJsonObject());
     }

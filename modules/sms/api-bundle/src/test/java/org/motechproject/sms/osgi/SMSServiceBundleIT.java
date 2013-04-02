@@ -18,6 +18,7 @@ import org.motechproject.sms.api.service.SendSmsRequest;
 import org.motechproject.sms.api.service.SmsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 import org.motechproject.testing.utils.Wait;
 import org.osgi.framework.ServiceReference;
 
@@ -31,7 +32,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 public class SMSServiceBundleIT extends BaseOsgiIT {
 
     private String HOST = "localhost";
-    private int PORT = 8080;
+    private int PORT = TestContext.getJettyPort();
 
     public void testSmsService() throws InterruptedException {
 

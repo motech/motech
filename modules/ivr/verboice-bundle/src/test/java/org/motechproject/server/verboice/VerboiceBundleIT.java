@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 
@@ -17,7 +18,10 @@ public class VerboiceBundleIT extends BaseOsgiIT {
 
 
     public void testThatVerboiceUrlIsAccessible() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient().get("http://localhost:8080/verboice/ivr?CallStatus=no-answer&CallSid=123A&From=12345");
+        HttpResponse response = new PollingHttpClient().get(
+                String.format("http://localhost:%d/verboice/ivr?CallStatus=no-answer&CallSid=123A&From=12345",
+                        TestContext.getJettyPort()));
+
         assertNotNull(response);
         assertEquals(response.getStatusLine().getStatusCode(), HttpStatus.SC_OK);
     }
@@ -27,5 +31,4 @@ public class VerboiceBundleIT extends BaseOsgiIT {
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testIvrVerboiceOsgiContext.xml"};
     }
-
 }

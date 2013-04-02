@@ -8,14 +8,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.LocalDate;
-import org.motechproject.security.service.MotechUserService;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
 import org.motechproject.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.messagecampaign.service.CampaignEnrollmentRecord;
 import org.motechproject.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.messagecampaign.service.MessageCampaignService;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 
 public class MessageCampaignBundleIT extends BaseOsgiIT {
+
+    private static final int PORT = TestContext.getJettyPort();
 
     public void testMessageCampaignService() {
         ServiceReference serviceReference = bundleContext.getServiceReference(MessageCampaignService.class.getName());
@@ -58,14 +61,16 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     public void testControllersAnonymous() throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        HttpGet request = new HttpGet("http://localhost:8080/messagecampaign/web-api/campaigns");
+        HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         HttpResponse response = httpClient.execute(request);
+
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
 
         EntityUtils.consume(response.getEntity());
 
-        request = new HttpGet("http://localhost:8080/messagecampaign/web-api/enrollments/users");
+        request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/enrollments/users", PORT));
         response = httpClient.execute(request);
+
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
@@ -74,13 +79,14 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         httpClient.getCredentialsProvider()
                 .setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("mal", "icious"));
 
-        HttpGet request = new HttpGet("http://localhost:8080/messagecampaign/web-api/campaigns");
+        HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         HttpResponse response = httpClient.execute(request);
+
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
 
         EntityUtils.consume(response.getEntity());
 
-        request = new HttpGet("http://localhost:8080/messagecampaign/web-api/enrollments/users");
+        request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/enrollments/users", PORT));
         response = httpClient.execute(request);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
@@ -92,14 +98,14 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        HttpGet request = new HttpGet("http://localhost:8080/messagecampaign/web-api/enrollments/users");
+        HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/enrollments/users", PORT));
         request.setHeader("Authorization", "Basic " + encodeBase64String("user-mc-noauth:pass".getBytes("UTF-8")).trim());
         HttpResponse response = httpClient.execute(request);
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 
         EntityUtils.consume(response.getEntity());
 
-        request = new HttpGet("http://localhost:8080/messagecampaign/web-api/campaigns");
+        request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         request.setHeader("Authorization", "Basic " + encodeBase64String("user-mc-noauth:pass".getBytes("UTF-8")).trim());
         response = httpClient.execute(request);
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
@@ -112,14 +118,14 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        HttpGet request = new HttpGet("http://localhost:8080/messagecampaign/web-api/campaigns");
+        HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         request.addHeader("Authorization", "Basic " + encodeBase64String("user-mc-auth:pass".getBytes("UTF-8")).trim());
         HttpResponse response = httpClient.execute(request);
         assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
         EntityUtils.consume(response.getEntity());
 
-        request = new HttpGet("http://localhost:8080/messagecampaign/web-api/enrollments/users");
+        request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/enrollments/users", PORT));
         request.addHeader("Authorization", "Basic " + encodeBase64String("user-mc-auth:pass".getBytes("UTF-8")).trim());
         response = httpClient.execute(request);
         assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
