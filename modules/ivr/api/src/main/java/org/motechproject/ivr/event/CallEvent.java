@@ -3,11 +3,15 @@ package org.motechproject.ivr.event;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.io.Serializable;
+
 /**
  * Represents IVR event like DTMF key press, Dial
  * @see IVREvent
  */
-public class CallEvent {
+public class CallEvent implements Serializable{
+    private static final long serialVersionUID = -5418119602203479583L;
+
     private String name;
     private DateTime timeStamp;
     private CallEventCustomData callEventCustomData = new CallEventCustomData();
@@ -72,6 +76,6 @@ public class CallEvent {
      * @param value
      */
     public void appendData(String key, String value) {
-        callEventCustomData.add(key, value);
+        callEventCustomData.put(key, value);
     }
 }

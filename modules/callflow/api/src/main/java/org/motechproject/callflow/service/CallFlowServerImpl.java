@@ -2,7 +2,9 @@ package org.motechproject.callflow.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.callflow.domain.CallDetailRecord;
+import org.motechproject.callflow.domain.CallEvent;
 import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.callflow.domain.IVREvent;
 import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.EndOfCallEvent;
 import org.motechproject.decisiontree.core.FlowSession;
@@ -82,14 +84,18 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
     public void handleMissedCall(String flowSessionId) {
         FlowSession session = flowSessionService.getSession(flowSessionId);
         CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
+        callDetailRecord.addCallEvent(new CallEvent(IVREvent.Missed.name()));
         flowSessionService.updateSession(session);
         eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
     }
 
     private ModelAndView getModelViewForNextNode(FlowSession session, String provider, String tree, String transitionKey) {
 
+
         if (CallStatus.Hangup.toString().equals(transitionKey) || CallStatus.Disconnect.toString().equals(transitionKey)) {
-            CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
+            CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
+            callDetailRecord.setEndDate(now());
+            callDetailRecord.addCallEvent(new CallEvent(transitionKey));
             flowSessionService.updateSession(session);
             eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
             return new ModelAndView(templateNameFor(provider, EXIT_TEMPLATE_NAME));
@@ -102,9 +108,12 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
         Node node = getCurrentNode(session);
         try {
             if (node == null) {
+                addFlowStartEvent(session, tree);
                 node = decisionTreeService.getRootNode(tree, session);
                 autowire(node);
                 executeOperations(transitionKey, session, node);
+            } else {
+                addDTMFEvent(session, transitionKey);
             }
 
             validateNode(node);
@@ -133,6 +142,26 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
         } finally {
             flowSessionService.updateSession(session);
         }
+    }
+
+    private void addDTMFEvent(FlowSession session, String transitionKey) {
+        final CallEvent callEvent = new CallEvent(IVREvent.GotDTMF.name());
+        callEvent.appendData("input", transitionKey);
+
+        saveEvent(session, callEvent);
+    }
+
+    private void addFlowStartEvent(FlowSession session, String tree) {
+        final CallEvent callEvent = new CallEvent("FlowStart:" + tree);
+        callEvent.appendData("treeName", tree);
+
+        saveEvent(session, callEvent);
+    }
+
+    private void saveEvent(FlowSession session, CallEvent callEvent) {
+        CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
+        callDetailRecord.addCallEvent(callEvent);
+        flowSessionService.updateSession(session);
     }
 
     private ModelAndView constructModelViewForNode(Node node, FlowSession session, String provider, String tree) {

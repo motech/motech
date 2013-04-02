@@ -14,7 +14,7 @@ import java.util.List;
 @Service("calllogSearchService")
 public class CalllogSearchServiceImpl implements CalllogSearchService {
     private AllCallDetailRecords allCallDetailRecords;
-    private static final int PAGE_SIZE = 2;
+    private static final int PAGE_SIZE = 20;
 
     @Autowired
     public CalllogSearchServiceImpl(AllCallDetailRecords allCallDetailRecords) {

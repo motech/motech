@@ -24,7 +24,6 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
-import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,9 +53,6 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
     @Autowired
     private AllFlowSessionRecords allFlowSessionRecords;
-
-    @Autowired
-    EventListenerRegistryService eventListenerRegistry;
 
     @Autowired
     @Qualifier("treesDatabase")

@@ -9,8 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.motechproject.callflow.domain.CallDetailRecord;
+import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.config.SettingsFacade;
 
@@ -55,7 +56,8 @@ public class VerboiceIVRServiceTest {
         settings.saveConfigProperties("verboice.properties", verboiceProperties);
         VerboiceIVRService ivrService = new VerboiceIVRService(settings, httpClient, flowSessionService);
 
-        FlowSession flowSession = mock(FlowSession.class);
+        FlowSessionRecord flowSession = mock(FlowSessionRecord.class);
+        when(flowSession.getCallDetailRecord()).thenReturn(new CallDetailRecord("a","23"));
         when(flowSessionService.findOrCreate(anyString(), anyString())).thenReturn(flowSession);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
@@ -90,7 +92,8 @@ public class VerboiceIVRServiceTest {
             put("foo", "bar");
         }});
 
-        FlowSession flowSession = mock(FlowSession.class);
+        FlowSessionRecord flowSession = mock(FlowSessionRecord.class);
+        when(flowSession.getCallDetailRecord()).thenReturn(new CallDetailRecord("c", "34"));
         when(flowSessionService.findOrCreate(callRequest.getCallId(), "1234567890")).thenReturn(flowSession);
 
         ivrService.initiateCall(callRequest);
