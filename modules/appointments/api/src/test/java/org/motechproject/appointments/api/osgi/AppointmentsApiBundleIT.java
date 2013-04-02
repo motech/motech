@@ -6,7 +6,10 @@ import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.Arrays.asList;
 
 public class AppointmentsApiBundleIT extends BaseOsgiIT {
 
@@ -24,5 +27,12 @@ public class AppointmentsApiBundleIT extends BaseOsgiIT {
         assertNotNull(response);
         assertEquals(visitName, response.getName());
         // Delete the doc in the post-integration phase
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.appointments.api.service.contract"
+        );
     }
 }

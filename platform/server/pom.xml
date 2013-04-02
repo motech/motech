@@ -275,7 +275,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-appointments-api-bundle</artifactId>
+                    <artifactId>motech-appointments-api</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>
