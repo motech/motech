@@ -4,6 +4,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +16,12 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class EventConfigManagerTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
+public class EventConfigManagerIT {
 
-    private EventConfigManager eventConfigManager = new EventConfigManagerImpl();
+    @Autowired
+    private EventConfigManager eventConfigManager;
 
     private File configFile;
 
