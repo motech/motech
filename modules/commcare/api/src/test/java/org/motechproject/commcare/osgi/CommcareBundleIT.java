@@ -1,4 +1,4 @@
-package org.motechproject.commcare.osgi.it;
+package org.motechproject.commcare.osgi;
 
 import com.google.gson.JsonParser;
 import org.apache.http.impl.client.BasicResponseHandler;

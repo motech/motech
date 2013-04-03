@@ -1142,7 +1142,6 @@
         <module>platform/server</module>
         <module>platform/web-security/web-security</module>
         <module>modules/admin/admin</module>
-        <module>modules/commcare/api</module>
         <module>modules/demo/demo</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
@@ -1182,7 +1181,7 @@
         <module>modules/appointments/api</module>
         <module>modules/callflow/api</module>
         <module>modules/cmslite/api</module>
-        <module>modules/commcare/api-bundle</module>
+        <module>modules/commcare/api</module>
         <module>modules/couchmrs/mrs-couchdb</module>
         <module>modules/decisiontree/core</module>
         <module>modules/demo/demo-bundle</module>
