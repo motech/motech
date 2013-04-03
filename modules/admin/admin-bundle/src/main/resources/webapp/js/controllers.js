@@ -97,7 +97,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.modules = {
         'org.motechproject:motech-demo-bundle:[0,)':'Demo',
         'org.motechproject:motech-message-campaign-bundle:[0,)':'Message campaign',
-        'org.motechproject:motech-scheduletracking-api-bundle:[0,)':'Schedule Tracking',
+        'org.motechproject:motech-scheduletracking-api:[0,)':'Schedule Tracking',
         'org.motechproject:motech-alerts-api:[0,)':'Alerts',
         'org.motechproject:motech-appointments-api:[0,)':'Appointments',
         'org.motechproject:motech-cmslite-api-bundle:[0,)':'CMS Lite',

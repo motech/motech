@@ -5,7 +5,10 @@ import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.Arrays.asList;
 
 public class ScheduleTrackingApiBundleIT extends BaseOsgiIT {
 
@@ -25,5 +28,12 @@ public class ScheduleTrackingApiBundleIT extends BaseOsgiIT {
             scheduleTrackingService.remove(scheduleName);
         }
 
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.scheduletracking.api.domain"
+        );
     }
 }
