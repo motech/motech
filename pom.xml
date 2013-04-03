@@ -1144,7 +1144,6 @@
         <module>modules/admin/admin</module>
         <module>modules/commcare/api</module>
         <module>modules/demo/demo</module>
-        <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
         <module>modules/ivr/kookoo</module>
@@ -1188,7 +1187,7 @@
         <module>modules/decisiontree/core</module>
         <module>modules/demo/demo-bundle</module>
         <module>modules/event-aggregation/event-aggregation</module>
-        <module>modules/event-logging/event-logging-bundle</module>
+        <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>
         <module>modules/ivr/kookoo-bundle</module>
