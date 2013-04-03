@@ -11,9 +11,9 @@ public class CallEventCustomDataTest {
         CallEventCustomData callEventCustomData = new CallEventCustomData();
         String key1 = "key1";
         String key2 = "key2";
-        callEventCustomData.add(key1, "bar");
-        callEventCustomData.add(key1, "bar");
-        callEventCustomData.add(key2, "baz");
+        callEventCustomData.put(key1, "bar");
+        callEventCustomData.put(key1, "bar");
+        callEventCustomData.put(key2, "baz");
         assertEquals(asList("bar", "bar"), callEventCustomData.getAll(key1));
         assertEquals(asList("baz"), callEventCustomData.getAll(key2));
     }
@@ -28,7 +28,7 @@ public class CallEventCustomDataTest {
     public void update() {
         CallEventCustomData callEventCustomData = new CallEventCustomData();
         String key = "foo";
-        callEventCustomData.add(key, "bar");
+        callEventCustomData.put(key, "bar");
         callEventCustomData.update(key, "baz");
         assertEquals("baz", callEventCustomData.getFirst(key));
     }

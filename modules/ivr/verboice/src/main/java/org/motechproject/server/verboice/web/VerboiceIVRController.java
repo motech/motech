@@ -2,10 +2,13 @@ package org.motechproject.server.verboice.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.core.model.CallStatus;
+import org.motechproject.callflow.domain.CallDetailRecord;
+import org.motechproject.callflow.domain.CallDirection;
+import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.CallFlowServer;
 import org.motechproject.callflow.service.FlowSessionService;
+import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.ivr.service.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +52,8 @@ public class VerboiceIVRController {
         FlowSession session = null;
         if (motechCallId == null) {
             session = flowSessionService.findOrCreate(verboiceCallId, phoneNumber);
+            final CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
+            callDetailRecord.setCallDirection(CallDirection.Inbound);
         } else {
             session = updateOutgoingCallSessionIdWithVerboiceSid(motechCallId, verboiceCallId);
         }

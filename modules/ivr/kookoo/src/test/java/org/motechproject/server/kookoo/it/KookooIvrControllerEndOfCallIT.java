@@ -25,13 +25,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.String.format;
 import static junit.framework.Assert.fail;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
 
     public static final int EVENT_TIMEOUT = 12000;
@@ -79,11 +82,10 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             mockKookooIvrController.perform(get("/kookoo/ivr?tree=someTree&ln=en&event=Disconnect&data=31415&sid=123a"));
 
             Object lock = listener.getLock();
-            while (!listener.isEventReceived()) {
-                synchronized (lock) {
-                    lock.wait(EVENT_TIMEOUT);
-                    if (!listener.isEventReceived())
-                        fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+            synchronized (lock) {
+                lock.wait(EVENT_TIMEOUT);
+                if (!listener.isEventReceived()) {
+                    fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
                 }
             }
         } finally {
@@ -108,11 +110,10 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             mockKookooIvrController.perform(get("/kookoo/ivr?tree=someTree&ln=en&event=Hangup&data=31415&sid=123a"));
 
             Object lock = listener.getLock();
-            while (!listener.isEventReceived()) {
-                synchronized (lock) {
-                    lock.wait(EVENT_TIMEOUT);
-                    if (!listener.isEventReceived())
-                        fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+            synchronized (lock) {
+                lock.wait(EVENT_TIMEOUT);
+                if (!listener.isEventReceived()) {
+                    fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
                 }
             }
         } finally {
@@ -136,8 +137,9 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             while (!listener.isEventReceived()) {
                 synchronized (lock) {
                     lock.wait(EVENT_TIMEOUT);
-                    if (!listener.isEventReceived())
+                    if (!listener.isEventReceived()) {
                         fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+                    }
                 }
             }
         } finally {
@@ -147,28 +149,26 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
 
     public static class TestListener implements EventListener {
 
-        Object lock;
-        boolean eventReceived;
+        List<MotechEvent> eventsReceived = new ArrayList<>();
         private String id;
 
         public TestListener(String id) {
             this.id = id;
-            this.lock = new Object();
         }
 
         public Object getLock() {
-            return lock;
+            return eventsReceived;
         }
 
         public boolean isEventReceived() {
-            return eventReceived;
+            return eventsReceived.size() > 0;
         }
 
         @Override
         public void handle(MotechEvent event) {
-            eventReceived = true;
-            synchronized (lock) {
-                lock.notifyAll();
+            synchronized (eventsReceived) {
+                eventsReceived.add(event);
+                eventsReceived.notifyAll();
             }
         }
 

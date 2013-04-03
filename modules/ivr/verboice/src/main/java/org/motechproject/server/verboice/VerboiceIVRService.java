@@ -3,8 +3,10 @@ package org.motechproject.server.verboice;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.motechproject.callflow.domain.CallDetailRecord;
+import org.motechproject.callflow.domain.CallDirection;
+import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.config.SettingsFacade;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * Verboice specific implementation of the IVR Service interface
@@ -56,7 +59,9 @@ public class VerboiceIVRService implements IVRService {
     }
 
     private void initSession(CallRequest callRequest) {
-        FlowSession flowSession = flowSessionService.findOrCreate(callRequest.getCallId(), callRequest.getPhone());
+        FlowSessionRecord flowSession = (FlowSessionRecord) flowSessionService.findOrCreate(callRequest.getCallId(), callRequest.getPhone());
+        final CallDetailRecord callDetailRecord = flowSession.getCallDetailRecord();
+        callDetailRecord.setCallDirection(CallDirection.Outbound);
         for (String key : callRequest.getPayload().keySet()) {
             if (!CALLBACK_URL.equals(key)) {
                 flowSession.set(key, callRequest.getPayload().get(key));
@@ -79,7 +84,7 @@ public class VerboiceIVRService implements IVRService {
             settings.getProperty("host"),
             settings.getProperty("port"),
             callRequest.getCallId(),
-            callRequest.getCallBackUrl(),
+            isBlank(callRequest.getCallBackUrl())?settings.getProperty("channel"):callRequest.getCallBackUrl(),
             callRequest.getPhone(), callbackUrlParameter, callbackStatusUrlParameter
         );
     }

@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.callflow.service.CallFlowServer;
-import org.motechproject.callflow.service.CallFlowServerImpl;
-import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.callflow.service.TreeEventProcessor;
+import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.Action;
@@ -65,7 +62,7 @@ public class CallFlowServerTest {
         doNothing().when(autoWireCapableFactory).autowireBean(anyObject());
         when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autoWireCapableFactory);
 
-        flowSession = new InMemoryFlowSession();
+        flowSession = new InMemoryFlowSession("sid", "3443434");
         when(flowSessionService.findOrCreate(anyString(), anyString())).thenReturn(flowSession);
 
         decisionTreeServer = new CallFlowServerImpl(decisionTreeService, treeEventProcessor, applicationContext, flowSessionService, eventRelay);
@@ -217,11 +214,15 @@ public class CallFlowServerTest {
         verify(treeEventProcessor, times(0)).sendActionsAfter(node, new HashMap<String, Object>());
     }
 
-    static class InMemoryFlowSession implements FlowSession {
+    static class InMemoryFlowSession extends FlowSessionRecord {
 
         private String language;
         Map<String, Serializable> store = new HashMap<String, Serializable>();
         private Node currentNode;
+
+        public InMemoryFlowSession(String sessionId, String phoneNumber) {
+            super(sessionId, phoneNumber);
+        }
 
         @Override
         public String getSessionId() {
