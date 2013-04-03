@@ -8,7 +8,10 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.Arrays.asList;
 
 public class PillReminderApiBundleIT extends BaseOsgiIT {
 
@@ -36,5 +39,12 @@ public class PillReminderApiBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/spring/testPillreminderApiBundleContext.xml"};
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.server.pillreminder.api.service"
+        );
     }
 }

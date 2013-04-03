@@ -365,7 +365,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-pillreminder-api-bundle</artifactId>
+                    <artifactId>motech-pillreminder-api</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

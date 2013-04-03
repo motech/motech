@@ -106,7 +106,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
         'org.motechproject:motech-event-aggregation-bundle:[0,)':'Event aggregation',
         'org.motechproject:motech-event-logging-bundle:[0,)':'Event logging',
         'org.motechproject:motech-tasks-bundle:[0,)':'Tasks',
-        'org.motechproject:motech-pillreminder-api-bundle:[0,)':'Pill reminder',
+        'org.motechproject:motech-pillreminder-api:[0,)':'Pill reminder',
         'org.motechproject:motech-outbox-bundle:[0,)':'Outbox'
     };
 
