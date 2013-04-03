@@ -147,7 +147,7 @@
             <dependencies>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-mrs-api-bundle</artifactId>
+                    <artifactId>motech-mrs-api</artifactId>
                     <version>${project.version}</version>
                     <scope>test</scope>
                 </dependency>

@@ -1195,7 +1195,6 @@
         <module>modules/ivr/motech-calllog</module>
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
-        <module>modules/mrs/api-bundle</module>
         <module>modules/openmrs/api-bundle</module>
         <module>modules/openmrs/atomfeed-bundle</module>
         <module>modules/openmrs/ws-bundle</module>
