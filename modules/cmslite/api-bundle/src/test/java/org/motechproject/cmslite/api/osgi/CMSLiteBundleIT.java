@@ -8,6 +8,7 @@ import org.motechproject.cmslite.api.model.StringContent;
 import org.motechproject.cmslite.api.service.CMSLiteService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 
@@ -28,7 +29,8 @@ public class CMSLiteBundleIT extends BaseOsgiIT {
         assertEquals("Test content", content.getValue());
 
         PollingHttpClient httpClient = new PollingHttpClient();
-        String response = httpClient.get("http://localhost:8080/cmsliteapi/string/en/title", new BasicResponseHandler());
+        String response = httpClient.get(String.format("http://localhost:%d/cmsliteapi/string/en/title", TestContext.getJettyPort()),
+                new BasicResponseHandler());
 
         assertEquals("Test content", response);
     }

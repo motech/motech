@@ -9,6 +9,7 @@ import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,7 +29,8 @@ public class DemoBundleIT extends BaseOsgiIT {
 
         PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
-        String response = httpClient.get("http://localhost:8080/demo/api/trees", new BasicResponseHandler());
+        String response = httpClient.get(String.format("http://localhost:%d/demo/api/trees", TestContext.getJettyPort()),
+                new BasicResponseHandler());
 
         assertNotNull(response);
 

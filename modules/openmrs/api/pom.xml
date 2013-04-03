@@ -145,25 +145,6 @@
             <id>IT</id>
             <build>
                 <plugins>
-                    <!--PROPERTIES READ-->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>properties-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
-                        <executions>
-                            <execution>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>read-project-properties</goal>
-                                </goals>
-                                <configuration>
-                                    <files>
-                                        <file>${modules.root.dir}/maven.properties</file>
-                                    </files>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>sql-maven-plugin</artifactId>

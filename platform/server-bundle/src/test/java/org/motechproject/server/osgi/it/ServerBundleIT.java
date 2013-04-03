@@ -5,6 +5,7 @@ import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
 
@@ -20,7 +21,8 @@ public class ServerBundleIT extends BaseOsgiIT {
     }
 
     public void testThatControllerIsUp() throws IOException, InterruptedException {
-        String response = new PollingHttpClient().get("http://localhost:8080/server/lang/list", new BasicResponseHandler());
+        String response = new PollingHttpClient().get(String.format("http://localhost:%d/server/lang/list",
+                TestContext.getJettyPort()), new BasicResponseHandler());
         assertTrue(response.contains("en"));
     }
 
