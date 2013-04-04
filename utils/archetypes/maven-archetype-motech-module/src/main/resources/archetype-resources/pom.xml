@@ -30,7 +30,7 @@
         <!-- to schedule jobs on motech -->
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-scheduler-bundle</artifactId>
+            <artifactId>motech-scheduler</artifactId>
             <version>${motech.version}</version>
         </dependency>
         <!-- to build your ui on motech's server console -->

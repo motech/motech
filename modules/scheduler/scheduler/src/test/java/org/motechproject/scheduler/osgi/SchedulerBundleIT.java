@@ -1,6 +1,5 @@
 package org.motechproject.scheduler.osgi;
 
-import org.eclipse.gemini.blueprint.test.platform.Platforms;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -10,8 +9,11 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class SchedulerBundleIT extends BaseOsgiIT {
 
@@ -51,5 +53,13 @@ public class SchedulerBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testSchedulerBundleContext.xml"};
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.scheduler",
+                "org.motechproject.scheduler.domain"
+        );
     }
 }

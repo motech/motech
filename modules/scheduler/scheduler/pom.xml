@@ -11,6 +11,7 @@
     <artifactId>motech-scheduler</artifactId>
     <version>0.19-SNAPSHOT</version>
     <name>MOTECH Scheduler</name>
+    <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
@@ -56,10 +57,95 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.motechproject.scheduler.*;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            javax.ejb;resolution:=optional,
+                            javax.jms;resolution:=optional,
+                            javax.mail;resolution:=optional,
+                            javax.mail.internet;resolution:=optional,
+                            javax.management;resolution:=optional,
+                            javax.management.openmbean;resolution:=optional,
+                            javax.naming;resolution:=optional,
+                            javax.rmi;resolution:=optional,
+                            javax.servlet;resolution:=optional,
+                            javax.servlet.http;resolution:=optional,
+                            javax.sql;resolution:=optional,
+                            javax.xml.bind;resolution:=optional,
+                            javax.xml.namespace;resolution:=optional,
+                            org.quartz;version="0",
+                            commonj.*;resolution:=optional,
+                            freemarker.*;resolution:=optional,
+                            net.sf.jasperreports.*;resolution:=optional,
+                            org.apache.velocity.*;resolution:=optional,
+                            org.springframework.jdbc.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <!-- Spring context support has optional import of Quartz. This gives runtime exception.
+                        So embedding quartz related packages. Fragment bundle may also solve the problem. -->
+                        <Private-Package>org.springframework.scheduling.quartz.*</Private-Package>
+                        <Embed-Dependency>
+                            org.springframework.context.support;inline=true
+                        </Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-osgi-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <outputDirectory>
+                                ${user.home}/.motech/bundles
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.7</version>
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
+                    <outputDirectory>${project.build.directory}/standalone</outputDirectory>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                     <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
@@ -79,10 +165,6 @@
                             <manifestEntries>
                                 <Main-Class>org.motechproject.scheduler.impl.MotechScheduler</Main-Class>
                             </manifestEntries>
-                        </transformer>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                            <resource>quartz.properties</resource>
-                            <file>${basedir}/src/main/shade-config/quartz.properties</file>
                         </transformer>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
                             <resource>META-INF/spring.handlers</resource>

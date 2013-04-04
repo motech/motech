@@ -1202,7 +1202,6 @@
         <module>modules/openmrs/domain-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
         <module>modules/rules/api-bundle</module>
-        <module>modules/scheduler/scheduler-bundle</module>
         <module>modules/sms/api-bundle</module>
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
