@@ -60,17 +60,17 @@ public class RepeatCampaignSchedulingIT {
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 10, 30, 0),
-            newDateTime(2020, 7, 17, 10, 30, 0),
-            newDateTime(2020, 7, 24, 10, 30, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 10, 30, 0),
+                newDateTime(2020, 7, 17, 10, 30, 0),
+                newDateTime(2020, 7, 24, 10, 30, 0)),
+                fireTimes);
 
         fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_2-repeat");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 8, 30, 0),
-            newDateTime(2020, 7, 20, 8, 30, 0),
-            newDateTime(2020, 7, 30, 8, 30, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 8, 30, 0),
+                newDateTime(2020, 7, 20, 8, 30, 0),
+                newDateTime(2020, 7, 30, 8, 30, 0)),
+                fireTimes);
     }
 
     @Test
@@ -79,10 +79,10 @@ public class RepeatCampaignSchedulingIT {
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 15, 20, 0),
-            newDateTime(2020, 7, 17, 15, 20, 0),
-            newDateTime(2020, 7, 24, 15, 20, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 15, 20, 0),
+                newDateTime(2020, 7, 17, 15, 20, 0),
+                newDateTime(2020, 7, 24, 15, 20, 0)),
+                fireTimes);
     }
 
     @Test
@@ -93,9 +93,9 @@ public class RepeatCampaignSchedulingIT {
             messageCampaignService.startFor(campaignRequest);
             List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.WeeklyCampaign.entity_1.message_key_1-repeat");
             assertEquals(asList(
-                newDateTime(2020, 7, 17, 10, 30, 0),
-                newDateTime(2020, 7, 24, 10, 30, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 17, 10, 30, 0),
+                    newDateTime(2020, 7, 24, 10, 30, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }
@@ -107,11 +107,11 @@ public class RepeatCampaignSchedulingIT {
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.HourlyCampaign.entity_1.message_key_1-repeat");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 4, 30, 0),
-            newDateTime(2020, 7, 10, 16, 30, 0),
-            newDateTime(2020, 7, 11, 4, 30, 0),
-            newDateTime(2020, 7, 11, 16, 30, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 4, 30, 0),
+                newDateTime(2020, 7, 10, 16, 30, 0),
+                newDateTime(2020, 7, 11, 4, 30, 0),
+                newDateTime(2020, 7, 11, 16, 30, 0)),
+                fireTimes);
     }
 
     private List<DateTime> getFireTimes(String triggerKey) throws SchedulerException {

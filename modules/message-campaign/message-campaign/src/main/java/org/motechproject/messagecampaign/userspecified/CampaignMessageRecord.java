@@ -64,10 +64,10 @@ public class CampaignMessageRecord {
     private CampaignMessage buildDayOfWeekCampaignMessage() {
         DayOfWeekCampaignMessage message = new DayOfWeekCampaignMessage(getDaysOfWeek(repeatOn));
         message.name(getName())
-            .formats(getFormats())
-            .languages(getLanguages())
-            .messageKey(getMessageKey())
-            .setStartTime(parseTime(startTime, ":"));
+                .formats(getFormats())
+                .languages(getLanguages())
+                .messageKey(getMessageKey())
+                .setStartTime(parseTime(startTime, ":"));
         return message;
     }
 
@@ -83,10 +83,10 @@ public class CampaignMessageRecord {
         RepeatIntervalCampaignMessage message = new RepeatIntervalCampaignMessage(new JodaFormatter().
                 parsePeriod(getRepeatEvery()));
         message.name(getName())
-            .formats(getFormats())
-            .languages(getLanguages())
-            .messageKey(getMessageKey())
-            .setStartTime(parseTime(startTime, ":"));
+                .formats(getFormats())
+                .languages(getLanguages())
+                .messageKey(getMessageKey())
+                .setStartTime(parseTime(startTime, ":"));
         return message;
     }
 

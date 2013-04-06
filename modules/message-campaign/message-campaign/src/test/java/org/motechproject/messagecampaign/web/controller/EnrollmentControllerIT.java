@@ -73,7 +73,7 @@ public class EnrollmentControllerIT {
         absoluteCampaignMessageRecord.setName(FRIDAY_CAMPAIGN);
         final CampaignRecord campaignRecord = CampaignRecordBuilder.absoluteCampaignRecord(FRIDAY_CAMPAIGN, absoluteCampaignMessageRecord);
         messageCampaignService.saveCampaign(campaignRecord);
-        final CampaignRequest enrollRequest =  new CampaignRequest(USER_ID, FRIDAY_CAMPAIGN, new LocalDate(2020, 7, 10), null, null); // Friday;
+        final CampaignRequest enrollRequest = new CampaignRequest(USER_ID, FRIDAY_CAMPAIGN, new LocalDate(2020, 7, 10), null, null); // Friday;
         messageCampaignService.startFor(enrollRequest);
     }
 

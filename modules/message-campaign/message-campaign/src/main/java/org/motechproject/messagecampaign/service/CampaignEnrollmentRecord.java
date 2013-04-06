@@ -6,12 +6,12 @@ import org.motechproject.messagecampaign.domain.campaign.CampaignEnrollmentStatu
 /**
  * \defgroup MessageCampaign Message Campaign
  */
+
 /**
  * \ingroup MessageCampaign
- *
+ * <p/>
  * This is the record which will be returned when message campaign service is queried for enrollments
  * It holds the details of an enrollment
- *
  */
 public class CampaignEnrollmentRecord {
     private String externalId;
@@ -21,6 +21,7 @@ public class CampaignEnrollmentRecord {
 
     /**
      * This is the constructor which is used to create an CampaignEnrollmentRecord
+     *
      * @param externalId
      * @param campaignName
      * @param referenceDate
@@ -35,6 +36,7 @@ public class CampaignEnrollmentRecord {
 
     /**
      * This returns the External Id of a CampaignEnrollmentRecord
+     *
      * @return String
      */
     public String getExternalId() {
@@ -43,6 +45,7 @@ public class CampaignEnrollmentRecord {
 
     /**
      * This returns the Campaign Name of a CampaignEnrollmentRecord
+     *
      * @return String
      */
     public String getCampaignName() {
@@ -51,6 +54,7 @@ public class CampaignEnrollmentRecord {
 
     /**
      * This returns the Start Date of a CampaignEnrollmentRecord
+     *
      * @return LocalDate
      */
     public LocalDate getReferenceDate() {
@@ -59,6 +63,7 @@ public class CampaignEnrollmentRecord {
 
     /**
      * This returns the Status of a CampaignEnrollmentRecord
+     *
      * @return CampaignEnrollmentStatus
      */
     public CampaignEnrollmentStatus getStatus() {

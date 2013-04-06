@@ -21,7 +21,7 @@ public class CampaignNameCriterion implements Criterion {
     @Override
     public List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments) {
         List<CampaignEnrollment> filteredEnrollments = new ArrayList<>();
-        for(CampaignEnrollment enrollment: campaignEnrollments) {
+        for (CampaignEnrollment enrollment : campaignEnrollments) {
             if (campaignName.equals(enrollment.getCampaignName())) {
                 filteredEnrollments.add(enrollment);
             }

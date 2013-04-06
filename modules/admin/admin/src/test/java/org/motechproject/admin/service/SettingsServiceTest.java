@@ -31,7 +31,7 @@ import static org.motechproject.server.config.settings.MotechSettings.QUARTZ_SCH
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;
-    private static final String BUNDLE_SYMBOLIC_NAME = "motech-test";
+    private static final String BUNDLE_SYMBOLIC_NAME = "motech-test-bundle";
 
     private static final String AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE = "2000";
     private static final String QUARTZ_SCHEDULER_NAME_VALUE = "sample";

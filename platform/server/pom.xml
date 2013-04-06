@@ -328,7 +328,7 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-message-campaign-bundle</artifactId>
+                    <artifactId>motech-message-campaign</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

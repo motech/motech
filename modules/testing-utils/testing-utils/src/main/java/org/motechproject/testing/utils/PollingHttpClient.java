@@ -7,32 +7,27 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PollingHttpClient {
-    private static Logger logger = Logger.getLogger(PollingHttpClient.class.getName());
-
+    private static final Logger LOG = LoggerFactory.getLogger(PollingHttpClient.class);
     private static final int MILLIS_PER_SEC = 1000;
-    private static final int CONNECT_TIMEOUT = 30 * 1000;
 
+    private DefaultHttpClient httpClient;
     private int maxWaitPeriodInMilliSeconds;
-    private final DefaultHttpClient httpClient;
 
+    public PollingHttpClient() {
+        this(new DefaultHttpClient(), 60);
+    }
 
     public PollingHttpClient(DefaultHttpClient httpClient, int waitPeriodInSeconds) {
         this.httpClient = httpClient;
         this.maxWaitPeriodInMilliSeconds = waitPeriodInSeconds * MILLIS_PER_SEC;
     }
-
-    public PollingHttpClient() {
-        this(new DefaultHttpClient(), 30);
-    }
-
 
     public HttpResponse get(String uri) throws IOException, InterruptedException {
         return get(uri, new DefaultResponseHandler());
@@ -53,49 +48,40 @@ public class PollingHttpClient {
     }
 
     private <T> T executeOnUriAvailability(HttpUriRequest httpUriRequest, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
-        waitForUriAvailability(getRequestUrl(httpUriRequest));
+        waitForUriAvailability(httpUriRequest);
         return httpClient.execute(httpUriRequest, responseHandler);
     }
 
-    private String getRequestUrl(HttpUriRequest request) {
-        return request.getRequestLine().getUri();
-    }
-
-
-    private void waitForUriAvailability(String uri) throws IOException, InterruptedException {
+    private void waitForUriAvailability(HttpUriRequest httpUriRequest) throws InterruptedException {
+        HttpResponse response = null;
         long startTime = System.currentTimeMillis();
-        int responseCode = HttpStatus.SC_NOT_FOUND;
-        HttpURLConnection connection = null;
-        long waitingFor = 0;
+        long waitingFor;
+
         do {
             try {
-                connection = (HttpURLConnection) new URL(uri).openConnection();
-                connection.setConnectTimeout(CONNECT_TIMEOUT);
-                connection.connect();
-                responseCode = connection.getResponseCode();
-                if (responseNotFound(responseCode)) {
+                response = httpClient.execute(httpUriRequest);
+
+                if (responseNotFound(response)) {
+                    LOG.warn("Response not found. Thread stopped for 2 seconds.");
                     Thread.sleep(2 * MILLIS_PER_SEC);
                 }
+
+                EntityUtils.consume(response.getEntity());
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage());
+                LOG.error(e.getMessage(), e);
                 Thread.sleep(2 * MILLIS_PER_SEC);
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
             }
 
             waitingFor = System.currentTimeMillis() - startTime;
-
-        } while (responseNotFound(responseCode) && waitingFor < maxWaitPeriodInMilliSeconds);
+        } while (responseNotFound(response) && waitingFor < maxWaitPeriodInMilliSeconds);
     }
 
     public CredentialsProvider getCredentialsProvider() {
         return httpClient.getCredentialsProvider();
     }
 
-    private static boolean responseNotFound(int responseCode) {
-        return responseCode == HttpStatus.SC_NOT_FOUND;
+    private static boolean responseNotFound(HttpResponse response) {
+        return response == null || response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

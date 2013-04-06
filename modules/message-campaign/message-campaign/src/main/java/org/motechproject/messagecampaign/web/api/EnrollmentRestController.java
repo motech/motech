@@ -44,7 +44,7 @@ public class EnrollmentRestController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
     public void enrollOrUpdateUser(@PathVariable String campaignName, @PathVariable String userId,
-                           @RequestBody EnrollmentRequest enrollmentRequest) {
+                                   @RequestBody EnrollmentRequest enrollmentRequest) {
 
         CampaignRequest campaignRequest = new CampaignRequest(userId, campaignName,
                 enrollmentRequest.getReferenceDate(), null, enrollmentRequest.getStartTime());
@@ -60,8 +60,8 @@ public class EnrollmentRestController {
 
     @RequestMapping(value = "/{campaignName}/users/{userId}", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
-    public @ResponseBody
-    EnrollmentDto getEnrollment(@PathVariable String campaignName, @PathVariable String userId) {
+    @ResponseBody
+    public EnrollmentDto getEnrollment(@PathVariable String campaignName, @PathVariable String userId) {
         CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery()
                 .withCampaignName(campaignName).withExternalId(userId);
 
@@ -105,11 +105,11 @@ public class EnrollmentRestController {
             messageCampaignService.stopAll(campaignRequest);
         }
     }
-    
+
     @RequestMapping(value = "/{campaignName}/users", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
-    public @ResponseBody
-    EnrollmentList getEnrollmentsForCampaign(@PathVariable String campaignName) {
+    @ResponseBody
+    public EnrollmentList getEnrollmentsForCampaign(@PathVariable String campaignName) {
         CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery().withCampaignName(campaignName);
 
         List<CampaignEnrollment> enrollments = enrollmentService.search(query);
@@ -122,7 +122,8 @@ public class EnrollmentRestController {
 
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
-    public @ResponseBody EnrollmentList getEnrollmentsForUser(@PathVariable String userId) {
+    @ResponseBody
+    public EnrollmentList getEnrollmentsForUser(@PathVariable String userId) {
         CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery().withExternalId(userId);
 
         List<CampaignEnrollment> enrollments = enrollmentService.search(query);
@@ -139,10 +140,10 @@ public class EnrollmentRestController {
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_ENROLLMENTS_ROLE)
-    public @ResponseBody EnrollmentList getAllEnrollments(
-            @RequestParam(required = false) String enrollmentStatus,
-            @RequestParam(required = false) String externalId,
-            @RequestParam(required = false) String campaignName) {
+    @ResponseBody
+    public EnrollmentList getAllEnrollments(@RequestParam(required = false) String enrollmentStatus,
+                                            @RequestParam(required = false) String externalId,
+                                            @RequestParam(required = false) String campaignName) {
         CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery();
 
         if (enrollmentStatus != null) {
@@ -160,15 +161,17 @@ public class EnrollmentRestController {
         return new EnrollmentList(enrollments);
     }
 
-    @ExceptionHandler({ EnrollmentNotFoundException.class, CampaignNotFoundException.class})
+    @ExceptionHandler({EnrollmentNotFoundException.class, CampaignNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody String handleException(Exception e) {
+    @ResponseBody
+    public String handleException(Exception e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody String handleIllegalArgException(Exception e) {
+    @ResponseBody
+    public String handleIllegalArgException(Exception e) {
         return e.getMessage();
     }
 

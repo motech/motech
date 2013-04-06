@@ -44,8 +44,8 @@ public class CampaignControllerIT {
     private String userName1 = "testuser2";
 
     @Before
-    public void setup(){
-       setUpSecurityContextWithManageCampaignRole();
+    public void setup() {
+        setUpSecurityContextWithManageCampaignRole();
     }
 
     @Test(expected = AccessDeniedException.class)

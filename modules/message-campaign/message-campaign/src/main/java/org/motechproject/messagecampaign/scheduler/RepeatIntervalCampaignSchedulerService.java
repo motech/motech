@@ -34,12 +34,12 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
         DateTime start = newDateTime(enrollment.getReferenceDate(), deliverTimeFor(enrollment, message));
         DateTime end = start.plus(campaign.maxDuration());
         RepeatingSchedulableJob job = new RepeatingSchedulableJob()
-            .setMotechEvent(motechEvent)
-            .setStartTime(start.toDate())
-            .setEndTime(end.toDate())
-            .setRepeatIntervalInMilliSeconds(message.getRepeatIntervalInMillis())
-            .setIgnorePastFiresAtStart(true)
-            .setUseOriginalFireTimeAfterMisfire(true);
+                .setMotechEvent(motechEvent)
+                .setStartTime(start.toDate())
+                .setEndTime(end.toDate())
+                .setRepeatIntervalInMilliSeconds(message.getRepeatIntervalInMillis())
+                .setIgnorePastFiresAtStart(true)
+                .setUseOriginalFireTimeAfterMisfire(true);
         getSchedulerService().safeScheduleRepeatingJob(job);
     }
 

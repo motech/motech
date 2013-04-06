@@ -64,9 +64,9 @@ public class MessageCampaignServiceFT {
         messageCampaignService.startFor(campaignRequest);
 
         listener.assertEventRaisedAt(asList(
-            newDateTime(2012, 10, 1, 10, 30, 0),
-            newDateTime(2012, 10, 8, 10, 30, 0),
-            newDateTime(2012, 10, 15, 10, 30, 0)
+                newDateTime(2012, 10, 1, 10, 30, 0),
+                newDateTime(2012, 10, 8, 10, 30, 0),
+                newDateTime(2012, 10, 15, 10, 30, 0)
         ));
     }
 }

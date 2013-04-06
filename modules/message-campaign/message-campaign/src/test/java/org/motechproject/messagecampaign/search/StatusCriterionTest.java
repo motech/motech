@@ -33,7 +33,7 @@ public class StatusCriterionTest {
         allCampaignEnrollments.add(completedCampaignEnrollment);
 
         List<CampaignEnrollment> filteredCampaignEnrollments = new StatusCriterion(CampaignEnrollmentStatus.ACTIVE).filter(allCampaignEnrollments);
-        assertEquals(asList(new CampaignEnrollmentStatus[]{ CampaignEnrollmentStatus.ACTIVE, CampaignEnrollmentStatus.ACTIVE}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getStatus()));
+        assertEquals(asList(new CampaignEnrollmentStatus[]{CampaignEnrollmentStatus.ACTIVE, CampaignEnrollmentStatus.ACTIVE}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getStatus()));
     }
 
     @Test

@@ -42,11 +42,12 @@ public class EnrollmentController {
     public void removeEnrollment(@PathVariable String campaignName, @PathVariable String externalId) {
         enrollmentController.removeEnrollment(campaignName, externalId);
     }
-    
+
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @PreAuthorize("permitAll")
-    public @ResponseBody EnrollmentList getAllEnrollments(
+    @ResponseBody
+    public EnrollmentList getAllEnrollments(
             @RequestParam(required = false) String externalId, @RequestParam(required = false) String campaignName) {
         return enrollmentController.getAllEnrollments(CampaignEnrollmentStatus.ACTIVE.name(), externalId, campaignName);
     }

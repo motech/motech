@@ -18,7 +18,7 @@
     <bean id="campaignJsonLoader" class="org.motechproject.messagecampaign.loader.CampaignJsonLoader"
           init-method="loadAferInit">
         <property name="messageCampaignsJsonFile" value="day_of_week_campaign_it/campaigns.json"/>
-        <property name="settings" ref="messageCampaignSettings" />
-        <property name="allMessageCampaigns" ref="allMessageCampaigns" />
+        <property name="settings" ref="messageCampaignSettings"/>
+        <property name="allMessageCampaigns" ref="allMessageCampaigns"/>
     </bean>
 </beans>

@@ -57,6 +57,7 @@
                                 dummyHandler, handleResponse, jConfirm, alertHandler, window,
                                 blockUI, unblockUI, motechAlert, motechConfirm, jAlert
                             </predefinedVars>
+                            <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>
                                 <exclude>rangy-core.js</exclude>
                             </excludes>

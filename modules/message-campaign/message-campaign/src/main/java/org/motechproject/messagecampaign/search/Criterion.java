@@ -5,8 +5,9 @@ import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
 
 import java.util.List;
 
-public interface Criterion  {
+public interface Criterion {
     List<CampaignEnrollment> fetch(AllCampaignEnrollments allCampaignEnrollments);
+
     List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments);
 }
 

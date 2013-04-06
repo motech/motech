@@ -182,6 +182,8 @@ public class SettingsServiceImpl implements SettingsService {
 
     private String getSymbolicName(long bundleId) {
         Bundle bundle = bundleContext.getBundle(bundleId);
-        return bundle.getSymbolicName();
+        String symbolicName = bundle.getSymbolicName();
+
+        return symbolicName.endsWith("-bundle") ? symbolicName : symbolicName + "-bundle";
     }
 }

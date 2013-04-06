@@ -30,8 +30,8 @@ public class CampaignRestController {
 
     @RequestMapping(value = "/campaigns/{campaignName}", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
-    public @ResponseBody
-    CampaignDto getCampaign(@PathVariable String campaignName) {
+    @ResponseBody
+    public CampaignDto getCampaign(@PathVariable String campaignName) {
         CampaignRecord campaignRecord = messageCampaignService.getCampaignRecord(campaignName);
 
         if (campaignRecord == null) {
@@ -51,7 +51,8 @@ public class CampaignRestController {
 
     @RequestMapping(value = "/campaigns", method = RequestMethod.GET)
     @PreAuthorize(HAS_MANAGE_CAMPAIGNS_ROLE)
-    public @ResponseBody List<CampaignDto> getAllCampaigns() {
+    @ResponseBody
+    public List<CampaignDto> getAllCampaigns() {
         List<CampaignRecord> campaignRecords = messageCampaignService.getAllCampaignRecords();
 
         List<CampaignDto> campaignDtos = new ArrayList<>();
@@ -71,7 +72,8 @@ public class CampaignRestController {
 
     @ExceptionHandler(CampaignNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody String handleException(Exception e) {
+    @ResponseBody
+    public String handleException(Exception e) {
         return e.getMessage();
     }
 }

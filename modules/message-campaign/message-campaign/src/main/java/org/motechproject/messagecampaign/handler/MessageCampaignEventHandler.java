@@ -20,14 +20,14 @@ public class MessageCampaignEventHandler {
     public void enrollOrUnenroll(MotechEvent event) {
         String externalId = event.getParameters().get(EventKeys.EXTERNAL_ID_KEY).toString();
         String campaignName = event.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY).toString();
-        LocalDate referenceDate = (LocalDate)event.getParameters().get(EventKeys.REFERENCE_DATE);
+        LocalDate referenceDate = (LocalDate) event.getParameters().get(EventKeys.REFERENCE_DATE);
         Time referenceTime = new Time(event.getParameters().get(EventKeys.REFERENCE_TIME).toString());
         Time startTime = new Time(event.getParameters().get(EventKeys.START_TIME).toString());
         CampaignRequest request = new CampaignRequest(externalId, campaignName, referenceDate, referenceTime, startTime);
 
         if (event.getSubject().equals(EventKeys.ENROLL_USER_SUBJECT)) {
             messageCampaignService.startFor(request);
-        } else if  (event.getSubject().equals(EventKeys.UNENROLL_USER_SUBJECT)) {
+        } else if (event.getSubject().equals(EventKeys.UNENROLL_USER_SUBJECT)) {
             messageCampaignService.stopAll(request);
         }
 

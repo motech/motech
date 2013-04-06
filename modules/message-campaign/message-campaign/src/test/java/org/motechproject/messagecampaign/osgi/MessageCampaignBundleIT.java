@@ -5,7 +5,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.LocalDate;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
@@ -14,6 +13,7 @@ import org.motechproject.messagecampaign.service.CampaignEnrollmentRecord;
 import org.motechproject.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.messagecampaign.service.MessageCampaignService;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.TestContext;
@@ -58,8 +58,8 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         }
     }
 
-    public void testControllersAnonymous() throws IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+    public void testControllersAnonymous() throws Exception {
+        PollingHttpClient httpClient = new PollingHttpClient();
 
         HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         HttpResponse response = httpClient.execute(request);
@@ -74,8 +74,8 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
-    public void testControllersUnauthenticated() throws IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+    public void testControllersUnauthenticated() throws Exception {
+        PollingHttpClient httpClient = new PollingHttpClient();
         httpClient.getCredentialsProvider()
                 .setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("mal", "icious"));
 
@@ -91,12 +91,12 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
-    public void testControllersAsUnathorizedUser() throws IOException {
+    public void testControllersAsUnathorizedUser() throws Exception {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
         motechUserService.register("user-mc-noauth", "pass", "testmcnoauth@test.com", null, asList("Admin User"));
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient();
 
         HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/enrollments/users", PORT));
         request.setHeader("Authorization", "Basic " + encodeBase64String("user-mc-noauth:pass".getBytes("UTF-8")).trim());
@@ -111,12 +111,12 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
     }
 
-    public void testControllersAsAuthorizedUser() throws InterruptedException, IOException {
+    public void testControllersAsAuthorizedUser() throws Exception {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
         motechUserService.register("user-mc-auth", "pass", "testmcauth@test.com", "test", asList("Message-campaign Bundle"));
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient();
 
         HttpGet request = new HttpGet(String.format("http://localhost:%d/messagecampaign/web-api/campaigns", PORT));
         request.addHeader("Authorization", "Basic " + encodeBase64String("user-mc-auth:pass".getBytes("UTF-8")).trim());
@@ -134,5 +134,14 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/spring/testMessageCampaignApiBundleContext.xml"};
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.messagecampaign.domain.campaign",
+                "org.motechproject.messagecampaign.service",
+                "org.motechproject.messagecampaign.userspecified"
+        );
     }
 }

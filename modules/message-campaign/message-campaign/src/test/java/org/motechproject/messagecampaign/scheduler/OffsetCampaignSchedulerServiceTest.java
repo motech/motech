@@ -59,8 +59,8 @@ public class OffsetCampaignSchedulerServiceTest {
             when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
-                new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(3, 10),
-                new OffsetCampaignMessage(days(5)).messageKey("foo").setStartTime(5, 30));
+                    new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(3, 10),
+                    new OffsetCampaignMessage(days(5)).messageKey("foo").setStartTime(5, 30));
 
             ArgumentCaptor<RunOnceSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
             verify(schedulerService).scheduleRunOnceJob(jobCaptor.capture());
@@ -82,8 +82,8 @@ public class OffsetCampaignSchedulerServiceTest {
             when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
-                new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(2, 0).setDeliverTime(8, 20),
-                new OffsetCampaignMessage(minutes(5)).messageKey("foo").setStartTime(5, 30));
+                    new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setReferenceTime(2, 0).setDeliverTime(8, 20),
+                    new OffsetCampaignMessage(minutes(5)).messageKey("foo").setStartTime(5, 30));
 
             ArgumentCaptor<RunOnceSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
             verify(schedulerService).scheduleRunOnceJob(jobCaptor.capture());
@@ -105,8 +105,8 @@ public class OffsetCampaignSchedulerServiceTest {
             when(allMessageCampaigns.getCampaign("camp")).thenReturn(campaign);
 
             offsetCampaignSchedulerService.scheduleMessageJob(
-                new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setDeliverTime(8, 20),
-                new OffsetCampaignMessage(days(3)).messageKey("foo").setStartTime(5, 30));
+                    new CampaignEnrollment("entity1", "camp").setReferenceDate(new LocalDate(2010, 10, 3)).setDeliverTime(8, 20),
+                    new OffsetCampaignMessage(days(3)).messageKey("foo").setStartTime(5, 30));
 
             ArgumentCaptor<RunOnceSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
             verify(schedulerService).scheduleRunOnceJob(jobCaptor.capture());

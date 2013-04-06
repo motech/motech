@@ -77,11 +77,11 @@ public class EnrollmentRestControllerTest {
     @Test
     public void shouldEnrollUser() throws Exception {
         controller.perform(
-            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(loadJson("enrollmentRequest.json").getBytes("UTF-8"))
+                post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(loadJson("enrollmentRequest.json").getBytes("UTF-8"))
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         ArgumentCaptor<CampaignRequest> captor = ArgumentCaptor.forClass(CampaignRequest.class);
@@ -96,11 +96,11 @@ public class EnrollmentRestControllerTest {
     @Test
     public void shouldUpdateUserEnrollmentWithExtId() throws Exception {
         controller.perform(
-            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+                post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         ArgumentCaptor<CampaignRequest> captor = ArgumentCaptor.forClass(CampaignRequest.class);
@@ -120,13 +120,13 @@ public class EnrollmentRestControllerTest {
                 .when(messageCampaignService).updateEnrollment(any(CampaignRequest.class), eq("couchId"));
 
         controller.perform(
-            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+                post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
     }
 
@@ -139,11 +139,11 @@ public class EnrollmentRestControllerTest {
                 .when(messageCampaignService).updateEnrollment(any(CampaignRequest.class), eq("couchId"));
 
         controller.perform(
-            post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
+                post("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(loadJson("updateEnrollmentExternalId.json").getBytes("UTF-8"))
         ).andExpect(
-            status().is(HttpStatus.BAD_REQUEST.value())
+                status().is(HttpStatus.BAD_REQUEST.value())
         ).andExpect(
                 content().string(expectedResponse)
         );
@@ -161,13 +161,13 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = loadJson("enrollmentDetails.json");
 
         controller.perform(
-            get("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                get("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> captor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -186,11 +186,11 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = "No enrollments found for user " + USER_ID;
 
         controller.perform(
-            get("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                get("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
     }
 
@@ -215,13 +215,13 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = loadJson("enrollmentsForCampaign.json");
 
         controller.perform(
-            get("/web-api/enrollments/{campaignName}/users", CAMPAIGN_NAME)
+                get("/web-api/enrollments/{campaignName}/users", CAMPAIGN_NAME)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> captor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -239,13 +239,13 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = "{\"campaignName\":\"PREGNANCY\", \"enrollments\":[]}";
 
         controller.perform(
-            get("/web-api/enrollments/{campaignName}/users", CAMPAIGN_NAME)
+                get("/web-api/enrollments/{campaignName}/users", CAMPAIGN_NAME)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
     }
 
@@ -266,13 +266,13 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = loadJson("enrollmentsForUser.json");
 
         controller.perform(
-            get("/web-api/enrollments/users/{user_id}", USER_ID)
+                get("/web-api/enrollments/users/{user_id}", USER_ID)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> captor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -290,11 +290,11 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = "No enrollments found for user " + USER_ID;
 
         controller.perform(
-            get("/web-api/enrollments/users/{user_id}", USER_ID)
+                get("/web-api/enrollments/users/{user_id}", USER_ID)
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
     }
 
@@ -319,13 +319,13 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = loadJson("enrollmentList.json");
 
         controller.perform(
-            get("/web-api/enrollments/users/?enrollmentStatus=COMPLETED")
+                get("/web-api/enrollments/users/?enrollmentStatus=COMPLETED")
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> captor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -341,9 +341,9 @@ public class EnrollmentRestControllerTest {
                 .thenReturn(Collections.<CampaignEnrollment>emptyList());
 
         controller.perform(
-            get("/web-api/enrollments/users/?campaignName={campaignName}&externalId={externalId}", CAMPAIGN_NAME, USER_ID)
+                get("/web-api/enrollments/users/?campaignName={campaignName}&externalId={externalId}", CAMPAIGN_NAME, USER_ID)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> captor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -357,11 +357,11 @@ public class EnrollmentRestControllerTest {
     @Test
     public void shouldUpdateEnrollment() throws Exception {
         controller.perform(
-            put("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(loadJson("enrollmentUpdate.json").getBytes("UTF-8"))
+                put("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(loadJson("enrollmentUpdate.json").getBytes("UTF-8"))
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         final Time expectedTime = new Time(17, 1);
@@ -390,9 +390,9 @@ public class EnrollmentRestControllerTest {
                 .thenReturn(asList(new CampaignEnrollment(CAMPAIGN_NAME, USER_ID)));
 
         controller.perform(
-            delete("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                delete("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         ArgumentCaptor<CampaignEnrollmentsQuery> queryCaptor = ArgumentCaptor.forClass(CampaignEnrollmentsQuery.class);
@@ -417,11 +417,11 @@ public class EnrollmentRestControllerTest {
         final String expectedResponse = "No enrollments found for user " + USER_ID;
 
         controller.perform(
-            delete("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
+                delete("/web-api/enrollments/{campaignName}/users/{userId}", CAMPAIGN_NAME, USER_ID)
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
     }
 

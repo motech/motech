@@ -83,9 +83,9 @@ public class MessageCampaignServiceImplTest {
         when(campaignSchedulerFactory.getCampaignScheduler("testCampaign")).thenReturn(campaignScheduler);
 
         CampaignRequest request = new EnrollRequestBuilder().withDefaults()
-            .withReferenceDate(new LocalDate(2011, 11, 22))
-            .withDeliverTime(new Time(8, 30))
-            .build();
+                .withReferenceDate(new LocalDate(2011, 11, 22))
+                .withDeliverTime(new Time(8, 30))
+                .build();
         messageCampaignService.startFor(request);
 
         ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
@@ -111,9 +111,9 @@ public class MessageCampaignServiceImplTest {
         when(campaignSchedulerFactory.getCampaignScheduler("testCampaign")).thenReturn(campaignScheduler);
 
         CampaignRequest request = new EnrollRequestBuilder().withDefaults()
-            .withReferenceDate(new LocalDate(2011, 11, 22))
-            .withDeliverTime(new Time(8, 30))
-            .build();
+                .withReferenceDate(new LocalDate(2011, 11, 22))
+                .withDeliverTime(new Time(8, 30))
+                .build();
         messageCampaignService.stopAll(request);
 
         verify(campaignEnrollmentService).unregister(request.externalId(), request.campaignName());
@@ -235,7 +235,7 @@ public class MessageCampaignServiceImplTest {
         DateTime now = now();
         DateTime startDate = now.plusDays(1);
         DateTime endDate = now.plusDays(1).plusDays(5);
-        final Map<String,List<DateTime>> campaignTimings = messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
+        final Map<String, List<DateTime>> campaignTimings = messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
         assertEquals(0, campaignTimings.size());
     }
 

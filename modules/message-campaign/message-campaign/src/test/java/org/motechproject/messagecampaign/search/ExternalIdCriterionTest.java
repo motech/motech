@@ -25,7 +25,7 @@ public class ExternalIdCriterionTest {
         allCampaignEnrollments.add(new CampaignEnrollment("externalId3", null));
 
         List<CampaignEnrollment> filteredCampaignEnrollments = new ExternalIdCriterion("externalId1").filter(allCampaignEnrollments);
-        assertEquals(asList(new String[]{ "externalId1"}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(new String[]{"externalId1"}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getExternalId()));
     }
 
     @Test

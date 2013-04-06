@@ -21,7 +21,7 @@ public class CampaignEnrollmentRecordMapperTest {
     }
 
     @Test
-    public void shouldMapEnrollmentToEnrollmentResponse(){
+    public void shouldMapEnrollmentToEnrollmentResponse() {
         CampaignEnrollment enrollment = new CampaignEnrollment("externalId", "campaign1");
         enrollment.setReferenceDate(new LocalDate(2012, 12, 24));
         CampaignEnrollmentRecord record = campaignEnrollmentRecordMapper.map(enrollment);

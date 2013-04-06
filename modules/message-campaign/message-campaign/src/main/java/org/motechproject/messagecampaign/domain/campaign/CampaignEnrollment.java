@@ -100,6 +100,6 @@ public class CampaignEnrollment extends MotechBaseDataObject {
 
     @JsonIgnore
     public boolean isActive() {
-        return  status.equals(CampaignEnrollmentStatus.ACTIVE);
+        return status.equals(CampaignEnrollmentStatus.ACTIVE);
     }
 }

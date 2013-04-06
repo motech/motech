@@ -22,7 +22,7 @@ public class StatusCriterion implements Criterion {
     @Override
     public List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments) {
         List<CampaignEnrollment> filteredEnrollments = new ArrayList<>();
-        for(CampaignEnrollment enrollment: campaignEnrollments) {
+        for (CampaignEnrollment enrollment : campaignEnrollments) {
             if (campaignEnrollmentStatus.equals(enrollment.getStatus())) {
                 filteredEnrollments.add(enrollment);
             }

@@ -60,11 +60,11 @@ public class DayOfWeekCampaignSchedulingIT {
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 10, 30, 0),
-            newDateTime(2020, 7, 13, 10, 30, 0),
-            newDateTime(2020, 7, 17, 10, 30, 0),
-            newDateTime(2020, 7, 20, 10, 30, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 10, 30, 0),
+                newDateTime(2020, 7, 13, 10, 30, 0),
+                newDateTime(2020, 7, 17, 10, 30, 0),
+                newDateTime(2020, 7, 20, 10, 30, 0)),
+                fireTimes);
     }
 
     @Test
@@ -73,11 +73,11 @@ public class DayOfWeekCampaignSchedulingIT {
         messageCampaignService.startFor(campaignRequest);
         List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
         assertEquals(asList(
-            newDateTime(2020, 7, 10, 8, 20, 0),
-            newDateTime(2020, 7, 13, 8, 20, 0),
-            newDateTime(2020, 7, 17, 8, 20, 0),
-            newDateTime(2020, 7, 20, 8, 20, 0)),
-            fireTimes);
+                newDateTime(2020, 7, 10, 8, 20, 0),
+                newDateTime(2020, 7, 13, 8, 20, 0),
+                newDateTime(2020, 7, 17, 8, 20, 0),
+                newDateTime(2020, 7, 20, 8, 20, 0)),
+                fireTimes);
     }
 
     @Test
@@ -88,9 +88,9 @@ public class DayOfWeekCampaignSchedulingIT {
             messageCampaignService.startFor(campaignRequest);
             List<DateTime> fireTimes = getFireTimes("org.motechproject.messagecampaign.fired-campaign-message-MessageJob.DayOfWeekCampaign.entity_1.message_key_1");
             assertEquals(asList(
-                newDateTime(2020, 7, 17, 10, 30, 0),
-                newDateTime(2020, 7, 20, 10, 30, 0)),
-                fireTimes);
+                    newDateTime(2020, 7, 17, 10, 30, 0),
+                    newDateTime(2020, 7, 20, 10, 30, 0)),
+                    fireTimes);
         } finally {
             stopFakingTime();
         }

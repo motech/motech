@@ -48,7 +48,7 @@ public class CampaignEnrollmentServiceTest {
     public void shouldSetInactiveStatusForEnrollmentOnUnregister() {
         CampaignEnrollment enrollment = new CampaignEnrollment("externalId", "cccaaName");
         service.unregister(enrollment);
-        assertEquals(CampaignEnrollmentStatus.INACTIVE,enrollment.getStatus());
+        assertEquals(CampaignEnrollmentStatus.INACTIVE, enrollment.getStatus());
         ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
         verify(mockAllCampaignEnrollments).saveOrUpdate(campaignEnrollmentCaptor.capture());
         assertThat(campaignEnrollmentCaptor.getValue().getCampaignName(), is(enrollment.getCampaignName()));
@@ -72,7 +72,7 @@ public class CampaignEnrollmentServiceTest {
         assertThat(campaignEnrollmentCaptor.getValue().getExternalId(), is(enrollment.getExternalId()));
         assertThat(campaignEnrollmentCaptor.getValue().getStatus(), is(CampaignEnrollmentStatus.INACTIVE));
     }
-    
+
     @Test
     public void shouldSearchTheCampaignEnrollmentsBasedOnTheGivenQuery() {
         Criterion primaryCriterion = mock(Criterion.class);

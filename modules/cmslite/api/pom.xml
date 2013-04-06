@@ -92,7 +92,7 @@
                                 $, angular, blockUI, unblockUI, handleWithStackTrace, alertHandler,
                                 jConfirm, jQuery, parseUri
                             </predefinedVars>
-                            <failOnIssues>true</failOnIssues>
+                            <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
                     </execution>
                 </executions>

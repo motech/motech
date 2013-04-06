@@ -12,7 +12,7 @@
     <bean id="campaignJsonLoader" class="org.motechproject.messagecampaign.loader.CampaignJsonLoader"
           init-method="loadAferInit">
         <property name="messageCampaignsJsonFile" value="message-campaigns.json"/>
-        <property name="settings" ref="messageCampaignSettings" />
-        <property name="allMessageCampaigns" ref="allMessageCampaigns" />
+        <property name="settings" ref="messageCampaignSettings"/>
+        <property name="allMessageCampaigns" ref="allMessageCampaigns"/>
     </bean>
 </beans>

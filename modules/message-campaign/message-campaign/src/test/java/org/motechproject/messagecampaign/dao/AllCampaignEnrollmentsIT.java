@@ -48,7 +48,7 @@ public class AllCampaignEnrollmentsIT {
         assertThat(enrollment.getId(), is(actualEnrollment.getId()));
         assertThat(enrollment.getReferenceDate(), is(actualEnrollment.getReferenceDate()));
     }
-    
+
     @Test
     public void shouldCreateNewEnrollmentIfSavedForFirstTime() {
         allCampaignEnrollments = spy(allCampaignEnrollments);
@@ -85,7 +85,7 @@ public class AllCampaignEnrollmentsIT {
         assertEquals(asList(new String[]{"active_external_id_1", "active_external_id_2"}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
 
         filteredEnrollments = allCampaignEnrollments.findByStatus(CampaignEnrollmentStatus.INACTIVE);
-        assertEquals(asList(new String[] { "some_external_id"}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+        assertEquals(asList(new String[]{"some_external_id"}), extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
     }
 
     @Test

@@ -17,14 +17,22 @@
         <db.server>localhost</db.server>
         <db.port>5984</db.port>
         <db.prefix>${user.name}_</db.prefix>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>3.1.0.RELEASE</spring.version>
-        <spring.security.version>3.1.0.RELEASE</spring.security.version>
-        <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
+
         <external.dependency.release.tag>r010</external.dependency.release.tag>
-        <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
+
+        <spring.version>3.1.0.RELEASE</spring.version>
+        <spring.security.version>${spring.version}</spring.security.version>
+        <spring.integration.version>2.1.0.RELEASE</spring.integration.version>
+
+        <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
+
+        <check.code.skip>${maven.test.skip}</check.code.skip>
+        <pmd.skip>${check.code.skip}</pmd.skip>
+        <checkstyle.skip>${check.code.skip}</checkstyle.skip>
+        <jslint.enable>true</jslint.enable>
 
         <scm.connection>scm:git:https://code.google.com/p/motech</scm.connection>
         <scm.developerConnection>scm:git:https://code.google.com/p/motech</scm.developerConnection>
@@ -1131,81 +1139,81 @@
 
     <modules>
         <!-- Non-OSGI modules -->
-        <module>platform/commons-api</module>
-        <module>platform/commons-date</module>
-        <module>platform/commons-couchdb</module>
-        <module>platform/osgi-extender-fragment</module>
-        <module>platform/event</module>
-        <module>platform/osgi-web-util</module>
-        <module>platform/server-api</module>
-        <module>platform/server-config</module>
-        <module>platform/server-startup</module>
         <module>platform/server</module>
         <module>platform/web-security/web-security</module>
-        <module>platform/web-security/web-security-bundle</module>
         <module>modules/admin/admin</module>
-        <module>modules/alerts/api</module>
-        <module>modules/appointments/api</module>
-        <module>modules/cmslite/api</module>
         <module>modules/commcare/api</module>
-        <module>modules/decisiontree/core</module>
-        <module>modules/callflow/api</module>
         <module>modules/demo/demo</module>
-        <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
         <module>modules/ivr/kookoo</module>
         <module>modules/ivr/verboice</module>
         <module>modules/ivr/voxeo</module>
-        <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api</module>
-        <module>modules/mrs/api</module>
-        <module>modules/couchmrs/mrs-couchdb</module>
         <module>modules/openmrs/api</module>
         <module>modules/openmrs/atomfeed</module>
         <module>modules/openmrs/omod</module>
         <module>modules/openmrs/ws</module>
         <module>modules/outbox/api</module>
         <module>modules/outbox/outbox</module>
-        <module>modules/pillreminder/api</module>
         <module>modules/rules/api</module>
-        <module>modules/scheduler/scheduler</module>
-        <module>modules/scheduletracking/api</module>
         <module>modules/sms/api</module>
         <module>modules/sms/http</module>
         <module>modules/sms/smpp</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/testing-utils/testing-utils</module>
-
         <module>utils/http-agent/http-agent</module>
 
         <!-- OSGI modules -->
+        <module>platform/commons-api</module>
+        <module>platform/commons-couchdb</module>
+        <module>platform/commons-date</module>
+        <module>platform/event</module>
+        <module>platform/osgi-extender-fragment</module>
+        <module>platform/osgi-web-util</module>
+        <module>platform/server-api</module>
         <module>platform/server-bundle</module>
+        <module>platform/server-config</module>
+        <module>platform/server-startup</module>
+        <module>platform/web-security/web-security-bundle</module>
         <module>modules/admin/admin-bundle</module>
+        <module>modules/alerts/api</module>
+        <module>modules/appointments/api</module>
+        <module>modules/callflow/api</module>
+        <module>modules/cmslite/api</module>
         <module>modules/commcare/api-bundle</module>
+        <module>modules/couchmrs/mrs-couchdb</module>
+        <module>modules/decisiontree/core</module>
         <module>modules/demo/demo-bundle</module>
+        <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging-bundle</module>
         <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>
         <module>modules/ivr/kookoo-bundle</module>
+        <module>modules/ivr/motech-calllog</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
-        <module>modules/ivr/motech-calllog</module>
-        <module>modules/message-campaign/message-campaign-bundle</module>
+        <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api-bundle</module>
+        <module>modules/mrs/api</module>
         <module>modules/openmrs/api-bundle</module>
         <module>modules/openmrs/atomfeed-bundle</module>
-        <module>modules/openmrs/ws-bundle</module>
         <module>modules/openmrs/domain-bundle</module>
+        <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
+        <module>modules/pillreminder/api</module>
         <module>modules/rules/api-bundle</module>
+        <module>modules/scheduler/scheduler</module>
+        <module>modules/scheduletracking/api</module>
         <module>modules/sms/api-bundle</module>
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
+
+        <!-- Archetypes modules -->
         <module>utils/archetypes/maven-archetype-motech-module</module>
 
         <!-- Packaging modules -->
@@ -1316,7 +1324,7 @@
                     </rulesets>
                     <includeTests>false</includeTests>
                     <targetJdk>${jdk.version}</targetJdk>
-                    <skip>${maven.test.skip}</skip>
+                    <skip>${pmd.skip}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -1361,7 +1369,7 @@
                     <enableFilesSummary>true</enableFilesSummary>
                     <failsOnError>true</failsOnError>
                     <consoleOutput>true</consoleOutput>
-                    <skip>${maven.test.skip}</skip>
+                    <skip>${checkstyle.skip}</skip>
                 </configuration>
                 <executions>
                     <execution>

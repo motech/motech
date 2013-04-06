@@ -25,7 +25,7 @@ public class CampaignNameCriterionTest {
         allCampaignEnrollments.add(new CampaignEnrollment("externalId1", "campaign1"));
 
         List<CampaignEnrollment> filteredCampaignEnrollments = new CampaignNameCriterion("campaign1").filter(allCampaignEnrollments);
-        assertEquals(asList(new String[]{ "campaign1", "campaign1"}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getCampaignName()));
+        assertEquals(asList(new String[]{"campaign1", "campaign1"}), extract(filteredCampaignEnrollments, on(CampaignEnrollment.class).getCampaignName()));
     }
 
     @Test

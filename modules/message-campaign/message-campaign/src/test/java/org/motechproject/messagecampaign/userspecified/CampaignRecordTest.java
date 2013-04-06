@@ -28,7 +28,7 @@ public class CampaignRecordTest {
         messageRecord = CampaignMessageRecordTestBuilder.createAbsoluteCampaignMessageRecord("Message 1", "message-key");
         campaignRecord = CampaignRecordBuilder.absoluteCampaignRecord("Campaign 1", messageRecord);
 
-        Campaign campaign =  campaignRecord.build();
+        Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof AbsoluteCampaign);
         AbsoluteCampaign absoluteCampaign = (AbsoluteCampaign) campaign;
         assertEquals(campaignRecord.getName(), absoluteCampaign.getName());

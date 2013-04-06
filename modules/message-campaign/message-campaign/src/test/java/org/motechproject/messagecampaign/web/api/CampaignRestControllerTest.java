@@ -66,13 +66,13 @@ public class CampaignRestControllerTest {
         final String expectedResponse = loadJson("campaignDetails.json");
 
         controller.perform(
-            get("/web-api/campaigns/{campaignName}", campaignName)
+                get("/web-api/campaigns/{campaignName}", campaignName)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         verify(messageCampaignService).getCampaignRecord(campaignName);
@@ -86,11 +86,11 @@ public class CampaignRestControllerTest {
         final String expectedResponse = "Campaign not found: " + campaignName;
 
         controller.perform(
-            get("/web-api/campaigns/{campaignName}", campaignName)
+                get("/web-api/campaigns/{campaignName}", campaignName)
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
 
         verify(messageCampaignService).getCampaignRecord(campaignName);
@@ -101,11 +101,11 @@ public class CampaignRestControllerTest {
         final CampaignRecord campaignRecord = readSingleCampaign("campaignDetails.json");
 
         controller.perform(
-            post("/web-api/campaigns/")
-            .body(loadJson("campaignDetails.json").getBytes())
-            .contentType(MediaType.APPLICATION_JSON)
+                post("/web-api/campaigns/")
+                        .body(loadJson("campaignDetails.json").getBytes())
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         ArgumentCaptor<CampaignRecord> captor = ArgumentCaptor.forClass(CampaignRecord.class);
@@ -122,13 +122,13 @@ public class CampaignRestControllerTest {
         final String expectedResponse = loadJson("campaignList.json");
 
         controller.perform(
-            get("/web-api/campaigns/")
+                get("/web-api/campaigns/")
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         ).andExpect(
-            content().type(APPLICATION_JSON_UTF8)
+                content().type(APPLICATION_JSON_UTF8)
         ).andExpect(
-            content().string(jsonMatcher(expectedResponse))
+                content().string(jsonMatcher(expectedResponse))
         );
 
         verify(messageCampaignService).getAllCampaignRecords();
@@ -142,9 +142,9 @@ public class CampaignRestControllerTest {
         when(messageCampaignService.getCampaignRecord(campaignName)).thenReturn(campaignRecord);
 
         controller.perform(
-            delete("/web-api/campaigns/{campaignName}", campaignName)
+                delete("/web-api/campaigns/{campaignName}", campaignName)
         ).andExpect(
-            status().is(HttpStatus.OK.value())
+                status().is(HttpStatus.OK.value())
         );
 
         verify(messageCampaignService).deleteCampaign(campaignName);
@@ -159,11 +159,11 @@ public class CampaignRestControllerTest {
                 .when(messageCampaignService).deleteCampaign(campaignName);
 
         controller.perform(
-            delete("/web-api/campaigns/{campaignName}", campaignName)
+                delete("/web-api/campaigns/{campaignName}", campaignName)
         ).andExpect(
-            status().is(HttpStatus.NOT_FOUND.value())
+                status().is(HttpStatus.NOT_FOUND.value())
         ).andExpect(
-            content().string(expectedResponse)
+                content().string(expectedResponse)
         );
 
         verify(messageCampaignService).deleteCampaign(campaignName);
