@@ -6,13 +6,17 @@ import org.motechproject.ivr.service.IVRService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
 
 public class VerboiceBundleIT extends BaseOsgiIT {
 
-    public void testThatVerboiceIvrServicesIsAvailableOnImport() {
-        IVRService ivrService = (IVRService) getApplicationContext().getBean("testIvrServiceOsgi");
+    public void testThatVerboiceIvrServicesIsAvailableOnImport() throws InvalidSyntaxException {
+        ServiceReference[] references = bundleContext.getServiceReferences(IVRService.class.getName(), "(IvrProvider=Verboice)");
+        assertNotNull(references);
+        IVRService ivrService = (IVRService) bundleContext.getService(references[0]);
         assertNotNull(ivrService);
     }
 
