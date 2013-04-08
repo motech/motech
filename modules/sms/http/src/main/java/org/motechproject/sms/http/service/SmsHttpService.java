@@ -5,9 +5,13 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.sms.api.SmsDeliveryFailureException;
 import org.motechproject.sms.http.SMSGatewayResponse;
 import org.motechproject.sms.http.TemplateReader;
+import org.motechproject.sms.http.event.SendSmsDTEvent;
 import org.motechproject.sms.http.template.Authentication;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
 import org.slf4j.Logger;
@@ -15,14 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class SmsHttpService {
     private HttpClient commonsHttpClient;
-
+    private MotechSchedulerService schedulerService;
 
     private static Logger log = LoggerFactory.getLogger(SmsHttpService.class);
     private TemplateReader templateReader;
@@ -36,9 +38,6 @@ public class SmsHttpService {
         this.commonsHttpClient = commonsHttpClient;
     }
 
-    public void sendSMS(String recipient, String message) throws SmsDeliveryFailureException {
-        sendSms(Arrays.asList(recipient), message);
-    }
 
     public void sendSms(List<String> recipients, String message) throws SmsDeliveryFailureException {
         if (CollectionUtils.isEmpty(recipients) || StringUtils.isEmpty(message)) {
@@ -54,6 +53,7 @@ public class SmsHttpService {
             int status = commonsHttpClient.executeMethod(httpMethod);
             response = httpMethod.getResponseBodyAsString();
             log.info("HTTP Status:" + status + "|Response:" + response);
+
         } catch (Exception e) {
             log.error("SMSDeliveryFailure due to : ", e);
             throw new SmsDeliveryFailureException(response, e);
@@ -69,6 +69,13 @@ public class SmsHttpService {
         }
 
         log.debug("SMS with message %s sent successfully to %s:", message, StringUtils.join(recipients.iterator(), ","));
+
+    }
+
+     public void sendSms(List<String> recipients, String message, DateTime deliveryTime) throws SmsDeliveryFailureException {
+        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(new SendSmsDTEvent(recipients, message).toMotechEvent(), deliveryTime.toDate());
+        log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
+        schedulerService.safeScheduleRunOnceJob(schedulableJob);
     }
 
     private void setAuthenticationInfo(Authentication authentication) {
