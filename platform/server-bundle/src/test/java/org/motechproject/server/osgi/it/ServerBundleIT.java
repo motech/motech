@@ -13,11 +13,12 @@ import java.io.IOException;
 public class ServerBundleIT extends BaseOsgiIT {
 
     public void testUIFrameworkService() throws IOException, InterruptedException {
-        UIFrameworkService service = (UIFrameworkService) verifyServiceAvailable(UIFrameworkService.class.getName());
+        UIFrameworkService uiFrameworkService = (UIFrameworkService) verifyServiceAvailable(UIFrameworkService.class.getName());
+        assertNotNull(uiFrameworkService);
 
         final ModuleRegistrationData registrationData = new ModuleRegistrationData("testUIFrameworkService", "/testUIFrameworkService");
-        service.registerModule(registrationData);
-        assertEquals(registrationData, service.getModuleData(registrationData.getModuleName()));
+        uiFrameworkService.registerModule(registrationData);
+        assertEquals(registrationData, uiFrameworkService.getModuleData(registrationData.getModuleName()));
     }
 
     public void testThatControllerIsUp() throws IOException, InterruptedException {

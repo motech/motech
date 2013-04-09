@@ -4,6 +4,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.event.metrics.MetricsAgent;
+import org.motechproject.event.utils.MotechProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +146,10 @@ public class ServerEventRelay implements EventRelay {
     }
 
     private void handleEvent(EventListener listener, MotechEvent event) {
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            Object target = MotechProxyUtils.getTargetIfProxied(listener);
+            Thread.currentThread().setContextClassLoader(target.getClass().getClassLoader());
             listener.handle(event);
 
         } catch (Exception e) {
@@ -159,6 +163,8 @@ public class ServerEventRelay implements EventRelay {
             }
             event.incrementMessageRedeliveryCount();
             sendEventMessage(event);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     }
 }
