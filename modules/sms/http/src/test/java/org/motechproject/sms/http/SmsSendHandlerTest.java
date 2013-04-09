@@ -1,5 +1,6 @@
 package org.motechproject.sms.http;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,6 +12,7 @@ import org.motechproject.sms.api.constants.EventSubjects;
 import org.motechproject.sms.http.service.SmsHttpService;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class SmsSendHandlerTest {
         Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
         assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-        assertArrayEquals(new String[]{EventSubjects.SEND_SMS}, annotation.subjects());
+        assertArrayEquals(new String[]{EventSubjects.SEND_SMS, EventSubjects.SEND_SMSDT}, annotation.subjects());
     }
 
     @Test
@@ -51,5 +53,21 @@ public class SmsSendHandlerTest {
 
         new SmsSendHandler(smsHttpService).handle(motechEvent);
         verify(smsHttpService).sendSms(recipients, messageText);
+    }
+
+    @Test
+    public void shouldSendSmsIfDeliveryTimeIsSpecified() throws SmsDeliveryFailureException {
+        HashMap<String, Object> eventParameters = new HashMap<String, Object>();
+        List<String> recipients = asList(new String[]{"recipient_1", "recipient_2"});
+        String messageText = "message_text";
+
+        eventParameters.put(EventDataKeys.RECIPIENTS, recipients);
+        eventParameters.put(EventDataKeys.MESSAGE, messageText);
+        eventParameters.put(EventDataKeys.DELIVERY_TIME, new DateTime(2013, 04, 05, 4, 40, 0, 0));
+
+        MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMSDT, eventParameters);
+
+        new SmsSendHandler(smsHttpService).handle(motechEvent);
+        verify(smsHttpService).sendSms(recipients, messageText,new DateTime(2013, 04, 05, 4, 40, 0, 0));
     }
 }

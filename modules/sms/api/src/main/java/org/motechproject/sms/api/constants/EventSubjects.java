@@ -9,6 +9,7 @@ public final class EventSubjects {
      * delivery_time - org.joda.DateTime used to schedule the delivery of the message at the specified time
      */
     public static final String SEND_SMS = "SendSMS";
+    public static final String SEND_SMSDT = "SendSMSDT";
     /**
      * Event key specifying an sms message is to be delivered. A listener can receive this event and handle message delivery.
      * Payload:

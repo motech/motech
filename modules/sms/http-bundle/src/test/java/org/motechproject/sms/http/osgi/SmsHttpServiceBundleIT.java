@@ -12,9 +12,7 @@ import org.motechproject.testing.utils.server.RequestInfo;
 import org.motechproject.testing.utils.server.StubServer;
 import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.ClassPathResource;
-
 import java.io.InputStream;
-
 import static java.util.Arrays.asList;
 
 
@@ -24,7 +22,6 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
     public static final int MAX_WAIT_TIME = 2000;
     public static final int WAIT_DURATION_BETWEEN_CHECKS = 10;
     private StubServer stubServer;
-
 
     @Override
     protected void onSetUp() throws Exception {
@@ -79,5 +76,3 @@ public class SmsHttpServiceBundleIT extends BaseOsgiIT {
         return new String[]{"/META-INF/spring/testSmsHttpBundleContext.xml"};
     }
 }
-
-
