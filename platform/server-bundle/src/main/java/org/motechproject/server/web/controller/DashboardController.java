@@ -10,6 +10,8 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.MotechPlatformState;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
@@ -25,7 +27,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,8 +50,14 @@ public class DashboardController {
     @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private MotechUserService userService;
 
-    @RequestMapping({"/index", "/", "/home" })
+    @Autowired
+    private MotechRoleService roleService;
+
+
+    @RequestMapping({"/index", "/", "/home"})
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
 
         ModelAndView mav = null;
@@ -57,12 +67,15 @@ public class DashboardController {
             mav = new ModelAndView("redirect:startup.do");
         } else {
             mav = new ModelAndView("index");
+            String userName;
             if (request.getUserPrincipal() != null) {
-                mav.addObject("userName", request.getUserPrincipal().getName());
+                userName = request.getUserPrincipal().getName();
+                mav.addObject("userName", userName);
                 mav.addObject("securityLaunch", true);
             } else {
+                userName = "Admin Mode";
                 mav.addObject("securityLaunch", false);
-                mav.addObject("userName", "Admin Mode");
+                mav.addObject("userName", userName);
             }
             if (StringUtils.isNotBlank(request.getSession().getServletContext().getContextPath()) && !"/".equals(request.getSession().getServletContext().getContextPath())) {
                 mav.addObject("contextPath", request.getSession().getServletContext().getContextPath().substring(1) + "/");
@@ -72,8 +85,10 @@ public class DashboardController {
             mav.addObject("uptime", getUptime(request));
 
             Map<String, Collection<ModuleRegistrationData>> modules = uiFrameworkService.getRegisteredModules();
-            mav.addObject(MODULES_WITH_SUBMENU, modules.get(MODULES_WITH_SUBMENU));
-            mav.addObject(MODULES_WITHOUT_SUBMENU, modules.get(MODULES_WITHOUT_SUBMENU));
+
+            mav.addObject(MODULES_WITH_SUBMENU, filterPermittedModules(userName, modules.get(MODULES_WITH_SUBMENU)));
+
+            mav.addObject(MODULES_WITHOUT_SUBMENU, filterPermittedModules(userName, modules.get(MODULES_WITHOUT_SUBMENU)));
 
             if (moduleName != null) {
                 ModuleRegistrationData currentModule = uiFrameworkService.getModuleData(moduleName);
@@ -86,6 +101,34 @@ public class DashboardController {
         }
 
         return mav;
+    }
+
+    private List<ModuleRegistrationData> filterPermittedModules(String userName, Collection<ModuleRegistrationData> modulesWithoutSubmenu) {
+        List<ModuleRegistrationData> allowedModules = new ArrayList<>();
+
+        if (modulesWithoutSubmenu != null) {
+            for (ModuleRegistrationData registrationData : modulesWithoutSubmenu) {
+
+                String requiredPermissionForAccess = registrationData.getRoleForAccess();
+
+                if (requiredPermissionForAccess != null) {
+                    List<String> userRoles = userService.getUser(userName).getRoles();
+
+                    for (String userRole : userRoles) {
+                        boolean userHasPermission = roleService.getRole(userRole).getPermissionNames().contains(requiredPermissionForAccess);
+
+                        if (userHasPermission) {
+                            allowedModules.add(registrationData);
+                            break;
+                        }
+                    }
+                } else {
+                    allowedModules.add(registrationData);
+                }
+
+            }
+        }
+        return allowedModules;
     }
 
     @RequestMapping(value = "/gettime", method = RequestMethod.POST)
@@ -104,7 +147,7 @@ public class DashboardController {
         PeriodFormatter formatter = new PeriodFormatterBuilder()
                 .appendDays()
                 .appendSuffix(" " + messageSource.getMessage("day", null, locale), " " + messageSource.getMessage("days", null, locale))
-                .appendSeparator(" " + messageSource.getMessage("and", null, locale)+" ")
+                .appendSeparator(" " + messageSource.getMessage("and", null, locale) + " ")
                 .appendHours()
                 .appendSuffix(" " + messageSource.getMessage("hour", null, locale), " " + messageSource.getMessage("hours", null, locale))
                 .appendSeparator(" " + messageSource.getMessage("and", null, locale) + " ")

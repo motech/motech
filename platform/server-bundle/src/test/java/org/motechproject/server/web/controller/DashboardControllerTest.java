@@ -6,6 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.model.UserDto;
+import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.ui.LocaleSettings;
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,11 +18,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -52,6 +61,13 @@ public class DashboardControllerTest {
 
     @Mock
     ServletContext servletContext;
+
+    @Mock
+    MotechUserService userService;
+
+    @Mock
+    MotechRoleService roleService;
+
 
     @InjectMocks
     private DashboardController controller = new DashboardController();
@@ -89,11 +105,76 @@ public class DashboardControllerTest {
     public void testDashboardWithModule() {
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
 
-        ModelAndView result = controller.index("demo", httpServletRequest);
+        ModelAndView result = controller.index(MODULE_NAME, httpServletRequest);
 
         assertEquals("index", result.getViewName());
         assertNotNull(result.getModelMap().get(UPTIME));
         assertEquals(regData, result.getModelMap().get(CURRENT_MODULE));
         verify(uiFrameworkService).getModuleData(MODULE_NAME);
+    }
+
+    @Test
+    public void testDashboardDisplayLinksWhichDontRequireAuthorization(){
+
+        when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
+        UserDto userDto = new UserDto();
+        userDto.setRoles(Arrays.asList("some role"));
+        when(userService.getUser("admin")).thenReturn(userDto);
+
+        HashMap hashMap = new HashMap();
+        hashMap.put(UIFrameworkService.MODULES_WITHOUT_SUBMENU, Arrays.asList(regData));
+        when(uiFrameworkService.getRegisteredModules()).thenReturn(hashMap);
+
+        ModelAndView result = controller.index(MODULE_NAME, httpServletRequest);
+
+        assertTrue(((List) result.getModelMap().get(UIFrameworkService.MODULES_WITHOUT_SUBMENU)).contains(regData));
+    }
+
+    @Test
+    public void testDashboardLinksAreDisplayedForAuthorizedUsers(){
+        String requiredRole = "testRole";
+        when(regData.getRoleForAccess()).thenReturn(requiredRole);
+        when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
+        UserDto userDto = new UserDto();
+        userDto.setRoles(Arrays.asList("admin-role"));
+        when(userService.getUser("admin")).thenReturn(userDto);
+
+        HashMap hashMap = new HashMap();
+        hashMap.put(UIFrameworkService.MODULES_WITHOUT_SUBMENU, Arrays.asList(regData));
+        when(uiFrameworkService.getRegisteredModules()).thenReturn(hashMap);
+
+        RoleDto roleDto= new RoleDto();
+        roleDto.setPermissionNames(Arrays.asList(requiredRole));
+
+        when(roleService.getRole("admin-role")).thenReturn(roleDto);
+
+
+        ModelAndView result = controller.index(MODULE_NAME, httpServletRequest);
+
+        assertTrue(((List) result.getModelMap().get(UIFrameworkService.MODULES_WITHOUT_SUBMENU)).contains(regData));
+    }
+
+    @Test
+    public void testDashboardLinksAreNotDisplayedForUnauthorizedUsers(){
+        String requiredRole = "testRole";
+        when(regData.getRoleForAccess()).thenReturn(requiredRole);
+        when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
+        UserDto userDto = new UserDto();
+        userDto.setRoles(Arrays.asList("admin-role"));
+        when(userService.getUser("admin")).thenReturn(userDto);
+
+        HashMap hashMap = new HashMap();
+        hashMap.put(UIFrameworkService.MODULES_WITHOUT_SUBMENU, Arrays.asList(regData));
+        when(uiFrameworkService.getRegisteredModules()).thenReturn(hashMap);
+
+        RoleDto roleDto= new RoleDto();
+        roleDto.setPermissionNames(Arrays.asList("some other role"));
+
+        when(roleService.getRole("admin-role")).thenReturn(roleDto);
+
+        ModelAndView result = controller.index(MODULE_NAME, httpServletRequest);
+
+        assertFalse(((List) result.getModelMap().get(UIFrameworkService.MODULES_WITHOUT_SUBMENU)).contains(regData));
+
     }
 }

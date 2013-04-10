@@ -10,6 +10,7 @@ public class ModuleRegistrationData {
     private String moduleName;
     private String url;
     private String header;
+    private String roleForAccess;
 
     private List<String> angularModules = new ArrayList<>();
     private Map<String, String> subMenu = new HashMap<>();
@@ -143,5 +144,13 @@ public class ModuleRegistrationData {
         result = 31 * result + (header != null ? header.hashCode() : 0);
         result = 31 * result + (angularModules != null ? angularModules.hashCode() : 0);
         return result;
+    }
+
+    public String getRoleForAccess() {
+        return roleForAccess;
+    }
+
+    public void setRoleForAccess(String role) {
+        this.roleForAccess = role;
     }
 }
