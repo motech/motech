@@ -10,11 +10,11 @@ import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.SMSType;
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.service.SmsRecordSearchCriteria;
+import org.motechproject.sms.api.domain.SmsRecords;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -83,11 +83,12 @@ public class AllSmsRecordsIT {
 
         SmsRecord smsRecord = new SmsRecord(smsType, recipient, messageContent, messageTime, deliveryStatus, refNo);
         allSmsRecords.addOrReplace(smsRecord);
+
         SmsRecord duplicateMessage = new SmsRecord(smsType, recipient, messageContent, messageTime, deliveryStatus, refNo);
         allSmsRecords.addOrReplace(duplicateMessage);
 
-        List<SmsRecord> allMessages = allSmsRecords.findAllBy(new SmsRecordSearchCriteria().withReferenceNumber(refNo).withPhoneNumber(recipient));
-        assertThat(allMessages.size(), is(1));
+        SmsRecords allMessages = allSmsRecords.findAllBy(new SmsRecordSearchCriteria().withReferenceNumber(refNo).withPhoneNumber(recipient));
+        assertThat(allMessages.getRecords().size(), is(1));
     }
 
     @Test

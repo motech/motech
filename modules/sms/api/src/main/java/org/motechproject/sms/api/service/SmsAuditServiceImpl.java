@@ -2,6 +2,7 @@ package org.motechproject.sms.api.service;
 
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.repository.AllSmsRecords;
+import org.motechproject.sms.api.domain.SmsRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class SmsAuditServiceImpl implements SmsAuditService {
     }
 
     @Override
-    public List<SmsRecord> findAllSmsRecords(SmsRecordSearchCriteria criteria) {
+    public SmsRecords findAllSmsRecords(SmsRecordSearchCriteria criteria) {
         return allSmsRecords.findAllBy(criteria);
     }
 }

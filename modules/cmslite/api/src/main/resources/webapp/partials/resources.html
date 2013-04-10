@@ -1,4 +1,6 @@
-<div>
+<div class="box-header ng-binding">{{msg('header.resourceCMS')}}</div>
+<div class="box-content clearfix">
+
     <div id="operations-resource" class="control-group">
         <button type="button" ng-click="showNewResourceModal()" class="btn btn-success">
             <i class="icon-plus icon-white"></i>&nbsp;{{msg('button.newResource')}}
@@ -9,34 +11,36 @@
     </div>
 
     <div class="collapse" id="collapse-resource">
-        <div class="row-fluid span12 margin-before">
-            <div class="span4">
-                <fieldset class="inside"><legend>{{msg('resource.name')}}</legend>
-                    <div class="control-group form-inline">
-                        <input type="text" class="input-xlarge search-query" placeholder="{{msg('resource.searchByName')}}" data-event-type="keyup" data-search-field="name" jqgrid-search="resourceTable">
-                    </div>
-                </fieldset>
-            </div>
-            <div class="span4">
-                <fieldset class="inside"><legend>{{msg('resource.type')}}</legend>
-                    <div data-toggle="buttons-checkbox" class="btn-group control-group">
-                        <button class="btn btn-info active" type="button" data-field-type="boolean" data-search-field="string" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('resource.type.string')}}</button>
-                        <button class="btn btn-info active" type="button" data-field-type="boolean" data-search-field="stream" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('resource.type.stream')}}</button>
-                    </div>
-                </fieldset>
-            </div>
-            <div class="span4">
-                <fieldset class="inside">
-                    <legend>{{msg('resource.languages')}}</legend>
-                    <label class="checkbox inline" ng-repeat="lang in usedLanguages">
-                        <input type="checkbox" id="languages" value="{{lang}}" data-field-type="array" data-event-type="click" data-search-field="languages" jqgrid-search="resourceTable"> {{lang}}
-                    </label>
-                </fieldset>
+        <div class="inside">
+            <div class="row-fluid span12 margin-before">
+                <div class="span4">
+                    <fieldset class="inside"><legend>{{msg('resource.name')}}</legend>
+                        <div class="control-group form-inline">
+                            <input type="text" class="input-xlarge search-query" placeholder="{{msg('resource.searchByName')}}" data-event-type="keyup" data-search-field="name" jqgrid-search="resourceTable">
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="span3">
+                    <fieldset class="inside"><legend>{{msg('resource.type')}}</legend>
+                        <div data-toggle="buttons-checkbox" class="btn-group control-group">
+                            <button class="btn btn-info active" type="button" data-field-type="boolean" data-search-field="string" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('resource.type.string')}}</button>
+                            <button class="btn btn-info active" type="button" data-field-type="boolean" data-search-field="stream" jqgrid-search="resourceTable"><i class="icon-white icon-ok"></i> {{msg('resource.type.stream')}}</button>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="span5">
+                    <fieldset class="inside">
+                        <legend>{{msg('resource.languages')}}</legend>
+                        <label class="checkbox inline" ng-repeat="lang in usedLanguages">
+                            <input type="checkbox" id="languages" value="{{lang}}" data-field-type="array" data-event-type="click" data-search-field="languages" jqgrid-search="resourceTable"> {{lang}}
+                        </label>
+                    </fieldset>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="outsideResourceTable" class="margin-before2">
+    <div id="outsideResourceTable" class="overrideJqgridTable">
         <table id="resourceTable" resources-grid="pageResourceTable"></table>
         <div id="pageResourceTable"></div>
     </div>

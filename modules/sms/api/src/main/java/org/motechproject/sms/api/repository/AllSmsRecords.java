@@ -9,17 +9,23 @@ import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
 import org.codehaus.jackson.type.TypeReference;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
+import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.lucene.query.CouchDbLuceneQuery;
 import org.motechproject.commons.couchdb.query.QueryParam;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.service.SmsRecordSearchCriteria;
+import org.motechproject.sms.api.domain.SmsRecords;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +37,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Repository
 public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord> {
 
+    private final Logger logger = LoggerFactory.getLogger(AllSmsRecords.class);
+
     public void updateDeliveryStatus(String recipient, String referenceNumber, String deliveryStatus) {
         SmsRecord smsRecord = findLatestBy(recipient, referenceNumber);
         if (smsRecord != null) {
@@ -40,22 +48,21 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
     }
 
     SmsRecord findLatestBy(String recipient, String referenceNumber) {
-        List<SmsRecord> smsRecords = findAllBy(new SmsRecordSearchCriteria()
+        SmsRecords smsRecords = findAllBy(new SmsRecordSearchCriteria()
                 .withPhoneNumber(recipient)
                 .withReferenceNumber(referenceNumber));
-        return CollectionUtils.isEmpty(smsRecords) ? null : (SmsRecord) sort(smsRecords, on(SmsRecord.class).getMessageTime(), reverseOrder()).get(0);
+        return CollectionUtils.isEmpty(smsRecords.getRecords()) ? null : (SmsRecord) sort(smsRecords.getRecords(), on(SmsRecord.class).getMessageTime(), reverseOrder()).get(0);
     }
 
     public void addOrReplace(SmsRecord smsRecord) {
-        List<SmsRecord> smsRecordsInDb = findAllBy(new SmsRecordSearchCriteria()
+        SmsRecords smsRecordsInDb = findAllBy(new SmsRecordSearchCriteria()
                 .withPhoneNumber(smsRecord.getPhoneNumber())
                 .withMessageTime(smsRecord.getMessageTime())
                 .withReferenceNumber(smsRecord.getReferenceNumber()));
-
-        if (CollectionUtils.isEmpty(smsRecordsInDb)) {
+        if (CollectionUtils.isEmpty(smsRecordsInDb.getRecords())) {
             add(smsRecord);
         } else {
-            SmsRecord smsRecordInDb = smsRecordsInDb.get(0);
+            SmsRecord smsRecordInDb = smsRecordsInDb.getRecords().get(0);
             smsRecord.setId(smsRecordInDb.getId());
             smsRecord.setRevision(smsRecordInDb.getRevision());
             update(smsRecord);
@@ -75,7 +82,8 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
                     "return result " +
                     "}"
     )})
-    public List<SmsRecord> findAllBy(SmsRecordSearchCriteria criteria) {
+
+    public SmsRecords findAllBy(SmsRecordSearchCriteria criteria) {
         StringBuilder query = new CouchDbLuceneQuery()
                 .withAny("smsType", criteria.getSmsTypes())
                 .with("phoneNumber", criteria.getPhoneNumber())
@@ -87,7 +95,7 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
         return runQuery(query, criteria.getQueryParam());
     }
 
-    private List<SmsRecord> runQuery(StringBuilder queryString, QueryParam queryParam) {
+    private SmsRecords runQuery(StringBuilder queryString, QueryParam queryParam) {
         LuceneQuery query = new LuceneQuery("SmsRecord", "search");
         query.setQuery(queryString.toString());
         query.setStaleOk(false);
@@ -99,6 +107,15 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
         }
         String sortBy = queryParam.getSortBy();
         if (isNotBlank(sortBy)) {
+            Class clazz = SmsRecord.class;
+            try {
+                Field f = clazz.getDeclaredField(sortBy);
+                if (f.getType().equals(DateTime.class)) {
+                    sortBy = sortBy + "<date>";
+                }
+            } catch (NoSuchFieldException e) {
+                logger.error(String.format("No found field %s", sortBy), e);
+            }
             String sortString = queryParam.isReverse() ? "\\" + sortBy : sortBy;
             query.setSort(sortString);
         }
@@ -108,15 +125,17 @@ public class AllSmsRecords extends CouchDbRepositorySupportWithLucene<SmsRecord>
         return convertToSmsRecords(db.queryLucene(query, typeRef));
     }
 
-    private List<SmsRecord> convertToSmsRecords(CustomLuceneResult<SmsRecord> result) {
+    private SmsRecords convertToSmsRecords(CustomLuceneResult<SmsRecord> result) {
         List<SmsRecord> smsRecords = new ArrayList<>();
+        int count = 0;
         if (result != null) {
             List<CustomLuceneResult.Row<SmsRecord>> rows = result.getRows();
             for (CustomLuceneResult.Row<SmsRecord> row : rows) {
                 smsRecords.add(row.getDoc());
             }
+            count = result.getTotalRows();
         }
-        return smsRecords;
+        return new SmsRecords(count, smsRecords);
     }
 
     //TODO: Create Base class and move it to there.

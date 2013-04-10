@@ -1,0 +1,105 @@
+/* -- override Jquery Grid -- */
+
+.overrideJqgridTable .ui-jqgrid input.ui-pg-input {
+    width: auto;
+    height: 14px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.overrideJqgridTable .ui-jqgrid select.ui-pg-selbox {
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.overrideJqgridTable .ui-widget-header {
+    background: #224477 url("../img/navbar.jpg") repeat-x 0 0;
+}
+
+.overrideJqgridTable .ui-jqgrid.ui-widget-content {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0 0 4px 4px;
+    border-top: 1px solid #D4E1F9;
+}
+
+.overrideJqgridTable .ui-jqgrid .table-lightblue .ui-widget-content {
+    background: #E4F1F9;
+}
+
+.overrideJqgridTable .table-lightblue .ui-widget-content {
+    border: 1px solid #D4E1F9;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-htable.table-lightblue th {
+    border-color: #c5dbec;
+    color: #224477;
+    background: #deefff;
+    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
+    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede', GradientType=0 );
+    -webkit-box-shadow: 0 0 2px #bec9de;
+       -moz-box-shadow: 0 0 2px #bec9de;
+            box-shadow: 0 0 2px #bec9de;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-view {
+    font-size: 1em;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-state-highlight,
+.overrideJqgridTable .ui-jqgrid .ui-widget-content .ui-state-highlight,
+.overrideJqgridTable .ui-jqgrid .ui-widget-header .ui-state-highlight {
+    border-color: #D4E1F9;
+    background: #EDF5F9;
+}
+
+.overrideJqgridTable .ui-jqgrid.ui-widget-content {
+    background: #E4F1F9;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-titlebar {
+    padding: .3em .2em .2em .5em;
+    font-size: 15px;
+    color: #C2EAFE;
+}
+
+.overrideJqgridTable .ui-jqgrid .ui-jqgrid-htable th div {
+    height: 30px;
+    line-height: 30px;
+}
+
+.overrideJqgridTable .ui-jqgrid-btable .ui-widget-content ul {
+    margin: 0 0 0 10px;
+    color: #0088CC;
+}
+
+.overrideJqgridTable .ui-jqgrid-btable .ui-widget-content li {
+    line-height: 18px;
+    float: left;
+    margin: 0 15px;
+}
+
+.overrideJqgridTable .ui-jqgrid-btable .ui-widget-content li a {
+    text-decoration: underline;
+    color: #0088CC;
+}
+
+.overrideJqgridTable .ui-jqgrid-btable .ui-widget-content li a:hover {
+    text-decoration: none;
+}
+
+.overrideJqgridTable .ui-jqgrid tr.jqgrow td {
+    padding: 4px 6px;
+}
+
+.overrideJqgridTable .ui-jqgrid-labels > th {
+    border-right: 0 none;
+}

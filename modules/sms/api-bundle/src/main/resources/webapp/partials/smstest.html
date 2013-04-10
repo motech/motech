@@ -1,21 +1,20 @@
-<div class="row-fluid">
-    <div class="span8 margin-after">
-        <div class="box-header">{{msg('sms.tab')}}</div>
-        <div class="box-content inside clearfix">
+<div class="row-fluid tab-frame">
+    <div class="inside">
+        <div class="clearfix margin-before">
             <div class="smsAlert">{{smsDeliveryStatus()}}</div>
             <form name="form" class="form-horizontal inside" ng-submit="sendSMS()" nonvalidate>
 
                 <div class="control-group">
                     <label class="control-label" for="recipient">{{msg('sms.phone.number')}}</label>
                     <div class="controls">
-                        <input class="span10" type="text" ng-model="sms.recipient" id="recipient" required>
+                        <input class="input-xlarge-fluid" type="text" ng-model="sms.recipient" id="recipient" required>
                     </div>
                 </div>
 
                 <div class="control-group">
                     <label class="control-label" for="message">{{msg('sms.message')}}</label>
                     <div class="controls">
-                        <textarea class="span10" rows="3" ng-model="sms.message" id="message" placeholder="{{msg('sms.message.placeholder')}}" required></textarea>
+                        <textarea class="input-xlarge-fluid" rows="3" ng-model="sms.message" id="message" placeholder="{{msg('sms.message.placeholder')}}" required></textarea>
                     </div>
                 </div>
 

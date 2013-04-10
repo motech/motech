@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-cron.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.css"/>
+    <link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.override.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/index.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css" />

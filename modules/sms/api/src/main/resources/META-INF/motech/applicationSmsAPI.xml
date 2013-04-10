@@ -15,7 +15,6 @@
 
     <bean id="smsAuditService" class="org.motechproject.sms.api.service.SmsAuditServiceImpl"/>
 
-
     <bean id="smsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>

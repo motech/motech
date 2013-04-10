@@ -123,7 +123,6 @@
                 var elem = angular.element(element);
 
                 elem.jqGrid({
-                    caption: 'CMS Resources',
                     url: '../cmsliteapi/resource?name=&string=true&stream=true&languages=',
                     datatype: 'json',
                     jsonReader:{
@@ -173,7 +172,6 @@
                     sortname: 'name',
                     sortorder: 'asc',
                     viewrecords: true,
-                    toolbar: [true,'top'],
                     gridComplete: function () {
                         angular.forEach(elem.find('ul'), function(value) {
                             $compile(value)(scope);
@@ -201,8 +199,6 @@
                     }
                 });
 
-                $('#t_resourceTable').append($compile($('#operations-resource'))(scope));
-                $('#t_resourceTable').append($compile($('#collapse-resource'))(scope));
             }
         };
     });
