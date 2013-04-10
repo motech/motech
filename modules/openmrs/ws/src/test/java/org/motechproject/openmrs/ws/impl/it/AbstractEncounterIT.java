@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.ws.impl.it;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
@@ -76,7 +77,7 @@ public abstract class AbstractEncounterIT {
         MRSPatient patient =  patientAdapter.getPatientByMotechId("700");
         MRSEncounter encounter = new MRSEncounterBuilder().withDate(format.parse(obsDate))
                 .withEncounterType("ADULTINITIAL").withFacility(facility).withObservations(obs).withPatient(patient)
-                .withProvider(provider).build();
+                .withProvider(provider).withCreator(user).build();
 
         OpenMRSEncounter saved;
 
@@ -99,7 +100,7 @@ public abstract class AbstractEncounterIT {
         OpenMRSEncounter encounter = (OpenMRSEncounter) encounterAdapter.getLatestEncounterByPatientMotechId("700", "ADULTINITIAL");
 
         assertNotNull(encounter);
-        assertEquals("2012-09-07", format.format(encounter.getDate()));
+        assertEquals(new LocalDate("2012-09-07"), encounter.getDate().toLocalDate());
     }
 
     public class MrsListener implements EventListener {

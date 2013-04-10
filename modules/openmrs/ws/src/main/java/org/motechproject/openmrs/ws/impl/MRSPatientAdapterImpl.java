@@ -13,6 +13,7 @@ import org.motechproject.mrs.domain.MRSPerson;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.model.OpenMRSPatient;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.PatientResource;
 import org.motechproject.openmrs.ws.resource.model.Identifier;
@@ -127,32 +128,35 @@ public class MRSPatientAdapterImpl implements MRSPatientAdapter {
     }
 
     @Override
-    public MRSPatient savePatient(MRSPatient patient) {
+    public OpenMRSPatient savePatient(MRSPatient patient) {
         validatePatientBeforeSave(patient);
+        OpenMRSPatient openMRSPatient = ConverterUtils.createPatient(patient);
 
-        MRSPerson savedPerson = personAdapter.savePerson(patient.getPerson());
+        OpenMRSPerson savedPerson = personAdapter.addPerson(patient.getPerson());
 
-        Patient converted = fromMrsPatient(patient, savedPerson);
+        Patient converted = fromMrsPatient(openMRSPatient, savedPerson);
         if (converted == null) {
             return null;
         }
 
-        Patient created = null;
+        OpenMRSPatient savedPatient;
         try {
-            created = patientResource.createPatient(converted);
-            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
+            patientResource.createPatient(converted);
+            savedPatient =  new OpenMRSPatient(openMRSPatient.getPatientId(), openMRSPatient.getMotechId(), savedPerson, openMRSPatient.getFacility());
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(savedPatient)));
         } catch (HttpException e) {
             logger.error("Failed to create a patient in OpenMRS with MoTeCH Id: " + patient.getMotechId());
             return null;
         }
 
-        return new OpenMRSPatient(created.getUuid(), patient.getMotechId(), savedPerson, patient.getFacility());
+        return savedPatient;
     }
 
     private void validatePatientBeforeSave(MRSPatient patient) {
         Validate.notNull(patient, "Patient cannot be null");
         Validate.isTrue(StringUtils.isNotEmpty(patient.getMotechId()), "You must provide a motech id to save a patient");
         Validate.notNull(patient.getPerson(), "Person cannot be null when saving a patient");
+        Validate.notNull(patient.getFacility(), "Facility cannot be null when saving a patient");
     }
 
     private Patient fromMrsPatient(MRSPatient patient, MRSPerson savedPerson) {
@@ -253,7 +257,8 @@ public class MRSPatientAdapterImpl implements MRSPatientAdapter {
         Validate.notNull(patient, "Patient cannot be null");
         Validate.notEmpty(patient.getPatientId(), "Patient Id may not be empty");
 
-        MRSPerson person = patient.getPerson();
+        OpenMRSPatient openMRSPatient = ConverterUtils.createPatient(patient);
+        OpenMRSPerson person = ConverterUtils.createPerson(patient.getPerson());
 
         personAdapter.updatePerson(person);
         // the openmrs web service requires an explicit delete request to remove
@@ -261,8 +266,9 @@ public class MRSPatientAdapterImpl implements MRSPatientAdapter {
         // create any attributes attached to the patient
         personAdapter.deleteAllAttributes(person);
         personAdapter.saveAttributesForPerson(person);
-        eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
-        return patient;
+        OpenMRSPatient updatedPatient = new OpenMRSPatient(openMRSPatient.getPatientId(), patient.getMotechId(), person, openMRSPatient.getFacility());
+        eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PATIENT_SUBJECT, EventHelper.patientParameters(updatedPatient)));
+        return updatedPatient;
     }
 
     @Override
@@ -281,7 +287,19 @@ public class MRSPatientAdapterImpl implements MRSPatientAdapter {
     }
 
     @Override
-    public List<MRSPatient> getAllPatients(){
+    public List<MRSPatient> getAllPatients() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void deletePatient(MRSPatient patient) throws PatientNotFoundException {
+        try {
+            String id = patientResource.queryForPatient(patient.getMotechId()).getResults().get(0).getUuid();
+            patientResource.deletePatient(id);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
+        } catch (HttpException e) {
+            throw new PatientNotFoundException(e);
+        }
+    }
+
 }

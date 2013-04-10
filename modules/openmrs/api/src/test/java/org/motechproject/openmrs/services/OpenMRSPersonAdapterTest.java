@@ -5,7 +5,8 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mrs.domain.MRSPerson;
+import org.motechproject.openmrs.model.OpenMRSPerson;
+import org.motechproject.openmrs.helper.PersonHelper;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -43,24 +44,6 @@ public class OpenMRSPersonAdapterTest {
         initMocks(this);
         openMRSPersonAdapter = new OpenMRSPersonAdapter(mockPersonService);
 
-    }
-
-    @Test
-    public void shouldGetFirstName() {
-        final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
-        final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
-        preferredName.setPreferred(true);
-        assertThat(openMRSPersonAdapter.getFirstName(new HashSet<PersonName>() {{
-            add(firstName);
-            add(preferredName);
-        }}), is(equalTo(firstName)));
-    }
-
-    @Test
-    public void shouldGetPreferredNameIfFirstNameIsNotSet() {
-        final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
-        preferredName.setPreferred(true);
-        assertThat(openMRSPersonAdapter.getFirstName(new HashSet<PersonName>() {{ add(preferredName); }}), is(equalTo(preferredName)));
     }
 
     @Test
@@ -104,7 +87,7 @@ public class OpenMRSPersonAdapterTest {
 
         person.setAttributes(personAttributes(staffType, phoneNo, email));
 
-        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(person);
+        OpenMRSPerson mrsPerson = PersonHelper.openMRSToMRSPerson(person);
 
         assertThat(mrsPerson.getFirstName(), is(equalTo(firstName)));
         assertThat(mrsPerson.getMiddleName(), is(equalTo(middleName)));

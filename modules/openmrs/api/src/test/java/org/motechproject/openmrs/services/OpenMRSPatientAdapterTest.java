@@ -28,6 +28,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -79,7 +80,6 @@ public class OpenMRSPatientAdapterTest {
         ReflectionTestUtils.setField(openMRSPatientAdapter, "personService", mockPersonService);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "facilityAdapter", mockFacilityAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "patientHelper", new PatientHelper());
-        ReflectionTestUtils.setField(openMRSPatientAdapter, "personAdapter", mockPersonAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "openMrsConceptAdapter", mockOpenMRSConceptAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "eventRelay", eventRelay);
     }
@@ -106,13 +106,11 @@ public class OpenMRSPatientAdapterTest {
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
         OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthdateEstimated).dateOfBirth(new DateTime(birthDate)).address(address1).gender(gender);
-        when(mockPersonAdapter.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
 
         OpenMRSPatient mrsPatient = new OpenMRSPatient(motechId, mrsPerson, facility);
         final MRSPatient actualPatient = openMRSPatientAdapter.savePatient(mrsPatient);
 
         verify(eventRelay).sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventHelper.patientParameters(actualPatient)));
-        verify(mockPersonAdapter).openMRSToMRSPerson(openMRSPatient);
 
         ArgumentCaptor<org.openmrs.Patient> openMrsPatientArgumentCaptor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
         verify(mockPatientService).savePatient(openMrsPatientArgumentCaptor.capture());
@@ -140,12 +138,10 @@ public class OpenMRSPatientAdapterTest {
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
         OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthDateEstimated).dateOfBirth(new DateTime(birthDate)).address(address1).gender(gender);
-        when(mockPersonAdapter.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
 
         MRSPatient returnedPatient = openMRSPatientAdapter.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
-        verify(mockPersonAdapter).openMRSToMRSPerson(openMRSPatient);
 
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient, motechId);
     }
@@ -171,11 +167,9 @@ public class OpenMRSPatientAdapterTest {
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
         OpenMRSPerson mrsPerson = new OpenMRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthDateEstimated).dateOfBirth(new DateTime(birthDate)).address(address1).gender(gender);
-        when(mockPersonAdapter.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
 
         MRSPatient returnedPatient = openMRSPatientAdapter.getPatientByMotechId(motechId);
 
-        verify(mockPersonAdapter).openMRSToMRSPerson(openMRSPatient);
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient, motechId);
     }
 
@@ -258,6 +252,7 @@ public class OpenMRSPatientAdapterTest {
     public void shouldSaveCauseOfDeath() throws PatientNotFoundException {
         String patientId = "patientId";
         Patient patient = new Patient();
+        patient.addName(new PersonName("test", "middle232", "last2121"));
         Date dateOfDeath = mock(Date.class);
         Concept concept = mock(Concept.class);
         String conceptName = "NONE";

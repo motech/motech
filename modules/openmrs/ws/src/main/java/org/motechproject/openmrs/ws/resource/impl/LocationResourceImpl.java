@@ -6,6 +6,7 @@ import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
 import org.motechproject.openmrs.ws.RestClient;
 import org.motechproject.openmrs.ws.resource.LocationResource;
+import org.motechproject.openmrs.ws.resource.model.Concept;
 import org.motechproject.openmrs.ws.resource.model.Location;
 import org.motechproject.openmrs.ws.resource.model.LocationListResult;
 import org.motechproject.openmrs.ws.util.JsonUtils;
@@ -50,5 +51,21 @@ public class LocationResourceImpl implements LocationResource {
         String jsonRequest = gson.toJson(location);
         String jsonResponse = restClient.postForJson(openmrsInstance.toInstancePath("/location"), jsonRequest);
         return (Location) JsonUtils.readJson(jsonResponse, Location.class);
+    }
+
+    @Override
+    public void updateLocation(Location location) throws HttpException {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Concept.class, new Concept.ConceptSerializer()).create();
+        // uuid cannot be set on an update call
+        String locationUuid = location.getUuid();
+        location.setUuid(null);
+        String jsonRequest = gson.toJson(location);
+        restClient.postWithEmptyResponseBody(openmrsInstance.toInstancePathWithParams("/location/{uuid}", locationUuid),
+                jsonRequest);
+    }
+
+    @Override
+    public void removeLocation(String locationId) throws HttpException {
+        restClient.delete(openmrsInstance.toInstancePathWithParams("/location/{uuid}?purge", locationId));
     }
 }

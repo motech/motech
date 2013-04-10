@@ -13,8 +13,10 @@ import org.motechproject.couch.mrs.model.Initializer;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.couch.mrs.repository.AllCouchPatients;
+import org.motechproject.couch.mrs.repository.AllCouchPersons;
 import org.motechproject.couch.mrs.repository.impl.AllCouchFacilitiesImpl;
 import org.motechproject.couch.mrs.repository.impl.AllCouchPatientsImpl;
+import org.motechproject.couch.mrs.repository.impl.AllCouchPersonsImpl;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
@@ -53,6 +55,9 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
     private AllCouchPatients allPatients;
 
     @Autowired
+    private AllCouchPersons allPersons;
+
+    @Autowired
     private AllCouchFacilities allFacilities;
 
     @Autowired
@@ -72,7 +77,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
     public void initialize() {
         init = new Initializer();
         mrsListener = new MrsListener();
-        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT));
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT));
     }
 
     @Test
@@ -132,7 +137,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void shouldSearchPatientByNameandMotechId() throws MRSCouchException, PatientNotFoundException {
+    public void shouldSearchPatientByNameAndMotechId() throws MRSCouchException, PatientNotFoundException {
         CouchPerson person = init.initializePerson1();
         person.setPreferredName("John Doe");
 
@@ -168,6 +173,27 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
         assertEquals(patientsRetrieved.get(0).getFacility().getFacilityId(), "facilityId");
     }
 
+    @Test
+    public void shouldRemovePatient() throws PatientNotFoundException, InterruptedException, MRSCouchException {
+        CouchFacility facility = new CouchFacility();
+        facility.setFacilityId("facilityId");
+        allFacilities.addFacility(facility);
+
+        CouchPatient patient = new CouchPatient(null, "test22", init.initializePerson1(), facility);
+        patientAdapter.savePatient(patient);
+        MRSPatient savedPatient = patientAdapter.getPatientByMotechId("test22");
+        assertEquals(savedPatient.getMotechId(), "test22");
+
+        synchronized (lock) {
+            patientAdapter.deletePatient(savedPatient);
+            lock.wait(60000);
+        }
+        assertEquals(patientAdapter.getPatientByMotechId("test22"), null);
+        assertEquals(patient.getMotechId(), mrsListener.eventParameters.get(EventKeys.MOTECH_ID));
+
+        assertTrue(mrsListener.deleted);
+    }
+
     @Override
     public CouchDbConnector getDBConnector() {
         return connector;
@@ -176,6 +202,7 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
     @After
     public void tearDown() {
         ((AllCouchPatientsImpl) allPatients).removeAll();
+        ((AllCouchPersonsImpl) allPersons).removeAll();
         ((AllCouchFacilitiesImpl) allFacilities).removeAll();
         eventListenerRegistry.clearListenersForBean("mrsTestListener");
     }
@@ -184,14 +211,17 @@ public class CouchPatientAdapterIT extends SpringIntegrationTest {
 
         private boolean created = false;
         private boolean deceased = false;
+        private boolean deleted = false;
         private Map<String, Object> eventParameters;
 
-        @MotechListener(subjects = {EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT})
+        @MotechListener(subjects = {EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT})
         public void handle(MotechEvent event) {
             if (event.getSubject().equals(EventKeys.CREATED_NEW_PATIENT_SUBJECT)) {
                 created = true;
             } else if (event.getSubject().equals(EventKeys.PATIENT_DECEASED_SUBJECT)) {
                 deceased = true;
+            } else if (event.getSubject().equals(EventKeys.DELETED_PATIENT_SUBJECT)) {
+                deleted = true;
             }
             eventParameters = event.getParameters();
             synchronized (lock) {

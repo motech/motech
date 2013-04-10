@@ -2,7 +2,7 @@ package org.motechproject.openmrs.ws.resource.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.log4j.Logger;
+
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.OpenMrsInstance;
 import org.motechproject.openmrs.ws.RestClient;
@@ -20,12 +20,8 @@ import org.motechproject.openmrs.ws.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 @Component
 public class PersonResourceImpl implements PersonResource {
-    private static final Logger LOGGER = Logger.getLogger(PersonResourceImpl.class);
 
     private final RestClient restClient;
     private final OpenMrsInstance openmrsInstance;
@@ -74,13 +70,12 @@ public class PersonResourceImpl implements PersonResource {
     }
 
     @Override
-    public void deleteAttribute(Attribute attribute) throws HttpException {
-        String uri = attribute.getLinks().get(0).getUri();
-        try {
-            restClient.delete(new URI(uri));
-        } catch (URISyntaxException e) {
-            LOGGER.warn("Error with patient attribute uri: " + uri);
-        }
+    public void deleteAttribute(String personParentUuid, Attribute attribute) throws HttpException {
+        String attributeUuid = attribute.getUuid();
+
+        restClient.delete(openmrsInstance.toInstancePathWithParams("/person/{parentUuid}/attribute/{uuid}?purge",
+                personParentUuid, attributeUuid));
+
     }
 
     @Override
@@ -121,5 +116,10 @@ public class PersonResourceImpl implements PersonResource {
         restClient.postWithEmptyResponseBody(
                 openmrsInstance.toInstancePathWithParams("/person/{personUuid}/address/{addressUuid}", uuid, addrUuid),
                 requestJson);
+    }
+
+    @Override
+    public void removePerson(String personUuid) throws HttpException {
+        restClient.delete(openmrsInstance.toInstancePathWithParams("/person/{uuid}?purge", personUuid));
     }
 }

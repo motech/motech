@@ -8,6 +8,7 @@ import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.openmrs.model.OpenMRSFacility;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.LocationResource;
 import org.motechproject.openmrs.ws.resource.model.Location;
@@ -100,6 +101,44 @@ public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {
         }
 
         return ConverterUtils.convertLocationToMrsLocation(saved);
+    }
+
+    @Override
+    public void deleteFacility(String facilityId) {
+        try {
+            MRSFacility facilityToRemove = ConverterUtils.convertLocationToMrsLocation(locationResource.getLocationById(facilityId));
+            locationResource.removeLocation(facilityId);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityToRemove)));
+        } catch (HttpException e) {
+            LOGGER.error("Failed to remove facility for: " + facilityId);
+        }
+    }
+
+    @Override
+    public OpenMRSFacility updateFacility(MRSFacility facility) {
+        Location location = null;
+        OpenMRSFacility updatedLocation = null;
+        try {
+            location = locationResource.getLocationById(facility.getFacilityId());
+        } catch (HttpException e) {
+            LOGGER.error("Failed to fetch information about location with uuid: " + facility.getFacilityId());
+            return null;
+        }
+        location.setAddress6(facility.getRegion());
+        location.setDescription(facility.getName());
+        location.setCountry(facility.getCountry());
+        location.setCountyDistrict(facility.getCountyDistrict());
+        location.setName(facility.getName());
+        location.setStateProvince(facility.getStateProvince());
+        try {
+            locationResource.updateLocation(location);
+            updatedLocation = ConverterUtils.convertLocationToMrsLocation(locationResource.getLocationById(facility.getFacilityId()));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_FACILITY_SUBJECT, EventHelper.facilityParameters(updatedLocation)));
+        } catch (HttpException e) {
+            LOGGER.error("Failed to update location with uuid: " + facility.getFacilityId());
+            return null;
+        }
+        return updatedLocation;
     }
 
     private Location convertMrsFacilityToLocation(MRSFacility facility) {

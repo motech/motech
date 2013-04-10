@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.CouchProvider;
+import org.motechproject.couch.mrs.model.CouchProviderImpl;
 import org.motechproject.couch.mrs.model.Initializer;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.impl.AllCouchProvidersImpl;
@@ -46,27 +47,25 @@ public class AllCouchProvidersIT extends SpringIntegrationTest {
 
     @Test
     public void shouldSaveAProviderAndRetrieveByExternalId() throws MRSCouchException {
-        CouchPerson person1 = init.initializePerson1();
-        CouchProvider provider = new CouchProvider("Provider1", person1);
+        CouchProviderImpl provider = new CouchProviderImpl("Provider1", "PersonId");
         allCouchProviders.addProvider(provider);
-        List<CouchProvider> providersRetrieved = allCouchProviders.findByProviderId("Provider1");
-        CouchProvider providerCompare = providersRetrieved.get(0);
+        List<CouchProviderImpl> providersRetrieved = allCouchProviders.findByProviderId("Provider1");
+        CouchProviderImpl providerCompare = providersRetrieved.get(0);
         assertTrue(providerCompare.getProviderId().equals(provider.getProviderId()));
-        assertNotNull(providerCompare.getPerson());
+        assertTrue(providerCompare.getPersonId().equals(provider.getPersonId()));
     }
 
     @Test
     public void shouldUpdateProviderRecord() throws MRSCouchException {
-        CouchPerson person1 = init.initializePerson1();
-        CouchProvider provider = new CouchProvider("Provider1", person1);
+        CouchProviderImpl provider = new CouchProviderImpl("Provider1", "PersonId");
         allCouchProviders.addProvider(provider);
-        CouchPerson person2 = init.initializeSecondPerson();
-        CouchProvider provider2  = new CouchProvider("Provider1", person2);
+
+        CouchProviderImpl provider2  = new CouchProviderImpl("Provider1", "NewPersonId");
         allCouchProviders.addProvider(provider2);
 
-        List<CouchProvider> providersRetrieved = allCouchProviders.findByProviderId("Provider1");
+        List<CouchProviderImpl> providersRetrieved = allCouchProviders.findByProviderId("Provider1");
 
-        assertEquals(asList("AName"), extract(providersRetrieved, on(CouchProvider.class).getPerson().getFirstName()));
+        assertEquals(providersRetrieved.get(0).getPersonId(), "NewPersonId");
     }
 
     @Test

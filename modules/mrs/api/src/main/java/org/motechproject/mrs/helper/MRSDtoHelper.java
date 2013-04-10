@@ -53,7 +53,7 @@ public final class MRSDtoHelper {
         return attributesList;
     }
 
-    private static MRSPerson createPersonDto(MRSPerson person) {
+    public static MRSPerson createPersonDto(MRSPerson person) {
         final MRSPersonDto personDto = new MRSPersonDto();
         final List<MRSAttribute> attributeList = new ArrayList<>();
 

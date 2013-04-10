@@ -44,14 +44,35 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
     @Test
     public void shouldCreatePerson() throws HttpException, IOException {
         Person person = buildPerson();
-
         impl.createPerson(person);
 
         ArgumentCaptor<String> sentJson = ArgumentCaptor.forClass(String.class);
         Mockito.verify(getClient()).postForJson(Mockito.any(URI.class), sentJson.capture());
         String expectedJson = readJsonFromFile("json/person-create.json");
 
-        assertEquals(stringToJsonElement(expectedJson), stringToJsonElement(sentJson.getValue()));
+        Person expectedObj = getGson().fromJson(expectedJson, Person.class);
+        Person sentObject = getGson().fromJson(sentJson.getValue(), Person.class);
+
+        assertEquals(expectedObj.getGender(), sentObject.getGender());
+        assertEquals(expectedObj.getNames(), sentObject.getNames());
+        assertEquals(expectedObj.getAddresses(), sentObject.getAddresses());
+    }
+
+    @Test
+    public void shouldUpdatePerson() throws HttpException, IOException {
+        Person person = buildPerson();
+        impl.updatePerson(person);
+
+        ArgumentCaptor<String> sentJson = ArgumentCaptor.forClass(String.class);
+        Mockito.verify(getClient()).postWithEmptyResponseBody(Mockito.any(URI.class), sentJson.capture());
+        String expectedJson = readJsonFromFile("json/person-create.json");
+
+        Person expectedObj = getGson().fromJson(expectedJson, Person.class);
+        Person sentObject = getGson().fromJson(sentJson.getValue(), Person.class);
+
+        assertEquals(expectedObj.getGender(), sentObject.getGender());
+        assertEquals(expectedObj.getNames(), sentObject.getNames());
+        assertEquals(expectedObj.getAddresses(), sentObject.getAddresses());
     }
 
     private Person buildPerson() {
@@ -108,7 +129,12 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
         Mockito.verify(getClient()).postWithEmptyResponseBody(Mockito.any(URI.class), sentJson.capture());
 
         String expectedJson = readJsonFromFile("json/person-update.json");
-        assertEquals(stringToJsonElement(expectedJson), stringToJsonElement(sentJson.getValue()));
+        Person expectedObj = getGson().fromJson(expectedJson, Person.class);
+        Person sentObject = getGson().fromJson(sentJson.getValue(), Person.class);
+
+        assertEquals(expectedObj.getGender(), sentObject.getGender());
+        assertEquals(expectedObj.getNames(), sentObject.getNames());
+        assertEquals(expectedObj.getAddresses(), sentObject.getAddresses());
     }
 
     @Test
@@ -125,7 +151,12 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
         Mockito.verify(getClient()).postWithEmptyResponseBody(Mockito.any(URI.class), sentJson.capture());
 
         String expectedJson = readJsonFromFile("json/person-name-update.json");
-        assertEquals(stringToJsonElement(expectedJson), stringToJsonElement(sentJson.getValue()));
+        Person expectedObj = getGson().fromJson(expectedJson, Person.class);
+        Person sentObject = getGson().fromJson(sentJson.getValue(), Person.class);
+
+        assertEquals(expectedObj.getGender(), sentObject.getGender());
+        assertEquals(expectedObj.getNames(), sentObject.getNames());
+        assertEquals(expectedObj.getAddresses(), sentObject.getAddresses());
     }
 
     @Test
@@ -140,6 +171,9 @@ public class PersonResourceImplTest extends AbstractResourceImplTest {
         Mockito.verify(getClient()).postWithEmptyResponseBody(Mockito.any(URI.class), sentJson.capture());
 
         String expectedJson = "{\"address1\":\"Test\"}";
-        assertEquals(stringToJsonElement(expectedJson), stringToJsonElement(sentJson.getValue()));
+        PreferredAddress expectedObj = getGson().fromJson(expectedJson, PreferredAddress.class);
+        PreferredAddress sentObject = getGson().fromJson(sentJson.getValue(), PreferredAddress.class);
+
+        assertEquals(expectedObj, sentObject);
     }
 }

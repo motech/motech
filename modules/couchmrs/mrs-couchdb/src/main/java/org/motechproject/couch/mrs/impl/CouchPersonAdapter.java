@@ -2,7 +2,6 @@ package org.motechproject.couch.mrs.impl;
 
 import org.joda.time.DateTime;
 import org.motechproject.couch.mrs.model.CouchPerson;
-import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchPersons;
 import org.motechproject.couch.mrs.repository.impl.AllCouchPersonsImpl;
 import org.motechproject.couch.mrs.util.CouchMRSConverterUtil;
@@ -28,8 +27,8 @@ public class CouchPersonAdapter implements MRSPersonAdapter {
     private EventRelay eventRelay;
 
     @Override
-    public void addPerson(String personId, String firstName, String lastName, DateTime dateOfBirth, String gender,
-            String address, List<MRSAttribute> attributes) throws MRSCouchException {
+    public MRSPerson addPerson(String personId, String firstName, String lastName, DateTime dateOfBirth, String gender,
+            String address, List<MRSAttribute> attributes) {
         CouchPerson person = new CouchPerson();
         person.setPersonId(personId);
         person.setFirstName(firstName);
@@ -40,34 +39,34 @@ public class CouchPersonAdapter implements MRSPersonAdapter {
         person.setAttributes(attributes);
         allCouchMRSPersons.addPerson(person);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
+        return person;
     }
 
     @Override
-    public void addPerson(MRSPerson person) throws MRSCouchException {
+    public MRSPerson addPerson(MRSPerson person) {
         if (person == null) {
-            return;
+            return null;
         }
 
         List<CouchPerson> persons = allCouchMRSPersons.findByPersonId(person.getPersonId());
         if (persons.size() > 0) {
-            updatePerson(person);
-            return;
+            return updatePerson(person);
         }
 
         CouchPerson couchPerson = (person instanceof CouchPerson) ? (CouchPerson) person :
-            CouchMRSConverterUtil.convertPersonToCouchPerson(person);
-
+                CouchMRSConverterUtil.convertPersonToCouchPerson(person);
         allCouchMRSPersons.addPerson(couchPerson);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
+        return person;
     }
 
     @Override
-    public void updatePerson(MRSPerson person) {
+    public MRSPerson updatePerson(MRSPerson person) {
         CouchPerson couchPerson = (person instanceof CouchPerson) ? (CouchPerson) person :
-            CouchMRSConverterUtil.convertPersonToCouchPerson(person);
-
-        allCouchMRSPersons.addPerson(couchPerson);
+                CouchMRSConverterUtil.convertPersonToCouchPerson(person);
+        allCouchMRSPersons.update(couchPerson);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PERSON_SUBJECT, EventHelper.personParameters(person)));
+        return person;
     }
 
     @Override

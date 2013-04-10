@@ -1,19 +1,17 @@
 package org.motechproject.couch.mrs.repository;
 
-import org.motechproject.couch.mrs.model.CouchProvider;
-import org.motechproject.couch.mrs.model.MRSCouchException;
-
 import java.util.List;
+import org.motechproject.couch.mrs.model.CouchProviderImpl;
 
 public interface AllCouchProviders {
 
-    List<CouchProvider> findByProviderId(String providerId);
+    List<CouchProviderImpl> findByProviderId(String providerId);
 
-    void addProvider(CouchProvider provider) throws MRSCouchException;
+    void addProvider(CouchProviderImpl provider);
 
-    void update(CouchProvider person);
+    void update(CouchProviderImpl provider);
 
-    void remove(CouchProvider person);
+    void remove(CouchProviderImpl provider);
 
-    List<CouchProvider> getAllProviders();
+    List<CouchProviderImpl> getAllProviders();
 }

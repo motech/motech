@@ -14,4 +14,6 @@ public interface PatientResource {
 
     String getMotechPatientIdentifierUuid() throws HttpException;
 
+    void deletePatient(String patientUuid) throws HttpException;
+
 }

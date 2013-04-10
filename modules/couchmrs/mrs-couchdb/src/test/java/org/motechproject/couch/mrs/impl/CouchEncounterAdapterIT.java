@@ -11,6 +11,7 @@ import org.motechproject.couch.mrs.model.CouchObservation;
 import org.motechproject.couch.mrs.model.CouchPatient;
 import org.motechproject.couch.mrs.model.CouchPatientImpl;
 import org.motechproject.couch.mrs.model.CouchProvider;
+import org.motechproject.couch.mrs.model.CouchProviderImpl;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchEncounters;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
@@ -132,18 +133,15 @@ public class CouchEncounterAdapterIT extends SpringIntegrationTest {
         allObservations.addOrUpdateObservation(observation);
         allObservations.addOrUpdateObservation(observation2);
 
-        CouchProvider provider = new CouchProvider("ProviderId", null);
-
+        CouchProviderImpl provider = new CouchProviderImpl("ProviderId", null);
         allProviders.addProvider(provider);
+        CouchProvider encounterProvider = new CouchProvider("ProviderId", null);
 
         CouchFacility facility = new CouchFacility("FacilityId");
-
         allFacilities.addFacility(facility);
 
         CouchPatientImpl patient = new CouchPatientImpl("patientId", "motechId", null, null);
-
         allPatients.addPatient(patient);
-
         CouchPatient encounterPatient = new CouchPatient("patientId", "motechId", null, null);
 
         Set<MRSObservation> observations = new HashSet<MRSObservation>();
@@ -151,7 +149,7 @@ public class CouchEncounterAdapterIT extends SpringIntegrationTest {
         observations.add(observation);
         observations.add(observation2);
 
-        CouchEncounter encounter = new CouchEncounter("12345", provider, null, facility, new DateTime(), observations, encounterPatient, "encounterType");
+        CouchEncounter encounter = new CouchEncounter("12345", encounterProvider, null, facility, new DateTime(), observations, encounterPatient, "encounterType");
 
         encounterAdapter.createEncounter(encounter);
 

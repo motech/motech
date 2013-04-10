@@ -1,5 +1,10 @@
 package org.motechproject.openmrs.ws.resource.model;
 
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
@@ -81,6 +86,27 @@ public class Person {
         public void setFamilyName(String familyName) {
             this.familyName = familyName;
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(uuid, display, givenName, middleName, familyName);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final PreferredName other = (PreferredName) obj;
+            return Objects.equals(this.uuid, other.uuid) &&
+                    Objects.equals(this.display, other.display) &&
+                    Objects.equals(this.givenName, other.givenName) &&
+                    Objects.equals(this.middleName, other.middleName) &&
+                    Objects.equals(this.familyName, other.familyName);
+        }
     }
 
     public static class PreferredAddress {
@@ -101,6 +127,23 @@ public class Person {
 
         public void setAddress1(String address1) {
             this.address1 = address1;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(uuid, address1);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final PreferredAddress other = (PreferredAddress) obj;
+            return Objects.equals(this.uuid, other.uuid) && Objects.equals(this.address1, other.address1);
         }
     }
 
@@ -214,5 +257,10 @@ public class Person {
 
     public void setAddresses(List<PreferredAddress> addresses) {
         this.addresses = addresses;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, display, gender, age, birthdate, birthdateEstimated, dead, causeOfDeath, deathDate, preferredName, names, preferredAddress, addresses, attributes);
     }
 }

@@ -40,10 +40,36 @@ public class LocationResourceImplTest extends AbstractResourceImplTest {
 
         String expectedJson = readJsonFromFile("json/location-create.json");
 
-        JsonElement expectedObj = getGson().fromJson(expectedJson, JsonObject.class);
-        JsonElement sentObject = getGson().fromJson(captor.getValue(), JsonObject.class);
+        Location expectedObj = getGson().fromJson(expectedJson, Location.class);
+        Location sentObject = getGson().fromJson(captor.getValue(), Location.class);
 
-        assertEquals(expectedObj, sentObject);
+        assertEquals(expectedObj.getAddress6(), sentObject.getAddress6());
+        assertEquals(expectedObj.getName(), sentObject.getName());
+        assertEquals(expectedObj.getStateProvince(), sentObject.getStateProvince());
+        assertEquals(expectedObj.getCountry(), sentObject.getCountry());
+        assertEquals(expectedObj.getCountyDistrict(), sentObject.getCountyDistrict());
+        assertEquals(expectedObj.getDescription(), sentObject.getDescription());
+    }
+
+    @Test
+    public void shouldUpdateLocation() throws IOException, HttpException {
+        Location loc = buildLocation();
+        impl.updateLocation(loc);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        Mockito.verify(getClient()).postWithEmptyResponseBody(Mockito.any(URI.class), captor.capture());
+
+        String expectedJson = readJsonFromFile("json/location-create.json");
+
+        Location expectedObj = getGson().fromJson(expectedJson, Location.class);
+        Location sentObject = getGson().fromJson(captor.getValue(), Location.class);
+
+        assertEquals(expectedObj.getAddress6(), sentObject.getAddress6());
+        assertEquals(expectedObj.getName(), sentObject.getName());
+        assertEquals(expectedObj.getStateProvince(), sentObject.getStateProvince());
+        assertEquals(expectedObj.getCountry(), sentObject.getCountry());
+        assertEquals(expectedObj.getCountyDistrict(), sentObject.getCountyDistrict());
+        assertEquals(expectedObj.getDescription(), sentObject.getDescription());
     }
 
     private Location buildLocation() {
@@ -53,6 +79,7 @@ public class LocationResourceImplTest extends AbstractResourceImplTest {
         loc.setCountry("Facility Country");
         loc.setCountyDistrict("Facility District");
         loc.setAddress6("Region");
+        loc.setDescription("Location Name");
 
         return loc;
     }

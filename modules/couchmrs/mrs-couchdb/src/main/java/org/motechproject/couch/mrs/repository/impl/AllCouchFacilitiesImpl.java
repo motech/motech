@@ -35,7 +35,7 @@ public class AllCouchFacilitiesImpl extends MotechBaseRepository<CouchFacility> 
     }
 
     @Override
-    public void addFacility(CouchFacility facility) throws MRSCouchException {
+    public void addFacility(CouchFacility facility) {
 
         if (facility.getFacilityId() == null) {
             throw new NullPointerException("Facility id cannot be null.");

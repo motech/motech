@@ -69,24 +69,20 @@ public final class CouchMRSConverterUtil {
         return new CouchEncounterImpl(mrsEncounter.getEncounterId(), providerId, creatorId, facilityId, mrsEncounter.getDate(), observationIds, patientId, mrsEncounter.getEncounterType());
     }
 
-
-    public static CouchPatientImpl createPatient (MRSPatient patient) {
-        CouchPerson person = new CouchPerson();
-
-        if (patient.getPerson() != null) {
-            MRSPerson patientPerson = patient.getPerson();
-
-            person = convertPersonToCouchPerson(patientPerson);
-        }
-
+    public static CouchPatientImpl createPatient(MRSPatient patient) {
         MRSFacility facility = patient.getFacility();
-
         String facilityId = null;
         if (facility != null) {
             facilityId = facility.getFacilityId();
         }
 
-        return new CouchPatientImpl(patient.getPatientId(), patient.getMotechId(), person, facilityId);
+        MRSPerson person = patient.getPerson();
+        String personId = null;
+        if (person != null) {
+            personId = person.getPersonId();
+        }
+
+        return new CouchPatientImpl(patient.getPatientId(), patient.getMotechId(), personId, facilityId);
     }
 
     public static CouchFacility convertFacilityToCouchFacility(MRSFacility facility) {
@@ -102,41 +98,6 @@ public final class CouchMRSConverterUtil {
         return convertedFacility;
     }
 
-    public static CouchPerson convertPersonToCouchPerson(MRSPerson person) {
-
-        if (person instanceof CouchPerson) {
-            return (CouchPerson) person;
-        }
-
-        CouchPerson convertedPerson = new CouchPerson();
-
-        List<MRSAttribute> attributeList = new ArrayList<>();
-
-        for (MRSAttribute attribute : person.getAttributes()){
-            CouchAttribute couchAttribute = new CouchAttribute();
-            couchAttribute.setName(attribute.getName());
-            couchAttribute.setValue(attribute.getValue());
-
-            attributeList.add(couchAttribute);
-        }
-
-        convertedPerson.setAddress(person.getAddress());
-        convertedPerson.setFirstName(person.getFirstName());
-        convertedPerson.setLastName(person.getLastName());
-        convertedPerson.setAge(person.getAge());
-        convertedPerson.setBirthDateEstimated(person.getBirthDateEstimated());
-        convertedPerson.setDateOfBirth(person.getDateOfBirth());
-        convertedPerson.setDead(person.isDead());
-        convertedPerson.setDeathDate(person.getDeathDate());
-        convertedPerson.setGender(person.getGender());
-        convertedPerson.setMiddleName(person.getMiddleName());
-        convertedPerson.setPersonId(person.getPersonId());
-        convertedPerson.setPreferredName(person.getPreferredName());
-        convertedPerson.setAttributes(attributeList);
-
-        return convertedPerson;
-    }
-
     public static CouchProvider convertProviderToCouchProvider(MRSProvider provider) {
         CouchPerson person = new CouchPerson();
         if (provider.getPerson() != null) {
@@ -145,6 +106,29 @@ public final class CouchMRSConverterUtil {
         CouchProvider convertedProvider = new CouchProvider(provider.getProviderId(), person);
 
         return convertedProvider;
+    }
+
+    public static CouchPerson convertPersonToCouchPerson(MRSPerson person) {
+        List<MRSAttribute> attributeList = createAttributeList(person);
+
+        return new CouchPerson(person.getPersonId(), person.getFirstName(), person.getMiddleName(), person.getLastName(),
+                person.getPreferredName(), person.getAddress(), person.getDateOfBirth(), person.getBirthDateEstimated(),
+                person.getAge(), person.getGender(), person.isDead(), attributeList, person.getDeathDate());
+    }
+
+    public static List<MRSAttribute> createAttributeList(MRSPerson person) {
+        List<MRSAttribute> attributeList = new ArrayList<>();
+
+        if (person != null) {
+            for (MRSAttribute attribute : person.getAttributes()) {
+                CouchAttribute couchAttribute = new CouchAttribute();
+                couchAttribute.setName(attribute.getName());
+                couchAttribute.setValue(attribute.getValue());
+
+                attributeList.add(couchAttribute);
+            }
+        }
+        return  attributeList;
     }
 
 }

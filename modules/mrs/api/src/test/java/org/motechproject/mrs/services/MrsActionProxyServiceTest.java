@@ -130,6 +130,15 @@ public class MrsActionProxyServiceTest {
     }
 
     @Test
+    public void shouldDeletePatientFromEvent() throws PatientNotFoundException {
+        mrsEventHandler.deletePatient(MOTECH_ID);
+        ArgumentCaptor<MRSPatient> captor = ArgumentCaptor.forClass(MRSPatient.class);
+        verify(patientAdapter).deletePatient(captor.capture());
+        MRSPatient p = captor.getValue();
+        assertEquals(MOTECH_ID, p.getMotechId());
+    }
+
+    @Test
     public void shouldCreateEncounterFromEvent() {
         setAllData();
         when(patientAdapter.getPatient(MOTECH_ID)).thenReturn(patient);
@@ -159,6 +168,25 @@ public class MrsActionProxyServiceTest {
         assertEquals(REGION, fac.getRegion());
         assertEquals(COUNTRY_DISTRICT, fac.getCountyDistrict());
         assertEquals(STATE_PROVINCE, fac.getStateProvince());
+    }
+
+    @Test
+    public void shouldUpdateFacilityFromEvent() {
+        mrsEventHandler.updateFacility(FACILITY_ID, NAME, COUNTRY, REGION, COUNTRY_DISTRICT, STATE_PROVINCE);
+        ArgumentCaptor<MRSFacility> captor = ArgumentCaptor.forClass(MRSFacility.class);
+        verify(facilityAdapter).updateFacility(captor.capture());
+        MRSFacility fac = captor.getValue();
+        assertEquals(NAME, fac.getName());
+        assertEquals(COUNTRY, fac.getCountry());
+        assertEquals(REGION, fac.getRegion());
+        assertEquals(COUNTRY_DISTRICT, fac.getCountyDistrict());
+        assertEquals(STATE_PROVINCE, fac.getStateProvince());
+    }
+
+    @Test
+    public void shouldDeleteFacility() {
+        mrsEventHandler.deleteFacility(FACILITY_ID);
+        verify(facilityAdapter).deleteFacility(FACILITY_ID);
     }
 
     @Test

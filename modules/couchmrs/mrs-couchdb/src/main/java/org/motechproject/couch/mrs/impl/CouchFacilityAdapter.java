@@ -60,4 +60,30 @@ public class CouchFacilityAdapter implements MRSFacilityAdapter {
 
         return null;
     }
+
+    @Override
+    public void deleteFacility(String facilityId) {
+        CouchFacility facility = (CouchFacility) getFacility(facilityId);
+        if (facility != null) {
+            allFacilities.remove(facility);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_FACILITY_SUBJECT, EventHelper.facilityParameters(facility)));
+        }
+    }
+
+    @Override
+    public MRSFacility updateFacility(MRSFacility facility) {
+        CouchFacility facilityToUpdate = (CouchFacility) getFacility(facility.getFacilityId());
+        if (facilityToUpdate != null) {
+            facilityToUpdate.setCountry(facility.getCountry());
+            facilityToUpdate.setCountyDistrict(facility.getCountyDistrict());
+            facilityToUpdate.setName(facility.getName());
+            facilityToUpdate.setRegion(facility.getRegion());
+            facilityToUpdate.setStateProvince(facility.getStateProvince());
+            allFacilities.update(facilityToUpdate);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityToUpdate)));
+            return getFacility(facilityToUpdate.getFacilityId());
+        } else {
+            return null;
+        }
+    }
 }

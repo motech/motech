@@ -21,4 +21,6 @@ public interface MRSProviderAdapter {
      */
     MRSProvider getProviderByProviderId(String motechId);
 
+    void removeProvider(String motechId);
+
 }

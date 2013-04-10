@@ -3,7 +3,6 @@ package org.motechproject.couch.mrs.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.mrs.domain.MRSPerson;
 
 @TypeDiscriminator("doc.type === 'Patient'")
 public class CouchPatientImpl extends MotechBaseDataObject {
@@ -14,8 +13,9 @@ public class CouchPatientImpl extends MotechBaseDataObject {
     private String patientId;
     @JsonProperty
     private String facilityId;
+
     @JsonProperty
-    private CouchPerson person;
+    private String personId;
     @JsonProperty
     private String motechId;
 
@@ -26,11 +26,11 @@ public class CouchPatientImpl extends MotechBaseDataObject {
         this.setType(type);
     }
 
-    public CouchPatientImpl(String patientId, String motechId, MRSPerson person, String facilityId) {
+    public CouchPatientImpl(String patientId, String motechId, String personId, String facilityId) {
         this();
         this.patientId = patientId;
         this.motechId = motechId;
-        this.person = (CouchPerson) person;
+        this.personId = personId;
         this.facilityId = facilityId;
     }
 
@@ -42,12 +42,12 @@ public class CouchPatientImpl extends MotechBaseDataObject {
         this.motechId = motechId;
     }
 
-    public CouchPerson getPerson() {
-        return person;
+    public String getPersonId() {
+        return personId;
     }
 
-    public void setPerson(CouchPerson person) {
-        this.person = person;
+    public void setPersonId(String personId) {
+        this.personId = personId;
     }
 
     public String getPatientId() {

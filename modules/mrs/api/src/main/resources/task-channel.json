@@ -71,6 +71,28 @@
       ]
     },
     {
+      "displayName" : "mrs.patient.deleted",
+      "subject" : "org.motechproject.mrs.api.Patient.deleted",
+      "eventParameters" : [
+        {
+          "eventKey" : "PatientId",
+          "displayName" : "mrs.patient.field.patientId"
+        },
+        {
+          "eventKey" : "FacilityId",
+          "displayName" : "mrs.facility.field.facilityId"
+        },
+        {
+          "eventKey" : "MotechId",
+          "displayName" : "mrs.motechId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
       "displayName" : "mrs.observation.created",
       "subject" : "org.motechproject.mrs.api.Observaion.Created",
       "eventParameters" : [
@@ -207,6 +229,58 @@
     {
       "displayName" : "mrs.facility.created",
       "subject" : "org.motechproject.mrs.api.Facility.Created",
+      "eventParameters" : [
+        {
+          "eventKey" : "FacilityName",
+          "displayName" : "mrs.facility.field.name"
+        },
+        {
+          "eventKey" : "FacilityCountry",
+          "displayName" : "mrs.facility.field.country"
+        },
+        {
+          "eventKey" : "FacilityRegion",
+          "displayName" : "mrs.facility.field.region"
+        },
+        {
+          "eventKey" : "FacilityCountyDistrict",
+          "displayName" : "mrs.facility.field.countyDistrict"
+        },
+        {
+          "eventKey" : "FacilityStateProvince",
+          "displayName" : "mrs.facility.field.stateProvince"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.facility.updated",
+      "subject" : "org.motechproject.mrs.api.Facility.Updated",
+      "eventParameters" : [
+        {
+          "eventKey" : "FacilityName",
+          "displayName" : "mrs.facility.field.name"
+        },
+        {
+          "eventKey" : "FacilityCountry",
+          "displayName" : "mrs.facility.field.country"
+        },
+        {
+          "eventKey" : "FacilityRegion",
+          "displayName" : "mrs.facility.field.region"
+        },
+        {
+          "eventKey" : "FacilityCountyDistrict",
+          "displayName" : "mrs.facility.field.countyDistrict"
+        },
+        {
+          "eventKey" : "FacilityStateProvince",
+          "displayName" : "mrs.facility.field.stateProvince"
+        }
+      ]
+    },
+    {
+      "displayName" : "mrs.facility.deleted",
+      "subject" : "org.motechproject.mrs.api.Facility.Deleted",
       "eventParameters" : [
         {
           "eventKey" : "FacilityName",
@@ -414,7 +488,35 @@
           "displayName" : "mrs.person.field.personId"
         }
       ]
-    }
+    },
+    {
+      "displayName" : "mrs.provider.updated",
+      "subject" : "org.motechproject.mrs.api.Provider.Updated",
+      "eventParameters" : [
+        {
+          "eventKey" : "ProviderId",
+          "displayName" : "mrs.provider.field.providerId"
+        },
+        {
+          "eventKey" : "PersonId",
+          "displayName" : "mrs.person.field.personId"
+        }
+      ]
+    },
+    {
+          "displayName" : "mrs.provider.deleted",
+          "subject" : "org.motechproject.mrs.api.Provider.Deleted",
+          "eventParameters" : [
+            {
+              "eventKey" : "ProviderId",
+              "displayName" : "mrs.provider.field.providerId"
+            },
+            {
+              "eventKey" : "PersonId",
+              "displayName" : "mrs.person.field.personId"
+            }
+          ]
+        }
   ],
   "actionTaskEvents" : [
     {
@@ -485,6 +587,17 @@
            "key" : "Comment",
            "displayName" : "mrs.comment"
          }
+      ]
+    },
+    {
+      "displayName" : "mrs.delete.patient",
+      "serviceInterface": "org.motechproject.mrs.services.MrsActionProxyService",
+      "serviceMethod": "deletePatient",
+      "actionParameters" : [
+        {
+          "key" : "MotechId",
+          "displayName" : "mrs.motechId"
+        }
       ]
     },
     {

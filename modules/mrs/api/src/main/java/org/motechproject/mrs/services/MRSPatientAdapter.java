@@ -77,4 +77,6 @@ public interface MRSPatientAdapter {
      * @throws PatientNotFoundException Exception when the expected Patient does not exist
      */
     void deceasePatient(String motechId, String conceptName, Date dateOfDeath, String comment) throws PatientNotFoundException;
+
+    void deletePatient(MRSPatient patient) throws PatientNotFoundException;
 }

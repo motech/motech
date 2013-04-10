@@ -16,7 +16,10 @@ import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.model.OpenMRSEncounter;
 import org.motechproject.openmrs.model.OpenMRSObservation;
+import org.motechproject.openmrs.model.OpenMRSPatient;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.model.OpenMRSProvider;
+import org.motechproject.openmrs.model.OpenMRSUser;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.EncounterResource;
 import org.motechproject.openmrs.ws.resource.model.Concept;
@@ -79,18 +82,20 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
 
         Encounter converted = toEncounter(encounterCopy);
         Encounter saved = null;
+        OpenMRSEncounter returnedEncounter;
         try {
             saved = encounterResource.createEncounter(converted);
-            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(encounter)));
+            returnedEncounter = new OpenMRSEncounter.MRSEncounterBuilder().withId(saved.getUuid()).withProvider((OpenMRSProvider) encounter.getProvider())
+                    .withCreator((OpenMRSUser) encounter.getCreator()).withFacility(encounter.getFacility())
+                    .withDate(encounter.getDate().toDate()).withPatient((OpenMRSPatient) encounter.getPatient())
+                    .withObservations(encounter.getObservations()).withEncounterType(encounter.getEncounterType()).build();
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_ENCOUNTER_SUBJECT, EventHelper.encounterParameters(returnedEncounter)));
         } catch (HttpException e) {
             LOGGER.error("Could not create encounter: " + e.getMessage());
             return null;
         }
 
-        return new OpenMRSEncounter.MRSEncounterBuilder().withId(saved.getUuid()).withProvider(encounter.getProvider())
-                .withCreator(encounter.getCreator()).withFacility(encounter.getFacility())
-                .withDate(encounter.getDate().toDate()).withPatient(encounter.getPatient())
-                .withObservations(encounter.getObservations()).withEncounterType(encounter.getEncounterType()).build();
+        return returnedEncounter;
     }
 
     private void validateEncounter(MRSEncounter encounter) {
@@ -223,7 +228,7 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         }
 
         for (String providerUuid : providers.keySet()) {
-            MRSPerson provider = personAdapter.getPerson(providerUuid);
+            OpenMRSPerson provider = personAdapter.findByPersonId(providerUuid).get(0);
             providers.put(providerUuid, provider);
         }
 
@@ -263,9 +268,9 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     public MRSEncounter getEncounterById(String id) {
         try {
             Encounter encounter = encounterResource.getEncounterById(id);
-            MRSPatient patient = patientAdapter.getPatient(encounter.getPatient().getUuid());
-            MRSPerson person = personAdapter.getPerson(encounter.getProvider().getUuid());
-            MRSProvider provider = new org.motechproject.openmrs.model.OpenMRSProvider(person);
+            OpenMRSPatient patient = (OpenMRSPatient) patientAdapter.getPatient(encounter.getPatient().getUuid());
+            OpenMRSPerson person = personAdapter.findByPersonId(encounter.getProvider().getUuid()).get(0);
+            OpenMRSProvider provider = new OpenMRSProvider(person);
             provider.setProviderId(person.getPersonId());
             return convertToMrsEncounter(encounter, provider, patient);
         } catch (HttpException e) {

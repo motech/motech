@@ -63,7 +63,11 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
 
         Location savedLocation = this.locationService.saveLocation(location);
         MRSFacility facilityInst = convertLocationToFacility(savedLocation);
-        eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityInst)));
+        if (facilityId == null) {
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityInst)));
+        } else {
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_FACILITY_SUBJECT, EventHelper.facilityParameters(facilityInst)));
+        }
         return facilityInst;
     }
 
@@ -135,5 +139,19 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
     MRSFacility convertLocationToFacility(Location savedLocation) {
         return new OpenMRSFacility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
+    }
+
+    @Override
+    public void deleteFacility(String facilityId) {
+        Location existingOpenMrsFacility = locationService.getLocation(Integer.parseInt(facilityId));
+        if (existingOpenMrsFacility != null) {
+            locationService.purgeLocation(existingOpenMrsFacility);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_FACILITY_SUBJECT, EventHelper.facilityParameters(convertLocationToFacility(existingOpenMrsFacility))));
+        }
+    }
+
+    @Override
+    public MRSFacility updateFacility(MRSFacility facility) {
+        return saveFacility(facility);
     }
 }

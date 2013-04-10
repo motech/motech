@@ -24,7 +24,7 @@ public class AllCouchPersonsImpl extends MotechBaseRepository<CouchPerson> imple
     }
 
     @Override
-    @View(name = "by_personId", map = "function(doc) { if (doc.type ==='Person') { emit(doc.personId, doc._id); }}")
+    @View(name = "by_personId", map = "function(doc) { if (doc.type ==='Person') { emit(doc._id, null); }}")
     public List<CouchPerson> findByPersonId(String personId) {
         if (personId == null) {
             return null;
@@ -34,19 +34,17 @@ public class AllCouchPersonsImpl extends MotechBaseRepository<CouchPerson> imple
     }
 
     @Override
-    public void addPerson(CouchPerson person) throws MRSCouchException {
+    public void addPerson(CouchPerson person) {
 
-        if (person.getPersonId() == null) {
-            throw new NullPointerException("Person ID cannot be null.");
-        }
+        if (person.getPersonId() != null) {
+            List<CouchPerson> persons = findByPersonId(person.getPersonId());
 
-        List<CouchPerson> persons = findByPersonId(person.getPersonId());
-
-        if (!persons.isEmpty()) {
-            CouchPerson couchPerson = persons.get(0);
-            updateFields(couchPerson, person);
-            update(couchPerson);
-            return;
+            if (!persons.isEmpty()) {
+                CouchPerson couchPerson = persons.get(0);
+                updateFields(couchPerson, person);
+                update(couchPerson);
+                return;
+            }
         }
 
         try {

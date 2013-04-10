@@ -2,7 +2,6 @@ package org.motechproject.openmrs.services;
 
 import ch.lambdaj.function.convert.Converter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
@@ -15,7 +14,9 @@ import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
+import org.motechproject.openmrs.helper.PersonHelper;
 import org.motechproject.openmrs.model.OpenMRSPatient;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -23,7 +24,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
-import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +55,6 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
     private OpenMRSFacilityAdapter facilityAdapter;
 
     @Autowired
-    private OpenMRSPersonAdapter personAdapter;
-
-    @Autowired
     private PatientHelper patientHelper;
 
     @Autowired
@@ -74,7 +71,7 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
      */
     @Override
     public MRSPatient getPatient(String patientId) {
-        org.openmrs.Patient openMrsPatient = getOpenMrsPatient(patientId);
+        Patient openMrsPatient = getOpenMrsPatient(patientId);
         return (openMrsPatient == null) ? null : getMrsPatient(openMrsPatient);
     }
 
@@ -135,11 +132,9 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         return updatePatient(patient, getOpenmrsPatientByMotechId(patient.getMotechId()));
     }
 
-
-
-    MRSPatient updatePatient(MRSPatient patient, Patient openMrsPatient) {
+    OpenMRSPatient updatePatient(MRSPatient patient, Patient openMrsPatient) {
         MRSPerson person = patient.getPerson();
-        updatePersonName(openMrsPatient, person);
+        PersonHelper.updatePersonName(openMrsPatient, person);
         openMrsPatient.setBirthdate(person.getDateOfBirth().toDate());
         openMrsPatient.setBirthdateEstimated(person.getBirthDateEstimated());
         openMrsPatient.setGender(person.getGender());
@@ -171,35 +166,6 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         return patientInst;
     }
 
-    private void updatePersonName(Patient openMrsPatient, MRSPerson person) {
-        if (StringUtils.isNotEmpty(person.getPreferredName())) {
-            if (openMrsPatient.getNames().size() == 2) {
-                for (PersonName name : openMrsPatient.getNames()) {
-                    if (name.isPreferred()) {
-                        name.setGivenName(person.getPreferredName());
-                    } else {
-                        name.setGivenName(person.getFirstName());
-                    }
-                    name.setMiddleName(person.getMiddleName());
-                    name.setFamilyName(person.getLastName());
-                }
-            } else {
-                PersonName personName = openMrsPatient.getPersonName();
-                personName.setGivenName(person.getFirstName());
-                personName.setMiddleName(person.getMiddleName());
-                personName.setFamilyName(person.getLastName());
-                PersonName preferredName = new PersonName(person.getPreferredName(), person.getMiddleName(), person.getLastName());
-                preferredName.setPreferred(true);
-                openMrsPatient.addName(preferredName);
-            }
-        } else {
-            PersonName personName = openMrsPatient.getPersonName();
-            personName.setGivenName(person.getFirstName());
-            personName.setMiddleName(person.getMiddleName());
-            personName.setFamilyName(person.getLastName());
-        }
-    }
-
     PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {
         return patientService.getPatientIdentifierTypeByName(identifierType.getName());
     }
@@ -208,7 +174,7 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         final PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
         MRSFacility mrsFacility = ((patientIdentifier != null) ? facilityAdapter.convertLocationToFacility(patientIdentifier.getLocation()) : null);
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
-        MRSPerson mrsPerson = personAdapter.openMRSToMRSPerson(patient);
+        OpenMRSPerson mrsPerson = PersonHelper.openMRSToMRSPerson(patient);
         return new OpenMRSPatient(String.valueOf(patient.getId()), motechId, mrsPerson, mrsFacility);
     }
 
@@ -301,5 +267,16 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         }
 
         return patients;
+    }
+
+    @Override
+    public void deletePatient(MRSPatient patient) throws PatientNotFoundException {
+        Patient existingOpenMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
+        if (existingOpenMrsPatient == null) {
+            throw new PatientNotFoundException("The patient by motech Id: " + patient.getMotechId() + " was not found in the database.");
+        } else {
+            patientService.purgePatient(existingOpenMrsPatient);
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_PATIENT_SUBJECT, EventHelper.patientParameters(patient)));
+        }
     }
 }

@@ -2,11 +2,15 @@ package org.motechproject.openmrs.ws.util;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
+import org.motechproject.mrs.domain.MRSAttribute;
 import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.domain.MRSObservation;
+import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.domain.MRSPerson;
-import org.motechproject.openmrs.model.OpenMRSFacility;
+import org.motechproject.openmrs.model.OpenMRSAttribute;
 import org.motechproject.openmrs.model.OpenMRSObservation;
+import org.motechproject.openmrs.model.OpenMRSFacility;
+import org.motechproject.openmrs.model.OpenMRSPatient;
 import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.ws.resource.model.Attribute;
 import org.motechproject.openmrs.ws.resource.model.Location;
@@ -23,7 +27,7 @@ public final class ConverterUtils {
     private ConverterUtils() {
     }
 
-    public static MRSPerson convertToMrsPerson(Person person) {
+    public static OpenMRSPerson convertToMrsPerson(Person person) {
         OpenMRSPerson converted = new OpenMRSPerson();
         converted.id(person.getUuid()).birthDateEstimated(person.isBirthdateEstimated())
                 .dead(person.isDead()).firstName(person.getPreferredName().getGivenName())
@@ -89,7 +93,7 @@ public final class ConverterUtils {
         return converted;
     }
 
-    public static MRSFacility convertLocationToMrsLocation(Location location) {
+    public static OpenMRSFacility convertLocationToMrsLocation(Location location) {
         return new OpenMRSFacility(location.getUuid(), location.getName(), location.getCountry(), location.getAddress6(),
                 location.getCountyDistrict(), location.getStateProvince());
     }
@@ -101,5 +105,62 @@ public final class ConverterUtils {
             obs.setPatientId(ob.getEncounter().getPatient().getUuid());
         }
         return obs;
+    }
+
+    public static OpenMRSPatient createPatient(MRSPatient patient) {
+        MRSFacility facility = patient.getFacility();
+        OpenMRSFacility openMRSFacility = null;
+        if (facility != null) {
+            openMRSFacility = new OpenMRSFacility(facility.getFacilityId());
+            openMRSFacility.setCountry(facility.getCountry());
+            openMRSFacility.setCountyDistrict(facility.getCountyDistrict());
+            openMRSFacility.setName(facility.getName());
+            openMRSFacility.setRegion(facility.getRegion());
+            openMRSFacility.setStateProvince(facility.getStateProvince());
+        }
+
+        OpenMRSPerson openMRSPerson = createPerson(patient.getPerson());
+
+        OpenMRSPatient openMRSPatient = new OpenMRSPatient(patient.getMotechId());
+        openMRSPatient.setPatientId(patient.getPatientId());
+        openMRSPatient.setFacility(openMRSFacility);
+        openMRSPatient.setPerson(openMRSPerson);
+        openMRSPatient.setMotechId(patient.getMotechId());
+
+        return openMRSPatient;
+    }
+
+    public static OpenMRSPerson createPerson(MRSPerson personMrs) {
+        List<MRSAttribute> attributeList = createAttributeList(personMrs.getAttributes());
+
+        OpenMRSPerson person = new OpenMRSPerson();
+        person.setPersonId(personMrs.getPersonId());
+        person.setAddress(personMrs.getAddress());
+        person.setFirstName(personMrs.getFirstName());
+        person.setLastName(personMrs.getLastName());
+        person.setAge(personMrs.getAge());
+        person.setBirthDateEstimated(personMrs.getBirthDateEstimated());
+        person.setDateOfBirth(personMrs.getDateOfBirth());
+        if (personMrs.isDead() != null) {
+            person.setDead(personMrs.isDead());
+        }
+        person.setDeathDate(personMrs.getDeathDate());
+        person.setGender(personMrs.getGender());
+        person.setMiddleName(personMrs.getMiddleName());
+        person.setPreferredName(personMrs.getPreferredName());
+        person.setAttributes(attributeList);
+
+        return person;
+    }
+
+    public static List<MRSAttribute> createAttributeList(List<MRSAttribute> attributesMrs) {
+        List<MRSAttribute> attributeList = new ArrayList<>();
+
+        if (attributesMrs != null) {
+            for (MRSAttribute attribute : attributesMrs) {
+                attributeList.add(new OpenMRSAttribute(attribute.getName(), attribute.getValue()));
+            }
+        }
+        return  attributeList;
     }
 }

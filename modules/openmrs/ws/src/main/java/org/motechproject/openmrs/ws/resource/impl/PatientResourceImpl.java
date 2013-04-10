@@ -80,6 +80,11 @@ public class PatientResourceImpl implements PatientResource {
         return motechIdTypeUuid;
     }
 
+    @Override
+    public void deletePatient(String patientUuid) throws HttpException {
+        restfulClient.delete(openmrsInstance.toInstancePathWithParams("/patient/{uuid}?purge", patientUuid));
+    }
+
     private PatientIdentifierListResult getAllPatientIdentifierTypes() throws HttpException {
         String responseJson = restfulClient.getJson(openmrsInstance.toInstancePath("/patientidentifiertype?v=full"));
         return (PatientIdentifierListResult) JsonUtils.readJson(responseJson, PatientIdentifierListResult.class);

@@ -34,4 +34,8 @@ public interface MRSFacilityAdapter {
      * @return Facility with the given id
      */
     MRSFacility getFacility(String facilityId);
+
+    void deleteFacility(String facilityId);
+
+    MRSFacility updateFacility(MRSFacility facility);
 }

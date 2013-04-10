@@ -14,4 +14,8 @@ public interface LocationResource {
 
     Location createLocation(Location location) throws HttpException;
 
+    void updateLocation(Location location) throws HttpException;
+
+    void removeLocation(String locationId) throws HttpException;
+
 }

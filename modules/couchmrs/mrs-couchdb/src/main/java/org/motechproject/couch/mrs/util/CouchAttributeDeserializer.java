@@ -2,7 +2,6 @@ package org.motechproject.couch.mrs.util;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.ObjectCodec;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
@@ -17,8 +16,7 @@ import java.util.List;
 public class CouchAttributeDeserializer extends JsonDeserializer<List<MRSAttribute>> {
 
     @Override
-    public List<MRSAttribute> deserialize(JsonParser jsonParser, DeserializationContext arg1) throws IOException,
-            JsonProcessingException {
+    public List<MRSAttribute> deserialize(JsonParser jsonParser, DeserializationContext arg1) throws IOException {
 
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);

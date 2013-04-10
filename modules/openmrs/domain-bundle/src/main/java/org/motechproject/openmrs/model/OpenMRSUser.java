@@ -110,9 +110,8 @@ public class OpenMRSUser implements MRSUser {
         return id;
     }
 
-    @Override
-    public void setUserId(String id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.id = userId;
     }
 
     @Override

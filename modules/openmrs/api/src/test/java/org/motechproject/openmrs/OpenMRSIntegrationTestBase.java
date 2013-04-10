@@ -8,11 +8,12 @@ import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.domain.MRSPatient;
 import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.services.MRSFacilityAdapter;
-import org.motechproject.mrs.services.MRSPatientAdapter;
-import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.model.OpenMRSPatient;
 import org.motechproject.openmrs.model.OpenMRSPerson;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSPersonAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,6 +41,9 @@ public class OpenMRSIntegrationTestBase {
 
     @Autowired
     protected MRSFacilityAdapter facilityAdapter;
+
+    @Autowired
+    protected MRSPersonAdapter personAdapter;
 
     boolean doOnce = false;
 

@@ -13,6 +13,7 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
+import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -56,7 +56,7 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void shouldSaveAPersonAndRetrieveByExternalId() throws InterruptedException {
+    public void shouldSaveAPersonAndRetrieveByExternalId() throws InterruptedException, MRSException {
         CouchPerson person1 = init.initializePerson1();
         try {
             synchronized (lock) {
@@ -80,7 +80,7 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void shouldHandleNullFirstAndLastName() throws MRSCouchException, InterruptedException {
+    public void shouldHandleNullFirstAndLastName() throws MRSCouchException, InterruptedException, MRSException {
         CouchPerson person2 = new CouchPerson();
         person2.setPersonId("externalid");
 
@@ -102,22 +102,19 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfNullExternalId() throws MRSCouchException, InterruptedException {
+    public void shouldGetCouchIdIfNullExternalId() throws MRSCouchException, InterruptedException, MRSException {
         CouchPerson person3 = new CouchPerson();
+        person3.setFirstName("TestNAME");
         assertNull(person3.getPersonId());
-        boolean thrown = false;
-        try {
-            synchronized (lock) {
-                couchMRSService.addPerson(person3.getPersonId(), null, null, null, null, null, null);
-                lock.wait(60000);
-            }
-        } catch (NullPointerException e) {
-            thrown = true;
+
+        synchronized (lock) {
+            couchMRSService.addPerson(person3.getPersonId(), person3.getFirstName(), null, null, null, null, null);
+            lock.wait(60000);
         }
 
-        assertTrue(thrown);
-        assertNull(mrsListener.eventParameters);
-        assertFalse(mrsListener.created);
+        CouchPerson savedPerson = couchMRSService.findAllPersons().get(0);
+        assertEquals(person3.getFirstName(), savedPerson.getFirstName());
+        assertTrue(mrsListener.created);
         assertFalse(mrsListener.updated);
         assertFalse(mrsListener.removed);
     }
@@ -206,18 +203,16 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
         }
 
         assertTrue(person.getFirstName().matches("AName"));
-        assertTrue(person.getPersonId().matches("externalId"));
 
         assertEquals(person.getPersonId(), mrsListener.eventParameters.get(EventKeys.PERSON_ID));
         assertEquals(person.getFirstName(), mrsListener.eventParameters.get(EventKeys.PERSON_FIRST_NAME));
         assertEquals(person.getLastName(), mrsListener.eventParameters.get(EventKeys.PERSON_LAST_NAME));
 
-        person.setPersonId("newExternalId");
-        person.setFirstName("ANewName");
+
         boolean thrown = false;
         try {
-            couchMRSService.addPerson(person);
-        } catch (MRSCouchException e) {
+            person.setPersonId("newExternalId");
+        } catch (IllegalStateException e) {
             thrown = true;
         }
         assertTrue(thrown);
@@ -271,7 +266,7 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
 
         List<CouchPerson> allPersons = couchMRSService.findAllPersons();
 
-        assertEquals(asList(first, second, third), allPersons);
+        assertTrue(allPersons.size() == 3);
     }
 
     @Test

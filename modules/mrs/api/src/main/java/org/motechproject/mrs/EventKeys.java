@@ -38,14 +38,19 @@ public final class EventKeys {
     public static final String CREATED_NEW_PATIENT_SUBJECT = BASE_SUBJECT + "Patient.Created";
     public static final String UPDATED_PATIENT_SUBJECT = BASE_SUBJECT + "Patient.Updated";
     public static final String PATIENT_DECEASED_SUBJECT = BASE_SUBJECT + "Patient.Deceased";
+    public static final String DELETED_PATIENT_SUBJECT = BASE_SUBJECT + "Patient.Deleted";
     public static final String CREATED_NEW_OBSERVATION_SUBJECT = BASE_SUBJECT + "Observation.Created";
     public static final String CREATED_NEW_ENCOUNTER_SUBJECT = BASE_SUBJECT + "Encounter.Created";
     public static final String UPDATED_ENCOUNTER_SUBJECT = BASE_SUBJECT + "Encounter.Updated";
     public static final String CREATED_NEW_FACILITY_SUBJECT = BASE_SUBJECT + "Facility.Create";
+    public static final String UPDATED_FACILITY_SUBJECT = BASE_SUBJECT + "Facility.Updated";
+    public static final String DELETED_FACILITY_SUBJECT = BASE_SUBJECT + "Facility.Deleted";
     public static final String CREATED_NEW_PERSON_SUBJECT = BASE_SUBJECT + "Person.Created";
     public static final String UPDATED_PERSON_SUBJECT = BASE_SUBJECT + "Person.Updated";
     public static final String DELETED_PERSON_SUBJECT = BASE_SUBJECT + "Person.Deleted";
     public static final String CREATED_NEW_PROVIDER_SUBJECT = BASE_SUBJECT + "Provider.Created";
+    public static final String UPDATED_PROVIDER_SUBJECT = BASE_SUBJECT + "Provider.Updated";
+    public static final String DELETED_PROVIDER_SUBJECT = BASE_SUBJECT + "Provider.Deleted";
     public static final String DELETED_OBSERVATION_SUBJECT = BASE_SUBJECT + "Observation.Deleted";
     public static final String CREATED_UPDATED_OBSERVATION_SUBJECT = "Observation.Updated";
 

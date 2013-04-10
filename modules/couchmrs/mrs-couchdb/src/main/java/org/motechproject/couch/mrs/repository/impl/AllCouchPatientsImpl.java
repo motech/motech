@@ -1,6 +1,6 @@
 package org.motechproject.couch.mrs.repository.impl;
 
-import org.ektorp.ComplexKey;
+import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
@@ -35,7 +35,7 @@ public class AllCouchPatientsImpl extends MotechBaseRepository<CouchPatientImpl>
     }
 
     @Override
-    public void addPatient(CouchPatientImpl patient) throws MRSCouchException {
+    public void addPatient(CouchPatientImpl patient) {
 
         if (patient.getMotechId() == null) {
             throw new NullPointerException("Motech ID for the patient cannot be null.");
@@ -60,7 +60,7 @@ public class AllCouchPatientsImpl extends MotechBaseRepository<CouchPatientImpl>
     private void updateFields(CouchPatientImpl couchPatient, CouchPatientImpl patient) {
         couchPatient.setFacilityId(patient.getFacilityId());
         couchPatient.setPatientId(patient.getPatientId());
-        couchPatient.setPerson(patient.getPerson());
+        couchPatient.setPersonId(patient.getPersonId());
     }
 
     @Override
@@ -79,11 +79,4 @@ public class AllCouchPatientsImpl extends MotechBaseRepository<CouchPatientImpl>
         return db.queryView(viewQuery, CouchPatientImpl.class);
     }
 
-    @Override
-    @View(name = "find_by_name_and_motech_id", map = "function(doc) {if(doc.type === 'Patient') emit([doc.person.preferredName, doc.motechId]);}")
-
-    public List<CouchPatientImpl> findByNameAndMotechId(String name, String motechId) {
-        List<CouchPatientImpl> patients = queryView("find_by_name_and_motech_id", ComplexKey.of(name, motechId));
-        return patients.isEmpty() ? null : patients;
-    }
 }

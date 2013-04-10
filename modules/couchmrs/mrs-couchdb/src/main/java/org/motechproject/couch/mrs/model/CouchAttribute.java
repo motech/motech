@@ -74,4 +74,12 @@ public class CouchAttribute implements MRSAttribute {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "CouchAttribute{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

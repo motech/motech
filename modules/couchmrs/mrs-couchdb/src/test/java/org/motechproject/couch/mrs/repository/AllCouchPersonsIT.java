@@ -58,10 +58,9 @@ public class AllCouchPersonsIT extends SpringIntegrationTest {
 
         allCouchMRSPersons.addPerson(person1);
 
-        CouchPerson person2 = init.initializeSecondPerson();
-        person2.setPersonId(person1.getPersonId());
+        person1.setFirstName("AName");
 
-        allCouchMRSPersons.addPerson(person2);
+        allCouchMRSPersons.addPerson(person1);
 
         List<CouchPerson> personsRetrieved = allCouchMRSPersons.findByPersonId(person1.getPersonId());
 

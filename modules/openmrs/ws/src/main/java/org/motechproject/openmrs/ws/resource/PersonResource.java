@@ -17,12 +17,14 @@ public interface PersonResource {
 
     AttributeTypeListResult queryPersonAttributeTypeByName(String name) throws HttpException;
 
-    void deleteAttribute(Attribute attribute) throws HttpException;
+    void deleteAttribute(String personParentUuid, Attribute attribute) throws HttpException;
 
     void updatePerson(Person person) throws HttpException;
 
     void updatePersonName(String personUuid, PreferredName name) throws HttpException;
 
     void updatePersonAddress(String personUuid, PreferredAddress addr) throws HttpException;
+
+    void removePerson(String personUuid) throws HttpException;
 
 }

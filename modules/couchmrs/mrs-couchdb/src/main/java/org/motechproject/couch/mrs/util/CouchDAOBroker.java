@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.motechproject.couch.mrs.model.CouchEncounter;
 import org.motechproject.couch.mrs.model.CouchEncounterImpl;
 import org.motechproject.couch.mrs.model.CouchFacility;
@@ -11,10 +12,13 @@ import org.motechproject.couch.mrs.model.CouchObservation;
 import org.motechproject.couch.mrs.model.CouchObservationImpl;
 import org.motechproject.couch.mrs.model.CouchPatient;
 import org.motechproject.couch.mrs.model.CouchPatientImpl;
+import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.CouchProvider;
+import org.motechproject.couch.mrs.model.CouchProviderImpl;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
 import org.motechproject.couch.mrs.repository.AllCouchObservations;
 import org.motechproject.couch.mrs.repository.AllCouchPatients;
+import org.motechproject.couch.mrs.repository.AllCouchPersons;
 import org.motechproject.couch.mrs.repository.AllCouchProviders;
 import org.motechproject.mrs.domain.MRSEncounter;
 import org.motechproject.mrs.domain.MRSFacility;
@@ -28,6 +32,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CouchDAOBroker {
 
+    @Autowired
+    private AllCouchPersons allCouchPersons;
     @Autowired
     private AllCouchFacilities allFacilities;
     @Autowired
@@ -57,11 +63,7 @@ public class CouchDAOBroker {
 
         patient = buildFullPatient(allPatients.findByMotechId(patientId));
 
-        List<CouchProvider> providers = allProviders.findByProviderId(providerId);
-
-        if (providers != null && providers.size() > 0) {
-            provider = providers.get(0);
-        }
+        provider = buildFullProvider(allProviders.findByProviderId(providerId));
 
         List<CouchFacility> facilities = allFacilities.findByFacilityId(facilityId);
 
@@ -73,7 +75,6 @@ public class CouchDAOBroker {
 
         return new CouchEncounter(encounter.getEncounterId(), provider, creator, facility, encounter.getDate(), observations, patient, encounter.getEncounterType());
     }
-
 
 
     private Set<MRSObservation> generateObsIdSet(Set<String> observationIds) {
@@ -108,7 +109,13 @@ public class CouchDAOBroker {
             if (facilities != null && facilities.size() > 0) {
                 facility = facilities.get(0);
             }
-            return new CouchPatient(couchPatient.getPatientId(), couchPatient.getMotechId(), couchPatient.getPerson(), facility);
+            String personId = couchPatient.getPersonId();
+            List<CouchPerson> persons = allCouchPersons.findByPersonId(personId);
+            CouchPerson person = null;
+            if (persons != null && persons.size() > 0) {
+                person = persons.get(0);
+            }
+            return new CouchPatient(couchPatient.getPatientId(), couchPatient.getMotechId(), person, facility);
         }
 
         return null;
@@ -125,6 +132,18 @@ public class CouchDAOBroker {
         couchObservation.setDependantObservations(dependantObs);
 
         return couchObservation;
+    }
+
+    public CouchProvider buildFullProvider(List<CouchProviderImpl> providers) {
+        CouchPerson person = null;
+        if (providers != null && providers.size() > 0) {
+            if (providers.get(0).getPersonId() != null) {
+                person = allCouchPersons.findByPersonId(providers.get(0).getPersonId()).get(0);
+            }
+            return new CouchProvider(providers.get(0).getProviderId(), person);
+        }
+
+        return null;
     }
 
     private Set<MRSObservation> getDependantObsById(Set<String> dependantObservationIds) {

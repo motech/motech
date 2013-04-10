@@ -10,6 +10,7 @@ import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.model.OpenMRSUser;
 import org.motechproject.openmrs.model.Password;
+import org.motechproject.openmrs.helper.PersonHelper;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -44,13 +45,11 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
 
     private UserService userService;
     private PersonService personService;
-    private OpenMRSPersonAdapter openMRSPersonAdapter;
 
     @Autowired
-    public OpenMRSUserAdapter(UserService userService, PersonService personService, OpenMRSPersonAdapter openMRSPersonAdapter) {
+    public OpenMRSUserAdapter(UserService userService, PersonService personService) {
         this.userService = userService;
         this.personService = personService;
-        this.openMRSPersonAdapter = openMRSPersonAdapter;
     }
 
     /**
@@ -144,7 +143,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
 
     MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
         OpenMRSUser mrsUser = new OpenMRSUser();
-        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(openMRSUser.getPerson());
+        OpenMRSPerson mrsPerson = PersonHelper.openMRSToMRSPerson(openMRSUser.getPerson());
 
         mrsUser.setUserId(Integer.toString(openMRSUser.getId()));
         mrsUser.setSystemId(openMRSUser.getSystemId());

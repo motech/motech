@@ -6,6 +6,7 @@ import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.services.MRSUserAdapter;
+import org.motechproject.openmrs.model.OpenMRSPerson;
 import org.motechproject.openmrs.model.Password;
 import org.motechproject.openmrs.ws.HttpException;
 import org.motechproject.openmrs.ws.resource.UserResource;
@@ -73,7 +74,7 @@ public class MRSUserAdapterImpl implements MRSUserAdapter {
             // the user response does not include the full person name or
             // address
             // must retrieve these separately
-            MRSPerson person = personAdapter.getPerson(u.getPerson().getUuid());
+            OpenMRSPerson person = personAdapter.findByPersonId(u.getPerson().getUuid()).get(0);
             mrsUsers.add(convertToMrsUser(u, person));
         }
 
@@ -112,8 +113,8 @@ public class MRSUserAdapterImpl implements MRSUserAdapter {
         // User response json does not include person name or address
         // must retrieve these separately
         User u = results.getResults().get(0);
-        MRSPerson person = personAdapter.getPerson(u.getPerson().getUuid());
-        MRSUser user = convertToMrsUser(u, person);
+        MRSPerson person = personAdapter.findByPersonId(u.getPerson().getUuid()).get(0);
+        MRSUser user = convertToMrsUser(u, (OpenMRSPerson) person);
 
         return user;
     }
@@ -137,8 +138,8 @@ public class MRSUserAdapterImpl implements MRSUserAdapter {
         // otherwise it would leave the OpenMRS in an inconsistent state
         getRoleUuidByRoleName(user);
 
-        MRSPerson savedPerson = personAdapter.savePerson(user.getPerson());
-        user.setPerson(savedPerson);
+        MRSPerson savedPerson = personAdapter.addPerson((OpenMRSPerson) user.getPerson());
+        user.setPerson((OpenMRSPerson) savedPerson);
 
         String generatedPassword = password.create();
         User converted = convertToUser(user, generatedPassword);

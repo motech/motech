@@ -8,6 +8,7 @@ import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.mrs.EventKeys;
 import org.motechproject.mrs.domain.MRSPatient;
+import org.motechproject.mrs.domain.MRSAttribute;
 import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.mrs.services.MRSPatientAdapter;
@@ -19,6 +20,7 @@ import org.motechproject.openmrs.ws.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +32,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,11 +53,14 @@ public abstract class AbstractPatientAdapterIT {
     @Test
     public void shouldCreatePatient() throws InterruptedException {
         mrsListener = new MrsListener();
-        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT));
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT));
 
         OpenMRSPerson person = new OpenMRSPerson().firstName("John").lastName("Smith").address("10 Fifth Avenue")
-                .birthDateEstimated(false).gender("M").preferredName("Jonathan");
+                .birthDateEstimated(false).gender("M");
         OpenMRSAttribute attr = new OpenMRSAttribute("Birthplace", "Motech");
+        List<MRSAttribute> attributes = new ArrayList<>();
+        attributes.add(attr);
+        person.setAttributes(attributes);
         OpenMRSFacility facility = (OpenMRSFacility) facilityAdapter.getFacilities("Clinic 1").get(0);
         OpenMRSPatient patient = new OpenMRSPatient("600", person, facility);
 
@@ -65,7 +71,7 @@ public abstract class AbstractPatientAdapterIT {
             lock.wait(60000);
         }
 
-        assertNotNull(created.getPatientId());
+        assertNotNull(created.getMotechId());
 
         assertTrue(mrsListener.created);
         assertFalse(mrsListener.deceased);
@@ -81,7 +87,7 @@ public abstract class AbstractPatientAdapterIT {
     @Test
     public void shouldUpdatePatient() throws InterruptedException {
         mrsListener = new MrsListener();
-        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT));
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT));
 
         MRSPatient patient = patientAdapter.getPatientByMotechId("750");
         patient.getPerson().setFirstName("Changed Name");
@@ -124,7 +130,7 @@ public abstract class AbstractPatientAdapterIT {
     @Test
     public void shouldDeceasePerson() throws HttpException, PatientNotFoundException, InterruptedException {
         mrsListener = new MrsListener();
-        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT));
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT));
 
         synchronized (lock) {
             patientAdapter.deceasePatient("750", "Death Concept", new Date(), null);
@@ -144,14 +150,51 @@ public abstract class AbstractPatientAdapterIT {
         eventListenerRegistry.clearListenersForBean("mrsTestListener");
     }
 
+    @Test
+    public void shouldDeletePatient() throws InterruptedException, PatientNotFoundException {
+        mrsListener = new MrsListener();
+        eventListenerRegistry.registerListener(mrsListener, Arrays.asList(EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT));
+
+        OpenMRSPerson person = new OpenMRSPerson().firstName("Test12").lastName("Name3").address("Black River")
+                .birthDateEstimated(false).gender("M");
+        OpenMRSFacility facility = (OpenMRSFacility) facilityAdapter.getFacilities("Clinic 1").get(0);
+        OpenMRSPatient patient = new OpenMRSPatient("3487", person, facility);
+
+        MRSPatient created;
+
+        synchronized (lock) {
+            created = patientAdapter.savePatient(patient);
+            lock.wait(60000);
+        }
+
+        assertNotNull(created.getMotechId());
+        assertNotNull(patientAdapter.getPatientByMotechId("3487"));
+
+        synchronized (lock) {
+            patientAdapter.deletePatient(created);
+            lock.wait(60000);
+        }
+
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.deceased);
+        assertFalse(mrsListener.updated);
+        assertTrue(mrsListener.deleted);
+
+        assertNull(patientAdapter.getPatientByMotechId("3487"));
+
+
+        eventListenerRegistry.clearListenersForBean("mrsTestListener");
+    }
+
     public class MrsListener implements EventListener {
 
         private boolean created = false;
         private boolean updated = false;
         private boolean deceased = false;
+        private boolean deleted = false;
         private Map<String, Object> eventParameters;
 
-        @MotechListener(subjects = {EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT})
+        @MotechListener(subjects = {EventKeys.CREATED_NEW_PATIENT_SUBJECT, EventKeys.UPDATED_PATIENT_SUBJECT, EventKeys.PATIENT_DECEASED_SUBJECT, EventKeys.DELETED_PATIENT_SUBJECT})
         public void handle(MotechEvent event) {
             if (event.getSubject().equals(EventKeys.CREATED_NEW_PATIENT_SUBJECT)) {
                 created = true;
@@ -159,6 +202,8 @@ public abstract class AbstractPatientAdapterIT {
                 updated = true;
             } else if (event.getSubject().equals(EventKeys.PATIENT_DECEASED_SUBJECT)) {
                 deceased = true;
+            } else if (event.getSubject().equals(EventKeys.DELETED_PATIENT_SUBJECT)) {
+                deleted = true;
             }
             eventParameters = event.getParameters();
             synchronized (lock) {

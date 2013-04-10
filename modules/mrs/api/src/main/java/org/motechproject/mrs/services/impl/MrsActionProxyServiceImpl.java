@@ -68,6 +68,11 @@ public class MrsActionProxyServiceImpl implements MrsActionProxyService {
     }
 
     @Override
+    public void deletePatient(String motechId) throws PatientNotFoundException {
+        patientAdapters.get(0).deletePatient(new MRSPatientDto(null, null, null, motechId));
+    }
+
+    @Override
     public void createEncounter(String motechId, String facilityId, String userId, String providerId, DateTime encounterDate,
                                 String encounterType, DateTime observationDate, String conceptName, String patientId, Object value) {
         MRSPatient patient = patientAdapters.get(0).getPatient(motechId);
@@ -87,6 +92,18 @@ public class MrsActionProxyServiceImpl implements MrsActionProxyService {
     @Override
     public void createFacility(String name, String country, String region, String countyDistrict, String stateProvince) {
         facilityAdapters.get(0).saveFacility(new MRSFacilityDto(name, country, region, countyDistrict, stateProvince));
+    }
+
+    @Override
+    public void updateFacility(String facilityId, String name, String country, String region, String countyDistrict, String stateProvince) {
+        MRSFacilityDto facilityDto = new MRSFacilityDto(name, country, region, countyDistrict, stateProvince);
+        facilityDto.setFacilityId(facilityId);
+        facilityAdapters.get(0).updateFacility(facilityDto);
+    }
+
+    @Override
+    public void deleteFacility(String facilityId) {
+        facilityAdapters.get(0).deleteFacility(facilityId);
     }
 
     @Override
