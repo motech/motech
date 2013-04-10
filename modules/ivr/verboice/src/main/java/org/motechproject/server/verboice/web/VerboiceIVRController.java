@@ -3,7 +3,9 @@ package org.motechproject.server.verboice.web;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.callflow.domain.CallDetailRecord;
+import org.motechproject.callflow.domain.CallDetailRecord.Disposition;
 import org.motechproject.callflow.domain.CallDirection;
+import org.motechproject.callflow.domain.CallEvent;
 import org.motechproject.callflow.domain.FlowSessionRecord;
 import org.motechproject.callflow.service.CallFlowServer;
 import org.motechproject.callflow.service.FlowSessionService;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
@@ -84,7 +85,10 @@ public class VerboiceIVRController {
     @ResponseStatus(HttpStatus.OK)
     public void handleMissedCall(HttpServletRequest request) {
         String callStatus = request.getParameter("CallStatus");
+        String callSid = request.getParameter(VERBOICE_CALL_SID);
         logger.info("Verboice status callback : " + callStatus);
+
+        updateRecord(callStatus, callSid);
 
         if ("completed".equals(callStatus)) {
             String language = request.getParameter("ln");
@@ -98,14 +102,39 @@ public class VerboiceIVRController {
         if (callStatus == null || callStatus.trim().isEmpty() || !missedCallStatuses.contains(callStatus)) {
             return;
         }
-        String motechCallId = request.getParameter(MOTECH_CALL_ID);
-        FlowSession session = flowSessionService.getSession(motechCallId);
+
+        FlowSession session = flowSessionService.getSession(callSid);
         if (session == null) {
-            throw new SessionNotFoundException("No session found! [Session Id " + motechCallId + "]");
+            throw new SessionNotFoundException("No session found! [Session Id " + callSid + "]");
         }
-        String callSid = request.getParameter(VERBOICE_CALL_SID);
-        session = flowSessionService.updateSessionId(motechCallId, callSid);
+
         callFlowServer.handleMissedCall(session.getSessionId());
+    }
+
+    private void updateRecord(String callStatus, String callSid) {
+        FlowSessionRecord record = (FlowSessionRecord) flowSessionService.getSession(callSid);
+        if (record != null) {
+
+            CallDetailRecord callDetail = record.getCallDetailRecord();
+            CallEvent callEvent = new CallEvent(callStatus);
+            callDetail.addCallEvent(callEvent);
+
+            if ("ringing".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.UNKNOWN);
+            } else if ("in-progress".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.ANSWERED);
+            } else if ("completed".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.ANSWERED);
+            } else if ("failed".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.FAILED);
+            } else if ("busy".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.BUSY);
+            } else if ("no-answer".equals(callStatus)) {
+                callDetail.setDisposition(Disposition.NO_ANSWER);
+            }
+
+            flowSessionService.updateSession(record);
+        }
     }
 
     private FlowSession updateOutgoingCallSessionIdWithVerboiceSid(String callId, String verboiceCallId) {
