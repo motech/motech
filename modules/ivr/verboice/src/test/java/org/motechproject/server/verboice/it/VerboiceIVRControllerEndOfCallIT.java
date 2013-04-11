@@ -53,10 +53,11 @@ public class VerboiceIVRControllerEndOfCallIT extends SpringIntegrationTest {
         try {
             TestListener listener = new TestListener("end_of_call_test_missed_call_listener");
             eventListenerRegistry.registerListener(listener, EventKeys.END_OF_CALL_EVENT);
-            String motechCallId = "mcid123";
+            String callSid = "123A";
+            String motechCallId = "motechId";
             String phoneNumber = "12345";
-            flowSessionService.findOrCreate(motechCallId, phoneNumber);
-            String url = String.format("/ivr/callstatus?CallStatus=no-answer&CallSid=123A&motech_call_id=%s&From=%s", motechCallId, phoneNumber);
+            flowSessionService.findOrCreate(callSid, phoneNumber);
+            String url = String.format("/ivr/callstatus?CallStatus=no-answer&CallSid=%s&motech_call_id=%s&From=%s", callSid, motechCallId, phoneNumber);
             mockVerboiceIvrController.perform(get(url));
 
             Object lock = listener.getLock();
