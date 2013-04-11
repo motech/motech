@@ -16,7 +16,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class TasksBundleITIgnored extends BaseOsgiIT {
+public class TasksBundleIT extends BaseOsgiIT {
     private static final Integer TRIES_COUNT = 50;
 
     public void testCoreServiceReferences() {
@@ -51,7 +51,7 @@ public class TasksBundleITIgnored extends BaseOsgiIT {
         int tries = 0;
 
         do {
-            fromFile = taskDataProviderService.getProvider("data.provider.mrs.name");
+            fromFile = taskDataProviderService.getProvider("mrs.name");
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
@@ -59,7 +59,7 @@ public class TasksBundleITIgnored extends BaseOsgiIT {
         assertNotNull(fromFile);
 
         AllTaskDataProviders allTaskDataProviders = getApplicationContext().getBean(AllTaskDataProviders.class);
-        TaskDataProvider fromDB = allTaskDataProviders.byName("data.provider.mrs.name");
+        TaskDataProvider fromDB = allTaskDataProviders.byName("mrs.name");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
