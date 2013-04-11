@@ -1,6 +1,5 @@
 package org.motechproject.tasks.service;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -15,7 +14,6 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.EventKeys;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.EventParameter;
@@ -44,10 +42,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
@@ -65,10 +63,15 @@ import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
 import static org.motechproject.tasks.domain.ParameterType.DATE;
 import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
 import static org.motechproject.tasks.domain.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.ParameterType.LIST;
+import static org.motechproject.tasks.domain.ParameterType.LONG;
+import static org.motechproject.tasks.domain.ParameterType.MAP;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.ParameterType.TIME;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
@@ -325,6 +328,34 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToLong() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setLongField();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("long", "1234   d");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        assertEquals("error.convertToLong", captor.getValue().getMessageKey());
+    }
+
+    @Test
     public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToDouble() throws Exception {
         setTriggerEvent();
         setActionEvent();
@@ -350,6 +381,62 @@ public class TaskTriggerHandlerTest {
 
         assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
         assertEquals("error.convertToDouble", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToBoolean() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setBooleanField();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("boolean", "abc");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        assertEquals("error.convertToBoolean", captor.getValue().getMessageKey());
+    }
+
+    @Test
+    public void shouldNotSendEventIfActionEventParameterCanNotBeConvertedToTime() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setTimeField();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task)).thenReturn(actionEvent);
+
+        task.getActionInputFields().put("time", "234543fgf");
+
+        handler.handle(createEvent());
+        ArgumentCaptor<TaskException> captor = ArgumentCaptor.forClass(TaskException.class);
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task);
+        verify(taskActivityService).addError(eq(task), captor.capture());
+
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(taskActivityService, never()).addSuccess(task);
+
+        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        assertEquals("error.convertToTime", captor.getValue().getMessageKey());
     }
 
     @Test
@@ -676,9 +763,15 @@ public class TaskTriggerHandlerTest {
 
         setManipulation();
         setDateField();
+        setTimeField();
         setFilters();
         setAdditionalData(true);
+        setLongField();
         setDoubleField();
+        setBooleanField();
+
+        setListField();
+        setMapField();
 
         Map<String, String> testObjectLookup = new HashMap<>();
         testObjectLookup.put("id", "6789");
@@ -716,7 +809,7 @@ public class TaskTriggerHandlerTest {
         assertNotNull(motechEvent.getSubject());
         assertNotNull(motechEvent.getParameters());
 
-        assertEquals(7, motechEvent.getParameters().size());
+        assertEquals(12, motechEvent.getParameters().size());
         assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
         assertEquals(task.getActionInputFields().get("phone"), motechEvent.getParameters().get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEvent.getParameters().get("message"));
@@ -724,6 +817,11 @@ public class TaskTriggerHandlerTest {
         assertEquals(DateTime.parse(task.getActionInputFields().get("date"), DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z")), motechEvent.getParameters().get("date"));
         assertEquals("test: 6789", motechEvent.getParameters().get("dataSourceTrigger"));
         assertEquals("test: 6789", motechEvent.getParameters().get("dataSourceObject"));
+        assertEquals(DateTime.parse(task.getActionInputFields().get("time"), DateTimeFormat.forPattern("HH:mm Z")), motechEvent.getParameters().get("time"));
+        assertEquals(10000000000L, motechEvent.getParameters().get("long"));
+        assertEquals(true, motechEvent.getParameters().get("boolean"));
+        assertEquals(getExpectedList(), motechEvent.getParameters().get("list"));
+        assertEquals(getExpectedMap(), motechEvent.getParameters().get("map"));
     }
 
     @Test
@@ -974,9 +1072,34 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Date", "date", DATE), true);
     }
 
+    private void setTimeField() {
+        task.getActionInputFields().put("time", "21:21 +0100");
+        actionEvent.addParameter(new ActionParameter("Time", "time", TIME), true);
+    }
+
+    private void setLongField() {
+        task.getActionInputFields().put("long", "10000000000");
+        actionEvent.addParameter(new ActionParameter("Long", "long", LONG), true);
+    }
+
+    private void setBooleanField() {
+        task.getActionInputFields().put("boolean", "true");
+        actionEvent.addParameter(new ActionParameter("Boolean", "boolean", BOOLEAN), true);
+    }
+
     private void setDoubleField() {
         task.getActionInputFields().put("double", "123.5");
         actionEvent.addParameter(new ActionParameter("Double", "double", DOUBLE), true);
+    }
+
+    private void setListField() {
+        task.getActionInputFields().put("list", "4\n5\n{{trigger.list}}\n{{trigger.externalId}}\n{{ad.12345.TestObjectField#1.id}}");
+        actionEvent.addParameter(new ActionParameter("List", "list", LIST), true);
+    }
+
+    private void setMapField() {
+        task.getActionInputFields().put("map", "key1:value\n{{trigger.map}}\n{{trigger.eventName}}:{{ad.12345.TestObjectField#1.id}}");
+        actionEvent.addParameter(new ActionParameter("Map", "map", MAP), true);
     }
 
     private void setAdditionalData(boolean isFail) {
@@ -1004,6 +1127,8 @@ public class TaskTriggerHandlerTest {
         triggerEventParameters.add(new EventParameter("EndDate", "endDate", DATE));
         triggerEventParameters.add(new EventParameter("FacilityId", "facilityId"));
         triggerEventParameters.add(new EventParameter("EventName", "eventName"));
+        triggerEventParameters.add(new EventParameter("List", "list", LIST));
+        triggerEventParameters.add(new EventParameter("Map", "map", MAP));
 
         triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(TRIGGER_SUBJECT);
@@ -1049,23 +1174,33 @@ public class TaskTriggerHandlerTest {
         Map<String, Object> param = new HashMap<>(4);
         param.put("externalId", 123456789);
         param.put("startDate", new LocalDate(2012, 11, 20));
+        param.put("map", new HashMap<>(param));
         param.put("endDate", new LocalDate(2012, 11, 29));
         param.put("facilityId", 987654321);
         param.put("eventName", "event name");
+        param.put("list", Arrays.asList(1, 2, 3));
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
     }
 
-    private Map<String, Object> createEventParameters(Task task, TaskException e) {
-        Map<String, Object> param = new HashMap<>();
-        param.put(EventKeys.TASK_FAIL_MESSAGE, e.getMessageKey());
-        param.put(EventKeys.TASK_FAIL_STACK_TRACE, ExceptionUtils.getStackTrace(e));
-        param.put(EventKeys.TASK_FAIL_FAILURE_DATE, DateTime.now());
-        param.put(EventKeys.TASK_FAIL_FAILURE_NUMBER, taskActivityService.errorsFromLastRun(task));
-        param.put(EventKeys.TASK_FAIL_TRIGGER_DISABLED, task.isEnabled());
-        param.put(EventKeys.TASK_FAIL_TASK_ID, task.getId());
-        param.put(EventKeys.TASK_FAIL_TASK_NAME, task.getName());
-        return param;
+    private List<Object> getExpectedList() {
+        List<Object> list = new ArrayList<>();
+        list.addAll(Arrays.asList("4", "5"));
+        list.addAll(Arrays.asList(1, 2, 3));
+        list.add(123456789);
+        list.add(6789);
+
+        return list;
+    }
+
+    private Map<Object, Object> getExpectedMap() {
+        Map<Object, Object> map = new HashMap<>();
+        map.put("externalId", 123456789);
+        map.put("startDate", new LocalDate(2012, 11, 20));
+        map.put("key1", "value");
+        map.put("event name", 6789);
+
+        return map;
     }
 
 }

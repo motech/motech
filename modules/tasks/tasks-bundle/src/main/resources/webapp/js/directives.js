@@ -51,19 +51,19 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 $('.accordion').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right;").addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-right').addClass('icon-chevron-down');
                 });
 
                 $('.tasks-list').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-right;").addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-right').addClass('icon-chevron-down');
                 });
 
                 $('.accordion').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass("icon-chevron-right;");
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
                 });
 
                 $('.tasks-list').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass("icon-chevron-down").addClass('icon-chevron-right');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
                 });
             }
         };
@@ -92,7 +92,7 @@
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
-                        var channelName, moduleName, moduleVersion, parent, value, pos, eventKey, dropElement, dragElement, browser,
+                        var channelName, moduleName, moduleVersion, parent = scope, value, pos, eventKey, dropElement, dragElement, browser, emText,
                             position = function (dropElement, dragElement) {
                                 var sel, range, space = document.createTextNode(' '), el, frag, node, lastNode;
 
@@ -134,32 +134,42 @@
                                 }
                             };
 
+                        while (parent.msg === undefined) {
+                            parent = parent.$parent;
+                        }
+
                         if (angular.element(ui.draggable).hasClass('triggerField') && element.hasClass('actionField')) {
                             dragElement = angular.element(ui.draggable);
                             dropElement = angular.element(element);
                             browser = scope.$parent.BrowserDetect.browser;
-                            parent = scope;
 
-                            while (parent.msg === undefined) {
-                                parent = parent.$parent;
-                            }
-
-                            if (dropElement.data('type') === 'DATE') {
-                                delete scope.selectedAction.actionParameters[dropElement.data('index')].value;
+                            switch (dropElement.data('type')) {
+                            case 'DATE': emText = 'placeholder.dateOnly'; break;
+                            case 'TIME': emText = 'placeholder.timeOnly'; break;
+                            case 'BOOLEAN': emText = 'placeholder.booleanOnly'; break;
+                            default:
                             }
 
                             if (browser !== 'Chrome' && browser !== 'Explorer') {
+                                if (emText !== undefined) {
+                                    delete parent.selectedAction.actionParameters[dropElement.data('index')].value;
+                                }
+
                                 if (dragElement.data('prefix') === 'trigger') {
-                                    eventKey = '{{trigger.' + scope.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
+                                    eventKey = '{{trigger.' + parent.selectedTrigger.eventParameters[dragElement.data('index')].eventKey + '}}';
                                 } else if (dragElement.data('prefix') === 'ad') {
                                     eventKey = '{{ad.' + parent.msg(dragElement.data('source')) + '.' + dragElement.data('object-type') + "#" + dragElement.data('object-id') + '.' + dragElement.data('field') + '}}';
                                 }
 
                                 pos = element.caret();
-                                value = scope.selectedAction.actionParameters[dropElement.data('index')].value || '';
+                                value = parent.selectedAction.actionParameters[dropElement.data('index')].value || '';
 
-                                scope.selectedAction.actionParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
+                                parent.selectedAction.actionParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
                             } else {
+                                if (emText !== undefined) {
+                                    parent.selectedAction.actionParameters[dropElement.data('index')].value = '<em style="color: gray;">' + parent.msg(emText) + '</em>';
+                                }
+
                                 dropElement.find('em').remove();
 
                                 dragElement = angular.element(ui.draggable).clone();
@@ -191,29 +201,29 @@
                             moduleVersion = angular.element(ui.draggable).data('module-version');
 
                             if (element.hasClass('trigger')) {
-                                scope.setTaskEvent('trigger', channelName, moduleName, moduleVersion);
-                                delete scope.task.trigger;
-                                delete scope.selectedTrigger;
+                                parent.setTaskEvent('trigger', channelName, moduleName, moduleVersion);
+                                delete parent.task.trigger;
+                                delete parent.selectedTrigger;
                             } else if (element.hasClass('action')) {
-                                scope.setTaskEvent('action', channelName, moduleName, moduleVersion);
-                                delete scope.task.action;
-                                delete scope.selectedAction;
+                                parent.setTaskEvent('action', channelName, moduleName, moduleVersion);
+                                delete parent.task.action;
+                                delete parent.selectedAction;
                             }
                         } else if (angular.element(ui.draggable).hasClass('dragged') && element.hasClass('task-selector')) {
                             parent = angular.element(ui.draggable).parent();
 
                             if (parent.hasClass('trigger')) {
-                                delete scope.draggedTrigger;
-                                delete scope.task.trigger;
-                                delete scope.selectedTrigger;
+                                delete parent.draggedTrigger;
+                                delete parent.task.trigger;
+                                delete parent.selectedTrigger;
                             } else if (parent.hasClass('action')) {
-                                delete scope.draggedAction;
-                                delete scope.task.action;
-                                delete scope.selectedAction;
+                                delete parent.draggedAction;
+                                delete parent.task.action;
+                                delete parent.selectedAction;
                             }
                         }
 
-                        scope.$apply();
+                        parent.$apply();
                     }
                 });
             }
@@ -243,6 +253,17 @@
                         allow = [8, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]; // char code: <Backspace> . 0 1 2 3 4 5 6 7 8 9
 
                     return allow.indexOf(charCode) >= 0;
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('readOnly', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                element.keypress(function (evt) {
+                    return false;
                 });
             }
         };
@@ -321,7 +342,9 @@
                 });
 
                 element.bind('keypress', function (event) {
-                    if ($(this).data('type') !== 'TEXTAREA') {
+                    var type = $(this).data('type');
+
+                    if (type !== 'TEXTAREA' && type !== 'MAP' && type !== 'LIST') {
                         return event.which !== 13;
                     }
                 });
@@ -346,7 +369,9 @@
                 INTEGER: 'content-editable-integer.html',
                 DOUBLE: 'content-editable-double.html',
                 UNICODE : 'content-editable-unicode.html',
-                DATE : 'content-editable-date.html'
+                DATE : 'content-editable-date.html',
+                TIME : 'content-editable-time.html',
+                BOOLEAN : 'content-editable-boolean.html'
             };
 
         return {
@@ -528,18 +553,59 @@
         };
     });
 
+    widgetModule.directive('datetimePicker', function () {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                element.focus(function () {
+                    $(this).prev('input').datetimepicker('show');
+                });
+            }
+        };
+    });
+
     widgetModule.directive('datetimePickerInput', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
+                var parent = scope;
+
+                while (parent.selectedAction === undefined) {
+                    parent = parent.$parent;
+                }
+
                 element.datetimepicker({
                     showTimezone: true,
                     useLocalTimezone: true,
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
                     onSelect: function (dateTex) {
-                        scope.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
-                        scope.$apply();
+                        parent.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
+                        parent.$apply();
+                    }
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('timePickerInput', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var parent = scope;
+
+                while (parent.selectedAction === undefined) {
+                    parent = parent.$parent;
+                }
+
+                element.datetimepicker({
+                    showTimezone: true,
+                    timeOnly: true,
+                    useLocalTimezone: true,
+                    timeFormat: 'HH:mm z',
+                    onSelect: function (dateTex) {
+                        parent.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
+                        parent.$apply();
                     }
                 });
             }
@@ -708,6 +774,63 @@
                     return $(element).find('.content-task').html();
                 }
             });
+        };
+    });
+
+    widgetModule.directive('helpPopover', function($compile, $http) {
+        return function(scope, element, attrs) {
+            var msgScope = scope;
+
+            while (msgScope.msg === undefined) {
+                msgScope = msgScope.$parent;
+            }
+
+            $http.get('../tasks/partials/help/' + attrs.helpPopover + '.html').success(function (html) {
+                $(element).popover({
+                    placement: 'left',
+                    trigger: 'hover',
+                    html: true,
+                    content: function() {
+                        var elem = angular.element(html);
+
+                        $compile(elem)(msgScope);
+                        msgScope.$apply(elem);
+
+                        return $compile(elem)(msgScope);
+                    }
+                });
+            });
+        };
+    });
+
+    widgetModule.directive('divPlaceholder', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var parent = scope, curText;
+
+                while (parent.msg === undefined) {
+                    parent = parent.$parent;
+                }
+
+                curText = parent.msg(attrs.divPlaceholder);
+
+                if (!element.text().trim().length) {
+                    element.html('<em style="color: gray;">' + curText + '</em>');
+                }
+
+                element.focusin(function() {
+                    if ($(this).text().toLowerCase() === curText.toLowerCase() || !$(this).text().length) {
+                        $(this).empty();
+                    }
+                });
+
+                element.focusout(function() {
+                    if ($(this).text().toLowerCase() === curText.toLowerCase() || !$(this).text().length) {
+                        $(this).html('<em style="color: gray;">' + curText + '</em>');
+                    }
+                });
+            }
         };
     });
 }());

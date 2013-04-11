@@ -1,7 +1,8 @@
 package org.motechproject.tasks;
 
 public final class EventKeys {
-    private EventKeys() { }
+    private EventKeys() {
+    }
 
     public static final String TASK_FAIL_MESSAGE = "TaskFailMessage";
     public static final String TASK_FAIL_STACK_TRACE = "TaskFailStackTrace";

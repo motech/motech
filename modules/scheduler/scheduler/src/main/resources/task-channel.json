@@ -1,0 +1,130 @@
+{
+  "displayName": "scheduler",
+  "moduleName": "${project.artifactId}",
+  "moduleVersion": "${parsedVersion.osgiVersion}",
+  "actionTaskEvents": [
+    {
+      "displayName": "scheduler.scheduleCronJob",
+      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceMethod": "scheduleCronJob",
+      "actionParameters": [
+        {
+          "key": "motechEventSubject",
+          "displayName": "scheduler.motechEventSubject"
+        }, {
+          "key": "motechEventParameters",
+          "displayName": "scheduler.motechEventParameters",
+          "type": "MAP"
+        }, {
+          "key": "cronExpression",
+          "displayName": "scheduler.cronExpression"
+        }, {
+          "key": "startDate",
+          "displayName": "scheduler.startDate",
+          "type": "DATE"
+        }, {
+          "key": "endTime",
+          "displayName": "scheduler.endDate",
+          "type": "DATE"
+        }, {
+          "key": "ignorePastFiresAtStart",
+          "displayName": "scheduler.ignorePastFiresAtStart",
+          "type": "BOOLEAN"
+        }
+      ]
+    },
+    {
+      "displayName": "scheduler.scheduleRepeatingJob",
+      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceMethod": "scheduleRepeatingJob",
+      "actionParameters": [
+        {
+          "key": "motechEventSubject",
+          "displayName": "scheduler.motechEventSubject"
+        }, {
+          "key": "motechEventParameters",
+          "displayName": "scheduler.motechEventParameters",
+          "type": "MAP"
+        }, {
+          "key": "startDate",
+          "displayName": "scheduler.startDate",
+          "type": "DATE"
+        }, {
+          "key": "endTime",
+          "displayName": "scheduler.endDate",
+          "type": "DATE"
+        }, {
+          "key": "repeatCount",
+          "displayName": "scheduler.repeatCount",
+          "type": "INTEGER"
+        }, {
+          "key": "repeatIntervalInMilliSeconds",
+          "displayName": "scheduler.repeatIntervalInMilliSeconds",
+          "type": "LONG"
+        }, {
+          "key": "ignorePastFiresAtStart",
+          "displayName": "scheduler.ignorePastFiresAtStart",
+          "type": "BOOLEAN"
+        }, {
+          "key": "useOriginalFireTimeAfterMisfire",
+          "displayName": "scheduler.useOriginalFireTimeAfterMisfire",
+          "type": "BOOLEAN"
+        }
+      ]
+    },
+    {
+      "displayName": "scheduler.scheduleRunOnceJob",
+      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceMethod": "scheduleRunOnceJob",
+      "actionParameters": [
+        {
+          "key": "motechEventSubject",
+          "displayName": "scheduler.motechEventSubject"
+        }, {
+          "key": "motechEventParameters",
+          "displayName": "scheduler.motechEventParameters",
+          "type": "MAP"
+        }, {
+          "key": "startDate",
+          "displayName": "scheduler.startDate",
+          "type": "DATE"
+        }
+      ]
+    },
+    {
+      "displayName": "scheduler.scheduleDayOfWeekJob",
+      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceMethod": "scheduleDayOfWeekJob",
+      "actionParameters": [
+        {
+          "key": "motechEventSubject",
+          "displayName": "scheduler.motechEventSubject"
+        }, {
+          "key": "motechEventParameters",
+          "displayName": "scheduler.motechEventParameters",
+          "type": "MAP"
+        }, {
+          "key": "startDate",
+          "displayName": "scheduler.startDate",
+          "type": "DATE"
+        }, {
+          "key": "endTime",
+          "displayName": "scheduler.endDate",
+          "type": "DATE"
+        }, {
+          "key": "days",
+          "displayName": "scheduler.days",
+          "type": "LIST"
+        }, {
+          "key": "time",
+          "displayName": "scheduler.time",
+          "type": "TIME"
+        }, {
+          "key": "ignorePastFiresAtStart",
+          "displayName": "scheduler.ignorePastFiresAtStart",
+          "type": "BOOLEAN"
+        }
+      ]
+    }
+  ]
+}

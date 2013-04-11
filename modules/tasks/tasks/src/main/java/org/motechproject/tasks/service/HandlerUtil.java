@@ -1,6 +1,9 @@
 package org.motechproject.tasks.service;
 
 import org.apache.commons.lang.WordUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
@@ -18,6 +21,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 final class HandlerUtil {
@@ -27,7 +31,36 @@ final class HandlerUtil {
     private HandlerUtil() {
     }
 
-    public static String getFieldValue(Object object, String key) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static Object convertTo(ParameterType type, String userInput) {
+        Object value;
+
+        switch (type) {
+            case DOUBLE:
+                value = convertToDouble(userInput);
+                break;
+            case INTEGER:
+                value = convertToInteger(userInput);
+                break;
+            case LONG:
+                value = convertToLong(userInput);
+                break;
+            case BOOLEAN:
+                value = convertToBoolean(userInput);
+                break;
+            case TIME:
+                value = convertToTime(userInput);
+                break;
+            case DATE:
+                value = convertToDate(userInput);
+                break;
+            default:
+                value = userInput;
+        }
+
+        return value;
+    }
+
+    public static Object getFieldValue(Object object, String key) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String[] fields = key.split("\\.");
         Object current = object;
 
@@ -42,7 +75,7 @@ final class HandlerUtil {
             }
         }
 
-        return current != null ? current.toString() : "";
+        return current;
     }
 
     public static TaskAdditionalData findAdditionalData(Task task, KeyInformation key) {
@@ -65,7 +98,7 @@ final class HandlerUtil {
         String value = "";
 
         if (event.getParameters() != null) {
-            value = getFieldValue(event.getParameters(), key.getEventKey());
+            value = getFieldValue(event.getParameters(), key.getEventKey()).toString();
         }
 
         return value;
@@ -175,5 +208,63 @@ final class HandlerUtil {
         }
 
         return result;
+    }
+
+    private static Object convertToDate(String userInput) {
+        Object value;
+        try {
+            value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
+        } catch (Exception e) {
+            throw new MotechException("error.convertToDate", e);
+        }
+        return value;
+    }
+
+    private static Object convertToTime(String userInput) {
+        Object value;
+        try {
+            value = DateTime.parse(userInput, DateTimeFormat.forPattern("HH:mm Z"));
+        } catch (Exception e) {
+            throw new MotechException("error.convertToTime", e);
+        }
+        return value;
+    }
+
+    private static Object convertToBoolean(String userInput) {
+        if (!equalsIgnoreCase(userInput, "true") && !equalsIgnoreCase(userInput, "false")) {
+            throw new MotechException("error.convertToBoolean");
+        }
+
+        return Boolean.valueOf(userInput);
+    }
+
+    private static Object convertToLong(String userInput) {
+        Object value;
+        try {
+            value = Long.valueOf(userInput);
+        } catch (Exception e) {
+            throw new MotechException("error.convertToLong", e);
+        }
+        return value;
+    }
+
+    private static Object convertToInteger(String userInput) {
+        Object value;
+        try {
+            value = Integer.valueOf(userInput);
+        } catch (Exception e) {
+            throw new MotechException("error.convertToInteger", e);
+        }
+        return value;
+    }
+
+    private static Object convertToDouble(String userInput) {
+        Object value;
+        try {
+            value = Double.valueOf(userInput);
+        } catch (Exception e) {
+            throw new MotechException("error.convertToDouble", e);
+        }
+        return value;
     }
 }

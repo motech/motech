@@ -296,6 +296,10 @@
 
                             $scope.selectedAction.actionParameters[i].value = value;
                         } else {
+                            if ($scope.selectedAction.actionParameters[i].type === 'BOOLEAN') {
+                                value = '<span contenteditable="false" class="badge badge-' + (value ? 'success' : 'important') + '" data-value="' + value + '" data-prefix="other">' + (value ? $scope.msg('yes') : $scope.msg('no')) + '</span>';
+                            }
+
                             $scope.selectedAction.actionParameters[i].value = $scope.createDraggableElement(value);
                         }
                     }
@@ -654,6 +658,8 @@
                     }
                 } else if (prefix === 'ad') {
                     eventKey = field;
+                } else {
+                    eventKey = $(this).data('value').toString();
                 }
 
                 manipulation = this.attributes.getNamedItem('manipulate') !== null ? this.attributes.getNamedItem('manipulate').value : '';
@@ -676,6 +682,8 @@
                     val = '{{' + prefix + '.' + eventKey + '}}';
                 } else if (prefix === 'ad') {
                     val = '{{' + prefix + '.' + $scope.msg(source) + '.' + type + '#' + id + '.' + eventKey + '}}';
+                } else {
+                    val = eventKey;
                 }
 
                 return val;
@@ -710,7 +718,7 @@
         $scope.createDraggableElement = function (value) {
             var regex = new RegExp("\\{\\{.*?\\}\\}", "g");
 
-            return value.replace(regex, $scope.buildSpan).replace(/\\n/g, "<br>");
+            return value.replace(regex, $scope.buildSpan).replace(/\n/g, "<br>");
         };
 
         $scope.buildSpan = function (eventParameterKey) {
@@ -770,7 +778,7 @@
                 operator.push("contains");
                 operator.push("startsWith");
                 operator.push("endsWith");
-            } else if (event && (event.type === 'INTEGER' || event.type === 'DOUBLE')) {
+            } else if (event && (event.type === 'INTEGER' || event.type === 'LONG' || event.type === 'DOUBLE')) {
                 operator.push("gt");
                 operator.push("lt");
                 operator.push("equal");
@@ -839,7 +847,7 @@
             var msg = "control-group", value;
 
             if ($scope.selectedTrigger !== undefined) {
-                value = $scope.refactorDivEditable(prop.value || '');
+                value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
 
                 if (value.length === 0 || value === "\n") {
                     msg = msg.concat(' error');
@@ -1128,6 +1136,22 @@
             }
 
             return $scope.availableLookupValue.selected === val;
+        };
+
+        $scope.getBooleanValue = function (value) {
+            return (value === 'true' || value === 'false') ? null : value;
+        };
+
+        $scope.setBooleanValue = function (index, value) {
+            var span = '<span contenteditable="false" class="badge badge-' + (value ? 'success' : 'important') + '" data-value="' + value + '" data-prefix="other">' + (value ? $scope.msg('yes') : $scope.msg('no')) + '</span>';
+            $scope.selectedAction.actionParameters[index].value = span;
+        };
+
+        $scope.checkedBoolean = function (index, val) {
+             var prop = $scope.selectedAction.actionParameters[index],
+                 value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
+
+             return value === val;
         };
     });
 

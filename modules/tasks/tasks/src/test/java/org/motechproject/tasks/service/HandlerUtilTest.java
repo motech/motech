@@ -1,6 +1,8 @@
 package org.motechproject.tasks.service;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
+import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
@@ -26,9 +28,18 @@ import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.ParameterType.DATE;
+import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
 import static org.motechproject.tasks.domain.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.ParameterType.LIST;
+import static org.motechproject.tasks.domain.ParameterType.LONG;
+import static org.motechproject.tasks.domain.ParameterType.MAP;
 import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.ParameterType.TIME;
+import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
+import static org.motechproject.tasks.service.HandlerUtil.convertTo;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getKeys;
@@ -57,11 +68,28 @@ public class HandlerUtilTest {
     }
 
     @Test
+    public void testConvertTo() {
+        DateTime now = DateTimeSourceUtil.now().withSecondOfMinute(0).withMillis(0);
+
+        assertEquals("text", convertTo(UNICODE, "text"));
+        assertEquals("text\nline2", convertTo(TEXTAREA, "text\nline2"));
+        assertEquals(123, convertTo(INTEGER, "123"));
+        assertEquals(100000000000L, convertTo(LONG, "100000000000"));
+        assertEquals(123.45, convertTo(DOUBLE, "123.45"));
+        assertEquals(now, convertTo(DATE, now.toString("yyyy-MM-dd HH:mm Z")));
+        assertEquals(true, convertTo(BOOLEAN, "true"));
+        assertEquals("key:value\nkey2:value2", convertTo(MAP, "key:value\nkey2:value2"));
+        assertEquals("value\nvalue2", convertTo(LIST, "value\nvalue2"));
+
+        assertTime(now, (DateTime) convertTo(TIME, now.toString("HH:mm Z")));
+    }
+
+    @Test
     public void testGetFieldValue() throws Exception {
         HandlerUtilObjectTest test = new HandlerUtilObjectTest();
-        String value = getFieldValue(test, "id");
+        int value = (int) getFieldValue(test, "id");
 
-        assertEquals(OBJECT_ID.toString(), value);
+        assertEquals(OBJECT_ID.intValue(), value);
     }
 
     @Test
@@ -177,5 +205,11 @@ public class HandlerUtilTest {
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, "abc", ""));
 
         assertFalse(checkFilters(filters, triggerParameters));
+    }
+
+    private void assertTime(DateTime expected, DateTime actual) {
+        assertEquals(expected.getHourOfDay(), actual.getHourOfDay());
+        assertEquals(expected.getMinuteOfHour(), actual.getMinuteOfHour());
+        assertEquals(expected.getZone(), actual.getZone());
     }
 }
