@@ -1,0 +1,28 @@
+{
+    "displayName" : "mobileforms",
+    "moduleName" : "${project.artifactId}",
+    "moduleVersion" : "${parsedVersion.osgiVersion}",
+    "triggerTaskEvents" : [
+        {
+            "displayName" : "mobileforms.valid.form",
+            "subject" : "handle.valid.xforms.group",
+            "eventParameters" : [
+                {
+                    "eventKey" : "formBeanGroup",
+                    "displayName" : "mobileforms.formBeanGroup"
+                }
+            ]
+        },
+        {
+            "displayName" : "mobileforms.form.error",
+            "subject" : "handle.xforms.error",
+            "eventParameters" : [
+                {
+                    "eventKey" : "formBeanGroup",
+                    "displayName" : "mobileforms.formBeanGroup"
+                }
+            ]
+        }
+    ],
+    "actionTaskEvents" : []
+}

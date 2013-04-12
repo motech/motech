@@ -755,9 +755,9 @@
                 <version>20080701-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.motechproject.mforms</groupId>
-                <artifactId>xforms-server</artifactId>
-                <version>0.7.0-beta-1</version>
+                <groupId>xforms</groupId>
+                <artifactId>org.motechproject.xforms</artifactId>
+                <version>0.7.0-beta-1-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>com.jcraft.jzlib</groupId>

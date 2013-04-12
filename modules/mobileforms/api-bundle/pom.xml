@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
@@ -37,14 +38,72 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks-test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>task-channel.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>task-channel.json</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>test.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>test/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>test.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -52,6 +111,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Context-File>META-INF/osgi/applicationMobileFormsAPIBundle.xml</Context-File>
+                        <Context-Path>mobileformsapi</Context-Path>
+                        <Resource-Path>mobileformsapi/resources</Resource-Path>
                         <Export-Package>
                             org.motechproject.mobileforms.api.callbacks;version=${project.version},
                             org.motechproject.mobileforms.api.domain;version=${project.version},
@@ -63,9 +126,6 @@
                             org.motechproject.mobileforms.api.vo;version=${project.version},
                             org.motechproject.mobileforms.api.web;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.mobileforms.api.osgi.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.aspectj,

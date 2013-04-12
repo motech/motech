@@ -30,8 +30,8 @@
             <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.motechproject.mforms</groupId>
-            <artifactId>xforms-server</artifactId>
+            <groupId>xforms</groupId>
+            <artifactId>org.motechproject.xforms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.jcraft.jzlib</groupId>
