@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="classpath*:/META-INF/motech/*.xml"/>
+
+    <bean id="couchdbSchedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="scheduler-couchdb"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:quartz-couchdb.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="jdbcSchedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="scheduler-jdbc"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:quartz-jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

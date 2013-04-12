@@ -2,7 +2,7 @@ package org.motechproject.commons.api;
 
 import org.apache.commons.lang.StringUtils;
 
-final public class TenantIdentity {
+public class TenantIdentity {
     private IdentityProvider identityProvider;
 
     public TenantIdentity() {

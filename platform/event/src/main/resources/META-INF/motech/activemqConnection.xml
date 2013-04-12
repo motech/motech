@@ -12,8 +12,10 @@
 
     <context:property-placeholder properties-ref="activemqConfig"/>
 
+    <bean id="tenantIdentity" class="org.motechproject.commons.api.TenantIdentity"/>
+
     <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="${queue.for.events}"/>
+        <constructor-arg value="#{tenantIdentity.getId()}-${queue.for.events}"/>
     </bean>
 
     <bean id="connectionFactory" class="org.motechproject.event.MotechCachingConnectionFactory">

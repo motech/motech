@@ -31,7 +31,7 @@ import static org.quartz.TriggerKey.triggerKey;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/testSchedulerApplicationContext.xml")
+@ContextConfiguration(locations = "classpath*:/META-INF/motech/*.xml")
 public class SpringQuartzIT {
 
     @Autowired

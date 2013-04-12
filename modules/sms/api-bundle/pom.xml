@@ -113,7 +113,17 @@
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
+                <includes>
+                    <include>test.properties</include>
+                </includes>
                 <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>test.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
             </testResource>
         </testResources>
         <plugins>

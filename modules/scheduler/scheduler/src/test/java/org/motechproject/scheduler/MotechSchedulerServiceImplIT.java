@@ -37,12 +37,13 @@ import static junit.framework.Assert.assertTrue;
 import static org.motechproject.commons.date.util.DateUtil.newDate;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.commons.date.util.DateUtil.now;
+import static org.motechproject.testing.utils.IdGenerator.id;
 import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testSchedulerApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
 public class MotechSchedulerServiceImplIT {
 
     @Autowired
@@ -62,7 +63,7 @@ public class MotechSchedulerServiceImplIT {
     }
 
     @After
-    public void teardown() {
+    public void tearDown() throws SchedulerException {
         schedulerService.unscheduleAllJobs("test_event");
     }
 
@@ -72,14 +73,15 @@ public class MotechSchedulerServiceImplIT {
             fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
-            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            final String job_id = id("job_id");
+            params.put(MotechSchedulerService.JOB_ID_KEY, job_id);
             schedulerService.scheduleJob(
                     new CronSchedulableJob(
                             new MotechEvent("test_event", params),
                             "0 0 10 * * ?"
                     ));
 
-            List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
+            List<DateTime> first3FireTimes = getFireTimes("test_event-" + job_id).subList(0, 3);
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 10, 0, 0),
                     newDateTime(2020, 7, 16, 10, 0, 0),
@@ -120,7 +122,7 @@ public class MotechSchedulerServiceImplIT {
     // org.quartz.jobStore.misfireThreshold=1000 (in quartz.properties) makes the test reliable.
     // See http://quartz-scheduler.org/documentation/quartz-2.x/configuration/ConfigJobStoreTX
     public void shouldNotIgnoreFiresInPastWhenSchedulingCronJob() throws InterruptedException, SchedulerException {
-        final String eventSubject = "eve";
+        final String eventSubject = id("eve");
         try {
             TestEventListener listener = new TestEventListener();
             eventListenerRegistryService.registerListener(listener, eventSubject);
@@ -156,7 +158,8 @@ public class MotechSchedulerServiceImplIT {
             fakeNow(new DateTime(2020, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
-            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            final String jobId = id("jobId");
+            params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
             schedulerService.scheduleJob(
                     new CronSchedulableJob(
                             new MotechEvent("test_event", params),
@@ -169,7 +172,7 @@ public class MotechSchedulerServiceImplIT {
                             "0 0 14 * * ?"
                     ));
 
-            List<DateTime> first3FireTimes = getFireTimes("test_event-job_id").subList(0, 3);
+            List<DateTime> first3FireTimes = getFireTimes("test_event-" + jobId).subList(0, 3);
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 14, 0, 0),
                     newDateTime(2020, 7, 16, 14, 0, 0),
@@ -210,7 +213,7 @@ public class MotechSchedulerServiceImplIT {
     public void shouldThrowExceptionForInvalidCronExpression() throws SchedulerException {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
-        schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "goo"));
+        schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "invalidCronExpression"));
     }
 
     @Test(expected = MotechSchedulerException.class)
@@ -218,7 +221,7 @@ public class MotechSchedulerServiceImplIT {
         Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
         schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 10 * * ?"));
-        schedulerService.rescheduleJob("test_event", "job_id", "goo");
+        schedulerService.rescheduleJob("test_event", "job_id", "invalidCronExpression");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -276,7 +279,8 @@ public class MotechSchedulerServiceImplIT {
             fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
 
             Map<String, Object> params = new HashMap<>();
-            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            final String jobId = id("jobId");
+            params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
             schedulerService.scheduleRepeatingJob(
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event", params),
@@ -287,7 +291,7 @@ public class MotechSchedulerServiceImplIT {
                             false)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
+            List<DateTime> fireTimes = getFireTimes("test_event-" + jobId + "-repeat");
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 12, 0, 0),
                     newDateTime(2020, 7, 16, 12, 0, 0),
@@ -302,9 +306,10 @@ public class MotechSchedulerServiceImplIT {
     public void shouldScheduleRepeatJobBoundByEndDate() throws SchedulerException {
         try {
             fakeNow(newDateTime(2020, 7, 15, 10, 0, 0));
+            final String jobId = id("jobId");
 
             Map<String, Object> params = new HashMap<>();
-            params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+            params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
             schedulerService.scheduleRepeatingJob(
                     new RepeatingSchedulableJob(
                             new MotechEvent("test_event", params),
@@ -314,7 +319,7 @@ public class MotechSchedulerServiceImplIT {
                             false)
             );
 
-            List<DateTime> fireTimes = getFireTimes("test_event-job_id-repeat");
+            List<DateTime> fireTimes = getFireTimes("test_event-" + jobId + "-repeat");
             assertEquals(asList(
                     newDateTime(2020, 7, 15, 12, 0, 0),
                     newDateTime(2020, 7, 16, 12, 0, 0),
@@ -470,12 +475,13 @@ public class MotechSchedulerServiceImplIT {
     @Test
     public void shouldUnscheduleJob() throws SchedulerException {
         Map<String, Object> params = new HashMap<>();
-        params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
+        final String jobId = id("jobId");
+        params.put(MotechSchedulerService.JOB_ID_KEY, jobId);
         schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("test_event", params), "0 0 12 * * ?"));
 
-        schedulerService.unscheduleJob("test_event", "job_id");
+        schedulerService.unscheduleJob("test_event", jobId);
 
-        assertNull(scheduler.getTrigger(triggerKey("test_event-job_id", "default")));
+        assertNull(scheduler.getTrigger(triggerKey("test_event-" + jobId, "default")));
     }
 
     @Test

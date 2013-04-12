@@ -6,6 +6,7 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.IdGenerator;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
@@ -16,18 +17,17 @@ import static java.util.Arrays.asList;
 
 public class SchedulerBundleIT extends BaseOsgiIT {
 
-    private static final String TEST_SUBJECT = "Scheduler Bundle IT - 001";
+    private String TEST_SUBJECT = IdGenerator.id("SchedulerBundleIT");
 
     public void testRunOnceJob() throws InterruptedException {
-        final Object waitLock = new Object();
         final List<String> receivedEvents = new ArrayList<>();
         EventListenerRegistryService eventRegistry = (EventListenerRegistryService) getApplicationContext().getBean("eventListenerRegistry");
         eventRegistry.registerListener(new EventListener() {
             @Override
             public void handle(MotechEvent event) {
-                synchronized (waitLock) {
-                    waitLock.notify();
+                synchronized (receivedEvents) {
                     receivedEvents.add(event.getSubject());
+                    receivedEvents.notify();
                 }
             }
 
@@ -41,9 +41,14 @@ public class SchedulerBundleIT extends BaseOsgiIT {
         assertNotNull(schedulerServiceReference);
         MotechSchedulerService schedulerService = (MotechSchedulerService) bundleContext.getService(schedulerServiceReference);
         assertNotNull(schedulerService);
-        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(new MotechEvent(TEST_SUBJECT), new Date()));
-        synchronized (waitLock) {
-            waitLock.wait(2000);
+        final MotechEvent motechEvent = new MotechEvent(TEST_SUBJECT);
+        motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, "jobId");
+        schedulerService.unscheduleAllJobs("SchedulerBundleIT");
+        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(motechEvent, new Date()));
+        synchronized (receivedEvents) {
+            System.out.print("\nEvent waiting " + new Date() + "\n");
+            receivedEvents.wait(10000);
+
         }
         assertEquals(1, receivedEvents.size());
         assertEquals(receivedEvents.get(0), TEST_SUBJECT);

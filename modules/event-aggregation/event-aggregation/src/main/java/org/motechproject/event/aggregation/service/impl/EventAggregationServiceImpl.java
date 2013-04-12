@@ -1,5 +1,6 @@
 package org.motechproject.event.aggregation.service.impl;
 
+import org.apache.log4j.Logger;
 import org.motechproject.event.aggregation.aggregate.EventAggregator;
 import org.motechproject.event.aggregation.model.AggregationRuleRecord;
 import org.motechproject.event.aggregation.model.event.PeriodicDispatchEvent;
@@ -34,6 +35,7 @@ public class EventAggregationServiceImpl implements EventAggregationService {
     public static final int MILLIS_IN_A_SEC = 1000;
     private static final long MILLIS_IN_A_MINUTE = 60 * 1000;
     private AggregationRuleMapper aggregationRuleMapper;
+    private Logger logger = Logger.getLogger(EventAggregationService.class);
 
     @Autowired
     public EventAggregationServiceImpl(AllAggregationRules allAggregationRules, EventListenerRegistryService eventListenerRegistryService, AllAggregatedEvents allAggregatedEvents, MotechSchedulerService schedulerService) {
@@ -53,6 +55,9 @@ public class EventAggregationServiceImpl implements EventAggregationService {
 
     @Override
     public void createRule(AggregationRuleRequest request) {
+        if (logger.isInfoEnabled()) {
+            logger.info("Creating aggregation rule " + request.getName());
+        }
         AggregationRuleRecord aggregationRule = aggregationRuleMapper.toRecord(request);
         allAggregationRules.addOrReplace(aggregationRule);
         registerListenerForRule(request);

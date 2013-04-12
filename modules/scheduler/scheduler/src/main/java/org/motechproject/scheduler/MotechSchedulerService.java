@@ -32,6 +32,11 @@ import java.util.List;
  * reschedule_now_with_existing_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT
  * reschedule_now_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT
  *
+ * Scheduler can use couchdb for its job store. To enable set the following properties
+ * org.quartz.jobStore.class =  org.motechproject.quartz.CouchDbStore
+ * org.quartz.jobStore.dbNameGenerator = org.motechproject.scheduler.impl.MultiTenantQuartzDatabaseName    # provides database names for the jobstore, used in a multi-tenant environment to have separate databases for each tenant; leave blank to use a single database
+ * org.quartz.jobStore.properties = <path-to-couchdb.properties-on-the-classpath>                          # a couchdb.properties file understood by ektorp to specify the database environment
+ *
  * @author Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
  *
