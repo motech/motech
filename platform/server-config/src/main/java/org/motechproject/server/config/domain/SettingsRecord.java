@@ -20,6 +20,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private String providerName;
     private String providerUrl;
     private String serverUrl;
+    private String uploadSize;
 
     private boolean cluster;
     private DateTime lastRun;
@@ -72,6 +73,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public String getServerUrl() {
         return serverUrl;
+    }
+
+    public String getUploadSize() {
+        return uploadSize;
     }
 
     public Properties getSchedulerProperties() {
@@ -134,6 +139,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         this.serverUrl = serverUrl;
     }
 
+    public void setUploadSize(String uploadSize) {
+        this.uploadSize = uploadSize;
+    }
+
     public byte[] getConfigFileChecksum() {
         return Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
@@ -153,6 +162,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setProviderName(settings.getProviderName());
         setProviderUrl(settings.getProviderUrl());
         setServerUrl(settings.getServerUrl());
+        setUploadSize(settings.getUploadSize());
     }
 
     public void updateFromProperties(final Properties props) {
@@ -191,17 +201,25 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     break;
                 case MotechSettings.PROVIDER_URL:
                     setProviderUrl(value);
+                    break;
                 case MotechSettings.SERVER_URL:
                     setServerUrl(value);
                     break;
-                default:
-                    for (Properties p : Arrays.asList(getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
-                        if (p.containsKey(key)) {
-                            p.put(key, value);
-                            break;
-                        }
-                    }
+                case MotechSettings.UPLOAD_SIZE:
+                    setUploadSize(value);
                     break;
+                default:
+                    handleMiscProperty(key, value);
+                    break;
+            }
+        }
+    }
+
+    private void handleMiscProperty(String key, String value) {
+        for (Properties p : Arrays.asList(getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
+            if (p.containsKey(key)) {
+                p.put(key, value);
+                break;
             }
         }
     }

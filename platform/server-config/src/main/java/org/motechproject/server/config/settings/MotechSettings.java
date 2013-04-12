@@ -24,10 +24,11 @@ public interface MotechSettings {
     String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
     String SERVER_URL = "server.url";
+    String UPLOAD_SIZE = "upload.size";
 
-    String PROVIDER_NAME="provider.name";
-    String PROVIDER_URL="provider.url";
-    String LOGINMODE ="login.mode";
+    String PROVIDER_NAME = "provider.name";
+    String PROVIDER_URL = "provider.url";
+    String LOGINMODE = "login.mode";
 
     String getLanguage();
 
@@ -40,6 +41,8 @@ public interface MotechSettings {
     String getProviderUrl();
 
     String getServerUrl();
+
+    String getUploadSize();
 
     Properties getActivemqProperties();
 

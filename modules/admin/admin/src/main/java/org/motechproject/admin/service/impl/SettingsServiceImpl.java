@@ -12,9 +12,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +66,8 @@ public class SettingsServiceImpl implements SettingsService {
             miscOptions.add(msgOption);
             SettingsOption serverUrlOption = ParamParser.parseParam(MotechSettings.SERVER_URL, motechSettings.getServerUrl());
             miscOptions.add(serverUrlOption);
+            SettingsOption uploadSizeOption = ParamParser.parseParam(MotechSettings.UPLOAD_SIZE, motechSettings.getUploadSize());
+            miscOptions.add(uploadSizeOption);
 
             Settings miscSettings = new Settings("other", miscOptions);
             settingsList.add(miscSettings);

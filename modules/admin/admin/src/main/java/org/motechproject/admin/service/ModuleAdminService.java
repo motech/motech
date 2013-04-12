@@ -1,6 +1,7 @@
 package org.motechproject.admin.service;
 
 import org.motechproject.admin.bundles.ExtendedBundleInformation;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.osgi.framework.BundleException;
@@ -40,4 +41,6 @@ public interface ModuleAdminService {
     BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle);
 
     BundleInformation installFromRepository(String featureId, boolean start);
+
+    void changeMaxUploadSize(MotechEvent event);
 }

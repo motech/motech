@@ -359,6 +359,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 dbSettings.setStatusMsgTimeout(value);
             } else if (MotechSettings.SERVER_URL.equals(key)) {
                 dbSettings.setServerUrl(value);
+            } else if (MotechSettings.UPLOAD_SIZE.equals(key)) {
+                dbSettings.setUploadSize(value);
             } else {
                 for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
                         dbSettings.getMetricsProperties())) {

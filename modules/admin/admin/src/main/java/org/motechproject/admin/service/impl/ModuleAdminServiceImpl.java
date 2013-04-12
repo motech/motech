@@ -2,6 +2,7 @@ package org.motechproject.admin.service.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authentication.AuthenticationException;
@@ -13,9 +14,13 @@ import org.motechproject.admin.bundles.MotechBundleFilter;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -38,6 +43,7 @@ import org.sonatype.aether.util.filter.DependencyFilterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,6 +76,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Autowired
     private MotechBundleFilter motechBundleFilter;
+
+    @Autowired
+    private CommonsMultipartResolver commonsMultipartResolver;
+
+    @Autowired
+    private PlatformSettingsService platformSettingsService;
 
     @Override
     public List<BundleInformation> getBundles() {
@@ -336,6 +348,15 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
         public void release(Wagon wagon) {
 
+        }
+    }
+
+    @MotechListener(subjects = ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT)
+    public void changeMaxUploadSize(MotechEvent event) {
+        String uploadSize = platformSettingsService.getPlatformSettings().getUploadSize();
+
+        if (StringUtils.isNotBlank(uploadSize)) {
+            commonsMultipartResolver.setMaxUploadSize(Long.valueOf(uploadSize));
         }
     }
 }

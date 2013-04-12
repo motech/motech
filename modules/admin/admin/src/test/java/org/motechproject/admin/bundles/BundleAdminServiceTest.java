@@ -1,6 +1,7 @@
 package org.motechproject.admin.bundles;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileMonitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -8,13 +9,18 @@ import org.mockito.Mock;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.impl.ModuleAdminServiceImpl;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +75,15 @@ public class BundleAdminServiceTest {
 
     @Mock
     MotechBundleFilter motechBundleFilter;
+
+    @Mock
+    CommonsMultipartResolver commonsMultipartResolver;
+
+    @Mock
+    ConfigFileSettings motechSettings;
+
+    @Mock
+    PlatformSettingsService platformSettingsService;
 
     @Before
     public void setUp() {
@@ -210,6 +225,18 @@ public class BundleAdminServiceTest {
         assertEquals("www.doc.org", bundleInfo.getDocURL());
         assertEquals("imp1, imp2", bundleInfo.getImportPackageHeader());
         assertEquals("exp1, exp2", bundleInfo.getExportPackageHeader());
+    }
+
+    @Test
+    public void testSetUploadSize() {
+        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
+        when(motechSettings.getUploadSize()).thenReturn("1000000");
+
+        MotechEvent motechEvent = new MotechEvent(ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT);
+
+        moduleAdminService.changeMaxUploadSize(motechEvent);
+
+        verify(commonsMultipartResolver).setMaxUploadSize(Long.valueOf("1000000"));
     }
 
     @Test(expected = BundleNotFoundException.class)

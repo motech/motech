@@ -49,6 +49,10 @@ public class ConfigFileSettings implements MotechSettings {
         return motechSettings.getProperty(SERVER_URL);
     }
 
+    public String getUploadSize() {
+        return motechSettings.getProperty(UPLOAD_SIZE);
+    }
+
     public byte[] getMd5checkSum() {
         return Arrays.copyOf(md5checkSum, md5checkSum.length);
     }
