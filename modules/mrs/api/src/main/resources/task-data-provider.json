@@ -4,7 +4,7 @@
         {
             "displayName": "mrs.patient.name",
             "type": "Patient",
-            "lookupFields": ["mrs.patient.lookupField.id"],
+            "lookupFields": ["id"],
             "fields": [
                 {
                     "displayName": "mrs.patient.field.patientId",
@@ -23,7 +23,7 @@
         {
             "displayName": "mrs.person.name",
             "type": "Person",
-            "lookupFields": ["mrs.person.lookupField.id"],
+            "lookupFields": ["id"],
             "fields": [
                 {
                     "displayName": "mrs.person.field.personId",
@@ -81,7 +81,7 @@
         {
             "displayName": "mrs.facility.name",
             "type": "Facility",
-            "lookupFields": ["mrs.facility.lookupField.id"],
+            "lookupFields": ["id"],
             "fields": [
                 {
                     "displayName": "mrs.facility.field.facilityId",

@@ -14,6 +14,8 @@
     <context:annotation-config/>
     <mvc:annotation-driven/>
 
+    <bean id="cmsDataProvider" class="org.motechproject.cmslite.api.CMSDataProvider"/>
+
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg value="cmslite"/>
         <constructor-arg value="../cmsliteapi/resources/index.html"/>
@@ -34,6 +36,9 @@
 
     <osgi:service id="cmsLiteServiceOsgi" ref="cmsLiteService"
                   interface="org.motechproject.cmslite.api.service.CMSLiteService"/>
+
+    <osgi:service id="cmsDataProviderOsgi" auto-export="interfaces" ref="cmsDataProvider"
+                  interface="org.motechproject.commons.api.DataProvider"/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
