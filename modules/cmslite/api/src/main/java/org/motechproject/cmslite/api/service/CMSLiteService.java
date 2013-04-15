@@ -88,6 +88,7 @@ public interface CMSLiteService {
     boolean isStringContentAvailable(String language, String name);
 
     List<Content> getAllContents();
-
+    StringContent getStringContent(String stringContentId);
+    StreamContent getStreamContent(String stringContentId);
 
 }

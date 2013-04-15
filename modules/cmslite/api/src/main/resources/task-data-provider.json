@@ -1,0 +1,59 @@
+{
+    "name": "cmslite.name",
+    "objects": [
+        {
+            "displayName": "cmslite.streamContent.name",
+            "type": "StreamContent",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "cmslite.streamContent.field.checksum",
+                    "fieldKey": "checksum"
+                },
+                {
+                    "displayName": "cmslite.streamContent.field.contentType",
+                    "fieldKey": "contentType"
+                },
+                {
+                    "displayName": "cmslite.streamContent.field.inputStream",
+                    "fieldKey": "inputStream"
+                },
+                {
+                    "displayName": "cmslite.streamContent.field.language",
+                    "fieldKey": "language"
+                },
+                {
+                    "displayName": "cmslite.streamContent.field.name",
+                    "fieldKey": "name"
+                },
+                {
+                    "displayName": "cmslite.streamContent.field.metadata",
+                    "fieldKey": "metadata"
+                }
+            ]
+        },
+        {
+            "displayName": "cmslite.stringContent.name",
+            "type": "StringContent",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "cmslite.stringContent.field.value",
+                    "fieldKey": "value"
+                },
+                {
+                    "displayName": "cmslite.stringContent.field.language",
+                    "fieldKey": "language"
+                },
+                {
+                    "displayName": "cmslite.stringContent.field.name",
+                    "fieldKey": "name"
+                },
+                {
+                    "displayName": "cmslite.stringContent.field.metadata",
+                    "fieldKey": "metadata"
+                }
+            ]
+        }
+    ]
+}
