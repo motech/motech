@@ -26,7 +26,7 @@ public final class EventKeys {
     public static final String FACILITY_STATE_PROVINCE = "FacilityStateProvince";
     public static final String OBSERVATION_VALUE = "ObservationValue";
     public static final String OBSERVATION_CONCEPT_NAME = "ObservationConceptName";
-    public static final String OBSERVATION_DATE = "ObservationName";
+    public static final String OBSERVATION_DATE = "ObservationDate";
     public static final String ENCOUNTER_ID = "EncounterID";
     public static final String ENCOUNTER_TYPE = "EncounterType";
     public static final String ENCOUNTER_DATE = "EncounterDate";
@@ -47,6 +47,7 @@ public final class EventKeys {
     public static final String DELETED_PERSON_SUBJECT = BASE_SUBJECT + "Person.Deleted";
     public static final String CREATED_NEW_PROVIDER_SUBJECT = BASE_SUBJECT + "Provider.Created";
     public static final String DELETED_OBSERVATION_SUBJECT = BASE_SUBJECT + "Observation.Deleted";
+    public static final String CREATED_UPDATED_OBSERVATION_SUBJECT = "Observation.Updated";
 
     private EventKeys() { }
 

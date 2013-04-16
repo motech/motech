@@ -69,7 +69,7 @@ public final class EventHelper {
             encounterParameters.put(EventKeys.FACILITY_ID, null);
         }
         encounterParameters.put(EventKeys.ENCOUNTER_DATE, encounter.getDate());
-        if (!encounter.getObservations().isEmpty()) {
+        if (encounter.getObservations() != null && !encounter.getObservations().isEmpty()) {
             MRSObservation obs = encounter.getObservations().iterator().next();
             encounterParameters.put(EventKeys.OBSERVATION_DATE, obs.getDate());
             encounterParameters.put(EventKeys.OBSERVATION_CONCEPT_NAME, obs.getConceptName());
