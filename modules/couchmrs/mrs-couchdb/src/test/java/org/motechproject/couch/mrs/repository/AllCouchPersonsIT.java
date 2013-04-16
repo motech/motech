@@ -43,9 +43,12 @@ public class AllCouchPersonsIT extends SpringIntegrationTest {
     public void shouldSaveAPersonAndRetrieveByExternalId() throws MRSCouchException {
         CouchPerson person1 = init.initializePerson1();
         allCouchMRSPersons.addPerson(person1);
+        CouchPerson person2 = init.initializeSecondPerson();
+        allCouchMRSPersons.addPerson(person2);
         List<CouchPerson> personsRetrieved = allCouchMRSPersons.findByPersonId(person1.getPersonId());
         CouchPerson personCompare = personsRetrieved.get(0);
         assertTrue(person1.equals(personCompare));
+        assertEquals(personsRetrieved.size(), 1);
     }
 
     @Test

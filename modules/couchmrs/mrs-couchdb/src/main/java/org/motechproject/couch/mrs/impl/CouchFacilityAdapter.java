@@ -3,6 +3,7 @@ package org.motechproject.couch.mrs.impl;
 import org.motechproject.couch.mrs.model.CouchFacility;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchFacilities;
+import org.motechproject.couch.mrs.util.CouchMRSConverterUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
@@ -26,8 +27,10 @@ public class CouchFacilityAdapter implements MRSFacilityAdapter {
     @Override
     public MRSFacility saveFacility(MRSFacility facility) {
 
+        CouchFacility convertedFacility = CouchMRSConverterUtil.convertFacilityToCouchFacility(facility);
+
         try {
-            allFacilities.addFacility((CouchFacility) facility);
+            allFacilities.addFacility(convertedFacility);
             eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_FACILITY_SUBJECT, EventHelper.facilityParameters(facility)));
         } catch (MRSCouchException e) {
             return null;

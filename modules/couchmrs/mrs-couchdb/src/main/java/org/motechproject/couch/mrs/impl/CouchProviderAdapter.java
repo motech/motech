@@ -3,6 +3,7 @@ package org.motechproject.couch.mrs.impl;
 import org.motechproject.couch.mrs.model.CouchProvider;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchProviders;
+import org.motechproject.couch.mrs.util.CouchMRSConverterUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
@@ -25,8 +26,8 @@ public class CouchProviderAdapter implements MRSProviderAdapter {
 
     @Override
     public MRSProvider saveProvider(MRSProvider provider) {
-
-        CouchProvider couchProvider = new CouchProvider(provider.getProviderId(), provider.getPerson());
+        CouchProvider couchProvider = (provider instanceof CouchProvider) ? (CouchProvider) provider :
+            CouchMRSConverterUtil.convertProviderToCouchProvider(provider);
 
         try {
             allCouchProviders.addProvider(couchProvider);
