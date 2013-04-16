@@ -131,7 +131,12 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
             lock.wait(60000);
         }
 
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.updated);
+        assertFalse(mrsListener.removed);
         assertTrue(person.getFirstName().matches("AName"));
+
+        mrsListener.resetValues();
 
         assertEquals(person.getPersonId(), mrsListener.eventParameters.get(EventKeys.PERSON_ID));
         assertEquals(person.getFirstName(), mrsListener.eventParameters.get(EventKeys.PERSON_FIRST_NAME));
@@ -150,7 +155,7 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
 
         List<CouchPerson> personsRetrieved = couchMRSService.findByPersonId(person.getPersonId());
         assertTrue(personsRetrieved.get(0).getFirstName().matches("ANewName"));
-        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.created);
         assertTrue(mrsListener.updated);
         assertFalse(mrsListener.removed);
     }
@@ -158,10 +163,22 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
     @Test
     public void shouldUpdatePersonIfExistsInDB() throws MRSCouchException, InterruptedException {
         CouchPerson person = init.initializeSecondPerson();
-        couchMRSService.addPerson(person);
+
+        synchronized (lock) {
+            couchMRSService.addPerson(person);
+            lock.wait(60000);
+        }
+
         assertTrue(person.getFirstName().matches("AName"));
         assertTrue(person.getPersonId().matches("externalId"));
         person.setFirstName("ANewName");
+
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.updated);
+        assertFalse(mrsListener.removed);
+
+        mrsListener.resetValues();
+
         synchronized (lock) {
             couchMRSService.addPerson(person);
             lock.wait(60000);
@@ -174,8 +191,8 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
         assertEquals(personsRetrieved.get(0).getFirstName(), mrsListener.eventParameters.get(EventKeys.PERSON_FIRST_NAME));
         assertEquals(personsRetrieved.get(0).getLastName(), mrsListener.eventParameters.get(EventKeys.PERSON_LAST_NAME));
 
-        assertTrue(mrsListener.created);
-        assertFalse(mrsListener.updated);
+        assertFalse(mrsListener.created);
+        assertTrue(mrsListener.updated);
         assertFalse(mrsListener.removed);
     }
 
@@ -213,8 +230,18 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
     @Test
     public void shouldRemovePerson() throws MRSCouchException, InterruptedException {
         CouchPerson person = init.initializeSecondPerson();
-        couchMRSService.addPerson(person);
+
+        synchronized (lock) {
+            couchMRSService.addPerson(person);
+            lock.wait(60000);
+        }
         List<CouchPerson> personsRetrieved = couchMRSService.findByPersonId(person.getPersonId());
+
+        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.updated);
+        assertFalse(mrsListener.removed);
+
+        mrsListener.resetValues();
 
         synchronized (lock) {
             couchMRSService.removePerson(personsRetrieved.get(0));
@@ -228,7 +255,7 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
         assertEquals(personsRetrieved.get(0).getFirstName(), mrsListener.eventParameters.get(EventKeys.PERSON_FIRST_NAME));
         assertEquals(personsRetrieved.get(0).getLastName(), mrsListener.eventParameters.get(EventKeys.PERSON_LAST_NAME));
 
-        assertTrue(mrsListener.created);
+        assertFalse(mrsListener.created);
         assertFalse(mrsListener.updated);
         assertTrue(mrsListener.removed);
     }
@@ -289,6 +316,12 @@ public class CouchPersonAdapterIT extends SpringIntegrationTest {
         @Override
         public String getIdentifier() {
             return "mrsTestListener";
+        }
+
+        public void resetValues() {
+            created = false;
+            updated = false;
+            removed = false;
         }
     }
 }

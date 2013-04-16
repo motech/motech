@@ -217,6 +217,42 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
+                            <execution>
+                                <id>drop DB =&gt; motech-encounter-repository</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-encounter-repository" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>drop DB =&gt; motech-observation-repository</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-observation-repository" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>

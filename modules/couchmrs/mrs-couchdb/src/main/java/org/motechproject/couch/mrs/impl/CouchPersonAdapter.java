@@ -5,6 +5,7 @@ import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.MRSCouchException;
 import org.motechproject.couch.mrs.repository.AllCouchPersons;
 import org.motechproject.couch.mrs.repository.impl.AllCouchPersonsImpl;
+import org.motechproject.couch.mrs.util.CouchMRSConverterUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mrs.EventKeys;
@@ -43,20 +44,41 @@ public class CouchPersonAdapter implements MRSPersonAdapter {
 
     @Override
     public void addPerson(MRSPerson person) throws MRSCouchException {
-        allCouchMRSPersons.addPerson((CouchPerson) person);
+        if (person == null) {
+            return;
+        }
+
+        List<CouchPerson> persons = allCouchMRSPersons.findByPersonId(person.getPersonId());
+        if (persons.size() > 0) {
+            updatePerson(person);
+            return;
+        }
+
+        CouchPerson couchPerson = (person instanceof CouchPerson) ? (CouchPerson) person :
+            CouchMRSConverterUtil.convertPersonToCouchPerson(person);
+
+        allCouchMRSPersons.addPerson(couchPerson);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.CREATED_NEW_PERSON_SUBJECT, EventHelper.personParameters(person)));
     }
 
     @Override
     public void updatePerson(MRSPerson person) {
-        allCouchMRSPersons.update((CouchPerson) person);
+        CouchPerson couchPerson = (person instanceof CouchPerson) ? (CouchPerson) person :
+            CouchMRSConverterUtil.convertPersonToCouchPerson(person);
+
+        allCouchMRSPersons.addPerson(couchPerson);
         eventRelay.sendEventMessage(new MotechEvent(EventKeys.UPDATED_PERSON_SUBJECT, EventHelper.personParameters(person)));
     }
 
     @Override
     public void removePerson(MRSPerson person) {
-        allCouchMRSPersons.remove((CouchPerson) person);
-        eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_PERSON_SUBJECT, EventHelper.personParameters(person)));
+        String personId = person.getPersonId();
+        List<CouchPerson> persons = findByPersonId(personId);
+        if (persons != null && persons.size() > 0) {
+            allCouchMRSPersons.remove(persons.get(0));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.DELETED_PERSON_SUBJECT, EventHelper.personParameters(person)));
+
+        }
     }
 
     @Override
