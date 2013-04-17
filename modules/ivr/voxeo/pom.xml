@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.19-SNAPSHOT</version>
+        <version>0.19</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-voxeo</artifactId>
-    <version>0.19-SNAPSHOT</version>
+    <version>0.19</version>
     <name>MOTECH IVR Voxeo</name>
     <description>Voxeo IVR Provider</description>
     <properties>
