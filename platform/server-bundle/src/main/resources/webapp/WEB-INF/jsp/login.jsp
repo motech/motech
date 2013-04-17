@@ -75,7 +75,6 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <c:if test="${loginMode=='repository'}">
                 <c:if test="${empty error}">
                 <div id="login" class="well2 margin-center margin-before2 spnw5">
                     <div class="box-header"><fmt:message key="security.signInUser" bundle="${bundle}"/></div>
@@ -98,6 +97,22 @@
                             </form>
                         </div>
                         <div class="clearfix"></div>
+                    <div class="well3"><div class="top-divider">
+                        <form class="inside form-horizontal" action="${contextPath}j_spring_openid_security_check" method="POST">
+                            <div class="control-group open-id">
+                                <p>For ${openIdProviderName} users:</p>
+                                <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
+                                <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
+                                <div class="control-group">
+                                    <input class="btn btn-primary pull-right" type="submit" value="${msg} ${openIdProviderName}"/>
+                                </div>
+                            </div>
+                            <div class="control-group open-id">
+                                <p><fmt:message key="oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                            </div>
+                        </form>
+                    </div></div>
+
                     </div>
                 </div>
                 </c:if>
@@ -126,7 +141,7 @@
                                         <div class="control-group">
                                             <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="motechId" bundle="${bundle}"/></h4>
                                         </div>
-                                        <div class="control-group margin-before2"">
+                                        <div class="control-group margin-before2">
                                             <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>">
                                         </div>
                                         <div class="control-group">
@@ -137,37 +152,26 @@
                                         </div>
                                     </form>
                                 </div></div>
+                                <div class="well3"><div class="top-divider">
+                                    <form class="inside form-horizontal" action="${contextPath}j_spring_openid_security_check" method="POST">
+                                        <div class="control-group open-id">
+                                            <p>For ${openIdProviderName} users:</p>
+                                            <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
+                                            <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
+                                            <div class="control-group">
+                                                <input class="btn btn-primary pull-right" type="submit" value="${msg} ${openIdProviderName}"/>
+                                            </div>
+                                        </div>
+                                        <div class="control-group open-id">
+                                            <p><fmt:message key="oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                                        </div>
+                                    </form>
+                                </div></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 </c:if>
-                </c:if>
-                <c:if test="${loginMode=='openid'}">
-                    <div class="well2 margin-center margin-before2 spn6">
-                        <div class="box-header"><fmt:message key="security.openIdConsumer" bundle="${bundle}"/></div>
-                        <div class="box-content">
-                            <div class="well3">
-                                <form class="inside form-horizontal" action="${contextPath}j_spring_openid_security_check" method="POST">
-                                   <div class="control-group open-id">
-                                        <p>For ${openIdProviderName} users:</p>
-                                        <input name="openid_identifier" type="hidden" value="${openIdProviderUrl}"/>
-                                        <fmt:message key="security.signInWith" bundle="${bundle}" var="msg" />
-                                        <div class="controls">
-                                             <input class="btn btn-primary" type="submit" value="${msg} ${openIdProviderName}"/>
-                                        </div>
-                                   </div>
-                                   <div class="control-group margin-before2 open-id">
-                                       <p><fmt:message key="oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
-                                   </div>
-                                </form>
-                            </div>
-                            <div class="clearfix"></div>
-
-                        </div>
-                    </div>
-                </c:if>
-
             </div>
         </div>
     </div>

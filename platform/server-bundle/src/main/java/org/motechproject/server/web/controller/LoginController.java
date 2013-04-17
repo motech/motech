@@ -34,13 +34,14 @@ public class LoginController {
 
         ModelAndView view = new ModelAndView("login");
 
-        if (StringUtils.isNotBlank(request.getSession().getServletContext().getContextPath()) && !"/".equals(request.getSession().getServletContext().getContextPath())) {
-            view.addObject("contextPath", request.getSession().getServletContext().getContextPath().substring(1) + "/");
-        } else if (StringUtils.isBlank(request.getSession().getServletContext().getContextPath()) || "/".equals(request.getSession().getServletContext().getContextPath())) {
+        String contextPath = request.getSession().getServletContext().getContextPath();
+
+        if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {
+            view.addObject("contextPath", contextPath.substring(1) + "/");
+        } else if (StringUtils.isBlank(contextPath) || "/".equals(contextPath)) {
             view.addObject("contextPath", "");
         }
 
-        view.addObject("loginMode", settingsService.getPlatformSettings().getLoginMode());
         view.addObject("openIdProviderName", settingsService.getPlatformSettings().getProviderName());
         view.addObject("openIdProviderUrl", settingsService.getPlatformSettings().getProviderUrl());
         view.addObject("error", request.getParameter("error"));
