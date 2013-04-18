@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import static java.lang.String.format;
@@ -36,7 +36,7 @@ public class FileSystemAwareUIHttpContext extends UiHttpContext {
                     print(resourceFile);
                 }
                 return resourceFile.toURI().toURL();
-            } catch (MalformedURLException e) {
+            } catch (IOException e) {
                 throw new MotechException(format("Exception when try to resolve %s", resourcePath), e);
             }
         }
@@ -46,13 +46,12 @@ public class FileSystemAwareUIHttpContext extends UiHttpContext {
 
     private void print(File resourceFile) {
         LOGGER.debug("Dumping " + resourceFile.getName());
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(resourceFile));
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(resourceFile))) {
             String currentLine;
             while ((currentLine = bufferedReader.readLine()) != null) {
                 LOGGER.debug(currentLine);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.warn(String.format("%s could not be written to logs ", resourceFile.getName()));
         }
         LOGGER.debug("Done ");

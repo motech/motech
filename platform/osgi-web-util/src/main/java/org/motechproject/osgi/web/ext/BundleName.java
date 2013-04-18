@@ -15,6 +15,9 @@ public class BundleName {
 
     @Override
     public boolean equals(Object bundle) {
+        if (!(bundle instanceof BundleName)) {
+            return false;
+        }
         BundleName other = (BundleName) bundle;
         return bundleSymbolicName.equals(other.bundleSymbolicName);
     }

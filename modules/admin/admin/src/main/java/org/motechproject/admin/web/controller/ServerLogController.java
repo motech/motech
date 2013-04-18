@@ -51,7 +51,10 @@ public class ServerLogController {
                 if (fileSize > readSize) {
                     in.skip(fileSize - readSize);
 
-                    while (in.available() > 0 && in.read() != '\n') {
+                    while (in.available() > 0) {
+                        if(in.read() == '\n'){
+                            break;
+                        }
                     }
                 }
 

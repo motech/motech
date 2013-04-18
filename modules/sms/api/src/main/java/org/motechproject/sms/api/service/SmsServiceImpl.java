@@ -106,10 +106,10 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private String getExceptionMessage(Set<ConstraintViolation<SendSmsRequest>> violations) {
-        String message = "";
+        StringBuilder message = new StringBuilder();
         for (ConstraintViolation<SendSmsRequest> violation : violations) {
-            message += format("%s %s; ", violation.getPropertyPath().toString(), violation.getMessage());
+            message.append(format("%s %s; ", violation.getPropertyPath().toString(), violation.getMessage()));
         }
-        return message;
+        return message.toString();
     }
 }

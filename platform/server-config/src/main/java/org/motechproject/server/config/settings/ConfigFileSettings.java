@@ -3,7 +3,6 @@ package org.motechproject.server.config.settings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -128,9 +127,11 @@ public class ConfigFileSettings implements MotechSettings {
         motechSettings.put(key, value);
     }
 
-    public void storeMotechSettings() throws FileNotFoundException, IOException {
+    public void storeMotechSettings() throws IOException {
         File file = new File(getPath() + File.separator + PlatformSettingsService.SETTINGS_FILE_NAME);
-        motechSettings.store(new FileOutputStream(file), null);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            motechSettings.store(fileOutputStream, null);
+        }
     }
 
     public Properties getAll() {
@@ -149,8 +150,12 @@ public class ConfigFileSettings implements MotechSettings {
         return motechSettings;
     }
 
-    public void storeActiveMqSettings() throws FileNotFoundException, IOException {
+    public void storeActiveMqSettings() throws IOException {
         File file = new File(getPath() + File.separator + PlatformSettingsService.ACTIVEMQ_FILE_NAME);
-        activemq.store(new FileOutputStream(file), null);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            activemq.store(fileOutputStream, null);
+        }
+
+
     }
 }

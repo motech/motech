@@ -30,6 +30,6 @@ public abstract class AggregationScheduleRecord implements AggregationSchedule, 
 
     @Override
     public int hashCode() {
-        return this.hashCode();
+        return super.hashCode();
     }
 }

@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Set;
-
 import static java.util.Arrays.asList;
 
 @Controller
@@ -100,11 +98,10 @@ public class KookooIvrController {
 
 
     private FlowSession setCustomParams(FlowSession session, HttpServletRequest request) {
-        Map params = request.getParameterMap();
-        Set<String> keys = params.keySet();
-        for (String key : keys) {
-            if (!asList("sid", "cid", "called_number", "event", "data", "duration", "status", "tree", "ln").contains(key)) {
-                session.set(key, (Serializable) params.get(key));
+        Map<String,Object> params = request.getParameterMap();
+        for (Map.Entry<String,Object> entry : params.entrySet()) {
+            if (!asList("sid", "cid", "called_number", "event", "data", "duration", "status", "tree", "ln").contains(entry.getKey())) {
+                session.set(entry.getKey(), (Serializable) entry.getValue());
             }
         }
         return session;

@@ -33,7 +33,11 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
     public MotechDelegatingFilterProxy(String targetBeanName, WebApplicationContext wac) {
         super(targetBeanName, wac);
 
-        isAdminMode = checkAdminMode();
+        try {
+            isAdminMode = checkAdminMode();
+        } catch (IOException e) {
+            logger.debug("Cannot check admin mode", e);
+        }
         anonymousFilter = new MotechAnonymousAuthenticationFilter(wac.getBean(MotechPermissionService.class));
     }
 
@@ -46,12 +50,11 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         }
     }
 
-    private boolean checkAdminMode() {
+    private boolean checkAdminMode() throws IOException {
         Properties p = new Properties();
         boolean adminModeProperty = false;
 
         File adminModeFile = new File(String.format("%s/.motech/%s", System.getProperty("user.home"), ADMIN_MODE_FILE));
-
         if (adminModeFile.exists()) {
             try (InputStream in = new FileInputStream(adminModeFile)) {
                 p.load(new InputStreamReader(in));

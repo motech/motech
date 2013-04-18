@@ -176,8 +176,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
 
             if (patientIdentifiers != null) {
                 for (PatientIdentifier patientId : patientIdentifiers) {
-                    // TODO: Equality among incompatible types?
-                    if (IdentifierType.IDENTIFIER_MOTECH_ID.getName().equals(patientId.getIdentifierType())) {
+                    if (IdentifierType.IDENTIFIER_MOTECH_ID.getName().equals(patientId.getIdentifierType().getName())) {
                         mrsObservation.setPatientId(patientId.getIdentifier());
                     }
                 }

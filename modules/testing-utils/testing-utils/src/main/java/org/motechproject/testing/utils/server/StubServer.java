@@ -44,7 +44,7 @@ public class StubServer {
         try {
             server.stop();
         } catch (Exception e) {
-            new MotechException("Stub Server could not be stopped", e);
+           throw new MotechException("Stub Server could not be stopped", e);
         }
     }
 

@@ -54,7 +54,7 @@ public class TreeNodeLocator {
 
     public Node findRootNode(Tree tree, FlowSession session) {
         if (tree == null) {
-            throw new IllegalArgumentException(String.format("tree: %s", tree));
+            throw new IllegalArgumentException(String.format("tree: null"));
         }
         ITransition rootTransition = rootTransition(tree);
         return rootNode(session, rootTransition);

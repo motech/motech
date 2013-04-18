@@ -1,6 +1,7 @@
 package org.motechproject.eventlogging.converter.impl;
 
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.EventToLogConverter;
 import org.motechproject.eventlogging.domain.CouchEventLog;
@@ -26,7 +27,10 @@ public class DefaultCouchToLogConverter implements EventToLogConverter<CouchEven
         return couchEventLog;
     }
 
-    public CouchEventLog configuredConvertEventToCouchLog(MotechEvent eventToLog, LoggableEvent loggableEvent) {
+    public CouchEventLog configuredConvertEventToCouchLog(MotechEvent eventToLog, LoggableEvent loggableEvent){
+        if (!(loggableEvent instanceof CouchLoggableEvent)) {
+            throw new MotechException("Error: unexpected loggable event type "+loggableEvent.getClass().getName());
+        }
         CouchLoggableEvent couchLoggableEvent = (CouchLoggableEvent) loggableEvent;
 
         CouchLogMappings mappings = couchLoggableEvent.getMappings();

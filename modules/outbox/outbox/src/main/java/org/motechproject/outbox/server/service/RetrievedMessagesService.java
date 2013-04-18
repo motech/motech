@@ -40,7 +40,7 @@ public class RetrievedMessagesService {
         MotechEvent reminderEvent = new MotechEvent(EventKeys.NOT_RETRIEVED_MESSAGE_SUBJECT, param);
         allMessageRecords.addOrUpdateMessageRecord(new MessageRecord(externalId, generatedJobId));
 
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, format("%d 0 0 0 0 0", outboxProperties.getProperty(RETRIEVED_TIMEOUT)));
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, format("%s 0 0 0 0 0", outboxProperties.getProperty(RETRIEVED_TIMEOUT)));
 
         motechSchedulerService.scheduleJob(cronSchedulableJob);
     }

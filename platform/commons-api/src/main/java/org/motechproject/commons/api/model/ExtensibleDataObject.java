@@ -17,8 +17,8 @@ public abstract class ExtensibleDataObject<T> {
     }
 
     public T addData(Map<String, Object> data) {
-        for (String key : data.keySet()) {
-            this.addData(key, data.get(key));
+        for (Map.Entry<String,Object> entry: data.entrySet()) {
+            this.addData(entry.getKey(), entry.getValue());
         }
         return (T) this;
     }

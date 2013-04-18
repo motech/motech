@@ -2,6 +2,7 @@ package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.api.SMSType;
@@ -51,6 +52,9 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             smsAuditService.log(new SmsRecord(SMSType.INBOUND, msg.getOriginator(), msg.getText(), newDateTime(msg.getDate()), null, null));
 
         } else if (msgType.equals(Message.MessageTypes.STATUSREPORT)) {
+            if (!(msg instanceof StatusReportMessage)) {
+                throw new MotechException("Unexpected message type: " + msg.getClass().getName());
+            }
             StatusReportMessage statusMessage = (StatusReportMessage) msg;
             HashMap<String, Object> data = new HashMap<>();
             data.put(SENDER, msg.getOriginator());

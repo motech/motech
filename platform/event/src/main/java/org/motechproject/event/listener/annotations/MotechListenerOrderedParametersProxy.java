@@ -37,7 +37,7 @@ public class MotechListenerOrderedParametersProxy extends MotechListenerAbstract
                 args.add(param);
                 i++;
             } else if (params.containsKey(Integer.toString(i)) && !t.isPrimitive() && param == null) {
-                args.add(param);
+                args.add(null);
                 i++;
             } else {
                 logger.warn(String.format("Method: %s parameter: #%d of type: %s is not available in the event: %s. Handler skiped...", getMethod().toGenericString(), i, t.getName(), event));

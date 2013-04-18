@@ -199,7 +199,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
     }
 
     private void addProviderRole(User user, Role role) {
-        if (!role.equals(OpenmrsConstants.PROVIDER_ROLE)) {
+        if (!role.toString().equals(OpenmrsConstants.PROVIDER_ROLE)) {
             user.addRole(userService.getRole(OpenmrsConstants.PROVIDER_ROLE));
         }
     }

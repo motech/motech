@@ -63,7 +63,7 @@ public class AllCouchProvidersImpl extends MotechBaseRepository<CouchProvider> i
 
     @Override
     public void remove(CouchProvider provider) {
-        this.remove(provider);
+        super.remove(provider);
     }
 
     @Override

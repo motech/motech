@@ -71,7 +71,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 dbSettings = new SettingsRecord();
             }
 
-            if (allSettings != null && configFileMonitor.getCurrentSettings() != null) {
+            if (configFileMonitor.getCurrentSettings() != null) {
                 dbSettings.updateFromProperties(settings);
                 dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
                 dbSettings.setLastRun(DateTime.now());
@@ -213,8 +213,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             throws IOException {
         File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
         setUpDirsForFile(file);
-
-        properties.store(new FileOutputStream(file), null);
+        try ( FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            properties.store(fileOutputStream, null);
+        }
     }
 
     @Override
@@ -240,14 +241,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException {
         File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty(USER_HOME), bundleSymbolicName, fileName));
-
         if (!file.exists()) {
             return null;
         }
 
         Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
-
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            properties.load(fileInputStream);
+        }
         return properties;
     }
 

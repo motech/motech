@@ -67,8 +67,8 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
                             "External ID: {0} & Schedule name: {1}", externalId, scheduleName));
         } else {
             Map<UpdateCriterion, Object> criteria = updateCriteria.getAll();
-            for (UpdateCriterion updateCriterion : criteria.keySet()) {
-                EnrollmentUpdater.get(updateCriterion).update(enrollment, criteria.get(updateCriterion));
+            for (Map.Entry<UpdateCriterion,Object> entry:criteria.entrySet()) {
+                EnrollmentUpdater.get(entry.getKey()).update(enrollment, entry.getValue());
             }
             allEnrollments.update(enrollment);
         }

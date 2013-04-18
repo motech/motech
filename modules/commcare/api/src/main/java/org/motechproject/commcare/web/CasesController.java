@@ -45,17 +45,17 @@ public class CasesController {
     private String getRequestBodyAsString(HttpServletRequest request) throws IOException {
         BufferedReader reader = request.getReader();
         boolean end = false;
-        String forwardedRequest = "";
+        StringBuilder forwardedRequest = new StringBuilder();
         while (!end) {
             String line = reader.readLine();
             if (line == null) {
                 end = true;
             } else {
-                forwardedRequest = forwardedRequest + line;
+                forwardedRequest.append(line);
             }
         }
 
-        return forwardedRequest;
+        return forwardedRequest.toString();
     }
 
     @RequestMapping({ "/cases" })

@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -125,7 +124,9 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                     File msgDestFile = new File(msgDestDir, fileName);
 
                     if (msgDestFile.exists()) {
-                        p.load(new FileInputStream(msgDestFile));
+                        try (FileInputStream fileInputStream = new FileInputStream((msgDestFile))) {
+                            p.load(fileInputStream);
+                        }
                     }
 
                     p.load(new InputStreamReader(msgUrl.openStream()));
@@ -139,7 +140,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         }
     }
 
-    private void searchForJspFilesInJarFile(JarFile jarFile) throws IOException, MalformedURLException {
+    private void searchForJspFilesInJarFile(JarFile jarFile) throws IOException {
         Enumeration filesInJar = jarFile.entries();
         while (filesInJar.hasMoreElements()) {
             JarEntry jarEntry = (JarEntry) filesInJar.nextElement();

@@ -35,18 +35,18 @@ public class SmsHttpTemplate {
     private NameValuePair[] addQueryParameters(List<String> recipients, String message) {
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
         Map<String, String> queryParameters = outgoing.getRequest().getQueryParameters();
-        for (String key : queryParameters.keySet()) {
-            String value = placeHolderOrLiteral(queryParameters.get(key), recipients, message);
-            queryStringValues.add(new NameValuePair(key, value));
+        for (Map.Entry< String, String > entry : queryParameters.entrySet()) {
+            String value = placeHolderOrLiteral(entry.getValue(), recipients, message);
+            queryStringValues.add(new NameValuePair(entry.getKey(), value));
         }
         return queryStringValues.toArray(new NameValuePair[queryStringValues.size()]);
     }
 
     private void addBodyParameters(PostMethod postMethod, List<String> recipients, String message) {
         Map<String, String> bodyParameters = outgoing.getRequest().getBodyParameters();
-        for (String key : bodyParameters.keySet()) {
-            String value = placeHolderOrLiteral(bodyParameters.get(key), recipients, message);
-            postMethod.setParameter(key, value);
+        for (Map.Entry<String,String> entry: bodyParameters.entrySet()) {
+            String value = placeHolderOrLiteral(entry.getValue(), recipients, message);
+            postMethod.setParameter(entry.getKey(), value);
         }
     }
 
