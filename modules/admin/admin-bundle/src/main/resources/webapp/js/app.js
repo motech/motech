@@ -14,6 +14,8 @@ angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageSe
           when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
           when('/operations', {templateUrl: '../admin/partials/operations.html', controller: OperationsCtrl}).
           when('/log', {templateUrl: '../admin/partials/log.html', controller: ServerLogCtrl}).
+          when('/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: QueueStatisticsCtrl}).
+          when('/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: MessageStatisticsCtrl}).
           when('/logOptions', {templateUrl: '../admin/partials/logOptions.html', controller: ServerLogOptionsCtrl}).
           when('/notificationRules', {templateUrl: '../admin/partials/notificationRules.html', controller: NotificationRuleCtrl}).
           otherwise({redirectTo: '/bundles'});

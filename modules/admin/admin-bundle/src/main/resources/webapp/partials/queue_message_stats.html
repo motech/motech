@@ -1,0 +1,26 @@
+<div class="well2">
+    <div class="box-header">
+        {{msg('queue.messages.pending')}}
+    </div>
+    <div class="box-content inside" ng-show="dataAvailable">
+        <table class="table table-bordered table-striped table-lightblue">
+            <thead>
+            <tr>
+                <th class="ng-binding">{{msg('queue.message.id')}}</th>
+                <th class="ng-binding">{{msg('queue.message.redelivered')}}</th>
+                <th class="ng-binding">{{msg('queue.message.timestamp')}}</th>
+            </tr>
+            </thead>
+            <tbody ng-repeat="message in messages">
+            <tr>
+                <td class="ng-binding">{{message.messageId}}</td>
+                <td class="ng-binding">{{message.redelivered}}</td>
+                <td class="ng-binding">{{message.timestamp}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="box-content inside" ng-show="!dataAvailable">
+        {{msg('queue.message.error')}}
+    </div>
+</div>

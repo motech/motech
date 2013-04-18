@@ -451,15 +451,17 @@ function ServerLogOptionsCtrl($scope, LogService, $http) {
 
     $scope.save = function () {
         $scope.config.$save({}, alertHandlerWithCallback('log.changedLevel', function () {
-                var loc = new String(window.location), indexOf = loc.indexOf('#');
-                window.location = loc.substring(0, indexOf) + "#/log";
-            }), function () { motechAlert('log.changedLevelError', 'error') });
+            var loc = new String(window.location), indexOf = loc.indexOf('#');
+            window.location = loc.substring(0, indexOf) + "#/log";
+        }), function () {
+            motechAlert('log.changedLevelError', 'error')
+        });
     }
 
     $scope.add = function () {
         $scope.config.loggers.push({
-            logName: $scope.entry.name,
-            logLevel: $scope.entry.level
+            logName:$scope.entry.name,
+            logLevel:$scope.entry.level
         });
 
         delete $scope.entry.name;
@@ -517,14 +519,28 @@ function ServerLogOptionsCtrl($scope, LogService, $http) {
         var cssClass = '';
 
         if (level !== undefined) {
-            switch(level.toLowerCase()) {
-                case 'trace': cssClass = 'btn-primary'; break;
-                case 'debug': cssClass = 'btn-success'; break;
-                case 'info': cssClass = 'btn-info'; break;
-                case 'warn': cssClass = 'btn-warning'; break;
-                case 'error': cssClass = 'btn-danger'; break;
-                case 'fatal': cssClass = 'btn-inverse'; break;
-                default: cssClass = ''; break;
+            switch (level.toLowerCase()) {
+                case 'trace':
+                    cssClass = 'btn-primary';
+                    break;
+                case 'debug':
+                    cssClass = 'btn-success';
+                    break;
+                case 'info':
+                    cssClass = 'btn-info';
+                    break;
+                case 'warn':
+                    cssClass = 'btn-warning';
+                    break;
+                case 'error':
+                    cssClass = 'btn-danger';
+                    break;
+                case 'fatal':
+                    cssClass = 'btn-inverse';
+                    break;
+                default:
+                    cssClass = '';
+                    break;
             }
         }
 
@@ -537,32 +553,60 @@ function NotificationRuleCtrl($scope, NotificationRule, NotificationRuleDto, $lo
     $scope.notificationRuleDto.notificationRules = NotificationRule.query();
     $scope.notificationRuleDto.idsToRemove = [];
 
-    $scope.changeRuleActionType = function(notificationRule, actionType) {
+    $scope.changeRuleActionType = function (notificationRule, actionType) {
         notificationRule.actionType = actionType;
     }
 
-    $scope.saveRules = function(notificationRule) {
+    $scope.saveRules = function (notificationRule) {
         notificationRule.$save();
     }
 
-    $scope.removeRule = function(notificationRule) {
+    $scope.removeRule = function (notificationRule) {
         $scope.notificationRuleDto.notificationRules.removeObject(notificationRule);
         if (notificationRule._id) {
             $scope.notificationRuleDto.idsToRemove.push(notificationRule._id);
         }
     }
 
-    $scope.newRule = function() {
+    $scope.newRule = function () {
         var notificationRule = new NotificationRule();
         notificationRule.actionType = 'EMAIL';
 
         $scope.notificationRuleDto.notificationRules.push(notificationRule);
     }
 
-    $scope.save = function() {
-        $scope.notificationRuleDto.$save(function() {
+    $scope.save = function () {
+        $scope.notificationRuleDto.$save(function () {
             motechAlert('messages.notifications.saved', 'success');
             $location.path('messages');
         }, angularHandler('error', 'messages.notifications.errorSave'));
     }
 }
+
+function QueueStatisticsCtrl($scope, $http) {
+
+    $scope.dataAvailable = true;
+
+    $http.get('../admin/api/queues/').success(function (data) {
+        $scope.queues = data;
+    }).error(function () {
+            $scope.dataAvailable = false;
+        });
+
+}
+
+function MessageStatisticsCtrl($scope, $http, $routeParams) {
+
+    var queue = $routeParams.queueName;
+
+    $scope.dataAvailable = true;
+
+    $http.get('../admin/api/queues/browse?queueName=' + queue).success(function (data) {
+        $scope.messages = data;
+    }).error(function () {
+            $scope.dataAvailable = false;
+        });
+
+
+}
+
