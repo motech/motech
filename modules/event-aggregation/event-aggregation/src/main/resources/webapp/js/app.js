@@ -4,7 +4,7 @@ var app = angular.module('event-aggregation', ['motech-dashboard', 'AggregationR
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.
             when('/', {
-                templateUrl: '../event-aggregation/resources/partials/dashboard.html'
+                templateUrl: '../event-aggregation/resources/partials/rules.html', controller: RulesController
             }).
             when('/rules/create/:scheduleType', {
                 templateUrl: '../event-aggregation/resources/partials/new_rule.html', controller: NewRulesController

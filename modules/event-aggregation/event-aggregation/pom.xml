@@ -101,6 +101,7 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>event-aggregation</Context-Path>
                         <Context-File>META-INF/osgi/applicationEventAggregationBundle.xml</Context-File>
+                        <Resource-Path>event-aggregation/resources</Resource-Path>
                         <Export-Package>
                             org.motechproject.event.aggregation.model.schedule;version=${project.version},
                             org.motechproject.event.aggregation.model;version=${project.version},

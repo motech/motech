@@ -1,12 +1,12 @@
 <div class="event span12 row-fluid">
-    <div class="span1">
-        <table class="table table-bordered table-condensed">
-            <thead class="event_params_head">
+    <div class="span7">
+        <table class="table table-bordered table-condensed table-lightblue">
+            <thead>
             <th>Key</th>
             <th>Value</th>
             </thead>
             <tbody>
-            <tr ng-repeat="(key, value) in event.aggregationParams" class="aggregation_param">
+            <tr ng-repeat="(key, value) in event.aggregationParams" class="aggregation-param">
                 <td>
                     <span>{{key}}</span>
                 </td>
@@ -14,7 +14,7 @@
                     <span>{{value}}</span>
                 </td>
             </tr>
-            <tr ng-repeat="(key, value) in event.nonAggregationParams" class="non_aggregation_param">
+            <tr ng-repeat="(key, value) in event.nonAggregationParams" class="non-aggregation-param">
                 <td>
                     <span>{{key}}</span>
                 </td>

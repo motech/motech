@@ -1,23 +1,30 @@
-<a href="#/rules/{{rule.name}}/aggregations/valid" class="rule">
-    <table class="table table-bordered">
-        <tr>
-            <td width="5%" class="icon">
-                <img src="../event-aggregation/resources/img/{{rule.aggregationSchedule.scheduleType.split('_')[0]}}.png" width="32px" height="32px" class="centered"/>
-            </td>
-            <td>
-                <h4>{{rule.name}} <small>{{rule.description}}</small></h4>
-                {{rule.subscribedTo}} &#x25B8; {{rule.publishAs}}</p>
-            </td>
-            <td width="5%">
-                <a href="#/rules/{{rule.name}}/aggregations/invalid">
-                    {{ msg('rule.view.error.events.label') }}
-                </a>
-            </td>
-            <td width="5%">
+<div class="inbox-header aggregation-list">
+    <div class="row-fluid">
+        <a href="#/rules/{{rule.name}}/aggregations/valid" class="rule-left-part pull-left">
+            <div id="img-schedule" class="pull-left divider-vertical centered">
+                <img src="../event-aggregation/resources/img/{{rule.aggregationSchedule.scheduleType.split('_')[0]}}.png" class="rule-list-icon centered"/>
+            </div>
+            <div id="name" class="divider-vertical-rule pull-left">
+                <h4>{{rule.name}}</h4>
+                {{rule.subscribedTo}} &#x25B8; {{rule.publishAs}}
+            </div>
+        </a>
+        <div class="pull-right rule-right-part">
+            <div id="edit" class="divider-vertical centered pull-right" ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('edit.aggregation.page.heading')}}">
                 <a href="#/rules/{{rule.name}}/edit">
-                    {{ msg('rule.edit.label') }}
+                    <img class="rule-list-img" src="../event-aggregation/resources/img/settings.png">
                 </a>
-            </td>
-        </tr>
-    </table>
-</a>
+            </div>
+            <div id="text" class="divider-vertical centered pull-right text">
+                <a href="#/rules/{{rule.name}}/aggregations/invalid" class="">
+                    {{msg('rule.view.error.events.label')}}
+                </a>
+            </div>
+            <div id="description" class="divider-vertical centered pull-right" ng-show="rule.description">
+                <div data-content="{{rule.description}}" data-trigger="hover" bs-popover data-placement="left">
+                    <img class="rule-list-img" src="../event-aggregation/resources/img/info.png">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 'use strict';
 
 function NewRulesController($scope, AggregationRules, i18nService, $routeParams, $http) {
+    $scope.scheduleTypeList = ['periodic', 'cron', 'custom'];
 
     if ($routeParams.ruleName != undefined) {
 
@@ -16,9 +17,15 @@ function NewRulesController($scope, AggregationRules, i18nService, $routeParams,
 
     } else {
         $scope.scheduleType = 'periodic';
+
+        $scope.changeScheduleType = function(scheduleType) {
+            $scope.scheduleType = scheduleType;
+        }
+
         if ($routeParams.scheduleType === 'cron' || $routeParams.scheduleType === 'custom') {
             $scope.scheduleType = $routeParams.scheduleType;
         }
+
         if ($scope.scheduleType == 'periodic') {
             $scope.rule = {
                 "aggregationSchedule": {
@@ -48,6 +55,7 @@ function NewRulesController($scope, AggregationRules, i18nService, $routeParams,
             function success(response) {
                 $scope.isSuccess = true;
                 $scope.errors = [];
+                window.location = "#/";
             },
             function error(response) {
                 $scope.errors = response.data;

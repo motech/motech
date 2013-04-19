@@ -869,3 +869,39 @@ select {
     margin: 0;
     padding: 0;
 }
+
+.input-mini-fluid {
+    max-width: 90px;
+    min-width: 60px;
+    width: 66%;
+}
+
+.input-small-fluid {
+    max-width: 150px;
+    min-width: 90px;
+    width: 66%;
+}
+
+.input-medium-fluid {
+    max-width: 210px;
+    min-width: 150px;
+    width: 66%;
+}
+
+.input-large-fluid {
+    max-width: 270px;
+    min-width: 210px;
+    width: 66%;
+}
+
+.input-xlarge-fluid {
+    max-width: 470px;
+    min-width: 270px;
+    width: 66%;
+}
+
+.input-xxlarge-fluid {
+    max-width: 740px;
+    min-width: 530px;
+    width: 66%;
+}

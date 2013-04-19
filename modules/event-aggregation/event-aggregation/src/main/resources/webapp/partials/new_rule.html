@@ -1,60 +1,89 @@
-<div ng-show="!editMode" class="box-header" xmlns="http://www.w3.org/1999/html">
-    {{ msg('create.aggregation.page.heading') }}
+<div ng-show="!editMode" class="box-header">{{msg('create.aggregation.page.heading')}}
+    <a href="#/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
 </div>
-<div ng-show="editMode" class="box-header" xmlns="http://www.w3.org/1999/html">
-    {{ msg('edit.aggregation.page.heading') }}
+<div ng-show="editMode" class="box-header">{{msg('edit.aggregation.page.heading')}}
+    <a href="#/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
 </div>
 
-<div class="tabbable" ng-controller="NewRulesController">
+<div class="box-content inside clearfix" ng-controller="NewRulesController">
 
-    <ul ng-show="!editMode" class="nav nav-tabs">
-        <li ng-class="{active: scheduleType=='periodic'}">
-            <a href="#/rules/create/periodic">{{ msg('periodic.rule') }}</a>
-        </li>
-        <li ng-class="{active: scheduleType=='cron'}">
-            <a  href="#/rules/create/cron">{{ msg('cron.rule') }}</a>
-        </li>
-        <li ng-class="{active: scheduleType=='custom'}">
-            <a href="#/rules/create/custom">{{ msg('custom.rule') }}</a>
-        </li>
-    </ul>
+    <div ng-show="errors.length > 0" class="span12 alert alert-block alert-error">
+        <div ng-include="'../event-aggregation/resources/partials/form_errors.html'"></div>
+    </div>
 
-    <div class="tab-content">
+    <div class="control-group"></div>
 
-        <div ng-show="errors.length > 0" class="span4">
-            <div ng-include="'../event-aggregation/resources/partials/form_errors.html'"/>
+    <form class="form-horizontal rule-form">
+
+        <div class="control-group" ng-show="!editMode">
+            <label class="control-label">{{ msg('new.rule.scheduleType') }}</label>
+            <div class="controls">
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        {{msg('new.rule.' + scheduleType)}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="scheduleType in scheduleTypeList">
+                            <a href="#/rules/create/{{scheduleType}}" ng-click="changeScheduleType(scheduleType)">
+                                {{msg('new.rule.' + scheduleType)}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <form class="rule_form">
-            <div class="span12">
-                <label>{{ msg('new.rule.name.label') }}</label>
-                <input type="text" ng-model="rule.name" server-validate/>
+        <div class="control-group">
+            <label class="control-label">{{ msg('new.rule.name.label') }}</label>
+            <div class="controls">
+                <input class="input-xlarge-fluid" type="text" ng-model="rule.name" server-validate />
+            </div>
+        </div>
 
-                <label>{{ msg('new.rule.description.label') }}</label>
-                <textarea ng-model="rule.description" />
+        <div class="control-group">
+            <label class="control-label">{{ msg('new.rule.description.label') }}</label>
+            <div class="controls">
+                <textarea class="input-xlarge-fluid" ng-model="rule.description"></textarea>
+            </div>
+        </div>
 
-                <label>{{ msg('new.rule.subscribe.to.label') }}</label>
-                <input type="text" ng-model="rule.subscribedTo" />
+        <div class="control-group">
+            <label class="control-label">{{ msg('new.rule.subscribe.to.label') }}</label>
+            <div class="controls">
+                <input class="input-xlarge-fluid" type="text" ng-model="rule.subscribedTo" />
+            </div>
+        </div>
 
-                <label>{{ msg('new.rule.fields.label') }}</label>
-                <input type="text" id='tagsinput' ng-model='rule.fields' />
+        <div class="control-group">
+            <label class="control-label">{{ msg('new.rule.fields.label') }}</label>
+            <div class="controls">
+                <input class="input-xlarge-fluid" type="text" id='tagsinput' ng-model='rule.fields' />
+            </div>
+        </div>
 
-                <label>{{ msg('new.rule.publish.as.label') }}</label>
-                <input type="text" ng-model="rule.publishAs" />
+        <div class="control-group">
+            <label class="control-label">{{ msg('new.rule.publish.as.label') }}</label>
+            <div class="controls">
+                <input class="input-xlarge-fluid" type="text" ng-model="rule.publishAs" />
+            </div>
+        </div>
 
-                <div ng-include="scheduleTypePartial"/>
+        <div ng-include="scheduleTypePartial"></div>
 
+        <div class="control-group">
+            <div class="controls">
                 <label class="checkbox">
                     <input type="checkbox" ng-model='rule.state' ng-true-value='paused' ng-false-value='running' id='rule_state'/>
                     {{ msg('new.rule.start.paused.heading') }}
                 </label>
-
-                <button ng-click="update(rule)">{{ msg('new.rule.save.label') }}</button>
-
-                <span ng-show="isSuccess" class="success_banner">
-                    &#x2713
-                </span>
             </div>
-        </form>
-    </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" ng-click="update(rule)">{{ msg('new.rule.save.label') }}</button>
+            <a type="button" href="#/" class="btn">{{msg('cancel')}}</a>
+        </div>
+    </form>
+
 </div>

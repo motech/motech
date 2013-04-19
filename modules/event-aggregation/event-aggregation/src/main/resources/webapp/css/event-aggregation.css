@@ -1,9 +1,9 @@
-.rule {
-    text-decoration: none !important;
+#module-content {
+    padding: 10px 0 20px;
 }
 
-.rule .icon {
-    text-align: center;
+.rule {
+    text-decoration: none !important;
 }
 
 .rule td a {
@@ -14,34 +14,40 @@
     text-decoration: none !important;
 }
 
-.event_params_head {
-    background-color: #c0c0c0;
-}
-
-.aggregation_container {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #bfbfbf;
+.aggregation-container {
+    margin-top: 20px;
+    padding: 10px;
     overflow-y: auto;
 }
 
-.event .span1 {
+.event .span7 {
     width: auto;
+    min-width: 300px;
 }
 
 .event .details {
     width: auto;
 }
 
-.aggregation_param {
-    background-color: #F4F3EE;
+.aggregation-param {
+    background-color: #E4F1F9;
 }
 
-.non_aggregation_param {
-    background-color: #E8D0A9;
+.non-aggregation-param {
+    background-color: #C4D1F7;
 }
 
-.rule_form button {
-    margin-top: 14px;
+.table-lightblue.table-bordered .non-aggregation-param td {
+    border-color: #E6ECFB;
+}
+
+.table-lightblue tbody tr.non-aggregation-param:nth-child(2n+1) td {
+    background-color: #DAE4FF;
+}
+
+.table-lightblue  tbody tr.non-aggregation-param:hover td {
+    background: #E3EAFE;
+    color: #005580;
 }
 
 .success_banner {
@@ -49,19 +55,142 @@
     margin-left: 8px;
 }
 
-.form_errors {
-    border: 2px solid red;
-    background-color: #ebcccc;
-    width: auto !important;
-    padding: 8px;
-}
-
-.custom_rule_fields .popover {
+.custom-rule-fields .popover {
     width: auto;
 }
 
-.custom_rule_fields .popover code {
+.custom-rule-fields .popover code {
     display: block;
     margin-top: 4px;
     margin-bottom: 12px;
+}
+
+.inbox-header.aggregation-list {
+    border: 1px solid #B2D8F8;
+    margin-bottom: 2px;
+    padding: 5px;
+    font-weight: normal;
+}
+
+.inbox-header.aggregation-list .divider-vertical-rule {
+    width: 59%;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.inbox-header.aggregation-list .divider-vertical-rule h4 {
+    margin: 4px 0;
+}
+
+.box-content div div:last-child div > .inbox-header.aggregation-list {
+    margin-bottom: 0;
+}
+
+.aggregation-list .rule-list-img {
+    width: 36px;
+    height: 36px;
+}
+
+.aggregation-list .rule-list-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.aggregation-list .divider-vertical {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    height: 50px;
+    margin: auto;
+    line-height: 50px;
+}
+
+.aggregation-list .divider-vertical-rule {
+    border-left: 1px solid #A9CAE6;
+    border-right: 1px solid #CEE3F7;
+    height: 50px;
+    margin: auto;
+    padding-left: 10px;
+}
+
+.aggregation-list div a > div:first-child,
+.aggregation-list div div > div:last-child {
+    border-left: none;
+}
+
+.aggregation-list div a > div:last-child,
+.aggregation-list div div > div:first-child {
+    border-right: none;
+}
+
+.inbox-header.aggregation-list .text {
+    overflow: hidden;
+}
+
+.inbox-header.aggregation-list .text a {
+    line-height: 50px;
+    font-weight: bold;
+}
+
+.inbox-header.aggregation-list .popover {
+    font-weight: normal;
+    line-height: 20px;
+    text-align: left;
+}
+
+.inbox-header.aggregation-list .popover-title:empty {
+    display: none;
+}
+
+.inbox-header.aggregation-list #img-schedule {
+    display: inline-block;
+    width: 50px;
+}
+
+.inbox-header.aggregation-list #name {
+    display: inline-block;
+    max-width: 100%;
+    min-width: 85%;
+}
+
+.inbox-header.aggregation-list #edit {
+     display: inline-block;
+     width: 60px;
+}
+
+.inbox-header.aggregation-list #text {
+     display: inline-block;
+     width: 40%;
+}
+
+.inbox-header.aggregation-list #description {
+     display: inline-block;
+     width: 60px;
+}
+
+.rule-right-part {
+     display: inline-block;
+     width: 35%;
+}
+
+.rule-left-part {
+     display: inline-block;
+     width: 64%;
+}
+
+.rule-form .form-actions {
+    background-color: #E3EDF8;
+    margin: 0 -10px -10px;
+    padding-left: 190px;
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}
+
+.ui-timepicker-div select {
+    width: auto;
+    height: 24px;
+    line-height: 18px;
+    padding: 1px 3px;
+    margin: 0 0 0 5px;
 }
