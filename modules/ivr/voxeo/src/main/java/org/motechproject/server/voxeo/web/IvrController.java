@@ -1,10 +1,10 @@
 package org.motechproject.server.voxeo.web;
 
 import org.ektorp.UpdateConflictException;
+import org.motechproject.callflow.domain.CallDetailRecord;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.event.IVREventDelegate;
-import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.voxeo.VoxeoIVRService;
