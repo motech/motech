@@ -24,6 +24,7 @@ function PatientMrsCtrl($scope, Patient, $http, $routeParams, $filter) {
     $scope.selectedPatientView=true;
     $scope.patientDto = {};
 
+
     $scope.getPatient = function (motechId) {
         Patient.get( { motechId: motechId }, function (data) {
             $scope.patientDto = data;
@@ -118,15 +119,35 @@ function SettingsMrsCtrl($scope, $http) {
     }
 }
 
-function ManagePatientMrsCtrl($scope, Patient, $routeParams, $location) {
+function ManagePatientMrsCtrl($scope, Patient, $routeParams, $location, $http) {
     $scope.patientDto = new Patient();
-
     $scope.motechIdValidate=true;
-    $scope.hideMotechId=true;
-
+    $scope.hideMotechId=true
+    $scope.inProgress = false;
+    var reqList = {};
     var typingTimer;
     var doneTypingInterval = 3000;
-    $scope.inProgress = false;
+
+    function clearReqList() {
+        reqList['motechId'] = false;
+        reqList['firstName'] = false;
+        reqList['middleName'] = false;
+        reqList['lastName'] = false;
+        reqList['preferredName'] = false;
+        reqList['address'] = false;
+        reqList['gender'] = false;
+        reqList['dateOfBirth'] = false;
+        reqList['facilityId'] = false;
+    }
+
+
+    $http.get('../mrs/api/patients/req').success(function(data) {
+        clearReqList();
+        for(var i=0;i<data.length;i++)
+        {
+             reqList[data[i]] = true;
+        }
+    });
 
     $('#inputMotechId').keyup(function(){
         if ($routeParams.motechId == undefined) {
@@ -186,7 +207,7 @@ function ManagePatientMrsCtrl($scope, Patient, $routeParams, $location) {
         if ($routeParams.motechId == undefined) {
             $scope.motechIdValidate = true;
             Patient.get( { motechId: $scope.patientDto.motechId }, function (data) {
-                if (data == "") return $scope.motechIdValidate;
+                if (data == "") return $scope.motechIdValidate = true;
                 else $scope.motechIdValidate = false;
             });
             $scope.inProgress = false;
@@ -220,7 +241,7 @@ function ManagePatientMrsCtrl($scope, Patient, $routeParams, $location) {
     $scope.cssClass = function(prop, option) {
         var msg = 'control-group';
 
-        if (!$scope.hasValue(prop, option)) {
+        if ($scope.isRequired(prop) && !$scope.hasValue(prop, option)) {
             msg = msg.concat(' error');
         }
 
@@ -237,12 +258,24 @@ function ManagePatientMrsCtrl($scope, Patient, $routeParams, $location) {
             case '1':
                 return $scope.patientDto.hasOwnProperty(prop) && $scope.patientDto[prop] != undefined;
             case '2':
-                return $scope.patientDto.person && $scope.patientDto.person.hasOwnProperty(prop) && $scope.patientDto.person[prop] != undefined;
+                if($scope.patientDto.person && $scope.patientDto.person.hasOwnProperty(prop) && $scope.patientDto.person[prop] != undefined) {
+                    if($scope.patientDto.person[prop] != "")
+                        return true;
+                }
+                return false;
             case '3':
-                return $scope.patientDto.facility && $scope.patientDto.facility.hasOwnProperty(prop) && $scope.patientDto.facility[prop] != undefined;
+                if($scope.patientDto.facility && $scope.patientDto.facility.hasOwnProperty(prop) && $scope.patientDto.facility[prop] != undefined) {
+                    if($scope.patientDto.facility[prop] != "")
+                        return true;
+                }
+                return false;
             default:
                 break;
         }
+    }
+
+     $scope.isRequired = function(prop) {
+        return reqList[prop];
     }
 
     $scope.cancel = function() {

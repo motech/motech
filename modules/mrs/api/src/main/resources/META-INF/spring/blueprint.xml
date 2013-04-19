@@ -57,6 +57,10 @@
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
 
+    <osgi:list id="reqImplAdapterList" interface="org.motechproject.mrs.services.MRSImplReqAdapter" cardinality="0..N">
+        <osgi:reference-listener ref="mrsImplementationManager"/>
+    </osgi:list>
+
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
     <osgi:list id="observationAdapterList" interface="org.motechproject.mrs.services.MRSObservationAdapter" cardinality="0..N"/>

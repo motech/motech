@@ -19,6 +19,8 @@
 
     <osgi:service ref="couchEncounterAdapter" interface="org.motechproject.mrs.services.MRSEncounterAdapter"/>
 
+    <osgi:service ref="couchImplReqAdapter" interface="org.motechproject.mrs.services.MRSImplReqAdapter"/>
+
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>

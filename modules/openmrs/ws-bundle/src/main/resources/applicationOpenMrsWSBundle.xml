@@ -12,6 +12,7 @@
     <osgi:service ref="patientAdapter" interface="org.motechproject.mrs.services.MRSPatientAdapter"/>
     <osgi:service ref="userAdapter" interface="org.motechproject.mrs.services.MRSUserAdapter"/>
     <osgi:service ref="observationAdapter" interface="org.motechproject.mrs.services.MRSObservationAdapter"/>
+    <osgi:service ref="implReqAdapter" interface="org.motechproject.mrs.services.MRSImplReqAdapter"/>
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 

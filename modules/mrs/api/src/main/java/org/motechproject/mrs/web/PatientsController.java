@@ -41,6 +41,12 @@ public class PatientsController {
         return MRSDtoHelper.createPatientDtoList(patients);
     }
 
+    @RequestMapping(value = "/patients/req", method = RequestMethod.GET)
+    @ResponseBody
+    public List<String> getRequired() throws ImplementationException {
+        return mrsImplementationManager.getReqFieldsNames();
+    }
+
     @RequestMapping(value = "/patients/{motechId}", method = RequestMethod.GET)
     @ResponseBody
     public MRSPatientDto getPatientById(@PathVariable String motechId)

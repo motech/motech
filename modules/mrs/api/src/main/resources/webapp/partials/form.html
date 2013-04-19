@@ -21,61 +21,66 @@
                 <div ng-class="cssClass('motechId','1')">
                     <label class="control-label">{{msg('mrs.patient.motechId')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" id="inputMotechId"  ng-model="patientDto.motechId" required />
+                        <input class="span8" type="text" id="inputMotechId"  ng-model="patientDto.motechId" ng-required="isRequired('motechId')" />
                         <span ng-hide="motechIdValidate" class="form-hint">{{msg('mrs.error.patient.exist')}}</span>
-                        <span ng-hide="hasValue('motechId','1')" class="form-hint">{{msg('mrs.error.motechId')}}</span>
+                        <span ng-show="isRequired('motechId') && !hasValue('motechId','1')" class="form-hint">{{msg('mrs.error.motechId')}}</span>
                     </div>
                 </div>
                 <div ng-class="cssClass('firstName','2')">
                     <label class="control-label">{{msg('mrs.person.field.firstName')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" ng-model="patientDto.person.firstName" required />
-                        <span ng-hide="hasValue('firstName','2')" class="form-hint">{{msg('mrs.error.firstName')}}</span>
+                        <input class="span8" type="text" ng-model="patientDto.person.firstName" ng-required="isRequired('firstName')"  />
+                        <span ng-show="isRequired('firstName') && !hasValue('firstName','2')" class="form-hint">{{msg('mrs.error.firstName')}}</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-class="cssClass('middleName','2')">
                     <label class="control-label">{{msg('mrs.person.field.middleName')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" ng-model="patientDto.person.middleName" />
+                        <input class="span8" type="text" ng-model="patientDto.person.middleName" ng-required="isRequired('middleName')"/>
+                        <span ng-show="isRequired('middleName') && !hasValue('middleName','2')" class="form-hint">{{msg('mrs.error.middleName')}}</span>
                     </div>
                 </div>
                 <div ng-class="cssClass('lastName','2')">
                     <label class="control-label">{{msg('mrs.person.field.lastName')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" ng-model="patientDto.person.lastName" required />
-                        <span ng-hide="hasValue('lastName','2')" class="form-hint">{{msg('mrs.error.lastName')}}</span>
+                        <input class="span8" type="text" ng-model="patientDto.person.lastName" ng-required="isRequired('lastName')" />
+                        <span ng-show="isRequired('lastName') && !hasValue('lastName','2')" class="form-hint">{{msg('mrs.error.lastName')}}</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-class="cssClass('preferredName','2')">
                     <label class="control-label span4">{{msg('mrs.person.field.preferredName')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" ng-model="patientDto.person.preferredName" />
+                        <input class="span8" type="text" ng-model="patientDto.person.preferredName" ng-required="isRequired('preferredName')" />
+                        <span ng-show="isRequired('preferredName') && !hasValue('preferredName','2')" class="form-hint">{{msg('mrs.error.preferredName')}}</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-class="cssClass('address','2')">
                     <label class="control-label" for="message">{{msg('mrs.person.field.address')}}</label>
                     <div class="controls">
-                        <textarea class="span8" rows="3" ng-model="patientDto.person.address" id="message" placeholder="eg. 111 1st St Seattle, WA USA"></textarea>
+                        <textarea class="span8" rows="3" ng-model="patientDto.person.address" id="message" placeholder="eg. 111 1st St Seattle, WA USA" ng-required="isRequired('address')" />
+                        <span ng-show="isRequired('address') && !hasValue('address','2')" class="form-hint">{{msg('mrs.error.address')}}</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-class="cssClass('gender','2')">
                     <label class="control-label">{{msg('mrs.person.field.gender')}}</label>
                     <div class="controls" data-role="content">
                         <label class="radio inline">
-                            <input type="radio" ng-model='patientDto.person.gender' id="optionsRadios1" value="male" >
+                            <input type="radio" ng-model='patientDto.person.gender' id="optionsRadios1" value="male" ng-required="isRequired('gender')">
                             {{msg('mrs.person.field.gender.male')}}
                         </label>
                         <label class="radio inline">
                             <input type="radio" ng-model='patientDto.person.gender' id="optionsRadios2" value="female" >
                             {{msg('mrs.person.field.gender.female')}}
                         </label>
+                        <span ng-show="isRequired('gender') && !hasValue('gender','2')" class="form-hint">{{msg('mrs.error.gender')}}</span>
                     </div>
                 </div>
-                <div class="control-group">
+                <div ng-class="cssClass('dateOfBirth','2')">
                     <label class="control-label">{{msg('mrs.person.field.dateOfBirth')}}</label>
                     <div class="controls">
                         <div class="input-append span11">
-                            <input type='text' ng-model='patientDto.person.dateOfBirth' datepicker placeholder="eg. 30/02/2000"/>
+                            <input type='text' ng-model='patientDto.person.dateOfBirth' datepicker placeholder="eg. 30/02/2000" ng-required="isRequired('dateOfBirth')"/>
+                            <span ng-show="isRequired('dateOfBirth') && !hasValue('dateOfBirth','2')" class="form-hint">{{msg('mrs.error.dateOfBirth')}}</span>
                         </div>
                     </div>
                 </div>
@@ -95,10 +100,11 @@
                         </label>
                     </div>
                 </div>
-                <div ng-class="control-group">
+                <div ng-class="cssClass('facilityId','3')">
                     <label class="control-label">{{msg('mrs.facility.field.facilityId')}}</label>
                     <div class="controls">
-                        <input class="span8" type="text" ng-model="patientDto.facility.facilityId" />
+                        <input class="span8" type="text" ng-model="patientDto.facility.facilityId" ng-required="isRequired('facilityId')" />
+                        <span ng-show="isRequired('facilityId') && !hasValue('facilityId','3')" class="form-hint">{{msg('mrs.error.facilityId')}}</span>
                     </div>
                 </div>
                 <div class="control-group margin-before2">
