@@ -1,10 +1,14 @@
-<div class="box-header">
-    {{msg('aggregation.rules.page.heading')}}
-</div>
-
-<div ng-controller="RulesController">
-
-    <div ng-repeat="rule in allRules">
-        <div ng-include="'../event-aggregation/resources/partials/rule.html'" class="list_item"/>
+<div class="box-header">{{msg('aggregation.rules.page.heading')}} - {{ msg('rules.all.rules.label') }}</div>
+<div class="box-content clearfix">
+    <div class="inside">
+        <a type="button" href="#/rules/create/periodic" class="btn btn-success"><i class="icon-plus icon-white"></i>&nbsp;
+            {{msg('rules.new.rule.label')}}
+        </a>
+    </div>
+    <div class="clearfix"></div>
+    <div ng-controller="RulesController">
+        <div ng-repeat="rule in allRules">
+            <div ng-include="'../event-aggregation/resources/partials/rule.html'" class="list_item"/>
+        </div>
     </div>
 </div>

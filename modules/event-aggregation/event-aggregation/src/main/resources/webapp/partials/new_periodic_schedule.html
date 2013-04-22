@@ -1,12 +1,20 @@
-<label>{{ msg('new.periodic.rule.repeat.interval.label') }}</label>
-<input type='text' id='repeat_every' ng-model='rule.aggregationSchedule.period' tooltip="#repeat_period_tooltip_text" />
-
-<div ng-show='false' id='repeat_period_tooltip_text'>
-    <div>{{ msg('new.periodic.rule.examples.label') }}</div>
-    <div>
-        30 minutes, 3 hours, 4 weeks etc.
+<div class="control-group">
+    <label class="control-label">{{ msg('new.periodic.rule.repeat.interval.label') }}</label>
+    <div class="controls">
+        <input class="input-xlarge-fluid" type='text' id='repeat_every' ng-model='rule.aggregationSchedule.period' tooltip="#repeat_period_tooltip_text" />
     </div>
 </div>
 
-<label>{{ msg('new.periodic.rule.start.time.label') }}</label>
-<input type='text' ng-model='rule.aggregationSchedule.startTimeInMillis' datetime-picker/>
+<div style="display: none;" id='repeat_period_tooltip_text'>
+    <div>{{ msg('new.periodic.rule.examples.label') }}</div>
+    <div>
+        {{ msg('new.periodic.rule.examples.paragraph') }}
+    </div>
+</div>
+
+<div class="control-group">
+    <label class="control-label">{{ msg('new.periodic.rule.start.time.label') }}</label>
+    <div class="controls">
+        <input class="input-xlarge-fluid" type='text' ng-model='rule.aggregationSchedule.startTimeInMillis' datetime-picker />
+    </div>
+</div>

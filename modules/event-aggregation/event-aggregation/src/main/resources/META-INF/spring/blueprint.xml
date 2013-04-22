@@ -10,16 +10,16 @@
     <bean id="header" class="org.motechproject.osgi.web.Header"></bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="url" value="../event-aggregation/index.html"/>
+        <constructor-arg name="url" value="../event-aggregation/resources/index.html"/>
         <constructor-arg name="moduleName" value="event-aggregation"/>
         <constructor-arg name="angularModules">
             <list>
-                <value>motech-event-aggregation</value>
+                <value>event-aggregation</value>
             </list>
         </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../event-aggregation/bundles/"/>
+                <entry key="messages" value="../event-aggregation/resources/bundles/"/>
             </map>
         </constructor-arg>
         <constructor-arg name="header" ref="header"/>
