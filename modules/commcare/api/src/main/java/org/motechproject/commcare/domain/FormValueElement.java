@@ -28,6 +28,10 @@ public class FormValueElement {
         subElements.put(key, element);
     }
 
+    public boolean containsAttribute(String key) {
+        return attributes.containsKey(key);
+    }
+
     public void addAttribute(String key, String value) {
         attributes.put(key, value);
     }
