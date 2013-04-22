@@ -1,18 +1,18 @@
 <div class="well2">
     <div class="box-header">
         {{msg('messages.title')}}
-        <a ng-click="refresh()"><img src="../admin/img/refresh.png" title="{{msg('refresh')}}" alt="{{msg('refresh')}}"/></a>
+        <a htef="#" ng-click="refresh()"><img src="../admin/img/refresh.png" title="{{msg('refresh')}}" alt="{{msg('refresh')}}"/></a>
     </div>
     <div class="box-content inside">
+        <div class="control-group"><a href="#/notificationRules" class="btn btn-success"><i class="icon-plus icon-white"></i>&nbsp;{{msg('messages.notifications.title')}}</a></div>
         <span ng-show="messages.length < 1"><p>{{msg('messages.empty')}}</p></span>
 
-            <div ng-repeat="message in messages" ng-class="getCssClass(message)">
-                <div class="status-message">
-                    <a ng-click="remove(message)"><img alt="{{msg('delete')}}" title="{{msg('remove')}}"
-                                                       src="../admin/img/delete.png"/></a>
-                    <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span> <span
-                        class="msg-level">[{{message.level}}]</span>: {{printText(message.text)}}
-                </div>
+        <div ng-repeat="message in messages" ng-class="getCssClass(message)" class="control-group messages">
+            <div class="status-message">
+                <a ng-click="remove(message)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i></a>&nbsp;
+                <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span>
+                <a ng-href="?moduleName={{message.moduleName}}"><span class="msg-level">[{{message.moduleName}}]</span></a>
+                <span class="msg-level">[{{message.level}}]</span>: {{printText(message.text)}}
             </div>
         </div>
     </div>

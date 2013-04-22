@@ -31,6 +31,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Controller
 public class BundleAdminController {
 
+    private static final String ADMIN_MODULE_NAME = "admin";
+
     @Autowired
     private ModuleAdminService moduleAdminService;
 
@@ -77,7 +79,7 @@ public class BundleAdminController {
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId);
-        statusMessageService.ok("{bundles.uninstall.success}");
+        statusMessageService.info("{bundles.uninstall.success}", ADMIN_MODULE_NAME);
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
@@ -114,7 +116,7 @@ public class BundleAdminController {
         Throwable rootEx = (ex.getCause() == null ? ex : ex.getCause());
 
         String msg = (StringUtils.isNotBlank(rootEx.getMessage())) ? rootEx.getMessage() : rootEx.toString();
-        statusMessageService.error(msg);
+        statusMessageService.error(msg, ADMIN_MODULE_NAME);
 
         try (Writer writer = response.getWriter()) {
             writer.write(ExceptionUtils.getStackTrace(ex));

@@ -410,7 +410,9 @@ public class TaskTriggerHandler {
         if (errorRunsCount >= possibleErrorRun) {
             task.setEnabled(false);
             taskService.save(task);
+
             activityService.addWarning(task);
+            publishTaskDisabledMessage(task.getName());
         }
     }
 
@@ -485,6 +487,17 @@ public class TaskTriggerHandler {
         param.put(EventKeys.TASK_FAIL_TASK_ID, task.getId());
         param.put(EventKeys.TASK_FAIL_TASK_NAME, task.getName());
         return param;
+    }
+
+    private void publishTaskDisabledMessage(String taskName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("message", "Task disabled automatically: " + taskName);
+        params.put("level", "CRITICAL");
+        params.put("moduleName", "tasks");
+
+        MotechEvent motechEvent = new MotechEvent("org.motechproject.message", params);
+
+        eventRelay.sendEventMessage(motechEvent);
     }
 
     @Autowired(required = false)

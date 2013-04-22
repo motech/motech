@@ -1,10 +1,17 @@
 package org.motechproject.admin.service.impl;
 
 import org.joda.time.DateTime;
+import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
+import org.motechproject.admin.email.EmailSender;
+import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.admin.repository.AllNotificationRules;
 import org.motechproject.admin.repository.AllStatusMessages;
 import org.motechproject.admin.service.StatusMessageService;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("statusMessageService")
 public class StatusMessageServiceImpl implements StatusMessageService {
@@ -25,16 +34,23 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     private AllStatusMessages allStatusMessages;
 
     @Autowired
+    private AllNotificationRules allNotificationRules;
+
+    @Autowired
     private PlatformSettingsService platformSettingsService;
+
+    @Autowired
+    private UIFrameworkService uiFrameworkService;
+
+    @Autowired
+    private EventRelay eventRelay;
+
+    @Autowired
+    private EmailSender emailSender;
 
     @Override
     public List<StatusMessage> getActiveMessages() {
-        List<StatusMessage> result = new ArrayList<>();
-        for (StatusMessage message : getAllMessages()) {
-            if (message.getTimeout().isAfterNow()) {
-                result.add(message);
-            }
-        }
+        List<StatusMessage> result = allStatusMessages.getActiveMessages();
 
         Collections.sort(result, new Comparator<StatusMessage>() {
             @Override
@@ -50,7 +66,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     public List<StatusMessage> getAllMessages() {
         List<StatusMessage> statusMessages = new ArrayList<>();
         if (getAllStatusMessages() == null) {
-            StatusMessage noDbMessage = new StatusMessage("{noDB}", Level.ERROR);
+            StatusMessage noDbMessage = new StatusMessage("{noDB}", "", Level.ERROR);
             statusMessages.add(noDbMessage);
         } else {
             statusMessages = allStatusMessages.getAll();
@@ -65,73 +81,120 @@ public class StatusMessageServiceImpl implements StatusMessageService {
         if (getAllStatusMessages() != null) {
             allStatusMessages.add(message);
         }
+
+        if (message.getLevel() == Level.CRITICAL) {
+            uiFrameworkService.moduleNeedsAttention("admin", "messages", "");
+            uiFrameworkService.moduleNeedsAttention(message.getModuleName(), message.getText());
+            sendNotifications(message);
+        }
     }
 
     @Override
-    public void postMessage(String text, Level level) {
-        StatusMessage message = new StatusMessage(text, level, defaultTimeout());
+    public void postMessage(String text, String moduleName, Level level) {
+        StatusMessage message = new StatusMessage(text, moduleName, level,  defaultTimeout());
         postMessage(message);
     }
 
     @Override
-    public void postMessage(String text, Level level, DateTime timeout) {
-        StatusMessage message = new StatusMessage(text, level, timeout);
+    public void postMessage(String text, String moduleName, Level level, DateTime timeout) {
+        StatusMessage message = new StatusMessage(text, moduleName, level, timeout);
         postMessage(message);
     }
 
     @Override
-    public void info(String text) {
-        postMessage(text, Level.INFO, defaultTimeout());
+    public void info(String text, String moduleName) {
+        postMessage(text, moduleName, Level.INFO, defaultTimeout());
     }
 
     @Override
-    public void info(String text, DateTime timeout) {
-        postMessage(text, Level.INFO, timeout);
+    public void info(String text, String moduleName, DateTime timeout) {
+        postMessage(text, moduleName, Level.INFO, timeout);
     }
 
     @Override
-    public void error(String text) {
-        postMessage(text, Level.ERROR);
+    public void error(String text, String moduleName) {
+        postMessage(text, moduleName, Level.ERROR);
     }
 
     @Override
-    public void error(String text, DateTime timeout) {
-        postMessage(text, Level.ERROR, timeout);
+    public void error(String text, String moduleName, DateTime timeout) {
+        postMessage(text, moduleName, Level.ERROR, timeout);
     }
 
     @Override
-    public void debug(String text) {
-        postMessage(text, Level.DEBUG);
+    public void debug(String text, String moduleName) {
+        postMessage(text, moduleName, Level.DEBUG);
     }
 
     @Override
-    public void debug(String text, DateTime timeout) {
-        postMessage(text, Level.DEBUG, timeout);
+    public void debug(String text, String moduleName, DateTime timeout) {
+        postMessage(text, moduleName, Level.DEBUG, timeout);
     }
 
     @Override
-    public void warn(String text) {
-        postMessage(text, Level.WARN);
+    public void warn(String text, String moduleName) {
+        postMessage(text, moduleName, Level.WARN);
     }
 
     @Override
-    public void warn(String text, DateTime timeout) {
-        postMessage(text, Level.WARN, timeout);
+    public void warn(String text, String moduleName, DateTime timeout) {
+        postMessage(text, moduleName, Level.WARN, timeout);
     }
 
     @Override
-    public void ok(String text) {
-        postMessage(text, Level.OK);
+    public void critical(String text, String moduleName) {
+        postMessage(text, moduleName, Level.CRITICAL);
     }
 
     @Override
-    public void ok(String text, DateTime timeout) {
-        postMessage(text, Level.OK, timeout);
+    public void critical(String text, String moduleName, DateTime timeout) {
+        postMessage(text, moduleName, Level.CRITICAL, timeout);
     }
 
     @Override
     public void removeMessage(StatusMessage message) {
         allStatusMessages.remove(message);
+    }
+
+    @Override
+    public void saveRule(NotificationRule notificationRule) {
+        NotificationRule existing = (notificationRule.getId() == null) ? null :
+                allNotificationRules.get(notificationRule.getId());
+
+        if (existing == null) {
+            allNotificationRules.add(notificationRule);
+        } else {
+            allNotificationRules.update(notificationRule);
+        }
+    }
+
+    @Override
+    public void removeNotificationRule(String id) {
+        NotificationRule notificationRule = allNotificationRules.get(id);
+        if (notificationRule != null) {
+            allNotificationRules.remove(notificationRule);
+        }
+    }
+
+    @Override
+    public List<NotificationRule> getNotificationRules() {
+        return allNotificationRules.getAll();
+    }
+
+    @Override
+    public void saveNotificationRules(List<NotificationRule> notificationRules) {
+        for (NotificationRule notificationRule : notificationRules) {
+            NotificationRule existing = (notificationRule.getId() == null) ? null :
+                    allNotificationRules.get(notificationRule.getId());
+
+            if (existing == null) {
+                allNotificationRules.add(notificationRule);
+            } else {
+                existing.setActionType(notificationRule.getActionType());
+                existing.setRecipient(notificationRule.getRecipient());
+                allNotificationRules.update(existing);
+            }
+        }
     }
 
     private AllStatusMessages getAllStatusMessages() {
@@ -159,5 +222,26 @@ public class StatusMessageServiceImpl implements StatusMessageService {
             timeout = DateTime.now().plusMinutes(1);
         }
         return timeout;
+    }
+
+    private void sendNotifications(StatusMessage message) {
+        List<String> smsRecipients = new ArrayList<>();
+
+        for (NotificationRule notificationRule : allNotificationRules.getAll()) {
+            if (notificationRule.getActionType() == ActionType.SMS) {
+                smsRecipients.add(notificationRule.getRecipient());
+            } else if (notificationRule.getActionType() == ActionType.EMAIL) {
+                emailSender.sendCriticalNotificationEmail(notificationRule.getRecipient(), message);
+            }
+        }
+
+        if (!smsRecipients.isEmpty()) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("number",  smsRecipients);
+            params.put("message", String.format("Motech Critical: [%s] %s", message.getModuleName(), message.getText()));
+
+            MotechEvent smsEvent = new MotechEvent("SendSMS", params);
+            eventRelay.sendEventMessage(smsEvent);
+        }
     }
 }

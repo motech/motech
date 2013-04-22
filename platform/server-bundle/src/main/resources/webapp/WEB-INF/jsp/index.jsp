@@ -168,9 +168,21 @@
             <div id="side-nav" class="span2">
                 <ul class="nav nav-tabs nav-stacked">
                     <c:forEach var="module" items="${individuals}">
-                        <li class="nav-header"><fmt:message key="${module.moduleName}" bundle="${bundle}"/></li>
+                        <li class="nav-header">
+                            <c:if test="${module.needsAttention}">
+                                <i class="icon icon-exclamation-sign icon-red"></i>
+                            </c:if>
+                            <fmt:message key="${module.moduleName}" bundle="${bundle}"/>
+                        </li>
                         <c:forEach var="entry" items="${module.subMenu}">
-                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value}')"><a href="?moduleName=${module.moduleName}${entry.value}"><fmt:message key="${entry.key}" bundle="${bundle}"/></a></li>
+                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value.url}')">
+                                <a href="?moduleName=${module.moduleName}${entry.value.url}">
+                                    <c:if test="${entry.value.needsAttention}">
+                                        <i class="icon icon-exclamation-sign icon-red"></i>
+                                    </c:if>
+                                    <fmt:message key="${entry.key}" bundle="${bundle}"/>
+                                </a>
+                            </li>
                         </c:forEach>
                         <li class="divider"></li>
                     </c:forEach>
@@ -178,7 +190,14 @@
                     <c:if test="${not empty links}">
                         <li class="nav-header"><fmt:message key="modules" bundle="${bundle}"/></li>
                         <c:forEach var="module" items="${links}">
-                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>><a href="?moduleName=${module.moduleName}"><fmt:message key="${module.moduleName}" bundle="${bundle}"/></a></li>
+                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>>
+                                <a href="?moduleName=${module.moduleName}">
+                                    <c:if test="${module.needsAttention}">
+                                        <i class="icon icon-exclamation-sign icon-red"></i>
+                                    </c:if>
+                                    <fmt:message key="${module.moduleName}" bundle="${bundle}"/>
+                                </a>
+                            </li>
                         </c:forEach>
                     </c:if>
                 </ul>
@@ -195,6 +214,11 @@
                             <div class="splash-msg"><fmt:message key="module.loading" bundle="${bundle}"/></div>
                             <div class="clearfix"></div>
                         </div>
+                        <c:if test="${criticalNotification != null && criticalNotification != ''}">
+                            <div id="criticalNotification" class="alert alert-error">
+                                ${criticalNotification}
+                            </div>
+                        </c:if>
                         <div id="module-content" ng-show="ready">
                             <script type="text/javascript">
                                 loadModule('${currentModule.url}', ${currentModule.angularModulesStr});

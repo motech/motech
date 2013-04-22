@@ -11,7 +11,7 @@
 
     <context:annotation-config/>
 
-    <bean id="header" class="org.motechproject.osgi.web.Header"></bean>
+    <bean id="header" class="org.motechproject.osgi.web.Header"/>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../admin/index.html"/>
@@ -39,7 +39,6 @@
     </bean>
 
 
-
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces"
                   ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService" />
 
@@ -52,6 +51,8 @@
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
+    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay"/>
+
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
@@ -62,5 +63,6 @@
 
     <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 
-
+    <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.UIFrameworkService"
+                    availability="optional"/>
 </beans>

@@ -32,6 +32,7 @@ public class SettingsController {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsController.class);
 
     private static final String PLATFORM_SETTINGS_SAVED = "{settings.saved}";
+    private static final String ADMIN_MODULE_NAME = "admin";
 
     @Autowired
     private SettingsService settingsService;
@@ -48,14 +49,14 @@ public class SettingsController {
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
     public void saveBundleSettings(@PathVariable long bundleId, @RequestBody Settings bundleSettings) throws IOException {
         settingsService.saveBundleSettings(bundleSettings, bundleId);
-        statusMessageService.ok("{settings.saved.bundle}");
+        statusMessageService.info("{settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/list", method = RequestMethod.POST)
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
         settingsService.savePlatformSettings(Arrays.asList(platformSettings));
-        statusMessageService.ok("{settings.saved.bundle}");
+        statusMessageService.info("{settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -70,7 +71,7 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.OK)
     public void savePlatformSettings(@RequestBody Settings platformSettings) throws IOException {
         settingsService.savePlatformSettings(platformSettings);
-        statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
+        statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
@@ -82,21 +83,21 @@ public class SettingsController {
     @RequestMapping(value = "/settings/platform/upload", method = RequestMethod.POST)
     public void uploadSettingsFile(@RequestParam(required = true) MultipartFile settingsFile) {
         settingsService.saveSettingsFile(settingsFile);
-        statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
+        statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/activemq/upload", method = RequestMethod.POST)
     public void uploadActiveMqFIle(@RequestParam(required = true) MultipartFile activemqFile) {
         settingsService.saveActiveMqFile(activemqFile);
-        statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
+        statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
     public void uploadSettingsLocation(@RequestParam(required = true) String location) throws IOException {
         settingsService.addSettingsPath(location);
-        statusMessageService.ok("{settings.saved.location}");
+        statusMessageService.info("{settings.saved.location}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -115,14 +116,14 @@ public class SettingsController {
     void uploadRawFile(@PathVariable long bundleId, @RequestParam(required = true) String filename,
                        @RequestParam(required = true) MultipartFile file) {
         settingsService.saveRawFile(file, filename, bundleId);
-        statusMessageService.ok("{settings.saved.file}");
+        statusMessageService.info("{settings.saved.file}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public void handleException(Exception e) {
         LOG.error(e.getMessage(), e);
-        statusMessageService.error("Error: " + e.getMessage());
+        statusMessageService.error("Error: " + e.getMessage(), ADMIN_MODULE_NAME);
     }
 
     private static List<SettingsOption> constructSettingsOptions(HttpServletRequest request) {

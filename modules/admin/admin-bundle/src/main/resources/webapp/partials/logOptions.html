@@ -1,9 +1,7 @@
 <div class="well2">
     <div class="box-header">
         {{msg('log.options')}}
-        <a href="#/log" class="btn btn-primary btn-in-header pull-right">
-            {{msg('back')}}
-        </a>
+        <a href="#/log" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
     </div>
     <div class="box-content log-options">
         <form id="changeLogLevels" class="form-vertical">
@@ -32,7 +30,7 @@
             </div>
             <div class="control-group" ng-repeat="logger in config.loggers">
                 <div class="form-inline">
-                    <a ng-click="remove(logger)" class="btn btn-danger"><i class="icon-minus-sign icon-white"></i></a>
+                    <a ng-click="remove(logger)" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
                     <div class="btn-group">
                         <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(logger.logLevel)" data-toggle="dropdown" href="#">
                             {{ logger.logLevel | uppercase }}
@@ -47,7 +45,7 @@
             </div>
             <div class="control-group">
                 <div class="form-inline">
-                    <button ng-disabled="!validate()" ng-click="add()" class="btn btn-inverse"><i class="icon-plus-sign icon-white"></i></button>
+                    <button ng-disabled="!validate()" ng-click="add()" class="btn btn-success"><i class="icon-plus icon-white"></i></button>
                     <div class="btn-group">
                         <a class="btn btn-log dropdown-toggle" ng-class="levelsCss(entry.level)" data-toggle="dropdown" href="#">
                             {{ entry.level | uppercase }}
@@ -62,7 +60,7 @@
             </div>
             <div class="form-actions">
                 <input type="button" class="btn btn-primary" ng-click="save()" value="{{msg('save')}}"/>
-                <a class="btn" href="#/log">{{msg('back')}}</a>
+                <a class="btn" href="#/log">{{msg('cancel')}}</a>
             </div>
         </form>
     </div>

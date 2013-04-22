@@ -23,6 +23,7 @@ import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.TestContext;
@@ -30,6 +31,7 @@ import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -41,6 +43,7 @@ public class AdminBundleIT extends BaseOsgiIT {
     private static final String ERROR_MSG = "test-error";
     private static final String DEBUG_MSG = "test-debug";
     private static final String WARNING_MSG = "test-warn";
+    private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateTime.now().plusHours(1);
 
     private HttpClient httpClient = new DefaultHttpClient();
@@ -55,9 +58,9 @@ public class AdminBundleIT extends BaseOsgiIT {
     public void testStatusMessageService() {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
 
-        service.error(ERROR_MSG, TIMEOUT);
-        service.warn(WARNING_MSG, TIMEOUT);
-        service.debug(DEBUG_MSG, TIMEOUT);
+        service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
+        service.warn(WARNING_MSG, MODULE_NAME, TIMEOUT);
+        service.debug(DEBUG_MSG, MODULE_NAME, TIMEOUT);
 
         List<StatusMessage> messages = service.getActiveMessages();
         messages = Lambda.filter(having(on(StatusMessage.class).getTimeout(), equalTo(TIMEOUT)), messages);
@@ -66,12 +69,15 @@ public class AdminBundleIT extends BaseOsgiIT {
 
         StatusMessage msg = findMsgByText(messages, ERROR_MSG);
         assertEquals(Level.ERROR, msg.getLevel());
+        assertEquals(MODULE_NAME, msg.getModuleName());
 
         msg = findMsgByText(messages, WARNING_MSG);
         assertEquals(Level.WARN, msg.getLevel());
+        assertEquals(MODULE_NAME, msg.getModuleName());
 
         msg = findMsgByText(messages, DEBUG_MSG);
         assertEquals(Level.DEBUG, msg.getLevel());
+        assertEquals(MODULE_NAME, msg.getModuleName());
     }
 
     public void testBundleController() throws IOException {
@@ -92,7 +98,7 @@ public class AdminBundleIT extends BaseOsgiIT {
 
     public void testMessageController() throws IOException {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
-        service.error(ERROR_MSG, TIMEOUT);
+        service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
 
         final String response = apiGet("messages");
 
@@ -124,7 +130,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         final HttpPost loginPost = new HttpPost(
                 String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check", TestContext.getJettyPort()));
 
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("j_username", "motech"));
         nvps.add(new BasicNameValuePair("j_password", "motech"));
 
@@ -166,6 +172,11 @@ public class AdminBundleIT extends BaseOsgiIT {
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/spring/testAdminBundleContext.xml"};
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return Arrays.asList("org.motechproject.osgi.web");
     }
 }
 

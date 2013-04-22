@@ -37,8 +37,8 @@
                     <div class="input-append" ng-show="moduleSource=='File'">
                         <input type="file" id="bundleFile" name="bundleFile" class="input-file"
                                placeholder="{{msg('bundles.file')}}" style="display: none;"/>
-                        <div class="uneditable-input span4">
-                            <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
+                        <div class="uneditable-input input-large fileupload-exists">
+                            <i class="icon-file"></i><span class="fileupload-preview"></span>
                         </div>
                     <span class="btn btn-file"><span class="fileupload-new">{{msg('selectFile')}}</span>
                     <span class="fileupload-exists">{{msg('bundles.change')}}</span><input type="file"/>
@@ -62,7 +62,7 @@
         </form>
     </div>
     <div class="clearfix"></div>
-    <table class="table table-bundles table-bordered table-striped table-lightblue">
+    <table class="table table-bundles table-bordered table-striped table-condensed table-lightblue">
         <thead>
         <tr>
             <th ng-click="setOrder('bundleId')">

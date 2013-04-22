@@ -94,6 +94,8 @@ public class DashboardController {
                 ModuleRegistrationData currentModule = uiFrameworkService.getModuleData(moduleName);
                 if (currentModule != null) {
                     mav.addObject("currentModule", currentModule);
+                    mav.addObject("criticalNotification", currentModule.getCriticalMessage());
+                    uiFrameworkService.moduleBackToNormal(moduleName);
                 }
             }
 

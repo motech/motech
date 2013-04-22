@@ -12,6 +12,7 @@ public class StatusMessage extends MotechBaseDataObject {
     private static final int DEFAULT_TIMEOUT_MINS = 60;
 
     private String text;
+    private String moduleName;
     private DateTime date = DateTime.now();
     private DateTime timeout = DateTime.now().plusMinutes(DEFAULT_TIMEOUT_MINS);
     private Level level = Level.INFO;
@@ -56,14 +57,23 @@ public class StatusMessage extends MotechBaseDataObject {
         this.text = text;
     }
 
-    public StatusMessage(String text, Level level) {
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public StatusMessage(String text, String moduleName, Level level) {
         this.text = text;
+        this.moduleName = moduleName;
         this.level = level;
     }
 
 
-    public StatusMessage(String text, Level level, DateTime timeout) {
-        this(text, level);
+    public StatusMessage(String text, String moduleName, Level level, DateTime timeout) {
+        this(text, moduleName, level);
         this.timeout = timeout;
     }
 

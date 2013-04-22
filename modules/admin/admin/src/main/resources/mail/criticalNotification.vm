@@ -1,0 +1,13 @@
+<html>
+<body>
+    <strong>A critical notification was raised in Motech</strong>
+
+    <p>Module: $module</p>
+
+    <p>Date: $dateTime</p>
+
+    <p>$msg</p>
+
+    <p>To go to the messages list: $msgLink<p>
+</body>
+</html>

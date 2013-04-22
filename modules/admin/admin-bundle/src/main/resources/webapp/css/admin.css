@@ -1,3 +1,7 @@
+.tab-content {
+    padding-left: 0;
+}
+
 form.form-horizontal {
     margin: 0;
 }
@@ -122,34 +126,6 @@ h4.settings-section {
     line-height: 20px;
 }
 
-.table-bundles thead .sorting-no {
-    float: right;
-    width: 15px;
-    height: 24px;
-    background: url("../img/sort.png")no-repeat center right;
-}
-
-.table-bundles thead .sorting-asc {
-    float: right;
-    width: 15px;
-    height: 24px;
-    background: url("../img/sort-asc.png")no-repeat center right;
-}
-
-.table-bundles thead .sorting-desc {
-    float: right;
-    width: 15px;
-    height: 24px;
-    background: url("../img/sort-desc.png")no-repeat center right;
-}
-
-.table-bundles thead .sorting-no-img {
-    float: right;
-    width: 1px;
-    height: 24px;
-    background: none;
-}
-
 .table-bundles a:link {
     text-decoration: none;
 }
@@ -263,14 +239,19 @@ div.sidebar-container {
 
 #changeLogLevels .control-group {
     margin: 0;
-    margin-bottom: 2px;
+    margin-bottom: 0;
     background-color: #E4F1F9;
-    padding: 2px 5px 2px 45px;
-    border-top: 1px solid #e5e5e5;
+    padding: 5px 5px 5px 45px;
 }
 
 #changeLogLevels .control-group.log {
     padding: 10px 5px 2px 15px;
+}
+
+#changeLogLevels .form-actions {
+    background: #E4F1F9;
+    margin: 0;
+    padding: 19px 20px 20px 45px;
 }
 
 #changeLogLevels .label-logAll {
@@ -302,4 +283,37 @@ div.sidebar-container {
 .log-options {
     background: #DBEDF7;
     background-image: none;
+}
+
+.messages.control-group, #notificationRulesForm > div,
+#changeLogLevels > div {
+    background-color: #EBF7FF;
+    border-top: 1px solid #D2EBFC;
+    border-top: 1px solid #D4E1F9;
+    margin: 0 -10px 0px;
+    padding: 5px 5px 5px 10px;
+}
+
+#notificationRulesForm > div:first-child {
+    border: none;
+    padding-top: 0;
+}
+
+#notificationRulesForm > div .control-group {
+    margin: 0 10px;
+}
+
+.box-content .messages.control-group:nth-child(2n+1),
+#notificationRulesForm > div:nth-child(2n+1),
+#changeLogLevels > div:nth-child(2n+1) {
+    background: #F3FBFE;
+}
+
+.box-content .messages.control-group:last-child {
+    margin: 0 -10px -10px;
+}
+
+#notificationRulesForm > div:last-child {
+    padding: 20px 5px 20px 10px;
+    margin: 0 -10px -10px;
 }

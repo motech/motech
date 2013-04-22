@@ -1,5 +1,6 @@
 package org.motechproject.server.ui;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.osgi.web.ModuleRegistrationData;
@@ -64,6 +65,28 @@ public class UIFrameworkServiceTest {
 
         Assert.assertTrue(uiFrameworkService.isModuleRegistered("test-module"));
 
+    }
+
+    @Test
+    public void shouldSetAndUnsetAttentionNeededFlag() {
+        UIFrameworkServiceImpl uiFrameworkService = new UIFrameworkServiceImpl();
+        ModuleRegistrationData testModule = new ModuleRegistrationData("test-module", "http://goo.gl");
+        uiFrameworkService.registerModule(testModule);
+
+        uiFrameworkService.moduleNeedsAttention("test-module", "test msg");
+        Assert.assertTrue(uiFrameworkService.getModuleData("test-module").isNeedsAttention());
+        Assert.assertEquals(uiFrameworkService.getModuleData("test-module").getCriticalMessage(), "test msg");
+
+        uiFrameworkService.moduleBackToNormal("test-module");
+        Assert.assertFalse(uiFrameworkService.getModuleData("test-module").isNeedsAttention());
+        Assert.assertTrue(StringUtils.isBlank(uiFrameworkService.getModuleData("test-module").getCriticalMessage()));
+    }
+
+    @Test
+    public void shouldIgnoreNonExistentModules() {
+        UIFrameworkServiceImpl uiFrameworkService = new UIFrameworkServiceImpl();
+        uiFrameworkService.moduleNeedsAttention("nonexistent", "test msg");
+        uiFrameworkService.moduleBackToNormal("nonexistent");
     }
 
     private ModuleRegistrationData moduleRegistration() {

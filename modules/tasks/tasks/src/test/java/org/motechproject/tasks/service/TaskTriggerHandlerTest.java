@@ -42,10 +42,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
@@ -493,12 +496,18 @@ public class TaskTriggerHandlerTest {
         verify(taskActivityService).addWarning(task);
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        List<MotechEvent> capturedEvents = captorEvent.getAllValues();
+
+        assertEquals(asList("org.motechproject.message" ,"TRIGGER_FAILED"),
+                extract(capturedEvents, on(MotechEvent.class).getSubject()));
+
         assertFalse(task.isEnabled());
         assertEquals("error.templateNull", captor.getValue().getMessageKey());
+
+
     }
 
     @Test
@@ -527,10 +536,14 @@ public class TaskTriggerHandlerTest {
         verify(dataProvider, never()).supports(anyString());
         verify(dataProvider, never()).lookup(anyString(), anyMap());
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        List<MotechEvent> capturedEvents = captorEvent.getAllValues();
+
+        assertEquals(asList("org.motechproject.message" ,"TRIGGER_FAILED"),
+                extract(capturedEvents, on(MotechEvent.class).getSubject()));
+
         assertFalse(task.isEnabled());
         assertEquals("error.notFoundDataProvider", captor.getValue().getMessageKey());
     }
@@ -561,10 +574,14 @@ public class TaskTriggerHandlerTest {
         verify(dataProvider, never()).supports(anyString());
         verify(dataProvider, never()).lookup(anyString(), anyMap());
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        List<MotechEvent> capturedEvents = captorEvent.getAllValues();
+
+        assertEquals(asList("org.motechproject.message" ,"TRIGGER_FAILED"),
+                extract(capturedEvents, on(MotechEvent.class).getSubject()));
+
         assertFalse(task.isEnabled());
         assertEquals("error.notFoundDataProvider", captor.getValue().getMessageKey());
     }
@@ -600,10 +617,14 @@ public class TaskTriggerHandlerTest {
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        List<MotechEvent> capturedEvents = captorEvent.getAllValues();
+
+        assertEquals(asList("org.motechproject.message" ,"TRIGGER_FAILED"),
+                extract(capturedEvents, on(MotechEvent.class).getSubject()));
+
         assertFalse(task.isEnabled());
         assertEquals("error.notFoundObjectForType", captor.getValue().getMessageKey());
     }
@@ -639,10 +660,14 @@ public class TaskTriggerHandlerTest {
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(captorEvent.capture());
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
 
-        assertEquals("TRIGGER_FAILED", captorEvent.getValue().getSubject());
+        List<MotechEvent> capturedEvents = captorEvent.getAllValues();
+
+        assertEquals(asList("org.motechproject.message" ,"TRIGGER_FAILED"),
+                extract(capturedEvents, on(MotechEvent.class).getSubject()));
+
         assertFalse(task.isEnabled());
         assertEquals("error.objectNotContainsField", captor.getValue().getMessageKey());
     }
@@ -1110,7 +1135,7 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
-        additionalData.put("12345", Arrays.asList(
+        additionalData.put("12345", asList(
                 new TaskAdditionalData(1L, "TestObjectField", "id", "trigger.externalId", isFail),
                 new TaskAdditionalData(2L, "TestObject", "id", "ad.12345.TestObjectField#1.id", isFail)
         ));

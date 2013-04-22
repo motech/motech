@@ -170,7 +170,7 @@ public class BundleAdminControllerTest {
 
         controller.handleBundleException(response, ex);
 
-        verify(statusMessageService).error(msg);
+        verify(statusMessageService).error(msg, "admin");
         verify(writer).write(exMsg);
     }
 }

@@ -111,6 +111,7 @@ public class DashboardControllerTest {
         assertNotNull(result.getModelMap().get(UPTIME));
         assertEquals(regData, result.getModelMap().get(CURRENT_MODULE));
         verify(uiFrameworkService).getModuleData(MODULE_NAME);
+        verify(uiFrameworkService).moduleBackToNormal(MODULE_NAME);
     }
 
     @Test

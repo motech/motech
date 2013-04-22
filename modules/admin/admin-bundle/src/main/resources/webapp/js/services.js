@@ -16,6 +16,14 @@ angular.module('messageServices', ['ngResource']).factory('StatusMessage', funct
     return $resource('../admin/api/messages');
 });
 
+angular.module('notificationRuleServices', ['ngResource']).factory('NotificationRule', function($resource) {
+    return $resource('../admin/api/messages/rules/:ruleId', {ruleId: '@_id'});
+});
+
+angular.module('notificationRuleDtoServices', ['ngResource']).factory('NotificationRuleDto', function($resource) {
+    return $resource('../admin/api/messages/rules/dto');
+});
+
 angular.module('platformSettingsServices', ['ngResource']).factory('PlatformSettings', function($resource) {
     return $resource('../admin/api/settings/platform');
 });

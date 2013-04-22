@@ -2,6 +2,7 @@ package org.motechproject.server.ui.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.slf4j.Logger;
@@ -80,8 +81,52 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         return module;
     }
 
+    private SubmenuInfo getSubmenu(String moduleName, String submenuName) {
+        ModuleRegistrationData moduleRegistrationData = getModuleData(moduleName);
+        if (moduleRegistrationData != null) {
+            return moduleRegistrationData.getSubMenu().get(submenuName);
+        }
+        return null;
+    }
+
     @Override
     public boolean isModuleRegistered(String moduleName) {
         return getModuleData(moduleName) != null;
+    }
+
+    @Override
+    public void moduleNeedsAttention(String moduleName, String message) {
+        ModuleRegistrationData moduleRegistrationData = getModuleData(moduleName);
+        if (moduleRegistrationData != null) {
+            moduleRegistrationData.setNeedsAttention(true);
+            moduleRegistrationData.setCriticalMessage(message);
+        }
+    }
+
+    @Override
+    public void moduleBackToNormal(String moduleName) {
+        ModuleRegistrationData moduleRegistrationData = getModuleData(moduleName);
+        if (moduleRegistrationData != null) {
+            moduleRegistrationData.setNeedsAttention(false);
+            moduleRegistrationData.setCriticalMessage("");
+        }
+    }
+
+    @Override
+    public void moduleNeedsAttention(String moduleName, String submenu, String message) {
+        SubmenuInfo submenuInfo = getSubmenu(moduleName, submenu);
+        if (submenuInfo != null) {
+            submenuInfo.setNeedsAttention(true);
+            submenuInfo.setCriticalMessage(message);
+        }
+    }
+
+    @Override
+    public void moduleBackToNormal(String moduleName, String submenu) {
+        SubmenuInfo submenuInfo = getSubmenu(moduleName, submenu);
+        if (submenuInfo != null) {
+            submenuInfo.setNeedsAttention(false);
+            submenuInfo.setCriticalMessage("");
+        }
     }
 }

@@ -119,7 +119,11 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.module = "";
 
     $scope.stopBundle = function (bundle) {
-        bundle.$stop(dummyHandler, angularHandler('error', 'bundles.error.stop'));
+        bundle.state = LOADING_STATE;
+        bundle.$stop(dummyHandler, function (response) {
+            bundle.state = 'RESOLVED';
+            handleWithStackTrace('error', 'bundles.error.stop', response);
+        });
     }
 
     $scope.startBundle = function (bundle) {
@@ -528,3 +532,37 @@ function ServerLogOptionsCtrl($scope, LogService, $http) {
     }
 }
 
+function NotificationRuleCtrl($scope, NotificationRule, NotificationRuleDto, $location) {
+    $scope.notificationRuleDto = new NotificationRuleDto()
+    $scope.notificationRuleDto.notificationRules = NotificationRule.query();
+    $scope.notificationRuleDto.idsToRemove = [];
+
+    $scope.changeRuleActionType = function(notificationRule, actionType) {
+        notificationRule.actionType = actionType;
+    }
+
+    $scope.saveRules = function(notificationRule) {
+        notificationRule.$save();
+    }
+
+    $scope.removeRule = function(notificationRule) {
+        $scope.notificationRuleDto.notificationRules.removeObject(notificationRule);
+        if (notificationRule._id) {
+            $scope.notificationRuleDto.idsToRemove.push(notificationRule._id);
+        }
+    }
+
+    $scope.newRule = function() {
+        var notificationRule = new NotificationRule();
+        notificationRule.actionType = 'EMAIL';
+
+        $scope.notificationRuleDto.notificationRules.push(notificationRule);
+    }
+
+    $scope.save = function() {
+        $scope.notificationRuleDto.$save(function() {
+            motechAlert('messages.notifications.saved', 'success');
+            $location.path('messages');
+        }, angularHandler('error', 'messages.notifications.errorSave'));
+    }
+}
