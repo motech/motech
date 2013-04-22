@@ -278,7 +278,11 @@ public class TaskTriggerHandler {
             String value = "";
 
             if (key.fromTrigger()) {
-                value = getTriggerKey(event, key);
+                try {
+                    value = getTriggerKey(event, key);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
+                }
             } else if (key.fromAdditionalData()) {
                 value = getAdditionalDataKey(event, task, key);
             }

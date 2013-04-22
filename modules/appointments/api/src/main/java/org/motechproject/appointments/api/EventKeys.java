@@ -4,7 +4,7 @@ public final class EventKeys {
 
     private EventKeys() { }
 
-    public static final String EXTERNAL_ID_KEY = "external.id";
+    public static final String EXTERNAL_ID_KEY = "externalId";
     public static final String VISIT_NAME = "VisitName";
     public static final String APPOINTMENT_ID = "AppointmentId";
     public static final String VISIT_DATE = "VisitDate";

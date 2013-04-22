@@ -8,7 +8,7 @@
       "subject" : "org.motechproject.appointments.api.Visit.Reminder",
       "eventParameters" : [
         {
-          "eventKey" : "external.id",
+          "eventKey" : "externalId",
           "displayName" : "appointments.externalId"
         },
         {
@@ -22,7 +22,7 @@
       "subject" : "org.motechproject.appointments.api.Appointment.Reminder",
       "eventParameters" : [
         {
-          "eventKey" : "external.id",
+          "eventKey" : "externalId",
           "displayName" : "appointments.externalId"
         },
         {

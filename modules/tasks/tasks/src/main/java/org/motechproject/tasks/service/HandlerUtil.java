@@ -31,12 +31,18 @@ final class HandlerUtil {
         String[] fields = key.split("\\.");
         Object current = object;
 
-        for (String f : fields) {
-            Method method = current.getClass().getMethod("get" + WordUtils.capitalize(f));
-            current = method.invoke(current);
+        for (String field : fields) {
+            if (current == null) {
+                throw new IllegalStateException("Field on path is null");
+            } else if (current instanceof Map) {
+                current = ((Map) current).get(field);
+            } else {
+                Method method = current.getClass().getMethod("get" + WordUtils.capitalize(field));
+                current = method.invoke(current);
+            }
         }
 
-        return current.toString();
+        return current != null ? current.toString() : "";
     }
 
     public static TaskAdditionalData findAdditionalData(Task task, KeyInformation key) {
@@ -55,17 +61,11 @@ final class HandlerUtil {
         return taskAdditionalData;
     }
 
-    public static String getTriggerKey(MotechEvent event, KeyInformation key) {
+    public static String getTriggerKey(MotechEvent event, KeyInformation key) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String value = "";
 
-        if (event.getParameters() != null && event.getParameters().containsKey(key.getEventKey())) {
-            Object obj = event.getParameters().get(key.getEventKey());
-
-            if (obj == null) {
-                obj = "";
-            }
-
-            value = String.valueOf(obj);
+        if (event.getParameters() != null) {
+            value = getFieldValue(event.getParameters(), key.getEventKey());
         }
 
         return value;

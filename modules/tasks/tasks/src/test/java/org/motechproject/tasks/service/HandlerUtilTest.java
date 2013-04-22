@@ -35,7 +35,7 @@ import static org.motechproject.tasks.service.HandlerUtil.getKeys;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 
 public class HandlerUtilTest {
-    private static final String EVENT_KEY = "eventKey";
+    private static final String EVENT_KEY = "event.key";
     private static final String OBJECT_TYPE = "Test";
     private static final Long OBJECT_ID = 1L;
     private static final String DATA_PROVIDER_ID = "123456789";
@@ -92,8 +92,8 @@ public class HandlerUtilTest {
         assertEquals(taskAdditionalData, findAdditionalData(task, key));
     }
 
-    @Test
-    public void testGetTriggerKey() {
+    @Test(expected = IllegalStateException.class)
+    public void testGetTriggerKey() throws Exception {
         String empty = "";
         Map<String, Object> parameters = new HashMap<>();
 
@@ -107,15 +107,16 @@ public class HandlerUtilTest {
         when(event.getParameters()).thenReturn(parameters);
         when(key.getEventKey()).thenReturn(EVENT_KEY);
 
-        assertEquals(empty, getTriggerKey(event, key));
+        Map<String, String> child = new HashMap<>();
+        child.put("key", EVENT_KEY_VALUE);
 
-        parameters.put(EVENT_KEY, null);
-
-        assertEquals(empty, getTriggerKey(event, key));
-
-        parameters.put(EVENT_KEY, EVENT_KEY_VALUE);
+        parameters.put("event", child);
 
         assertEquals(EVENT_KEY_VALUE, getTriggerKey(event, key));
+
+        parameters.clear();
+
+        getTriggerKey(event, key);
     }
 
     @Test
