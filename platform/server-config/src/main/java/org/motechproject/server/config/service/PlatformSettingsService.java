@@ -14,6 +14,7 @@ public interface PlatformSettingsService {
     String SETTINGS_FILE_NAME = "motech-settings.conf";
     String ACTIVEMQ_FILE_NAME = "activemq.properties";
     String ACTIVEMQ_CACHE_NAME = "ActiveMqSettings";
+    String BUNDLE_CACHE_NAME = "BundleSettings";
 
     MotechSettings getPlatformSettings();
 
@@ -60,5 +61,9 @@ public interface PlatformSettingsService {
     Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException;
 
     void evictMotechSettingsCache();
+
+    void evictActiveMqSettingsCache();
+
+    void evictBundleSettingsCache();
 
 }

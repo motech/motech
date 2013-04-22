@@ -23,6 +23,8 @@
                       p:name="MotechSettings"/>
                 <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
                       p:name="ActiveMqSettings"/>
+                <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
+                      p:name="BundleSettings"/>
             </set>
         </property>
     </bean>
