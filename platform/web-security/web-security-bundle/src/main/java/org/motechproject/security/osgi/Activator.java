@@ -35,9 +35,13 @@ public class Activator implements BundleActivator {
     private static BundleContext bundleContext;
     private static DelegatingFilterProxy filter;
 
+    public static void setBundleContext(BundleContext context) {
+        bundleContext = context;
+    }
+
     @Override
     public void start(BundleContext context) {
-        bundleContext = context;
+        setBundleContext(context);
 
         this.httpServiceTracker = new ServiceTracker(context,
                 ExtHttpService.class.getName(), null) {

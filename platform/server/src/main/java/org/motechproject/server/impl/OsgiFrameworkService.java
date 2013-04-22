@@ -85,6 +85,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private boolean httpServiceRegistered = false;
     private boolean startupEventReceived = false;
 
+    private final Object lock = new Object();
+
     /**
      * Initialize, install and start bundles and the OSGi framework
      */
@@ -121,9 +123,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
     }
 
-    private synchronized void startupModules() {
-        if (httpServiceRegistered && startupEventReceived) {
-            startBundles(MODULE_BUNDLES);
+    private void startupModules() {
+        synchronized (lock) {
+            if (httpServiceRegistered && startupEventReceived) {
+                startBundles(MODULE_BUNDLES);
+            }
         }
     }
 
@@ -393,7 +397,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         String result = null;
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             StringBuilder sb = new StringBuilder(externalBundleFolder);
-                if (File.separator != null && !externalBundleFolder.endsWith(File.separator)) {
+                if (!externalBundleFolder.endsWith(File.separator)) {
                     sb.append(File.separatorChar);
                 }
             sb.append(fragmentSubFolder);
@@ -445,12 +449,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public void httpServiceRegistered() {
-        httpServiceRegistered = true;
+        synchronized (lock) {
+            httpServiceRegistered = true;
+        }
         startupModules();
     }
 
     public void allowStartup() {
-        startupEventReceived = true;
+        synchronized (lock) {
+            startupEventReceived = true;
+        }
         startupModules();
     }
 
