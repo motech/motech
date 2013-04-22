@@ -24,6 +24,7 @@ import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
+import org.motechproject.testing.utils.TestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -91,12 +92,13 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         params.put("userId", "user123");
         CallRequest callRequest = new CallRequest("phonenumber", params, "someCallBackChannel");
 
-        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        String expectedResponse = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "  <Gather method=\"POST\" action=\"http://localhost:%d/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
                 "    <Say>Hello Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
-                "</Response>";
+                "</Response>", TestContext.getVerboicePort());
+
         HttpClient verboiceIvrController = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&ln=en&CallSid=" + callRequest.getCallId();
         String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -134,11 +136,12 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     public void shouldDialAndTestForDialStatus() throws Exception {
         createTreeWithDialPrompt();
 
-        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        String expectedResponse = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "  <Say>Some Message</Say>\n" +
-                "  <Dial callerId=\"callerNumber\" action=\"http://localhost:7080/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial\">othernumber</Dial>\n" +
-                "</Response>";
+                "  <Dial callerId=\"callerNumber\" action=\"http://localhost:%d/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial\">othernumber</Dial>\n" +
+                "</Response>", TestContext.getVerboicePort());
+
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithDial&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -153,13 +156,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     public void shouldRedirectOnNoInputTransitionIfSuchTransitionExists() throws Exception {
         createTreeWithNoInputRedirect();
 
-        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        String expectedResponse = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect\" numDigits=\"1\" timeout=\"5\" finishOnKey=\"\">\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:%d/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect\" numDigits=\"1\" timeout=\"5\" finishOnKey=\"\">\n" +
                 "    <Say>Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
-                "  <Redirect method=\"POST\">http://localhost:7080/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;Digits=</Redirect>" +
-                "</Response>";
+                "  <Redirect method=\"POST\">http://localhost:%d/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;Digits=</Redirect>" +
+                "</Response>", TestContext.getVerboicePort(), TestContext.getVerboicePort());
+
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -179,14 +183,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     public void shouldPlayNoticePromptsBeforeTransitionMenu() throws Exception {
         createTreeWithNoticePrompts();
 
-        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        String expectedResponse = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "  <Say>Please listen carefully</Say>\n" +
                 "  <Say>You wont be able to give any input while this is playing</Say>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "  <Gather method=\"POST\" action=\"http://localhost:%d/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
                 "    <Say>Hello Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
-                "</Response>";
+                "</Response>", TestContext.getVerboicePort());
 
         HttpClient verboiceIvrController = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree" + "&ln=en";

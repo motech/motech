@@ -5,6 +5,7 @@ import org.apache.http.HttpStatus;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
+import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
@@ -22,12 +23,14 @@ public class KookooIvrServiceBundleIT extends BaseOsgiIT {
 
 
     public void testThatKooKooServiceUrlIsAvailable() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient().get("http://localhost:8080/kookoo/kookoo/status");
+        HttpResponse response = new PollingHttpClient()
+                .get(String.format("http://localhost:%d/kookoo/kookoo/status", TestContext.getJettyPort()));
         assertEquals(HttpStatus.SC_OK,response.getStatusLine().getStatusCode());
     }
 
     public void testThatKooKooIvrIsAvailable() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient().get("http://localhost:8080/kookoo/kookoo/ivr");
+        HttpResponse response = new PollingHttpClient()
+                .get(String.format("http://localhost:%d/kookoo/kookoo/ivr", TestContext.getJettyPort()));
         assertEquals(HttpStatus.SC_OK,response.getStatusLine().getStatusCode());
     }
 
