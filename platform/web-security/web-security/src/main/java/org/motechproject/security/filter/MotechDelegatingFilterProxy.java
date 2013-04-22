@@ -57,7 +57,9 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         File adminModeFile = new File(String.format("%s/.motech/%s", System.getProperty("user.home"), ADMIN_MODE_FILE));
         if (adminModeFile.exists()) {
             try (InputStream in = new FileInputStream(adminModeFile)) {
-                p.load(new InputStreamReader(in));
+                try (InputStreamReader inputStreamReader = new InputStreamReader(in)) {
+                    p.load(inputStreamReader);
+                }
                 adminModeProperty = Boolean.valueOf(p.getProperty("admin.mode"));
 
                 adminModeFile.delete();

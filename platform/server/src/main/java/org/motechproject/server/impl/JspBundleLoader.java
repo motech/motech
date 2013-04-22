@@ -128,9 +128,10 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                             p.load(fileInputStream);
                         }
                     }
-
-                    p.load(new InputStreamReader(msgUrl.openStream()));
-                    logger.debug("Loaded " + msgUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                    try (InputStreamReader inputStreamReader = new InputStreamReader(msgUrl.openStream())) {
+                        p.load(inputStreamReader);
+                        logger.debug("Loaded " + msgUrl.getFile() + " from [" + bundle.getLocation() + "]");
+                    }
 
                     try (FileOutputStream output = new FileOutputStream(msgDestFile)) {
                         p.store(output, null);

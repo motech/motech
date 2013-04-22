@@ -46,9 +46,9 @@ public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface {
      * @throws java.io.IOException
      */
     public void addOrUpdateRule(File ruleFile, String bundleSymbolicName, ClassLoader... cl) throws IOException {
-        InputStream inputStream = new FileInputStream(ruleFile);
-        addOrUpdateRule(ruleFile.getName(), bundleSymbolicName, inputStream, cl);
-        inputStream.close();
+        try (InputStream inputStream = new FileInputStream(ruleFile)) {
+             addOrUpdateRule(ruleFile.getName(), bundleSymbolicName, inputStream, cl);
+        }
     }
 
     /**

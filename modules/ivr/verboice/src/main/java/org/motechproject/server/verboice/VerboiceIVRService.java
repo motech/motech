@@ -63,7 +63,7 @@ public class VerboiceIVRService implements IVRService {
                 } catch (JsonParseException e) {
                     log.error("Unable to parse response from Verboice: " + responseBody);
                 }
-                if (response.getCallId() != null) {
+                if (response != null && response.getCallId() != null) {
                     flowSessionService.updateSessionId(session.getSessionId(), response.getCallId());
                 }
             }

@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
 
@@ -143,11 +142,11 @@ public class VerboiceIVRController {
     }
 
     private FlowSession setCustomParams(FlowSession session, HttpServletRequest request) {
-        Map params = request.getParameterMap();
-        Set<String> keys = params.keySet();
-        for (String key : keys) {
-            if (!asList(VERBOICE_CALL_SID, "AccountSid", VERBOICE_FROM_PHONE_PARAM, "To", "CallStatus", "ApiVersion", "Direction", "ForwardedFrom", "CallerName", "FromCity", "FromState", "FromZip", "FromCountry", "ToCity", "ToState", "ToZip", "ToCountry", "ln").contains(key)) {
-                session.set(key, (Serializable) params.get(key));
+
+        Map <String, Object> params = request.getParameterMap();
+        for (Map.Entry<String,Object> entry : params.entrySet()) {
+            if (!asList(VERBOICE_CALL_SID, "AccountSid", VERBOICE_FROM_PHONE_PARAM, "To", "CallStatus", "ApiVersion", "Direction", "ForwardedFrom", "CallerName", "FromCity", "FromState", "FromZip", "FromCountry", "ToCity", "ToState", "ToZip", "ToCountry", "ln").contains(entry.getKey())) {
+                session.set(entry.getKey(), (Serializable) entry.getValue());
             }
         }
         return session;

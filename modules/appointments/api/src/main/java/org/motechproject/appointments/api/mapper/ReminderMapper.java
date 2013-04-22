@@ -26,10 +26,10 @@ public class ReminderMapper {
             return (intervalCount * 60L * 60);
         }
         if (ReminderConfiguration.IntervalUnit.DAYS == intervalUnit) {
-            return (intervalCount * 60 * 60 * 24);
+            return (intervalCount * 60L * 60 * 24);
         }
         if (IntervalUnit.WEEKS == intervalUnit) {
-            return (intervalCount * 60 * 60 * 24 * 7);
+            return (intervalCount * 60L * 60 * 24 * 7);
         }
         return (long) -1;
     }

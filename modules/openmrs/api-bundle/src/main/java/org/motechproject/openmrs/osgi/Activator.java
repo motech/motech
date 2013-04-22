@@ -20,9 +20,13 @@ public class Activator implements BundleActivator {
 
     private static BundleContext bundleContext;
 
-    @Override
-    public void start(BundleContext context) {
+    public static void setBundleContext(BundleContext context) {
         bundleContext = context;
+    }
+
+    @Override
+    public void start(BundleContext context)  {
+        setBundleContext(context);
 
         this.tracker = new ServiceTracker(context,
                 HttpService.class.getName(), null) {

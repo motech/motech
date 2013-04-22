@@ -134,7 +134,7 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
 
     @Override
     public <T> T getBean(Class<T> requiredType) throws BeansException {
-        return getBean(requiredType);
+        return applicationContext.getBean(requiredType);
     }
 
     @Override
