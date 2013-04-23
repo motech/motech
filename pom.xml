@@ -33,7 +33,7 @@
         <pmd.skip>${check.code.skip}</pmd.skip>
         <checkstyle.skip>${check.code.skip}</checkstyle.skip>
         <jslint.enable>true</jslint.enable>
-        <unitTests.skip>${maven.test.skip}</unitTests.skip>
+        <unitTests.skip>${skipTests}</unitTests.skip>
 
         <scm.connection>scm:git:https://code.google.com/p/motech</scm.connection>
         <scm.developerConnection>scm:git:https://code.google.com/p/motech</scm.developerConnection>
