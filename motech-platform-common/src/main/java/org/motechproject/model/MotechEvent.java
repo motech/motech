@@ -41,18 +41,19 @@ import java.util.Map;
  * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
  * <p></p>
  * This class is immutable
- *
  */
 public final class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
     private String subject;
     private Map<String, Object> parameters;
+    private Date scheduledTime;
     private Date endTime;
     private boolean isLastEvent;
 
     /**
      * Constructor with subject only (parameters can be added interactively)
+     *
      * @param subject - event destination
      * @throws IllegalArgumentException
      */
@@ -74,6 +75,7 @@ public final class MotechEvent implements Serializable {
 
     /**
      * Constructor
+     *
      * @param subject    - event type: Pill Reminder, Appointment Reminder ...
      * @param parameters - a Map<String, Object> of additional parameters
      * @throws IllegalArgumentException
@@ -89,10 +91,19 @@ public final class MotechEvent implements Serializable {
 
     /**
      * Sets empty HashMap if parameters=null
+     *
      * @return
      */
     public Map<String, Object> getParameters() {
         return parameters != null ? parameters : (parameters = new HashMap<String, Object>());
+    }
+
+    public Date getScheduledTime() {
+        return scheduledTime;
+    }
+
+    public void setScheduledTime(Date scheduledTime) {
+        this.scheduledTime = scheduledTime;
     }
 
     public Date getEndTime() {
