@@ -21,6 +21,12 @@ public final class EventDataKeys {
     public static final String FORM_ID = "formId";
     public static final String CASE_IDS = "caseIds";
 
+    //FullFormsEvent
+    public static final String ELEMENT_NAME = "elementName";
+    public static final String SUB_ELEMENTS = "subElements";
+    public static final String ATTRIBUTES = "attributes";
+    public static final String VALUE = "value";
+
     private EventDataKeys() {
     }
 }

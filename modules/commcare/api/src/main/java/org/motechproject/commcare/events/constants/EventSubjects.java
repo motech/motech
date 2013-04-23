@@ -12,6 +12,10 @@ public final class EventSubjects {
 
     public static final String FORM_STUB_FAIL_EVENT = FORM_STUB_EVENT + ".failed";
 
+    public static final String FORMS_EVENT = BASE_SUBJECT + "forms";
+
+    public static final String FORMS_FAIL_EVENT = FORMS_EVENT + ".failed";
+
     private EventSubjects() {
     }
 }
