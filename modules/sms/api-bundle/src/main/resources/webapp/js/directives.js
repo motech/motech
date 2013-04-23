@@ -91,10 +91,54 @@
         };
     });
 
-    widgetModule.directive('loggingGrid', function ($compile, $http, $templateCache) {
+    widgetModule.directive('gridDatePickerFrom', function() {
         return {
             restrict: 'A',
-            link: function (scope, element, attrs) {
+            link: function(scope, element, attrs) {
+                var elem = angular.element(element);
+
+                var endDateTextBox = angular.element('#dateTimeTo');
+
+                elem.datetimepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: +0,
+                    timeFormat: "HH:mm:ss",
+                    onSelect: function (selectedDateTime){
+                        endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
+                    }
+                });
+            }
+        }
+    });
+
+    widgetModule.directive('gridDatePickerTo', function() {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var elem = angular.element(element);
+
+                var startDateTextBox = angular.element('#dateTimeFrom');
+
+                elem.datetimepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: +0,
+                    timeFormat: "HH:mm:ss",
+                    onSelect: function (selectedDateTime){
+                        startDateTextBox.datetimepicker('option', 'maxDate', elem.datetimepicker('getDate') );
+                    }
+                });
+            }
+        }
+    });
+
+    widgetModule.directive('loggingGrid', function($compile, $http, $templateCache) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
                 var elem = angular.element(element);
                 var filters;
 
@@ -159,28 +203,6 @@
 
                        var startDateTextBox = angular.element('#dateTimeFrom');
                        var endDateTextBox = angular.element('#dateTimeTo');
-
-                       startDateTextBox.datetimepicker({
-                           dateFormat: "yy-mm-dd",
-                           changeMonth: true,
-                           changeYear: true,
-                           maxDate: +0,
-                           timeFormat: "HH:mm:ss",
-                           onSelect: function (selectedDateTime){
-                               endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate') );
-                           }
-                       });
-
-                       endDateTextBox.datetimepicker({
-                           dateFormat: "yy-mm-dd",
-                           changeMonth: true,
-                           changeYear: true,
-                           maxDate: +0,
-                           timeFormat: "HH:mm:ss",
-                           onSelect: function (selectedDateTime){
-                               startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate') );
-                           }
-                       });
                     }
                 });
             }
