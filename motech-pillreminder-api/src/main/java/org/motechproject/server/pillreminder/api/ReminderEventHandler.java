@@ -62,6 +62,7 @@ public class ReminderEventHandler extends MotechObject {
 
     private MotechEvent createNewMotechEvent(Dosage dosage, PillRegimen pillRegimen, MotechEvent eventRaisedByScheduler, String subject) {
         MotechEvent motechEvent = new MotechEvent(subject);
+        motechEvent.setScheduledTime(eventRaisedByScheduler.getScheduledTime());
         Map<String, Object> eventParams = motechEvent.getParameters();
         eventParams.putAll(eventRaisedByScheduler.getParameters());
         eventParams.put(EventKeys.PILLREMINDER_TIMES_SENT, pillRegimen.numberOfTimesPillRemindersSentFor(dosage));
