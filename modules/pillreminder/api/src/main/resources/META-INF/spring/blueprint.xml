@@ -2,43 +2,23 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-    <import resource="classpath*:META-INF/motech/applicationPillReminderAPI.xml"/>
-
-    <context:annotation-config/>
-
-    <bean id="bundleWrapper" class="org.motechproject.osgi.web.BundleContextWrapper"/>
-
-    <bean id="messagecampaignUIServiceTracker" class="org.motechproject.osgi.web.UIServiceTracker">
-        <constructor-arg name="wrapper" ref="bundleWrapper"/>
-        <constructor-arg name="moduleRegistrationData" ref="pillreminderRegistrationData"/>
-    </bean>
-
-    <bean id="pillreminderRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="moduleName" value="pillreminder"/>
-        <constructor-arg name="i18n">
-            <map>
-                <entry key="messages" value="../pillreminder/resource/bundles/"/>
-            </map>
-        </constructor-arg>
-    </bean>
+    <import resource="classpath*:META-INF/motech/applicationPillReminder.xml"/>
 
     <osgi:service id="pillReminderServiceImplOsgi" auto-export="interfaces" ref="pillReminderServiceImpl"
                   interface="org.motechproject.server.pillreminder.api.service.PillReminderService"/>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.MotechSchedulerService" />
+                    interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.listener.EventRelay" />
+                    interface="org.motechproject.event.listener.EventRelay"/>
 
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
