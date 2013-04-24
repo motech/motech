@@ -16,6 +16,4 @@
         <constructor-arg value="motech-appointments"/>
     </bean>
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
-
 </beans>
