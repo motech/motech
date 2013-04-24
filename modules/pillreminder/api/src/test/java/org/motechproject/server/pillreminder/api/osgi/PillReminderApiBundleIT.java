@@ -44,7 +44,7 @@ public class PillReminderApiBundleIT extends BaseOsgiIT {
     @Override
     protected List<String> getImports() {
         return asList(
-                "org.motechproject.server.pillreminder.api.service"
+                "org.motechproject.server.pillreminder.api.service","org.motechproject.osgi.web"
         );
     }
 }
