@@ -37,6 +37,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -112,7 +118,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
+                        <Context-File>META-INF/servlet/applicationPillReminder-servlet.xml</Context-File>
                         <Context-Path>pillreminder</Context-Path>
                         <Resource-Path>pillreminder/resource</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
@@ -126,6 +132,7 @@
                             org.motechproject.event.listener,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.osgi.web,
                             *
                         </Import-Package>
                     </instructions>
