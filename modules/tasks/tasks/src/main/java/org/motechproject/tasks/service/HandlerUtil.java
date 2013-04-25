@@ -7,6 +7,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
@@ -15,19 +16,12 @@ import org.motechproject.tasks.domain.TaskAdditionalData;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 final class HandlerUtil {
-    public static final String TRIGGER_PREFIX = "trigger";
-    public static final String ADDITIONAL_DATA_PREFIX = "ad";
-
     private HandlerUtil() {
     }
 
@@ -98,22 +92,10 @@ final class HandlerUtil {
         String value = "";
 
         if (event.getParameters() != null) {
-            value = getFieldValue(event.getParameters(), key.getEventKey()).toString();
+            value = getFieldValue(event.getParameters(), key.getKey()).toString();
         }
 
         return value;
-    }
-
-    public static List<KeyInformation> getKeys(String input) {
-        List<KeyInformation> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\{\\{(.*?)\\}\\}");
-        Matcher matcher = pattern.matcher(isEmpty(input) ? "" : input);
-
-        while (matcher.find()) {
-            keys.add(new KeyInformation(matcher.group(1)));
-        }
-
-        return keys;
     }
 
     public static boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {

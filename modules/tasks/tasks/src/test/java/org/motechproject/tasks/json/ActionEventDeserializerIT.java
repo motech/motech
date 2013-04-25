@@ -28,7 +28,8 @@ import static org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ActionEventDeserializerIT {
     private Map<Type, Object> typeAdapters = new HashMap<>();
-    private Type type = new TypeToken<Channel>() {}.getType();
+    private Type type = new TypeToken<Channel>() {
+    }.getType();
     private MotechJsonReader reader = new MotechJsonReader();
     private String channelAsString;
     private List<ActionEvent> expected;

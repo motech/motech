@@ -6,6 +6,7 @@ import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 
@@ -21,6 +22,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
+import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
@@ -42,7 +45,6 @@ import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
 import static org.motechproject.tasks.service.HandlerUtil.convertTo;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
-import static org.motechproject.tasks.service.HandlerUtil.getKeys;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 
 public class HandlerUtilTest {
@@ -50,10 +52,8 @@ public class HandlerUtilTest {
     private static final String OBJECT_TYPE = "Test";
     private static final Long OBJECT_ID = 1L;
     private static final String DATA_PROVIDER_ID = "123456789";
-    private static final String EVENT_KEY_VALUE = "event.key.value";
-
-    private static final String KEY_1 = "trigger.DosageID";
-    private static final String KEY_2 = "trigger.ExternalID";
+    private static final String EVENT_KEY_VALUE = "trigger.event.key.value";
+    private static final String KEY_VALUE = "key";
 
     private class HandlerUtilObjectTest {
         private int id;
@@ -95,9 +95,8 @@ public class HandlerUtilTest {
     @Test
     public void testFindAdditionalData() {
         Task task = mock(Task.class);
-        KeyInformation key = mock(KeyInformation.class);
+        KeyInformation key = KeyInformation.parse(String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, OBJECT_ID, KEY_VALUE));
 
-        when(key.getDataProviderId()).thenReturn(DATA_PROVIDER_ID);
         when(task.containsAdditionalData(DATA_PROVIDER_ID)).thenReturn(false);
 
         assertNull(findAdditionalData(task, key));
@@ -108,9 +107,6 @@ public class HandlerUtilTest {
 
         when(task.containsAdditionalData(DATA_PROVIDER_ID)).thenReturn(true);
         when(task.getAdditionalData(DATA_PROVIDER_ID)).thenReturn(asList(taskAdditionalData));
-
-        when(key.getObjectId()).thenReturn(OBJECT_ID);
-        when(key.getObjectType()).thenReturn(OBJECT_TYPE);
 
         assertNull(findAdditionalData(task, key));
 
@@ -126,14 +122,13 @@ public class HandlerUtilTest {
         Map<String, Object> parameters = new HashMap<>();
 
         MotechEvent event = mock(MotechEvent.class);
-        KeyInformation key = mock(KeyInformation.class);
+        KeyInformation key = KeyInformation.parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
 
         when(event.getParameters()).thenReturn(null);
 
         assertEquals(empty, getTriggerKey(event, key));
 
         when(event.getParameters()).thenReturn(parameters);
-        when(key.getEventKey()).thenReturn(EVENT_KEY);
 
         Map<String, String> child = new HashMap<>();
         child.put("key", EVENT_KEY_VALUE);
@@ -145,22 +140,6 @@ public class HandlerUtilTest {
         parameters.clear();
 
         getTriggerKey(event, key);
-    }
-
-    @Test
-    public void testGetKeys() {
-        List<KeyInformation> expected = new ArrayList<>();
-        expected.add(new KeyInformation(KEY_1));
-        expected.add(new KeyInformation(KEY_2));
-
-        assertTrue(getKeys(null).isEmpty());
-        assertTrue(getKeys("").isEmpty());
-
-        String input = String.format("abc {{%s}} def {{%s}} ghi", KEY_1, KEY_2);
-
-        List<KeyInformation> actual = getKeys(input);
-
-        assertEquals(expected, actual);
     }
 
     @Test

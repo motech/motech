@@ -1,3 +1,13 @@
+<!---------------------  Validation Errors  --------------------->
+<div ng-show="task.validationErrors.length > 0" class="alert alert-error">
+    <strong>{{msg('header.taskErrors')}}:</strong>
+    <ul>
+        <li ng-repeat="error in task.validationErrors">
+            {{getTaskValidationError(error)}}
+        </li>
+    </ul>
+</div>
+
 <!------------------------  Create Task  ------------------------>
 <div ng-hide="task._id" class="box-header" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">{{msg('section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
 <div ng-show="task._id" class="box-header">{{msg('section.editTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
@@ -82,7 +92,7 @@
     </div>
 
     <!------------------------  Build Task  ------------------------>
-    <div ng-show="task.trigger != undefined && task.action != undefined">
+    <div ng-show="selectedTrigger != undefined && selectedAction != undefined">
         <div class="well2 container-fluid margin-center margin-before">
             <h3 ng-hide="task._id" class="centered">{{msg('section.buildAction')}}</h3>
             <h3 ng-show="task._id" class="centered">{{msg('section.editAction')}}</h3>
@@ -98,9 +108,9 @@
                             <div class="control-group">
                                 <h4>{{msg(selectedTrigger.displayName)}} <img class="pull-right arrow-drop2" src="../tasks/img/arrow-drop2.png" width="85" height="57"></h4>
                                 <div ng-show="selectedAction.description">{{msg(selectedTrigger.description)}}</div>
-                                <p>{{msg('info.dragFieldBuildAction')}}</p>
+                                <p ng-show="selectedTrigger.eventParameters.length > 0">{{msg('info.dragFieldBuildAction')}}</p>
                             </div>
-                            <div class="control-group move-element">
+                            <div class="control-group move-element" ng-show="selectedTrigger.eventParameters.length > 0">
                                 <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                             </div>
                             <!------------------  Include Additional Data  ------------------------>
@@ -182,7 +192,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="control-group move-element margin-before2" ng-hide="object.displayName == undefined">
+                                                    <div class="control-group move-element margin-before2" ng-hide="object.fields == 0">
                                                         <p><strong>{{msg('subsubsection.objectFields')}}</strong></p>
                                                         <span contenteditable="false" ng-repeat="i in object.fields" class="badge badge-warning triggerField" draggable
                                                               data-prefix="ad" data-source="{{dataSource.name}}" data-object="{{object.displayName}}" data-object-type="{{object.type}}"

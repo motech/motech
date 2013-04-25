@@ -30,7 +30,6 @@ public class MethodHandlerTest {
     @Test
     public void shouldNotBeParametrized() {
         assertFalse(new MethodHandler(null, null).isParametrized());
-        assertFalse(new MethodHandler(new ActionEvent(), null).isParametrized());
         assertFalse(new MethodHandler(new ActionEvent(null, null, null, new TreeSet<ActionParameter>()), null).isParametrized());
     }
 

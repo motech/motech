@@ -8,12 +8,14 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
 import org.motechproject.tasks.ex.TaskException;
+import org.motechproject.tasks.ex.TaskTriggerException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang.exception.ExceptionUtils.getStackTrace;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +62,7 @@ public class TaskActivityServiceImplTest {
         assertNotNull(errors);
 
         for (TaskActivity error : errors) {
-            assertActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, error);
+            assertActivity(ERROR.getValue(), ERROR_FIELD, TASK_ID, ERROR, null, error);
         }
     }
 
@@ -84,20 +86,22 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(messageKey, new String[0], TASK_ID, TaskActivityType.ERROR, captor.getValue());
+        TaskActivity actual = captor.getValue();
+        assertActivity(messageKey, new String[0], TASK_ID, TaskActivityType.ERROR, actual.getStackTraceElement(), actual);
     }
 
     @Test
     public void shouldAddErrorActivityWithTaskException() {
         String messageKey = "error.notFoundTrigger";
+        TaskException exception = new TaskException(messageKey, ERROR_FIELD);
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
-        activityService.addError(task, new TaskException(messageKey, ERROR_FIELD));
+        activityService.addError(task, exception);
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.ERROR, getStackTrace(exception), captor.getValue());
     }
 
 
@@ -111,7 +115,7 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(messageKey, null, TASK_ID, TaskActivityType.SUCCESS, captor.getValue());
+        assertActivity(messageKey, new String[0], TASK_ID, TaskActivityType.SUCCESS, null, captor.getValue());
     }
 
     @Test
@@ -124,7 +128,7 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(messageKey, null, TASK_ID, TaskActivityType.WARNING, captor.getValue());
+        assertActivity(messageKey, new String[0], TASK_ID, TaskActivityType.WARNING, null, captor.getValue());
     }
 
     @Test
@@ -137,7 +141,21 @@ public class TaskActivityServiceImplTest {
 
         verify(allTaskActivities).add(captor.capture());
 
-        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, captor.getValue());
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, null, captor.getValue());
+    }
+
+    @Test
+    public void shouldAddTaskWarningActivityWithGivenException() {
+        TaskTriggerException exception = new TaskTriggerException("trigger.exception", new TaskException("task.exception"));
+        String messageKey = "warning.manipulation";
+
+        ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
+
+        activityService.addWarning(task, messageKey, ERROR_FIELD[0], exception);
+
+        verify(allTaskActivities).add(captor.capture());
+
+        assertActivity(messageKey, ERROR_FIELD, TASK_ID, TaskActivityType.WARNING, getStackTrace(exception.getCause()), captor.getValue());
     }
 
     @Test
@@ -178,12 +196,14 @@ public class TaskActivityServiceImplTest {
         assertEquals(activities, actual);
     }
 
-    private void assertActivity(String messageKey, String[] field, String task, TaskActivityType activityType, TaskActivity activity) {
+    private void assertActivity(String messageKey, String[] field, String task, TaskActivityType activityType,
+                                String stackTraceElement, TaskActivity activity) {
         assertNotNull(activity);
 
         assertEquals(messageKey, activity.getMessage());
         assertEquals(task, activity.getTask());
         assertEquals(activityType, activity.getActivityType());
+        assertEquals(stackTraceElement, activity.getStackTraceElement());
 
         assertArrayEquals(field, activity.getFields());
     }

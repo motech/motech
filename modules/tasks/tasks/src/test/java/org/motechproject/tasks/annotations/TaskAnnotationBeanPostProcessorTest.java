@@ -170,7 +170,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         ActionEvent actualActionEvent = (ActionEvent) find(actualChannel.getActionTaskEvents(), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return object instanceof ActionEvent && ((ActionEvent) object).hasService();
+                return object instanceof ActionEvent && ((ActionEvent) object).hasService() && ((ActionEvent) object).getActionParameters().size() > 1;
             }
         });
 

@@ -15,9 +15,9 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.EventKeys;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -42,11 +42,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_FAILURE_DATE;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_FAILURE_NUMBER;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_MESSAGE;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_STACK_TRACE;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TASK_ID;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TASK_NAME;
+import static org.motechproject.tasks.events.constants.EventDataKeys.TASK_FAIL_TRIGGER_DISABLED;
+import static org.motechproject.tasks.events.constants.EventSubjects.ACTION_FAILED_SUBJECT;
+import static org.motechproject.tasks.events.constants.EventSubjects.TRIGGER_FAILED_SUBJECT;
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
 import static org.motechproject.tasks.service.HandlerUtil.convertTo;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
-import static org.motechproject.tasks.service.HandlerUtil.getKeys;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -110,16 +118,16 @@ public class TaskTriggerHandler {
                 } catch (TaskActionException e) {
                     registerError(task, e);
                     Map<String, Object> eventParam = createEventParameters(task, e);
-                    eventRelay.sendEventMessage(new MotechEvent("ACTION_FAILED", eventParam));
+                    eventRelay.sendEventMessage(new MotechEvent(ACTION_FAILED_SUBJECT, eventParam));
                 } catch (TaskTriggerException e) {
                     registerError(task, e);
                     Map<String, Object> eventParam = createEventParameters(task, e);
-                    eventRelay.sendEventMessage(new MotechEvent("TRIGGER_FAILED", eventParam));
+                    eventRelay.sendEventMessage(new MotechEvent(TRIGGER_FAILED_SUBJECT, eventParam));
                 } catch (Exception e) {
                     TaskException exp = new TaskException("error.unrecognizedError", e);
                     registerError(task, exp);
                     Map<String, Object> eventParam = createEventParameters(task, exp);
-                    eventRelay.sendEventMessage(new MotechEvent("TRIGGER_FAILED", eventParam));
+                    eventRelay.sendEventMessage(new MotechEvent(TRIGGER_FAILED_SUBJECT, eventParam));
                 }
             }
         }
@@ -303,7 +311,7 @@ public class TaskTriggerHandler {
     }
 
     private Object getValue(String row, MotechEvent event, Task task) throws TaskTriggerException {
-        List<KeyInformation> keys = getKeys(row);
+        List<KeyInformation> keys = KeyInformation.parseAll(row);
         Object result = null;
 
         if (keys.isEmpty()) {
@@ -312,7 +320,7 @@ public class TaskTriggerHandler {
             KeyInformation rowKeyInfo = keys.get(0);
 
             if (rowKeyInfo.fromTrigger()) {
-                result = event.getParameters().get(rowKeyInfo.getEventKey());
+                result = event.getParameters().get(rowKeyInfo.getKey());
             } else if (rowKeyInfo.fromAdditionalData()) {
                 result = getAdditionalDataValue(event, task, rowKeyInfo);
             }
@@ -324,20 +332,20 @@ public class TaskTriggerHandler {
     private String replaceAll(String template, MotechEvent event, Task task) throws TaskTriggerException {
         String conversionTemplate = template;
 
-        for (KeyInformation key : getKeys(template)) {
+        for (KeyInformation key : KeyInformation.parseAll(template)) {
             String value = "";
 
             if (key.fromTrigger()) {
                 try {
                     value = getTriggerKey(event, key);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
+                    throw new TaskTriggerException("error.objectNotContainsField", e, key.getKey());
                 }
             } else if (key.fromAdditionalData()) {
                 value = getAdditionalDataValue(event, task, key).toString();
             }
 
-            String replacedValue = key.getManipulations() != null ? manipulateValue(value, key.getManipulations(), task) : value;
+            String replacedValue = !key.getManipulations().isEmpty() ? manipulateValue(value, key.getManipulations(), task) : value;
             conversionTemplate = conversionTemplate.replace(String.format("{{%s}}", key.getOriginalKey()), replacedValue);
         }
 
@@ -356,12 +364,12 @@ public class TaskTriggerHandler {
         }
 
         TaskAdditionalData ad = findAdditionalData(task, key);
-        KeyInformation adKey = new KeyInformation(ad.getLookupValue());
+        KeyInformation adKey = KeyInformation.parse(ad.getLookupValue());
 
         Map<String, String> lookupFields = new HashMap<>();
 
         if (adKey.fromTrigger()) {
-            lookupFields.put(ad.getLookupField(), event.getParameters().get(adKey.getEventKey()).toString());
+            lookupFields.put(ad.getLookupField(), event.getParameters().get(adKey.getKey()).toString());
         } else if (adKey.fromAdditionalData()) {
             String objectValue = getAdditionalDataValue(event, task, adKey).toString();
             lookupFields.put(ad.getLookupField(), objectValue);
@@ -384,12 +392,12 @@ public class TaskTriggerHandler {
         }
 
         try {
-            value = getFieldValue(found, key.getEventKey());
+            value = getFieldValue(found, key.getKey());
         } catch (Exception e) {
             if (ad.isFailIfDataNotFound()) {
-                throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
+                throw new TaskTriggerException("error.objectNotContainsField", e, key.getKey());
             } else {
-                activityService.addWarning(task, "warning.objectNotContainsField", key.getEventKey(), e);
+                activityService.addWarning(task, "warning.objectNotContainsField", key.getKey(), e);
                 value = "";
             }
         }
@@ -479,13 +487,13 @@ public class TaskTriggerHandler {
 
     private Map<String, Object> createEventParameters(Task task, TaskException e) {
         Map<String, Object> param = new HashMap<>();
-        param.put(EventKeys.TASK_FAIL_MESSAGE, e.getMessageKey());
-        param.put(EventKeys.TASK_FAIL_STACK_TRACE, ExceptionUtils.getStackTrace(e));
-        param.put(EventKeys.TASK_FAIL_FAILURE_DATE, DateTime.now());
-        param.put(EventKeys.TASK_FAIL_FAILURE_NUMBER, activityService.errorsFromLastRun(task));
-        param.put(EventKeys.TASK_FAIL_TRIGGER_DISABLED, task.isEnabled());
-        param.put(EventKeys.TASK_FAIL_TASK_ID, task.getId());
-        param.put(EventKeys.TASK_FAIL_TASK_NAME, task.getName());
+        param.put(TASK_FAIL_MESSAGE, e.getMessageKey());
+        param.put(TASK_FAIL_STACK_TRACE, ExceptionUtils.getStackTrace(e));
+        param.put(TASK_FAIL_FAILURE_DATE, DateTime.now());
+        param.put(TASK_FAIL_FAILURE_NUMBER, activityService.errorsFromLastRun(task));
+        param.put(TASK_FAIL_TRIGGER_DISABLED, task.isEnabled());
+        param.put(TASK_FAIL_TASK_ID, task.getId());
+        param.put(TASK_FAIL_TASK_NAME, task.getName());
         return param;
     }
 

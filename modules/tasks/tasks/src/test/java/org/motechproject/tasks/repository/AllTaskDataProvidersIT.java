@@ -19,6 +19,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
@@ -38,7 +40,7 @@ public class AllTaskDataProvidersIT extends SpringIntegrationTest {
         List<TaskDataProvider> expected = new ArrayList<>();
         expected.add(loadDataProvider());
 
-        allTaskDataProviders.addOrUpdate(expected.get(0));
+        assertFalse(allTaskDataProviders.addOrUpdate(expected.get(0)));
 
         List<TaskDataProvider> providers = allTaskDataProviders.getAll();
 
@@ -47,7 +49,7 @@ public class AllTaskDataProvidersIT extends SpringIntegrationTest {
         TaskDataProvider actual = providers.get(0);
         actual.getObjects().remove(2);
 
-        allTaskDataProviders.addOrUpdate(actual);
+        assertTrue(allTaskDataProviders.addOrUpdate(actual));
 
         providers = allTaskDataProviders.getAll();
 
@@ -59,7 +61,8 @@ public class AllTaskDataProvidersIT extends SpringIntegrationTest {
     private TaskDataProvider loadDataProvider() {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream mrsDataProviderStream = classLoader.getResourceAsStream("mrs-test-data-provider.json");
-        Type type = new TypeToken<TaskDataProvider>() { }.getType();
+        Type type = new TypeToken<TaskDataProvider>() {
+        }.getType();
 
         return (TaskDataProvider) motechJsonReader.readFromStream(mrsDataProviderStream, type);
     }

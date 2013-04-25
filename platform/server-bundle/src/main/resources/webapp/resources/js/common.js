@@ -17,7 +17,7 @@ var handleResponse = function(title, defaultMsg, response) {
 
         unblockUI();
 
-        if (responseData && responseData.startsWith('key:') && !responseData.endsWith('key')) {
+        if ((typeof(responseData) == 'string') && responseData.startsWith('key:') && !responseData.endsWith('key')) {
             msg = responseData.split(':')[1];
         } else if (defaultMsg) {
             msg = defaultMsg;

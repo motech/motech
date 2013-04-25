@@ -4,15 +4,17 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventDeserializer;
 import org.motechproject.tasks.repository.AllChannels;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.validation.ChannelValidator;
-import org.motechproject.tasks.validation.ValidationResult;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -30,8 +32,12 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
+import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 @Service("channelService")
 public class ChannelServiceImpl implements ChannelService {
@@ -44,6 +50,7 @@ public class ChannelServiceImpl implements ChannelService {
     private AllChannels allChannels;
     private MotechJsonReader motechJsonReader;
     private ResourceLoader resourceLoader;
+    private EventRelay eventRelay;
 
     private BundleContext bundleContext;
 
@@ -52,16 +59,17 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Autowired
-    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader) {
+    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay) {
         this.allChannels = allChannels;
+        this.eventRelay = eventRelay;
         this.resourceLoader = resourceLoader;
-
         this.motechJsonReader = new MotechJsonReader();
     }
 
     @Override
     public void registerChannel(final InputStream stream) {
-        Type type = new TypeToken<Channel>() {}.getType();
+        Type type = new TypeToken<Channel>() {
+        }.getType();
         StringWriter writer = new StringWriter();
 
         try {
@@ -76,14 +84,21 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public void addOrUpdate(Channel channel) {
-        ValidationResult result = ChannelValidator.validate(channel);
+        Set<TaskError> errors = ChannelValidator.validate(channel);
 
-        if (!result.isValid()) {
-            throw new ValidationException(ChannelValidator.CHANNEL, result.getTaskErrors());
+        if (!isEmpty(errors)) {
+            throw new ValidationException(ChannelValidator.CHANNEL, errors);
         }
 
-        allChannels.addOrUpdate(channel);
+        boolean update = allChannels.addOrUpdate(channel);
         LOG.info(String.format("Saved channel: %s", channel.getDisplayName()));
+
+        if (update) {
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(CHANNEL_MODULE_NAME, channel.getModuleName());
+
+            eventRelay.sendEventMessage(new MotechEvent(CHANNEL_UPDATE_SUBJECT, parameters));
+        }
     }
 
     @Override

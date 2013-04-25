@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+
 @TypeDiscriminator("doc.type == 'TaskDataProvider'")
 public class TaskDataProvider extends MotechBaseDataObject {
     private static final long serialVersionUID = -5427486904165895928L;
@@ -20,7 +22,37 @@ public class TaskDataProvider extends MotechBaseDataObject {
 
     public TaskDataProvider(String name, List<TaskDataProviderObject> objects) {
         this.name = name;
-        this.objects = objects;
+        this.objects = objects == null ? new ArrayList<TaskDataProviderObject>() : objects;
+    }
+
+    public boolean containsProviderObject(String type) {
+        boolean found = false;
+
+        for (TaskDataProviderObject object : getObjects()) {
+            if (equalsIgnoreCase(object.getType(), type)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public boolean containsProviderObjectLookup(String type, String lookupField) {
+        return getProviderObject(type).getLookupFields().contains(lookupField);
+    }
+
+    public TaskDataProviderObject getProviderObject(String type) {
+        TaskDataProviderObject found = null;
+
+        for (TaskDataProviderObject object : getObjects()) {
+            if (equalsIgnoreCase(object.getType(), type)) {
+                found = object;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public String getName() {
@@ -36,7 +68,11 @@ public class TaskDataProvider extends MotechBaseDataObject {
     }
 
     public void setObjects(List<TaskDataProviderObject> objects) {
-        this.objects = objects;
+        this.objects.clear();
+
+        if (objects != null) {
+            this.objects.addAll(objects);
+        }
     }
 
     @Override

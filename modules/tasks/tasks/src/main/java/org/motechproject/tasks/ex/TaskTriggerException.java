@@ -1,10 +1,7 @@
 package org.motechproject.tasks.ex;
 
 public class TaskTriggerException extends TaskException {
-
-    public TaskTriggerException(String messageKey) {
-        super(messageKey);
-    }
+    private static final long serialVersionUID = -4596985095010942897L;
 
     public TaskTriggerException(String messageKey, Throwable cause) {
         super(messageKey, cause);

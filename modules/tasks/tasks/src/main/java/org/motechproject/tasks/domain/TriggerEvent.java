@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+
 public class TriggerEvent extends TaskEvent {
     private static final long serialVersionUID = 4235157487991610105L;
 
@@ -13,9 +15,23 @@ public class TriggerEvent extends TaskEvent {
         this(null, null, null, null);
     }
 
-    public TriggerEvent(String description, String displayName, String subject, List<EventParameter> eventParameters) {
+    public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters) {
         super(description, displayName, subject);
         this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
+    }
+
+    @Override
+    public boolean containsParameter(String key) {
+        boolean found = false;
+
+        for (EventParameter param : getEventParameters()) {
+            if (equalsIgnoreCase(param.getEventKey(), key)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public List<EventParameter> getEventParameters() {
@@ -23,8 +39,9 @@ public class TriggerEvent extends TaskEvent {
     }
 
     public void setEventParameters(List<EventParameter> eventParameters) {
+        this.eventParameters.clear();
+
         if (eventParameters != null) {
-            this.eventParameters.clear();
             this.eventParameters.addAll(eventParameters);
         }
     }

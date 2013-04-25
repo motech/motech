@@ -19,10 +19,11 @@ public class AllTaskDataProviders extends MotechBaseRepository<TaskDataProvider>
         super(TaskDataProvider.class, connector);
     }
 
-    public void addOrUpdate(TaskDataProvider entity) {
+    public boolean addOrUpdate(TaskDataProvider entity) {
         TaskDataProvider provider = byName(entity.getName());
+        boolean exists = provider != null;
 
-        if (provider != null) {
+        if (exists) {
             provider.setName(entity.getName());
             provider.setObjects(entity.getObjects());
 
@@ -30,6 +31,8 @@ public class AllTaskDataProviders extends MotechBaseRepository<TaskDataProvider>
         } else {
             add(entity);
         }
+
+        return exists;
     }
 
     public TaskDataProvider byName(String name) {
