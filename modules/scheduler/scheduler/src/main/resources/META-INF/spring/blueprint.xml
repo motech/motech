@@ -7,6 +7,18 @@
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
 
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg value="scheduler"/>
+        <constructor-arg type="java.util.Map">
+            <map>
+                <entry key="messages" value="../scheduler/resources/bundles/"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
     <osgi:service ref="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>
+
+    <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.MotechSchedulerActionProxyService"/>
+
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 </beans>

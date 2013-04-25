@@ -9,8 +9,13 @@ public enum ParameterType {
     UNICODE("UNICODE"),
     TEXTAREA("TEXTAREA"),
     INTEGER("INTEGER"),
+    LONG("LONG"),
     DOUBLE("DOUBLE"),
-    DATE("DATE");
+    DATE("DATE"),
+    TIME("TIME"),
+    BOOLEAN("BOOLEAN"),
+    MAP("MAP"),
+    LIST("LIST");
 
     private final String value;
 
@@ -26,7 +31,7 @@ public enum ParameterType {
 
     @JsonIgnore
     public boolean isNumber() {
-        return value.equalsIgnoreCase(INTEGER.getValue()) || value.equalsIgnoreCase(DOUBLE.getValue());
+        return value.equalsIgnoreCase(INTEGER.getValue()) || value.equalsIgnoreCase(LONG.getValue()) || value.equalsIgnoreCase(DOUBLE.getValue());
     }
 
     private ParameterType(String value) {

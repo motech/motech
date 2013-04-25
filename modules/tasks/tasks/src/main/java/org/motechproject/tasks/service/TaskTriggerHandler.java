@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.DataProvider;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -35,12 +36,14 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
+import static org.motechproject.tasks.service.HandlerUtil.convertTo;
 import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getKeys;
@@ -235,40 +238,87 @@ public class TaskTriggerHandler {
                 throw new TaskTriggerException("error.templateNull", key);
             }
 
-            String userInput = replaceAll(template, event, task);
-
-            Object value;
-
             switch (param.getType()) {
-                case DOUBLE:
-                    try {
-                        value = Double.valueOf(userInput);
-                    } catch (Exception e) {
-                        throw new TaskTriggerException("error.convertToDouble", e, key);
-                    }
+                case LIST:
+                    parameters.put(key, convertToList(task, event, template));
                     break;
-                case INTEGER:
-                    try {
-                        value = Integer.valueOf(userInput);
-                    } catch (Exception e) {
-                        throw new TaskTriggerException("error.convertToInteger", e, key);
-                    }
-                    break;
-                case DATE:
-                    try {
-                        value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
-                    } catch (Exception e) {
-                        throw new TaskTriggerException("error.convertToDate", e, key);
-                    }
+                case MAP:
+                    parameters.put(key, convertToMap(task, event, template));
                     break;
                 default:
-                    value = userInput;
+                    try {
+                        String userInput = replaceAll(template, event, task);
+                        Object obj = convertTo(param.getType(), userInput);
+                        parameters.put(key, obj);
+                    } catch (MotechException ex) {
+                        throw new TaskTriggerException(ex.getMessage(), ex, key);
+                    }
             }
-
-            parameters.put(key, value);
         }
 
         return parameters;
+    }
+
+    private Map<Object, Object> convertToMap(Task task, MotechEvent event, String template) throws TaskTriggerException {
+        String[] rows = template.split("(\\r)?\\n");
+        Map<Object, Object> tempMap = new HashMap<>(rows.length);
+
+        for (String row : rows) {
+            String[] array = row.split(":");
+            Object mapKey;
+            Object mapValue;
+
+            switch (array.length) {
+                case 2:
+                    mapKey = getValue(array[0], event, task);
+                    mapValue = getValue(array[1], event, task);
+
+                    tempMap.put(mapKey, mapValue);
+                    break;
+                case 1:
+                    mapValue = getValue(array[0], event, task);
+
+                    tempMap.putAll((Map) mapValue);
+                    break;
+                default:
+            }
+        }
+        return tempMap;
+    }
+
+    private List<Object> convertToList(Task task, MotechEvent event, String template) throws TaskTriggerException {
+        String[] rows = template.split("(\\r)?\\n");
+        List<Object> tempList = new ArrayList<>(rows.length);
+
+        for (String row : rows) {
+            Object value = getValue(row, event, task);
+
+            if (value instanceof Collection) {
+                tempList.addAll((Collection) value);
+            } else {
+                tempList.add(value);
+            }
+        }
+        return tempList;
+    }
+
+    private Object getValue(String row, MotechEvent event, Task task) throws TaskTriggerException {
+        List<KeyInformation> keys = getKeys(row);
+        Object result = null;
+
+        if (keys.isEmpty()) {
+            result = row;
+        } else {
+            KeyInformation rowKeyInfo = keys.get(0);
+
+            if (rowKeyInfo.fromTrigger()) {
+                result = event.getParameters().get(rowKeyInfo.getEventKey());
+            } else if (rowKeyInfo.fromAdditionalData()) {
+                result = getAdditionalDataValue(event, task, rowKeyInfo);
+            }
+        }
+
+        return result;
     }
 
     private String replaceAll(String template, MotechEvent event, Task task) throws TaskTriggerException {
@@ -284,7 +334,7 @@ public class TaskTriggerHandler {
                     throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
                 }
             } else if (key.fromAdditionalData()) {
-                value = getAdditionalDataKey(event, task, key);
+                value = getAdditionalDataValue(event, task, key).toString();
             }
 
             String replacedValue = key.getManipulations() != null ? manipulateValue(value, key.getManipulations(), task) : value;
@@ -294,7 +344,7 @@ public class TaskTriggerHandler {
         return conversionTemplate;
     }
 
-    private String getAdditionalDataKey(MotechEvent event, Task task, KeyInformation key) throws TaskTriggerException {
+    private Object getAdditionalDataObject(MotechEvent event, Task task, KeyInformation key) throws TaskTriggerException {
         if (dataProviders == null || dataProviders.isEmpty()) {
             throw new TaskTriggerException("error.notFoundDataProvider", key.getObjectType());
         }
@@ -313,30 +363,29 @@ public class TaskTriggerHandler {
         if (adKey.fromTrigger()) {
             lookupFields.put(ad.getLookupField(), event.getParameters().get(adKey.getEventKey()).toString());
         } else if (adKey.fromAdditionalData()) {
-            String objectValue = getAdditionalDataKey(event, task, adKey);
+            String objectValue = getAdditionalDataValue(event, task, adKey).toString();
             lookupFields.put(ad.getLookupField(), objectValue);
         }
 
-        Object found = provider.lookup(key.getObjectType(), lookupFields);
-        String value = "";
+        return provider.lookup(key.getObjectType(), lookupFields);
+    }
+
+    private Object getAdditionalDataValue(MotechEvent event, Task task, KeyInformation key) throws TaskTriggerException {
+        TaskAdditionalData ad = findAdditionalData(task, key);
+        Object found = getAdditionalDataObject(event, task, key);
+        Object value;
+
         if (found == null) {
             if (ad.isFailIfDataNotFound()) {
                 throw new TaskTriggerException("error.notFoundObjectForType", key.getObjectType());
             } else {
                 activityService.addWarning(task, "warning.notFoundObjectForType", key.getObjectType());
             }
-        } else {
-            value = getAdditionalDataValue(found, key, ad, task);
         }
 
-        return value;
-    }
-
-    private String getAdditionalDataValue(Object found, KeyInformation key, TaskAdditionalData ad, Task task) throws TaskTriggerException {
-        String value;
         try {
             value = getFieldValue(found, key.getEventKey());
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (Exception e) {
             if (ad.isFailIfDataNotFound()) {
                 throw new TaskTriggerException("error.objectNotContainsField", e, key.getEventKey());
             } else {
@@ -344,6 +393,7 @@ public class TaskTriggerHandler {
                 value = "";
             }
         }
+
         return value;
     }
 

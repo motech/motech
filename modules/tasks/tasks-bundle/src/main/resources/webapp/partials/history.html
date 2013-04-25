@@ -17,8 +17,8 @@
                     </ul>
 
                     <ul class="task-nav pull-right">
-                        <li ng-show="description && enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
-                        <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
+                        <li ng-show="description && enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-placement="left"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                        <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-placement="left"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                         <li ng-show="description" class="divider-vertical"></li>
                         <li ng-hide="enabled" class="task-element task-paused">
                             <span class="task-list-button-activity">
@@ -51,7 +51,7 @@
                         <tr>
                             <th>{{msg('subsection.status')}}</th>
                             <th>{{msg('subsection.message')}}</th>
-                            <th>{{msg('subsection.additionalInformation')}}</th>
+                            <th>{{msg('subsection.information')}}</th>
                         </tr>
                         </thead>
                         <tbody>

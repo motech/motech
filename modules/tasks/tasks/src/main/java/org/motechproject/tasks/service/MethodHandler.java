@@ -4,6 +4,7 @@ import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -16,16 +17,24 @@ class MethodHandler {
         if (action != null) {
             SortedSet<ActionParameter> actionParameters = action.getActionParameters();
 
-            if (actionParameters != null && !actionParameters.isEmpty()) {
+            if (!actionParameters.isEmpty()) {
                 parametrized = true;
                 classes = new Class[parameters.size()];
                 objects = new Object[parameters.size()];
 
                 for (ActionParameter actionParameter : actionParameters) {
                     Object obj = parameters.get(actionParameter.getKey());
+                    Integer idx = actionParameter.getOrder();
 
-                    objects[actionParameter.getOrder()] = obj;
-                    classes[actionParameter.getOrder()] = obj.getClass();
+                    objects[idx] = obj;
+
+                    if (obj instanceof Map) {
+                        classes[idx] = Map.class;
+                    } else if (obj instanceof List) {
+                        classes[idx] = List.class;
+                    } else {
+                        classes[idx] = obj.getClass();
+                    }
                 }
             }
         }

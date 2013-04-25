@@ -19,4 +19,6 @@
     </bean>
 
     <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl" />
+
+    <bean id="schedulerActionProxyService" class="org.motechproject.scheduler.impl.MotechSchedulerActionProxyServiceImpl"/>
 </beans>

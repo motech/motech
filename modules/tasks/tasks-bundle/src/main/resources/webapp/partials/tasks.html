@@ -3,17 +3,17 @@
     <div class="span8 margin-after">
 
         <div class="box-header">{{msg('header.tasks')}}</div>
-        <div class="box-content inside clearfix">
+        <div class="box-content clearfix">
 
-            <div class="control-group">
+            <div class="inside">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             </div>
-            <div class="control-group form-inline">
+            <div class="inside form-inline">
                 <label >{{msg('header.searchTasks')}}</label>
                 <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('header.searchByNameOrDescription')}}">
                 <div data-toggle="buttons-checkbox" class="btn-group">
-                    <button ng-click="setHideActive()" class="btn btn-primary setHideActive" type="button"><i class="icon-white icon-ok"></i> {{msg('header.activeTasks')}}</button>
-                    <button ng-click="setHidePaused()" class="btn btn-primary setHidePaused" type="button"><i class="icon-white icon-ok"></i> {{msg('header.pausedTasks')}}</button>
+                    <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('header.activeTasks')}}</button>
+                    <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('header.pausedTasks')}}</button>
                 </div>
             </div>
             <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
@@ -39,16 +39,16 @@
                                 <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-hide="item.task.enabled" class="task-element task-paused">
-                                    <span class="task-list-button-activity">
-                                        <span class="task-list-text-activity">{{msg('task.paused')}}</span>
-                                        <img class="task-list-img-activity" src="../tasks/img/task-paused.png" />
-                                    </span>
+                                    <div class="task-list-button-activity">
+                                        <div class="task-list-text-activity">{{msg('task.paused')}}</div>
+                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
+                                    </div>
                                 </li>
                                 <li ng-show="item.task.enabled" class="task-element task-active">
-                                    <span class="task-list-button-activity">
-                                        <img class="task-list-img-activity" src="../tasks/img/task-active.png" />
-                                        <span class="task-list-text-activity">{{msg('task.active')}}</span>
-                                    </span>
+                                    <div class="task-list-button-activity">
+                                        <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-active.png" /></div>
+                                        <div class="task-list-text-activity">{{msg('task.active')}}</div>
+                                    </div>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li ng-show="item.task.enabled" class="task-element"><a href="#/task/{{item.task._id}}/edit"><img src="../tasks/img/task-settings.png" class="task-list-img" /></a></li>
@@ -127,7 +127,7 @@
                     </tr>
                     </tbody>
                     <tbody ng-hide="activities.length == 0">
-                    <tr ng-repeat="activity in activities">
+                    <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
                         <td>
                             <div>
                                 <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}&moduleVersion={{activity.trigger.moduleVersion}}" class="recent-activity-img"/>
@@ -149,9 +149,9 @@
                         <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('tooltip.clickToSeeDetails')}}">
                             <div>
                                 <a href="#/task/{{activity.task}}/log">
-                                    <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
-                                    <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
-                                    <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
+                                    <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
+                                    <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
+                                    <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>
                                 </a>
                             </div>
                         </td>
