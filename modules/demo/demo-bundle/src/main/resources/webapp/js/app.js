@@ -10,5 +10,6 @@ angular.module('motech-demo', ['motech-dashboard', 'TreeServices', 'ngCookies', 
             when('/trees/:treeId/execute', {templateUrl: '../demo/partials/trees/execute.html', controller: TreeExecuteCtrl}).
             when('/welcome', {templateUrl: '../demo/partials/welcome.html'}).
             when('/ivrservice', {templateUrl: '../demo/partials/ivrcalls.html', controller: IVRCallCtrl}).
+            when('/event', {templateUrl: '../demo/partials/event.html', controller: EventCtrl}).
             otherwise({redirectTo: '/welcome'});
 }]);

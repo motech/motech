@@ -1,0 +1,30 @@
+<div class="well2 event-panel">
+    <div class="box-header">{{msg('event')}}</div>
+    <div class="box-content clearfix">
+        <div>
+            <div id="msgSentSuccess" class="alert" style="display: none">{{msg('event.msg.sent.success')}}</div>
+            <div id="msgSentFailure" class="alert alert-error" style="display: none">{{msg('event.msg.sent.failure')}}</div>
+            <div id="msgInvalidEvent" class="alert alert-error" style="display: none">{{msg('event.msg.invalid.event')}}</div>
+        </div>
+        <form class="form-horizontal inside" id="form">
+            <div class="control-group">
+                <label class="control-label" for="subject">{{msg('event.subject')}}</label>
+                <div class="controls">
+                    <input type="text" ng-model="subject" id="subject" class="input-xlarge-fluid span6"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="params">{{msg('event.params')}} (JSON)
+                    <i class="icon-info-sign" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('event.tooltip.params')}}"></i>
+                </label>
+                <div class="controls">
+                    <textarea rows="5" ng-model="params" id="params" class="input-xlarge-fluid span6"/>
+                </div>
+            </div>
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{msg('event.send')}}" ng-click="send()"/>
+            </div>
+        </form>
+
+    </div>
+</div>

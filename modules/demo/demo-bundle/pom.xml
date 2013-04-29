@@ -85,8 +85,7 @@
                             org.eclipse.gemini.blueprint.config,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-demo</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-demo;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

@@ -48,9 +48,4 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <bean id="eventAnnotationBeanPostProcessor"
-          class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
-        <property name="eventListenerRegistry" ref="eventListenerRegistry"/>
-    </bean>
-
 </beans>

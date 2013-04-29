@@ -352,3 +352,28 @@ function IVRCallCtrl($scope, i18nService, $http) {
         }
     };
 }
+
+function EventCtrl($scope, $http) {
+
+    $scope.send = function() {
+        var event = {};
+        event.subject = $scope.subject;
+        if (!event.subject) {
+            jQuery("#msgInvalidEvent").show().fadeOut(5000);
+            return;
+        }
+        try {
+            event.parameters = jQuery.parseJSON($scope.params);
+        } catch(e) {
+            jQuery("#msgInvalidEvent").show().fadeOut(5000);
+            return;
+        }
+        $http.post('../demo/api/event', event).
+            success(function () {
+                jQuery("#msgSentSuccess").show().fadeOut(5000);
+            }).
+            error(function() {
+                jQuery("#msgSentFailure").show().fadeOut(5000);
+            });
+    }
+}
