@@ -9,7 +9,7 @@ angular.module('motech-demo', ['motech-dashboard', 'TreeServices', 'ngCookies', 
             when('/trees/create', {templateUrl: '../demo/partials/trees/create.html', controller: TreeCreateCtrl}).
             when('/trees/:treeId/execute', {templateUrl: '../demo/partials/trees/execute.html', controller: TreeExecuteCtrl}).
             when('/welcome', {templateUrl: '../demo/partials/welcome.html'}).
-            when('/ivrservice', {templateUrl: '../demo/partials/ivrcalls.html', controller: IVRCallCtrl}).
             when('/event', {templateUrl: '../demo/partials/event.html', controller: EventCtrl}).
+            when('/ivrservicejsp', {templateUrl: '../demo/api/ivrcalls', controller: IVRCallCtrl}).
             otherwise({redirectTo: '/welcome'});
 }]);
