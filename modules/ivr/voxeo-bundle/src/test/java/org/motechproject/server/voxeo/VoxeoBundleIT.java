@@ -19,7 +19,7 @@ public class VoxeoBundleIT extends BaseOsgiIT {
 
     @Override
     protected void onSetUp() throws Exception {
-        voxeoServer = new StubServer(9998, CONTEXT_PATH);
+        voxeoServer = new StubServer(TestContext.getVoxeoPort(), CONTEXT_PATH);
         voxeoServer.start();
     }
 
