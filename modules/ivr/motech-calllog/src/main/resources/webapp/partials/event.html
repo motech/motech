@@ -1,8 +1,8 @@
-<table class="call-event single-row-table table table-bundles table-bordered table-striped table-lightblue">
+<table class="call-event single-row-table table table-condensed table-bordered table-striped table-lightblue">
     <tbody>
         <tr>
             <td>
-                {{callEvent.name}}
+                &#x25BC;&nbsp;{{callEvent.name}}
             </td>
             <td>
                 {{callEvent.timeStamp | date:'yyyy-MM-dd hh:mm:ss'}}
@@ -14,12 +14,12 @@
     </tbody>
 </table>
 
-<div class="tooltip" ng-show="false">
+<div class="tooltip" style="display: none;">
     <div>
-        Data
+        {{msg('calllog.data')}}
     </div>
     <div>
-        <div class="padded" ng-show="isEmpty(callEvent.data.data)">Empty</div>
+        <div class="padded" ng-show="isEmpty(callEvent.data.data)">{{msg('calllog.emptyEmpty')}}</div>
         <table class="table">
             <tbody>
             <tr ng-repeat="(key, value) in callEvent.data.data">

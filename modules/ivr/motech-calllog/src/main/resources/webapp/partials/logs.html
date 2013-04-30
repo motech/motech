@@ -1,77 +1,77 @@
-<div class="box-header">{{ msg('calllog.welcome.heading') }}</div>
+<div ng-controller="CalllogController" class="call-log">
+    <div class="box-header">{{ msg('calllog.welcome.heading') }}</div>
 
-<div ng-controller="CalllogController">
+    <div class="box-content clearfix margin-after">
 
-    <div class="accordion" id="filter-accordion">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a id="filter-title" class="accordion-toggle" data-toggle="collapse" data-parent="#filter-accordion" href="#filter-panel">
-                    Filter by
-                </a>
-            </div>
-            <div id="filter-panel" class="accordion-body collapse in">
-                <div class="accordion-inner">
-                    <form name="form" ng-submit="search()" nonvalidate>
-                        <div class="controls controls-row">
-                            <div class="span4">
-                                <div class="controls controls-row">
-                                    <label class="span6" for="phoneNumber">
-                                        Phone number <input type="text" id="phoneNumber" ng-model="phoneNumber" typeahead class="span12"/>
-                                    </label>
-                                    <label class="span6" for="message">
-                                        Message <input type="text" id="message" name="message" class="span12"/>
-                                    </label>
-                                </div>
-                                <div class="controls controls-row">
-                                    <label for="from" class="span6">From <input type="text" id="from" name="from" class="span12"/></label>
-                                    <label for="to" class="span6"> To <input type="text" id="to" name="to" class="span12"/></label>
-                                </div>
+    <form name="form" ng-submit="search()" nonvalidate>
+        <div id="filter" class="control-group">
+            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#filter-panel">
+                <i class="icon-eject icon-white"></i>&nbsp;{{msg('header.filters')}}
+            </button>
+            <input class="btn btn-primary" type="submit" value="{{msg('calllog.search')}}" ng-disabled="form.$invalid"/>
+            <span class="help-inline" id="filter-title"></span>
+        </div>
+        <div id="filter-panel" class="collapse">
+            <div class="inside">
 
-                                <div class="controls controls-row">
-                                    <label class="span12">Call Duration
-                                    </label>
-                                    <input type="text" class="slider-control" slider="#slider" slider-point="min"/>
-                                    -
-                                    <input type="text" class="slider-control" slider="#slider" slider-point="max"/>
-                                    seconds
-                                    <div id="slider"></div>
-                                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <fieldset class="inside"><legend>{{msg('calllog.phoneNumber')}}</legend>
+                            <div class="control-group form-inline">
+                                <input type="text" class="span10 search-query" id="phoneNumber" ng-model="phoneNumber" typeahead placeholder="{{msg('search')}}"
+                                       data-event-type="keyup" data-search-field="name" jqgrid-search="resourceTable">
                             </div>
-
-                            <div class="span2">
-                                <div class="controls controls-row">
-                                    <fieldset>
-                                        <legend>Disposition</legend>
-                                        <label for="answered" class="checkbox">
-                                            <input type="checkbox" id="answered" name="answered" class="btn">Answered
-                                        </label>
-                                        <label class="checkbox" for="busy">
-                                            <input type="checkbox" class="control" name="busy" id="busy">Busy
-                                        </label>
-                                        <label class="checkbox" for="failed">
-                                            <input type="checkbox" class="control" name="failed" id="failed">Failed
-                                        </label>
-                                        <label class="checkbox" for="noAnswer">
-                                            <input type="checkbox" class="control" name="noAnswer" id="noAnswer">No Answer
-                                        </label>
-                                        <label class="checkbox" for="unknown">
-                                            <input type="checkbox" class="control" name="unknown" id="unknown">Unknown
-                                        </label>
-                                    </fieldset>
-                                </div>
+                        </fieldset>
+                    </div>
+                    <div class="span8">
+                        <fieldset class="inside"><legend>{{msg('header.dates')}}</legend>
+                            <div class="control-group form-inline">
+                                <input for="from" type="datetime" id="from" name="from" class="offset1 span4 search-query" placeholder="{{msg('header.from')}}">
+                                <input for="to" type="datetime" id="to" name="to" class="span4 margin-offset1 search-query" placeholder="{{msg('header.to')}}">
                             </div>
-                        </div>
-
-                        <div class="controls control-row">
-                            <input class="btn btn-primary offset4 span2" type="submit" value="{{msg('calllog.search')}}" ng-disabled="form.$invalid"/>
-                        </div>
-                    </form>
+                        </fieldset>
+                    </div>
                 </div>
+                <div class="clearfix"></div>
+
+                <div class="row-fluid">
+                    <div class="span3">
+                        <fieldset class="inside"><legend>{{msg('calllog.callDuraction')}}</legend>
+                            <div class="control-group">
+                                <input type="text" class="slider-control" slider="#slider" slider-point="min"/>
+                                -
+                                <input type="text" class="slider-control" slider="#slider" slider-point="max"/>
+                                <span class="help-inline">{{msg('calllog.seconds')}}</span>
+                                <div id="slider"></div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="span6">
+                        <fieldset class="inside"><legend>{{msg('calllog.disposition')}}</legend>
+                            <div data-toggle="buttons-checkbox" class="btn-group control-group">
+                                <button id="answered" class="btn btn-info active" type="button" ng-click="setActive('answered')" ><i class="icon-white icon-ok"></i> {{msg('calllog.answered')}}</button>
+                                <button id="busy" class="btn btn-info active" type="button" ng-click="setActive('busy')" ><i class="icon-white icon-ok"></i> {{msg('calllog.busy')}}</button>
+                                <button id="failed" class="btn btn-info active" type="button" ng-click="setActive('failed')" ><i class="icon-white icon-ok"></i> {{msg('calllog.failed')}}</button>
+                                <button id="noAnswer" class="btn btn-info active" type="button" ng-click="setActive('noAnswer')" ><i class="icon-white icon-ok"></i> {{msg('calllog.noAnswer')}}</button>
+                                <button id="unknown" class="btn btn-info active" type="button" ng-click="setActive('unknown')" ><i class="icon-white icon-ok"></i> {{msg('calllog.unknown')}}</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="span3">
+                        <fieldset class="inside"><legend>{{msg('calllog.direction')}}</legend>
+                            <div data-toggle="buttons-checkbox" class="btn-group control-group">
+                                <button id="incoming" class="btn btn-info active" type="button" ><i class="icon-white icon-ok"></i> {{msg('calllog.incoming')}}</button>
+                                <button id="outgoing" class="btn btn-info active" type="button" ><i class="icon-white icon-ok"></i> {{msg('calllog.outgoing')}}</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
+    </form>
 
-    <div class="pagination pagination-right pagination-condensed lightblue" ng-show="pageCount.count  > 1">
+    <div class="pagination pagination-right pagination-condensed lightblue" ng-show="pageCount.count > 1">
         <ul>
             <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('calllog.pagination.prev')}}</a></li>
 
@@ -82,17 +82,29 @@
         </ul>
     </div>
 
-    <table class="calllogs-head single-row-table table table-bundles table-bordered table-striped table-lightblue">
-        <tbody>
-        <tr>
-            <th><a href ng-click="sort('phoneNumber')">{{msg('calllog.phoneNumber')}}</a></th>
-            <th><a href ng-click="sort('direction')">{{msg('calllog.direction')}}</a></th>
-            <th><a href ng-click="sort('startDate')">{{msg('calllog.startDate')}}</a></th>
-            <th><a href ng-click="sort('endDate')">{{msg('calllog.endDate')}}</a></th>
-            <th><a href ng-click="sort('disposition')">{{msg('calllog.disposition')}}</a></th>
-            <th><a href ng-click="sort('duration')">{{msg('calllog.duration')}}</a></th>
-        </tr>
-        </tbody>
+    <table class="calllogs-head single-row-table table table-condensed table-bordered table-striped table-lightblue">
+        <thead>
+            <tr>
+                <th class="phoneNumber" ng-click="sort('phoneNumber')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingPhoneNumber')}}" title="{{msg('calllog.sortingPhoneNumber')}}"
+                        class="sorting-no" />{{msg('calllog.phoneNumber')}}</th>
+                <th class="direction" ng-click="sort('direction')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDirection')}}" title="{{msg('calllog.sortingDirection')}}"
+                         class="sorting-no" />{{msg('calllog.direction')}}</th>
+                <th class="startDate" ng-click="sort('startDate')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingStartDate')}}" title="{{msg('calllog.sortingStartDate')}}"
+                         class="sorting-no" />{{msg('calllog.startDate')}}</th>
+                <th class="endDate" ng-click="sort('endDate')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingEndDate')}}" title="{{msg('calllog.sortingEndDate')}}"
+                         class="sorting-no" />{{msg('calllog.endDate')}}</th>
+                <th class="disposition" ng-click="sort('disposition')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDisposition')}}" title="{{msg('calllog.sortingDisposition')}}"
+                         class="sorting-no" />{{msg('calllog.disposition')}}</th>
+                <th class="duration" ng-click="sort('duration')">
+                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDuration')}}" title="{{msg('calllog.sortingDuration')}}"
+                         class="sorting-no" />{{msg('calllog.duration')}}</th>
+            </tr>
+        </thead>
     </table>
 
     <div class="calllogs-body accordion" id="calllogs">
@@ -100,7 +112,7 @@
             <div class="accordion-group">
                 <div class="accordion-heading">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#calllogs" href="#item{{$index}}">
-                        <table class="single-row-table table table-bundles table-bordered table-striped table-lightblue">
+                        <table class="single-row-table table table-condensed table-bordered table-striped table-lightblue">
                             <tbody>
                             <tr>
                                 <td>{{calllog.phoneNumber}}</td>
@@ -116,7 +128,7 @@
                 </div>
                 <div id="item{{$index}}" class="accordion-body collapse clearfix">
                     <div class="accordion-inner">
-                        <div class="padded" ng-show="isEmpty(calllog.callEvents)">No events.</div>
+                        <div class="padded" ng-hide="isEmpty(calllog.callEvents)">{{msg('calllog.noEvents')}}</div>
                         <div ng-repeat="callEvent in calllog.callEvents" ng-model="calllogs">
                             <div ng-include="'../callLog/resources/partials/event.html'"/>
                         </div>
@@ -124,5 +136,7 @@
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
 </div>

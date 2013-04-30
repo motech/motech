@@ -125,6 +125,16 @@ function CalllogController($scope, CalllogSearch, CalllogCount, CalllogPhoneNumb
             $scope.sortReverse = false;
         }
         $scope.sortColumn = column;
+
+        $('th img').each(function(){
+            $(this).removeClass().addClass('sorting-no');
+        });
+
+        if ($scope.sortReverse)
+            $('th.'+$scope.sortColumn+' img').removeClass('sorting-no').addClass('sorting-desc');
+        else
+            $('th.'+$scope.sortColumn+' img').removeClass('sorting-no').addClass('sorting-asc');
+
         $scope.getCalllogs();
     }
 
@@ -138,11 +148,11 @@ function CalllogController($scope, CalllogSearch, CalllogCount, CalllogPhoneNumb
         $scope.max = $("#slider").slider("values", 1);
         $scope.from = $("#from").val();
         $scope.to = $("#to").val();
-        $scope.answered = $("#answered").is(':checked');
-        $scope.busy = $("#busy").is(':checked');
-        $scope.failed = $('#failed').is(':checked');
-        $scope.noAnswer = $('#noAnswer').is(':checked');
-        $scope.unknown = $('#unknown').is(':checked');
+        $scope.answered = $("#answered").is('button.active');
+        $scope.busy = $("#busy").is('button.active');
+        $scope.failed = $('#failed').is('button.active');
+        $scope.noAnswer = $('#noAnswer').is('button.active');
+        $scope.unknown = $('#unknown').is('button.active');
 
         $scope.getCalllogs();
         $scope.countPages();
@@ -241,4 +251,14 @@ function CalllogController($scope, CalllogSearch, CalllogCount, CalllogPhoneNumb
     $scope.isEmpty = function (obj) {
         return angular.equals({}, obj);
     };
+
+    $scope.setActive = function(active){
+        if($('#'+active+'').is('button.active') === true) {
+            $scope.active = false;
+            $('#'+active+'').find('i').removeClass("icon-ok").addClass('icon-ban-circle');
+        } else {
+            $scope.active = true;
+            $('#'+active+'').find('i').removeClass("icon-ban-circle").addClass('icon-ok');
+        }
+    }
 }

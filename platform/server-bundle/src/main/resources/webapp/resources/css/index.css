@@ -480,7 +480,7 @@ select {
     background: #E4F1F9;
 }
 
-.table-lightblue  tbody tr:nth-child(2n+1) td, .table-lightblue tbody tr:nth-child(2n+1) th {
+.table-lightblue  tbody tr:nth-child(2n+1) td {
     background: #F3FBFE;
 }
 
@@ -494,7 +494,7 @@ select {
       border-left: 1px solid #D4E1F9;
 }
 
-.table-lightblue th, .pagination.lightblue ul > li > a {
+.table-lightblue th, .table-lightblue th a, .pagination.lightblue ul > li > a {
     border-color: #fff;
     color: #224477;
     background: #deefff;

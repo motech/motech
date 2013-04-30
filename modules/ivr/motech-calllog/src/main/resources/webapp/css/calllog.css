@@ -1,0 +1,192 @@
+.call-log {
+    margin-top: 10px;
+}
+
+.single-row-table {
+    margin-bottom: 0;
+    border: 0;
+}
+
+.calllogs-head tr th {
+    width: 16%;
+}
+
+.calllogs-body .accordion-group {
+    margin-bottom: 0;
+    border-top-width: 0;
+}
+
+.calllogs-body .accordion-toggle {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.calllogs-body table tr td {
+    width: 16%;
+}
+
+.call-event {
+    margin-bottom: 0px;
+}
+
+.call-event.table-lightblue {
+    background: #DEEEFF;
+}
+
+.call-event .popover {
+    position: fixed;
+}
+
+.call-event div.popover-content {
+    margin: 0;
+    padding: 0;
+}
+
+.padded {
+    padding: 4px;
+}
+
+.call-event .popover-content table {
+    margin: 0;
+}
+
+.slider-control {
+    width: 36px;
+}
+
+#filter-title {
+    text-decoration: none;
+}
+
+.pagination ul li a {
+    min-width: 20px;
+    text-align: center;
+}
+
+.calllogs.accordion {
+    margin-bottom: 0;
+}
+
+.call-log #filter.control-group {
+    margin: 10px;
+}
+
+.call-log .accordion-group {
+    border-bottom: 1px solid #BDD9F8;
+    border-radius: 0;
+
+}
+
+.call-log .accordion-group .table-lightblue {
+    background: #E4F1F9;
+}
+
+
+.call-log .accordion-inner {
+    border-top: 1px solid #B2D8F8;
+    margin: 0;
+    padding: 0;
+    background: #none;
+}
+
+.call-log .accordion-inner a, .call-log .accordion-inner a:hover {
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        text-decoration: none;
+}
+
+.call-log fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.call-log legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.call-log legend + .control-group {
+    margin-top: 2px;
+}
+
+.ui-datepicker, #ui-timepicker-div {
+    z-index: 9999 !important;
+}
+
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}
+
+.ui-timepicker-div select {
+    width: auto;
+    height: 24px;
+    line-height: 18px;
+    padding: 1px 3px;
+    margin: 0 0 0 5px;
+}
+
+
+.table-lightblue {
+    border-color: #D4E1F9;
+    background: #E4F1F9;
+}
+
+.table-lightblue  tbody tr:nth-child(2n+1) td {
+    background: none;
+}
+
+.accordion-inner .table-lightblue  tbody tr td {
+    background: #E4F1F9;
+}
+
+.accordion-inner .table-lightblue  tbody tr:hover td {
+    background: #DEEEFF;
+}
+
+#calllogs .table-lightblue .popover-content tbody > tr:nth-child(2n+1) td {
+    background: #FFFFFF;
+}
+
+#calllogs .table-lightblue .popover-content tbody > tr td {
+    background: #E4F1F9;
+}
+
+#calllogs > div:nth-child(2n+1) .table-lightblue tbody tr td {
+    background: #F3FBFE;
+}
+
+#calllogs.accordion {
+    margin: 0 -2px -1px;
+}
+
+.table-lightblue  tbody tr:hover td, .table-lightblue tbody tr:hover th, .table-lightblue tbody tr:hover td a {
+    background: #EDF5F9;
+    color: #005580;
+}
+
+.table-lightblue.table-bordered th, .table-lightblue.table-bordered td {
+      border-top: 1px solid #D4E1F9;
+      border-left: 1px solid #D4E1F9;
+}
+
+.call-log .table th {
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.call-log .row-fluid .span4.margin-offset1 {
+    margin-left: 9%;
+}
