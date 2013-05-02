@@ -147,8 +147,7 @@
                      </div>
                     <div class="control-group">
                         <div class="controls">
-                            <input class="btn btn-primary" type="submit" name="SUBMIT" value="<fmt:message key="submit" bundle="${bundle}"/>"/>
-                            <input class="btn" type="submit" name="START" value="<fmt:message key="submitAndStart" bundle="${bundle}"/>"/>
+                            <input class="btn btn-primary" type="submit" name="START" value="<fmt:message key="submit" bundle="${bundle}"/>"/>
                         </div>
                     </div>
                     <c:if test="${not empty errors}">

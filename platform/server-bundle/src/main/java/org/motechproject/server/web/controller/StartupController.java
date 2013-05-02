@@ -1,6 +1,5 @@
 package org.motechproject.server.web.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.service.PlatformSettingsService;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +30,6 @@ import java.util.Locale;
 
 @Controller
 public class StartupController {
-    private static final String START_PARAM = "START";
 
     private StartupManager startupManager = StartupManager.getInstance();
 
@@ -72,8 +69,7 @@ public class StartupController {
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
-    public ModelAndView submitForm(@RequestParam(value = START_PARAM, required = false) String start,
-                                   @ModelAttribute("startupSettings") @Valid StartupForm form,
+    public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
         ModelAndView view = new ModelAndView("redirect:home");
 
@@ -100,8 +96,7 @@ public class StartupController {
                 registerAdminUser(form);
             }
 
-            boolean startAllBundles = StringUtils.isNotBlank(start);
-            startupManager.startup(startAllBundles);
+            startupManager.startup();
         }
 
         return view;

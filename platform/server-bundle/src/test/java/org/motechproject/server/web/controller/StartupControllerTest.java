@@ -134,22 +134,6 @@ public class StartupControllerTest {
         assertEquals("redirect:home", result.getViewName());
     }
 
-    @Test
-    public void testSubmitFormNoStart() {
-        StartupForm startupForm = startupForm();
-        startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
-        when(startupManager.canLaunchBundles()).thenReturn(true);
-
-        ModelAndView result = startupController.submitForm(null, startupForm, bindingResult);
-
-        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
-        verify(startupManager).startup(false);
-        verifyUserRegistration();
-
-        assertEquals("redirect:home", result.getViewName());
-    }
 
     @Test
     public void testSubmitFormStart() {
@@ -159,10 +143,10 @@ public class StartupControllerTest {
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
-        ModelAndView result = startupController.submitForm("start", startupForm, bindingResult);
+        ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
-        verify(startupManager).startup(true);
+        verify(startupManager).startup();
         verifyUserRegistration();
 
         assertEquals("redirect:home", result.getViewName());
@@ -176,10 +160,10 @@ public class StartupControllerTest {
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
-        ModelAndView result = startupController.submitForm("start", startupForm, bindingResult);
+        ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
-        verify(startupManager).startup(true);
+        verify(startupManager).startup();
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class));
 
         assertEquals("redirect:home", result.getViewName());
