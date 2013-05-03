@@ -34,7 +34,7 @@ public final class StartupManager {
     private static StartupManager instance;
 
     private static final String SETTINGS_DB = "motech-platform-startup";
-    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin-bundle";
+    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin";
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);

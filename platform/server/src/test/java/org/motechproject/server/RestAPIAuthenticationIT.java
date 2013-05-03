@@ -33,7 +33,7 @@ public class RestAPIAuthenticationIT {
 
 
         HttpGet statusRequest =
-                new HttpGet(String.format("http://%s:%d/motech-platform-server/module/admin/api/web-api/status", HOST, PORT));
+                new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server/web-api/status", HOST, PORT));
 
         HttpResponse response = httpClient.execute(statusRequest);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());

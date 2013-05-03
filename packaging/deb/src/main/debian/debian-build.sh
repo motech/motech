@@ -103,7 +103,7 @@ rm -f ./motech-base/var/lib/motech/motech-default/data/config/motech-settings.co
 # Platofrm bundles
 cp -r $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 # Include motech-admin
-cp -r $ARTIFACT_DIR/motech-admin-bundle*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
+cp -r $ARTIFACT_DIR/motech-admin*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # Include dependencies
 cp -r $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles

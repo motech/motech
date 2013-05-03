@@ -42,7 +42,7 @@ public class DefaultBundleFilterTest {
 
         when(bundle.getHeaders()).thenReturn(headers);
         when(bundleContext.getBundle()).thenReturn(adminBundle);
-        when(adminBundle.getSymbolicName()).thenReturn("org.motechproject.motech-admin-bundle");
+        when(adminBundle.getSymbolicName()).thenReturn("org.motechproject.motech-admin");
     }
 
     @Test

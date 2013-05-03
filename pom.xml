@@ -1142,7 +1142,6 @@
         <!-- Non-OSGI modules -->
         <module>platform/server</module>
         <module>platform/web-security/web-security</module>
-        <module>modules/admin/admin</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
         <module>modules/ivr/kookoo</module>
@@ -1175,7 +1174,7 @@
         <module>platform/server-config</module>
         <module>platform/server-startup</module>
         <module>platform/web-security/web-security-bundle</module>
-        <module>modules/admin/admin-bundle</module>
+        <module>modules/admin/admin</module>
         <module>modules/alerts/api</module>
         <module>modules/appointments/api</module>
         <module>modules/callflow/api</module>

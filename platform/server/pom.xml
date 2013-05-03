@@ -145,7 +145,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-admin-bundle</artifactId>
+            <artifactId>motech-admin</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -262,7 +262,7 @@
             <dependencies>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-admin-bundle</artifactId>
+                    <artifactId>motech-admin</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>
