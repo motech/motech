@@ -10,7 +10,7 @@
 
     <context:annotation-config/>
 
-    <import resource="classpath*:META-INF/motech/*.xml" />
+    <import resource="classpath*:META-INF/motech/applicationDemo.xml" />
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="demo" />

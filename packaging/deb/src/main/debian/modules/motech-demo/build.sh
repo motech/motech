@@ -25,7 +25,7 @@ gzip --best $TMP_DIR/motech-demo/usr/share/doc/motech-demo/changelog*
 
 # Copy bundle
 mkdir -p $TMP_DIR/motech-demo/$BUNDLE_DIR
-cp $ARTIFACT_DIR/motech-demo-bundle*.jar $TMP_DIR/motech-demo/$BUNDLE_DIR
+cp $ARTIFACT_DIR/motech-demo*.jar $TMP_DIR/motech-demo/$BUNDLE_DIR
 
 # Copy scripts
 cp $MODULE_DIR/../common/post* $TMP_DIR/motech-demo/DEBIAN
