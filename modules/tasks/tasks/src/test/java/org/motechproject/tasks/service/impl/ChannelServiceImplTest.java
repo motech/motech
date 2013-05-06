@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.EventParameter;
@@ -15,6 +17,8 @@ import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,6 +26,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -36,12 +41,17 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ChannelServiceImplTest {
     private static final String MODULE_NAME = "test";
     private static final String VERSION = "0.16";
+    private static final String DEFAULT_ICON = "/webapp/img/iconTaskChannel.png";
+    private static final String DEFAULT_ICON_PATH = "/bundle_icon.png";
 
     @Mock
     AllChannels allChannels;
 
     @Mock
     BundleContext bundleContext;
+
+    @Mock
+    ResourceLoader resourceLoader;
 
     @Mock
     Bundle bundle;
@@ -55,7 +65,7 @@ public class ChannelServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(allChannels);
+        channelService = new ChannelServiceImpl(allChannels, resourceLoader);
     }
 
     @Test(expected = ValidationException.class)
@@ -125,49 +135,50 @@ public class ChannelServiceImplTest {
         channelService.getChannelIcon(MODULE_NAME, VERSION);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenBundleContextNotContainBundles() {
+    @Test
+    public void shouldReturnDefaultIconWhenBundleNotFound() throws IOException {
         ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
-        when(bundleContext.getBundles()).thenReturn(new Bundle[]{});
+        byte[] image = readDefaultIcon();
 
-        channelService.getChannelIcon(MODULE_NAME, VERSION);
-
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenBundleNotFound() throws IOException {
-        String fakeModuleName = "testing";
-
+        when(resourceLoader.getResource(DEFAULT_ICON)).thenReturn(new ClassPathResource(DEFAULT_ICON_PATH));
         whenGetChannelIcon(getDefaultIconUrl());
 
-        channelService.getChannelIcon(fakeModuleName, VERSION);
+        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, "0.15");
+
+        assertNotNull(bundleIcon);
+        assertEquals("image/png", bundleIcon.getMime());
+        assertArrayEquals(image, bundleIcon.getIcon());
+        assertEquals(image.length, bundleIcon.getContentLength());
+
+        bundleIcon = channelService.getChannelIcon("faceModule", VERSION);
+
+        assertNotNull(bundleIcon);
+        assertEquals("image/png", bundleIcon.getMime());
+        assertArrayEquals(image, bundleIcon.getIcon());
+        assertEquals(image.length, bundleIcon.getContentLength());
+
+        bundleIcon = channelService.getChannelIcon("faceModule", "0.15");
+
+        assertNotNull(bundleIcon);
+        assertEquals("image/png", bundleIcon.getMime());
+        assertArrayEquals(image, bundleIcon.getIcon());
+        assertEquals(image.length, bundleIcon.getContentLength());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenVersionNotMatch() throws IOException {
+    @Test
+    public void shouldReturnDefaultIconWhenBundleNotContainIcon() throws IOException {
         ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
+        byte[] image = readDefaultIcon();
 
-        whenGetChannelIcon(getDefaultIconUrl());
+        when(resourceLoader.getResource(DEFAULT_ICON)).thenReturn(new ClassPathResource(DEFAULT_ICON_PATH));
+        whenGetChannelIcon(null);
 
-        channelService.getChannelIcon(MODULE_NAME, "0.15");
-    }
+        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenSymbolicNameNotMatch() throws IOException {
-        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
-
-        whenGetChannelIcon(getDefaultIconUrl());
-
-        channelService.getChannelIcon("faceModule", VERSION);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenSymbolicNameAndVersionNotMatch() throws IOException {
-        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
-
-        whenGetChannelIcon(getDefaultIconUrl());
-
-        channelService.getChannelIcon("faceModule", "0.15");
+        assertNotNull(bundleIcon);
+        assertEquals("image/png", bundleIcon.getMime());
+        assertArrayEquals(image, bundleIcon.getIcon());
+        assertEquals(image.length, bundleIcon.getContentLength());
     }
 
     @Test
@@ -183,15 +194,6 @@ public class ChannelServiceImplTest {
         assertEquals("image/png", bundleIcon.getMime());
         assertArrayEquals(image, bundleIcon.getIcon());
         assertEquals(image.length, bundleIcon.getContentLength());
-    }
-
-    @Test
-    public void shouldReturnNullWhenBundleNotContainIcon() throws IOException {
-        ((ChannelServiceImpl) channelService).setBundleContext(bundleContext);
-
-        whenGetChannelIcon(null);
-
-        assertNull(channelService.getChannelIcon(MODULE_NAME, VERSION));
     }
 
     private void whenGetChannelIcon(URL iconUrl) throws IOException {
@@ -213,6 +215,6 @@ public class ChannelServiceImplTest {
     }
 
     private static URL getDefaultIconUrl() {
-        return ChannelServiceImplTest.class.getResource("/bundle_icon.png");
+        return ChannelServiceImplTest.class.getResource(DEFAULT_ICON_PATH);
     }
 }
