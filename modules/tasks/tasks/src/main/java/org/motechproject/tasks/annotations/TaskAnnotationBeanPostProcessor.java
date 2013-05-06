@@ -93,7 +93,7 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         String moduleName = taskChannel.moduleName();
         String moduleVersion = taskChannel.moduleVersion();
 
-        Channel channel = channelService.getChannel(displayName, moduleName, moduleVersion);
+        Channel channel = channelService.getChannel(moduleName);
 
         if (channel == null) {
             channel = new Channel(displayName, moduleName, moduleVersion);

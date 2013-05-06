@@ -1,6 +1,5 @@
 package org.motechproject.tasks.repository;
 
-import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@View(name = "by_channelInfo", map = "function(doc) { if(doc.type === 'Channel') emit([doc.displayName, doc.moduleName, doc.moduleVersion]); }")
+@View(name = "by_moduleName", map = "function(doc) { if(doc.type === 'Channel') emit(doc.moduleName); }")
 public class AllChannels extends MotechBaseRepository<Channel> {
 
     @Autowired
@@ -21,7 +20,7 @@ public class AllChannels extends MotechBaseRepository<Channel> {
     }
 
     public void addOrUpdate(Channel channel) {
-        Channel existingChannel = byChannelInfo(channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion());
+        Channel existingChannel = byModuleName(channel.getModuleName());
 
         if (existingChannel == null) {
             add(channel);
@@ -37,8 +36,8 @@ public class AllChannels extends MotechBaseRepository<Channel> {
         }
     }
 
-    public Channel byChannelInfo(final String displayName, final String moduleName, final String moduleVersion) {
-        List<Channel> channels = queryView("by_channelInfo", ComplexKey.of(displayName, moduleName, moduleVersion));
+    public Channel byModuleName(final String moduleName) {
+        List<Channel> channels = queryView("by_moduleName", moduleName);
         return channels.isEmpty() ? null : channels.get(0);
     }
 

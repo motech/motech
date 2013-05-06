@@ -61,34 +61,24 @@ public class ChannelControllerTest {
 
     @Test
     public void shouldGetChannelIcon() throws IOException {
-        String moduleName = "test";
-        String moduleVersion = "0.15";
-
-        verifyGetChannelIcon(moduleName, moduleVersion, times(1));
+        verifyGetChannelIcon("test", times(1));
     }
 
     @Test
-    public void shouldNotGetChannelIconWhenNameOrVersionIsEmpty() throws IOException {
-        String moduleName = "test";
-        String moduleVersion = "0.15";
+    public void shouldNotGetChannelIconWhenNameIsEmpty() throws IOException {
         VerificationMode mode = never();
 
-        verifyGetChannelIcon(moduleName, "", mode);
-        verifyGetChannelIcon("", moduleVersion, mode);
-        verifyGetChannelIcon("", "", mode);
-
-        verifyGetChannelIcon(moduleName, null, mode);
-        verifyGetChannelIcon(null, moduleVersion, mode);
-        verifyGetChannelIcon(null, null, mode);
+        verifyGetChannelIcon("", mode);
+        verifyGetChannelIcon(null, mode);
     }
 
-    private void verifyGetChannelIcon(String moduleName, String moduleVersion, VerificationMode mode) throws IOException {
+    private void verifyGetChannelIcon(String moduleName, VerificationMode mode) throws IOException {
         BundleIcon icon = new BundleIcon(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, "image/jpeg");
 
-        when(channelService.getChannelIcon(moduleName, moduleVersion)).thenReturn(icon);
+        when(channelService.getChannelIcon(moduleName)).thenReturn(icon);
         when(response.getOutputStream()).thenReturn(outputStream);
 
-        controller.getChannelIcon(moduleName, moduleVersion, response);
+        controller.getChannelIcon(moduleName, response);
 
         verify(response, mode).setStatus(HttpServletResponse.SC_OK);
         verify(response, mode).setContentLength(icon.getContentLength());

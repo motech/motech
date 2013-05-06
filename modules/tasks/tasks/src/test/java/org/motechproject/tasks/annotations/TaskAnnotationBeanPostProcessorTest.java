@@ -149,7 +149,7 @@ public class TaskAnnotationBeanPostProcessorTest {
         channel.addActionTaskEvent(new ActionEvent(ACTION_DISPLAY_NAME, ACTION_DISPLAY_NAME, "", null));
         channel.addActionTaskEvent(new ActionEvent(ACTION_DISPLAY_NAME, "", TestAction.class.getName(), "action", null));
 
-        when(channelService.getChannel(CHANNEL_NAME, MODULE_NAME, MODULE_VERSION)).thenReturn(channel);
+        when(channelService.getChannel(MODULE_NAME)).thenReturn(channel);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
 
@@ -187,7 +187,7 @@ public class TaskAnnotationBeanPostProcessorTest {
     public void shouldNotRegisterSameActionTwice() {
         Channel channel = new Channel(CHANNEL_NAME, MODULE_NAME, MODULE_VERSION);
 
-        when(channelService.getChannel(CHANNEL_NAME, MODULE_NAME, MODULE_VERSION)).thenReturn(channel);
+        when(channelService.getChannel(MODULE_NAME)).thenReturn(channel);
 
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         processor.postProcessAfterInitialization(new TestActionWithoutParam(), null);

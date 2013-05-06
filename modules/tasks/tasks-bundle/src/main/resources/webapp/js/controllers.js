@@ -341,7 +341,7 @@
             for (i = 0; i < $scope.channels.length; i += 1) {
                 channel = $scope.channels[i];
 
-                if (channel.displayName === channelName && channel.moduleName === moduleName && channel.moduleVersion === moduleVersion) {
+                if (channel.moduleName === moduleName) {
                     selected = {
                         display: channelName,
                         channel: channelName,

@@ -130,7 +130,7 @@
                     <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
                         <td>
                             <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}&moduleVersion={{activity.trigger.moduleVersion}}" class="recent-activity-img"/>
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>
                             </div>
                         </td>
                         <td>
@@ -140,7 +140,7 @@
                         </td>
                         <td>
                             <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}&moduleVersion={{activity.action.moduleVersion}}" class="recent-activity-img"/>
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
                             </div>
                         </td>
                         <td><span class="recent-name-first">{{ activity.name }}<br></span>

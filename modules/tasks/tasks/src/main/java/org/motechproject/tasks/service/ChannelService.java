@@ -15,8 +15,8 @@ public interface ChannelService {
 
     List<Channel> getAllChannels();
 
-    Channel getChannel(String displayName, String moduleName, String moduleVersion);
+    Channel getChannel(String moduleName);
 
-    BundleIcon getChannelIcon(String moduleName, String version) throws IOException;
+    BundleIcon getChannelIcon(String moduleName) throws IOException;
 
 }

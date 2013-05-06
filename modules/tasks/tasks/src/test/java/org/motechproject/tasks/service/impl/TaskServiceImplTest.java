@@ -115,7 +115,7 @@ public class TaskServiceImplTest {
     public void shouldThrowActionNotFoundExceptionWhenChannelNotContainsActions() throws ActionNotFoundException {
         Channel c = new Channel();
 
-        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+        when(channelService.getChannel("test")).thenReturn(c);
 
         taskService.getActionEventFor(new Task(null, action, null, null));
     }
@@ -125,7 +125,7 @@ public class TaskServiceImplTest {
         Channel c = new Channel();
         c.setActionTaskEvents(new ArrayList<ActionEvent>());
 
-        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+        when(channelService.getChannel("test")).thenReturn(c);
 
         taskService.getActionEventFor(new Task(null, action, null, null));
     }
@@ -138,7 +138,7 @@ public class TaskServiceImplTest {
         Channel c = new Channel();
         c.setActionTaskEvents(actionEvents);
 
-        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+        when(channelService.getChannel("test")).thenReturn(c);
 
         taskService.getActionEventFor(new Task(null, action, null, null));
     }
@@ -154,7 +154,7 @@ public class TaskServiceImplTest {
         Channel c = new Channel();
         c.setActionTaskEvents(asList(expected));
 
-        when(channelService.getChannel("test", "test", "0.14")).thenReturn(c);
+        when(channelService.getChannel("test")).thenReturn(c);
 
         TaskEvent actual = taskService.getActionEventFor(t);
 

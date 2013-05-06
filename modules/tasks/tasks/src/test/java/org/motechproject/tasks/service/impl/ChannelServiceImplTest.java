@@ -120,9 +120,9 @@ public class ChannelServiceImplTest {
         expected.setModuleName(moduleName);
         expected.setModuleVersion(VERSION);
 
-        when(allChannels.byChannelInfo(displayName, moduleName, VERSION)).thenReturn(expected);
+        when(allChannels.byModuleName(moduleName)).thenReturn(expected);
 
-        Channel actual = channelService.getChannel(displayName, moduleName, VERSION);
+        Channel actual = channelService.getChannel(moduleName);
 
         assertNotNull(actual);
         assertEquals(expected, actual);
@@ -132,7 +132,7 @@ public class ChannelServiceImplTest {
     public void shouldThrowExceptionWhenBundleContextNotSet() throws IOException {
         whenGetChannelIcon(getDefaultIconUrl());
 
-        channelService.getChannelIcon(MODULE_NAME, VERSION);
+        channelService.getChannelIcon(MODULE_NAME);
     }
 
     @Test
@@ -143,21 +143,14 @@ public class ChannelServiceImplTest {
         when(resourceLoader.getResource(DEFAULT_ICON)).thenReturn(new ClassPathResource(DEFAULT_ICON_PATH));
         whenGetChannelIcon(getDefaultIconUrl());
 
-        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, "0.15");
+        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME);
 
         assertNotNull(bundleIcon);
         assertEquals("image/png", bundleIcon.getMime());
         assertArrayEquals(image, bundleIcon.getIcon());
         assertEquals(image.length, bundleIcon.getContentLength());
 
-        bundleIcon = channelService.getChannelIcon("faceModule", VERSION);
-
-        assertNotNull(bundleIcon);
-        assertEquals("image/png", bundleIcon.getMime());
-        assertArrayEquals(image, bundleIcon.getIcon());
-        assertEquals(image.length, bundleIcon.getContentLength());
-
-        bundleIcon = channelService.getChannelIcon("faceModule", "0.15");
+        bundleIcon = channelService.getChannelIcon("faceModule");
 
         assertNotNull(bundleIcon);
         assertEquals("image/png", bundleIcon.getMime());
@@ -173,7 +166,7 @@ public class ChannelServiceImplTest {
         when(resourceLoader.getResource(DEFAULT_ICON)).thenReturn(new ClassPathResource(DEFAULT_ICON_PATH));
         whenGetChannelIcon(null);
 
-        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
+        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME);
 
         assertNotNull(bundleIcon);
         assertEquals("image/png", bundleIcon.getMime());
@@ -188,7 +181,7 @@ public class ChannelServiceImplTest {
 
         whenGetChannelIcon(getDefaultIconUrl());
 
-        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME, VERSION);
+        BundleIcon bundleIcon = channelService.getChannelIcon(MODULE_NAME);
 
         assertNotNull(bundleIcon);
         assertEquals("image/png", bundleIcon.getMime());
