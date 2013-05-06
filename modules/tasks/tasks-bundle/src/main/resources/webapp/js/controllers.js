@@ -1221,5 +1221,15 @@
             $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
         };
 
+        $scope.clearHistory = function () {
+            motechConfirm('history.confirm.clearHistory', 'history.confirm.clear',function (r) {
+                if (!r) {
+                    return;
+                }
+                Activities.remove({taskId: $routeParams.taskId});
+                $scope.activities = [];
+                $scope.search();
+            });
+        };
     });
 }());

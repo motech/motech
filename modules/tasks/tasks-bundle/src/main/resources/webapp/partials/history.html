@@ -44,6 +44,7 @@
                     <select ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
                     <label class="help-inline">{{msg('header.activitiesPerPage')}}</label>
                     <select class="span1" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
+                    <a href ng-click="clearHistory()" class="btn btn-danger"> {{msg('button.clearHistory')}}</a>
                 </div>
                 <div class="box-content clearfix" ng-hide="activities.length == 0">
                     <table class="table table-striped table-lightblue table-bordered table-recent-activity-task table-condensed">
@@ -94,7 +95,10 @@
                     {{msg('info.notFoundActivities')}}
                 </div>
             </div>
-            <div class="inside"><a href="#/task/" class="btn btn-primary"> {{msg('button.back')}}</a></div>
+            <div class="inside">
+                <a href ng-click="clearHistory()" class="btn btn-danger"> {{msg('button.clearHistory')}}</a>
+                <a href="#/task/" class="btn btn-primary"> {{msg('button.back')}}</a>
+            </div>
         </div>
     </div>
 </div>

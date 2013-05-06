@@ -9,7 +9,9 @@ import org.motechproject.tasks.service.TaskActivityService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -57,5 +59,11 @@ public class ActivityControllerTest {
 
         verify(activityService).getTaskActivities(TASK_ID);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldRemoveAllActivitiesForTask() {
+        controller.deleteActivitiesForTask(TASK_ID);
+        verify(activityService).deleteActivitiesForTask(TASK_ID);
     }
 }

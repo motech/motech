@@ -3,11 +3,13 @@ package org.motechproject.tasks.web;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -30,5 +32,11 @@ public class ActivityController {
     @ResponseBody
     public List<TaskActivity> getTaskActivities(@PathVariable String taskId) {
         return activityService.getTaskActivities(taskId);
+    }
+
+    @RequestMapping(value = "/activity/{taskId}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteActivitiesForTask(@PathVariable String taskId) {
+        activityService.deleteActivitiesForTask(taskId);
     }
 }
