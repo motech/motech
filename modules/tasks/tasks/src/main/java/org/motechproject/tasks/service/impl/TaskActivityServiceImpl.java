@@ -4,7 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.ex.TaskException;
+import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 
 @Service
 public class TaskActivityServiceImpl implements TaskActivityService {
@@ -27,12 +29,12 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Deprecated
     @Override
     public void addError(Task task, String message) {
-        addError(task, new TaskException(message));
+        addError(task, new TaskHandlerException(TRIGGER, message));
     }
 
     @Override
-    public void addError(Task task, TaskException e) {
-        allTaskActivities.add(new TaskActivity(e.getMessageKey(), e.getFields(), task.getId(), TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e)));
+    public void addError(Task task, TaskHandlerException e) {
+        allTaskActivities.add(new TaskActivity(e.getMessage(), e.getArgs(), task.getId(), TaskActivityType.ERROR, ExceptionUtils.getStackTrace(e)));
     }
 
     @Override

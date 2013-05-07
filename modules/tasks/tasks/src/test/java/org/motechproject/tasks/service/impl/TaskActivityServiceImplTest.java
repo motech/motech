@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.ex.TaskException;
-import org.motechproject.tasks.ex.TaskTriggerException;
+import org.motechproject.tasks.events.constants.TaskFailureCause;
+import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;
 
@@ -28,6 +28,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.domain.TaskActivityType.SUCCESS;
 import static org.motechproject.tasks.domain.TaskActivityType.WARNING;
+import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 
 public class TaskActivityServiceImplTest {
     private static final String TASK_ID = "12345";
@@ -93,7 +94,7 @@ public class TaskActivityServiceImplTest {
     @Test
     public void shouldAddErrorActivityWithTaskException() {
         String messageKey = "error.notFoundTrigger";
-        TaskException exception = new TaskException(messageKey, ERROR_FIELD);
+        TaskHandlerException exception = new TaskHandlerException(TRIGGER, messageKey, ERROR_FIELD);
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
@@ -146,7 +147,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskWarningActivityWithGivenException() {
-        TaskTriggerException exception = new TaskTriggerException("trigger.exception", new TaskException("task.exception"));
+        TaskHandlerException exception = new TaskHandlerException(TRIGGER, "trigger.exception", new TaskHandlerException(TRIGGER, "task.exception"));
         String messageKey = "warning.manipulation";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
