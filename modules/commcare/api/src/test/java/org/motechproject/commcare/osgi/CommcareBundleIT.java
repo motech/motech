@@ -14,7 +14,6 @@ import java.io.IOException;
 
 public class CommcareBundleIT extends BaseOsgiIT {
 
-
     public void testCommcareUserService() {
         CommcareUserService service = (CommcareUserService) verifyServiceAvailable(CommcareUserService.class.getName());
         assertNotNull(service);

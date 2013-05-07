@@ -1,45 +1,59 @@
 package org.motechproject.commcare.domain;
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonMethod;
+import org.codehaus.jackson.annotate.JsonProperty;
 
+@JsonAutoDetect(JsonMethod.NONE)
 public class SettingsDto {
-    private String commcareBaseUrl;
-    private String commcareDomain;
-    private String username;
-    private String password;
+
+    @JsonProperty
+    private CommcareAccountSettings accountSettings;
+
+    @JsonProperty
     private String eventStrategy;
 
+    @JsonProperty
+    private boolean forwardForms;
+    @JsonProperty
+    private boolean forwardCases;
+    @JsonProperty
+    private boolean forwardFormStubs;
+
+    public SettingsDto() {
+        this.accountSettings = new CommcareAccountSettings();
+    }
+
     public String getCommcareBaseUrl() {
-        return commcareBaseUrl;
+        return accountSettings.getCommcareBaseUrl();
     }
 
     public void setCommcareBaseUrl(String commcareBaseUrl) {
-        this.commcareBaseUrl = commcareBaseUrl;
+        this.accountSettings.setCommcareBaseUrl(commcareBaseUrl);
     }
 
     public String getCommcareDomain() {
-        return commcareDomain;
+        return accountSettings.getCommcareDomain();
     }
 
     public void setCommcareDomain(final String commcareDomain) {
-        this.commcareDomain = commcareDomain;
+        this.accountSettings.setCommcareDomain(commcareDomain);
     }
 
     public String getUsername() {
-        return username;
+        return accountSettings.getUsername();
     }
 
     public void setUsername(final String username) {
-        this.username = username;
+        this.accountSettings.setUsername(username);
     }
 
     public String getPassword() {
-        return password;
+        return accountSettings.getPassword();
     }
 
     public void setPassword(final String password) {
-        this.password = password;
+        this.accountSettings.setPassword(password);
     }
 
     public String getEventStrategy() {
@@ -50,29 +64,30 @@ public class SettingsDto {
         this.eventStrategy = eventStrategy;
     }
 
-    @JsonIgnore
-    public boolean isValid() {
-        if (StringUtils.isBlank(commcareBaseUrl)) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(commcareDomain)) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(username)) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(password)) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(eventStrategy)) {
-            return false;
-        }
-
-        return true;
+    @JsonProperty("forwardForms")
+    public boolean shouldForwardForms() {
+        return forwardForms;
     }
 
+    public void setForwardForms(boolean forwardForms) {
+        this.forwardForms = forwardForms;
+    }
+
+    @JsonProperty("forwardCases")
+    public boolean shouldForwardCases() {
+        return forwardCases;
+    }
+
+    public void setForwardCases(boolean forwardCases) {
+        this.forwardCases = forwardCases;
+    }
+
+    @JsonProperty("forwardFormStubs")
+    public boolean shouldForwardFormStubs() {
+        return forwardFormStubs;
+    }
+
+    public void setForwardFormStubs(boolean forwardFormStubs) {
+        this.forwardFormStubs = forwardFormStubs;
+    }
 }

@@ -29,7 +29,7 @@ import java.io.IOException;
 public class CasesController {
     private static final Logger LOG = LoggerFactory.getLogger(CasesController.class);
 
-    private static final String CASE_EVENT_STRATEGY_KEY = "case.events.send.with.all.data";
+    private static final String CASE_EVENT_STRATEGY_KEY = "eventStrategy";
     private static final String FULL_DATA_EVENT = "full";
     private static final String PARTIAL_DATA_EVENT = "partial";
 

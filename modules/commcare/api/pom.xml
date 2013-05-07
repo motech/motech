@@ -1,20 +1,27 @@
 <?xml version="1.0"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.20-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech-commcare-api</artifactId>
     <version>0.20-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
     <name>MOTECH CommCare API</name>
+
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -64,8 +71,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -99,6 +108,7 @@
                     </instructions>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -118,6 +128,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
@@ -142,6 +153,31 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                        <configuration>
+                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
+                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
+                            <requireUseStrict>true</requireUseStrict>
+                            <predefinedVars>
+                                $, angular, blockUI, unblockUI, handleWithStackTrace, alertHandler,
+                                jConfirm, jQuery, parseUri
+                            </predefinedVars>
+                            <failOnIssues>${jslint.enable}</failOnIssues>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
 </project>

@@ -1,0 +1,34 @@
+<div class="commcare">
+
+    <div ng-repeat="module in modules">
+
+        <fieldset>
+            <legend>{{ module.name }}</legend>
+
+            <div ng-repeat="form in module.formSchemas">
+
+                <div class="form-schema-group">
+                    <span>{{ form.name }}</span>
+                    <button class="btn" data-toggle="modal" href="#form-schema-{{$parent.$index}}-{{$index}}">View</button>
+
+                    <div id="form-schema-{{$parent.$index}}-{{$index}}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+                            Module: <b>{{ module.name }}</b>&nbsp;&nbsp;Form: <b>{{ form.name }}</b>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>{{ form }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </fieldset>
+
+    </div>
+
+</div>
