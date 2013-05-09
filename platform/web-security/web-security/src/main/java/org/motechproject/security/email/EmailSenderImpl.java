@@ -5,6 +5,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -14,6 +15,7 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -35,8 +37,12 @@ public class EmailSenderImpl implements EmailSender {
     @Autowired
     private PlatformSettingsService settingsService;
 
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
+
     @Override
-    public void sendResecoveryEmail(final PasswordRecovery recovery) {
+    public void sendResecoveryEmail(final PasswordRecovery recovery, final Locale locale) {
+
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws MessagingException {
@@ -45,7 +51,7 @@ public class EmailSenderImpl implements EmailSender {
                 message.setFrom("noreply@motechsuite.org");
                 message.setSubject(RECOVERY_SUBJECT);
 
-                Map<String, Object> model = templateParams(recovery, "reset");
+                Map<String, Object> model = templateParams(recovery, "reset", locale);
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);
 
                 // send as html
@@ -56,7 +62,7 @@ public class EmailSenderImpl implements EmailSender {
     }
 
     @Override
-    public void sendOneTimeToken(final PasswordRecovery recovery) {
+    public void sendOneTimeToken(final PasswordRecovery recovery, final Locale locale) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws MessagingException {
@@ -65,7 +71,7 @@ public class EmailSenderImpl implements EmailSender {
                 message.setFrom("noreply@motechsuite.org");
                 message.setSubject(ONE_TIME_TOKEN_SUBJECT);
 
-                Map<String, Object> model = templateParams(recovery, "onetimetoken");
+                Map<String, Object> model = templateParams(recovery, "onetimetoken", locale);
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, ONE_TIME_TOKEN_TEMPLATE, model);
 
                 // send as html
@@ -75,7 +81,7 @@ public class EmailSenderImpl implements EmailSender {
         mailSender.send(preparator);
     }
 
-    public void sendLoginInfo(final MotechUser user,final String password) {
+    public void sendLoginInfo(final MotechUser user, final String password, final Locale locale) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws MessagingException {
@@ -84,18 +90,19 @@ public class EmailSenderImpl implements EmailSender {
                 message.setFrom("noreply@motechsuite.org");
                 message.setSubject(LOGIN_INFORMATION_SUBJECT);
 
-                Map<String, Object> model = loginInformationParams(user, password);
+                Map<String, Object> model = loginInformationParams(user, password, locale);
                 String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, LOGIN_INFORMATION_TEMPLATE, model);
 
                 // send as html
                 message.setText(text, true);
             }
         };
+
         mailSender.send(preparator);
     }
 
 
-    private Map<String, Object> loginInformationParams(MotechUser user, String password) {
+    private Map<String, Object> loginInformationParams(MotechUser user, String password, Locale locale) {
         Map<String, Object> params = new HashMap<>();
 
         String link = settingsService.getPlatformSettings().getServerUrl();
@@ -103,18 +110,22 @@ public class EmailSenderImpl implements EmailSender {
         params.put("link", link);
         params.put("user", user.getUserName());
         params.put("password", password);
+        params.put("messages", messageSource);
+        params.put("locale", locale);
 
         return params;
     }
 
-     private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
+    private Map<String, Object> templateParams(PasswordRecovery recovery, String flag, Locale locale) {
         Map<String, Object> params = new HashMap<>();
 
         String link = joinUrls(settingsService.getPlatformSettings().getServerUrl(),
-                "/module/websecurity/api/"+flag+"?token=") + recovery.getToken();
+                "/module/websecurity/api/" + flag + "?token=") + recovery.getToken();
 
         params.put("link", link);
         params.put("user", recovery.getUsername());
+        params.put("messages", messageSource);
+        params.put("locale", locale);
 
         return params;
     }

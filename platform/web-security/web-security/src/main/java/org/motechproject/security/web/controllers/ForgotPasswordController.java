@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 @Controller
 public class ForgotPasswordController {
@@ -41,10 +42,11 @@ public class ForgotPasswordController {
     @RequestMapping(value = "/forgot", method = RequestMethod.POST)
     public ModelAndView forgotPost(@RequestParam String email, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("forgotProcessed");
-        mav.addObject(PAGE_LANG, cookieLocaleResolver.resolveLocale(request));
+        Locale locale = cookieLocaleResolver.resolveLocale(request);
+        mav.addObject(PAGE_LANG, locale);
 
         try {
-            recoveryService.passwordRecoveryRequest(email);
+            recoveryService.passwordRecoveryRequest(email,locale);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
             LOG.debug("Request for a nonexistent email" ,e);
@@ -68,10 +70,11 @@ public class ForgotPasswordController {
     @RequestMapping(value = "/forgotOpenId", method = RequestMethod.POST)
     public ModelAndView forgotOpenIdPost(@RequestParam String email, HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("forgotProcessed");
-        mav.addObject(PAGE_LANG, cookieLocaleResolver.resolveLocale(request));
+        Locale locale = cookieLocaleResolver.resolveLocale(request);
+        mav.addObject(PAGE_LANG, locale);
 
         try {
-            recoveryService.oneTimeTokenOpenId(email);
+            recoveryService.oneTimeTokenOpenId(email, locale);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
             LOG.debug("Request for a nonexistent email" ,e);

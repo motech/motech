@@ -47,12 +47,12 @@ public class ForgotPasswordControllerTest {
 
         assertEquals("forgotProcessed", mav.getViewName());
         assertEquals(Locale.ENGLISH, mav.getModel().get("pageLang"));
-        verify(recoveryService).passwordRecoveryRequest(EMAIL);
+        verify(recoveryService).passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
     }
 
     @Test
     public void testInvalidEmail() throws UserNotFoundException {
-        doThrow(new UserNotFoundException()).when(recoveryService).passwordRecoveryRequest(EMAIL);
+        doThrow(new UserNotFoundException()).when(recoveryService).passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
         when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.ENGLISH);
 
         ModelAndView mav = controller.forgotPost(EMAIL, request);
@@ -60,6 +60,6 @@ public class ForgotPasswordControllerTest {
         assertEquals("forgotProcessed", mav.getViewName());
         assertEquals(Locale.ENGLISH, mav.getModel().get("pageLang"));
         assertEquals("security.forgot.noSuchUser", mav.getModel().get("error"));
-        verify(recoveryService).passwordRecoveryRequest(EMAIL);
+        verify(recoveryService).passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
     }
 }

@@ -1,15 +1,19 @@
+#macro( msg $key )
+    $messages.getMessage($key,null,$locale)
+#end
+
 <html>
 <body>
 
-<strong>Hello $user</strong>
+    <strong>#msg('email.hello') $user</strong>
 
-    <p>Administrator added your account to MOTECH</p>
+    <p>#msg('email.login_info_msg1')</p>
 
-    <p>If you want login go to page: <a href="$link">$link</a></p>
-    <p>and use this login and password information.</p>
+    <p>#msg('email.login_info_msg2') <a href="$link">$link</a></p>
+    <p>#msg('email.login_info_msg3')</p>
 
-    <p>Login: $user</p>
-    <p>Password: $password</p>
+    <p>#msg('email.login'): $user</p>
+    <p>#msg('email.password'): $password</p>
 
 </body>
 </html>

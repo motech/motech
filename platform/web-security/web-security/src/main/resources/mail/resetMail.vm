@@ -1,13 +1,15 @@
+#macro( msg $key )
+    $messages.getMessage($key,null,$locale)
+#end
+
 <html>
 <body>
+    <strong>#msg('email.hello') $user </strong>
 
-<strong>Hello $user</strong>
-
-    <p>Someone has opened a password recovery request for your account. If it was you, click the following link in order to
-    reset your password:</p>
+    <p>#msg('email.reset_body')</p>
 
     <p><a href="$link">$link</a><p>
 
-    <p> If you did not request password recovery please ignore this message.</p>
+    <p>#msg('email.footer')</p>
 </body>
 </html>

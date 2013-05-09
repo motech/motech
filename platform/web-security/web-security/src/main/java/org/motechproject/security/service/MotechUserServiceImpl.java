@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -139,7 +140,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public void sendLoginInformation(String userName, String password) {
         MotechUser user = allMotechUsers.findByUserName(userName);
-        emailSender.sendLoginInfo(user, password);
+        emailSender.sendLoginInfo(user, password, Locale.ENGLISH);
     }
 
     private void refreshUserContextIfActive(String userName) {
