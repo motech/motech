@@ -40,8 +40,7 @@ public class AbstractTaskBundleIT extends BaseOsgiIT {
 
         LOG.info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
 
-        return channelService.getChannel(channelName, props.getProperty("module.name"),
-                props.getProperty("module.version"));
+        return channelService.getChannel(props.getProperty("module.name"));
     }
 
     protected TaskEvent findTaskEventBySubject(List<? extends TaskEvent> taskEvents, String subject) {

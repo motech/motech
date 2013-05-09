@@ -49,7 +49,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ActionEvent getActionEventFor(final Task task) throws ActionNotFoundException {
         TaskActionInformation actionInfo = task.getAction();
-        Channel channel = channelService.getChannel(actionInfo.getChannelName(), actionInfo.getModuleName(), actionInfo.getModuleVersion());
+        Channel channel = channelService.getChannel(actionInfo.getModuleName());
         ActionEvent event = null;
 
         if (channel.getActionTaskEvents() != null) {

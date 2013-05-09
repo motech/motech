@@ -67,12 +67,12 @@ public class AllChannelsIT extends SpringIntegrationTest {
         assertEquals(channels, channelList);
 
         Channel channel = channelList.get(0);
-        Channel actual = allChannels.byChannelInfo(channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion());
+        Channel actual = allChannels.byModuleName(channel.getModuleName());
 
         assertEquals(channel, actual);
 
         channel = channelList.get(1);
-        actual = allChannels.byChannelInfo(channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion());
+        actual = allChannels.byModuleName(channel.getModuleName());
 
         assertEquals(channel, actual);
 

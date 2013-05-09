@@ -31,7 +31,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         int tries = 0;
 
         do {
-            fromFile = channelService.getChannel("test", "test", "0.15");
+            fromFile = channelService.getChannel("test");
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
@@ -39,7 +39,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         assertNotNull(fromFile);
 
         AllChannels allChannels = getApplicationContext().getBean(AllChannels.class);
-        Channel fromDB = allChannels.byChannelInfo("test", "test", "0.15");
+        Channel fromDB = allChannels.byModuleName("test");
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);

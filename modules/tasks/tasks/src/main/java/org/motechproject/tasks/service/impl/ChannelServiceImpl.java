@@ -15,7 +15,6 @@ import org.motechproject.tasks.validation.ChannelValidator;
 import org.motechproject.tasks.validation.ValidationResult;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,13 +92,13 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public Channel getChannel(final String displayName, final String moduleName, final String moduleVersion) {
-        return allChannels.byChannelInfo(displayName, moduleName, moduleVersion);
+    public Channel getChannel(final String moduleName) {
+        return allChannels.byModuleName(moduleName);
     }
 
     @Override
-    public BundleIcon getChannelIcon(String moduleName, String version) throws IOException {
-        Bundle bundle = getModule(moduleName, version);
+    public BundleIcon getChannelIcon(String moduleName) throws IOException {
+        Bundle bundle = getModule(moduleName);
         BundleIcon bundleIcon = null;
         URL iconURL;
 
@@ -127,7 +126,7 @@ public class ChannelServiceImpl implements ChannelService {
         this.bundleContext = bundleContext;
     }
 
-    private Bundle getModule(String moduleName, String version) {
+    private Bundle getModule(String moduleName) {
         if (bundleContext == null) {
             throw new IllegalArgumentException("Bundle context not set");
         }
@@ -135,14 +134,14 @@ public class ChannelServiceImpl implements ChannelService {
         Bundle bundle = null;
 
         for (Bundle b : bundleContext.getBundles()) {
-            if (b.getSymbolicName().equalsIgnoreCase(String.format("org.motechproject.%s", moduleName)) && b.getVersion().equals(Version.parseVersion(version))) {
+            if (b.getSymbolicName().equalsIgnoreCase(String.format("org.motechproject.%s", moduleName))) {
                 bundle = b;
                 break;
             }
         }
 
         if (bundle == null) {
-            LOG.warn(String.format("Module with moduleName [%s] and version [%s] not found", moduleName, version));
+            LOG.warn(String.format("Module with moduleName: %s not found", moduleName));
         }
 
         return bundle;

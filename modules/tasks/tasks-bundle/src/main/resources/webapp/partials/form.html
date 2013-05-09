@@ -8,7 +8,7 @@
             <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedTrigger)}}">
                 <ul class="trigger droppable" droppable>
                     <li class="task-panel dragged" ng-show="draggedTrigger" draggable double-click>
-                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}&moduleVersion={{draggedTrigger.version}}" class="panel-img"/></div>
+                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedTrigger.module}}" class="panel-img"/></div>
                         <span>{{msg(draggedTrigger.display)}}</span>
                         <div class="popover left" ng-hide="selectedTrigger">
                             <div class="arrow"></div>
@@ -30,7 +30,7 @@
             <div class="panel-input" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{getTooltipMsg(selectedAction)}}">
                 <ul class="action droppable" droppable>
                     <li class="task-panel dragged" ng-show="draggedAction" draggable double-click>
-                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}&moduleVersion={{draggedAction.version}}" class="panel-img"/></div>
+                        <div><img ng-src="../tasks/api/channel/icon?moduleName={{draggedAction.module}}" class="panel-img"/></div>
                         <span>{{msg(draggedAction.display)}}</span>
                         <div class="popover right" ng-hide="selectedAction">
                             <div class="arrow"></div>
@@ -60,7 +60,7 @@
         <ul class="task-selector droppable" style="position: relative;" droppable>
             <li class="task-panel draggable" ng-repeat="channel in channels | filterPagination:currentPage.channels*pageSize.channels | limitTo:pageSize.channels" draggable data-channel-name="{{channel.displayName}}" data-module-name="{{channel.moduleName}}" data-module-version="{{channel.moduleVersion}}">
                 <div task-popover rel="popover">
-                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" /></div>
+                    <div><img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}" class="panel-img" /></div>
                     <span>{{msg(channel.displayName)}}</span>
                     <div class="content-task" style="display:none;">
                         <div class="popover-titles">{{msg('tooltip.availableTriggers')}}</div>
