@@ -44,11 +44,6 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
-
-    <osgi:reference id="motechPermissionServiceOsgi"
-                    interface="org.motechproject.security.service.MotechPermissionService"/>
-
     <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
 
     <bean id="eventAnnotationBeanPostProcessor"

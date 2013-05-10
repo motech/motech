@@ -120,7 +120,7 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
     public void testSmsWebServiceAsAuthorizedUser() throws InterruptedException, IOException {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("foo", "bar", "foobar@a.com", "foobar", asList("Sms-api Bundle"));
+        motechUserService.register("foo", "bar", "foobar@a.com", "foobar", asList("Sms Admin"));
 
         PollingHttpClient httpClient = new PollingHttpClient();
         HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));

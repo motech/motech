@@ -1,0 +1,6 @@
+[
+    {
+        "roleName":"Test Role",
+        "permissionNames": ["perm1", "perm2"]
+    }
+]

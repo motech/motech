@@ -24,9 +24,4 @@
     <bean id="messageCampaignDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-message-campaign"/>
     </bean>
-
-
-    <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">
-        <property name="moduleName" value="message-campaign"/>
-    </bean>
 </beans>

@@ -113,7 +113,7 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     public void testControllersAsAuthorizedUser() throws Exception {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("user-mc-auth", "pass", "testmcauth@test.com", "test", asList("Message-campaign Bundle"));
+        motechUserService.register("user-mc-auth", "pass", "testmcauth@test.com", "test", asList("Campaign Manager"));
 
         PollingHttpClient httpClient = new PollingHttpClient();
 

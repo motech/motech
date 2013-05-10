@@ -24,10 +24,6 @@
         <property name="moduleName" value="sms-api"/>
     </bean>
 
-    <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">
-        <property name="moduleName" value="sms-api"/>
-    </bean>
-
     <bean id="smsDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-sms-audit"/>
     </bean>

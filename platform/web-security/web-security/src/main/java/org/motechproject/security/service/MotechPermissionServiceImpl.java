@@ -28,7 +28,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
     @Override
     public void addPermission(PermissionDto permission) {
         if (allMotechPermissions.findByPermissionName(permission.getPermissionName()) == null) {
-            allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(), permission.getBundleName()));
+            allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(), null));
         }
     }
 

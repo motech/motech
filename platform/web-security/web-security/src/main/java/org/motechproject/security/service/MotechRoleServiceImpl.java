@@ -42,12 +42,14 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         motechRole.setRoleName(role.getRoleName());
         motechRole.setPermissionNames(role.getPermissionNames());
         List<MotechUser> users = (List<MotechUser>) allMotechUsers.findByRole(role.getOriginalRoleName());
+
         for (MotechUser user : users) {
             List<String> roleList = user.getRoles();
             roleList.remove(role.getOriginalRoleName());
             roleList.add(role.getRoleName());
             allMotechUsers.update(user);
         }
+
         allMotechRoles.update(motechRole);
     }
 

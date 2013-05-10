@@ -1,0 +1,6 @@
+[
+    {
+        "roleName": "Sms Admin",
+        "permissionNames": ["smsSend"]
+    }
+]
