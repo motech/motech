@@ -1153,7 +1153,6 @@
         <module>modules/openmrs/atomfeed</module>
         <module>modules/openmrs/omod</module>
         <module>modules/openmrs/ws</module>
-        <module>modules/outbox/api</module>
         <module>modules/outbox/outbox</module>
         <module>modules/rules/api</module>
         <module>modules/sms/api</module>

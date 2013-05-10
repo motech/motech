@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox;
+package org.motechproject.outbox.server;
 
 import org.junit.Before;
 import org.junit.Test;
