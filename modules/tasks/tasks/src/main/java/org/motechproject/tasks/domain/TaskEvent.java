@@ -14,7 +14,6 @@ public abstract class TaskEvent implements Serializable {
 
     protected TaskEvent() {
         this(null, null, null);
-
     }
 
     protected TaskEvent(String description, String displayName, String subject) {
@@ -22,6 +21,8 @@ public abstract class TaskEvent implements Serializable {
         this.displayName = displayName;
         this.subject = subject;
     }
+
+    public abstract boolean containsParameter(String key);
 
     public boolean hasSubject() {
         return isNotBlank(subject);
@@ -70,7 +71,7 @@ public abstract class TaskEvent implements Serializable {
 
         return Objects.equals(this.description, other.description) &&
                 Objects.equals(this.displayName, other.displayName) &&
-                subjectEquals(other.subject);
+                equalsSubject(other.subject);
     }
 
     @Override
@@ -79,7 +80,7 @@ public abstract class TaskEvent implements Serializable {
                 description, displayName, subject);
     }
 
-    protected boolean subjectEquals(String subject) {
+    protected boolean equalsSubject(String subject) {
         return Objects.equals(this.subject, subject);
     }
 

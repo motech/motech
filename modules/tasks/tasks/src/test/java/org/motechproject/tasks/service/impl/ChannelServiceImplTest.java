@@ -33,10 +33,11 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
 public class ChannelServiceImplTest {
     private static final String MODULE_NAME = "test";
@@ -46,6 +47,9 @@ public class ChannelServiceImplTest {
 
     @Mock
     AllChannels allChannels;
+
+    @Mock
+    EventRelay eventRelay;
 
     @Mock
     BundleContext bundleContext;
@@ -65,7 +69,7 @@ public class ChannelServiceImplTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        channelService = new ChannelServiceImpl(allChannels, resourceLoader);
+        channelService = new ChannelServiceImpl(allChannels, resourceLoader, eventRelay);
     }
 
     @Test(expected = ValidationException.class)
@@ -93,7 +97,29 @@ public class ChannelServiceImplTest {
         assertEquals(MODULE_NAME, c.getModuleName());
         assertEquals(VERSION, c.getModuleVersion());
         assertEquals(1, c.getTriggerTaskEvents().size());
-        assertEquals(new TriggerEvent(null, "displayName", "subject", asList(new EventParameter("displayName", "eventKey"))), c.getTriggerTaskEvents().get(0));
+        assertEquals(new TriggerEvent("displayName", "subject", null, asList(new EventParameter("displayName", "eventKey"))), c.getTriggerTaskEvents().get(0));
+    }
+
+    @Test
+    public void shouldSendEventWhenChannelWasUpdated() {
+        EventParameter eventParameter = new EventParameter("displayName", "eventKey");
+        TriggerEvent triggerEvent = new TriggerEvent("displayName", "subject", null, Arrays.asList(eventParameter));
+
+        Channel channel = new Channel("displayName", MODULE_NAME, VERSION);
+        channel.getTriggerTaskEvents().add(triggerEvent);
+
+        when(allChannels.addOrUpdate(channel)).thenReturn(true);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+        channelService.addOrUpdate(channel);
+
+        verify(allChannels).addOrUpdate(channel);
+        verify(eventRelay).sendEventMessage(captor.capture());
+
+        MotechEvent event = captor.getValue();
+
+        assertEquals(CHANNEL_UPDATE_SUBJECT, event.getSubject());
+        assertEquals(MODULE_NAME, event.getParameters().get(CHANNEL_MODULE_NAME));
     }
 
     @Test

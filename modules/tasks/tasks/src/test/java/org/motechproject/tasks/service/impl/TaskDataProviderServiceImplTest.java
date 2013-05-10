@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.FieldParameter;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
@@ -30,8 +32,11 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 
 public class TaskDataProviderServiceImplTest {
+    private static final String PROVIDER_ID = "12345";
     private static final String PROVIDER_NAME = "test";
 
     @Mock
@@ -43,13 +48,16 @@ public class TaskDataProviderServiceImplTest {
     @Mock
     MotechJsonReader motechJsonReader;
 
+    @Mock
+    EventRelay eventRelay;
+
     TaskDataProviderService taskDataProviderService;
 
     @Before
     public void setup() throws Exception {
         initMocks(this);
 
-        taskDataProviderService = new TaskDataProviderServiceImpl(allTaskDataProviders, motechJsonReader);
+        taskDataProviderService = new TaskDataProviderServiceImpl(allTaskDataProviders, eventRelay, motechJsonReader);
     }
 
     @Test(expected = ValidationException.class)
@@ -68,7 +76,8 @@ public class TaskDataProviderServiceImplTest {
 
     @Test
     public void shouldRegisterProviderFromInputStream() {
-        Type type = new TypeToken<TaskDataProvider>() {}.getType();
+        Type type = new TypeToken<TaskDataProvider>() {
+        }.getType();
         List<TaskDataProviderObject> objects = new ArrayList<>();
 
         List<String> lookupField = asList("lookupField");
@@ -92,7 +101,8 @@ public class TaskDataProviderServiceImplTest {
         String objectAsJson = String.format("{ displayName: 'displayName', type: 'type', lookupFields: %s, fields: [%s]}", lookupFieldsAsJson, fieldParameterAsJson);
         String providerAsJson = String.format("{ name: '%s', objects: [%s] }", PROVIDER_NAME, objectAsJson);
 
-        Type type = new TypeToken<TaskDataProvider>() {}.getType();
+        Type type = new TypeToken<TaskDataProvider>() {
+        }.getType();
         StringWriter writer = new StringWriter();
 
         List<String> lookupField = asList("lookupField");
@@ -119,12 +129,48 @@ public class TaskDataProviderServiceImplTest {
     }
 
     @Test
+    public void shouldSendEventWhenProviderWasUpdated() {
+        Type type = new TypeToken<TaskDataProvider>() {
+        }.getType();
+        List<TaskDataProviderObject> objects = new ArrayList<>();
+
+        List<String> lookupField = asList("lookupField");
+        List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
+        objects.add(new TaskDataProviderObject("displayName", "type", lookupField, fields));
+
+        TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
+
+        when(motechJsonReader.readFromStream(inputStream, type)).thenReturn(provider);
+        when(allTaskDataProviders.addOrUpdate(provider)).thenReturn(true);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+        taskDataProviderService.registerProvider(inputStream);
+
+        verify(allTaskDataProviders).addOrUpdate(provider);
+        verify(eventRelay).sendEventMessage(captor.capture());
+
+        MotechEvent event = captor.getValue();
+
+        assertEquals(DATA_PROVIDER_UPDATE_SUBJECT, event.getSubject());
+        assertEquals(PROVIDER_NAME, event.getParameters().get(DATA_PROVIDER_NAME));
+    }
+
+    @Test
     public void shouldGetProviderByName() {
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, new ArrayList<TaskDataProviderObject>());
 
         when(allTaskDataProviders.byName(PROVIDER_NAME)).thenReturn(provider);
 
         assertEquals(provider, taskDataProviderService.getProvider(PROVIDER_NAME));
+    }
+
+    @Test
+    public void shouldGetProviderById() {
+        TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, new ArrayList<TaskDataProviderObject>());
+
+        when(allTaskDataProviders.get(PROVIDER_ID)).thenReturn(provider);
+
+        assertEquals(provider, taskDataProviderService.getProviderById(PROVIDER_ID));
     }
 
     @Test

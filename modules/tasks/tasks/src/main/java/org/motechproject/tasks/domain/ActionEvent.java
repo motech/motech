@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class ActionEvent extends TaskEvent {
@@ -41,13 +42,27 @@ public class ActionEvent extends TaskEvent {
     public boolean accept(TaskActionInformation info) {
         boolean result = false;
 
-        if (hasService() && info.hasService() && serviceEquals(info.getServiceInterface(), info.getServiceMethod())) {
+        if (hasService() && info.hasService() && equalsService(info.getServiceInterface(), info.getServiceMethod())) {
             result = true;
-        } else if (hasSubject() && info.hasSubject() && subjectEquals(info.getSubject())) {
+        } else if (hasSubject() && info.hasSubject() && equalsSubject(info.getSubject())) {
             result = true;
         }
 
         return result;
+    }
+
+    @Override
+    public boolean containsParameter(String key) {
+        boolean found = false;
+
+        for (ActionParameter param : getActionParameters()) {
+            if (equalsIgnoreCase(param.getKey(), key)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public void addParameter(ActionParameter parameter, boolean changeOrder) {
@@ -71,8 +86,9 @@ public class ActionEvent extends TaskEvent {
     }
 
     public void setActionParameters(SortedSet<ActionParameter> actionParameters) {
+        this.actionParameters.clear();
+
         if (actionParameters != null) {
-            this.actionParameters.clear();
             this.actionParameters.addAll(actionParameters);
         }
     }
@@ -115,7 +131,7 @@ public class ActionEvent extends TaskEvent {
         final ActionEvent other = (ActionEvent) obj;
 
         return Objects.equals(this.actionParameters, other.actionParameters) &&
-                serviceEquals(other.serviceInterface, other.serviceMethod);
+                equalsService(other.serviceInterface, other.serviceMethod);
 
     }
 
@@ -125,7 +141,8 @@ public class ActionEvent extends TaskEvent {
                 actionParameters, serviceInterface, serviceMethod);
     }
 
-    private boolean serviceEquals(String serviceInterface, String serviceMethod) {
-        return Objects.equals(this.serviceInterface, serviceInterface) && Objects.equals(this.serviceMethod, serviceMethod);
+    private boolean equalsService(String serviceInterface, String serviceMethod) {
+        return Objects.equals(this.serviceInterface, serviceInterface) &&
+                Objects.equals(this.serviceMethod, serviceMethod);
     }
 }

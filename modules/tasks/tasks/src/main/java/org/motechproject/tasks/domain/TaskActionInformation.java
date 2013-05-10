@@ -11,16 +11,16 @@ public class TaskActionInformation extends TaskEventInformation {
     private String serviceMethod;
 
     public TaskActionInformation() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    public TaskActionInformation(String channelName, String moduleName, String moduleVersion, String subject) {
-        super(channelName, moduleName, moduleVersion, subject);
+    public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion, String subject) {
+        super(displayName, channelName, moduleName, moduleVersion, subject);
     }
 
-    public TaskActionInformation(String channelName, String moduleName, String moduleVersion,
+    public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
                                  String serviceInterface, String serviceMethod) {
-        super(channelName, moduleName, moduleVersion, null);
+        super(displayName, channelName, moduleName, moduleVersion, null);
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
     }

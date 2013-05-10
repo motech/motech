@@ -38,7 +38,7 @@ public class TaskActivity extends MotechBaseDataObject {
 
     public TaskActivity(String message, String[] fields, String task, TaskActivityType activityType, String stackTraceElement) {
         this.message = message;
-        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : null;
+        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : new String[0];
         this.task = task;
         this.date = DateTimeSourceUtil.now();
         this.activityType = activityType;
@@ -62,21 +62,15 @@ public class TaskActivity extends MotechBaseDataObject {
     }
 
     public String[] getFields() {
-        String[] results = null;
-
-        if (fields != null) {
-            results = Arrays.copyOf(fields, fields.length);
-        }
-
-        return results;
+        return Arrays.copyOf(fields, fields.length);
     }
 
     public void setFields(String[] fields) {
-        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : null;
+        this.fields = fields != null ? Arrays.copyOf(fields, fields.length) : new String[0];
     }
 
     public void setField(String field) {
-        this.fields = field != null ? new String[]{field} : null;
+        this.fields = field != null ? new String[]{field} : new String[0];
     }
 
     public DateTime getDate() {

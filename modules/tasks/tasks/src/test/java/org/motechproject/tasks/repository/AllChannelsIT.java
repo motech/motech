@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
@@ -43,13 +45,11 @@ public class AllChannelsIT extends SpringIntegrationTest {
     public void shouldAddAndUpdateChannels() throws IOException {
         List<Channel> channels = loadChannels();
 
-        allChannels.addOrUpdate(channels.get(0));
-        allChannels.addOrUpdate(channels.get(1));
-
+        assertFalse(allChannels.addOrUpdate(channels.get(0)));
+        assertFalse(allChannels.addOrUpdate(channels.get(1)));
         assertEquals(channels, allChannels.getAll());
 
-        allChannels.addOrUpdate(channels.get(1));
-
+        assertTrue(allChannels.addOrUpdate(channels.get(1)));
         assertEquals(channels, allChannels.getAll());
 
         markForDeletion(allChannels.getAll());
@@ -59,8 +59,8 @@ public class AllChannelsIT extends SpringIntegrationTest {
     public void shouldFindChannelByChannelInfo() throws Exception {
         List<Channel> channels = loadChannels();
 
-        allChannels.addOrUpdate(channels.get(0));
-        allChannels.addOrUpdate(channels.get(1));
+        assertFalse(allChannels.addOrUpdate(channels.get(0)));
+        assertFalse(allChannels.addOrUpdate(channels.get(1)));
 
         List<Channel> channelList = allChannels.getAll();
 
@@ -80,7 +80,8 @@ public class AllChannelsIT extends SpringIntegrationTest {
     }
 
     private List<Channel> loadChannels() throws IOException {
-        Type type = new TypeToken<Channel>() { }.getType();
+        Type type = new TypeToken<Channel>() {
+        }.getType();
 
         HashMap<Type, Object> typeAdapters = new HashMap<>();
         typeAdapters.put(ActionEvent.class, new ActionEventDeserializer());

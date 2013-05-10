@@ -19,12 +19,11 @@ public class AllChannels extends MotechBaseRepository<Channel> {
         super(Channel.class, connector);
     }
 
-    public void addOrUpdate(Channel channel) {
+    public boolean addOrUpdate(Channel channel) {
         Channel existingChannel = byModuleName(channel.getModuleName());
+        boolean exists = existingChannel != null;
 
-        if (existingChannel == null) {
-            add(channel);
-        } else {
+        if (exists) {
             existingChannel.setActionTaskEvents(channel.getActionTaskEvents());
             existingChannel.setTriggerTaskEvents(channel.getTriggerTaskEvents());
             existingChannel.setDescription(channel.getDescription());
@@ -33,7 +32,11 @@ public class AllChannels extends MotechBaseRepository<Channel> {
             existingChannel.setModuleVersion(channel.getModuleVersion());
 
             update(existingChannel);
+        } else {
+            add(channel);
         }
+
+        return exists;
     }
 
     public Channel byModuleName(final String moduleName) {

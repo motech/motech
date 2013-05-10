@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+
 public class TaskDataProviderObject implements Serializable {
     private static final long serialVersionUID = 1767818631190935233L;
 
@@ -14,14 +16,27 @@ public class TaskDataProviderObject implements Serializable {
     private List<FieldParameter> fields;
 
     public TaskDataProviderObject() {
-        this(null, null, new ArrayList<String>(), new ArrayList<FieldParameter>());
+        this(null, null, null, null);
     }
 
     public TaskDataProviderObject(String displayName, String type, List<String> lookupFields, List<FieldParameter> fields) {
         this.displayName = displayName;
         this.type = type;
-        this.lookupFields = lookupFields;
-        this.fields = fields;
+        this.lookupFields = lookupFields == null ? new ArrayList<String>() : lookupFields;
+        this.fields = fields == null ? new ArrayList<FieldParameter>() : fields;
+    }
+
+    public boolean containsField(String fieldKey) {
+        boolean found = false;
+
+        for (FieldParameter parameter : getFields()) {
+            if (equalsIgnoreCase(parameter.getFieldKey(), fieldKey)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public String getDisplayName() {
@@ -45,7 +60,11 @@ public class TaskDataProviderObject implements Serializable {
     }
 
     public void setLookupFields(List<String> lookupFields) {
-        this.lookupFields = lookupFields;
+        this.lookupFields.clear();
+
+        if (lookupFields != null) {
+            this.lookupFields.addAll(lookupFields);
+        }
     }
 
     public List<FieldParameter> getFields() {
@@ -53,7 +72,11 @@ public class TaskDataProviderObject implements Serializable {
     }
 
     public void setFields(List<FieldParameter> fields) {
-        this.fields = fields;
+        this.fields.clear();
+
+        if (fields != null) {
+            this.fields.addAll(fields);
+        }
     }
 
     @Override

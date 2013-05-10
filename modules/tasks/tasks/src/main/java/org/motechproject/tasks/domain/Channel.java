@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+
 @TypeDiscriminator("doc.type == 'Channel'")
 public class Channel extends MotechBaseDataObject {
     private static final long serialVersionUID = -5528351408863732084L;
@@ -37,6 +39,58 @@ public class Channel extends MotechBaseDataObject {
         this.triggerTaskEvents = triggerTaskEvents == null ? new ArrayList<TriggerEvent>() : triggerTaskEvents;
     }
 
+    public boolean containsTrigger(TaskEventInformation triggerInformation) {
+        boolean found = false;
+
+        for (TriggerEvent trigger : getTriggerTaskEvents()) {
+            if (equalsIgnoreCase(trigger.getSubject(), triggerInformation.getSubject())) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public boolean containsAction(TaskActionInformation actionInformation) {
+        boolean found = false;
+
+        for (ActionEvent action : getActionTaskEvents()) {
+            if (action.accept(actionInformation)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public TriggerEvent getTrigger(TaskEventInformation triggerInformation) {
+        TriggerEvent found = null;
+
+        for (TriggerEvent trigger : getTriggerTaskEvents()) {
+            if (equalsIgnoreCase(trigger.getSubject(), triggerInformation.getSubject())) {
+                found = trigger;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public ActionEvent getAction(TaskActionInformation actionInformation) {
+        ActionEvent found = null;
+
+        for (ActionEvent action : getActionTaskEvents()) {
+            if (action.accept(actionInformation)) {
+                found = action;
+                break;
+            }
+        }
+
+        return found;
+    }
+
     public void addActionTaskEvent(ActionEvent actionEvent) {
         actionTaskEvents.add(actionEvent);
     }
@@ -46,8 +100,9 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public void setActionTaskEvents(List<ActionEvent> actionTaskEvents) {
+        this.actionTaskEvents.clear();
+
         if (actionTaskEvents != null) {
-            this.actionTaskEvents.clear();
             this.actionTaskEvents.addAll(actionTaskEvents);
         }
     }
@@ -57,8 +112,9 @@ public class Channel extends MotechBaseDataObject {
     }
 
     public void setTriggerTaskEvents(List<TriggerEvent> triggerTaskEvents) {
+        this.triggerTaskEvents.clear();
+
         if (triggerTaskEvents != null) {
-            this.triggerTaskEvents.clear();
             this.triggerTaskEvents.addAll(triggerTaskEvents);
         }
     }
@@ -113,6 +169,7 @@ public class Channel extends MotechBaseDataObject {
                 Objects.equals(this.displayName, other.displayName) &&
                 Objects.equals(this.moduleName, other.moduleName) &&
                 Objects.equals(this.moduleVersion, other.moduleVersion);
+
     }
 
     @Override

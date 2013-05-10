@@ -31,9 +31,9 @@ public class AllTasksIT extends SpringIntegrationTest {
 
     @Test
     public void shouldAddAndUpdateTask() {
-        TaskActionInformation action = new TaskActionInformation("test", "test", "0.15", "SEND");
-        TaskEventInformation trigger = new TaskEventInformation("test", "test", "0.14", "RECEIVE");
-        Task expected = new Task(trigger, action, new HashMap<String, String>(), "name");
+        TaskActionInformation action = new TaskActionInformation("test", "test", "test", "0.15", "SEND");
+        TaskEventInformation trigger = new TaskEventInformation("test", "test", "test", "0.14", "RECEIVE");
+        Task expected = new Task("name", trigger, action, new HashMap<String, String>());
 
         allTasks.addOrUpdate(expected);
 

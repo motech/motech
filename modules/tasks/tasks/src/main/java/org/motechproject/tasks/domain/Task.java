@@ -1,12 +1,18 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @TypeDiscriminator("doc.type == 'Task'")
 public class Task extends MotechBaseDataObject {
@@ -20,24 +26,26 @@ public class Task extends MotechBaseDataObject {
     private TaskEventInformation trigger;
     private boolean enabled;
     private Map<String, String> actionInputFields;
+    private Set<TaskError> validationErrors;
 
     public Task() {
         this(null, null, null, null);
     }
 
-    public Task(TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields, String name) {
-        this(true, actionInputFields, null, null, action, trigger, name);
+    public Task(String name, TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields) {
+        this(name, trigger, action, actionInputFields, null, null, true);
     }
 
-    public Task(boolean enabled, Map<String, String> actionInputFields, Map<String, List<TaskAdditionalData>> additionalData,
-                List<Filter> filters, TaskActionInformation action, TaskEventInformation trigger, String name) {
+    public Task(String name, TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields,
+                List<Filter> filters, Map<String, List<TaskAdditionalData>> additionalData, boolean enabled) {
         this.enabled = enabled;
-        this.actionInputFields = actionInputFields;
-        this.additionalData = additionalData;
-        this.filters = filters;
+        this.actionInputFields = actionInputFields == null ? new HashMap<String, String>() : actionInputFields;
+        this.additionalData = additionalData == null ? new HashMap<String, List<TaskAdditionalData>>() : additionalData;
+        this.filters = filters == null ? new ArrayList<Filter>() : filters;
         this.action = action;
         this.trigger = trigger;
         this.name = name;
+        this.validationErrors = new HashSet<>();
     }
 
     @JsonIgnore
@@ -79,7 +87,11 @@ public class Task extends MotechBaseDataObject {
     }
 
     public void setActionInputFields(final Map<String, String> actionInputFields) {
-        this.actionInputFields = actionInputFields;
+        this.actionInputFields.clear();
+
+        if (actionInputFields != null) {
+            this.actionInputFields.putAll(actionInputFields);
+        }
     }
 
     public boolean isEnabled() {
@@ -95,7 +107,11 @@ public class Task extends MotechBaseDataObject {
     }
 
     public void setAdditionalData(final Map<String, List<TaskAdditionalData>> additionalData) {
-        this.additionalData = additionalData;
+        this.additionalData.clear();
+
+        if (additionalData != null) {
+            this.additionalData.putAll(additionalData);
+        }
     }
 
     public List<Filter> getFilters() {
@@ -103,7 +119,11 @@ public class Task extends MotechBaseDataObject {
     }
 
     public void setFilters(final List<Filter> filters) {
-        this.filters = filters;
+        this.filters.clear();
+
+        if (filters != null) {
+            this.filters.addAll(filters);
+        }
     }
 
     public String getDescription() {
@@ -112,6 +132,33 @@ public class Task extends MotechBaseDataObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addValidationErrors(Set<TaskError> validationErrors) {
+        this.validationErrors.addAll(validationErrors);
+    }
+
+    public void removeValidationError(final String message) {
+        TaskError taskError = (TaskError) CollectionUtils.find(validationErrors, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return object instanceof TaskError && ((TaskError) object).getMessage().equalsIgnoreCase(message);
+            }
+        });
+
+        validationErrors.remove(taskError);
+    }
+
+    public void setValidationErrors(Set<TaskError> validationErrors) {
+        this.validationErrors.clear();
+
+        if (validationErrors != null) {
+            this.validationErrors.addAll(validationErrors);
+        }
+    }
+
+    public Set<TaskError> getValidationErrors() {
+        return validationErrors;
     }
 
     @Override
@@ -138,20 +185,21 @@ public class Task extends MotechBaseDataObject {
                     Objects.equals(trigger, task.trigger);
         }
         if (isEqualTo) {
-            isEqualTo = Objects.equals(description,
-                    task.description) && Objects.equals(name, task.name);
+            isEqualTo = Objects.equals(description, task.description) &&
+                    Objects.equals(name, task.name) &&
+                    Objects.equals(validationErrors, task.validationErrors);
         }
         return isEqualTo;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(filters, additionalData, description, name, action, trigger, enabled, actionInputFields);
+        return Objects.hash(filters, additionalData, description, name, action, trigger, enabled, actionInputFields, validationErrors);
     }
 
     @Override
     public String toString() {
-        return String.format("Task{actionInputFields=%s, additionalData=%s, filters=%s, action='%s', description='%s', trigger='%s', name='%s', enabled=%s}",
-                actionInputFields, additionalData, filters, action, description, trigger, name, enabled);
+        return String.format("Task{filters=%s, additionalData=%s, description='%s', name='%s', action=%s, trigger=%s, enabled=%s, actionInputFields=%s, validationErrors=%s}",
+                filters, additionalData, description, name, action, trigger, enabled, actionInputFields, validationErrors);
     }
 }

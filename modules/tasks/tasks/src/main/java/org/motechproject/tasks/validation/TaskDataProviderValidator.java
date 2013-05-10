@@ -2,6 +2,12 @@ package org.motechproject.tasks.validation;
 
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
+import org.motechproject.tasks.domain.TaskError;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 public final class TaskDataProviderValidator extends GeneralValidator {
     public static final String TASK_DATA_PROVIDER = "taskDataProvider";
@@ -9,58 +15,52 @@ public final class TaskDataProviderValidator extends GeneralValidator {
     private TaskDataProviderValidator() {
     }
 
-    public static ValidationResult validate(TaskDataProvider provider) {
-        ValidationResult result = new ValidationResult();
+    public static Set<TaskError> validate(TaskDataProvider provider) {
+        Set<TaskError> errors = new HashSet<>();
 
-        result.addError(checkBlankValue(TASK_DATA_PROVIDER, "name", provider.getName()));
+        checkBlankValue(errors, TASK_DATA_PROVIDER, "name", provider.getName());
 
-        EmptyCollectionTaskError collectionError = checkEmpty(TASK_DATA_PROVIDER, "objects", provider.getObjects());
+        boolean empty = checkEmpty(errors, TASK_DATA_PROVIDER, "objects", provider.getObjects());
 
-        if (null != collectionError) {
-            result.addError(collectionError);
-        } else {
+        if (!empty) {
             for (int i = 0; i < provider.getObjects().size(); ++i) {
-                result.addErrors(validateObject(i, provider.getObjects().get(i)));
+                errors.addAll(validateObject(i, provider.getObjects().get(i)));
             }
         }
 
-        return result;
+        return errors;
     }
 
-    private static ValidationResult validateObject(int index, TaskDataProviderObject object) {
-        ValidationResult result = new ValidationResult();
+    private static Set<TaskError> validateObject(int index, TaskDataProviderObject object) {
+        Set<TaskError> errors = new HashSet<>();
         String field = "objects[" + index + "]";
 
-        result.addError(checkNullValue(TASK_DATA_PROVIDER, field, object));
+        checkNullValue(errors, TASK_DATA_PROVIDER, field, object);
 
-        if (result.isValid()) {
+        if (isEmpty(errors)) {
             String objectName = TASK_DATA_PROVIDER + "." + field;
 
-            result.addError(checkBlankValue(objectName, "displayName", object.getDisplayName()));
-            result.addError(checkBlankValue(objectName, "type", object.getType()));
+            checkBlankValue(errors, objectName, "displayName", object.getDisplayName());
+            checkBlankValue(errors, objectName, "type", object.getType());
 
-            EmptyCollectionTaskError collectionError = checkEmpty(objectName, "lookupFields", object.getLookupFields());
+            boolean empty = checkEmpty(errors, objectName, "lookupFields", object.getLookupFields());
 
-            if (null != collectionError) {
-                result.addError(collectionError);
-            } else {
+            if (!empty) {
                 for (int i = 0; i < object.getLookupFields().size(); ++i) {
-                    result.addError(checkBlankValue(objectName, "lookupFields[" + i + "]", object.getLookupFields().get(i)));
+                    checkBlankValue(errors, objectName, "lookupFields[" + i + "]", object.getLookupFields().get(i));
                 }
             }
 
-            collectionError = checkEmpty(objectName, "fields", object.getFields());
+            empty = checkEmpty(errors, objectName, "fields", object.getFields());
 
-            if (null != collectionError) {
-                result.addError(collectionError);
-            } else {
+            if (!empty) {
                 for (int i = 0; i < object.getFields().size(); ++i) {
-                    result.addErrors(validateFieldParameter(objectName, "fields[" + i + "]", object.getFields().get(i)));
+                    errors.addAll(validateFieldParameter(objectName, "fields[" + i + "]", object.getFields().get(i)));
                 }
             }
         }
 
-        return result;
+        return errors;
     }
 
 }

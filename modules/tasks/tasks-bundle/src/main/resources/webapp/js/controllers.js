@@ -234,6 +234,10 @@
                         }
                     }
 
+                    if (!$scope.selectedTrigger || !$scope.selectedAction) {
+                        return;
+                    }
+
                     for (dataSourceId in $scope.task.additionalData) {
                         ds = $scope.findDataSourceById($scope.allDataSources, dataSourceId);
                         dataSource = { '_id': ds._id, 'name': ds.name, 'objects': [], 'available': ds.objects};
@@ -241,6 +245,14 @@
                         for (i = 0; i < $scope.task.additionalData[dataSourceId].length; i += 1) {
                             object = $scope.task.additionalData[dataSourceId][i];
                             obj = $scope.findObject(ds, object.type);
+
+                            if (!obj) {
+                                obj = {
+                                    displayName: object.type,
+                                    fields: [],
+                                    lookupFields: [object.lookupField]
+                                };
+                            }
 
                             dataSource.objects.push({
                                 id: object.id,
@@ -305,23 +317,21 @@
                     }
 
                     $scope.filters = [];
-                    if ($scope.task.filters) {
-                        for (i = 0; i < $scope.task.filters.length; i += 1) {
-                            for (j = 0; j < $scope.selectedTrigger.eventParameters.length; j += 1) {
-                                if ($scope.selectedTrigger.eventParameters[j].displayName === $scope.task.filters[i].eventParameter.displayName) {
-                                    $scope.task.filters[i].eventParameter = $scope.selectedTrigger.eventParameters[j];
-                                    break;
-                                }
+                    for (i = 0; i < $scope.task.filters.length; i += 1) {
+                        for (j = 0; j < $scope.selectedTrigger.eventParameters.length; j += 1) {
+                            if ($scope.selectedTrigger.eventParameters[j].displayName === $scope.task.filters[i].eventParameter.displayName) {
+                                $scope.task.filters[i].eventParameter = $scope.selectedTrigger.eventParameters[j];
+                                break;
                             }
-
-                            if ($scope.task.filters[i].negationOperator) {
-                                $scope.task.filters[i].negationOperator = $scope.negationOperators[0];
-                            } else {
-                                $scope.task.filters[i].negationOperator = $scope.negationOperators[1];
-                            }
-
-                            $scope.filters.push($scope.task.filters[i]);
                         }
+
+                        if ($scope.task.filters[i].negationOperator) {
+                            $scope.task.filters[i].negationOperator = $scope.negationOperators[0];
+                        } else {
+                            $scope.task.filters[i].negationOperator = $scope.negationOperators[1];
+                        }
+
+                        $scope.filters.push($scope.task.filters[i]);
                     }
                 });
             }
@@ -372,6 +382,7 @@
             if (taskEventType === 'trigger') {
                 $scope.draggedTrigger.display = taskEvent.displayName;
                 $scope.task.trigger = {
+                    displayName: taskEvent.displayName,
                     channelName: $scope.draggedTrigger.channel,
                     moduleName: $scope.draggedTrigger.module,
                     moduleVersion: $scope.draggedTrigger.version,
@@ -381,6 +392,7 @@
             } else if (taskEventType === 'action') {
                 $scope.draggedAction.display = taskEvent.displayName;
                 $scope.task.action = {
+                    displayName: taskEvent.displayName,
                     channelName: $scope.draggedAction.channel,
                     moduleName: $scope.draggedAction.module,
                     moduleVersion: $scope.draggedAction.version
@@ -603,14 +615,12 @@
                         var msg = $scope.msg('task.error.saved') + '\n', i;
 
                         for (i = 0; i < response.length; i += 1) {
-                            msg += ' - ' + $scope.msg(response[i].message, [response[i].field, response[i].objectName]) + '\n';
+                            msg += ' - ' + $scope.getTaskValidationError(response[i]) + '\n';
                         }
 
                         delete $scope.task.actionInputFields;
                         delete $scope.task.enabled;
                         delete $scope.task.additionalData;
-
-
 
                         jAlert(msg, jQuery.i18n.prop('header.error'));
                     });
@@ -630,7 +640,7 @@
                     var msg = $scope.msg('task.error.saved') + '\n', i;
                     unblockUI();
                     for (i = 0; i < response.data.length; i += 1) {
-                        msg += ' - ' + $scope.msg(response.data[i].message, [response.data[i].field, response.data[i].objectName]) + '\n';
+                        msg += ' - ' + $scope.getTaskValidationError(response.data[i]) + '\n';
                     }
 
                     delete $scope.task.actionInputFields;
@@ -741,8 +751,16 @@
 
             if (prefix === 'trigger') {
                 param = $scope.findTriggerEventParameter(eventParameterKey);
-                span = '<span unselectable="on" ' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-info triggerField ng-scope ng-binding pointer"' +
-                       '" data-prefix="' + prefix + '" data-type="' + param.type + '" style="position: relative;" ' +
+
+                if (!param) {
+                    param = {
+                        type: 'unknown',
+                        displayName: eventParameterKey
+                    };
+                }
+
+                span = '<span unselectable="on" ' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable triggerField ng-scope ng-binding pointer badge ' +
+                       (param.type !== 'unknown' ? 'badge-info' : 'badge-important') + '" data-prefix="' + prefix + '" data-type="' + param.type + '" style="position: relative;" ' +
                        (manipulation.length === 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' + $scope.msg(param.displayName) + '</span>';
             } else if (prefix === 'ad') {
                 cuts = eventParameterKey.split('.');
@@ -761,9 +779,16 @@
                 object = $scope.findObject(dataSource, type);
                 param = $scope.findObjectField(object, field);
 
-                span = '<span unselectable="on"' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable badge badge-warning triggerField ng-scope ng-binding pointer" data-type="' + param.type +
-                       '" data-prefix="' + prefix + '" data-source="' + dataSource.name + '" data-object="' + param.displayName + '" data-object-type="' + type + '" data-field="' + field +
-                       '" data-object-id="' + id + '" style="position: relative;" ' + (manipulation.length === 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' +
+                if (!param) {
+                    param = {
+                        type: 'unknown',
+                        displayName: field
+                    };
+                }
+
+                span = '<span unselectable="on"' + ((param.type !== 'INTEGER' || param.type !== 'DOUBLE') ? 'manipulationpopover' : '') + ' contenteditable="false" class="popoverEvent nonEditable triggerField ng-scope ng-binding pointer badge ' +
+                       (param.type !== 'unknown' ? 'badge-warning' : 'badge-important') + '" data-type="' + param.type + '" data-prefix="' + prefix + '" data-source="' + dataSource.name + '" data-object="' + param.displayName + '" data-object-type="' +
+                       type + '" data-field="' + field + '" data-object-id="' + id + '" style="position: relative;" ' + (manipulation.length === 0 ? "" : 'manipulate="' + manipulation.join(" ") + '"') + '>' +
                        $scope.msg(dataSource.name) + '.' + $scope.msg(object.displayName) + '#' + id + '.' + $scope.msg(param.displayName) + '</span>';
             }
 
@@ -1152,6 +1177,16 @@
                  value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
 
              return value === val;
+        };
+
+        $scope.getTaskValidationError = function (error) {
+            var array = [], i;
+
+            for (i = 0; i < error.args.length; i += 1) {
+                array.push($scope.msg(error.args[i]));
+            }
+
+            return $scope.msg(error.message, array);
         };
     });
 

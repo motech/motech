@@ -1,21 +1,21 @@
 package org.motechproject.tasks.ex;
 
-import org.motechproject.tasks.validation.TaskError;
+import org.motechproject.tasks.domain.TaskError;
 
-import java.util.List;
+import java.util.Set;
 
 public class ValidationException extends IllegalArgumentException {
     private static final long serialVersionUID = -8282120820802247252L;
 
     private final String objectType;
-    private final List<TaskError> taskErrors;
+    private final Set<TaskError> taskErrors;
 
-    public ValidationException(String objectType, List<TaskError> taskErrors) {
+    public ValidationException(String objectType, Set<TaskError> taskErrors) {
         this.objectType = objectType;
         this.taskErrors = taskErrors;
     }
 
-    public List<TaskError> getTaskErrors() {
+    public Set<TaskError> getTaskErrors() {
         return taskErrors;
     }
 

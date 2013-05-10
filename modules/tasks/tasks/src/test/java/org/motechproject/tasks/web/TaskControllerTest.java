@@ -52,13 +52,13 @@ public class TaskControllerTest {
 
     @Test
     public void shouldGetAllTasks() {
-        TaskActionInformation action = new TaskActionInformation("action1", "action", "0.15", "receive");
-        TaskEventInformation trigger = new TaskEventInformation("trigger1", "trigger", "0.16", "send");
+        TaskActionInformation action = new TaskActionInformation("action", "action1", "action", "0.15", "receive");
+        TaskEventInformation trigger = new TaskEventInformation("trigger", "trigger1", "trigger", "0.16", "send");
 
         List<Task> expected = new ArrayList<>();
-        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
-        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
-        expected.add(new Task(trigger, action, new HashMap<String, String>(), "name"));
+        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
+        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
+        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
 
         when(taskService.getAllTasks()).thenReturn(expected);
 
@@ -95,7 +95,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldSaveExistingTask() {
-        Task expected = new Task(null, null, new HashMap<String, String>(), "name");
+        Task expected = new Task("name", null, null, new HashMap<String, String>());
         expected.setId(TASK_ID);
 
         controller.saveTask(expected);
@@ -105,7 +105,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldNotSaveNewTask() {
-        Task expected = new Task(null, null, new HashMap<String, String>(), "name");
+        Task expected = new Task("name", null, null, new HashMap<String, String>());
 
         controller.saveTask(expected);
 
@@ -115,9 +115,9 @@ public class TaskControllerTest {
     @Test
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
-        TaskActionInformation action = new TaskActionInformation("action1", "action", "0.15", "send");
-        TaskEventInformation trigger = new TaskEventInformation("trigger1", "trigger", "0.16", subject);
-        Task expected = new Task(trigger, action, new HashMap<String, String>(), "name");
+        TaskActionInformation action = new TaskActionInformation("action", "action1", "action", "0.15", "send");
+        TaskEventInformation trigger = new TaskEventInformation("trigger", "trigger1", "trigger", "0.16", subject);
+        Task expected = new Task("name", trigger, action, new HashMap<String, String>());
 
         when(eventListenerRegistryService.getListeners(subject)).thenReturn(new HashSet<EventListener>());
 

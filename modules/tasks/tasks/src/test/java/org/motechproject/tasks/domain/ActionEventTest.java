@@ -12,7 +12,7 @@ public class ActionEventTest {
         String serviceInterface = "interface";
         String serviceMethod = "method";
 
-        TaskActionInformation information = new TaskActionInformation(null, null, null, serviceInterface, serviceMethod);
+        TaskActionInformation information = new TaskActionInformation(null, null, null, null, serviceInterface, serviceMethod);
         ActionEvent actionEvent = new ActionEvent(null, null, serviceInterface, serviceMethod, null);
 
         assertTrue(actionEvent.accept(information));
@@ -69,7 +69,7 @@ public class ActionEventTest {
     public void shouldAcceptTaskActionInformationWithSameSubject() {
         String subject = "subject";
 
-        TaskActionInformation information = new TaskActionInformation(null, null, null, subject);
+        TaskActionInformation information = new TaskActionInformation(null, null, null, null, subject);
         ActionEvent actionEvent = new ActionEvent(null, subject, null, null);
 
         assertTrue(actionEvent.accept(information));
