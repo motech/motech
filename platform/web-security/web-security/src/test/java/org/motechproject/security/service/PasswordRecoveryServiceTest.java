@@ -21,6 +21,7 @@ import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -79,7 +80,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
                 any(String.class), any(DateTime.class))).thenReturn(recovery);
 
-        recoveryService.passwordRecoveryRequest(EMAIL);
+        recoveryService.passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -94,14 +95,14 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
                 return time.equals(now.plusHours(1));
             }
         }));
-        verify(emailSender).sendResecoveryEmail(recovery);
+        verify(emailSender).sendResecoveryEmail(recovery, Locale.ENGLISH);
     }
 
 
     @Test(expected = UserNotFoundException.class)
     public void testUserNotFound() throws UserNotFoundException {
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(null);
-        recoveryService.passwordRecoveryRequest(EMAIL);
+        recoveryService.passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
     }
 
     @Test
@@ -162,7 +163,7 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
                 any(String.class), any(DateTime.class))).thenReturn(recovery);
 
-        recoveryService.oneTimeTokenOpenId(EMAIL);
+        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -177,20 +178,20 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
                 return time.equals(now.plusHours(1));
             }
         }));
-        verify(emailSender).sendOneTimeToken(recovery);
+        verify(emailSender).sendOneTimeToken(recovery,Locale.ENGLISH);
     }
 
     @Test(expected = UserNotFoundException.class)
     public void testNoFindUserInOneTimeToken() throws UserNotFoundException, NonAdminUserException {
         when(user.getUserName()).thenReturn(null);
-        recoveryService.oneTimeTokenOpenId(EMAIL);
+        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
     }
 
     @Test(expected = NonAdminUserException.class)
     public void testNonAdminUserInOneTimeToken() throws UserNotFoundException, NonAdminUserException {
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
         when(user.getRoles()).thenReturn(Arrays.asList("user"));
-        recoveryService.oneTimeTokenOpenId(EMAIL);
+        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
     }
 
 }

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
@@ -74,7 +75,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
+    public void oneTimeTokenOpenId(String email, Locale locale) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
 
         if (user == null) {
@@ -96,7 +97,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate);
 
-        emailSender.sendOneTimeToken(recovery);
+        emailSender.sendOneTimeToken(recovery, locale);
 
         LOG.info("Created a one time token for user " + user.getUserName());
     }
@@ -118,7 +119,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void passwordRecoveryRequest(String email) throws UserNotFoundException {
+    public void passwordRecoveryRequest(String email, Locale locale) throws UserNotFoundException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
 
         if (user == null) {
@@ -131,7 +132,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
                 token, expirationDate);
 
-        emailSender.sendResecoveryEmail(recovery);
+        emailSender.sendResecoveryEmail(recovery,locale);
 
         LOG.info("Created a password recovery for user " + user.getUserName());
     }
