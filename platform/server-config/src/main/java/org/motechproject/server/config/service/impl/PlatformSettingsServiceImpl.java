@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -42,7 +43,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")
+    @Caching(cacheable = { @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         MotechSettings settings = configFileMonitor.getCurrentSettings();
 
@@ -53,6 +54,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 settings = record;
             }
         }
+
         return settings;
     }
 
@@ -203,12 +205,13 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
+    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
     public void addConfigLocation(final String location, final boolean save) throws IOException {
         configFileMonitor.changeConfigFileLocation(location, save);
     }
 
     @Override
+    @CacheEvict(value = BUNDLE_CACHE_NAME, allEntries = true)
     public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties)
             throws IOException {
         File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
@@ -239,6 +242,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
+    @Cacheable(value = BUNDLE_CACHE_NAME)
     public Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException {
         File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty(USER_HOME), bundleSymbolicName, fileName));
         if (!file.exists()) {
@@ -253,6 +257,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
+    @Cacheable(value = BUNDLE_CACHE_NAME)
     public Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException {
         File dir = new File(getConfigDir(bundleSymbolicName));
         Map<String, Properties> propertiesMap = new HashMap<>();
@@ -323,10 +328,22 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME }, allEntries = true)
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     public void evictMotechSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached motech settings
+    }
+
+    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
+    public void evictActiveMqSettingsCache() {
+        // Left blank.
+        // Annotation will automatically remove all cached activemq settings
+    }
+
+    @CacheEvict(value = BUNDLE_CACHE_NAME, allEntries = true)
+    public void evictBundleSettingsCache() {
+        // Left blank.
+        // Annotation will automatically remove all cached bundle settings
     }
 
     @Override

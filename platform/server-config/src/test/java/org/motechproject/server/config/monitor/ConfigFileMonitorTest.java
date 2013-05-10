@@ -25,6 +25,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigFileMonitorTest {
+    private static final String MOTECH_SETTINGS_FILE_NAME = "motech-settings.conf";
+    private static final String ACTIVEMQ_FILE_NAME = "activemq.properties";
     private static final String SETTINGS_FILE_NAME = "settings.properties";
 
     @Mock
@@ -52,7 +54,9 @@ public class ConfigFileMonitorTest {
     @Spy
     ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
 
-    private FileObject resource;
+    private FileObject motechSettingsResource;
+    private FileObject activemqResource;
+    private FileObject settingsResource;
 
     @Before
     public void setUp() throws Exception {
@@ -65,7 +69,9 @@ public class ConfigFileMonitorTest {
 
         configFileMonitor.afterPropertiesSet();
 
-        resource = VFS.getManager().resolveFile(String.format("res:%s", SETTINGS_FILE_NAME));
+        motechSettingsResource = VFS.getManager().resolveFile(String.format("res:%s", MOTECH_SETTINGS_FILE_NAME));
+        activemqResource = VFS.getManager().resolveFile(String.format("res:%s", ACTIVEMQ_FILE_NAME));
+        settingsResource = VFS.getManager().resolveFile(String.format("res:%s", SETTINGS_FILE_NAME));
     }
 
     @Test
@@ -80,8 +86,8 @@ public class ConfigFileMonitorTest {
     }
 
     @Test
-    public void testFileDeleted() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(resource);
+    public void testMotechSettingsFileDeleted() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(motechSettingsResource);
 
         configFileMonitor.fileDeleted(fileChangeEvent);
 
@@ -91,8 +97,30 @@ public class ConfigFileMonitorTest {
     }
 
     @Test
-    public void testFileChanged() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(resource);
+    public void testActiveMqSettingsFileDeleted() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(activemqResource);
+
+        configFileMonitor.fileDeleted(fileChangeEvent);
+
+        verify(platformSettingsService).evictActiveMqSettingsCache();
+
+        assertNull(configFileMonitor.getCurrentSettings());
+    }
+
+    @Test
+    public void testBundleSettingsFileDeleted() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(settingsResource);
+
+        configFileMonitor.fileDeleted(fileChangeEvent);
+
+        verify(platformSettingsService).evictBundleSettingsCache();
+
+        assertNull(configFileMonitor.getCurrentSettings());
+    }
+
+    @Test
+    public void testMotechFileChanged() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(motechSettingsResource);
         when(configLoader.loadConfig()).thenReturn(motechSettings);
 
         configFileMonitor.fileChanged(fileChangeEvent);
@@ -100,6 +128,31 @@ public class ConfigFileMonitorTest {
         verify(configLoader).loadConfig();
         verify(platformSettingsService).evictMotechSettingsCache();
 
+        assertCurrentSettings();
+    }
+
+    @Test
+    public void testActiveMqFileChanged() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(activemqResource);
+        when(configLoader.loadConfig()).thenReturn(motechSettings);
+
+        configFileMonitor.fileChanged(fileChangeEvent);
+
+        verify(configLoader).loadConfig();
+        verify(platformSettingsService).evictActiveMqSettingsCache();
+
+        assertCurrentSettings();
+    }
+
+    @Test
+    public void testBundleFileChanged() throws Exception {
+        when(fileChangeEvent.getFile()).thenReturn(settingsResource);
+        when(configLoader.loadConfig()).thenReturn(motechSettings);
+
+        configFileMonitor.fileChanged(fileChangeEvent);
+
+        verify(configLoader).loadConfig();
+        verify(platformSettingsService).evictBundleSettingsCache();
         assertCurrentSettings();
     }
 

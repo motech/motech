@@ -108,6 +108,18 @@ public class ConfigFileMonitor implements FileListener {
     public void fileCreated(FileChangeEvent fileChangeEvent) {
     }
 
+    public void evictProperCache(FileChangeEvent fileChangeEvent) {
+        String fileName = fileChangeEvent.getFile().getName().getBaseName();
+
+        if (fileName.equals(PlatformSettingsService.SETTINGS_FILE_NAME)) {
+            platformSettingsService.evictMotechSettingsCache();
+        } else if (fileName.equals(PlatformSettingsService.ACTIVEMQ_FILE_NAME)) {
+            platformSettingsService.evictActiveMqSettingsCache();
+        } else {
+            platformSettingsService.evictBundleSettingsCache();
+        }
+    }
+
     @Override
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         LOGGER.error("Config file was deleted...");
@@ -116,7 +128,8 @@ public class ConfigFileMonitor implements FileListener {
             remove();
         }
 
-        platformSettingsService.evictMotechSettingsCache();
+        evictProperCache(fileChangeEvent);
+
         sendEventMessage(FILE_DELETED_EVENT_SUBJECT, fileChangeEvent);
     }
 
@@ -125,7 +138,9 @@ public class ConfigFileMonitor implements FileListener {
         LOGGER.warn("Config file was changed...");
 
         currentSettings = configLoader.loadConfig();
-        platformSettingsService.evictMotechSettingsCache();
+
+        evictProperCache(fileChangeEvent);
+
         sendEventMessage(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
     }
 
