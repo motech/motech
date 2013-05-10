@@ -1,0 +1,34 @@
+<div class="well2">
+    <div class="box-header">
+        {{msg('queue.statistics')}}
+    </div>
+    <div class="box-content inside" ng-show="dataAvailable">
+        <table class="table table-bordered table-striped table-lightblue">
+            <thead>
+            <tr>
+                <th class="ng-binding">{{msg('queue.name')}}</th>
+                <th class="ng-binding">{{msg('queue.size')}}</th>
+                <th class="ng-binding">{{msg('queue.consumer.count')}}</th>
+                <th class="ng-binding">{{msg('queue.enqueue.count')}}</th>
+                <th class="ng-binding">{{msg('queue.dequeue.count')}}</th>
+                <th class="ng-binding">{{msg('queue.expired.count')}}</th>
+            </tr>
+            </thead>
+            <tbody ng-repeat="queue in queues">
+            <tr>
+                <td class="ng-binding">
+                    <a ng-href="#/queues/browse?queueName={{queue.destination}}">{{queue.destination}}</a>
+                </td>
+                <td class="ng-binding">{{queue.queueSize}}</td>
+                <td class="ng-binding">{{queue.consumerCount}}</td>
+                <td class="ng-binding">{{queue.enqueueCount}}</td>
+                <td class="ng-binding">{{queue.dequeueCount}}</td>
+                <td class="ng-binding">{{queue.expiredCount}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="box-content inside" ng-show="!dataAvailable">
+        {{msg('queue.error')}}
+    </div>
+</div>

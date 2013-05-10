@@ -34,6 +34,7 @@
                 <entry key="settings" value="#/settings"/>
                 <entry key="operations" value="#/operations"/>
                 <entry key="log" value="#/log"/>
+                <entry key="queues" value="#/queues"/>
             </map>
         </property>
     </bean>
