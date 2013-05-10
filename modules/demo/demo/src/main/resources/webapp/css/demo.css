@@ -146,7 +146,7 @@ div#phone {
     float:left;
     margin:5px 5px 10px 50px;
     padding:0;
-    background: url("../img/phone.png") no-repeat;
+    background: url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone.png") no-repeat;
     height:400px;
     width:195px;
 }
@@ -217,7 +217,7 @@ div#keyboard span.hidden-value {
 .button_size2 {
     width:46px;
     height:27px;
-    background:url("../img/phone-btn-sprite.png") no-repeat;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat;
 }
 div#a1 {
     width:122px;
@@ -231,25 +231,25 @@ div#b01 {
     margin:5px 0 7px 0;
 }
 div#b01 div{
-    background:url("../img/phone-btn-sprite.png") no-repeat -628px 0;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -628px 0;
 }
 div#b01 div:hover{
-    background:url("../img/phone-btn-sprite.png") no-repeat -628px -30px;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -628px -30px;
 }
 div#b01 div:active{
-    background:url("../img/phone-btn-sprite.png") no-repeat -628px -59px;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -628px -59px;
 }
 div#ba {
     margin:1 0 11px 0;
 }
 div#ba div{
-    background:url("../img/phone-btn-sprite.png") no-repeat -590px 0;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -590px 0;
 }
 div#ba div:hover{
-    background:url("../img/phone-btn-sprite.png") no-repeat -590px -29px;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -590px -29px;
 }
 div#ba div:active{
-    background:url("../img/phone-btn-sprite.png") no-repeat -590px -58px;
+    background:url("../../../../../../demo-bundle/src/main/resources/webapp/img/phone-btn-sprite.png") no-repeat -590px -58px;
 }
 div#a2 {
     width:122px;

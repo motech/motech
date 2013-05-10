@@ -101,7 +101,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
     $scope.moduleSource = $scope.moduleSources['Repository'];
 
     $scope.modules = {
-        'org.motechproject:motech-demo-bundle:[0,)':'Demo',
+        'org.motechproject:motech-demo:[0,)':'Demo',
         'org.motechproject:motech-message-campaign:[0,)':'Message campaign',
         'org.motechproject:motech-scheduletracking-api:[0,)':'Schedule Tracking',
         'org.motechproject:motech-alerts-api:[0,)':'Alerts',

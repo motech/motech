@@ -68,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-demo-bundle</artifactId>
+            <artifactId>motech-demo</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

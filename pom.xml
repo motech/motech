@@ -1143,7 +1143,6 @@
         <module>platform/server</module>
         <module>platform/web-security/web-security</module>
         <module>modules/admin/admin</module>
-        <module>modules/demo/demo</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
         <module>modules/ivr/kookoo</module>
@@ -1185,7 +1184,6 @@
         <module>modules/commcare/api</module>
         <module>modules/couchmrs/mrs-couchdb</module>
         <module>modules/decisiontree/core</module>
-        <module>modules/demo/demo-bundle</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api-bundle</module>
@@ -1209,6 +1207,7 @@
         <module>modules/sms/api-bundle</module>
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
+        <module>modules/demo/demo</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
 
