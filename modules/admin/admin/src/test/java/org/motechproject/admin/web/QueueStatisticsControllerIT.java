@@ -30,7 +30,7 @@ import static org.springframework.test.web.server.result.MockMvcResultMatchers.s
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath*:testApplicationAdmin.xml")
-public class QueueStatisticsControllerTest {
+public class QueueStatisticsControllerIT {
 
 
     MockMvc mockMvc;
