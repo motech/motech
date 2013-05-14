@@ -2,7 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.ex.TaskException;
+import org.motechproject.tasks.ex.TaskHandlerException;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface TaskActivityService {
     @Deprecated
     void addError(Task task, String message);
 
-    void addError(Task task, TaskException e);
+    void addError(Task task, TaskHandlerException e);
 
     void addSuccess(Task task);
 
