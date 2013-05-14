@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox.web;
+package org.motechproject.outbox.server.web;
 
 import org.junit.Assert;
 import org.junit.Before;

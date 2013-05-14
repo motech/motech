@@ -23,11 +23,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-outbox-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -45,10 +40,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>com.springsource.org.apache.velocity</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -125,7 +116,7 @@
                             org.springframework.ui.velocity,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-outbox-api;inline=true,motech-outbox;inline=true</Embed-Dependency>
+                        <Embed-Dependency>motech-outbox;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

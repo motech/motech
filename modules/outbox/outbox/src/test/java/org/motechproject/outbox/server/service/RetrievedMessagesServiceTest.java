@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox.service;
+package org.motechproject.outbox.server.service;
 
 import junit.framework.Assert;
 import org.junit.Before;
