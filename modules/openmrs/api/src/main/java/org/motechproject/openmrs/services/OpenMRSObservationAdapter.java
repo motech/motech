@@ -9,6 +9,7 @@ import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.services.MRSObservationAdapter;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.model.OpenMRSConcept;
+import org.motechproject.openmrs.model.OpenMRSConceptName;
 import org.motechproject.openmrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -116,7 +117,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
         } else if (value instanceof OpenMRSConcept) {
-            openMRSObservation.setValueCoded(openMRSConceptAdapter.getConceptByName(((OpenMRSConcept) value).getName()));
+            openMRSObservation.setValueCoded(openMRSConceptAdapter.getConceptByName(((OpenMRSConcept) value).getName().getName()));
         } else if (value != null) {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
@@ -161,7 +162,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
         } else if (datatype.isText()) {
             return createMRSObservation(obs, obs.getValueText());
         } else if (datatype.isCoded()) {
-            return createMRSObservation(obs, new OpenMRSConcept(obs.getValueCoded().getName().getName()));
+            return createMRSObservation(obs, new OpenMRSConcept(new OpenMRSConceptName(obs.getValueCoded().getName().getName())));
         } else {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
         }

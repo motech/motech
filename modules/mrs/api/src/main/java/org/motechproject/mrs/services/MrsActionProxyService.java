@@ -30,4 +30,10 @@ public interface MrsActionProxyService {
 
     void removePerson(String personId, String firstName, String middleName, String lastName, String preferredName, String address,
                       DateTime dateOfBirth, String birthDateEstimated, Integer age, String gender, String dead, DateTime deathDate);
+
+    void createConcept(String name);
+
+    void updateConcept(String conceptId, String name);
+
+    void deleteConcept(String conceptId);
 }

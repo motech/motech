@@ -5,13 +5,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.motechproject.couch.mrs.model.CouchAttribute;
+import org.motechproject.couch.mrs.model.CouchConcept;
 import org.motechproject.couch.mrs.model.CouchEncounterImpl;
 import org.motechproject.couch.mrs.model.CouchFacility;
 import org.motechproject.couch.mrs.model.CouchPatientImpl;
 import org.motechproject.couch.mrs.model.CouchPerson;
 import org.motechproject.couch.mrs.model.CouchProvider;
 import org.motechproject.mrs.domain.MRSAttribute;
+import org.motechproject.mrs.domain.MRSConcept;
 import org.motechproject.mrs.domain.MRSEncounter;
 import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.domain.MRSObservation;
@@ -131,4 +134,15 @@ public final class CouchMRSConverterUtil {
         return  attributeList;
     }
 
+    public static CouchConcept convertConceptToCouchConcept(MRSConcept concept) {
+        CouchConcept convertedConcept = new CouchConcept();
+
+        convertedConcept.setName(concept.getName());
+        convertedConcept.setDisplay(concept.getDisplay());
+        convertedConcept.setConceptClass(concept.getConceptClass());
+        convertedConcept.setDataType(concept.getDataType());
+        convertedConcept.setUuid(concept.getUuid());
+
+        return convertedConcept;
+    }
 }

@@ -15,6 +15,7 @@ import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.helper.EventHelper;
 import org.motechproject.mrs.domain.MRSObservation;
 import org.motechproject.openmrs.model.OpenMRSConcept;
+import org.motechproject.openmrs.model.OpenMRSConceptName;
 import org.motechproject.openmrs.model.OpenMRSObservation;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -95,8 +96,8 @@ public class OpenMRSObservationAdapterTest {
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
         Date dependentObservationDate = new LocalDate(1999, 1, 1).toDate();
 
-        OpenMRSConcept observationValueConcept = new OpenMRSConcept(observationValueConceptName);
-        OpenMRSConcept dependentConceptValue = new OpenMRSConcept(dependentObservationValueConceptName);
+        OpenMRSConcept observationValueConcept = new OpenMRSConcept(new OpenMRSConceptName(observationValueConceptName));
+        OpenMRSConcept dependentConceptValue = new OpenMRSConcept(new OpenMRSConceptName(dependentObservationValueConceptName));
 
         Concept openMrsConceptUsedForObsName = mock(Concept.class);
         Concept openMrsConceptUsedForObsValue = mock(Concept.class);
@@ -283,10 +284,10 @@ public class OpenMRSObservationAdapterTest {
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
-        final OpenMRSConcept concept = new OpenMRSConcept("conceptName");
+        final OpenMRSConcept concept = new OpenMRSConcept(new OpenMRSConceptName("conceptName"));
 
         Concept openMrsConcept = mock(Concept.class);
-        when(mockConceptAdapter.getConceptByName(concept.getName())).thenReturn(openMrsConcept);
+        when(mockConceptAdapter.getConceptByName(concept.getName().getName())).thenReturn(openMrsConcept);
 
         observationAdapter.writeValueToOpenMRSObservation(feverValue, fever);
         observationAdapter.writeValueToOpenMRSObservation(temperatureValue, temperature);

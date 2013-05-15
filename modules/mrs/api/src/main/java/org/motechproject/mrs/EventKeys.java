@@ -53,6 +53,9 @@ public final class EventKeys {
     public static final String DELETED_PROVIDER_SUBJECT = BASE_SUBJECT + "Provider.Deleted";
     public static final String DELETED_OBSERVATION_SUBJECT = BASE_SUBJECT + "Observation.Deleted";
     public static final String CREATED_UPDATED_OBSERVATION_SUBJECT = "Observation.Updated";
+    public static final String CREATED_NEW_CONCEPT_SUBJECT = BASE_SUBJECT + "Concept.Created";
+    public static final String UPDATED_CONCEPT_SUBJECT = BASE_SUBJECT + "Concept.Updated";
+    public static final String DELETED_CONCEPT_SUBJECT = BASE_SUBJECT + "Concept.Deleted";
 
     private EventKeys() { }
 
