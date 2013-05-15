@@ -861,17 +861,21 @@
                     $scope.activities = Activities.query(data);
                 }, 30 * 1000);
 
-                $scope.trigger = {
-                    display: task.trigger.channelName,
-                    module: task.trigger.moduleName,
-                    version: task.trigger.moduleVersion
-                };
+                if (task.trigger) {
+                    $scope.trigger = {
+                        display: task.trigger.channelName,
+                        module: task.trigger.moduleName,
+                        version: task.trigger.moduleVersion
+                    };
+                }
 
-                $scope.action = {
-                    display: task.action.channelName,
-                    module: task.action.moduleName,
-                    version: task.action.moduleVersion
-                };
+                if (task.action) {
+                    $scope.action = {
+                        display: task.action.channelName,
+                        module: task.action.moduleName,
+                        version: task.action.moduleVersion
+                    };
+                }
 
                 $scope.description = task.description;
                 $scope.enabled = task.enabled;
