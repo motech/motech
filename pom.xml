@@ -1189,7 +1189,6 @@
         <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>
         <module>modules/ivr/kookoo-bundle</module>
-        <module>modules/ivr/motech-calllog</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
         <module>modules/message-campaign/message-campaign</module>

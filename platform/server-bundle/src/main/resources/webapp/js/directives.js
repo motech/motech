@@ -33,3 +33,9 @@ widgetModule.directive('goToEnd', function () {
         });
     }
 });
+
+widgetModule.directive('ngDateTimePicker', function () {
+    return function (scope, element, attributes) {
+        $(element).datetimepicker();
+    };
+});

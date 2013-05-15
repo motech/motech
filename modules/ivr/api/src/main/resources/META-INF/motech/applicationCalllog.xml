@@ -10,28 +10,10 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd "
        >
 
-    <import resource="classpath*:META-INF/motech/*.xml" />
-
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.ivr.calllog"/>
 
-    <bean id="header" class="org.motechproject.osgi.web.Header"></bean>
-
-    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="moduleName" value="callLog" />
-        <constructor-arg name="url" value="../callLog/resources/index.html" />
-        <constructor-arg name="angularModules">
-            <list>
-                <value>callLog</value>
-            </list>
-        </constructor-arg>
-        <constructor-arg name="i18n">
-            <map>
-                <entry key="messages" value="../callLog/resources/messages/"/>
-            </map>
-        </constructor-arg>
-        <constructor-arg name="header" ref="header"/>
-    </bean>
+    <mvc:annotation-driven/>
 
 
     <!-- get a settings instance to store your module's properties -->
@@ -39,16 +21,11 @@
         <property name="moduleName" value="motech-calllog"/>
     </bean>
 
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
     <!-- get a couchdb connector to access motech's datastore -->
-    <bean id="dbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+    <bean id="callLogDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-calllog" />
     </bean>
 
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
-    <osgi:reference id="calllogSearchService" interface="org.motechproject.callflow.service.CalllogSearchService" />
-
-    <mvc:annotation-driven/>
 </beans>

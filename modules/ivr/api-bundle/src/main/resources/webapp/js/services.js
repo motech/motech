@@ -19,3 +19,21 @@ angular.module('TestCallServices', ['ngResource'])
             }
         });
     });
+
+
+angular.module('CalllogSearchService', ['ngResource']).factory('CalllogSearch', function ($resource) {
+    return $resource('../ivr/api/calllog/search');
+});
+
+angular.module('CalllogCountService', ['ngResource']).factory('CalllogCount', function ($resource) {
+    return $resource('../ivr/api/calllog/count', {}, { query:{method:'GET', isArray:false}});
+});
+
+angular.module('CalllogMaxDurationService', ['ngResource']).factory('CalllogMaxDuration', function ($resource) {
+    return $resource('../ivr/api/calllog/maxduration', {}, { query:{method:'GET', isArray:false}});
+});
+
+angular.module('CalllogPhoneNumberService', ['ngResource']).factory('CalllogPhoneNumber', function($resource) {
+    return $resource('../ivr/api/calllog/phone-numbers',{}, { query: {method: 'GET', isArray: true}});
+});
+

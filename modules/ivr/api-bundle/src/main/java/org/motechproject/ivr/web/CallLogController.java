@@ -1,9 +1,9 @@
-package org.motechproject.ivr.calllog.web;
+package org.motechproject.ivr.web;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.motechproject.callflow.service.CalllogSearchParameters;
-import org.motechproject.callflow.service.CalllogSearchService;
-import org.motechproject.decisiontree.core.CallDetail;
+import org.motechproject.ivr.calllog.domain.CallRecord;
+import org.motechproject.ivr.calllog.domain.CallLogSearchParameters;
+import org.motechproject.ivr.calllog.service.CallRecordsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,22 +15,23 @@ import java.util.HashMap;
 import java.util.List;
 
 @Controller
+@RequestMapping("/calllog")
 public class CallLogController {    // service methods for angular ui
 
     @Autowired
-    private CalllogSearchService calllogSearchService;
+    private CallRecordsSearchService calllogSearchService;
 
     // TODO: should return application/json content
     @RequestMapping("/search")
     @ResponseBody
-    public String search(@ModelAttribute CalllogSearchParameters params) throws IOException {
-        List<CallDetail> result = calllogSearchService.search(params);
+    public String search(@ModelAttribute CallLogSearchParameters params) throws IOException {
+        List<CallRecord> result = calllogSearchService.search(params);
         return new ObjectMapper().writeValueAsString(result);
     }
 
     @RequestMapping("/count")
     @ResponseBody
-    public String count(@ModelAttribute CalllogSearchParameters params) throws IOException {
+    public String count(@ModelAttribute CallLogSearchParameters params) throws IOException {
         HashMap<String, Long> map = new HashMap<>();
         map.put("count", calllogSearchService.count(params));
         return new ObjectMapper().writeValueAsString(map);

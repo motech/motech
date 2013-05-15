@@ -61,6 +61,18 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -76,7 +88,7 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>ivr</Resource-Path>
                         <Context-Path>ivr/api</Context-Path>
-                        <Context-File>META-INF/osgi/applicationIvrApiBundle.xml</Context-File>
+                        <Context-File>META-INF/servlet/applicationIvrApiBundle.xml</Context-File>
                         <Export-Package>
                             org.motechproject.ivr.domain;version=${project.version},
                             org.motechproject.ivr.event;version=${project.version},

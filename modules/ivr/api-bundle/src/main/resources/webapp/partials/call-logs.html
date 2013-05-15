@@ -26,8 +26,8 @@
                     <div class="span8">
                         <fieldset class="inside"><legend>{{msg('header.dates')}}</legend>
                             <div class="control-group form-inline">
-                                <input for="from" type="datetime" id="from" name="from" class="offset1 span4 search-query" placeholder="{{msg('header.from')}}">
-                                <input for="to" type="datetime" id="to" name="to" class="span4 margin-offset1 search-query" placeholder="{{msg('header.to')}}">
+                                <input for="from" ng-date-time-picker type="datetime" id="from" name="from" class="offset1 span4 search-query" placeholder="{{msg('header.from')}}">
+                                <input for="to" ng-date-time-picker type="datetime" id="to" name="to" class="span4 margin-offset1 search-query" placeholder="{{msg('header.to')}}">
                             </div>
                         </fieldset>
                     </div>
@@ -42,7 +42,7 @@
                                 -
                                 <input type="text" class="slider-control" slider="#slider" slider-point="max"/>
                                 <span class="help-inline">{{msg('calllog.seconds')}}</span>
-                                <div id="slider"></div>
+                                <div ng-slider id="slider"></div>
                             </div>
                         </fieldset>
                     </div>
@@ -86,22 +86,22 @@
         <thead>
             <tr>
                 <th class="phoneNumber" ng-click="sort('phoneNumber')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingPhoneNumber')}}" title="{{msg('calllog.sortingPhoneNumber')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingPhoneNumber')}}" title="{{msg('calllog.sortingPhoneNumber')}}"
                         class="sorting-no" />{{msg('calllog.phoneNumber')}}</th>
                 <th class="direction" ng-click="sort('direction')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDirection')}}" title="{{msg('calllog.sortingDirection')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingDirection')}}" title="{{msg('calllog.sortingDirection')}}"
                          class="sorting-no" />{{msg('calllog.direction')}}</th>
                 <th class="startDate" ng-click="sort('startDate')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingStartDate')}}" title="{{msg('calllog.sortingStartDate')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingStartDate')}}" title="{{msg('calllog.sortingStartDate')}}"
                          class="sorting-no" />{{msg('calllog.startDate')}}</th>
                 <th class="endDate" ng-click="sort('endDate')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingEndDate')}}" title="{{msg('calllog.sortingEndDate')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingEndDate')}}" title="{{msg('calllog.sortingEndDate')}}"
                          class="sorting-no" />{{msg('calllog.endDate')}}</th>
                 <th class="disposition" ng-click="sort('disposition')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDisposition')}}" title="{{msg('calllog.sortingDisposition')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingDisposition')}}" title="{{msg('calllog.sortingDisposition')}}"
                          class="sorting-no" />{{msg('calllog.disposition')}}</th>
                 <th class="duration" ng-click="sort('duration')">
-                    <img src=../callLog/resources/img/trans.gif alt="{{msg('calllog.sortingDuration')}}" title="{{msg('calllog.sortingDuration')}}"
+                    <img src=../ivr/img/trans.gif alt="{{msg('calllog.sortingDuration')}}" title="{{msg('calllog.sortingDuration')}}"
                          class="sorting-no" />{{msg('calllog.duration')}}</th>
             </tr>
         </thead>
@@ -130,7 +130,7 @@
                     <div class="accordion-inner">
                         <div class="padded" ng-hide="isEmpty(calllog.callEvents)">{{msg('calllog.noEvents')}}</div>
                         <div ng-repeat="callEvent in calllog.callEvents" ng-model="calllogs">
-                            <div ng-include="'../callLog/resources/partials/event.html'"/>
+                            <div ng-include="'../ivr/partials/event.html'"/>
                         </div>
                     </div>
                 </div>
