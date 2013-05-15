@@ -37,15 +37,15 @@ html, body {
 }
 
 .icon.icon-red {
-    background-image: url("../img/glyphicons-halflings-red.png");
+    color: #fa0328;
 }
 
 .icon.icon-blue {
-    background-image: url("../img/glyphicons-halflings-blue.png");
+    color: #0044cc;
 }
 
 .icon.icon-green {
-    background-image: url("../img/glyphicons-halflings-green.png");
+    color: #0D800B;
 }
 
 h1, h2, h3, h4, h5, h6 {

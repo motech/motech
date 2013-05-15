@@ -16,6 +16,7 @@
     <link rel="stylesheet" type="text/css" href="resources/css/angular-ui.css">
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-responsive.css">
+    <link rel="stylesheet" type="text/css" href="resources/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-fileupload.min.css">
     <link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-min.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/tagsinput/jquery.tagsinput.css">
