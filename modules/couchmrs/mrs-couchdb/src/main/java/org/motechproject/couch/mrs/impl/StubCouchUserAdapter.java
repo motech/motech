@@ -3,10 +3,12 @@ package org.motechproject.couch.mrs.impl;
 import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.services.MRSUserAdapter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class StubCouchUserAdapter implements MRSUserAdapter {
     @Override
     public void changeCurrentUserPassword(String currentPassword, String newPassword) {
