@@ -11,8 +11,11 @@
     <context:component-scan base-package="org.motechproject.server.verboice"/>
     <mvc:annotation-driven/>
 
-    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient"/>
+    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
 
+    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg ref="multiThreadedHttpConnectionManager"/>
+    </bean>
 
     <bean id="verboiceAPISettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
