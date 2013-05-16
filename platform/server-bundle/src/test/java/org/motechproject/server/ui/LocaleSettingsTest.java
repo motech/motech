@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LocaleSettingsTest {
-    private static final String I18N_RESOURCES_PATH = "webapp/resources/messages/";
+    private static final String I18N_RESOURCES_PATH = "webapp/messages/";
 
     @Mock
     private CookieLocaleResolver cookieLocaleResolver;

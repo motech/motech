@@ -103,6 +103,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -129,8 +135,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <BluePrint-Enabled>true</BluePrint-Enabled>
                         <Context-Path>server</Context-Path>
-                        <Context-File>applicationPlatformServerBundle.xml</Context-File>
+                        <Context-File>META-INF/servlet/applicationPlatform-servlet.xml</Context-File>
+                        <Resource-path>server/resources</Resource-path>
                         <Export-Package>
                             org.motechproject.server.startup;version=${project.version},
                             org.motechproject.server.ui;version=${project.version},
@@ -140,9 +148,6 @@
                             org.motechproject.server.web.form;version=${project.version},
                             org.motechproject.server.web.validator;version=${project.version}
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.server.bundle.Activator
-                        </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.event.listener,
@@ -215,7 +220,7 @@
                     <skipTests>${maven.test.skip}</skipTests>
                     <serverPort>${jasmine.server.port}</serverPort>
 
-                    <jsSrcDir>${project.basedir}/src/main/resources/webapp/resources</jsSrcDir>
+                    <jsSrcDir>${project.basedir}/src/main/resources/webapp</jsSrcDir>
                     <sourceIncludes>
                         <include>lib/angular/angular.min.js</include>
                         <include>lib/angular/angular-resource.min.js</include>

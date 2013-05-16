@@ -18,7 +18,7 @@ import java.util.TreeMap;
 
 @Service
 public class LocaleSettingsImpl implements LocaleSettings, BundleContextAware {
-    private static final String I18N_RESOURCES_PATH = "webapp/resources/messages/";
+    private static final String I18N_RESOURCES_PATH = "webapp/messages/";
 
     @Autowired
     private CookieLocaleResolver cookieLocaleResolver;
