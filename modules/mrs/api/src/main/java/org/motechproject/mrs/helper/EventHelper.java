@@ -1,6 +1,7 @@
 package org.motechproject.mrs.helper;
 
 import org.motechproject.mrs.EventKeys;
+import org.motechproject.mrs.domain.MRSConcept;
 import org.motechproject.mrs.domain.MRSEncounter;
 import org.motechproject.mrs.domain.MRSFacility;
 import org.motechproject.mrs.domain.MRSObservation;
@@ -115,5 +116,11 @@ public final class EventHelper {
             providerParameters.put(EventKeys.PERSON_ID, null);
         }
         return providerParameters;
+    }
+
+    public static Map<String, Object> conceptParameters(MRSConcept concept) {
+        Map<String, Object> conceptParameters = new HashMap<>();
+        conceptParameters.put(EventKeys.CONCEPT_NAME, concept.getName());
+        return conceptParameters;
     }
 }

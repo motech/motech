@@ -2,6 +2,7 @@ package org.motechproject.mrs.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
+import org.motechproject.mrs.services.MRSConceptAdapter;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.mrs.services.MRSImplReqAdapter;
 import org.motechproject.mrs.services.MRSPatientAdapter;
@@ -22,6 +23,7 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
     private Map<String, MRSFacilityAdapter> facilityAdapterMap = new HashMap<>();
     private Map<String, MRSPersonAdapter> personAdapterMap = new HashMap<>();
     private Map<String, MRSImplReqAdapter> implReqAdapterMap = new HashMap<>();
+    private Map<String, MRSConceptAdapter> conceptAdapterMap = new HashMap<>();
 
     public String getCurrentImplName() {
         return currentImplName;
@@ -55,6 +57,8 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
             personAdapterMap.put(bundleSymbolicName, (MRSPersonAdapter) service);
         } else if (service instanceof MRSImplReqAdapter) {
             implReqAdapterMap.put(bundleSymbolicName, (MRSImplReqAdapter) service);
+        } else if (service instanceof MRSConceptAdapter) {
+            conceptAdapterMap.put(bundleSymbolicName, (MRSConceptAdapter) service);
         }
     }
 
@@ -70,6 +74,8 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
             personAdapterMap.remove(bundleSymbolicName);
         } else if (service instanceof MRSImplReqAdapter) {
             implReqAdapterMap.remove(bundleSymbolicName);
+        } else if (service instanceof MRSConceptAdapter) {
+            conceptAdapterMap.remove(bundleSymbolicName);
         }
     }
 
@@ -115,6 +121,17 @@ public class MrsImplementationManager implements OsgiServiceLifecycleListener {
         }
 
         return personAdapter;
+    }
+
+    public MRSConceptAdapter getConceptAdapter() throws ImplementationException {
+        MRSConceptAdapter conceptAdapter = conceptAdapterMap.get(currentImplName);
+
+        if (conceptAdapter == null) {
+            changeToNextImpl();
+            throw implException();
+        }
+
+        return conceptAdapter;
     }
 
     private void changeToNextImpl() {

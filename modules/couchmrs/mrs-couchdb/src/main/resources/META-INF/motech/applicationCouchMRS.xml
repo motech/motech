@@ -14,6 +14,11 @@
         <constructor-arg value="motech-person-repository" />
     </bean>
 
+    <bean id="couchConceptDatabaseConnector" factory-bean="couchDbManager"
+          factory-method="getConnector">
+        <constructor-arg value="motech-concept-repository" />
+    </bean>
+
     <bean id="couchProviderDatabaseConnector" factory-bean="couchDbManager"
         factory-method="getConnector">
         <constructor-arg value="motech-provider-repository" />

@@ -8,11 +8,14 @@ import org.motechproject.mrs.domain.MRSPerson;
 import org.motechproject.mrs.domain.MRSProvider;
 import org.motechproject.mrs.domain.MRSUser;
 import org.motechproject.mrs.exception.PatientNotFoundException;
+import org.motechproject.mrs.model.MRSConceptDto;
+import org.motechproject.mrs.model.MRSConceptNameDto;
 import org.motechproject.mrs.model.MRSEncounterDto;
 import org.motechproject.mrs.model.MRSFacilityDto;
 import org.motechproject.mrs.model.MRSObservationDto;
 import org.motechproject.mrs.model.MRSPatientDto;
 import org.motechproject.mrs.model.MRSPersonDto;
+import org.motechproject.mrs.services.MRSConceptAdapter;
 import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.mrs.services.MRSPatientAdapter;
@@ -34,6 +37,7 @@ public class MrsActionProxyServiceImpl implements MrsActionProxyService {
     private List<MRSUserAdapter> userAdapters;
     private List<MRSProviderAdapter> providerAdapters;
     private List<MRSPersonAdapter> personAdapters;
+    private List<MRSConceptAdapter> conceptAdapters;
 
 
     @Override
@@ -124,6 +128,21 @@ public class MrsActionProxyServiceImpl implements MrsActionProxyService {
         personAdapters.get(0).removePerson(new MRSPersonDto(personId, firstName, middleName, lastName, preferredName, address, dateOfBirth, Boolean.valueOf(birthDateEstimated), age, gender, Boolean.parseBoolean(dead), null, deathDate));
     }
 
+    @Override
+    public void createConcept(String name) {
+        conceptAdapters.get(0).saveConcept(new MRSConceptDto(new MRSConceptNameDto(name)));
+    }
+
+    @Override
+    public void updateConcept(String conceptId, String name) {
+        conceptAdapters.get(0).updateConcept(new MRSConceptDto(new MRSConceptNameDto(name)));
+    }
+
+    @Override
+    public void deleteConcept(String conceptId) {
+        conceptAdapters.get(0).deleteConcept(conceptId);
+    }
+
     public void setPatientAdapters(List<MRSPatientAdapter> patientAdapters) {
         this.patientAdapters = patientAdapters;
     }
@@ -148,4 +167,7 @@ public class MrsActionProxyServiceImpl implements MrsActionProxyService {
         this.personAdapters = personAdapters;
     }
 
+    public void setConceptAdapters(List<MRSConceptAdapter> conceptAdapters) {
+        this.conceptAdapters = conceptAdapters;
+    }
 }
