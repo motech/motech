@@ -16,10 +16,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -135,6 +139,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
                     try (FileOutputStream output = new FileOutputStream(msgDestFile)) {
                         p.store(output, null);
+                        reloadBundles();
                     }
                 }
             }
@@ -185,5 +190,40 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
         }
 
         return tempJspFile;
+    }
+
+    public static void reloadBundles() {
+        try {
+            clearMap(ResourceBundle.class, null, "cacheList");
+            clearTomcatCache();
+        } catch (Exception e) {
+            logger.error("Could not reload resource bundles"+e.getMessage());
+        }
+    }
+
+
+    private static void clearTomcatCache() {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Class cl = loader.getClass();
+
+        try {
+            if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
+                clearMap(cl, loader, "resourceEntries");
+            } else {
+                logger.error("class loader " + cl.getName() + " is not tomcat loader.");
+            }
+        } catch (Exception e) {
+            logger.error("couldn't clear tomcat cache"+e.getMessage());
+        }
+    }
+
+
+    private static void clearMap(Class cl, Object obj, String name) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Field field = cl.getDeclaredField(name);
+        field.setAccessible(true);
+        Object cache = field.get(obj);
+        Class ccl = cache.getClass();
+        Method clearMethod = ccl.getMethod("clear", null);
+        clearMethod.invoke(cache, null);
     }
 }
