@@ -37,7 +37,19 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
         <constructor-arg ref="basicAuthenticationEntryPoint"/>
     </bean>
 
-    <bean id="basicAuthenticationEntryPoint" class="org.motechproject.security.authentication.ChallengelessBasicAuthenticationEntryPoint"/>
+    <bean id="webSecuritySettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="configFiles">
+            <list>
+                <value>classpath:security.properties</value>
+            </list>
+        </property>
+        <property name="moduleName" value="web-security"/>
+    </bean>
+
+
+    <bean id="basicAuthenticationEntryPoint" class="org.motechproject.security.authentication.MotechBasicAuthenticationEntryPoint">
+        <constructor-arg name="settingsFacade" ref="webSecuritySettings"/>
+    </bean>
 
 
     <security:http auto-config="false" pattern="/**/web-api/**" entry-point-ref="basicAuthenticationEntryPoint" use-expressions="true">

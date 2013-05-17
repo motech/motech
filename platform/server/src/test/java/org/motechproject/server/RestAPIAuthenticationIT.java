@@ -1,6 +1,8 @@
 package org.motechproject.server;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -10,6 +12,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.core.Is;
 import org.json.JSONException;
 import org.junit.Test;
 import org.motechproject.testing.utils.TestContext;
@@ -19,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public class RestAPIAuthenticationIT {
 
@@ -37,6 +42,12 @@ public class RestAPIAuthenticationIT {
 
         HttpResponse response = httpClient.execute(statusRequest);
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+
+        Header authenticateHeader = response.getFirstHeader(HttpHeaders.WWW_AUTHENTICATE);
+        assertNotNull(authenticateHeader);
+
+        String authenticateHeaderValue = authenticateHeader.getValue();
+        assertThat(authenticateHeaderValue, Is.is("Basic realm=\"MOTECH\""));
 
         EntityUtils.consume(response.getEntity());
 
