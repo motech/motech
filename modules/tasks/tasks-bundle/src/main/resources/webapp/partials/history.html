@@ -1,7 +1,7 @@
 <!------------------------  History ------------------------------------->
 <div class="row-fluid" xmlns="http://www.w3.org/1999/html">
     <div class="margin-after history">
-        <div class="box-header">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a></div>
+        <div class="box-header">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-mail-reply icon-white"></i></a></div>
         <div class="box-content tasks-list">
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
@@ -12,7 +12,7 @@
                         <li class="divider-vertical"></li>
                         <li class="task-element task-name">
                             <span class="name-first">{{name}}</span>
-                            <span class="name-second-history">{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-chevron-right"></i>&nbsp;{{msg(trigger.display)}} - {{msg(action.display)}}</span>
+                            <span class="name-second-history">{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-caret-right"></i>&nbsp;{{msg(trigger.display)}} - {{msg(action.display)}}</span>
                         </li>
                     </ul>
 
@@ -21,16 +21,16 @@
                         <li ng-show="description && !enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{description}}" data-placement="left"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                         <li ng-show="description" class="divider-vertical"></li>
                         <li ng-hide="enabled" class="task-element task-paused">
-                            <span class="task-list-button-activity">
-                                <span class="task-list-text-activity">{{msg('task.paused')}}</span>
-                                <img class="task-list-img-activity" src="../tasks/img/task-paused.png" />
-                            </span>
+                            <div class="task-list-button-activity">
+                                <div class="task-list-text-activity">{{msg('task.paused')}}</div>
+                                <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
+                            </div>
                         </li>
                         <li ng-show="enabled" class="task-element task-active">
-                            <span class="task-list-button-activity">
-                                <img class="task-list-img-activity" src="../tasks/img/task-active.png" />
-                                <span class="task-list-text-activity">{{msg('task.active')}}</span>
-                            </span>
+                            <div class="task-list-button-activity">
+                                <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-active.png" /></div>
+                                <div class="task-list-text-activity">{{msg('task.active')}}</div>
+                            </div>
                         </li>
                     </ul>
                     <div class="clearfix"></div>
@@ -39,10 +39,10 @@
             <div class="clearfix"></div><div class="margin-before2"></div>
 
             <div class="margin-after"  ng-show="activities.length &gt; 0">
-                <div class="control-group">
-                    <label class="help-inline">{{msg('header.filterActivity')}}</label>
+                <div class="control-group form-inline">
+                    <label class="interval">{{msg('header.filterActivity')}}</label>
                     <select ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
-                    <label class="help-inline">{{msg('header.activitiesPerPage')}}</label>
+                    <label class="interval">{{msg('header.activitiesPerPage')}}</label>
                     <select class="span1" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
                     <a href ng-click="clearHistory()" class="btn btn-danger"> {{msg('button.clearHistory')}}</a>
                 </div>
@@ -58,9 +58,9 @@
                         <tbody>
                         <tr ng-repeat="activity in pagedItems[currentPage]">
                             <td>
-                                <img ng-show="activity.activityType == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-arrow"/>
-                                <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-arrow"/>
-                                <img ng-show="activity.activityType == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-arrow"/>
+                                <img ng-show="activity.activityType == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-task-img"/>
+                                <img ng-show="activity.activityType == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-task-img"/>
+                                <img ng-show="activity.activityType == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-task-img"/>
                             </td>
                             <td class="message-history">
                                 <p class="wrap-paragraph" ng-hide="activity.stackTraceElement.length &gt; 1">{{msg(activity.message, activity.fields)}}</p>

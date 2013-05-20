@@ -255,7 +255,7 @@ form.inside {
 .nav-tabs > .active > a:hover,
 .nav-tabs > li > a:hover,
 .nav-tabs.nav-stacked > .active > a,
-.nav-tabs.nav-stacked > .active > a {
+.nav-tabs > .active > a:focus {
     border: 1px solid #0088cc;
     background: #3b679e; /* Old browsers */
     background: -moz-linear-gradient(top,  #3b679e 0%, #2b88d9 50%, #207cca 51%, #7db9e8 100%);

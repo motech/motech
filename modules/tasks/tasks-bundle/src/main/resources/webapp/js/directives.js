@@ -5,41 +5,34 @@
 
     var widgetModule = angular.module('motech-tasks');
 
-    widgetModule.directive('doubleClick', function () {
+    widgetModule.directive('overflowChange', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                element.dblclick(function () {
-                    var parent = element.parent();
-
-                    if (parent.hasClass('trigger')) {
-                        delete scope.selectedTrigger;
-                        delete scope.task.trigger;
-
-                        scope.draggedTrigger.display = scope.draggedTrigger.channel;
-                    } else if (parent.hasClass('action')) {
-                        delete scope.selectedAction;
-                        delete scope.task.action;
-
-                        scope.draggedAction.display = scope.draggedAction.channel;
-                    }
-
-                    scope.$apply();
+                $(element).find('.overflowChange').livequery(function () {
+                    $(this).on({
+                        shown: function () {
+                            $(this).css('overflow', 'visible');
+                        },
+                        hide: function () {
+                            $(this).css('overflow', 'hidden');
+                        }
+                    });
                 });
             }
         };
     });
 
-    widgetModule.directive('overflowChange', function () {
+    widgetModule.directive('expandAccordion', function () {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                $('#collapse1').on({
-                    shown: function () {
-                        $(this).css('overflow', 'visible');
+                angular.element(element).on({
+                    show: function () {
+                        $(this).find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
                     },
                     hide: function () {
-                        $(this).css('overflow', 'hidden');
+                        $(this).find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
                     }
                 });
             }
@@ -51,19 +44,19 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 $('.accordion').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-right').addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
                 $('.tasks-list').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-right').addClass('icon-chevron-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
                 $('.accordion').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
 
                 $('.tasks-list').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
             }
         };
@@ -86,13 +79,13 @@
     });
 
 
-    widgetModule.directive('droppable', function ($compile) {
+    widgetModule.directive('droppable', function (ManageTaskUtils, $compile) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
                 element.droppable({
                     drop: function (event, ui) {
-                        var channelName, moduleName, moduleVersion, parent = scope, value, pos, eventKey, dropElement, dragElement, browser, emText,
+                        var parent = scope, value, pos, eventKey, dragElement, browser, emText, dataSource,
                             position = function (dropElement, dragElement) {
                                 var sel, range, space = document.createTextNode(' '), el, frag, node, lastNode;
 
@@ -134,16 +127,15 @@
                                 }
                             };
 
-                        while (parent.msg === undefined) {
+                        while (parent.task === undefined) {
                             parent = parent.$parent;
                         }
 
-                        if (angular.element(ui.draggable).hasClass('triggerField') && element.hasClass('actionField')) {
-                            dragElement = angular.element(ui.draggable);
-                            dropElement = angular.element(element);
-                            browser = scope.$parent.BrowserDetect.browser;
+                        dragElement = angular.element(ui.draggable);
+                        browser = parent.BrowserDetect.browser;
 
-                            switch (dropElement.data('type')) {
+                        if (dragElement.hasClass('triggerField')) {
+                            switch (element.data('type')) {
                             case 'DATE': emText = 'placeholder.dateOnly'; break;
                             case 'TIME': emText = 'placeholder.timeOnly'; break;
                             case 'BOOLEAN': emText = 'placeholder.booleanOnly'; break;
@@ -151,8 +143,27 @@
                             }
 
                             if (browser !== 'Chrome' && browser !== 'Explorer') {
+                                if (element.hasClass('dataSourceField')) {
+                                    dataSource = ManageTaskUtils.find({
+                                        where: parent.selectedDataSources,
+                                        by: [{
+                                            what: 'dataSourceId',
+                                            equalTo: element.data('index')
+                                        }, {
+                                            what: 'id',
+                                            equalTo: element.data('object-id')
+                                        }]
+                                    });
+                                }
+
                                 if (emText !== undefined) {
-                                    delete parent.selectedAction.actionParameters[dropElement.data('index')].value;
+                                    if (element.hasClass('actionField')) {
+                                        delete parent.selectedAction.actionParameters[element.data('index')].value;
+                                    } else if (element.hasClass('dataSourceField')) {
+                                        if (dataSource) {
+                                            delete dataSource.lookup.value;
+                                        }
+                                    }
                                 }
 
                                 if (dragElement.data('prefix') === 'trigger') {
@@ -162,17 +173,24 @@
                                 }
 
                                 pos = element.caret();
-                                value = parent.selectedAction.actionParameters[dropElement.data('index')].value || '';
+                                value = element.val() || '';
 
-                                parent.selectedAction.actionParameters[dropElement.data('index')].value = value.insert(pos, eventKey);
+                                if (element.hasClass('actionField')) {
+                                    parent.selectedAction.actionParameters[element.data('index')].value = value.insert(pos, eventKey);
+                                } else if (element.hasClass('dataSourceField')) {
+                                    if (dataSource) {
+                                        dataSource.lookup.value = value.insert(pos, eventKey);
+                                    }
+                                }
                             } else {
                                 if (emText !== undefined) {
-                                    parent.selectedAction.actionParameters[dropElement.data('index')].value = '<em style="color: gray;">' + parent.msg(emText) + '</em>';
+                                    element.empty();
+                                    element.append('<em style="color: gray;">' + parent.msg(emText) + '</em>');
                                 }
 
-                                dropElement.find('em').remove();
+                                element.find('em').remove();
 
-                                dragElement = angular.element(ui.draggable).clone();
+                                dragElement = dragElement.clone();
                                 dragElement.css("position", "relative");
                                 dragElement.css("left", "0px");
                                 dragElement.css("top", "0px");
@@ -188,38 +206,7 @@
                                 dragElement.removeAttr("ng-repeat");
                                 dragElement.removeAttr("draggable");
 
-                                if (dragElement.data('prefix') === 'ad') {
-                                    dragElement.text(parent.msg(dragElement.data('source')) + '.' + parent.msg(dragElement.data('object')) + "#" + dragElement.data('object-id') + '.' + dragElement.text());
-                                }
-
-                                position(dropElement, dragElement);
-                            }
-
-                        } else if (angular.element(ui.draggable).hasClass('task-panel') && (element.hasClass('trigger') || element.hasClass('action'))) {
-                            channelName = angular.element(ui.draggable).data('channel-name');
-                            moduleName = angular.element(ui.draggable).data('module-name');
-                            moduleVersion = angular.element(ui.draggable).data('module-version');
-
-                            if (element.hasClass('trigger')) {
-                                parent.setTaskEvent('trigger', channelName, moduleName, moduleVersion);
-                                delete parent.task.trigger;
-                                delete parent.selectedTrigger;
-                            } else if (element.hasClass('action')) {
-                                parent.setTaskEvent('action', channelName, moduleName, moduleVersion);
-                                delete parent.task.action;
-                                delete parent.selectedAction;
-                            }
-                        } else if (angular.element(ui.draggable).hasClass('dragged') && element.hasClass('task-selector')) {
-                            parent = angular.element(ui.draggable).parent();
-
-                            if (parent.hasClass('trigger')) {
-                                delete parent.draggedTrigger;
-                                delete parent.task.trigger;
-                                delete parent.selectedTrigger;
-                            } else if (parent.hasClass('action')) {
-                                delete parent.draggedAction;
-                                delete parent.task.action;
-                                delete parent.selectedAction;
+                                position(element, dragElement);
                             }
                         }
 
@@ -362,17 +349,7 @@
     });
 
     widgetModule.directive('editableContent', function ($compile, $timeout, $http, $templateCache) {
-        var templateLoader,
-            baseURL = '../tasks/partials/widgets/',
-            typeTemplateMapping = {
-                TEXTAREA : 'content-editable-textarea.html',
-                INTEGER: 'content-editable-integer.html',
-                DOUBLE: 'content-editable-double.html',
-                UNICODE : 'content-editable-unicode.html',
-                DATE : 'content-editable-date.html',
-                TIME : 'content-editable-time.html',
-                BOOLEAN : 'content-editable-boolean.html'
-            };
+        var templateLoader;
 
         return {
             restrict: 'E',
@@ -383,8 +360,9 @@
                 index: '='
             },
             compile: function (tElement, tAttrs, scope) {
-                var tplURL = baseURL + typeTemplateMapping[tAttrs.type];
-                templateLoader = $http.get(tplURL, {cache: $templateCache})
+                var url = '../tasks/partials/widgets/content-editable-' + tAttrs.type.toLowerCase() + '.html',
+
+                templateLoader = $http.get(url, {cache: $templateCache})
                     .success(function (html) {
                         tElement.html(html);
                     });
@@ -764,15 +742,27 @@
         };
     });
 
-    widgetModule.directive('taskPopover', function() {
+    widgetModule.directive('selectEvent', function() {
         return function(scope, element, attrs) {
-            $(element).popover({
-                placement: 'left',
-                trigger: 'hover',
-                html: true,
-                content: function() {
-                    return $(element).find('.content-task').html();
-                }
+            $(element).click(function (event) {
+                var li = $(element).parent('li'),
+                    content = $(element).find('.content-task'),
+                    visible = content.is(":visible"),
+                    other = $('[select-event=' + attrs.selectEvent + ']').not('#' + $(this).attr('id'));
+
+                    other.parent('li').not('.selectedTrigger').removeClass('active');
+                    other.find('.content-task').hide();
+
+                    if (visible) {
+                        if (!li.hasClass('selectedTrigger')) {
+                            li.removeClass('active');
+                        }
+
+                        content.hide();
+                    } else {
+                        li.addClass('active');
+                        content.show();
+                    }
             });
         };
     });
@@ -787,7 +777,7 @@
 
             $http.get('../tasks/partials/help/' + attrs.helpPopover + '.html').success(function (html) {
                 $(element).popover({
-                    placement: 'left',
+                    placement: 'top',
                     trigger: 'hover',
                     html: true,
                     content: function() {

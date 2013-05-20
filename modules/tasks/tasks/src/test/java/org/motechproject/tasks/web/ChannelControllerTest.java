@@ -16,7 +16,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,31 +60,19 @@ public class ChannelControllerTest {
 
     @Test
     public void shouldGetChannelIcon() throws IOException {
-        verifyGetChannelIcon("test", times(1));
-    }
-
-    @Test
-    public void shouldNotGetChannelIconWhenNameIsEmpty() throws IOException {
-        VerificationMode mode = never();
-
-        verifyGetChannelIcon("", mode);
-        verifyGetChannelIcon(null, mode);
-    }
-
-    private void verifyGetChannelIcon(String moduleName, VerificationMode mode) throws IOException {
         BundleIcon icon = new BundleIcon(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, "image/jpeg");
 
-        when(channelService.getChannelIcon(moduleName)).thenReturn(icon);
+        when(channelService.getChannelIcon("test")).thenReturn(icon);
         when(response.getOutputStream()).thenReturn(outputStream);
 
-        controller.getChannelIcon(moduleName, response);
+        controller.getChannelIcon("test", response);
 
-        verify(response, mode).setStatus(HttpServletResponse.SC_OK);
-        verify(response, mode).setContentLength(icon.getContentLength());
-        verify(response, mode).setContentType(icon.getMime());
-        verify(response, mode).getOutputStream();
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        verify(response).setContentLength(icon.getContentLength());
+        verify(response).setContentType(icon.getMime());
+        verify(response).getOutputStream();
 
-        verify(outputStream, mode).write(icon.getIcon());
+        verify(outputStream).write(icon.getIcon());
     }
 
 }

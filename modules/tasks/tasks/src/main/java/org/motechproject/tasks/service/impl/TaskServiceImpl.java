@@ -59,15 +59,20 @@ public class TaskServiceImpl implements TaskService {
     public void save(final Task task) {
         Set<TaskError> errors = TaskValidator.validate(task);
 
-        if (!isEmpty(errors)) {
+        if (task.isEnabled() && !isEmpty(errors)) {
             throw new ValidationException(TaskValidator.TASK, errors);
         }
 
         TaskEventInformation trigger = task.getTrigger();
         TaskActionInformation action = task.getAction();
 
-        errors.addAll(validateTaskByTriggerChannel(task, channelService.getChannel(trigger.getModuleName())));
-        errors.addAll(validateTaskByActionChannel(task, channelService.getChannel(action.getModuleName())));
+        if (trigger != null) {
+            errors.addAll(validateTriggerTask(task, channelService.getChannel(trigger.getModuleName())));
+        }
+
+        if (action != null) {
+            errors.addAll(validateActionTask(task, channelService.getChannel(action.getModuleName())));
+        }
 
         for (String providerId : task.getAdditionalData().keySet()) {
             errors.addAll(TaskValidator.validateByProvider(task, providerService.getProviderById(providerId)));
@@ -173,19 +178,25 @@ public class TaskServiceImpl implements TaskService {
         Channel channel = channelService.getChannel(moduleName);
 
         for (Task task : getAllTasks()) {
-            Set<TaskError> errors = validateTaskByTriggerChannel(task, channel);
+            Set<TaskError> errors;
 
-            if (errors != null) {
-                setTaskValidationErrors(task, errors,
-                        "validation.error.triggerNotExist",
-                        "validation.error.triggerFieldNotExist"
-                );
+            if (task.getTrigger() != null) {
+                errors = validateTriggerTask(task, channel);
+
+                if (errors != null) {
+                    setTaskValidationErrors(task, errors,
+                            "validation.error.triggerNotExist",
+                            "validation.error.triggerFieldNotExist"
+                    );
+                }
             }
 
-            errors = validateTaskByActionChannel(task, channel);
+            if (task.getAction() != null) {
+                errors = validateActionTask(task, channel);
 
-            if (errors != null) {
-                setTaskValidationErrors(task, errors, "validation.error.actionNotExist");
+                if (errors != null) {
+                    setTaskValidationErrors(task, errors, "validation.error.actionNotExist");
+                }
             }
         }
     }
@@ -209,23 +220,23 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private Set<TaskError> validateTaskByTriggerChannel(Task task, Channel channel) {
+    private Set<TaskError> validateTriggerTask(Task task, Channel channel) {
         Set<TaskError> errors = null;
         TaskEventInformation trigger = task.getTrigger();
 
         if (channel.getModuleName().equalsIgnoreCase(trigger.getModuleName())) {
-            errors = new HashSet<>(TaskValidator.validateByTrigger(task, channel));
+            errors = new HashSet<>(TaskValidator.validateTrigger(task, channel));
         }
 
         return errors;
     }
 
-    private Set<TaskError> validateTaskByActionChannel(Task task, Channel channel) {
+    private Set<TaskError> validateActionTask(Task task, Channel channel) {
         Set<TaskError> errors = null;
         TaskActionInformation action = task.getAction();
 
         if (channel.getModuleName().equalsIgnoreCase(action.getModuleName())) {
-            errors = new HashSet<>(TaskValidator.validateByAction(task, channel));
+            errors = new HashSet<>(TaskValidator.validateAction(task, channel));
         }
 
         return errors;

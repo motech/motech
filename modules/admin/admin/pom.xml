@@ -20,7 +20,6 @@
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
-        <jasmine.server.port>8234</jasmine.server.port>
     </properties>
 
     <dependencies>

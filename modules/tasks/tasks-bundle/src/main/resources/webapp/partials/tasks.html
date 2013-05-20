@@ -4,8 +4,7 @@
 
         <div class="box-header">{{msg('header.tasks')}}</div>
         <div class="box-content clearfix">
-
-            <div class="inside">
+            <div class="inside btn-group">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             </div>
             <div class="inside form-inline">
@@ -22,20 +21,27 @@
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}&moduleVersion={{item.task.trigger.moduleVersion}}" class="task-list-img" /></li>
+                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" /></li>
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.action.moduleName}}&moduleVersion={{item.task.action.moduleVersion}}" class="task-list-img"/></li>
+                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.action.moduleName}}" class="task-list-img"/></li>
                                     <li class="divider-vertical"></li>
                                     <li class="task-element task-name">
-                                        <i class="icon-chevron-right i-name"></i>
+                                        <i class="icon-caret-right icon-fixed-width icon-large i-name"></i>
                                         <span class="name-first">&nbsp;{{item.task.name}}</span>
-                                        <span class="name-second">{{msg(item.task.trigger.channelName)}} - {{msg(item.task.action.channelName)}}</span>
+                                        <span class="name-second">
+                                            <span ng-show="item.task.trigger">
+                                                {{msg(item.task.trigger.channelName)}}
+                                            </span>
+                                            <span ng-show="item.task.action">
+                                                - {{msg(item.task.action.channelName)}}
+                                            </span>
+                                        </span>
                                     </li>
                                 </ul>
                             </a>
 
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description && item.task.enabled" class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-hide="item.task.enabled" class="task-element task-paused">

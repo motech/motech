@@ -18,6 +18,8 @@
         <db.port>5984</db.port>
         <db.prefix>${user.name}_</db.prefix>
 
+        <jasmine.server.port>8234</jasmine.server.port>
+
         <external.dependency.release.tag>r011</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>

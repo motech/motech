@@ -367,16 +367,10 @@ public class TaskTriggerHandler {
         }
 
         TaskAdditionalData ad = findAdditionalData(task, key);
-        KeyInformation adKey = KeyInformation.parse(ad.getLookupValue());
+        String value = replaceAll(ad.getLookupValue(), event, task);
 
         Map<String, String> lookupFields = new HashMap<>();
-
-        if (adKey.fromTrigger()) {
-            lookupFields.put(ad.getLookupField(), event.getParameters().get(adKey.getKey()).toString());
-        } else if (adKey.fromAdditionalData()) {
-            String objectValue = getAdditionalDataValue(event, task, adKey).toString();
-            lookupFields.put(ad.getLookupField(), objectValue);
-        }
+        lookupFields.put(ad.getLookupField(), value);
 
         return provider.lookup(key.getObjectType(), lookupFields);
     }

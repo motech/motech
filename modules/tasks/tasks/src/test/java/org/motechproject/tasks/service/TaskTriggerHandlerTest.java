@@ -800,7 +800,7 @@ public class TaskTriggerHandlerTest {
         setMapField();
 
         Map<String, String> testObjectLookup = new HashMap<>();
-        testObjectLookup.put("id", "6789");
+        testObjectLookup.put("id", "123456789-6789");
 
         TestObject testObject = new TestObject();
         TestObjectField testObjectField = new TestObjectField();
@@ -1160,8 +1160,8 @@ public class TaskTriggerHandlerTest {
 
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
         additionalData.put("12345", asList(
-                new TaskAdditionalData(1L, "TestObjectField", "id", "trigger.externalId", isFail),
-                new TaskAdditionalData(2L, "TestObject", "id", "ad.12345.TestObjectField#1.id", isFail)
+                new TaskAdditionalData(1L, "TestObjectField", "id", "{{trigger.externalId}}", isFail),
+                new TaskAdditionalData(2L, "TestObject", "id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}", isFail)
         ));
 
         task.setAdditionalData(additionalData);

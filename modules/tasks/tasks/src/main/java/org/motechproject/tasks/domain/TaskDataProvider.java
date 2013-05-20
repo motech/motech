@@ -39,7 +39,9 @@ public class TaskDataProvider extends MotechBaseDataObject {
     }
 
     public boolean containsProviderObjectLookup(String type, String lookupField) {
-        return getProviderObject(type).getLookupFields().contains(lookupField);
+        TaskDataProviderObject providerObject = getProviderObject(type);
+
+        return providerObject != null && providerObject.getLookupFields().contains(lookupField);
     }
 
     public TaskDataProviderObject getProviderObject(String type) {
