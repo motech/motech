@@ -39,6 +39,7 @@
     <script src="resources/lib/jquery/jquery.blockUI.js" type="text/javascript"></script>
     <script src="resources/lib/jquery/jquery.caret.js" type="text/javascript"></script>
     <script src="resources/lib/jquery/jquery.sidebar.js" type="text/javascript"></script>
+    <script src="resources/lib/jquery/jquery.livequery.min.js" type="text/javascript"></script>
 
     <script src="resources/lib/angular/angular.min.js" type="text/javascript"></script>
     <script src="resources/lib/angular/angular-resource.min.js" type="text/javascript"></script>
