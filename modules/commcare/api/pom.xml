@@ -74,7 +74,6 @@
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Context-Path>commcare</Context-Path>
                         <Resource-Path>commcare/resources</Resource-Path>
                         <Export-Package>

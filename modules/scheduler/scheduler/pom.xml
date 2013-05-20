@@ -108,7 +108,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Context-Path>scheduler</Context-Path>
                         <Resource-Path>scheduler/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>

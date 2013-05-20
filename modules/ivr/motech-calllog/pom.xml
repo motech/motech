@@ -105,7 +105,6 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Context-Path>callLog</Context-Path>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Resource-Path>callLog/resources</Resource-Path>
                         <Import-Package>
                             org.motechproject.server.config,
