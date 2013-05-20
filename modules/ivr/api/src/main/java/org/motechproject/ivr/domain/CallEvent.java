@@ -1,82 +1,25 @@
 package org.motechproject.ivr.domain;
 
-import org.joda.time.DateTime;
-import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.ivr.event.CallEventCustomData;
+import org.motechproject.event.MotechEvent;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Represents IVR event like DTMF key press, Dial
- * @see IVREvent
- */
-public class CallEvent implements Serializable{
-    private static final long serialVersionUID = -5399759051930894664L;
+public class CallEvent {
 
-    private String name;
-    private DateTime timeStamp;
-    private CallEventCustomData callEventCustomData = new CallEventCustomData();
+    private final MotechEvent motechEvent;
 
-    private CallEvent() {
+    public CallEvent(String callEvent, CallDetail callDetail) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(EventKeys.CALL_DETAIL_RECORD_PARAM, callDetail);
+        motechEvent = new MotechEvent(callEvent, params);
     }
 
-    public CallEvent(String name) {
-        this(name, DateUtil.now());
+    public CallDetail getCallDetail() {
+        return (CallDetail) motechEvent.getParameters().get(EventKeys.CALL_DETAIL_RECORD_PARAM);
     }
 
-    private CallEvent(String name, DateTime timeStamp) {
-        this.name = name;
-        this.timeStamp = timeStamp;
-    }
-
-    /**
-     * Factory method to create new dial event.
-     * @return Dial event
-     */
-    public static CallEvent newDialEvent() {
-        return new CallEvent("Dial", DateUtil.now());
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public DateTime getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(DateTime timeStamp) {
-        this.timeStamp = DateUtil.setTimeZone(timeStamp);
-    }
-
-    /**
-     * Get additional data for call event such as audio played etc.
-     * @return Data map with key value pair
-     *
-     */
-    public CallEventCustomData getData() {
-        return callEventCustomData;
-    }
-
-    /**
-     * Set additional data for call event such as audio played etc.
-     * @param callEventCustomData
-     */
-    public void setData(CallEventCustomData callEventCustomData) {
-        this.callEventCustomData = callEventCustomData;
-    }
-
-    /**
-     * Add key value pair to additional data in call event.
-     * It can be used to store information related to IVR event like audio played etc.
-     * @param key
-     * @param value
-     */
-    public void appendData(String key, String value) {
-        callEventCustomData.put(key, value);
+    public MotechEvent toMotechEvent() {
+        return motechEvent;
     }
 }

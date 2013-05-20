@@ -2,25 +2,27 @@ package org.motechproject.callflow.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.callflow.domain.FlowSessionRecord;
-import org.motechproject.callflow.service.CallFlowServer;
-import org.motechproject.callflow.service.CallFlowServerImpl;
-import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.callflow.service.TreeEventProcessor;
+import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.decisiontree.core.DecisionTreeService;
-import org.motechproject.decisiontree.core.EndOfCallEvent;
-import org.motechproject.decisiontree.core.model.CallStatus;
+import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.ivr.domain.CallEvent;
 import org.springframework.context.ApplicationContext;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 
 public class CallFlowServerImplTest {
 
-    CallFlowServer decisionTreeServer;
+    CallFlowServer callFlowServer;
 
     @Mock
     private DecisionTreeService decisionTreeService;
@@ -36,46 +38,36 @@ public class CallFlowServerImplTest {
     @Before
     public void setup() {
         initMocks(this);
-        decisionTreeServer = new CallFlowServerImpl(decisionTreeService, treeEventProcessor, applicationContext, flowSessionService, eventRelay);
+        callFlowServer = new CallFlowServerImpl(decisionTreeService, treeEventProcessor, applicationContext, flowSessionService, eventRelay);
     }
 
     @Test
-    public void shouldRaiseEndOfCallEventOnHangup() {
-        FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
-        when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
-
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Hangup.toString(), "en");
-
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
-    }
-
-    @Test
-    public void shouldRaiseEndOfCallEventOnDisconnect() {
-        FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
-        when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
-
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
-
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
-    }
-
-    @Test
-    public void shouldRaiseEndOfCallEventForMissedCalls() {
+    public void shouldRaiseCallEvent() {
         FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.getSession("123a")).thenReturn(flowSession);
 
-        decisionTreeServer.handleMissedCall(flowSession.getSessionId());
-        verify(flowSessionService).updateSession(flowSession);
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
+        callFlowServer.raiseCallEvent(IvrEvent.Answered, flowSession.getSessionId());
+
+        verify(eventRelay).sendEventMessage(new CallEvent(IvrEvent.Answered.getEventSubject(), flowSession.getCallDetailRecord()).toMotechEvent());
     }
 
     @Test
-    public void testingCallDetailRecordParams() {
-        FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
-        when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
+    public void shouldSetCallEndTimeWhenCallEnds() {
+        try {
+            fakeNow(newDateTime(2010, 10, 1));
 
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
+            FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
+            when(flowSessionService.getSession("123a")).thenReturn(flowSession);
 
-        verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()).toMotechEvent());
+            callFlowServer.raiseCallEvent(IvrEvent.Answered, flowSession.getSessionId());
+
+            ArgumentCaptor<FlowSession> sessionCaptor = ArgumentCaptor.forClass(FlowSession.class);
+            verify(flowSessionService).updateSession(sessionCaptor.capture());
+
+            FlowSessionRecord sessionRecord = (FlowSessionRecord) sessionCaptor.getValue();
+            assertEquals(newDateTime(2010, 10, 1), sessionRecord.getCallDetailRecord().getEndDate());
+        } finally {
+            stopFakingTime();
+        }
     }
 }

@@ -24,7 +24,7 @@ public class KookooIvrServiceBundleIT extends BaseOsgiIT {
 
     public void testThatKooKooServiceUrlIsAvailable() throws IOException, InterruptedException {
         HttpResponse response = new PollingHttpClient()
-                .get(String.format("http://localhost:%d/kookoo/kookoo/status", TestContext.getJettyPort()));
+                .get(String.format("http://localhost:%d/kookoo/kookoo/ivr/callstatus", TestContext.getJettyPort()));
         assertEquals(HttpStatus.SC_OK,response.getStatusLine().getStatusCode());
     }
 

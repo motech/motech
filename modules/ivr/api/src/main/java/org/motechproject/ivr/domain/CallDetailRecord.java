@@ -31,7 +31,7 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
     private Integer duration;
     private CallDirection callDirection;
 
-    private List<CallEvent> callEvents = new ArrayList<CallEvent>();
+    private List<CallEventLog> callEventLogs = new ArrayList<CallEventLog>();
 
     private Map<String, Object> customProperties = new HashMap<>();
 
@@ -123,12 +123,19 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
         return callDirection;
     }
 
+    public List<CallEventLog> getCallEvents() {
+        return callEventLogs;
+    }
 
     public CallDetailRecord setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
 
+    public CallDetailRecord setCallEvents(List<CallEventLog> callEventLogs) {
+        this.callEventLogs = callEventLogs;
+        return this;
+    }
 
     public CallDetailRecord setCallDirection(CallDirection callDirection) {
         this.callDirection = callDirection;
@@ -190,21 +197,13 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
         this.duration = duration;
     }
 
-    public List<CallEvent> getCallEvents() {
-        return callEvents;
-    }
-
-    public void setCallEvents(List<CallEvent> callEvents) {
-        this.callEvents = callEvents;
-    }
-
     /**
      * Adds IVR events such as key press, hangup etc., to current call detail record.
      *
-     * @param callEvent
+     * @param callEventLog
      */
-    public CallDetailRecord addCallEvent(CallEvent callEvent) {
-        callEvents.add(callEvent);
+    public CallDetailRecord addCallEvent(CallEventLog callEventLog) {
+        callEventLogs.add(callEventLog);
         return this;
     }
 
@@ -213,8 +212,8 @@ public class CallDetailRecord extends MotechBaseDataObject implements CallDetail
      *
      * @return Call event
      */
-    public CallEvent lastCallEvent() {
-        return callEvents.size() == 0 ? null : callEvents.get(callEvents.size() - 1);
+    public CallEventLog lastCallEvent() {
+        return callEventLogs.size() == 0 ? null : callEventLogs.get(callEventLogs.size() - 1);
     }
 
 }

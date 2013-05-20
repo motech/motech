@@ -52,7 +52,15 @@
             <groupId>com.github.ldriscoll</groupId>
             <artifactId>org.motechproject.ektorplucene</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.callflow.repository.AllFlowSessionRecords;
 import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.decisiontree.core.EventKeys;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
@@ -38,6 +37,7 @@ import static org.springframework.test.web.server.request.MockMvcRequestBuilders
 public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
 
     public static final int EVENT_TIMEOUT = 12000;
+    public static final String END_OF_CALL_EVENT = "ivr.end_of_call.*";
 
     @Autowired
     @Qualifier("treesDatabase")
@@ -69,7 +69,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
     public void shouldReceiveEndOfCallEventOnDisconnect() throws Exception {
         try {
             TestListener listener = new TestListener("end_of_call_disconnect_test_listener");
-            eventListenerRegistry.registerListener(listener, EventKeys.END_OF_CALL_EVENT);
+            eventListenerRegistry.registerListener(listener, END_OF_CALL_EVENT);
 
             Tree tree = new Tree();
             tree.setName("someTree");
@@ -85,7 +85,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             synchronized (lock) {
                 lock.wait(EVENT_TIMEOUT);
                 if (!listener.isEventReceived()) {
-                    fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+                    fail(format("%s event not raised.", END_OF_CALL_EVENT));
                 }
             }
         } finally {
@@ -97,7 +97,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
     public void shouldReceiveEndOfCallEventOnHangup() throws Exception {
         try {
             TestListener listener = new TestListener("end_of_call_test_hangup_listener");
-            eventListenerRegistry.registerListener(listener, EventKeys.END_OF_CALL_EVENT);
+            eventListenerRegistry.registerListener(listener, END_OF_CALL_EVENT);
 
             Tree tree = new Tree();
             tree.setName("someTree");
@@ -113,7 +113,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             synchronized (lock) {
                 lock.wait(EVENT_TIMEOUT);
                 if (!listener.isEventReceived()) {
-                    fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+                    fail(format("%s event not raised.", END_OF_CALL_EVENT));
                 }
             }
         } finally {
@@ -126,11 +126,13 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
     public void shouldReceiveEndOfCallEventOnMissedCall() throws Exception {
         try {
             TestListener listener = new TestListener("end_of_call_test_missed_call_listener");
-            eventListenerRegistry.registerListener(listener, EventKeys.END_OF_CALL_EVENT);
-            String motechCallId = "mcid123";
+            eventListenerRegistry.registerListener(listener, END_OF_CALL_EVENT);
+
+            String sid = "mcid123";
             String phoneNumber = "12345";
-            flowSessionService.findOrCreate(motechCallId, phoneNumber);
-            String url = String.format("/kookoo/ivr/callstatus?status_details=NoAnswer&sid=123A&motech_call_id=%s&phone_no=%s", motechCallId, phoneNumber);
+            flowSessionService.findOrCreate(sid, phoneNumber);
+
+            String url = String.format("/kookoo/ivr/callstatus?status=ring&status_details=NoAnswer&sid=%s&phone_no=%s", sid, phoneNumber);
             mockKookooIvrController.perform(post(url));
 
             Object lock = listener.getLock();
@@ -138,7 +140,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
                 synchronized (lock) {
                     lock.wait(EVENT_TIMEOUT);
                     if (!listener.isEventReceived()) {
-                        fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+                        fail(format("%s event not raised.", END_OF_CALL_EVENT));
                     }
                 }
             }

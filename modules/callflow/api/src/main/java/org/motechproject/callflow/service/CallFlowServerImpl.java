@@ -2,8 +2,9 @@ package org.motechproject.callflow.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.ivr.domain.CallEventLog;
+import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.decisiontree.core.DecisionTreeService;
-import org.motechproject.decisiontree.core.EndOfCallEvent;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.CallStatus;
@@ -15,7 +16,6 @@ import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallEvent;
-import org.motechproject.ivr.domain.IVREvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.commons.date.util.DateUtil.now;
 
 @Service
-public class CallFlowServerImpl implements org.motechproject.callflow.service.CallFlowServer {
+public class CallFlowServerImpl implements CallFlowServer {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
@@ -82,25 +82,22 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
     }
 
     @Override
-    public void handleMissedCall(String flowSessionId) {
+    public void raiseCallEvent(IvrEvent callEvent, String flowSessionId) {
         FlowSession session = flowSessionService.getSession(flowSessionId);
-        CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
-        callDetailRecord.addCallEvent(new CallEvent(IVREvent.Missed.name()));
-        flowSessionService.updateSession(session);
-        eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
+        CallDetailRecord callDetail = ((FlowSessionRecord) session).getCallDetailRecord();
+        if (callEvent.isEndOfCall()) {
+            callDetail.setEndDate(now()).addCallEvent(new CallEventLog(callEvent.getEventSubject()));
+            flowSessionService.updateSession(session);
+        }
+        eventRelay.sendEventMessage(new CallEvent(callEvent.getEventSubject(), callDetail).toMotechEvent());
     }
 
     private ModelAndView getModelViewForNextNode(FlowSession session, String provider, String tree, String transitionKey) {
 
-
         if (CallStatus.Hangup.toString().equals(transitionKey) || CallStatus.Disconnect.toString().equals(transitionKey)) {
-            CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
-            callDetailRecord.setEndDate(now());
-            callDetailRecord.addCallEvent(new CallEvent(transitionKey));
-            flowSessionService.updateSession(session);
-            eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord).toMotechEvent());
             return new ModelAndView(templateNameFor(provider, EXIT_TEMPLATE_NAME));
         }
+
         if (isBlank(session.getLanguage()) || isBlank(tree)) {
             logger.error(format("No tree or language specified"));
             return getErrorModelAndView(Error.TREE_OR_LANGUAGE_MISSING, session, provider);
@@ -150,22 +147,22 @@ public class CallFlowServerImpl implements org.motechproject.callflow.service.Ca
     }
 
     private void addDTMFEvent(FlowSession session, String transitionKey) {
-        final CallEvent callEvent = new CallEvent(IVREvent.GotDTMF.name());
-        callEvent.appendData("input", transitionKey);
+        final CallEventLog callEventLog = new CallEventLog(IvrEvent.Dtmf.getEventSubject());
+        callEventLog.appendData("input", transitionKey);
 
-        saveEvent(session, callEvent);
+        saveEvent(session, callEventLog);
     }
 
     private void addFlowStartEvent(FlowSession session, String tree) {
-        final CallEvent callEvent = new CallEvent("FlowStart:" + tree);
-        callEvent.appendData("treeName", tree);
+        final CallEventLog callEventLog = new CallEventLog("FlowStart:" + tree);
+        callEventLog.appendData("treeName", tree);
 
-        saveEvent(session, callEvent);
+        saveEvent(session, callEventLog);
     }
 
-    private void saveEvent(FlowSession session, CallEvent callEvent) {
+    private void saveEvent(FlowSession session, CallEventLog callEventLog) {
         CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
-        callDetailRecord.addCallEvent(callEvent);
+        callDetailRecord.addCallEvent(callEventLog);
         flowSessionService.updateSession(session);
     }
 

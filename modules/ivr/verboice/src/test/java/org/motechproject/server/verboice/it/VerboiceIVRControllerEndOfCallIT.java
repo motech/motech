@@ -5,9 +5,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.callflow.repository.AllFlowSessionRecords;
 import org.motechproject.callflow.service.FlowSessionService;
-import org.motechproject.decisiontree.core.EventKeys;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -49,23 +49,22 @@ public class VerboiceIVRControllerEndOfCallIT extends SpringIntegrationTest {
     }
 
     @Test
-    public void shouldReceiveEndOfCallEventOnMissedCall() throws Exception {
+    public void shouldReceiveMissedCallEvent() throws Exception {
         try {
             TestListener listener = new TestListener("end_of_call_test_missed_call_listener");
-            eventListenerRegistry.registerListener(listener, EventKeys.END_OF_CALL_EVENT);
+            eventListenerRegistry.registerListener(listener, IvrEvent.Missed.getEventSubject());
             String callSid = "123A";
             String motechCallId = "motechId";
             String phoneNumber = "12345";
             flowSessionService.findOrCreate(callSid, phoneNumber);
-            String url = String.format("/ivr/callstatus?CallStatus=no-answer&CallSid=%s&motech_call_id=%s&From=%s", callSid, motechCallId, phoneNumber);
-            mockVerboiceIvrController.perform(get(url));
+            mockVerboiceIvrController.perform(get(format("/ivr/callstatus?CallStatus=no-answer&CallSid=%s&motech_call_id=%s&From=%s", callSid, motechCallId, phoneNumber)));
 
             Object lock = listener.getLock();
             while (!listener.isEventReceived()) {
                 synchronized (lock) {
                     lock.wait(EVENT_TIMEOUT);
                     if (!listener.isEventReceived())
-                        fail(format("%s event not raised.", EventKeys.END_OF_CALL_EVENT));
+                        fail(format("%s event not raised.", IvrEvent.Missed.getEventSubject()));
                 }
             }
         } finally {

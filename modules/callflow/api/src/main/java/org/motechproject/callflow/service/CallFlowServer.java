@@ -1,5 +1,6 @@
 package org.motechproject.callflow.service;
 
+import org.motechproject.callflow.domain.IvrEvent;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -15,11 +16,12 @@ public interface CallFlowServer {
     ModelAndView getResponse(String flowSessionId, String phoneNumber, String provider, String tree, String transitionKey, String language);
 
     /**
-     * Raises an EndOfCallEvent with the call detail record.
+     * Raises an IVR event with the call detail record of the call.
      *
+     * @param callEvent event to be raised
      * @param flowSessionId FlowSession ID
      */
-    void handleMissedCall(String flowSessionId);
+    void raiseCallEvent(IvrEvent callEvent, String flowSessionId);
 
     enum Error {
         TREE_OR_LANGUAGE_MISSING("Tree or language missing, please check IVR URL."),
