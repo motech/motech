@@ -106,7 +106,6 @@
                         <Context-Path>cmsliteapi</Context-Path>
                         <Resource-Path>cmsliteapi/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Export-Package>
                             org.motechproject.cmslite.api.model;version=${project.version},
                             org.motechproject.cmslite.api.repository;version=${project.version},
