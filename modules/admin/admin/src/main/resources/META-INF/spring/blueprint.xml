@@ -57,11 +57,6 @@
     <osgi:reference id="eventListenerRegistryServiceOsgi"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="motechPermissionServiceOsgi"
-                    interface="org.motechproject.security.service.MotechPermissionService"/>
-
-    <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
-
     <osgi:reference id="packageAdmin" interface="org.osgi.service.packageadmin.PackageAdmin"/>
 
     <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.UIFrameworkService"

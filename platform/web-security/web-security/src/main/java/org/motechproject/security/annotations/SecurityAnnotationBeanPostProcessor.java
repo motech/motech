@@ -1,13 +1,10 @@
 package org.motechproject.security.annotations;
 
-import org.apache.commons.lang.WordUtils;
 import org.motechproject.security.model.PermissionDto;
-import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechPermissionService;
-import org.motechproject.security.service.MotechRoleService;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelNode;
 import org.springframework.expression.spel.standard.SpelExpression;
@@ -28,10 +25,21 @@ import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
+
     private MotechPermissionService permissionService;
-    private MotechRoleService roleService;
-    private String moduleName = "unknown";
+
     private ExpressionParser annotationParser = new DefaultMethodSecurityExpressionHandler().getExpressionParser();
+
+    public SecurityAnnotationBeanPostProcessor(MotechPermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
+
+    public void processAnnotations(ApplicationContext applicationContext) {
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            Object bean = applicationContext.getBean(beanName);
+            postProcessAfterInitialization(bean, beanName);
+        }
+    }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -73,20 +81,6 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
-    @Autowired(required = false)
-    public void setPermissionService(MotechPermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
-
-    @Autowired(required = false)
-    public void setRoleService(MotechRoleService roleService) {
-        this.roleService = roleService;
-    }
-
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
-    }
-
     private List<String> findPermissions(SpelNode node) {
         List<String> list = new ArrayList<>(node.getChildCount());
 
@@ -106,26 +100,7 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
     private void addRoleAndPermissions(List<String> permissions) {
         if (!permissions.isEmpty() && permissionService != null) {
             for (String permission : permissions) {
-                permissionService.addPermission(new PermissionDto(permission, moduleName));
-            }
-
-            if (roleService != null) {
-                String role = WordUtils.capitalize(String.format("%s bundle", moduleName));
-                RoleDto dto = roleService.getRole(role);
-
-                if (dto == null) {
-                    dto = new RoleDto(role, permissions);
-
-                    roleService.createRole(dto);
-                } else {
-                    for (String permission : permissions) {
-                        if (!dto.getPermissionNames().contains(permission)) {
-                            dto.getPermissionNames().add(permission);
-                        }
-                    }
-
-                    roleService.updateRole(dto);
-                }
+                permissionService.addPermission(new PermissionDto(permission));
             }
         }
     }

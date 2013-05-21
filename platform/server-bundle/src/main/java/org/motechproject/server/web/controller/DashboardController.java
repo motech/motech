@@ -10,6 +10,8 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.security.model.RoleDto;
+import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.MotechPlatformState;
@@ -108,28 +110,23 @@ public class DashboardController {
     private List<ModuleRegistrationData> filterPermittedModules(String userName, Collection<ModuleRegistrationData> modulesWithoutSubmenu) {
         List<ModuleRegistrationData> allowedModules = new ArrayList<>();
 
+        UserDto user = userService.getUser(userName);
+
         if (modulesWithoutSubmenu != null) {
             for (ModuleRegistrationData registrationData : modulesWithoutSubmenu) {
 
                 String requiredPermissionForAccess = registrationData.getRoleForAccess();
 
                 if (requiredPermissionForAccess != null) {
-                    List<String> userRoles = userService.getUser(userName).getRoles();
-
-                    for (String userRole : userRoles) {
-                        boolean userHasPermission = roleService.getRole(userRole).getPermissionNames().contains(requiredPermissionForAccess);
-
-                        if (userHasPermission) {
-                            allowedModules.add(registrationData);
-                            break;
-                        }
+                    if (checkUserPermission(user, requiredPermissionForAccess)) {
+                        allowedModules.add(registrationData);
                     }
                 } else {
                     allowedModules.add(registrationData);
                 }
-
             }
         }
+
         return allowedModules;
     }
 
@@ -160,4 +157,15 @@ public class DashboardController {
         return formatter.print(uptime.normalizedStandard());
     }
 
+    private boolean checkUserPermission(UserDto user, String requiredPermission) {
+        for (String userRole : user.getRoles()) {
+            RoleDto role = roleService.getRole(userRole);
+            if (role != null) {
+                if (role.getPermissionNames() != null && role.getPermissionNames().contains(requiredPermission)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

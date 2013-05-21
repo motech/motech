@@ -4,7 +4,6 @@ import ch.lambdaj.Lambda;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -21,11 +20,9 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.security.service.MotechPermissionService;
-import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
@@ -46,13 +43,11 @@ public class AdminBundleIT extends BaseOsgiIT {
     private static final String MODULE_NAME = "test-module";
     private static final DateTime TIMEOUT = DateTime.now().plusHours(1);
 
-    private HttpClient httpClient = new DefaultHttpClient();
+    private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
     public void testAdminBundleContext() {
         assertServicePresent(PlatformSettingsService.class);
         assertServicePresent(EventListenerRegistryService.class);
-        assertServicePresent(MotechPermissionService.class);
-        assertServicePresent(MotechRoleService.class);
     }
 
     public void testStatusMessageService() {
@@ -80,7 +75,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertEquals(MODULE_NAME, msg.getModuleName());
     }
 
-    public void testBundleController() throws IOException {
+    public void testBundleController() throws IOException, InterruptedException {
         final String response = apiGet("bundles/");
 
         assertTrue(StringUtils.isNotBlank(response));
@@ -88,7 +83,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No bundles listed as active", json.size() > 0);
     }
 
-    public void testSettingsController() throws IOException {
+    public void testSettingsController() throws IOException, InterruptedException {
         final String response = apiGet("settings/platform");
 
         assertTrue(StringUtils.isNotBlank(response));
@@ -96,7 +91,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         assertTrue("No settings listed", json.size() > 0);
     }
 
-    public void testMessageController() throws IOException {
+    public void testMessageController() throws IOException, InterruptedException {
         StatusMessageService service = (StatusMessageService) assertServicePresent(StatusMessageService.class);
         service.error(ERROR_MSG, MODULE_NAME, TIMEOUT);
 
@@ -117,7 +112,7 @@ public class AdminBundleIT extends BaseOsgiIT {
         return service;
     }
 
-    private String apiGet(String path) throws IOException {
+    private String apiGet(String path) throws IOException, InterruptedException {
         login();
 
         String processedPath = (path.startsWith("/")) ? path.substring(1) : path;
@@ -126,7 +121,7 @@ public class AdminBundleIT extends BaseOsgiIT {
                 + processedPath), new BasicResponseHandler());
     }
 
-    private void login() throws IOException {
+    private void login() throws IOException, InterruptedException {
         final HttpPost loginPost = new HttpPost(
                 String.format("http://localhost:%d/server/motech-platform-server/j_spring_security_check", TestContext.getJettyPort()));
 

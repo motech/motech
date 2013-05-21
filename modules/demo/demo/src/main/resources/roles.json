@@ -1,0 +1,6 @@
+[
+    {
+        "roleName": "Demo Role",
+        "permissionNames": ["callIVR"]
+    }
+]

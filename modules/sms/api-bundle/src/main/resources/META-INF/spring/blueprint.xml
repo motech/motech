@@ -48,10 +48,6 @@
 
     <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
-    <osgi:reference id="motechPermissionServiceOsgi" interface="org.motechproject.security.service.MotechPermissionService"/>
-
-    <osgi:reference id="motechRoleServiceOsgi" interface="org.motechproject.security.service.MotechRoleService"/>
-
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
 </beans>

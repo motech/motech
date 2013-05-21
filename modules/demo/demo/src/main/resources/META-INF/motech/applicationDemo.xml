@@ -26,9 +26,4 @@
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
     </bean>
 
-    <bean class="org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor">
-        <property name="moduleName" value="demo"/>
-    </bean>
-
-
 </beans>

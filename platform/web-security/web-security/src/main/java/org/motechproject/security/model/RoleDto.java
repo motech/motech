@@ -2,6 +2,7 @@ package org.motechproject.security.model;
 
 import org.motechproject.security.domain.MotechRole;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoleDto {
@@ -13,7 +14,7 @@ public class RoleDto {
     private List<String> permissionNames;
 
     public RoleDto() {
-        this(null, null);
+        this(null, new ArrayList<String>());
     }
 
     public RoleDto(MotechRole motechRole) {

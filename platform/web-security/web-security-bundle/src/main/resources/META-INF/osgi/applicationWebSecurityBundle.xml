@@ -13,11 +13,17 @@
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
+    <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
+
     <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService"
-                  interface="org.motechproject.security.service.MotechPermissionService"/>
+                  interface="org.motechproject.security.service.MotechPermissionService">
+        <osgi:registration-listener ref="rolePermissionRegListener" />
+    </osgi:service>
 
     <osgi:service id="motechRoleServiceOsgi" ref="motechRoleService"
-                  interface="org.motechproject.security.service.MotechRoleService"/>
+                  interface="org.motechproject.security.service.MotechRoleService">
+        <osgi:registration-listener ref="rolePermissionRegListener" />
+    </osgi:service>
 
     <osgi:service id="motechUserServiceOsgi" ref="motechUserService"
                   interface="org.motechproject.security.service.MotechUserService"/>
