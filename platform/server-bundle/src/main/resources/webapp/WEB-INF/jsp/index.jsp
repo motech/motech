@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../server/resources/css/angular-ui.css">
     <link rel="stylesheet" type="text/css" href="../server/resources/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="../server/resources/css/bootstrap-responsive.css">
-    <link rel="stylesheet" type="text/css" href="../server/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../server/resources/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../server/resources/css/bootstrap-fileupload.min.css">
     <link rel="stylesheet" type="text/css" href="../server/resources/css/jquery-ui-min.css" />
     <link rel="stylesheet" type="text/css" href="../server/resources/css/tagsinput/jquery.tagsinput.css">
@@ -39,6 +39,7 @@
     <script src="../server/resources/lib/jquery/jquery.blockUI.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.caret.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.sidebar.js" type="text/javascript"></script>
+    <script src="../server/resources/lib/jquery/jquery.livequery.min.js" type="text/javascript"></script>
 
     <script src="../server/resources/lib/angular/angular.min.js" type="text/javascript"></script>
     <script src="../server/resources/lib/angular/angular-resource.min.js" type="text/javascript"></script>
