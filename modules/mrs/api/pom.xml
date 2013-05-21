@@ -120,7 +120,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/spring/blueprint.xml</Context-File>
                         <Context-Path>mrs/api</Context-Path>
                         <Resource-Path>mrs/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
