@@ -6,23 +6,22 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.commcare.domain.CommcareForm;
+import org.motechproject.commcare.domain.FormNode;
 import org.motechproject.commcare.domain.FormValueElement;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CommcareFormServiceImplTest {
 
     private CommcareFormServiceImpl formService;
-
     @Mock
     private CommCareAPIHttpClient commcareHttpClient;
 
@@ -92,19 +91,28 @@ public class CommcareFormServiceImplTest {
 
         FormValueElement rootElement = form.getForm();
 
-        List<FormValueElement> elementsByName = rootElement.getAllElementsByName("top_level_value_1");
+        List<FormValueElement> elementsByName = rootElement.getAllElements("top_level_value_1");
         assertEquals(2, elementsByName.size());
 
-        elementsByName = rootElement.getElementsByName("value3");
+        elementsByName = rootElement.getChildElements("value3");
         assertEquals(1, elementsByName.size());
+        assertEquals("no", elementsByName.get(0).getValue());
 
-        elementsByName = rootElement.getAllElementsByName("value3");
+
+        elementsByName = rootElement.getAllElements("value3");
+        assertEquals(3, elementsByName.size());
+
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("registration");
+        elementsByName = rootElement.getAllElements("value3", restrictedElements);
         assertEquals(2, elementsByName.size());
+        assertEquals("no", elementsByName.get(0).getValue());
+        assertEquals("innervalue", elementsByName.get(1).getValue());
 
-        elementsByName = rootElement.getAllElementsByName("noName");
+        elementsByName = rootElement.getAllElements("noName");
         assertEquals(0, elementsByName.size());
 
-        elementsByName = rootElement.getAllElementsByName("case");
+        elementsByName = rootElement.getAllElements("case");
         assertEquals(2, elementsByName.size());
 
         FormValueElement caseElementOne = elementsByName.get(0);
@@ -115,9 +123,116 @@ public class CommcareFormServiceImplTest {
 
         assertEquals(3, caseElementTwo.getSubElements().size());
 
-        assertNull(caseElementOne.getElementByName("create"));
+        assertNull(caseElementOne.getElement("create"));
 
-        assertNotNull(caseElementTwo.getElementByName("create"));
+        assertNotNull(caseElementTwo.getElement("create"));
+    }
+
+    @Test
+    public void shouldSearchFromStartElement() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
+
+        CommcareForm form = formService.retrieveForm("testForm");
+
+        FormValueElement rootElement = form.getForm();
+
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("restricted");
+        restrictedElements.add("anotherRestricted");
+        FormValueElement value = rootElement.getElement("value", restrictedElements);
+        assertEquals("1", value.getValue());
+
+        FormValueElement subelement1 = rootElement.getElement("subelement1");
+        FormValueElement valueInsideSublement1 = subelement1.getElement("value", restrictedElements);
+        assertEquals("4", valueInsideSublement1.getValue());
+
+        FormValueElement valueWithoutRestriction = subelement1.getElement("value");
+        assertEquals("2", valueWithoutRestriction.getValue());
+
+    }
+
+    @Test
+    public void shouldSearchFromRootPath() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm();
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("restricted");
+        restrictedElements.add("anotherRestricted");
+
+        FormNode elementByPath = rootElement.search("//subelement1/value", restrictedElements);
+
+        assertEquals("4", elementByPath.getValue());
+
+    }
+
+    @Test
+    public void shouldSearchFromRootPathWithoutRestrictedElements() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm();
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("restricted");
+        restrictedElements.add("anotherRestricted");
+
+        FormNode elementByPath = rootElement.search("/form/restricted", restrictedElements);
+
+        assertNull(elementByPath);
+
+    }
+
+    @Test
+    public void shouldSearchByCurrentPath() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm().getElement("subelement1");
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("restricted");
+        restrictedElements.add("anotherRestricted");
+
+        FormNode elementByCurrentPath = rootElement.search("//validElement/value", restrictedElements);
+
+        assertEquals("5", elementByCurrentPath.getValue());
+    }
+
+    @Test
+    public void shouldSearchByCurrentPathWithoutRestrictedElements() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm().getElement("subelement1");
+        List<String> restrictedElements = new ArrayList<>();
+        restrictedElements.add("restricted");
+        restrictedElements.add("anotherRestricted");
+
+        FormNode elementByCurrentPath = rootElement.search("//restricted/value", restrictedElements);
+
+        assertNull(elementByCurrentPath);
+    }
+
+    @Test
+    public void shouldSearchForAttributes() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonRegistrationForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm();
+        List<String> restrictedElements = null;
+
+        FormNode elementByPath = rootElement.search("//case/@case_id", restrictedElements);
+
+        assertEquals("6bc2f8f6-b1da-4be2-98d4-1cb2d557a329", elementByPath.getValue());
+
+    }
+
+    @Test
+    public void shouldSearchForValue() {
+        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonRegistrationForm());
+        CommcareForm form = formService.retrieveForm("testForm");
+        FormValueElement rootElement = form.getForm();
+        List<String> restrictedElements = null;
+
+        FormNode elementByPath = rootElement.search("//#", restrictedElements);
+
+        assertEquals("data", elementByPath.getValue());
+
     }
 
     private String jsonRegistrationForm() {
@@ -125,6 +240,10 @@ public class CommcareFormServiceImplTest {
     }
 
     private String jsonFormTwo() {
-        return "{\"form\":{\"#type\":\"data\",\"@name\":\"Test form\",\"@uiVersion\":\"1\",\"@version\":\"100\",\"@xmlns\":\"http://openrosa.org/formdesigner/1\",\"case\":{\"@case_id\":\"case1\",\"@date_modified\":\"2013-01-29T13:08:23\",\"@user_id\":\"ABC\",\"@xmlns\":\"http://commcarehq.org/case/transaction/v2\",\"update\":{\"date_of_visit\":\"2013-01-29\",\"total_children\":\"\",\"visit_type\":\"registration\"}},\"top_level_value_1\":\"2013-01-29\",\"top_level_value_2\":\"123\",\"meta\":{\"@xmlns\":\"http://openrosa.org/jr/xforms\",\"appVersion\":{\"#text\":\"v2.3.0 (6dcc56-6c6a74-unvers-2.1.0-Nokia/S40-generic) build 881 App #881 b:2012-Dec-17 r:2013-Jan-25\",\"@xmlns\":\"http://commcarehq.org/xforms\"},\"deviceID\":\"ABCDEF\",\"instanceID\":\"eee444fffgg\",\"timeEnd\":\"2013-01-29T13:08:23\",\"timeStart\":\"2013-01-29T13:06:33\",\"userID\":\"ABC\",\"username\":\"Motech\"},\"value3\":\"no\",\"registration\":{\"value3\":\"yes\"},\"subcase_0\":{\"case\":{\"@case_id\":\"case2\",\"@date_modified\":\"2013-01-29T13:08:23\",\"@user_id\":\"ABC\",\"@xmlns\":\"http://commcarehq.org/case/transaction/v2\",\"create\":{\"total_children\":\"5\"},\"index\":{\"parent\":{\"#text\":\"case1\",\"@case_type\":\"mother\"}},\"update\":{\"updateField\":\"updateValue\",\"top_level_value_1\":\"5\"}}},\"value_4\":\"\",\"top_level_value_1\":\"\"},\"id\":\"2645\",\"md5\":\"24634634\",\"metadata\":{\"@xmlns\":\"http://openrosa.org/jr/xforms\",\"appVersion\":\"@xmlns:http://commcarehq.org/xforms, #text:v2.3.0 (6dcc56-6c6a74-unvers-2.1.0-Nokia/S40-generic) build 881 App #881 b:2012-Dec-17 r:2013-Jan-25\",\"deprecatedID\":null,\"deviceID\":\"BCDEF\",\"instanceID\":\"werwer\",\"timeEnd\":\"2013-01-29T13:08:23\",\"timeStart\":\"2013-01-29T13:06:33\",\"userID\":\"ABC\",\"username\":\"marie\"},\"received_on\":\"2013-01-29T13:08:30\",\"resource_uri\":\"\",\"type\":\"data\",\"uiversion\":\"1\",\"version\":\"111\"}";
+        return "{\"form\":{\"#type\":\"data\",\"@name\":\"Test form\",\"@uiVersion\":\"1\",\"@version\":\"100\",\"@xmlns\":\"http://openrosa.org/formdesigner/1\",\"case\":{\"@case_id\":\"case1\",\"@date_modified\":\"2013-01-29T13:08:23\",\"@user_id\":\"ABC\",\"@xmlns\":\"http://commcarehq.org/case/transaction/v2\",\"update\":{\"date_of_visit\":\"2013-01-29\",\"total_children\":\"\",\"visit_type\":\"registration\"}},\"top_level_value_1\":\"2013-01-29\",\"top_level_value_2\":\"123\",\"meta\":{\"@xmlns\":\"http://openrosa.org/jr/xforms\",\"appVersion\":{\"#text\":\"v2.3.0 (6dcc56-6c6a74-unvers-2.1.0-Nokia/S40-generic) build 881 App #881 b:2012-Dec-17 r:2013-Jan-25\",\"@xmlns\":\"http://commcarehq.org/xforms\"},\"deviceID\":\"ABCDEF\",\"instanceID\":\"eee444fffgg\",\"timeEnd\":\"2013-01-29T13:08:23\",\"timeStart\":\"2013-01-29T13:06:33\",\"userID\":\"ABC\",\"username\":\"Motech\"},\"value3\":\"no\",\"registration\":{\"value3\":\"yes\"},\"subcase_0\":{\"case\":{\"@case_id\":\"case2\",\"@date_modified\":\"2013-01-29T13:08:23\",\"@user_id\":\"ABC\",\"@xmlns\":\"http://commcarehq.org/case/transaction/v2\",\"create\":{\"total_children\":\"5\",\"value3\":\"innervalue\"},\"index\":{\"parent\":{\"#text\":\"case1\",\"@case_type\":\"mother\"}},\"update\":{\"updateField\":\"updateValue\",\"top_level_value_1\":\"5\"}}},\"value_4\":\"\",\"top_level_value_1\":\"\"},\"id\":\"2645\",\"md5\":\"24634634\",\"metadata\":{\"@xmlns\":\"http://openrosa.org/jr/xforms\",\"appVersion\":\"@xmlns:http://commcarehq.org/xforms, #text:v2.3.0 (6dcc56-6c6a74-unvers-2.1.0-Nokia/S40-generic) build 881 App #881 b:2012-Dec-17 r:2013-Jan-25\",\"deprecatedID\":null,\"deviceID\":\"BCDEF\",\"instanceID\":\"werwer\",\"timeEnd\":\"2013-01-29T13:08:23\",\"timeStart\":\"2013-01-29T13:06:33\",\"userID\":\"ABC\",\"username\":\"marie\"},\"received_on\":\"2013-01-29T13:08:30\",\"resource_uri\":\"\",\"type\":\"data\",\"uiversion\":\"1\",\"version\":\"111\"}";
+    }
+
+    private String jsonTestForm() {
+        return "{\"form\":{\"value\":\"1\",\"subelement1\":{\"restricted\":{\"value\":\"2\"},\"anotherRestricted\":{\"value\":\"3\"},\"value\":\"4\",\"validElement\":{\"value\":\"5\"}}}}";
     }
 }
