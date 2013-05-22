@@ -1,0 +1,73 @@
+{
+    "type": "Task",
+    "filters": [
+        {
+            "eventParameter": {
+                "displayName": "mrs.observation.field.observationConceptName",
+                "type": "UNICODE",
+                "eventKey": "ObservationConceptName"
+            },
+            "negationOperator": true,
+            "operator": "equals",
+            "expression": "pregnancy_urine_test"
+        },
+        {
+            "eventParameter": {
+                "displayName": "mrs.observation.field.value",
+                "type": "UNICODE",
+                "eventKey": "ObservationValue"
+            },
+            "negationOperator": true,
+            "operator": "equals",
+            "expression": "positive"
+        }
+    ],
+    "additionalData": {
+        "6899548ec91d9ad04e3aad9cf2aa19f9": [
+            {
+                "id": 1,
+                "type": "Person",
+                "lookupField": "mrs.person.lookupField.id",
+                "lookupValue": "trigger.PatientId",
+                "failIfDataNotFound": false
+            }
+        ]
+    },
+    "name": "Pregnancy SMS",
+    "actions": [
+        {
+            "displayName": null,
+            "channelName": "sms.api",
+            "moduleName": "motech-sms-api-bundle",
+            "moduleVersion": "0.19.0.SNAPSHOT",
+            "subject": "SendSMS",
+            "serviceInterface": null,
+            "serviceMethod": null,
+            "values": {
+                "delivery_time": "12:00",
+                "message": "Congratulations,                {{ad.6899548ec91d9ad04e3aad9cf2aa19f9.Person#1.firstName}}, your pregnancy test was positive. Please reply to schedule a clinic visit with your midwife.",
+                "message": "{{trigger.PatientId}}"
+            }
+        }
+    ],
+    "trigger": {
+        "displayName": null,
+        "channelName": "mrs.name",
+        "moduleName": "motech-mrs-api",
+        "moduleVersion": "0.19.0.SNAPSHOT",
+        "subject": "org.motechproject.mrs.api.Observaion.Created"
+    },
+    "enabled": false,
+    "validationErrors": [
+        {
+            "args": [
+                "mrs.person.lookupField.id",
+                "Person",
+                "mrs.name"
+            ],
+            "message": "validation.error.providerObjectLookupNotExist"
+        }
+    ],
+    "_id": "6899548ec91d9ad04e3aad9cf2ad4e05",
+    "_rev": "91-0c023b58f6fa64f0a7896e9d5083f210"
+}

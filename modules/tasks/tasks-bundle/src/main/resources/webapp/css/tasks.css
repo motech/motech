@@ -295,8 +295,8 @@ editable-content .actionField.input-block-level span.badge {
     border: none;
     color: #224477;
 }
-#accordion3 .accordion-heading .accordion-toggle:hover,
-#accordion4 .accordion-heading .accordion-toggle:hover {
+#accordion3 .accordion-heading .accordion-toggle li:nth-child(5):hover,
+#accordion4 .accordion-heading .accordion-toggle li:nth-child(5):hover {
     color: #0088CC;
 }
 

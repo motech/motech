@@ -87,28 +87,28 @@
                             <div class="btn-group">
                                 <button ui-if="!task.filters" class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('button.addFilter')}}</button>
                                 <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('button.addDataSource')}}</button>
-                                <button ui-if="!task.action" class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('button.addAction')}}</button>
+                                <button class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('button.addAction')}}</button>
                             </div>
                         </div>
                     </div>
 
                     <!------------------------  ACTION  ------------------------->
-                    <div class="accordion" id="select-action" ng-show="task.action" overflow-change expand-accordion>
+                    <div class="accordion" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
                         <div class="task-group">
                             <div class="accordion-heading">
                                 <div class="pull-right">
-                                    <button ng-click="removeAction()" class="btn btn-danger btn-in-heading">
+                                    <button ng-click="removeAction($index)" class="btn btn-danger btn-in-heading">
                                         <i class="icon-remove icon-white"></i>
                                     </button>
                                 </div>
-                                <a class="accordion-toggle inbox-header" style="cursor: auto;">
-                                    <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#select-action" href="#collapse-action" style="cursor: pointer;"></i> {{msg('header.action')}}
-                                    <span ng-hide="!task.action.displayName">
-                                        &raquo; {{msg(task.action.channelName)}} : {{msg(task.action.displayName)}}
+                                <a class="accordion-toggle inbox-header" style="cursor: auto;" action-sortable-cursor>
+                                    <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#select-action-{{$index}}" href="#collapse-action-{{$index}}" style="cursor: pointer;"></i> {{msg('header.action')}}
+                                    <span ng-hide="!action.displayName">
+                                        &raquo; {{msg(action.channelName)}} : {{msg(action.displayName)}}
                                     </span>
                                 </a>
                             </div>
-                            <div id="collapse-action" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
+                            <div id="collapse-action-{{$index}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
                                 <div class="accordion-inner inside">
                                     <div class="control-group control-section">
                                         <label class="control-label task-label">{{msg('info.availableFields')}}:</label>
@@ -127,33 +127,33 @@
                                         <span class="control-label">{{msg('channel')}}:</span>
                                         <div class="btn-group interval">
                                             <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                {{msg(selectedActionChannel.displayName || 'select')}}
+                                                {{msg(selectedActionChannel[$index].displayName || 'select')}}
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li ng-repeat="channel in util.channels.withActions(channels)">
-                                                    <a ng-click="selectActionChannel(channel)">{{msg(channel.displayName)}}</a>
+                                                    <a ng-click="selectActionChannel($parent.$index, channel)">{{msg(channel.displayName)}}</a>
                                                 </li>
                                             </ul>
                                         </div>
                                         <span class="interval2">{{msg('action')}}:</span>
                                         <div class="btn-group interval">
                                             <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                {{msg(selectedAction.displayName || 'select')}}
+                                                {{msg(selectedAction[$index].displayName || 'select')}}
                                                 <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li ng-repeat="action in getActions()">
-                                                    <a ng-click="selectAction(action)">{{msg(action.displayName)}}</a>
+                                                <li ng-repeat="a in getActions($index)">
+                                                    <a ng-click="selectAction($parent.$index, a)">{{msg(a.displayName)}}</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="control-group" ng-show="selectedAction.description">
+                                    <div class="control-group" ng-show="selectedAction[$index].description">
                                         <label class="control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
-                                    <div ui-if="selectedAction">
-                                        <div class="control-group" ng-class="{error: actionCssClass(i)}" ng-repeat="i in selectedAction.actionParameters" class="control-group form-inline clearfix">
+                                    <div ui-if="selectedAction[$index]">
+                                        <div class="control-group" ng-class="{error: actionCssClass(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="control-group form-inline clearfix">
                                             <label class="control-label tip">
                                                 {{msg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
@@ -163,12 +163,12 @@
 
                                             <!------------------------ Chrome & IE ------------------------>
                                             <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
-                                                <editable-content ui-if="i.type == 'UNICODE'" data="i" index="$index" type="UNICODE"></editable-content>
-                                                <editable-content ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" data="i" index="$index" type="TEXTAREA"></editable-content>
-                                                <editable-content ui-if="i.type == 'INTEGER' || i.type == 'LONG'" data="i" index="$index" type="INTEGER"></editable-content>
-                                                <editable-content ui-if="i.type == 'DOUBLE'" data="i" index="$index" type="DOUBLE"></editable-content>
-                                                <editable-content ui-if="i.type == 'TIME'" data="i" index="$index" type="TIME"></editable-content>
-                                                <editable-content ui-if="i.type == 'DATE'" data="i" index="$index" type="DATE"></editable-content>
+                                                <editable-content ui-if="i.type == 'UNICODE'" data="i" index="{{$index}}" type="UNICODE"></editable-content>
+                                                <editable-content ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" data="i" index="{{$index}}" type="TEXTAREA"></editable-content>
+                                                <editable-content ui-if="i.type == 'INTEGER' || i.type == 'LONG'" data="i" index="{{$index}}" type="INTEGER"></editable-content>
+                                                <editable-content ui-if="i.type == 'DOUBLE'" data="i" index="{{$index}}" type="DOUBLE"></editable-content>
+                                                <editable-content ui-if="i.type == 'TIME'" data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="TIME"></editable-content>
+                                                <editable-content ui-if="i.type == 'DATE'" data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="DATE"></editable-content>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio-inline no-margin-top">
                                                         <input type="radio" class="input-block-level" ng-checked="checkedBoolean($index, 'true')" ng-click="setBooleanValue($index, true)"/> {{msg('yes')}}
@@ -184,12 +184,12 @@
 
                                             <!------------------------ Other browsers  ------------------------>
                                             <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
-                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" rows="5" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}"></textarea>
-                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}"/>
-                                                <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" datetime-picker-input placeholder="{{msg('placeholder.dateOnly')}}" readonly="readonly" style="background:white;"/>
-                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" time-picker-input placeholder="{{msg('placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
+                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" rows="5" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
+                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
+                                                <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('placeholder.dateOnly')}}" readonly="readonly" style="background:white;"/>
+                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio radio-inline">
                                                         <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('yes')}}
@@ -198,7 +198,7 @@
                                                         <input type="radio" ng-model="i.value" class="input-block-level" value="false"/> {{msg('no')}}
                                                     </label>
                                                     <label class="radio-inline input-large-fluid">
-                                                        <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField" data-index="{{$index}}" data-type="{{i.type}}" placeholder="{{msg('placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
+                                                        <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
                                                     </label>
                                                 </div>
                                             </div>

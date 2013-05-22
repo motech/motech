@@ -2,6 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -12,7 +13,13 @@ public interface TaskService {
 
     void save(final Task task);
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link #getActionEventFor(org.motechproject.tasks.domain.TaskActionInformation)}
+     */
+    @Deprecated
     ActionEvent getActionEventFor(Task task) throws ActionNotFoundException;
+
+    ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException;
 
     List<Task> getAllTasks();
 

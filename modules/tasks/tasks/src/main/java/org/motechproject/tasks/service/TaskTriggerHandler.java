@@ -19,6 +19,7 @@ import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
@@ -114,10 +115,13 @@ public class TaskTriggerHandler {
             try {
                 for (Task task : selectTasks(trigger, triggerEvent.getParameters())) {
                     try {
-                        ActionEvent action = getActionEvent(task);
-                        Map<String, Object> parameters = createParameters(task, action.getActionParameters(), triggerEvent);
+                        for (TaskActionInformation actionInformation : task.getActions()) {
+                            ActionEvent action = getActionEvent(actionInformation);
+                            Map<String, Object> parameters = createParameters(task, actionInformation, action, triggerEvent);
 
-                        executeAction(task, action, parameters);
+                            executeAction(task, action, parameters);
+                        }
+
                         registerSuccess(triggerEvent, task);
                     } catch (TaskHandlerException e) {
                         registerError(triggerEvent, task, e);
@@ -155,12 +159,12 @@ public class TaskTriggerHandler {
         return trigger;
     }
 
-    private ActionEvent getActionEvent(Task task) throws TaskHandlerException {
+    private ActionEvent getActionEvent(TaskActionInformation actionInformation) throws TaskHandlerException {
         ActionEvent action;
 
         try {
-            action = taskService.getActionEventFor(task);
-            LOG.info("Found action for task: " + task);
+            action = taskService.getActionEventFor(actionInformation);
+            LOG.info("Found action on the basic of information: " + actionInformation);
         } catch (ActionNotFoundException e) {
             throw new TaskHandlerException(TRIGGER, "error.actionNotFound", e);
         }
@@ -233,20 +237,21 @@ public class TaskTriggerHandler {
         return serviceAvailable;
     }
 
-    private Map<String, Object> createParameters(Task task, SortedSet<ActionParameter> actionParameters, MotechEvent event) throws TaskHandlerException {
+    private Map<String, Object> createParameters(Task task, TaskActionInformation info, ActionEvent action, MotechEvent event) throws TaskHandlerException {
+        SortedSet<ActionParameter> actionParameters = action.getActionParameters();
         Map<String, Object> parameters = new HashMap<>(actionParameters.size());
 
         for (ActionParameter param : actionParameters) {
             String key = param.getKey();
 
-            if (!task.getActionInputFields().containsKey(key)) {
-                throw new TaskHandlerException(TRIGGER, "error.taskNotContainsField", key);
+            if (!info.getValues().containsKey(key)) {
+                throw new TaskHandlerException(TRIGGER, "error.taskActionNotContainsField", action.getDisplayName(), key);
             }
 
-            String template = task.getActionInputFields().get(key);
+            String template = info.getValues().get(key);
 
             if (template == null) {
-                throw new TaskHandlerException(TRIGGER, "error.templateNull", key);
+                throw new TaskHandlerException(TRIGGER, "error.templateNull", key, action.getDisplayName());
             }
 
             switch (param.getType()) {
