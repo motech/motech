@@ -18,7 +18,7 @@
         <db.port>5984</db.port>
         <db.prefix>${user.name}_</db.prefix>
 
-        <external.dependency.release.tag>r010</external.dependency.release.tag>
+        <external.dependency.release.tag>r011</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
