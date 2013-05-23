@@ -143,11 +143,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "</Response>", TestContext.getVerboicePort());
 
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithDial&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithDial&ln=en&CallSid=123ab";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
-        String transitionUrl = SERVER_URL + "?tree=treeWithDial&ln=en&DialCallStatus=completed";
+        String transitionUrl = SERVER_URL + "?tree=treeWithDial&ln=en&DialCallStatus=completed&CallSid=123ab";
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
     }
@@ -165,7 +165,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "</Response>", TestContext.getVerboicePort(), TestContext.getVerboicePort());
 
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&ln=en&CallSid=123ab";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
@@ -174,7 +174,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "    <Say>timed out</Say>\n" +
                 "</Response>";
 
-        String noInputTransition = SERVER_URL + "?provider=verboice&ln=en&tree=treeWithNoInputRedirect&Digits=";
+        String noInputTransition = SERVER_URL + "?provider=verboice&ln=en&tree=treeWithNoInputRedirect&Digits=&CallSid=123ab";
         response = client.execute(new HttpGet(noInputTransition), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
     }
@@ -193,7 +193,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "</Response>", TestContext.getVerboicePort());
 
         HttpClient verboiceIvrController = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=someTree" + "&ln=en";
+        String rootUrl = SERVER_URL + "?tree=someTree" + "&ln=en" + "&CallSid=123ab";
         String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         System.out.println(response);
         assertXMLEqual(expectedResponse, response);

@@ -32,7 +32,6 @@ import static java.util.Arrays.asList;
 public class VerboiceIVRController {
 
     private static final String VERBOICE_CALL_SID = "CallSid";
-    private static final String MOTECH_CALL_ID = "motech_call_id";
     private static final String VERBOICE_FROM_PHONE_PARAM = "From";
     private Logger logger = Logger.getLogger(VerboiceIVRController.class);
 
@@ -47,15 +46,13 @@ public class VerboiceIVRController {
     @RequestMapping("/ivr")
     public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) {
         String verboiceCallId = request.getParameter(VERBOICE_CALL_SID);
-        String motechCallId = request.getParameter(MOTECH_CALL_ID);
         String phoneNumber = request.getParameter(VERBOICE_FROM_PHONE_PARAM);
         FlowSession session = null;
-        if (motechCallId == null) {
+        session = flowSessionService.getSession(verboiceCallId);
+        if (session == null) {
             session = flowSessionService.findOrCreate(verboiceCallId, phoneNumber);
             final CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord();
             callDetailRecord.setCallDirection(CallDirection.Inbound);
-        } else {
-            session = updateOutgoingCallSessionIdWithVerboiceSid(motechCallId, verboiceCallId);
         }
 
         String tree = request.getParameter("tree");
@@ -85,9 +82,11 @@ public class VerboiceIVRController {
     public void handleMissedCall(HttpServletRequest request) {
         String callStatus = request.getParameter("CallStatus");
         String callSid = request.getParameter(VERBOICE_CALL_SID);
+        String phoneNum = request.getParameter(VERBOICE_FROM_PHONE_PARAM);
+
         logger.info("Verboice status callback : " + callStatus);
 
-        updateRecord(callStatus, callSid);
+        updateRecord(callStatus, callSid, phoneNum);
 
         if ("completed".equals(callStatus)) {
             String language = request.getParameter("ln");
@@ -110,7 +109,7 @@ public class VerboiceIVRController {
         callFlowServer.handleMissedCall(session.getSessionId());
     }
 
-    private void updateRecord(String callStatus, String callSid) {
+    private void updateRecord(String callStatus, String callSid, String phoneNumber) {
         FlowSessionRecord record = (FlowSessionRecord) flowSessionService.getSession(callSid);
         if (record != null) {
 
@@ -133,12 +132,12 @@ public class VerboiceIVRController {
             }
 
             flowSessionService.updateSession(record);
+        } else {
+            record = (FlowSessionRecord) flowSessionService.findOrCreate(callSid, phoneNumber);
+            final CallDetailRecord callDetailRecord = record.getCallDetailRecord();
+            callDetailRecord.setCallDirection(CallDirection.Inbound);
+            flowSessionService.updateSession(record);
         }
-    }
-
-    private FlowSession updateOutgoingCallSessionIdWithVerboiceSid(String callId, String verboiceCallId) {
-        FlowSession flowSession = flowSessionService.getSession(callId);
-        return flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
     }
 
     private FlowSession setCustomParams(FlowSession session, HttpServletRequest request) {
