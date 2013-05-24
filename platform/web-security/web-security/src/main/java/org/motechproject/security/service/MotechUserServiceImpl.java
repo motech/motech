@@ -45,18 +45,18 @@ public class MotechUserServiceImpl implements MotechUserService {
     private AllMotechRoles allMotechRoles;
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles) {
-        this.register(username, password, email, externalId, roles, true, "");
+    public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale) {
+        this.register(username, password, email, externalId, roles, locale, true, "");
     }
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive, String openId) {
+    public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale, boolean isActive, String openId) {
         if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
 
         String encodePassword = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles, openId);
+        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles, openId, locale);
         user.setActive(isActive);
         allMotechUsers.add(user);
     }
@@ -111,6 +111,11 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    public Locale getLocale(String userName) {
+        return allMotechUsers.findByUserName(userName).getLocale();
+    }
+
+    @Override
     public List<MotechUserProfile> getOpenIdUsers() {
         List<MotechUserProfile> users = new ArrayList<>();
         for (MotechUser user : allMotechUsers.getOpenIdUsers()) {
@@ -120,13 +125,25 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
-    public void updateUser(UserDto user) {
+    public void updateUserDetailsWithoutPassword(UserDto user) {
+        MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
+        motechUser.setEmail(user.getEmail());
+        motechUser.setPassword(user.getPassword());
+        motechUser.setRoles(user.getRoles());
+        motechUser.setLocale(user.getLocale());
+        allMotechUsers.update(motechUser);
+        refreshUserContextIfActive(motechUser.getUserName());
+    }
+
+    @Override
+    public void updateUserDetailsWithPassword(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
         if (!"".equals(user.getPassword())) {
             motechUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         motechUser.setRoles(user.getRoles());
+        motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
         refreshUserContextIfActive(motechUser.getUserName());
     }
@@ -140,7 +157,19 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public void sendLoginInformation(String userName, String password) {
         MotechUser user = allMotechUsers.findByUserName(userName);
-        emailSender.sendLoginInfo(user, password, Locale.ENGLISH);
+        emailSender.sendLoginInfo(user, password);
+    }
+
+    @Override
+    public void setLocale(String userName, Locale locale) {
+        MotechUser user = allMotechUsers.findByUserName(userName);
+        user.setLocale(locale);
+        updateUserDetailsWithoutPassword(new UserDto(user));
+    }
+
+    @Override
+    public List<String> getRoles(String userName) {
+        return allMotechUsers.findByUserName(userName).getRoles();
     }
 
     private void refreshUserContextIfActive(String userName) {

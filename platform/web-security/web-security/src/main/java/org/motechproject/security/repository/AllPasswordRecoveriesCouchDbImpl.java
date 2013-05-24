@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Repository
 @View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
@@ -65,7 +66,7 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
     }
 
     @Override
-    public PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate) {
+    public PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate, Locale locale) {
         PasswordRecovery oldRecovery = findForUser(username);
 
         if (oldRecovery != null) {
@@ -78,6 +79,7 @@ public class AllPasswordRecoveriesCouchDbImpl extends MotechBaseRepository<Passw
         recovery.setEmail(email);
         recovery.setToken(token);
         recovery.setExpirationDate(expirationDate);
+        recovery.setLocale(locale);
 
         add(recovery);
 

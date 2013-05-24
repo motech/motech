@@ -164,7 +164,7 @@ public class StartupControllerTest {
 
         verify(platformSettingsService).savePlatformSettings(any(Properties.class));
         verify(startupManager).startup();
-        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class));
+        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
 
         assertEquals("redirect:home", result.getViewName());
     }
@@ -201,6 +201,6 @@ public class StartupControllerTest {
                 List<String> val = (List<String>) argument;
                 return val.equals(Arrays.asList("Admin User", "Admin Bundle"));
             }
-        }));
+        }), eq(Locale.ENGLISH));
     }
 }

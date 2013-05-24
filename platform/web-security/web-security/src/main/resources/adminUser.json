@@ -7,5 +7,6 @@
     "email":"motech@motech.com",
     "roles":["Admin User", "Bundle Admin"],
     "active":true,
-    "openId":""
+    "openId":"",
+    "locale":"en"
 }

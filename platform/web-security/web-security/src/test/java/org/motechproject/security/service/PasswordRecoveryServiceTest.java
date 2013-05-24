@@ -77,10 +77,11 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
         when(user.getUserName()).thenReturn(USERNAME);
         when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
         when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class))).thenReturn(recovery);
+                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
 
-        recoveryService.passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
+        recoveryService.passwordRecoveryRequest(EMAIL);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -94,15 +95,15 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
                 DateTime time = (DateTime) argument;
                 return time.equals(now.plusHours(1));
             }
-        }));
-        verify(emailSender).sendResecoveryEmail(recovery, Locale.ENGLISH);
+        }), eq(Locale.ENGLISH));
+        verify(emailSender).sendResecoveryEmail(recovery);
     }
 
 
     @Test(expected = UserNotFoundException.class)
     public void testUserNotFound() throws UserNotFoundException {
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(null);
-        recoveryService.passwordRecoveryRequest(EMAIL, Locale.ENGLISH);
+        recoveryService.passwordRecoveryRequest(EMAIL);
     }
 
     @Test
@@ -160,10 +161,11 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
         when(user.getUserName()).thenReturn(USERNAME);
         when(user.getRoles()).thenReturn(ROLES);
         when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getLocale()).thenReturn(Locale.ENGLISH);
         when(allPasswordRecoveries.createRecovery(any(String.class), any(String.class),
-                any(String.class), any(DateTime.class))).thenReturn(recovery);
+                any(String.class), any(DateTime.class), any(Locale.class))).thenReturn(recovery);
 
-        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
+        recoveryService.oneTimeTokenOpenId(EMAIL);
 
         verify(allPasswordRecoveries).createRecovery(eq(USERNAME), eq(EMAIL), argThat(new ArgumentMatcher<String>() {
             @Override
@@ -177,21 +179,21 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
                 DateTime time = (DateTime) argument;
                 return time.equals(now.plusHours(1));
             }
-        }));
-        verify(emailSender).sendOneTimeToken(recovery,Locale.ENGLISH);
+        }), eq(Locale.ENGLISH));
+        verify(emailSender).sendOneTimeToken(recovery);
     }
 
     @Test(expected = UserNotFoundException.class)
     public void testNoFindUserInOneTimeToken() throws UserNotFoundException, NonAdminUserException {
         when(user.getUserName()).thenReturn(null);
-        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
+        recoveryService.oneTimeTokenOpenId(EMAIL);
     }
 
     @Test(expected = NonAdminUserException.class)
     public void testNonAdminUserInOneTimeToken() throws UserNotFoundException, NonAdminUserException {
         when(allMotechUsers.findUserByEmail(EMAIL)).thenReturn(user);
         when(user.getRoles()).thenReturn(Arrays.asList("user"));
-        recoveryService.oneTimeTokenOpenId(EMAIL, Locale.ENGLISH);
+        recoveryService.oneTimeTokenOpenId(EMAIL);
     }
 
 }

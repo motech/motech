@@ -20,6 +20,7 @@ import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.ServiceReference;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -93,7 +94,7 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     public void testControllersAsUnathorizedUser() throws Exception {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("user-mc-noauth", "pass", "testmcnoauth@test.com", null, asList("Admin User"));
+        motechUserService.register("user-mc-noauth", "pass", "testmcnoauth@test.com", null, asList("Admin User"), Locale.ENGLISH);
 
         PollingHttpClient httpClient = new PollingHttpClient();
 
@@ -113,7 +114,7 @@ public class MessageCampaignBundleIT extends BaseOsgiIT {
     public void testControllersAsAuthorizedUser() throws Exception {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("user-mc-auth", "pass", "testmcauth@test.com", "test", asList("Campaign Manager"));
+        motechUserService.register("user-mc-auth", "pass", "testmcauth@test.com", "test", asList("Campaign Manager"), Locale.ENGLISH);
 
         PollingHttpClient httpClient = new PollingHttpClient();
 

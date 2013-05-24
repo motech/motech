@@ -16,6 +16,7 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MotechOpenIdUserDetailsService implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
 
@@ -35,7 +36,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
                     roles.add(role.getRoleName());
                 }
             }
-            user = new MotechUserCouchdbImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName());
+            user = new MotechUserCouchdbImpl(getAttribute(token.getAttributes(), "Email"), "", getAttribute(token.getAttributes(), "Email"), "", roles, token.getName(), Locale.getDefault());
             allMotechUsers.addOpenIdUser(user);
         }
 

@@ -5,6 +5,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.List;
+import java.util.Locale;
 
 @TypeDiscriminator("doc.type == 'MotechUser'")
 public class MotechUserCouchdbImpl extends MotechBaseDataObject implements MotechUser {
@@ -31,12 +32,15 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
     @JsonProperty
     private String openId;
 
+    @JsonProperty
+    private Locale locale;
+
     public MotechUserCouchdbImpl() {
         super();
         this.setType(DOC_TYPE);
     }
 
-    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles, String openId) {
+    public MotechUserCouchdbImpl(String userName, String password, String email, String externalId, List<String> roles, String openId, Locale locale) {
         super();
         this.userName = userName == null ? null : userName.toLowerCase();
         this.password = password;
@@ -45,6 +49,7 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         this.roles = roles;
         this.active = true;
         this.openId = openId;
+        this.locale = locale;
         this.setType(DOC_TYPE);
     }
 
@@ -102,6 +107,14 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     @Override

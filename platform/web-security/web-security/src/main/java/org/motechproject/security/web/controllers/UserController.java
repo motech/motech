@@ -41,7 +41,7 @@ public class UserController {
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
     public void saveUser(@RequestBody UserDto user) {
         String password = user.isGeneratePassword() ? RandomStringUtils.randomAlphanumeric(PASSWORD_LENGTH) : user.getPassword();
-        motechUserService.register(user.getUserName(), password, user.getEmail(), "", user.getRoles());
+        motechUserService.register(user.getUserName(), password, user.getEmail(), "", user.getRoles(), user.getLocale());
         motechUserService.sendLoginInformation(user.getUserName(), password);
     }
 
@@ -69,7 +69,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/update", method = RequestMethod.POST)
     public void updateUser(@RequestBody UserDto user) {
-        motechUserService.updateUser(user);
+        motechUserService.updateUserDetailsWithPassword(user);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -91,7 +91,7 @@ public class UserController {
         UserDto dto = motechUserService.getUser(userName);
         dto.setEmail(email);
 
-        motechUserService.updateUser(dto);
+        motechUserService.updateUserDetailsWithoutPassword(dto);
     }
 
     @ResponseStatus(HttpStatus.OK)

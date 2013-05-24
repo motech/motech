@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.ui.impl.LocaleSettingsImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class LocaleSettingsTest {
     private static final String I18N_RESOURCES_PATH = "webapp/messages/";
 
     @Mock
-    private CookieLocaleResolver cookieLocaleResolver;
+    private MotechUserService userService;
 
     @Mock
     private BundleContext bundleContext;

@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -50,7 +51,7 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
 
     @Test
     public void testFindForUser() {
-        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION);
+        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION, Locale.ENGLISH);
         verifyDefaultRecovery(recovery);
 
         recovery = allPasswordRecoveries.findForUser(USERNAME);
@@ -59,7 +60,7 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
 
     @Test
     public void testFindForToken() {
-        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION);
+        PasswordRecovery recovery = allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION, Locale.ENGLISH);
         verifyDefaultRecovery(recovery);
 
         recovery = allPasswordRecoveries.findForToken(TOKEN);
@@ -68,14 +69,14 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
 
     @Test
     public void testRemoveOldRecovery() {
-        allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION);
-        allPasswordRecoveries.createRecovery(OTHER_USERNAME, OTHER_EMAIL, OTHER_TOKEN, EXPIRATION.minusHours(2));
+        allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION, Locale.ENGLISH);
+        allPasswordRecoveries.createRecovery(OTHER_USERNAME, OTHER_EMAIL, OTHER_TOKEN, EXPIRATION.minusHours(2), Locale.ENGLISH);
 
         List<PasswordRecovery> recoveries = allPasswordRecoveries.allRecoveries();
 
         assertEquals(2, recoveries.size());
         verifyDefaultRecovery(recoveries.get(0));
-        verifyRecovery(recoveries.get(1), OTHER_TOKEN, OTHER_USERNAME, OTHER_EMAIL, EXPIRATION.minusHours(2));
+        verifyRecovery(recoveries.get(1), OTHER_TOKEN, OTHER_USERNAME, OTHER_EMAIL, EXPIRATION.minusHours(2), Locale.ENGLISH);
 
         for (PasswordRecovery recovery : allPasswordRecoveries.getExpired()) {
             allPasswordRecoveries.remove(recovery);
@@ -89,26 +90,27 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
 
     @Test
     public void testGetExpired() {
-        allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION);
-        allPasswordRecoveries.createRecovery(OTHER_USERNAME, OTHER_EMAIL, OTHER_TOKEN, EXPIRATION.minusHours(10));
+        allPasswordRecoveries.createRecovery(USERNAME, EMAIL, TOKEN, EXPIRATION, Locale.ENGLISH);
+        allPasswordRecoveries.createRecovery(OTHER_USERNAME, OTHER_EMAIL, OTHER_TOKEN, EXPIRATION.minusHours(10), Locale.ENGLISH);
 
         List<PasswordRecovery> recoveries = allPasswordRecoveries.getExpired();
 
         assertEquals(1, recoveries.size());
         PasswordRecovery recovery = recoveries.get(0);
-        verifyRecovery(recovery, OTHER_TOKEN, OTHER_USERNAME, OTHER_EMAIL, EXPIRATION.minusHours(10));
+        verifyRecovery(recovery, OTHER_TOKEN, OTHER_USERNAME, OTHER_EMAIL, EXPIRATION.minusHours(10), Locale.ENGLISH);
     }
 
     private void verifyDefaultRecovery(PasswordRecovery recovery) {
-        verifyRecovery(recovery, TOKEN, USERNAME, EMAIL, EXPIRATION);
+        verifyRecovery(recovery, TOKEN, USERNAME, EMAIL, EXPIRATION, Locale.ENGLISH);
     }
 
     private void verifyRecovery(PasswordRecovery recovery, String token, String username, String email,
-                                DateTime expiration) {
+                                DateTime expiration, Locale locale) {
         assertNotNull(recovery);
         assertEquals(email, recovery.getEmail());
         assertEquals(username, recovery.getUsername());
         assertEquals(token, recovery.getToken());
         assertEquals(expiration, recovery.getExpirationDate());
+        assertEquals(locale, recovery.getLocale());
     }
 }

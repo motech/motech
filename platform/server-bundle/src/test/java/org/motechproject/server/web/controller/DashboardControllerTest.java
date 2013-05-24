@@ -136,9 +136,7 @@ public class DashboardControllerTest {
         String requiredRole = "testRole";
         when(regData.getRoleForAccess()).thenReturn(requiredRole);
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(regData);
-        UserDto userDto = new UserDto();
-        userDto.setRoles(Arrays.asList("admin-role"));
-        when(userService.getUser("admin")).thenReturn(userDto);
+        when(userService.getRoles("admin")).thenReturn(Arrays.asList("admin-role"));
 
         HashMap hashMap = new HashMap();
         hashMap.put(UIFrameworkService.MODULES_WITHOUT_SUBMENU, Arrays.asList(regData));

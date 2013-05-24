@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 
@@ -78,7 +79,7 @@ public class CampaignControllerIT {
         SecurityContext securityContext = new SecurityContextImpl();
         motechRoleService.createRole(manageCampaignRole);
 
-        motechUserService.register(userName, credentials, "test1@example.com", "testid", Arrays.asList("manageCampaignRole"));
+        motechUserService.register(userName, credentials, "test1@example.com", "testid", Arrays.asList("manageCampaignRole"), Locale.ENGLISH);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userName, credentials);
         securityContext.setAuthentication(authentication);
@@ -89,7 +90,7 @@ public class CampaignControllerIT {
     private void setUpSecurityContextWithoutManageCampaignRole() {
         RoleDto role = new RoleDto("NonmanageCampaignRole", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole"));
         motechRoleService.createRole(role);
-        motechUserService.register(userName1, credentials, "test2@example.com", "testid1", Arrays.asList("NonmanageCampaignRole"));
+        motechUserService.register(userName1, credentials, "test2@example.com", "testid1", Arrays.asList("NonmanageCampaignRole"), Locale.ENGLISH);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userName1, credentials);
         SecurityContext securityContext = new SecurityContextImpl();

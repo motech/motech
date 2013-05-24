@@ -46,7 +46,7 @@ public class ForgotPasswordController {
         mav.addObject(PAGE_LANG, locale);
 
         try {
-            recoveryService.passwordRecoveryRequest(email,locale);
+            recoveryService.passwordRecoveryRequest(email);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
             LOG.debug("Request for a nonexistent email" ,e);
@@ -74,7 +74,7 @@ public class ForgotPasswordController {
         mav.addObject(PAGE_LANG, locale);
 
         try {
-            recoveryService.oneTimeTokenOpenId(email, locale);
+            recoveryService.oneTimeTokenOpenId(email);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
             LOG.debug("Request for a nonexistent email" ,e);

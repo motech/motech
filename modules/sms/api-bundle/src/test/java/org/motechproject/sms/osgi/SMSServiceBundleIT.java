@@ -25,6 +25,7 @@ import org.osgi.framework.ServiceReference;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
@@ -106,7 +107,7 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
     public void testSmsWebServiceAsUnauthorizedUser() throws InterruptedException, IOException {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("fuu", "bar", "fuubar@a.com", "fuubar", asList("Admin User"));
+        motechUserService.register("fuu", "bar", "fuubar@a.com", "fuubar", asList("Admin User"), Locale.ENGLISH);
 
         PollingHttpClient httpClient = new PollingHttpClient();
         HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));
@@ -120,7 +121,7 @@ public class SMSServiceBundleIT extends BaseOsgiIT {
     public void testSmsWebServiceAsAuthorizedUser() throws InterruptedException, IOException {
         ServiceReference motechUserServiceRef = bundleContext.getServiceReference(MotechUserService.class.getName());
         MotechUserService motechUserService = (MotechUserService) bundleContext.getService(motechUserServiceRef);
-        motechUserService.register("foo", "bar", "foobar@a.com", "foobar", asList("Sms Admin"));
+        motechUserService.register("foo", "bar", "foobar@a.com", "foobar", asList("Sms Admin"), Locale.ENGLISH);
 
         PollingHttpClient httpClient = new PollingHttpClient();
         HttpPost request = new HttpPost(String.format("http://%s:%d%s", HOST, PORT, "/smsapi/web-api/messages"));

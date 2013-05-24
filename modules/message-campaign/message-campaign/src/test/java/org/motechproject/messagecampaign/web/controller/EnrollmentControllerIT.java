@@ -27,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -89,7 +90,7 @@ public class EnrollmentControllerIT {
         RoleDto roles = new RoleDto("testRole", asList("addUser", "editUser", "deleteUser", "manageUser", "activateUser", "manageRole", "manageEnrollments", "manageCampaigns"));
         SecurityContext securityContext = new SecurityContextImpl();
         motechRoleService.createRole(roles);
-        motechUserService.register(userName, credentials, "test@example.com", "testid", Arrays.asList("testRole"));
+        motechUserService.register(userName, credentials, "test@example.com", "testid", Arrays.asList("testRole"), Locale.ENGLISH);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userName, credentials);
         securityContext.setAuthentication(authentication);

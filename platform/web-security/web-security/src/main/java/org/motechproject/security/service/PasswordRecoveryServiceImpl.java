@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
@@ -75,7 +74,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void oneTimeTokenOpenId(String email, Locale locale) throws UserNotFoundException, NonAdminUserException {
+    public void oneTimeTokenOpenId(String email) throws UserNotFoundException, NonAdminUserException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
 
         if (user == null) {
@@ -95,9 +94,9 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
 
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
-                token, expirationDate);
+                token, expirationDate, user.getLocale());
 
-        emailSender.sendOneTimeToken(recovery, locale);
+        emailSender.sendOneTimeToken(recovery);
 
         LOG.info("Created a one time token for user " + user.getUserName());
     }
@@ -119,7 +118,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     @Override
-    public void passwordRecoveryRequest(String email, Locale locale) throws UserNotFoundException {
+    public void passwordRecoveryRequest(String email) throws UserNotFoundException {
         MotechUser user = allMotechUsers.findUserByEmail(email);
 
         if (user == null) {
@@ -130,9 +129,9 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         DateTime expirationDate = DateTimeSourceUtil.now().plusHours(EXPIRATION_HOURS);
 
         PasswordRecovery recovery = allPasswordRecoveries.createRecovery(user.getUserName(), user.getEmail(),
-                token, expirationDate);
+                token, expirationDate, user.getLocale());
 
-        emailSender.sendResecoveryEmail(recovery,locale);
+        emailSender.sendResecoveryEmail(recovery);
 
         LOG.info("Created a password recovery for user " + user.getUserName());
     }

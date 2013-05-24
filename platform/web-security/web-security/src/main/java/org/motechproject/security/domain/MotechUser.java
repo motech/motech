@@ -1,6 +1,7 @@
 package org.motechproject.security.domain;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface MotechUser {
 
@@ -31,4 +32,8 @@ public interface MotechUser {
     String getOpenId();
 
     void setOpenId(String openId);
+
+    Locale getLocale();
+
+    void setLocale(Locale locale);
 }

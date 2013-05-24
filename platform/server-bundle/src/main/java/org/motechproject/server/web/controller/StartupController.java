@@ -135,9 +135,10 @@ public class StartupController {
         String login = form.getAdminLogin();
         String password = form.getAdminPassword();
         String email = form.getAdminEmail();
+        Locale locale = new Locale(form.getLanguage());
 
         List<String> roles = Arrays.asList("Admin User", "Admin Bundle");
 
-        userService.register(login, password, email, null, roles);
+        userService.register(login, password, email, null, roles, locale);
     }
 }

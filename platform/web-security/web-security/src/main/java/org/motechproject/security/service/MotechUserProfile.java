@@ -4,6 +4,7 @@ import org.motechproject.security.domain.MotechUser;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 
 public class MotechUserProfile implements Serializable {
     private static final long serialVersionUID = -5704183407915646673L;
@@ -23,5 +24,9 @@ public class MotechUserProfile implements Serializable {
 
     public List<String> getRoles() {
         return user.getRoles();
+    }
+
+    public Locale getLocale() {
+        return user.getLocale();
     }
 }

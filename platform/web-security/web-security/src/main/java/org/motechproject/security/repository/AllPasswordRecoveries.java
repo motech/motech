@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.security.domain.PasswordRecovery;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface AllPasswordRecoveries {
 
@@ -15,7 +16,7 @@ public interface AllPasswordRecoveries {
 
     PasswordRecovery findForToken(String token);
 
-    PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate);
+    PasswordRecovery createRecovery(String username, String email, String token, DateTime expirationDate, Locale locale);
 
     void update(PasswordRecovery passwordRecovery);
 

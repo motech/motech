@@ -6,6 +6,8 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.util.Locale;
+
 @TypeDiscriminator("doc.type == 'PasswordRecovery'")
 public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements PasswordRecovery {
 
@@ -22,6 +24,9 @@ public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements
 
     @JsonProperty
     private DateTime expirationDate;
+
+    @JsonProperty
+    private Locale locale;
 
     public PasswordRecoveryCouchDbImpl() {
         super();
@@ -66,5 +71,15 @@ public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements
     @Override
     public void setExpirationDate(DateTime expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    @Override
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

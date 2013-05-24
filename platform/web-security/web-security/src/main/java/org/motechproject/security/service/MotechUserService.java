@@ -4,14 +4,15 @@ import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
+import java.util.Locale;
 
 
 public interface MotechUserService {
 
-    void register(String username, String password, String email, String externalId, List<String> roles);
+    void register(String username, String password, String email, String externalId, List<String> roles, Locale locale);
 
     @PreAuthorize("hasRole('addUser')")
-    void register(String username, String password, String email, String externalId, List<String> roles, boolean isActive, String openId);
+    void register(String username, String password, String email, String externalId, List<String> roles, Locale locale, boolean isActive, String openId);
 
     @PreAuthorize("hasRole('activateUser')")
     void activateUser(String username);
@@ -28,13 +29,21 @@ public interface MotechUserService {
     @PreAuthorize("hasRole('editUser')")
     UserDto getUser(String userName);
 
+    Locale getLocale(String userName);
+
     @PreAuthorize("hasRole('manageUser')")
     List<MotechUserProfile> getOpenIdUsers();
 
-    void updateUser(UserDto user);
+    void updateUserDetailsWithoutPassword(UserDto user);
+
+    void updateUserDetailsWithPassword(UserDto user);
 
     @PreAuthorize("hasRole('deleteUser')")
     void deleteUser(UserDto user);
 
     void sendLoginInformation(String userName, String password);
+
+    void setLocale(String userName, Locale locale);
+
+    List<String> getRoles(String userName);
 }

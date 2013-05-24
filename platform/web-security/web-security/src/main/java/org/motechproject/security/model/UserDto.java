@@ -3,6 +3,7 @@ package org.motechproject.security.model;
 import org.motechproject.security.domain.MotechUser;
 
 import java.util.List;
+import java.util.Locale;
 
 public class UserDto {
 
@@ -20,6 +21,8 @@ public class UserDto {
 
     private String openId;
 
+    private Locale locale;
+
     private boolean generatePassword;
 
     public UserDto() {
@@ -33,6 +36,7 @@ public class UserDto {
         this.roles = motechUser.getRoles();
         this.active = motechUser.isActive();
         this.openId = motechUser.getOpenId();
+        this.locale = motechUser.getLocale();
         this.generatePassword = false;
     }
 
@@ -90,6 +94,14 @@ public class UserDto {
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public boolean isGeneratePassword() {

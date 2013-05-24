@@ -14,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Locale;
+
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -39,7 +41,7 @@ public class MotechAuthenticationProviderTest {
 
     @Test
     public void shouldRetrieveUserFromDatabase() {
-        MotechUser motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "");
+        MotechUser motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
         MotechRole motechRole = new MotechRoleCouchdbImpl("some_role", asList("some_permission"));
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
         when(allMotechRoles.findByRoleName("some_role")).thenReturn(motechRole);
@@ -61,7 +63,7 @@ public class MotechAuthenticationProviderTest {
 
     @Test(expected = AuthenticationException.class)
     public void shouldThrowExceptionIfUserIsInactive() {
-        MotechUserCouchdbImpl motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "");
+        MotechUserCouchdbImpl motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
         motechUser.setActive(false);
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
 

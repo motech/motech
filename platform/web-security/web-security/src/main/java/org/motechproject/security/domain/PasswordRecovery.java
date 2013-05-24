@@ -2,6 +2,8 @@ package org.motechproject.security.domain;
 
 import org.joda.time.DateTime;
 
+import java.util.Locale;
+
 public interface PasswordRecovery {
 
     String getToken();
@@ -19,4 +21,8 @@ public interface PasswordRecovery {
     DateTime getExpirationDate();
 
     void setExpirationDate(DateTime expirationDate);
+
+    Locale getLocale();
+
+    void setLocale(Locale locale);
 }
