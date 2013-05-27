@@ -41,8 +41,8 @@
                             </a>
 
                             <ul class="task-nav pull-right">
-                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
-                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover data-trigger="hover" data-content="{{item.task.description}}"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && item.task.enabled" class="task-element" rel="popover" bs-popover="{{item.task.description}}" data-trigger="hover"><img src="../tasks/img/task-info.png"  class="task-list-img" /></li>
+                                <li ng-show="item.task.description && !item.task.enabled"  class="task-element" bs-popover="{{item.task.description}}" data-trigger="hover"><img src="../tasks/img/task-info-paused.png"  class="task-list-img" /></li>
                                 <li ng-show="item.task.description" class="divider-vertical"></li>
                                 <li ng-hide="item.task.enabled" class="task-element task-paused">
                                     <div class="task-list-button-activity">
