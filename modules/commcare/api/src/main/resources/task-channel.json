@@ -1,0 +1,95 @@
+{
+  "displayName" : "commcare",
+  "moduleName" : "${project.artifactId}",
+  "moduleVersion" : "${parsedVersion.osgiVersion}",
+  "triggerTaskEvents" : [
+    {
+      "displayName" : "commcare.case",
+      "subject" : "org.motechproject.commcare.api.case",
+      "eventParameters" : [
+        {
+          "eventKey" : "caseId",
+          "displayName" : "commcare.caseId"
+        },
+        {
+          "eventKey" : "userId",
+          "displayName" : "commcare.userId"
+        },
+        {
+          "eventKey" : "apiKey",
+          "displayName" : "commcare.apiKey"
+        },
+        {
+          "eventKey" : "dateModified",
+          "displayName" : "commcare.dateModified"
+        },
+        {
+          "eventKey" : "caseAction",
+          "displayName" : "commcare.caseAction"
+        },
+        {
+          "eventKey" : "fieldValues",
+          "type" : "MAP",
+          "displayName" : "commcare.fieldValues"
+        },
+        {
+          "eventKey" : "caseType",
+          "displayName" : "commcare.caseType"
+        },
+        {
+          "eventKey" : "caseName",
+          "displayName" : "commcare.caseName"
+        },
+        {
+          "eventKey" : "ownerId",
+          "displayName" : "commcare.ownerId"
+        }
+      ]
+    },
+    {
+      "displayName" : "commcare.formstub",
+      "subject" : "org.motechproject.commcare.api.formstub",
+      "eventParameters" : [
+        {
+          "eventKey" : "receivedOn",
+          "displayName" : "commcare.receivedOn"
+        },
+        {
+          "eventKey" : "formId",
+          "displayName" : "commcare.formId"
+        },
+        {
+          "eventKey" : "caseIds",
+          "type" : "LIST",
+          "displayName" : "commcare.caseIds"
+        }
+      ]
+    },
+    {
+      "displayName" : "commcare.forms",
+      "subject" : "org.motechproject.commcare.api.forms",
+      "eventParameters" : [
+        {
+          "eventKey" : "elementName",
+          "displayName" : "commcare.elementName"
+        },
+        {
+          "eventKey" : "subElements",
+          "type" : "MAP",
+          "displayName" : "commcare.subElements"
+        },
+        {
+          "eventKey" : "attributes",
+          "type" : "MAP",
+          "displayName" : "commcare.attributes"
+        },
+        {
+          "eventKey" : "value",
+          "displayName" : "commcare.value"
+        }
+      ]
+    }
+  ],
+  "actionTaskEvents" : [
+  ]
+}
