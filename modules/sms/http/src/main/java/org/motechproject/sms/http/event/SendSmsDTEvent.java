@@ -13,9 +13,14 @@ public class SendSmsDTEvent {
     private MotechEvent event;
 
     public SendSmsDTEvent(List<String> recipients, String message) {
+        this(recipients, message, 0);
+    }
+
+    public SendSmsDTEvent(List<String> recipients, String message, Integer failureCount) {
         Map<String, Object> params = new HashMap<>();
         params.put(EventDataKeys.RECIPIENTS, recipients);
         params.put(EventDataKeys.MESSAGE, message);
+        params.put(EventDataKeys.FAILURE_COUNT, failureCount);
         event = new MotechEvent(EventSubjects.SEND_SMSDT, params);
     }
 

@@ -40,6 +40,10 @@ public final class EventDataKeys {
      * Indicates the message text for an inbound sms
      */
     public static final String STATUS_MESSAGE = "status_message";
+    /**
+     * Indicates the number of failed attempts
+     */
+    public static final String FAILURE_COUNT = "failure_count";
 
     private EventDataKeys() {
     }
