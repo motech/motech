@@ -10,7 +10,6 @@ import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
 import org.smslib.OutboundMessage;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,8 +21,14 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
+import static org.motechproject.sms.api.DeliveryStatus.INPROGRESS;
+import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
+import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENT;
+import static org.motechproject.sms.smpp.constants.SmsProperties.MAX_RETRIES;
+import static org.smslib.OutboundMessage.MessageStatuses.FAILED;
+import static org.smslib.OutboundMessage.MessageStatuses.SENT;
 
 public class OutboundMessageNotificationTest {
     @Mock
@@ -40,7 +45,7 @@ public class OutboundMessageNotificationTest {
         initMocks(this);
 
         Properties smsProperties = new Properties() {{
-            setProperty(SmsProperties.MAX_RETRIES, "4");
+            setProperty(MAX_RETRIES, "4");
         }};
         SettingsFacade settings = new SettingsFacade();
         settings.saveConfigProperties("sms.properties", smsProperties);
@@ -55,7 +60,7 @@ public class OutboundMessageNotificationTest {
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
             setRefNo("refNo11111");
-            setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
+            setMessageStatus(FAILED);
             setRetryCount(4);
         }};
 
@@ -68,7 +73,7 @@ public class OutboundMessageNotificationTest {
         assertEquals(recipient, parameters.get(RECIPIENT));
         assertEquals("Test Message", parameters.get(MESSAGE));
 
-        assertAuditMessage(recipient, "refNo11111", DeliveryStatus.ABORTED);
+        assertAuditMessage(recipient, "refNo11111", ABORTED);
     }
 
     @Test
@@ -77,14 +82,14 @@ public class OutboundMessageNotificationTest {
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
             setRefNo("refNo2222");
-            setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
+            setMessageStatus(FAILED);
             setRetryCount(1);
         }};
 
         outboundMessageNotification.process(gateway, message);
 
         verifyZeroInteractions(eventRelay);
-        assertAuditMessage(recipient, "refNo2222", DeliveryStatus.KEEPTRYING);
+        assertAuditMessage(recipient, "refNo2222", KEEPTRYING);
     }
 
     @Test
@@ -92,7 +97,7 @@ public class OutboundMessageNotificationTest {
         String recipient = "9876543210";
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
-            setMessageStatus(OutboundMessage.MessageStatuses.SENT);
+            setMessageStatus(SENT);
             setRefNo("refNo");
         }};
 

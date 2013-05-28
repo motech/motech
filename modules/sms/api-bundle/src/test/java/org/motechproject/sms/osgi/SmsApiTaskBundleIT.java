@@ -14,10 +14,12 @@ import java.util.List;
 import static org.motechproject.sms.api.constants.EventDataKeys.DELIVERY_TIME;
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
+import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENT;
 import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENTS;
 import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
 import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.sms.api.constants.EventSubjects.SEND_SMS;
+import static org.motechproject.sms.api.constants.EventSubjects.SMS_FAILURE_NOTIFICATION;
 
 public class SmsApiTaskBundleIT extends AbstractTaskBundleIT {
 
@@ -37,6 +39,7 @@ public class SmsApiTaskBundleIT extends AbstractTaskBundleIT {
 
         assertSendSmsTrigger(channel.getTriggerTaskEvents());
         assertInboundSmsTrigger(channel.getTriggerTaskEvents());
+        assertSmsFailureNotificationTrigger(channel.getTriggerTaskEvents());
     }
 
     public void testTaskActions() throws IOException {
@@ -70,5 +73,14 @@ public class SmsApiTaskBundleIT extends AbstractTaskBundleIT {
         assertTrue(hasActionParameterKey(RECIPIENTS, sendSmsAction.getActionParameters()));
         assertTrue(hasActionParameterKey(MESSAGE, sendSmsAction.getActionParameters()));
         assertTrue(hasActionParameterKey(DELIVERY_TIME, sendSmsAction.getActionParameters()));
+    }
+
+    private void assertSmsFailureNotificationTrigger(List<TriggerEvent> triggerTaskEvents) {
+        TriggerEvent smsFailureNotificationTrigger = findTriggerEventBySubject(triggerTaskEvents,
+                SMS_FAILURE_NOTIFICATION);
+
+        assertNotNull(smsFailureNotificationTrigger);
+        assertTrue(hasEventParameterKey(RECIPIENT, smsFailureNotificationTrigger.getEventParameters()));
+        assertTrue(hasEventParameterKey(MESSAGE, smsFailureNotificationTrigger.getEventParameters()));
     }
 }

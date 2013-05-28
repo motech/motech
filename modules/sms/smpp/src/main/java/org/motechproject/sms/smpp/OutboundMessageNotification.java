@@ -9,8 +9,6 @@ import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.SMSType;
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.smpp.constants.EventSubjects;
-import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.OutboundMessage;
@@ -21,8 +19,13 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
+import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
+import static org.motechproject.sms.api.SMSType.OUTBOUND;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
+import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENT;
+import static org.motechproject.sms.api.constants.EventSubjects.SMS_FAILURE_NOTIFICATION;
+import static org.motechproject.sms.smpp.constants.SmsProperties.MAX_RETRIES;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -37,7 +40,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     @Autowired
     public OutboundMessageNotification(EventRelay eventRelay, @Qualifier("smsApiSettings") SettingsFacade settings) {
         this.eventRelay = eventRelay;
-        String maxRetriesAsString = settings.getProperty(SmsProperties.MAX_RETRIES);
+        String maxRetriesAsString = settings.getProperty(MAX_RETRIES);
         this.maxRetries = maxRetriesAsString != null ? Integer.parseInt(maxRetriesAsString) : 0;
     }
 
@@ -50,7 +53,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
             if (msg.getRetryCount() >= maxRetries) {
                 raiseFailureEvent(msg, sentTime);
             } else if (msg.getRetryCount() < maxRetries) {
-                smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.KEEPTRYING, msg.getRefNo()));
+                smsAuditService.log(new SmsRecord(OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, KEEPTRYING, msg.getRefNo()));
             }
         } else {
             smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.DISPATCHED, msg.getRefNo()));
@@ -61,8 +64,8 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
-        eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
-        smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.ABORTED, msg.getRefNo()));
+        eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
+        smsAuditService.log(new SmsRecord(OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, ABORTED, msg.getRefNo()));
     }
 
     private boolean sendingFailed(OutboundMessage msg) {

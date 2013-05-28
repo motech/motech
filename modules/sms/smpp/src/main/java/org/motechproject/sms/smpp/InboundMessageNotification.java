@@ -25,10 +25,10 @@ import static org.motechproject.sms.api.DeliveryStatus.UNKNOWN;
 import static org.motechproject.sms.api.SMSType.INBOUND;
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
+import static org.motechproject.sms.api.constants.EventDataKeys.STATUS_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.STATUS_MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventSubjects.INBOUND_SMS;
-import static org.motechproject.sms.smpp.constants.EventSubjects.SMS_DELIVERY_REPORT;
+import static org.motechproject.sms.api.constants.EventSubjects.INBOUND_SMS;
+import static org.motechproject.sms.api.constants.EventSubjects.SMS_DELIVERY_REPORT;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {

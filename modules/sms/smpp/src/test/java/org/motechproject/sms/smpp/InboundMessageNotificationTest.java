@@ -10,7 +10,6 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.smslib.AGateway;
 import org.smslib.InboundMessage;
 import org.smslib.StatusReportMessage;
@@ -24,9 +23,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
 import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
+import static org.motechproject.sms.api.constants.EventSubjects.INBOUND_SMS;
+import static org.motechproject.sms.api.constants.EventSubjects.SMS_DELIVERY_REPORT;
 import static org.smslib.Message.MessageTypes.INBOUND;
 import static org.smslib.Message.MessageTypes.STATUSREPORT;
 import static org.smslib.Message.MessageTypes.UNKNOWN;
+import static org.smslib.StatusReportMessage.DeliveryStatuses.INPROGRESS;
 
 public class InboundMessageNotificationTest {
     private InboundMessageNotification inboundMessageNotification;
@@ -62,7 +64,7 @@ public class InboundMessageNotificationTest {
         verify(eventRelay).sendEventMessage(eventCaptor.capture());
 
         MotechEvent event = eventCaptor.getValue();
-        assertEquals(EventSubjects.INBOUND_SMS, event.getSubject());
+        assertEquals(INBOUND_SMS, event.getSubject());
         assertEquals("sender", event.getParameters().get(SENDER));
         assertEquals("yoohoo", event.getParameters().get(INBOUND_MESSAGE));
         assertEquals(new DateTime(2011, 11, 23, 10, 20, 0, 0), event.getParameters().get(TIMESTAMP));
@@ -75,7 +77,7 @@ public class InboundMessageNotificationTest {
         String destAddr = "destAddr";
         String text = "messageContent";
         StatusReportMessage reportMessage = new StatusReportMessage(refNo, srcAddress, destAddr, text, DateUtil.now().toDate(), DateUtil.now().toDate());
-        StatusReportMessage.DeliveryStatuses deliveryStatus = StatusReportMessage.DeliveryStatuses.INPROGRESS;
+        StatusReportMessage.DeliveryStatuses deliveryStatus = INPROGRESS;
         reportMessage.setStatus(deliveryStatus);
 
         inboundMessageNotification.process(gateway, STATUSREPORT, reportMessage);
@@ -84,7 +86,7 @@ public class InboundMessageNotificationTest {
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(eventCaptor.capture());
         MotechEvent event = eventCaptor.getValue();
-        assertThat(event.getSubject(), is(EventSubjects.SMS_DELIVERY_REPORT));
+        assertThat(event.getSubject(), is(SMS_DELIVERY_REPORT));
     }
 
 }

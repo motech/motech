@@ -4,20 +4,6 @@
   "moduleVersion" : "${parsedVersion.osgiVersion}",
   "triggerTaskEvents" : [
     {
-      "displayName" : "sms.failureNotification",
-      "subject" : "sms_failure_notification",
-      "eventParameters" : [
-        {
-          "eventKey" : "recipient",
-          "displayName" : "sms.recipients"
-        },
-        {
-          "eventKey" : "message",
-          "displayName" : "sms.message"
-        }
-      ]
-    },
-    {
       "displayName" : "sms.deliveryReport",
       "subject" : "sms_delivery_report",
       "eventParameters" : [

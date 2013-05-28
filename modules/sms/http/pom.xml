@@ -21,12 +21,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-sms-api</artifactId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
+            <artifactId>motech-scheduler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

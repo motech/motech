@@ -32,6 +32,14 @@ public final class EventDataKeys {
      * the timestamp when the recipient received the message
      */
     public static final String TIMESTAMP = "timestamp";
+    /**
+     * Indicates the recipient for the message
+     */
+    public static final String RECIPIENT = "recipient";
+    /**
+     * Indicates the message text for an inbound sms
+     */
+    public static final String STATUS_MESSAGE = "status_message";
 
     private EventDataKeys() {
     }

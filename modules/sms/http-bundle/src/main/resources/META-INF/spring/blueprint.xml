@@ -21,4 +21,7 @@
     <osgi:reference id="smsAuditService"
                     interface="org.motechproject.sms.api.service.SmsAuditService"/>
 
+    <osgi:reference id="schedulerServiceOsgi" availability="optional"
+                    interface="org.motechproject.scheduler.MotechSchedulerService"/>
+
 </beans>
