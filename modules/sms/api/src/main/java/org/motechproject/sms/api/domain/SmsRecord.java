@@ -2,11 +2,13 @@ package org.motechproject.sms.api.domain;
 
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.SMSType;
+import org.motechproject.sms.api.json.DeliveryStatusDeserializer;
 
 @TypeDiscriminator("doc.type === 'SmsRecord'")
 public class SmsRecord extends MotechBaseDataObject {
@@ -23,6 +25,7 @@ public class SmsRecord extends MotechBaseDataObject {
     @JsonProperty
     private DateTime messageTime;
     @JsonProperty
+    @JsonDeserialize(using = DeliveryStatusDeserializer.class)
     private DeliveryStatus deliveryStatus;
     @JsonProperty
     private String referenceNumber;

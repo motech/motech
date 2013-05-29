@@ -5,10 +5,9 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.sms.api.SMSType;
+import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.api.domain.SmsRecord;
 import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.smslib.AGateway;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.InboundMessage;
@@ -21,10 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.sms.api.DeliveryStatus.RECEIVED;
+import static org.motechproject.sms.api.DeliveryStatus.UNKNOWN;
+import static org.motechproject.sms.api.SMSType.INBOUND;
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
 import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.STATUS_MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventSubjects.INBOUND_SMS;
+import static org.motechproject.sms.smpp.constants.EventSubjects.SMS_DELIVERY_REPORT;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
@@ -47,22 +51,33 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             data.put(SENDER, msg.getOriginator());
             data.put(INBOUND_MESSAGE, msg.getText());
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
-            relayEvent(data, EventSubjects.INBOUND_SMS);
-            // TODO: Why delivery status and reference number are not set?
-            smsAuditService.log(new SmsRecord(SMSType.INBOUND, msg.getOriginator(), msg.getText(), newDateTime(msg.getDate()), null, null));
+            relayEvent(data, INBOUND_SMS);
+            smsAuditService.log(new SmsRecord(INBOUND, msg.getOriginator(), msg.getText(), newDateTime(msg.getDate()), RECEIVED, Integer.toString(msg.getMpRefNo())));
 
         } else if (msgType.equals(Message.MessageTypes.STATUSREPORT)) {
             if (!(msg instanceof StatusReportMessage)) {
                 throw new MotechException("Unexpected message type: " + msg.getClass().getName());
             }
             StatusReportMessage statusMessage = (StatusReportMessage) msg;
+            String statusName = statusMessage.getStatus().name();
+
+            DeliveryStatus status;
+
+            try {
+                status = DeliveryStatus.valueOf(statusName);
+            } catch (IllegalArgumentException e) {
+                /* status not exists in DeliverStatus enum */
+                status = UNKNOWN;
+            }
+
             HashMap<String, Object> data = new HashMap<>();
             data.put(SENDER, msg.getOriginator());
             data.put(STATUS_MESSAGE, statusMessage);
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
-            relayEvent(data, EventSubjects.SMS_DELIVERY_REPORT);
-            //TODO: Check status exists in DeliverStatus enum
-            smsAuditService.updateDeliveryStatus(statusMessage.getRecipient(), statusMessage.getRefNo(), statusMessage.getStatus().name());
+
+            relayEvent(data, SMS_DELIVERY_REPORT);
+
+            smsAuditService.updateDeliveryStatus(statusMessage.getRecipient(), statusMessage.getRefNo(), status.name());
         }
     }
 

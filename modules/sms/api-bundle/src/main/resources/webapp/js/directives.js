@@ -143,7 +143,7 @@
                 var filters;
 
                 elem.jqGrid({
-                    url: '../smsapi/smslogging?phoneNumber=&messageContent=&timeFrom=&timeTo=&deliveryStatus=INPROGRESS,DELIVERED,KEEPTRYING,ABORTED,UNKNOWN&smsType=INBOUND,OUTBOUND',
+                    url: '../smsapi/smslogging?phoneNumber=&messageContent=&timeFrom=&timeTo=&deliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,KEEPTRYING,ABORTED,UNKNOWN,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
                     datatype: 'json',
                     jsonReader:{
                         repeatitems:false
