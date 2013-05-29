@@ -99,7 +99,7 @@ public class OutboundMessageNotificationTest {
         outboundMessageNotification.process(gateway, message);
 
         verifyZeroInteractions(eventRelay);
-        assertAuditMessage(recipient, "refNo", DeliveryStatus.INPROGRESS);
+        assertAuditMessage(recipient, "refNo", DeliveryStatus.DISPATCHED);
     }
 
     private void assertAuditMessage(String recipient, String refNo, DeliveryStatus deliveryStatus) {

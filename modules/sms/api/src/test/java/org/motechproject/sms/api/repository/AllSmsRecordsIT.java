@@ -22,6 +22,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
 import static org.motechproject.sms.api.DeliveryStatus.DELIVERED;
+import static org.motechproject.sms.api.DeliveryStatus.DELIVERY_CONFIRMED;
+import static org.motechproject.sms.api.DeliveryStatus.DISPATCHED;
 import static org.motechproject.sms.api.DeliveryStatus.INPROGRESS;
 import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
 
@@ -61,7 +63,7 @@ public class AllSmsRecordsIT {
 
         SmsRecord latest = allSmsRecords.findLatestBy(recipient, refNo);
         assertThat(latest.getMessageTime(), is(messageTime.plusDays(3)));
-        assertThat(latest.getDeliveryStatus(), is(INPROGRESS));
+        assertThat(latest.getDeliveryStatus(), is(DISPATCHED));
 
         allSmsRecords.addOrReplace(new SmsRecord(SMSType.OUTBOUND, recipient, messageContent, messageTime.plusDays(6).plusMinutes(4), KEEPTRYING, refNo));
         allSmsRecords.addOrReplace(new SmsRecord(SMSType.OUTBOUND, recipient, messageContent, messageTime.plusHours(2), INPROGRESS, refNo));
@@ -105,7 +107,7 @@ public class AllSmsRecordsIT {
 
         SmsRecord updatedSms = allSmsRecords.get(latestMessage.getId());
         assertThat(updatedSms.getMessageContent(), is("LatestMessage"));
-        assertThat(updatedSms.getDeliveryStatus(), is(DELIVERED));
+        assertThat(updatedSms.getDeliveryStatus(), is(DELIVERY_CONFIRMED));
     }
 
     @After

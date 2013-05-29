@@ -53,7 +53,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
                 smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.KEEPTRYING, msg.getRefNo()));
             }
         } else {
-            smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.INPROGRESS, msg.getRefNo()));
+            smsAuditService.log(new SmsRecord(SMSType.OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, DeliveryStatus.DISPATCHED, msg.getRefNo()));
         }
     }
 
