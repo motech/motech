@@ -22,17 +22,15 @@
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
                                     <li class="task-element">
-                                        <div bs-popover="{{msg(item.task.trigger.channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
+                                        <div trigger-popover>
                                             <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" />
                                         </div>
                                     </li>
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
                                     <li class="task-element">
-                                        <div ui-if="item.task.actions.length == 1" bs-popover="{{msg(item.task.actions[0].channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
-                                            <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
-                                        </div>
-                                        <div ui-if="item.task.actions.length > 1" actions-popover>
-                                            <i class="icon-reorder icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
+                                        <div actions-popover>
+                                            <img ui-if="item.task.actions.length == 1" ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
+                                            <i ui-if="item.task.actions.length > 1" class="icon-reorder icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
                                         </div>
                                     </li>
                                     <li class="divider-vertical"></li>

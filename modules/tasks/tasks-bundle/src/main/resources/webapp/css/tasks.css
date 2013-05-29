@@ -965,3 +965,7 @@ i.close-channel.icon-remove {
 .inside-0 {
     padding: 0 10px;
 }
+
+.popover {
+    max-width: none;
+}

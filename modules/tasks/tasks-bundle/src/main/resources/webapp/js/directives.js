@@ -29,10 +29,10 @@
             link: function (scope, element, attrs) {
                 angular.element(element).on({
                     show: function () {
-                        $(this).find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
+                        $(this).find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                     },
                     hide: function () {
-                        $(this).find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
+                        $(this).find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
                     }
                 });
             }
@@ -44,19 +44,19 @@
             restrict: 'A',
             link: function (scope, element, attrs) {
                 $('.accordion').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
                 $('.tasks-list').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-right').addClass('icon-caret-down');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
                 $('.accordion').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
 
                 $('.tasks-list').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i').removeClass('icon-caret-down').addClass('icon-caret-right');
+                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
             }
         };
@@ -861,7 +861,7 @@
                             img.attr('src', '../tasks/api/channel/icon?moduleName=' + action.moduleName);
                             img.addClass('task-list-img');
 
-                            name.text(scope.msg(action.channelName));
+                            name.text(scope.msg(action.channelName) + ": " + scope.msg(action.displayName));
 
                             div.append(img);
                             div.append(name);
@@ -875,4 +875,33 @@
            }
        };
     });
+
+    widgetModule.directive('triggerPopover', function () {
+           return {
+               restrict: 'A',
+               link: function (scope, element, attrs) {
+                    angular.element(element).popover({
+                        placement: 'right',
+                        trigger: 'hover',
+                        html: true,
+                        content: function () {
+                            var html = angular.element('<div style="text-align: left" />'),
+                                div = angular.element('<div />'),
+                                img = angular.element('<img />'),
+                                name = angular.element('<span style="margin-left: 5px" />');
+
+                            img.attr('src', '../tasks/api/channel/icon?moduleName=' + scope.item.task.trigger.moduleName);
+                            img.addClass('task-list-img');
+                            name.text(scope.msg(scope.item.task.trigger.channelName) + ": " + scope.msg(scope.item.task.trigger.displayName));
+                            div.append(img);
+                            div.append(name);
+                            html.append(div);
+
+                            return html;
+                        }
+                    });
+               }
+           };
+        });
+
 }());
