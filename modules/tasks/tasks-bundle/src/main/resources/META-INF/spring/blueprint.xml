@@ -52,7 +52,7 @@
     <osgi:service id="taskServiceOsgi" auto-export="interfaces" ref="taskService"
                   interface="org.motechproject.tasks.service.TaskService"/>
 
-    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" cardinality="0..N">
+    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
         <osgi:reference-listener ref="managementDataProvider"/>
     </osgi:set>
 

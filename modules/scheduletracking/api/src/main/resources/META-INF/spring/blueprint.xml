@@ -26,7 +26,7 @@
     <osgi:service id="enrollmentActionServiceOsgi" ref="enrollmentActionService"
                   interface="org.motechproject.scheduletracking.api.service.EnrollmentActionService"/>
 
-    <osgi:reference cardinality="0..1" id="schedulerServiceOsgi"
+    <osgi:reference id="schedulerServiceOsgi"
                     interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
@@ -35,7 +35,7 @@
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+    <osgi:reference id="eventRelayOsgi"
                     interface="org.motechproject.event.listener.EventRelay" />
 
 </beans>
