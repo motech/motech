@@ -133,6 +133,7 @@ function UserCtrl($scope, Roles, Users, $http) {
                 openId: "",
                 generatePassword:false
             }
+            $scope.confirmPassword="";
        }
 
        $scope.hasValue = function(prop) {
