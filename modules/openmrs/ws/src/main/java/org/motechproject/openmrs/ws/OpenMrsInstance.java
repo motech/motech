@@ -28,7 +28,7 @@ public class OpenMrsInstance {
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public OpenMrsInstance(@Qualifier("openmrsWsSettings")SettingsFacade settingsFacade) {
+    public OpenMrsInstance(@Qualifier("openmrsWsSettings") SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 

@@ -16,6 +16,7 @@ import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.messagecampaign.web.ex.EnrollmentNotFoundException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,6 +38,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     private AllMessageCampaigns allMessageCampaigns;
     private EventRelay relay;
     @Autowired
+    @Qualifier("messageCampaignSettings")
     private SettingsFacade settingsFacade;
 
     @Autowired

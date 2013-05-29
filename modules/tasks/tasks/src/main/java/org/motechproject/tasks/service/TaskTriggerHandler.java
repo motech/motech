@@ -30,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -81,7 +82,7 @@ public class TaskTriggerHandler {
     @Autowired
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
                               EventListenerRegistryService registryService, EventRelay eventRelay,
-                              SettingsFacade settingsFacade) {
+                              @Qualifier("tasksSettings") SettingsFacade settingsFacade) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.registryService = registryService;

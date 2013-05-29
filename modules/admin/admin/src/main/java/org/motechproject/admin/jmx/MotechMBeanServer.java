@@ -5,6 +5,7 @@ import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.management.MBeanServerConnection;
@@ -31,7 +32,7 @@ public class MotechMBeanServer {
 
 
     @Autowired
-    public MotechMBeanServer(SettingsFacade settingsFacade) {
+    public MotechMBeanServer(@Qualifier("jmxSettings") SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 

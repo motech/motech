@@ -16,6 +16,7 @@ import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class CommCareAPIHttpClient {
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public CommCareAPIHttpClient(final HttpClient commonsHttpClient, final SettingsFacade settingsFacade) {
+    public CommCareAPIHttpClient(final HttpClient commonsHttpClient, @Qualifier("commcareAPISettings") final SettingsFacade settingsFacade) {
         this.commonsHttpClient = commonsHttpClient;
         this.settingsFacade = settingsFacade;
     }

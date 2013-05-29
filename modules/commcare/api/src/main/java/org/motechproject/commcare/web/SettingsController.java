@@ -4,6 +4,7 @@ import org.motechproject.commcare.domain.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,7 @@ public class SettingsController {
     private SettingsFacade settingsFacade;
 
     @Autowired
-    public SettingsController(final SettingsFacade settingsFacade) {
+    public SettingsController(@Qualifier("commcareAPISettings") final SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 

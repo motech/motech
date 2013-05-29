@@ -6,6 +6,7 @@ import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,7 +17,7 @@ public class TemplateReader {
     private SettingsFacade settings;
 
     @Autowired
-    public void setSettings(SettingsFacade settings) {
+    public void setSettings(@Qualifier("smsHttpSettings") SettingsFacade settings) {
         this.settings = settings;
     }
 
