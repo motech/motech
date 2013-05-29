@@ -53,6 +53,13 @@
             <groupId>com.googlecode.jsmpp</groupId>
             <artifactId>org.motechproject.com.googlecode.jsmpp</artifactId>
         </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>

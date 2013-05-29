@@ -18,4 +18,7 @@
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay"/>
 
+    <osgi:reference id="smsAuditService"
+                    interface="org.motechproject.sms.api.service.SmsAuditService"/>
+
 </beans>
