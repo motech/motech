@@ -1,5 +1,6 @@
 package org.motechproject.commcare.web;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.motechproject.commcare.domain.FormValueElement;
 import org.motechproject.commcare.exception.FullFormParserException;
@@ -49,6 +50,8 @@ public class FullFormController {
 
         if (formValueElement != null) {
             Map<String, Object> parameters = new HashMap<>();
+            parameters.put(VALUE, formValueElement.getValue());
+            parameters.put(ELEMENT_NAME, formValueElement.getElementName());
             parameters.put(ATTRIBUTES, formValueElement.getAttributes());
             parameters.put(SUB_ELEMENTS, convertToMap(formValueElement.getSubElements()));
 
@@ -56,11 +59,11 @@ public class FullFormController {
         }
     }
 
-    private Map<String, Map<String, Object>> convertToMap(Multimap<String, FormValueElement> subElements) {
-        Map<String, Map<String, Object>> elements = new HashMap<>();
+    private Multimap<String, Map<String, Object>> convertToMap(Multimap<String, FormValueElement> subElements) {
+        Multimap<String, Map<String, Object>> elements = new LinkedHashMultimap<>();
 
         for (Map.Entry<String, FormValueElement> entry : subElements.entries()) {
-            Map<String, Object> elementAsMap = new HashMap<>(3);
+            Map<String, Object> elementAsMap = new HashMap<>(4);
             FormValueElement formValueElement = entry.getValue();
 
             elementAsMap.put(ELEMENT_NAME, formValueElement.getElementName());

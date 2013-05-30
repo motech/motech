@@ -99,7 +99,7 @@ public class FormValueElement implements FormNode {
                         return elements;
                     }
                 }
-                elements.addAll(entry.getValue().getAllElements(elementName, restrictedElements));
+                elements.addAll(entry.getValue().getAllElements(elementName, restrictedElements, breakOnFirst));
                 if (breakOnFirst && elements.size() > 0) {
                     return elements;
                 }
@@ -112,7 +112,7 @@ public class FormValueElement implements FormNode {
         return new ArrayList<>(subElements.get(elementName));
     }
 
-    private FormValueElement getChildElement(String elementName) {
+    public FormValueElement getChildElement(String elementName) {
         for (Entry<String, FormValueElement> entry : subElements.entries()) {
             if (entry.getKey().equals(elementName)) {
                 return entry.getValue();
@@ -121,41 +121,88 @@ public class FormValueElement implements FormNode {
         return null;
     }
 
+    public FormValueElement getElementByAttribute(String attribute, String value) {
+        return getElementByAttribute(attribute, value, null);
+    }
+
+    public FormValueElement getElementByAttribute(String attribute, String value, List<String> restrictedElements) {
+        List<FormValueElement> elementsByAttribute = getElementsByAttribute(attribute, value, restrictedElements, true);
+        return elementsByAttribute.size() > 0 ? elementsByAttribute.get(0) : null;
+    }
+
     public List<FormValueElement> getElementsByAttribute(String attribute, String value) {
+        return getElementsByAttribute(attribute, value, null);
+    }
+
+    public List<FormValueElement> getElementsByAttribute(String attribute, String value, List<String> restrictedElements) {
+        return getElementsByAttribute(attribute, value, restrictedElements, false);
+    }
+
+    public List<FormValueElement> getElementsByAttribute(String attribute, String value, List<String> restrictedElements, boolean breakOnFirst) {
         List<FormValueElement> elements = new ArrayList<>();
+
+        if(restrictedElements != null && restrictedElements.contains(this.getElementName())) {
+            return elements;
+        }
+
         if (value.equals(this.getAttributes().get(attribute))) {
             elements.add(this);
+            if(breakOnFirst) {
+                return elements;
+            }
         }
+
         for (Entry<String, FormValueElement> entry : subElements.entries()) {
-            List<FormValueElement> subElementList = entry.getValue().getElementsByAttribute(attribute, value);
+            List<FormValueElement> subElementList = entry.getValue().getElementsByAttribute(attribute, value, restrictedElements);
             elements.addAll(subElementList);
+            if(elements.size() > 0 && breakOnFirst) {
+                break;
+            }
         }
         return elements;
     }
 
-    public FormNode search(String path, List<String> restrictedElements) {
-        List<String> pathToTraverse = new Vector<>();
-        pathToTraverse.addAll(Arrays.asList(path.replaceFirst("^" + PREFIX_SEARCH_RELATIVE, "").split("/")));
-        return search(pathToTraverse, restrictedElements);
+    public FormNode searchFirst(String path) {
+        List<FormNode> results = new ArrayList<>();
+        search(splitPath(path), true, results);
+        return results.size() > 0 ? results.get(0) : null;
     }
 
-    private FormNode search(List<String> pathToTraverse, List<String> restrictedElements) {
-        FormValueElement returnElement = this;
-        while (pathToTraverse.size() > 0 && returnElement != null) {
-            String currentSearchSegment = pathToTraverse.remove(0);
-            if (currentSearchSegment.startsWith(PREFIX_ATTRIBUTE)) {
-                return returnElement.getAttributeAsNode(currentSearchSegment.replace(PREFIX_ATTRIBUTE, ""));
-            }
-            if (currentSearchSegment.startsWith(PREFIX_VALUE)) {
-                return returnElement;
-            }
-            if (restrictedElements != null && restrictedElements.contains(currentSearchSegment)) {
-                return null;
-            }
-            returnElement = returnElement.getChildElement(currentSearchSegment);
+    public List<FormNode> search(String path) {
+        List<FormNode> results = new ArrayList<>();
+        search(splitPath(path), false, results);
+        return results;
+    }
 
+    private List<String> splitPath(String path) {
+        List<String> pathToTraverse = new Vector<>();
+        pathToTraverse.addAll(Arrays.asList(path.replaceFirst("^" + PREFIX_SEARCH_RELATIVE, "").split("/")));
+        return pathToTraverse;
+    }
+
+    private void search(List<String> pathToTraverse, boolean breakOnFirst, List<FormNode> results) {
+        if(pathToTraverse.isEmpty()) {
+            results.add(this);
+            return;
         }
-        return returnElement;
+
+        String currentSearchSegment = pathToTraverse.remove(0);
+
+        if (currentSearchSegment.startsWith(PREFIX_ATTRIBUTE)) {
+            results.add(getAttributeAsNode(currentSearchSegment.replace(PREFIX_ATTRIBUTE, "")));
+            return;
+        }
+        if (currentSearchSegment.startsWith(PREFIX_VALUE)) {
+            results.add(this);
+        }
+
+        List<FormValueElement> childElements = getChildElements(currentSearchSegment);
+        for(FormValueElement childElement: childElements) {
+            childElement.search(new ArrayList<>(pathToTraverse), breakOnFirst, results);
+            if(breakOnFirst && results.size() > 0) {
+                return;
+            }
+        }
     }
 
     private FormValueAttribute getAttributeAsNode(String name) {
