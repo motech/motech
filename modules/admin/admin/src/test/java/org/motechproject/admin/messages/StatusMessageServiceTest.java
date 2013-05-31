@@ -8,11 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
-import org.motechproject.admin.email.EmailSender;
+import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.repository.AllNotificationRules;
 import org.motechproject.admin.repository.AllStatusMessages;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.service.impl.StatusMessageServiceImpl;
+import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
@@ -47,7 +48,7 @@ public class StatusMessageServiceTest {
     private StatusMessage mockMsg;
 
     @Mock
-    private EmailSender emailSender;
+    private EmailSenderService emailSender;
 
     @Mock
     private EventRelay eventRelay;
@@ -55,9 +56,12 @@ public class StatusMessageServiceTest {
     @Mock
     private UIFrameworkService uiFrameworkService;
 
-    StatusMessage activeMessage = new StatusMessage("active", MODULE_NAME, Level.INFO, DateTime.now().plusHours(1));
-    StatusMessage inactiveMessage = new StatusMessage("inactive", MODULE_NAME, Level.INFO, DateTime.now().minusHours(1));
+    @Mock
+    private EmailNotifier emailNotifier;
 
+    StatusMessage activeMessage = new StatusMessage("active", MODULE_NAME, Level.INFO, DateTime.now().plusHours(1));
+
+    StatusMessage inactiveMessage = new StatusMessage("inactive", MODULE_NAME, Level.INFO, DateTime.now().minusHours(1));
     List<StatusMessage> statusMessages = new ArrayList<>();
 
     @Before
@@ -209,14 +213,13 @@ public class StatusMessageServiceTest {
                 notificationRuleEmail2));
 
         StatusMessage statusMessage = new StatusMessage("text", "module", Level.CRITICAL);
-
         statusMessageService.postMessage(statusMessage);
 
         verify(allStatusMessages).add(statusMessage);
         verify(allNotificationRules).getAll();
 
-        verify(emailSender).sendCriticalNotificationEmail("e@ma.il", statusMessage);
-        verify(emailSender).sendCriticalNotificationEmail("e2@ma.il", statusMessage);
+        verify(emailNotifier).send(statusMessage,"e@ma.il");
+        verify(emailNotifier).send(statusMessage,"e2@ma.il");
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(captor.capture());

@@ -61,4 +61,7 @@
 
     <osgi:reference id="uiFrameworkServiceOsgi" interface="org.motechproject.osgi.web.UIFrameworkService"
                     availability="optional"/>
+
+    <osgi:reference id="mailSender" interface="org.motechproject.email.service.EmailSenderService"/>
+
 </beans>

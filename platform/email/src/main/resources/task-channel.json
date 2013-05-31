@@ -1,0 +1,30 @@
+{
+    "displayName": "email.module",
+    "moduleName": "${project.artifactId}",
+    "moduleVersion": "${parsedVersion.osgiVersion}",
+    "triggerTaskEvents" : [],
+    "actionTaskEvents": [
+        {
+            "displayName": "email.send",
+            "subject": "SendEMail",
+            "actionParameters": [
+                {
+                    "key": "fromAddress",
+                    "displayName": "email.from.address"
+                },
+                {
+                    "key": "toAddress",
+                    "displayName": "email.to.address"
+                },
+                {
+                    "key": "subject",
+                    "displayName": "email.subject"
+                },
+                {
+                    "key": "message",
+                    "displayName": "email.message"
+                }
+            ]
+        }
+    ]
+}

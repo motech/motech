@@ -1,5 +1,6 @@
 package org.motechproject.server.config.settings;
 
+import org.motechproject.server.config.domain.MotechURL;
 import org.motechproject.server.config.service.PlatformSettingsService;
 
 import java.io.File;
@@ -17,6 +18,14 @@ public class ConfigFileSettings implements MotechSettings {
     private URL fileURL;
     private Properties motechSettings = new Properties();
     private Properties activemq = new Properties();
+
+    public ConfigFileSettings() {
+    }
+
+    ConfigFileSettings(Properties motechSettings, Properties activemqSettings) {
+        this.motechSettings.putAll(motechSettings);
+        this.activemq.putAll(activemqSettings);
+    }
 
     @Override
     public String getLanguage() {
@@ -45,8 +54,15 @@ public class ConfigFileSettings implements MotechSettings {
 
     @Override
     public String getServerUrl() {
-        return motechSettings.getProperty(SERVER_URL);
+        return new MotechURL(motechSettings.getProperty(SERVER_URL)).toString();
     }
+
+
+    @Override
+    public String getServerHost() {
+        return new MotechURL(motechSettings.getProperty(SERVER_URL)).getHost();
+    }
+
 
     public String getUploadSize() {
         return motechSettings.getProperty(UPLOAD_SIZE);

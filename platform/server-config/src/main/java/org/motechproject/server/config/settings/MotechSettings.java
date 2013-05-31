@@ -42,6 +42,8 @@ public interface MotechSettings {
 
     String getServerUrl();
 
+    String getServerHost();
+
     String getUploadSize();
 
     Properties getActivemqProperties();

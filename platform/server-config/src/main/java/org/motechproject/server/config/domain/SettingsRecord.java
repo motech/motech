@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
-@JsonIgnoreProperties(ignoreUnknown = true, value = { "couchDbProperties" })
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"couchDbProperties"})
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
 
     private String language;
@@ -72,7 +72,12 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     @Override
     public String getServerUrl() {
-        return serverUrl;
+        return new MotechURL(this.serverUrl).toString();
+    }
+
+    @Override
+    public String getServerHost() {
+        return new MotechURL(this.serverUrl).getHost();
     }
 
     public String getUploadSize() {
@@ -183,8 +188,8 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     private void handleMiscProperties(Properties props) {
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
-            String key = (String)entry.getKey();
-            String value = (String)entry.getValue();
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
 
             switch (key) {
                 case MotechSettings.LANGUAGE:

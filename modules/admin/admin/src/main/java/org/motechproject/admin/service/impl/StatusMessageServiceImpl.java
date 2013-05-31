@@ -3,9 +3,9 @@ package org.motechproject.admin.service.impl;
 import org.joda.time.DateTime;
 import org.motechproject.admin.domain.NotificationRule;
 import org.motechproject.admin.domain.StatusMessage;
-import org.motechproject.admin.email.EmailSender;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.repository.AllNotificationRules;
 import org.motechproject.admin.repository.AllStatusMessages;
 import org.motechproject.admin.service.StatusMessageService;
@@ -46,7 +46,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     private EventRelay eventRelay;
 
     @Autowired
-    private EmailSender emailSender;
+    private EmailNotifier emailNotifier;
 
     @Override
     public List<StatusMessage> getActiveMessages() {
@@ -231,7 +231,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
             if (notificationRule.getActionType() == ActionType.SMS) {
                 smsRecipients.add(notificationRule.getRecipient());
             } else if (notificationRule.getActionType() == ActionType.EMAIL) {
-                emailSender.sendCriticalNotificationEmail(notificationRule.getRecipient(), message);
+                emailNotifier.send(message, notificationRule.getRecipient());
             }
         }
 
