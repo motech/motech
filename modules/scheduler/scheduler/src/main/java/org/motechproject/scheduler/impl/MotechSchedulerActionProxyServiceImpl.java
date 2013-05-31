@@ -11,18 +11,20 @@ import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service("schedulerActionProxyService")
 public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerActionProxyService {
     private MotechSchedulerService scheduler;
 
     @Autowired
-    public MotechSchedulerActionProxyServiceImpl(MotechSchedulerService scheduler) {
-        this.scheduler = scheduler;
+    public MotechSchedulerActionProxyServiceImpl(MotechSchedulerService schedulerService) {
+        this.scheduler = schedulerService;
     }
 
     @Override

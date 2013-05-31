@@ -2,6 +2,7 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.impl.MotechScheduledJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -11,7 +12,6 @@ import org.quartz.SimpleTrigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -35,7 +35,7 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 public class SpringQuartzIT {
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     String groupName = "group1";
 
@@ -54,12 +54,9 @@ public class SpringQuartzIT {
                 .startAt(new Date(new Date().getTime() + 3000))
                 .build();
 
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        Scheduler scheduler = motechSchedulerFactoryBean.getQuartzSchedulerFactoryBean().getScheduler();
 
         scheduler.scheduleJob(job, trigger);
-
-        scheduler = schedulerFactoryBean.getScheduler();
-
 
         List<JobKey> jobKeys = new ArrayList<JobKey>(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)));
         List<String> jobNames = extractJobNames(jobKeys);
@@ -86,7 +83,7 @@ public class SpringQuartzIT {
 
     @Test
     public void shouldWaitForJobsToCompleteBeforeShutdown() {
-        assertTrue((Boolean) getField(schedulerFactoryBean, "waitForJobsToCompleteOnShutdown"));
+        assertTrue((Boolean) getField(motechSchedulerFactoryBean.getQuartzSchedulerFactoryBean(), "waitForJobsToCompleteOnShutdown"));
     }
 
     private List<String> extractJobNames(List<JobKey> jobKeys) {

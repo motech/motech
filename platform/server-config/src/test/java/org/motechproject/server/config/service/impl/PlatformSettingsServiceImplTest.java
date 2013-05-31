@@ -21,7 +21,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PlatformSettingsServiceImplTest {
+public class
+    PlatformSettingsServiceImplTest {
 
     @Mock
     AllSettings allSettings;

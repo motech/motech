@@ -18,6 +18,20 @@ import java.util.List;
  * \ingroup scheduler
  * Motech Scheduler Service Interface provides methods to schedule reschedule and unschedule a job
  *
+ * Set a global policy that determines trigger fire behaviour for misfired triggers.
+ * For details see quartz documentations for misfire policy
+ *
+ * do_nothing -> @see CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING
+ * fire_once_now -> @see CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW
+ * ignore -> @see CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY
+ *
+ * fire_now -> @see SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW
+ * ignore -> @see SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY
+ * reschedule_next_with_existing_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT
+ * reschedule_next_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT
+ * reschedule_now_with_existing_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT
+ * reschedule_now_with_remaining_count -> @see SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT
+ *
  * @author Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
  *

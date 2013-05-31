@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
 import org.motechproject.messagecampaign.service.MessageCampaignService;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,13 +26,13 @@ public class MessageCampaignServiceIT {
     MessageCampaignService messageCampaignService;
 
     @Autowired
-    SchedulerFactoryBean schedulerFactoryBean;
+    MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     Scheduler scheduler;
 
     @Before
     public void setup() {
-        scheduler = schedulerFactoryBean.getScheduler();
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
     @Test

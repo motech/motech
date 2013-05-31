@@ -9,7 +9,6 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

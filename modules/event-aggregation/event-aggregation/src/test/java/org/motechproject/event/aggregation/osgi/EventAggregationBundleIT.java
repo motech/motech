@@ -30,7 +30,7 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
         final Object waitLock = new Object();
         final List<List<AggregatedEvent>> aggregation = new ArrayList<>();
         final int[] receivedEvents = {0};
-        final int totalEvents = 3;
+        final int totalEvents = 2;
 
         ServiceReference eventListenerRegistryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
         EventListenerRegistry eventListenerRegistry = (EventListenerRegistry) bundleContext.getService(eventListenerRegistryReference);
@@ -69,15 +69,13 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
         params.put("foo", "bar");
         params.put("fuu", "baz");
         schedulerService.safeScheduleRepeatingJob(
-            new RepeatingSchedulableJob(new MotechEvent("eve", params), now().toDate(), null, totalEvents - 1, 6000L, false));
+            new RepeatingSchedulableJob(new MotechEvent("eve", params), now().toDate(), null, totalEvents - 1, 2000L, false));
 
         synchronized (waitLock) {
-            waitLock.wait(60000);
+            waitLock.wait(30000);
         }
-        assertEquals(3, aggregation.size());
-        assertEquals(1, aggregation.get(0).size());
-        assertEquals(1, aggregation.get(1).size());
-        assertEquals(1, aggregation.get(2).size());
+        assertEquals(1, aggregation.size());
+        assertEquals(2, aggregation.get(0).size());
     }
 
     @Override
