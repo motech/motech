@@ -121,7 +121,7 @@
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.security.annotations,
                             org.motechproject.security.service,
-                            org.motechproject.ivr.service,
+                            org.motechproject.ivr.service.contract,
                             org.springframework.security.config,
                             *
                         </Import-Package>

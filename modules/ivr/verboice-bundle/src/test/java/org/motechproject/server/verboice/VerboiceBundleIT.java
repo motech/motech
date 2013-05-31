@@ -2,7 +2,7 @@ package org.motechproject.server.verboice;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpResponse;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;

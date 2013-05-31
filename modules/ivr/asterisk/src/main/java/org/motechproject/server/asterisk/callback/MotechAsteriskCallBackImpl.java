@@ -4,11 +4,12 @@ import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;
 import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
-import org.motechproject.callflow.domain.CallDetailRecord;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.event.IVREventDelegate;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.ivr.service.contract.CallRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -91,7 +92,7 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
         MotechEvent event = callRequest.getOnFailureEvent();
 
         if (event != null) {
-            CallDetailRecord cdr = new CallDetailRecord(CallDetailRecord.Disposition.FAILED, e.getMessage());
+            CallDetailRecord cdr = new CallDetailRecord(CallDisposition.FAILED, e.getMessage());
 
             Map<String, Object> parameters = event.getParameters();
             parameters.put(IVREventDelegate.CALL_DETAIL_RECORD_KEY, cdr);
@@ -101,23 +102,23 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
 
     }
 
-    private CallDetailRecord.Disposition translateDisposition(Disposition disposition) {
-        CallDetailRecord.Disposition ret = CallDetailRecord.Disposition.UNKNOWN;
+    private CallDisposition translateDisposition(Disposition disposition) {
+        CallDisposition ret = CallDisposition.UNKNOWN;
 
         if (disposition == Disposition.BUSY) {
-            ret = CallDetailRecord.Disposition.BUSY;
+            ret = CallDisposition.BUSY;
         }
 
         if (disposition == Disposition.ANSWERED) {
-            ret = CallDetailRecord.Disposition.ANSWERED;
+            ret = CallDisposition.ANSWERED;
         }
 
         if (disposition == Disposition.NO_ANSWER) {
-            ret = CallDetailRecord.Disposition.NO_ANSWER;
+            ret = CallDisposition.NO_ANSWER;
         }
 
         if (disposition == Disposition.FAILED) {
-            ret = CallDetailRecord.Disposition.FAILED;
+            ret = CallDisposition.FAILED;
         }
 
         return ret;

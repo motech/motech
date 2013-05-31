@@ -1,5 +1,6 @@
 package org.motechproject.ivr.event;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,10 @@ import java.util.Map;
 /**
  * Extra data stored as key value pair along with call event.
  */
-public class CallEventCustomData {
+public class CallEventCustomData implements Serializable {
+
+    private static final long serialVersionUID = -6688004334051287734L;
+
     private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
     public void put(String key, String value) {

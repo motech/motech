@@ -8,7 +8,7 @@
     <import resource="classpath*:META-INF/motech/ivrKookooContext.xml"/>
 
     <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="ivrServiceKookoo"
-                  interface="org.motechproject.ivr.service.IVRService">
+                  interface="org.motechproject.ivr.service.contract.IVRService">
         <osgi:service-properties>
             <entry key="IvrProvider" value="Kookoo"/>
             <entry key="Host" value="localhost"/>

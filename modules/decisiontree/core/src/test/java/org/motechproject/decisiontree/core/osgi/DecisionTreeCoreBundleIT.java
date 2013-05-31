@@ -29,4 +29,9 @@ public class DecisionTreeCoreBundleIT extends BaseOsgiIT {
     protected List<String> getImports() {
         return Arrays.asList("org.motechproject.decisiontree.core.model");
     }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[]{"testDecisionTreeContext.xml"};
+    }
 }

@@ -112,7 +112,7 @@
                             org.ektorp.spring,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.commons.couchdb.service,
-                            org.motechproject.ivr.service,
+                            org.motechproject.ivr.service.contract,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,

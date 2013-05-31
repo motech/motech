@@ -2,9 +2,9 @@ package org.motechproject.outbox.server;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.ivr.model.CallInitiationException;
-import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.exception.CallInitiationException;
+import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.server.service.RetrievedMessagesService;
 import org.motechproject.scheduler.MotechSchedulerService;

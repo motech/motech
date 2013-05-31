@@ -22,7 +22,7 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.contract.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.motechproject.testing.utils.TestContext;
 import org.springframework.beans.factory.annotation.Autowired;

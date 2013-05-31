@@ -1,6 +1,6 @@
 package org.motechproject.ivr.osgi;
 
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

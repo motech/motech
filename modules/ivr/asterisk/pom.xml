@@ -29,11 +29,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-callflow</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-ivr-api-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -87,6 +87,7 @@
                             org.motechproject.decisiontree.core,
                             org.motechproject.decisiontree.core.model,
                             org.motechproject.decisiontree.core.repository,
+                            org.motechproject.callflow.service,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,

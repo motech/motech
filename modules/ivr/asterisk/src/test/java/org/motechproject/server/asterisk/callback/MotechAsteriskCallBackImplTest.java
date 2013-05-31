@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.contract.CallRequest;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

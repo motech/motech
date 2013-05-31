@@ -1,10 +1,7 @@
 package org.motechproject.callflow.service;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.motechproject.callflow.domain.CallDetailRecord;
-import org.motechproject.callflow.domain.CallEvent;
 import org.motechproject.callflow.domain.FlowSessionRecord;
-import org.motechproject.callflow.domain.IVREvent;
 import org.motechproject.decisiontree.core.DecisionTreeService;
 import org.motechproject.decisiontree.core.EndOfCallEvent;
 import org.motechproject.decisiontree.core.FlowSession;
@@ -16,6 +13,9 @@ import org.motechproject.decisiontree.core.model.ITransition;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.ivr.domain.CallEvent;
+import org.motechproject.ivr.domain.IVREvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
