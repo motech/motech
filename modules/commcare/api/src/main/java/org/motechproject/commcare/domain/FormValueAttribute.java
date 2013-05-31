@@ -1,6 +1,6 @@
 package org.motechproject.commcare.domain;
 
-public class FormValueAttribute implements FormNode{
+public class FormValueAttribute implements FormNode {
     private final String value;
 
     public FormValueAttribute(String value) {

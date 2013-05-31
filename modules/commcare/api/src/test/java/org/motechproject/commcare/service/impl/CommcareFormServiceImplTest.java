@@ -156,11 +156,8 @@ public class CommcareFormServiceImplTest {
         when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
         CommcareForm form = formService.retrieveForm("testForm");
         FormValueElement rootElement = form.getForm();
-        List<String> restrictedElements = new ArrayList<>();
-        restrictedElements.add("restricted");
-        restrictedElements.add("anotherRestricted");
 
-        FormNode elementByPath = rootElement.search("//subelement1/value", restrictedElements);
+        FormNode elementByPath = rootElement.searchFirst("//subelement1/value");
 
         assertEquals("4", elementByPath.getValue());
 
@@ -171,11 +168,8 @@ public class CommcareFormServiceImplTest {
         when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
         CommcareForm form = formService.retrieveForm("testForm");
         FormValueElement rootElement = form.getForm();
-        List<String> restrictedElements = new ArrayList<>();
-        restrictedElements.add("restricted");
-        restrictedElements.add("anotherRestricted");
 
-        FormNode elementByPath = rootElement.search("/form/restricted", restrictedElements);
+        FormNode elementByPath = rootElement.searchFirst("/form/restricted");
 
         assertNull(elementByPath);
 
@@ -186,27 +180,10 @@ public class CommcareFormServiceImplTest {
         when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
         CommcareForm form = formService.retrieveForm("testForm");
         FormValueElement rootElement = form.getForm().getElement("subelement1");
-        List<String> restrictedElements = new ArrayList<>();
-        restrictedElements.add("restricted");
-        restrictedElements.add("anotherRestricted");
 
-        FormNode elementByCurrentPath = rootElement.search("//validElement/value", restrictedElements);
+        FormNode elementByCurrentPath = rootElement.searchFirst("//validElement/value");
 
         assertEquals("5", elementByCurrentPath.getValue());
-    }
-
-    @Test
-    public void shouldSearchByCurrentPathWithoutRestrictedElements() {
-        when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonTestForm());
-        CommcareForm form = formService.retrieveForm("testForm");
-        FormValueElement rootElement = form.getForm().getElement("subelement1");
-        List<String> restrictedElements = new ArrayList<>();
-        restrictedElements.add("restricted");
-        restrictedElements.add("anotherRestricted");
-
-        FormNode elementByCurrentPath = rootElement.search("//restricted/value", restrictedElements);
-
-        assertNull(elementByCurrentPath);
     }
 
     @Test
@@ -214,9 +191,8 @@ public class CommcareFormServiceImplTest {
         when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonRegistrationForm());
         CommcareForm form = formService.retrieveForm("testForm");
         FormValueElement rootElement = form.getForm();
-        List<String> restrictedElements = null;
 
-        FormNode elementByPath = rootElement.search("//case/@case_id", restrictedElements);
+        FormNode elementByPath = rootElement.searchFirst("//case/@case_id");
 
         assertEquals("6bc2f8f6-b1da-4be2-98d4-1cb2d557a329", elementByPath.getValue());
 
@@ -227,9 +203,8 @@ public class CommcareFormServiceImplTest {
         when(commcareHttpClient.formRequest(Matchers.anyString())).thenReturn(jsonRegistrationForm());
         CommcareForm form = formService.retrieveForm("testForm");
         FormValueElement rootElement = form.getForm();
-        List<String> restrictedElements = null;
 
-        FormNode elementByPath = rootElement.search("//#", restrictedElements);
+        FormNode elementByPath = rootElement.searchFirst("//#");
 
         assertEquals("data", elementByPath.getValue());
 
