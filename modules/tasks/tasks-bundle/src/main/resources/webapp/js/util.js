@@ -110,28 +110,24 @@
                 }
             },
             action: {
-                select: function (scope, action) {
-                    if (!scope.task) {
-                        scope.task = {};
-                    }
-
-                    scope.task.action = {
+                select: function (scope, idx, action) {
+                    scope.task.actions[idx] = {
                         displayName: action.displayName,
-                        channelName: scope.selectedActionChannel.displayName,
-                        moduleName: scope.selectedActionChannel.moduleName,
-                        moduleVersion: scope.selectedActionChannel.moduleVersion
+                        channelName: scope.selectedActionChannel[idx].displayName,
+                        moduleName: scope.selectedActionChannel[idx].moduleName,
+                        moduleVersion: scope.selectedActionChannel[idx].moduleVersion
                     };
 
                     if (action.subject) {
-                        scope.task.action.subject = action.subject;
+                        scope.task.actions[idx].subject = action.subject;
                     }
 
                     if (action.serviceInterface && action.serviceMethod) {
-                        scope.task.action.serviceInterface = action.serviceInterface;
-                        scope.task.action.serviceMethod = action.serviceMethod;
+                        scope.task.actions[idx].serviceInterface = action.serviceInterface;
+                        scope.task.actions[idx].serviceMethod = action.serviceMethod;
                     }
 
-                    scope.selectedAction = action;
+                    scope.selectedAction[idx] = action;
 
                     if (!scope.$$phase) {
                         scope.$apply();

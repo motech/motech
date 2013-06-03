@@ -80,7 +80,7 @@
                             $scope.activities.push({
                                 task: activities[i].task,
                                 trigger: tasks[j].trigger,
-                                action: tasks[j].action,
+                                actions: tasks[j].actions,
                                 date: activities[i].date,
                                 type: activities[i].activityType,
                                 name: tasks[j].name
@@ -161,6 +161,8 @@
     widgetModule.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
         $scope.util = ManageTaskUtils;
         $scope.selectedDataSources = [];
+        $scope.selectedActionChannel = [];
+        $scope.selectedAction = [];
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
             blockUI();
@@ -172,8 +174,7 @@
                 $scope.task = {};
             } else {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                    var triggerChannel, trigger, action, actionBy = [],
-                        dataSource, dataSourceId, object, obj, i;
+                    var triggerChannel, trigger, dataSource, dataSourceId, object, obj, i;
 
                     if ($scope.task.trigger) {
                         triggerChannel = $scope.util.find({
@@ -258,43 +259,45 @@
                         angular.element($scope.util.BUILD_AREA_ID + " .accordion-body").collapse('hide');
                     });
 
-                    if ($scope.task.action) {
-                        $scope.selectedActionChannel = $scope.util.find({
+                    angular.forEach($scope.task.actions, function (info, idx) {
+                        var action, actionBy = [];
+
+                        $scope.selectedActionChannel[idx] = $scope.util.find({
                             where: $scope.channels,
                             by: {
                                 what: 'moduleName',
-                                equalTo: $scope.task.action.moduleName
+                                equalTo: info.moduleName
                             }
                         });
 
-                        if ($scope.selectedActionChannel) {
-                            if ($scope.task.action.subject) {
-                                actionBy.push({ what: 'subject', equalTo: $scope.task.action.subject });
+                        if ($scope.selectedActionChannel[idx]) {
+                            if (info.subject) {
+                                actionBy.push({ what: 'subject', equalTo: info.subject });
                             }
 
-                            if ($scope.task.action.serviceInterface && $scope.task.action.serviceMethod) {
-                                actionBy.push({ what: 'serviceInterface', equalTo: $scope.task.action.serviceInterface });
-                                actionBy.push({ what: 'serviceMethod', equalTo: $scope.task.action.serviceMethod });
+                            if (info.serviceInterface && info.serviceMethod) {
+                                actionBy.push({ what: 'serviceInterface', equalTo: info.serviceInterface });
+                                actionBy.push({ what: 'serviceMethod', equalTo: info.serviceMethod });
                             }
 
                             action = $scope.util.find({
-                                where: $scope.selectedActionChannel.actionTaskEvents,
+                                where: $scope.selectedActionChannel[idx].actionTaskEvents,
                                 by: actionBy
                             });
 
                             if (action) {
                                 $timeout(function () {
-                                    $scope.util.action.select($scope, action);
-                                    angular.element('#collapse-action').collapse('hide');
+                                    $scope.util.action.select($scope, idx, action);
+                                    angular.element('#collapse-action-' + idx).collapse('hide');
 
-                                    angular.forEach($scope.selectedAction.actionParameters, function (param) {
-                                        param.value = $scope.task.actionInputFields[param.key];
+                                    angular.forEach($scope.selectedAction[idx].actionParameters, function (param) {
+                                        param.value = info.values[param.key] || '';
                                         param.value = $scope.util.convertToView($scope, param.type, param.value);
                                     });
                                 });
                             }
                         }
-                    }
+                    });
                 });
             }
 
@@ -325,13 +328,19 @@
         };
 
         $scope.addAction = function () {
-            $scope.task.action = {};
+            if (!$scope.task.actions) {
+                $scope.task.actions = [];
+            }
+
+            $scope.task.actions.push({});
         };
 
-        $scope.removeAction = function () {
+        $scope.removeAction = function (idx) {
             motechConfirm('task.confirm.action', "header.confirm", function (val) {
                 if (val) {
-                    delete $scope.task.action;
+                    $scope.task.actions.remove(idx);
+                    $scope.selectedActionChannel.remove(idx);
+                    $scope.selectedAction.remove(idx);
 
                     if (!$scope.$$phase) {
                         $scope.$apply($scope.task);
@@ -340,13 +349,13 @@
             });
         };
 
-        $scope.selectActionChannel = function (channel) {
-            if ($scope.selectedActionChannel && $scope.selectedAction) {
+        $scope.selectActionChannel = function (idx, channel) {
+            if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
                 motechConfirm('task.confirm.action', "header.confirm", function (val) {
                     if (val) {
-                        $scope.task.action = {};
-                        $scope.selectedActionChannel = channel;
-                        delete $scope.selectedAction;
+                        $scope.task.actions[idx] = {};
+                        $scope.selectedActionChannel[idx] = channel;
+                        $scope.selectedAction.remove(idx);
 
                         if (!$scope.$$phase) {
                             $scope.$apply($scope.task);
@@ -354,23 +363,23 @@
                     }
                 });
             } else {
-                $scope.selectedActionChannel = channel;
+                $scope.selectedActionChannel[idx] = channel;
             }
         };
 
-        $scope.getActions = function () {
-            return ($scope.selectedActionChannel && $scope.selectedActionChannel.actionTaskEvents) || [];
+        $scope.getActions = function (idx) {
+            return ($scope.selectedActionChannel[idx] && $scope.selectedActionChannel[idx].actionTaskEvents) || [];
         };
 
-        $scope.selectAction = function (action) {
-            if ($scope.selectedAction) {
+        $scope.selectAction = function (idx, action) {
+            if ($scope.selectedAction[idx]) {
                 motechConfirm('task.confirm.action', "header.confirm", function (val) {
                     if (val) {
-                        $scope.util.action.select($scope, action);
+                        $scope.util.action.select($scope, idx, action);
                     }
                 });
             } else {
-                $scope.util.action.select($scope, action);
+                $scope.util.action.select($scope, idx, action);
             }
         };
 
@@ -695,9 +704,6 @@
         };
 
         $scope.save = function (enabled) {
-            var action = $scope.selectedAction;
-
-            $scope.task.actionInputFields = {};
             $scope.task.enabled = enabled;
             $scope.task.additionalData = {};
 
@@ -738,11 +744,15 @@
                 }
             });
 
-            if (action) {
+            angular.forEach($scope.selectedAction, function (action, idx) {
+                if ($scope.task.actions[idx].values === undefined) {
+                    $scope.task.actions[idx].values = {};
+                }
+
                 angular.forEach(action.actionParameters, function (param) {
-                    $scope.task.actionInputFields[param.key] = $scope.util.convertToServer($scope, param.value);
+                    $scope.task.actions[idx].values[param.key] = $scope.util.convertToServer($scope, param.value);
                 });
-            }
+            });
 
             blockUI();
 
@@ -760,7 +770,10 @@
                         });
                     })
                     .error(function (response) {
-                        delete $scope.task.actionInputFields;
+                        angular.forEach($scope.task.actions, function (action) {
+                            delete action.values;
+                        });
+
                         delete $scope.task.enabled;
                         delete $scope.task.additionalData;
 
@@ -779,7 +792,10 @@
                         window.location = "{0}#/dashboard".format(loc.substring(0, indexOf));
                     });
                 }, function (response) {
-                    delete $scope.task.actionInputFields;
+                    angular.forEach($scope.task.actions, function (action) {
+                        delete action.values;
+                    });
+
                     delete $scope.task.enabled;
                     delete $scope.task.additionalData;
 
@@ -863,19 +879,21 @@
 
                 if (task.trigger) {
                     $scope.trigger = {
-                        display: task.trigger.channelName,
-                        module: task.trigger.moduleName,
-                        version: task.trigger.moduleVersion
+                        channelName: task.trigger.channelName,
+                        moduleName: task.trigger.moduleName,
+                        moduleVersion: task.trigger.moduleVersion
                     };
                 }
 
-                if (task.action) {
-                    $scope.action = {
-                        display: task.action.channelName,
-                        module: task.action.moduleName,
-                        version: task.action.moduleVersion
-                    };
-                }
+                $scope.actions = [];
+
+                angular.forEach(task.actions, function (action) {
+                    $scope.actions.push({
+                        channelName: action.channelName,
+                        moduleName: action.moduleName,
+                        moduleVersion: action.moduleVersion
+                    });
+                });
 
                 $scope.description = task.description;
                 $scope.enabled = task.enabled;

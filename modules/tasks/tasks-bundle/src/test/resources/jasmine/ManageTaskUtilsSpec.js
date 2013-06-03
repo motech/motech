@@ -153,48 +153,46 @@
                     moduleVersion: '0.10.0'
                 };
 
-            scope.selectedActionChannel = {
+            scope.selectedActionChannel = [{
                 displayName: 'displayName',
                 moduleName: 'moduleName',
                 moduleVersion: '0.10.0'
+            }];
+
+            scope.selectedAction = [];
+
+            scope.task = {
+                actions: []
             };
 
-            utils.action.select(scope, action);
+            utils.action.select(scope, 0, action);
 
-            expect(scope.task).not.toEqual(undefined);
-
-            expect(scope.task.action).toEqual(actionInfo);
-            expect(scope.selectedAction).toEqual(action);
+            expect(scope.task.actions[0]).toEqual(actionInfo);
+            expect(scope.selectedAction[0]).toEqual(action);
 
             action.subject = 'subject';
             actionInfo.subject = 'subject';
 
-            utils.action.select(scope, action);
+            utils.action.select(scope, 0, action);
 
-            expect(scope.task).not.toEqual(undefined);
-
-            expect(scope.task.action).toEqual(actionInfo);
-            expect(scope.selectedAction).toEqual(action);
+            expect(scope.task.actions[0]).toEqual(actionInfo);
+            expect(scope.selectedAction[0]).toEqual(action);
 
             action.serviceInterface = 'serviceInterface';
 
-            utils.action.select(scope, action);
+            utils.action.select(scope, 0, action);
 
-            expect(scope.task).not.toEqual(undefined);
-
-            expect(scope.task.action).toEqual(actionInfo);
-            expect(scope.selectedAction).toEqual(action);
+            expect(scope.task.actions[0]).toEqual(actionInfo);
+            expect(scope.selectedAction[0]).toEqual(action);
 
             action.serviceMethod = 'serviceMethod';
             actionInfo.serviceInterface = 'serviceInterface';
             actionInfo.serviceMethod = 'serviceMethod';
 
-            utils.action.select(scope, action);
+            utils.action.select(scope, 0, action);
 
-            expect(scope.task).not.toEqual(undefined);
-
-            expect(scope.task.action).toEqual(actionInfo);
-            expect(scope.selectedAction).toEqual(action);
+            expect(scope.task.actions[0]).toEqual(actionInfo);
+            expect(scope.selectedAction[0]).toEqual(action);
         });
 
         it('Should select data source', function () {

@@ -6,13 +6,24 @@
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
                     <ul class="task-nav">
-                        <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{trigger.module}}" class="task-list-img" /></li>
+                        <li class="task-element">
+                            <div bs-popover="{{msg(trigger.channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{trigger.moduleName}}" class="task-list-img" />
+                            </div>
+                        </li>
                         <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                        <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{action.module}}" class="task-list-img" /></li>
+                        <li class="task-element">
+                            <div ui-if="actions.length == 1" bs-popover="{{msg(actions[0].channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
+                                <img ng-src="../tasks/api/channel/icon?moduleName={{actions[0].moduleName}}" class="task-list-img"/>
+                            </div>
+                            <div ui-if="actions.length > 1" actions-popover>
+                                <i class="icon-folder-open-alt icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
+                            </div>
+                        </li>
                         <li class="divider-vertical"></li>
                         <li class="task-element task-name">
                             <span class="name-first">{{name}}</span>
-                            <span class="name-second-history">{{msg('section.recentActivityForTask')}}&nbsp;<i class="icon-caret-right"></i>&nbsp;{{msg(trigger.display)}} - {{msg(action.display)}}</span>
+                            <span class="name-second-history">{{msg('section.recentActivityForTask')}}</span>
                         </li>
                     </ul>
 

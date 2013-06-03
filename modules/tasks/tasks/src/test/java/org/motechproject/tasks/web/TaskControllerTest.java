@@ -13,10 +13,12 @@ import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -52,13 +54,13 @@ public class TaskControllerTest {
 
     @Test
     public void shouldGetAllTasks() {
-        TaskActionInformation action = new TaskActionInformation("receive", "action1", "action", "0.15", "receive");
+        TaskActionInformation action = new TaskActionInformation("receive", "action1", "action", "0.15", "receive", new HashMap<String, String>());
         TaskEventInformation trigger = new TaskEventInformation("send", "trigger1", "trigger", "0.16", "send");
 
         List<Task> expected = new ArrayList<>();
-        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
-        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
-        expected.add(new Task("name", trigger, action, new HashMap<String, String>()));
+        expected.add(new Task("name", trigger, asList(action)));
+        expected.add(new Task("name", trigger, asList(action)));
+        expected.add(new Task("name", trigger, asList(action)));
 
         when(taskService.getAllTasks()).thenReturn(expected);
 
@@ -95,7 +97,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldSaveExistingTask() {
-        Task expected = new Task("name", null, null, new HashMap<String, String>());
+        Task expected = new Task("name", null, null);
         expected.setId(TASK_ID);
 
         controller.saveTask(expected);
@@ -105,7 +107,7 @@ public class TaskControllerTest {
 
     @Test
     public void shouldNotSaveNewTask() {
-        Task expected = new Task("name", null, null, new HashMap<String, String>());
+        Task expected = new Task("name", null, null);
 
         controller.saveTask(expected);
 
@@ -115,9 +117,9 @@ public class TaskControllerTest {
     @Test
     public void shouldSaveTaskAndRegisterHandlerForNewTrigger() {
         String subject = "trigger1";
-        TaskActionInformation action = new TaskActionInformation("send", "action1", "action", "0.15", "send");
+        TaskActionInformation action = new TaskActionInformation("send", "action1", "action", "0.15", "send", new HashMap<String, String>());
         TaskEventInformation trigger = new TaskEventInformation("trigger", "trigger1", "trigger", "0.16", subject);
-        Task expected = new Task("name", trigger, action, new HashMap<String, String>());
+        Task expected = new Task("name", trigger, asList(action));
 
         when(eventListenerRegistryService.getListeners(subject)).thenReturn(new HashSet<EventListener>());
 

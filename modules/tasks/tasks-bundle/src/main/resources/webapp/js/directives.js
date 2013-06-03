@@ -158,7 +158,7 @@
 
                                 if (emText !== undefined) {
                                     if (element.hasClass('actionField')) {
-                                        delete parent.selectedAction.actionParameters[element.data('index')].value;
+                                        delete parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value;
                                     } else if (element.hasClass('dataSourceField')) {
                                         if (dataSource) {
                                             delete dataSource.lookup.value;
@@ -176,7 +176,7 @@
                                 value = element.val() || '';
 
                                 if (element.hasClass('actionField')) {
-                                    parent.selectedAction.actionParameters[element.data('index')].value = value.insert(pos, eventKey);
+                                    parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = value.insert(pos, eventKey);
                                 } else if (element.hasClass('dataSourceField')) {
                                     if (dataSource) {
                                         dataSource.lookup.value = value.insert(pos, eventKey);
@@ -356,8 +356,9 @@
             replace : true,
             transclude: true,
             scope: {
-                data: '=',
-                index: '='
+                'data': '=',
+                'index': '@',
+                'action': '@'
             },
             compile: function (tElement, tAttrs, scope) {
                 var url = '../tasks/partials/widgets/content-editable-' + tAttrs.type.toLowerCase() + '.html',
@@ -558,7 +559,7 @@
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
                     onSelect: function (dateTex) {
-                        parent.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
+                        parent.selectedAction[$(this).data('action')].actionParameters[$(this).data('index')].value = dateTex;
                         parent.$apply();
                     }
                 });
@@ -582,7 +583,7 @@
                     useLocalTimezone: true,
                     timeFormat: 'HH:mm z',
                     onSelect: function (dateTex) {
-                        parent.selectedAction.actionParameters[$(this).data('index')].value = dateTex;
+                        parent.selectedAction[$(this).data('action')].actionParameters[$(this).data('index')].value = dateTex;
                         parent.$apply();
                     }
                 });
@@ -822,5 +823,56 @@
                 });
             }
         };
+    });
+
+    widgetModule.directive('actionSortableCursor', function () {
+       return {
+           restrict: 'A',
+           link: function (scope, element, attrs) {
+                angular.element(element).on({
+                    mousedown: function () {
+                        $(this).css('cursor', 'move');
+                    },
+                    mouseup: function () {
+                        $(this).css('cursor', 'auto');
+                    }
+                });
+           }
+       };
+    });
+
+    widgetModule.directive('actionsPopover', function () {
+       return {
+           restrict: 'A',
+           link: function (scope, element, attrs) {
+                angular.element(element).popover({
+                    placement: 'right',
+                    trigger: 'hover',
+                    html: true,
+                    content: function () {
+                        var html = angular.element('<div style="text-align: left" />'),
+                            actions = (scope.item && scope.item.task && scope.item.task.actions) || scope.actions || [];
+
+                        angular.forEach(actions, function (action) {
+                            var div = angular.element('<div />'),
+                                img = angular.element('<img />'),
+                                name = angular.element('<span style="margin-left: 5px" />');
+
+                            img.attr('src', '../tasks/api/channel/icon?moduleName=' + action.moduleName);
+                            img.addClass('task-list-img');
+
+                            name.text(scope.msg(action.channelName));
+
+                            div.append(img);
+                            div.append(name);
+
+                            html.append(div);
+                        });
+
+                        return html;
+                    }
+                });
+           }
+       };
     });
 }());

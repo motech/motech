@@ -21,21 +21,24 @@
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" /></li>
+                                    <li class="task-element">
+                                        <div bs-popover="{{msg(item.task.trigger.channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
+                                            <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" />
+                                        </div>
+                                    </li>
                                     <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
-                                    <li class="task-element"><img ng-src="../tasks/api/channel/icon?moduleName={{item.task.action.moduleName}}" class="task-list-img"/></li>
+                                    <li class="task-element">
+                                        <div ui-if="item.task.actions.length == 1" bs-popover="{{msg(item.task.actions[0].channelName)}}" data-toggle="popover" data-placement="right" data-trigger="hover">
+                                            <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
+                                        </div>
+                                        <div ui-if="item.task.actions.length > 1" actions-popover>
+                                            <i class="icon-reorder icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
+                                        </div>
+                                    </li>
                                     <li class="divider-vertical"></li>
-                                    <li class="task-element task-name">
+                                    <li class="task-element">
                                         <i class="icon-caret-right icon-fixed-width icon-large i-name"></i>
-                                        <span class="name-first">&nbsp;{{item.task.name}}</span>
-                                        <span class="name-second">
-                                            <span ng-show="item.task.trigger">
-                                                {{msg(item.task.trigger.channelName)}}
-                                            </span>
-                                            <span ng-show="item.task.action">
-                                                - {{msg(item.task.action.channelName)}}
-                                            </span>
-                                        </span>
+                                        &nbsp;{{item.task.name}}
                                     </li>
                                 </ul>
                             </a>

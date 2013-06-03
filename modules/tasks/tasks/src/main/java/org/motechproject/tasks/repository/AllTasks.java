@@ -19,8 +19,7 @@ public class AllTasks extends MotechBaseRepository<Task> {
         if (task.getId() != null) {
             Task existing = get(task.getId());
 
-            existing.setAction(task.getAction());
-            existing.setActionInputFields(task.getActionInputFields());
+            existing.setActions(task.getActions());
             existing.setAdditionalData(task.getAdditionalData());
             existing.setDescription(task.getDescription());
             existing.setEnabled(task.isEnabled());

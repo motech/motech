@@ -156,57 +156,58 @@
             scope.addAction();
 
             expect(scope.task).not.toEqual(undefined);
-            expect(scope.task.action).toEqual({});
+            expect(scope.task.actions).toEqual([{}]);
         });
 
         it('Should remove action', function () {
-            scope.removeAction();
+            scope.task.actions = [{}];
+            scope.removeAction(0);
 
             expect(angular.element('#popup_message').text()).toEqual('[task.confirm.action]');
             angular.element('#popup_ok').click();
 
-            expect(scope.task.action).toEqual(undefined);
+            expect(scope.task.actions).toEqual([]);
         });
 
         it('Should select action channel', function () {
             var channel = { displayName: 'displayName', moduleName: 'moduleName', moduleVersion: '0.10.0' };
 
-            scope.selectActionChannel(channel);
+            scope.selectActionChannel(0, channel);
 
-            expect(scope.selectedActionChannel).toEqual(channel);
+            expect(scope.selectedActionChannel[0]).toEqual(channel);
 
             channel.moduleName = 'test-module';
 
             scope.task = {
-                action: {
+                actions: [{
                     displayName: 'task action'
-                }
+                }]
             };
 
-            scope.selectedAction = {
+            scope.selectedAction[0] = {
                 displayName: 'selected action'
             };
 
-            scope.selectActionChannel(channel);
+            scope.selectActionChannel(0, channel);
 
             expect(angular.element('#popup_message').text()).toEqual('[task.confirm.action]');
             angular.element('#popup_ok').click();
 
-            expect(scope.selectedActionChannel).toEqual(channel);
-            expect(scope.task.action).toEqual({});
-            expect(scope.selectedAction).toEqual(undefined);
+            expect(scope.selectedActionChannel[0]).toEqual(channel);
+            expect(scope.task.actions[0]).toEqual({});
+            expect(scope.selectedAction[0]).toEqual(undefined);
         });
 
         it('Should get available actions', function () {
-            expect(scope.getActions()).toEqual([]);
+            expect(scope.getActions(0)).toEqual([]);
 
-            scope.selectedActionChannel = channels[1];
+            scope.selectedActionChannel[0] = channels[1];
 
-            expect(scope.getActions()).toEqual([]);
+            expect(scope.getActions(0)).toEqual([]);
 
-            scope.selectedActionChannel = channels[0];
+            scope.selectedActionChannel[0] = channels[0];
 
-            expect(scope.getActions()).toEqual(channels[0].actionTaskEvents);
+            expect(scope.getActions(0)).toEqual(channels[0].actionTaskEvents);
         });
 
         it('Should select action', function () {
@@ -218,11 +219,12 @@
                 subject : 'Action_1'
             };
 
-            scope.selectedActionChannel = channels[0];
+            scope.selectedActionChannel[0] = channels[0];
+            scope.task.actions = [];
 
-            scope.selectAction(channels[0].actionTaskEvents[0]);
+            scope.selectAction(0, channels[0].actionTaskEvents[0]);
 
-            expect(scope.task.action).toEqual(actionInfo);
+            expect(scope.task.actions[0]).toEqual(actionInfo);
         });
 
         it('Should return proper operators', function () {

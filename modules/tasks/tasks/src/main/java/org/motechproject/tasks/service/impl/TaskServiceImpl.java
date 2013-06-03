@@ -64,18 +64,21 @@ public class TaskServiceImpl implements TaskService {
         }
 
         TaskEventInformation trigger = task.getTrigger();
-        TaskActionInformation action = task.getAction();
 
         if (trigger != null) {
             errors.addAll(validateTriggerTask(task, channelService.getChannel(trigger.getModuleName())));
         }
 
-        if (action != null) {
-            errors.addAll(validateActionTask(task, channelService.getChannel(action.getModuleName())));
+        for (TaskActionInformation action : task.getActions()) {
+            errors.addAll(validateActionTask(action, channelService.getChannel(action.getModuleName())));
         }
 
         for (String providerId : task.getAdditionalData().keySet()) {
-            errors.addAll(TaskValidator.validateByProvider(task, providerService.getProviderById(providerId)));
+            TaskDataProvider provider = providerService.getProviderById(providerId);
+
+            for (TaskActionInformation action : task.getActions()) {
+                errors.addAll(TaskValidator.validateProvider(action.getValues(), task.getAdditionalData(provider.getId()), provider));
+            }
         }
 
         if (!isEmpty(errors)) {
@@ -92,21 +95,29 @@ public class TaskServiceImpl implements TaskService {
         LOG.info(String.format("Saved task: %s", task.getId()));
     }
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link #getActionEventFor(org.motechproject.tasks.domain.TaskActionInformation)}
+     */
+    @Deprecated
     @Override
-    public ActionEvent getActionEventFor(final Task task) throws ActionNotFoundException {
-        TaskActionInformation actionInfo = task.getAction();
-        Channel channel = channelService.getChannel(actionInfo.getModuleName());
+    public ActionEvent getActionEventFor(Task task) throws ActionNotFoundException {
+        return getActionEventFor(task.getAction());
+    }
+
+    @Override
+    public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException {
+        Channel channel = channelService.getChannel(taskActionInformation.getModuleName());
         ActionEvent event = null;
 
         for (ActionEvent action : channel.getActionTaskEvents()) {
-            if (action.accept(actionInfo)) {
+            if (action.accept(taskActionInformation)) {
                 event = action;
                 break;
             }
         }
 
         if (event == null) {
-            throw new ActionNotFoundException(String.format("Cant find action for task: %s", task.getId()));
+            throw new ActionNotFoundException(String.format("Cant find action on the basic of information: %s", taskActionInformation));
         }
 
         return event;
@@ -191,8 +202,8 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
 
-            if (task.getAction() != null) {
-                errors = validateActionTask(task, channel);
+            for (TaskActionInformation action : task.getActions()) {
+                errors = validateActionTask(action, channel);
 
                 if (errors != null) {
                     setTaskValidationErrors(task, errors, "validation.error.actionNotExist");
@@ -209,13 +220,15 @@ public class TaskServiceImpl implements TaskService {
 
         for (Task task : getAllTasks()) {
             if (task.getAdditionalData().containsKey(provider.getId())) {
-                Set<TaskError> errors = TaskValidator.validateByProvider(task, provider);
+                for (TaskActionInformation action : task.getActions()) {
+                    Set<TaskError> errors = TaskValidator.validateProvider(action.getValues(), task.getAdditionalData(provider.getId()), provider);
 
-                setTaskValidationErrors(task, errors,
-                        "validation.error.providerObjectFieldNotExist",
-                        "validation.error.providerObjectNotExist",
-                        "validation.error.providerObjectLookupNotExist"
-                );
+                    setTaskValidationErrors(task, errors,
+                            "validation.error.providerObjectFieldNotExist",
+                            "validation.error.providerObjectNotExist",
+                            "validation.error.providerObjectLookupNotExist"
+                    );
+                }
             }
         }
     }
@@ -231,12 +244,11 @@ public class TaskServiceImpl implements TaskService {
         return errors;
     }
 
-    private Set<TaskError> validateActionTask(Task task, Channel channel) {
+    private Set<TaskError> validateActionTask(TaskActionInformation actionInformation, Channel channel) {
         Set<TaskError> errors = null;
-        TaskActionInformation action = task.getAction();
 
-        if (channel.getModuleName().equalsIgnoreCase(action.getModuleName())) {
-            errors = new HashSet<>(TaskValidator.validateAction(task, channel));
+        if (channel.getModuleName().equalsIgnoreCase(actionInformation.getModuleName())) {
+            errors = new HashSet<>(TaskValidator.validateAction(actionInformation, channel));
         }
 
         return errors;

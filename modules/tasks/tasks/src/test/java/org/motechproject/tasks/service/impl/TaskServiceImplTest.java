@@ -77,34 +77,28 @@ public class TaskServiceImplTest {
 
     @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutTrigger() {
-        Map<String, String> map = new HashMap<>();
-        map.put("phone", "12345");
-
-        Task t = new Task("name", null, action, map);
+        Task t = new Task("name", null, asList(action));
 
         taskService.save(t);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutAction() {
-        Map<String, String> map = new HashMap<>();
-        map.put("phone", "12345");
-
-        Task t = new Task("name", trigger, null, map);
+        Task t = new Task("name", trigger, null);
 
         taskService.save(t);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithoutName() {
-        Task t = new Task(null, trigger, action, null);
+        Task t = new Task(null, trigger, asList(action));
 
         taskService.save(t);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldNotSaveTaskWithNameWithContainsOnlyWhitespaces() {
-        Task t = new Task("     ", trigger, action, null);
+        Task t = new Task("     ", trigger, asList(action));
 
         taskService.save(t);
     }
@@ -117,7 +111,9 @@ public class TaskServiceImplTest {
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
         additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
 
-        Task task = new Task("name", trigger, action, map, null, additionalData, true);
+        action.setValues(map);
+
+        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
@@ -133,7 +129,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldSaveTaskWithEmptyActionInputFields() {
-        Task task = new Task("name", trigger, action, new HashMap<String, String>(), null, null, false);
+        Task task = new Task("name", trigger, asList(action), null, null, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
@@ -157,7 +153,9 @@ public class TaskServiceImplTest {
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
         additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
 
-        Task task = new Task("name", trigger, action, map, null, additionalData, true);
+        action.setValues(map);
+
+        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
 
         ActionEvent actionEvent = new ActionEvent("receive", "RECEIVE", "", null);
@@ -183,7 +181,7 @@ public class TaskServiceImplTest {
 
         when(channelService.getChannel("test-action")).thenReturn(c);
 
-        taskService.getActionEventFor(new Task(null, null, action, null));
+        taskService.getActionEventFor(action);
     }
 
     @Test(expected = ActionNotFoundException.class)
@@ -193,7 +191,7 @@ public class TaskServiceImplTest {
 
         when(channelService.getChannel("test-action")).thenReturn(c);
 
-        taskService.getActionEventFor(new Task(null, null, action, null));
+        taskService.getActionEventFor(action);
     }
 
     @Test(expected = ActionNotFoundException.class)
@@ -206,12 +204,12 @@ public class TaskServiceImplTest {
 
         when(channelService.getChannel("test-action")).thenReturn(c);
 
-        taskService.getActionEventFor(new Task(null, null, action, null));
+        taskService.getActionEventFor(action);
     }
 
     @Test
     public void shouldFindActionForGivenTask() throws ActionNotFoundException {
-        Task t = new Task("name", trigger, action, new HashMap<String, String>());
+        Task task = new Task("name", trigger, asList(action));
 
         ActionEvent expected = new ActionEvent();
         expected.setSubject(action.getSubject());
@@ -222,7 +220,23 @@ public class TaskServiceImplTest {
 
         when(channelService.getChannel("test-action")).thenReturn(c);
 
-        TaskEvent actual = taskService.getActionEventFor(t);
+        TaskEvent actual = taskService.getActionEventFor(task);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldFindActionForGivenInformation() throws ActionNotFoundException {
+        ActionEvent expected = new ActionEvent();
+        expected.setSubject(action.getSubject());
+        expected.setDisplayName("Receive");
+
+        Channel c = new Channel();
+        c.setActionTaskEvents(asList(expected));
+
+        when(channelService.getChannel("test-action")).thenReturn(c);
+
+        TaskEvent actual = taskService.getActionEventFor(action);
 
         assertEquals(expected, actual);
     }
@@ -243,7 +257,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotFindTasksForGivenTrigger() {
-        Task t = new Task("name", action, null, new HashMap<String, String>());
+        Task t = new Task("name", action, null);
 
         TriggerEvent triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(trigger.getSubject());
@@ -258,7 +272,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldFindTasksForGivenTrigger() {
-        Task t = new Task("name", trigger, action, new HashMap<String, String>());
+        Task t = new Task("name", trigger, asList(action));
 
         TriggerEvent triggerEvent = new TriggerEvent();
         triggerEvent.setSubject("SEND");
@@ -362,7 +376,9 @@ public class TaskServiceImplTest {
         Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
         additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
 
-        Task task = new Task("name", trigger, action, map, null, additionalData, true);
+        action.setValues(map);
+
+        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
         when(allTasks.getAll()).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
