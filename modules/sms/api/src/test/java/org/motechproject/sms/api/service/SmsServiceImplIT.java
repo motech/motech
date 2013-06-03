@@ -30,7 +30,6 @@ public class SmsServiceImplIT {
     EventListenerRegistry eventListenerRegistry;
 
     @Test
-    @Ignore("fails randomly on fufu")
     public void shouldRaiseSendSmsEvent() throws InterruptedException {
         try {
             TestEventListener listener = new TestEventListener("listener");
