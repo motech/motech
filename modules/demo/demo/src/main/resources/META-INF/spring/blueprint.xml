@@ -30,21 +30,21 @@
         </constructor-arg>
     </bean>
 
-    <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
+    <osgi:reference id="schedulerServiceOsgi"
                     interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+    <osgi:reference id="eventRelayOsgi"
                     interface="org.motechproject.event.listener.EventRelay" />
 
-    <osgi:reference cardinality="0..1" id="decisionTreeServiceOsgi"
+    <osgi:reference id="decisionTreeServiceOsgi"
                     interface="org.motechproject.decisiontree.core.DecisionTreeService"/>
 
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
+    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" availability="optional"/>
 
     <bean id="eventAnnotationBeanPostProcessor"
               class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">

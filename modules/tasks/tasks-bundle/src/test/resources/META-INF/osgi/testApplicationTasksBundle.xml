@@ -27,7 +27,7 @@
 
     <osgi:reference id="dataProviderServiceOsgi" interface="org.motechproject.tasks.service.TaskDataProviderService"/>
 
-    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" cardinality="0..N">
+    <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
         <osgi:reference-listener>
             <bean class="org.motechproject.tasks.util.ManagementDataProvider">
                 <constructor-arg ref="dataProviderServiceOsgi"/>

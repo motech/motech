@@ -11,11 +11,11 @@
     <osgi:service id="eventAggregationServiceOsgi" auto-export="interfaces" ref="eventAggregationServiceImpl"
                   interface="org.motechproject.event.aggregation.service.EventAggregationService"/>
 
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" cardinality="0..1" />
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
 
     <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" cardinality="0..1" />
+    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 

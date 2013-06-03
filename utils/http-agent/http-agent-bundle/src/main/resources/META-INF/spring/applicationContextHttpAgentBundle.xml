@@ -13,10 +13,10 @@
     <osgi:service id="httpAgentServiceOsgi" auto-export="interfaces" ref="httpAgentImpl"
                   interface="org.motechproject.http.agent.service.HttpAgent" />
 
-    <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
+    <osgi:reference id="schedulerServiceOsgi"
                     interface="org.motechproject.scheduler.MotechSchedulerService" />
 
-    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+    <osgi:reference id="eventRelayOsgi"
                     interface="org.motechproject.event.listener.EventRelay" />
 
 </beans>

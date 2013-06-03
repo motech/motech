@@ -9,16 +9,16 @@
     <osgi:service id="atomFeedServiceOsgi" auto-export="interfaces" ref="atomFeedService"
         interface="org.motechproject.openmrs.atomfeed.service.AtomFeedService" />
 
-    <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
+    <osgi:reference id="schedulerServiceOsgi"
         interface="org.motechproject.scheduler.MotechSchedulerService" />
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
-    <osgi:reference id="eventRelayOsgi" cardinality="1..1" interface="org.motechproject.event.listener.EventRelay" />
+    <osgi:reference id="eventRelayOsgi" interface="org.motechproject.event.listener.EventRelay" />
 
     <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
+    <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
     <bean id="alertDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
