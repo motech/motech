@@ -17,6 +17,7 @@
             <list>
                 <value>classpath:commcareUserApi.properties</value>
                 <value>classpath:caseEventStrategy.properties</value>
+                <value>classpath:commcareConnect.properties</value>
             </list>
         </property>
         <property name="moduleName" value="commcare-api"/>

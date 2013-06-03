@@ -1,54 +1,107 @@
-<div class="commcare">
-    <form id="commcareSettingsForm" name="commcareSettingsForm" class="form-horizontal" novalidate>
-        <h3 class="control-group">{{msg('settings.section.accountSettings')}}</h3>
-        <div ng-class="cssClass('commcareBaseUrl')">
-            <label class="control-label" for="commcareBaseUrl">{{msg('settings.label.commcareBaseUrl')}}</label>
+<form class="commcare form-horizontal" novalidate>
 
-            <div class="controls">
-                <input ng-model="settings.commcareBaseUrl" type="text" id="commcareBaseUrl" placeholder="{{msg('settings.label.commcareBaseUrl')}}" required/>
-                <span ng-hide="hasValue('commcareBaseUrl')" class="form-hint">{{msg('settings.error.commcareBaseUrl')}}</span>
+    <h3 class="control-group">{{msg('settings.section.accountSettings')}}</h3>
+    <div class="control-group">
+        <input ng-disabled="!canMakeConnection()" ng-click="verify()" type="button" value="{{msg('main.verify')}}" class="btn btn-primary"/>
+        <div ng-show="isVerifyError()" class="connection-status connection-error">
+            {{verifyErrorMessage}}
+        </div>
+        <div ng-show="isVerifySuccess()" class="connection-status connection-success">
+            <div>
+                <span class="icon-ok"/>
+                <span>{{verifySuccessMessage}}</span>
+            </div>
+            <div ng-repeat="permission in permissions" class="{{permission.granted && 'permission-present' || 'permission-absent'}}">
+                Motech {{permission.granted && 'can' || 'cannot'}} {{ permission.permissionName}}
             </div>
         </div>
-        <div ng-class="cssClass('commcareDomain')">
-            <label class="control-label" for="commcareDomain">{{msg('settings.label.commcareDomain')}}</label>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="commcareBaseUrl">{{msg('settings.label.commcareBaseUrl')}}</label>
 
-            <div class="controls">
-                <input ng-model="settings.commcareDomain" type="text" id="commcareDomain" placeholder="{{msg('settings.label.commcareDomain')}}" required/>
-                <span ng-hide="hasValue('commcareDomain')" class="form-hint">{{msg('settings.error.commcareDomain')}}</span>
+        <div class="controls">
+            <input ng-model="settings.accountSettings.commcareBaseUrl" autosave="change" type="text" id="commcareBaseUrl" placeholder="{{msg('settings.label.commcareBaseUrl')}}" />
+            <div class="form-hints">
+                <span ng-hide="hasAccountValue('commcareBaseUrl')" class="form-hint-error">{{msg('settings.error.commcareBaseUrl')}}</span>
             </div>
         </div>
-        <div ng-class="cssClass('username')">
-            <label class="control-label" for="username">{{msg('settings.label.username')}}</label>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="commcareDomain">{{msg('settings.label.commcareDomain')}}</label>
 
-            <div class="controls">
-                <input ng-model="settings.username" type="text" id="username" placeholder="{{msg('settings.label.username')}}" required/>
-                <span ng-hide="hasValue('username')" class="form-hint">{{msg('settings.error.username')}}</span>
+        <div class="controls">
+            <input ng-model="settings.accountSettings.commcareDomain" autosave="change" type="text" id="commcareDomain" placeholder="{{msg('settings.label.commcareDomain')}}" required/>
+            <div class="form-hints">
+                <span ng-hide="hasAccountValue('commcareDomain')" class="form-hint-error">{{msg('settings.error.commcareDomain')}}</span>
             </div>
         </div>
-        <div ng-class="cssClass('password')">
-            <label class="control-label" for="password">{{msg('settings.label.password')}}</label>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="username">{{msg('settings.label.username')}}</label>
 
-            <div class="controls">
-                <input ng-model="settings.password" type="password" id="password" placeholder="{{msg('settings.label.password')}}" required/>
-                <span ng-hide="hasValue('password')" class="form-hint">{{msg('settings.error.password')}}</span>
+        <div class="controls">
+            <input ng-model="settings.accountSettings.username" autosave="change" type="text" id="username" placeholder="{{msg('settings.label.username')}}" required/>
+            <div class="form-hints">
+                <span ng-hide="hasAccountValue('username')" class="form-hint-error">{{msg('settings.error.username')}}</span>
             </div>
         </div>
-        <h3 class="control-group">{{msg('settings.section.eventForwarding')}}</h3>
-        <div ng-class="cssClass('eventStrategy')">
-            <label class="control-label">
-                {{msg('settings.label.eventStrategy')}}
-                <i class="icon-info-sign" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('settings.tooltip.eventStrategy')}}"></i>
-            </label>
-            <div class="controls">
-                <select ng-model="settings.eventStrategy" ng-options="option for option in eventStrategyOptions" required ng-disabled="!hasAccountSettings()">
-                    <option value="">-- {{msg('main.select')}} --</option>
-                </select>
-                <span ng-hide="hasValue('eventStrategy')" class="form-hint">{{msg('settings.error.eventStrategy')}}</span>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="password">{{msg('settings.label.password')}}</label>
+
+        <div class="controls">
+            <input ng-model="settings.accountSettings.password" autosave="change" type="password" id="password" placeholder="{{msg('settings.label.password')}}" required/>
+            <div class="form-hints">
+                <span ng-hide="hasAccountValue('password')" class="form-hint-error">{{msg('settings.error.password')}}</span>
             </div>
         </div>
+    </div>
 
-        <div class="form-actions">
-            <input ng-disabled="commcareSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('main.submit')}}" class="btn btn-primary"/>
+    <h3 class="control-group">{{msg('settings.section.eventForwarding')}}</h3>
+    <div class="control-group">
+        <label class="control-label">
+            {{msg('settings.label.eventStrategy')}}
+            <i class="icon-info-sign" ui-jq="tooltip" ui-options="{placement:'bottom'}" data-original-title="{{msg('settings.tooltip.eventStrategy')}}"></i>
+        </label>
+        <div class="controls">
+            <select ng-model="settings.eventStrategy" autosave="change" ng-options="option for option in eventStrategyOptions" required ng-disabled="!isVerifySuccess()">
+                <option value="">-- {{msg('main.select')}} --</option>
+            </select>
+            <div class="form-hints">
+                <span ng-hide="hasValue('eventStrategy')" class="form-hint-error">{{msg('settings.error.eventStrategy')}}</span>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+
+    <h3 class="control-group">{{msg('settings.section.dataForwarding')}}</h3>
+    <div class="control-group">
+        <label class="control-label">{{msg('settings.label.forwardForms')}}</label>
+        <div class="controls">
+            <div class="switch switch-small" switch=".forwardFormsInput" autosave="switch-change" id="forwardFormsSwitch">
+                <input type="checkbox" ng-model="settings.forwardForms" class="forwardFormsInput" />
+            </div>
+            <div class="form-hints"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">{{msg('settings.label.forwardCases')}}</label>
+        <div class="controls">
+            <div class="switch-small" switch=".forwardCasesInput" autosave="switch-change" id="forwardCasesSwitch">
+                <input type="checkbox" ng-model="settings.forwardCases" class="forwardCasesInput" />
+            </div>
+            <div class="form-hints"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">{{msg('settings.label.forwardFormStubs')}}</label>
+        <div class="controls">
+            <div class="switch-small" switch=".forwardFormStubsInput" autosave="switch-change" id="forwardFormStubsSwitch">
+                <input type="checkbox" ng-model="settings.forwardFormStubs" class="forwardFormStubsInput" />
+            </div>
+            <div class="form-hints"/>
+        </div>
+    </div>
+
+</form>
