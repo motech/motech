@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Factory bean to create an HTTP client with BASIC authentication
@@ -19,7 +20,7 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
     private HttpClient httpClient;
     private SettingsFacade settingsFacade;
 
-    public HttpClientFactoryBean(SettingsFacade settingsFacade) {
+    public HttpClientFactoryBean(@Qualifier("openmrsWsSettings") SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 

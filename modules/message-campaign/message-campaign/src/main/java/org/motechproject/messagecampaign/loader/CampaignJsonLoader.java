@@ -7,6 +7,7 @@ import org.motechproject.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.messagecampaign.web.model.CampaignDto;
 import org.motechproject.server.config.SettingsFacade;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,7 +83,7 @@ public class CampaignJsonLoader {
         this.messageCampaignsJsonFile = messageCampaignsJsonFile;
     }
 
-    public void setSettings(SettingsFacade settings) {
+    public void setSettings(@Qualifier("messageCampaignSettings") SettingsFacade settings) {
         this.settings = settings;
     }
 

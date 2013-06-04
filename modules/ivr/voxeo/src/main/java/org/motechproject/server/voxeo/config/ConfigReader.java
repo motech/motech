@@ -4,6 +4,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class ConfigReader {
     private SettingsFacade settings;
 
     @Autowired
-    public void setSettings(SettingsFacade settings) {
+    public void setSettings(@Qualifier("voxeoSettings") SettingsFacade settings) {
         this.settings = settings;
     }
 
