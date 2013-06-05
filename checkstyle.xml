@@ -36,9 +36,6 @@
         <module name="ParameterAssignment">
             <property name="severity" value="error"/>
         </module>
-        <module name="DoubleCheckedLocking">
-            <property name="severity" value="error"/>
-        </module>
         <module name="TypecastParenPad">
             <property name="severity" value="warning"/>
             <property name="tokens" value="TYPECAST,RPAREN"/>
@@ -156,7 +153,7 @@
             <property name="severity" value="warning"/>
         </module>
         <module name="InnerAssignment">
-            <property name="severity" value="warning"/>
+            <property name="severity" value="error"/>
             <property name="tokens" value="ASSIGN,BAND_ASSIGN,BOR_ASSIGN,BSR_ASSIGN,BXOR_ASSIGN,DIV_ASSIGN,MINUS_ASSIGN,MOD_ASSIGN,PLUS_ASSIGN,SL_ASSIGN,SR_ASSIGN,STAR_ASSIGN"/>
         </module>
         <module name="ModifiedControlVariable">
