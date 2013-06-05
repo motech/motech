@@ -2,25 +2,6 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-            http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
-
-    <import resource="classpath*:META-INF/motech/applicationEventAggregation.xml" />
-
-    <osgi:service id="eventAggregationServiceOsgi" auto-export="interfaces" ref="eventAggregationServiceImpl"
-                  interface="org.motechproject.event.aggregation.service.EventAggregationService"/>
-
-    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
-
-    <osgi:reference id="eventListenerRegistryService" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
-    <osgi:reference id="schedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
-
-    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
-
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">
-        <property name="eventListenerRegistry" ref="eventListenerRegistryService"/>
-    </bean>
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 </beans>

@@ -49,7 +49,7 @@ public class AllAggregatedEventsLoadTest {
         assertEquals(3, aggregations.size());
         int eventCount = 0;
         for (Aggregation aggregation : aggregations)
-            eventCount += aggregation.getEvents().size();
+            eventCount += aggregation.getEventRecords().size();
         assertEquals(80, eventCount);
     }
 

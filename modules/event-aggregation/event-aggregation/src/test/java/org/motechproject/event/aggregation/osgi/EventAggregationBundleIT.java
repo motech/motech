@@ -15,7 +15,6 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,24 +26,19 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
 
     public void testEventAggregationScervice() throws InterruptedException {
 
-        final Object waitLock = new Object();
-        final List<List<AggregatedEvent>> aggregation = new ArrayList<>();
-        final int[] receivedEvents = {0};
-        final int totalEvents = 2;
+        final List<AggregatedEvent> aggregatedEvents = new ArrayList<>();
+        final int totalEvents = 3;
 
         ServiceReference eventListenerRegistryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
         EventListenerRegistry eventListenerRegistry = (EventListenerRegistry) bundleContext.getService(eventListenerRegistryReference);
+        String aggregationEvent = id("agg");
         eventListenerRegistry.registerListener(new EventListener() {
-
             @Override
             public void handle(MotechEvent event) {
-                List<AggregatedEvent> aggregatedEvents = (List<AggregatedEvent>) event.getParameters().get("aggregated_events");
-                aggregation.add(aggregatedEvents);
-                receivedEvents[0] += aggregatedEvents.size();
-                System.out.println("got " + aggregatedEvents.size() + " events at " + new Date());
-                if (receivedEvents[0] >= totalEvents) {
-                    synchronized (waitLock) {
-                        waitLock.notify();
+                synchronized (aggregatedEvents) {
+                    aggregatedEvents.addAll((List<AggregatedEvent>) event.getParameters().get("aggregated_events"));
+                    if (aggregatedEvents.size() >= totalEvents) {
+                        aggregatedEvents.notify();
                     }
                 }
             }
@@ -53,7 +47,7 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
             public String getIdentifier() {
                 return "test";
             }
-        }, "agg");
+        }, aggregationEvent);
 
         ServiceReference schedulerServiceReference = bundleContext.getServiceReference(MotechSchedulerService.class.getName());
         MotechSchedulerService schedulerService = (MotechSchedulerService) bundleContext.getService(schedulerServiceReference);
@@ -61,21 +55,31 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
 
         ServiceReference eventAggregationServiceReference = bundleContext.getServiceReference(EventAggregationService.class.getName());
         EventAggregationService eventAggregationService = (EventAggregationService) bundleContext.getService(eventAggregationServiceReference);
+        assertNotNull(eventAggregationService);
 
+        String eventSubject = id("testEvent");
         eventAggregationService.createRule(
-            new AggregationRuleRequest("test_aggregation", null, "eve", asList("foo"), new PeriodicAggregationRequest("5 seconds", now()), "agg", AggregationState.Running));
+            new AggregationRuleRequest("test_aggregation", "test aggregation subscription",
+                eventSubject, asList("foo"),
+                new PeriodicAggregationRequest("2 seconds", now()),
+                aggregationEvent, AggregationState.Running));
 
         Map<String, Object> params = new HashMap<>();
         params.put("foo", "bar");
         params.put("fuu", "baz");
+        params.put(MotechSchedulerService.JOB_ID_KEY, id("simulatedEventJob"));
+        final MotechEvent motechEvent = new MotechEvent(eventSubject, params);
         schedulerService.safeScheduleRepeatingJob(
-            new RepeatingSchedulableJob(new MotechEvent("eve", params), now().toDate(), null, totalEvents - 1, 2000L, false));
+                new RepeatingSchedulableJob(motechEvent, now().plusSeconds(2).toDate(), null, totalEvents - 1, 1000L, false));
 
-        synchronized (waitLock) {
-            waitLock.wait(30000);
+        synchronized (aggregatedEvents) {
+            aggregatedEvents.wait(30000);
         }
-        assertEquals(1, aggregation.size());
-        assertEquals(2, aggregation.get(0).size());
+        assertEquals(totalEvents, aggregatedEvents.size());
+    }
+
+    private String id(String s) {
+        return format("%s_%d", now().getMillis(), s);
     }
 
     @Override

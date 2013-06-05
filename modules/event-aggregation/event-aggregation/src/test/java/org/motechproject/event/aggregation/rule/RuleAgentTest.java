@@ -1,7 +1,7 @@
 package org.motechproject.event.aggregation.rule;
 
 import org.junit.Test;
-import org.motechproject.event.aggregation.service.AggregatedEventResult;
+import org.motechproject.event.aggregation.model.AggregatedEventRecord;
 
 import java.util.HashMap;
 
@@ -22,9 +22,9 @@ public class RuleAgentTest {
         try {
             fakeNow(newDateTime(2010, 10, 1, 10, 15, 0));
 
-            AggregatedEventResult aggregatedEvent1 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent1 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent1, "timeStamp", newDateTime(2010, 10, 1, 10, 0, 0));
-            AggregatedEventResult aggregatedEvent2 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent2 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent2, "timeStamp", newDateTime(2010, 10, 1, 10, 6, 0));
 
             ruleAgent = new RuleAgent("firstEvent.timeStamp.isBefore(now.minusMinutes(10))", asList(aggregatedEvent1, aggregatedEvent2));
@@ -40,9 +40,9 @@ public class RuleAgentTest {
         try {
             fakeNow(newDateTime(2010, 10, 1, 10, 5, 0));
 
-            AggregatedEventResult aggregatedEvent1 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent1 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent1, "timeStamp", newDateTime(2010, 10, 1, 10, 0, 0));
-            AggregatedEventResult aggregatedEvent2 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent2 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent2, "timeStamp", newDateTime(2010, 10, 1, 10, 6, 0));
 
             ruleAgent = new RuleAgent("firstEvent.timeStamp.isBefore(now.minusMinutes(10))", asList(aggregatedEvent1, aggregatedEvent2));
@@ -58,9 +58,9 @@ public class RuleAgentTest {
         try {
             fakeNow(newDateTime(2010, 10, 1, 10, 20, 0));
 
-            AggregatedEventResult aggregatedEvent1 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent1 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent1, "timeStamp", newDateTime(2010, 10, 1, 10, 4, 0));
-            AggregatedEventResult aggregatedEvent2 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent2 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent2, "timeStamp", newDateTime(2010, 10, 1, 10, 9, 0));
 
             ruleAgent = new RuleAgent("lastEvent.timeStamp.isBefore(now.minusMinutes(10))", asList(aggregatedEvent1, aggregatedEvent2));
@@ -76,9 +76,9 @@ public class RuleAgentTest {
         try {
             fakeNow(newDateTime(2010, 10, 1, 10, 20, 0));
 
-            AggregatedEventResult aggregatedEvent1 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent1 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent1, "timeStamp", newDateTime(2010, 10, 1, 10, 4, 0));
-            AggregatedEventResult aggregatedEvent2 = new AggregatedEventResult(new HashMap<String, Object>(), new HashMap<String, Object>());
+            AggregatedEventRecord aggregatedEvent2 = new AggregatedEventRecord("", new HashMap<String, Object>(), new HashMap<String, Object>());
             setField(aggregatedEvent2, "timeStamp", newDateTime(2010, 10, 1, 10, 12, 0));
 
             ruleAgent = new RuleAgent("lastEvent.timeStamp.isBefore(now.minusMinutes(10))", asList(aggregatedEvent1, aggregatedEvent2));

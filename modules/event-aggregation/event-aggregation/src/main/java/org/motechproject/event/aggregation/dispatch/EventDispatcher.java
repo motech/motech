@@ -30,7 +30,7 @@ public class EventDispatcher {
         List<Aggregation> aggregations = allAggregatedEvents.findAllAggregations(aggregationRule.getName());
         for (Aggregation aggregation : aggregations) {
             eventRelay.sendEventMessage(new AggregationEvent(aggregationRule, aggregation).toMotechEvent());
+            allAggregatedEvents.removeByAggregation(aggregation);
         }
-        allAggregatedEvents.removeByAggregationRule(aggregationRule.getName());
     }
 }

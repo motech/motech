@@ -131,23 +131,23 @@ public class AllAggregatedEventsIT {
         assertEquals(asList("aggregation", "aggregation", "aggregation"), extract(aggregations, on(Aggregation.class).getAggregationRuleName()));
 
         Aggregation aggregate = aggregations.get(0);
-        assertEquals("123", aggregate.getEvents().get(0).getAggregationParams().get("flw_id"));
-        assertEquals("m",   aggregate.getEvents().get(0).getAggregationParams().get("sex"));
-        assertEquals(2,     aggregate.getEvents().size());
-        assertEquals("fii", aggregate.getEvents().get(0).getNonAggregationParams().get("data2"));
-        assertEquals("foo", aggregate.getEvents().get(1).getNonAggregationParams().get("data1"));
+        assertEquals("123", aggregate.getEventRecords().get(0).getAggregationParams().get("flw_id"));
+        assertEquals("m",   aggregate.getEventRecords().get(0).getAggregationParams().get("sex"));
+        assertEquals(2,     aggregate.getEventRecords().size());
+        assertEquals("fii", aggregate.getEventRecords().get(0).getNonAggregationParams().get("data2"));
+        assertEquals("foo", aggregate.getEventRecords().get(1).getNonAggregationParams().get("data1"));
 
         aggregate = aggregations.get(1);
-        assertEquals("234", aggregate.getEvents().get(0).getAggregationParams().get("flw_id"));
-        assertEquals("f",   aggregate.getEvents().get(0).getAggregationParams().get("sex"));
-        assertEquals(1,     aggregate.getEvents().get(0).getNonAggregationParams().size());
-        assertEquals("fuu", aggregate.getEvents().get(0).getNonAggregationParams().get("data"));
+        assertEquals("234", aggregate.getEventRecords().get(0).getAggregationParams().get("flw_id"));
+        assertEquals("f",   aggregate.getEventRecords().get(0).getAggregationParams().get("sex"));
+        assertEquals(1,     aggregate.getEventRecords().get(0).getNonAggregationParams().size());
+        assertEquals("fuu", aggregate.getEventRecords().get(0).getNonAggregationParams().get("data"));
 
         aggregate = aggregations.get(2);
-        assertEquals("234", aggregate.getEvents().get(0).getAggregationParams().get("flw_id"));
-        assertEquals("m",   aggregate.getEvents().get(0).getAggregationParams().get("sex"));
-        assertEquals(1,     aggregate.getEvents().get(0).getNonAggregationParams().size());
-        assertEquals("fee", aggregate.getEvents().get(0).getNonAggregationParams().get("data"));
+        assertEquals("234", aggregate.getEventRecords().get(0).getAggregationParams().get("flw_id"));
+        assertEquals("m",   aggregate.getEventRecords().get(0).getAggregationParams().get("sex"));
+        assertEquals(1,     aggregate.getEventRecords().get(0).getNonAggregationParams().size());
+        assertEquals("fee", aggregate.getEventRecords().get(0).getNonAggregationParams().get("data"));
     }
 
     @Test
@@ -184,16 +184,16 @@ public class AllAggregatedEventsIT {
         assertEquals(2, aggregations.size());
 
         Aggregation aggregate = aggregations.get(0);
-        assertEquals("123", aggregate.getEvents().get(0).getAggregationParams().get("flw_id"));
-        assertEquals("m",   aggregate.getEvents().get(0).getAggregationParams().get("sex"));
-        assertEquals(1,     aggregate.getEvents().size());
-        assertEquals("foo", aggregate.getEvents().get(0).getNonAggregationParams().get("data1"));
+        assertEquals("123", aggregate.getEventRecords().get(0).getAggregationParams().get("flw_id"));
+        assertEquals("m",   aggregate.getEventRecords().get(0).getAggregationParams().get("sex"));
+        assertEquals(1,     aggregate.getEventRecords().size());
+        assertEquals("foo", aggregate.getEventRecords().get(0).getNonAggregationParams().get("data1"));
 
         aggregate = aggregations.get(1);
-        assertEquals("234", aggregate.getEvents().get(0).getAggregationParams().get("flw_id"));
-        assertEquals("m",   aggregate.getEvents().get(0).getAggregationParams().get("sex"));
-        assertEquals(1,     aggregate.getEvents().get(0).getNonAggregationParams().size());
-        assertEquals("fee", aggregate.getEvents().get(0).getNonAggregationParams().get("data"));
+        assertEquals("234", aggregate.getEventRecords().get(0).getAggregationParams().get("flw_id"));
+        assertEquals("m",   aggregate.getEventRecords().get(0).getAggregationParams().get("sex"));
+        assertEquals(1,     aggregate.getEventRecords().get(0).getNonAggregationParams().size());
+        assertEquals("fee", aggregate.getEventRecords().get(0).getNonAggregationParams().get("data"));
     }
 
     @Test
@@ -238,5 +238,31 @@ public class AllAggregatedEventsIT {
 
         allAggregatedEvents.removeByAggregationRule("aggregation");
         assertEquals(0, allAggregatedEvents.findByAggregationRule("aggregation").size());
+    }
+
+    @Test
+    public void shouldRemoveByAggregation() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("foo", "bar");
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+
+        params = new HashMap<>();
+        params.put("foo", "bar");
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>()));
+
+        params = new HashMap<>();
+        params.put("foo", "bor");
+        allAggregatedEvents.add(new AggregatedEventRecord("another_aggregation", params, new HashMap<String, Object>()));
+
+        List<Aggregation> fetchedAggregations = allAggregatedEvents.findAllAggregations("aggregation");
+        assertEquals(1, fetchedAggregations.size());
+        assertEquals(2, fetchedAggregations.get(0).getEventRecords().size());
+
+        params = new HashMap<>();
+        params.put("foo", "bar");
+        allAggregatedEvents.add(new AggregatedEventRecord("aggregation", params, new HashMap<String, Object>(), true));
+
+        allAggregatedEvents.removeByAggregation(fetchedAggregations.get(0));
+        assertEquals(1, allAggregatedEvents.findByAggregationRule("aggregation").size());
     }
 }

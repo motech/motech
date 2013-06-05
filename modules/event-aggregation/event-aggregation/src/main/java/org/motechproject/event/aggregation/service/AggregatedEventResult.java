@@ -7,8 +7,6 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 import java.util.Map;
 
-import static org.motechproject.commons.date.util.DateUtil.now;
-
 
 public class AggregatedEventResult implements AggregatedEvent, Serializable {
 
@@ -26,11 +24,11 @@ public class AggregatedEventResult implements AggregatedEvent, Serializable {
     private AggregatedEventResult() {
     }
 
-    public AggregatedEventResult(Map<String, Object> aggregationParams, Map<String, Object> nonAggregationParams) {
+    public AggregatedEventResult(Map<String, Object> aggregationParams, Map<String, Object> nonAggregationParams, DateTime timeStamp) {
         this();
         this.aggregationParams = aggregationParams;
         this.nonAggregationParams = nonAggregationParams;
-        this.timeStamp = now();
+        this.timeStamp = timeStamp;
     }
 
     @JsonIgnore

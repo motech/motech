@@ -3,6 +3,7 @@ package org.motechproject.event.aggregation.dispatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.event.aggregation.model.AggregatedEventRecord;
 import org.motechproject.event.aggregation.model.Aggregation;
 import org.motechproject.event.aggregation.model.AggregationRuleRecord;
 import org.motechproject.event.aggregation.model.AggregationState;
@@ -11,7 +12,6 @@ import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.model.schedule.CustomAggregationRecord;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
-import org.motechproject.event.aggregation.service.AggregatedEventResult;
 import org.motechproject.event.aggregation.service.AggregationRuleRequest;
 import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 import org.motechproject.event.listener.EventRelay;
@@ -52,10 +52,10 @@ public class EventDispatcherTest {
 
         Map<String, Object> params1 = new HashMap<>();
         params1.put("foo", "bar");
-        Aggregation aggregation1 = new Aggregation("my_aggregation", asList(new AggregatedEventResult(new HashMap<String, Object>(), params1)));
+        Aggregation aggregation1 = new Aggregation("my_aggregation", asList(new AggregatedEventRecord("my_aggregation", new HashMap<String, Object>(), params1)));
         Map<String, Object> params2 = new HashMap<>();
         params2.put("fuu", "baz");
-        Aggregation aggregation2 = new Aggregation("my_aggregation", asList(new AggregatedEventResult(new HashMap<String, Object>(), params2)));
+        Aggregation aggregation2 = new Aggregation("my_aggregation", asList(new AggregatedEventRecord("my_aggregation", new HashMap<String, Object>(), params2)));
         when(allAggregatedEvents.findAllAggregations("my_aggregation")).thenReturn(asList(aggregation1, aggregation2));
 
         AggregationRuleRecord aggregationRule = aggregationRuleMapper.toRecord(new AggregationRuleRequest(
@@ -78,6 +78,7 @@ public class EventDispatcherTest {
 
         eventDispatcher.dispatch("my_aggregation");
 
-        verify(allAggregatedEvents).removeByAggregationRule("my_aggregation");
+        verify(allAggregatedEvents).removeByAggregation(aggregation1);
+        verify(allAggregatedEvents).removeByAggregation(aggregation2);
     }
 }
