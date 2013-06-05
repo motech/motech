@@ -9,12 +9,12 @@ import org.junit.runner.RunWith;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
 import org.motechproject.messagecampaign.service.MessageCampaignService;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -37,7 +37,7 @@ public class RepeatCampaignSchedulingIT {
     MessageCampaignService messageCampaignService;
 
     @Autowired
-    SchedulerFactoryBean schedulerFactoryBean;
+    MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     Scheduler scheduler;
 
@@ -46,7 +46,7 @@ public class RepeatCampaignSchedulingIT {
 
     @Before
     public void setup() {
-        scheduler = schedulerFactoryBean.getScheduler();
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
     @After

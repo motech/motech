@@ -6,16 +6,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.server.pillreminder.api.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.api.contract.DosageRequest;
 import org.motechproject.server.pillreminder.api.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.api.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.api.domain.PillRegimen;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -28,16 +29,18 @@ public class PillReminderServiceIT {
     @Autowired
     private org.motechproject.server.pillreminder.api.service.PillReminderService pillReminderService;
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private MotechSchedulerFactoryBean motechSchedulerFactoryBean;
     
     @Autowired
     private AllPillRegimens allPillRegimens;
 
+    private Scheduler scheduler;
     private LocalDate startDate;
     private LocalDate endDate;
 
     @Before
     public void setUp() {
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
         startDate = DateUtil.newDate(2020, 1, 20);
         endDate = DateUtil.newDate(2021, 1, 20);
     }
@@ -46,7 +49,7 @@ public class PillReminderServiceIT {
     public void shouldSaveTheDailyPillRegimenAndScheduleJob() throws SchedulerException {
         String externalId = "1234";
         allPillRegimens.removeAll("externalId", externalId);
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
 
         ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();
         MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
@@ -58,13 +61,13 @@ public class PillReminderServiceIT {
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
         pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, 5, dosageContracts));
-        Assert.assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        Assert.assertEquals(scheduledJobsNum + 1, scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
     }
 
     @Test
     public void shouldRenewThePillRegimenAndScheduleJob() throws SchedulerException {
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        int scheduledJobsNum = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
 
         ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();
         MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
@@ -82,7 +85,7 @@ public class PillReminderServiceIT {
         newDosageContracts.add(new DosageRequest(9, 5, Arrays.asList(new MedicineRequest("m1", DateUtil.today(), DateUtil.today().plusDays(100)))));
         newDosageContracts.add(new DosageRequest(4, 5, Arrays.asList(new MedicineRequest("m2", DateUtil.today(), DateUtil.today().plusDays(100)))));
         pillReminderService.renew(new DailyPillRegimenRequest(externalId, 2, 15, 5, newDosageContracts));
-        Assert.assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        Assert.assertEquals(scheduledJobsNum + 2, scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
         PillRegimen regimen = allPillRegimens.findByExternalId(externalId);
         allPillRegimens.remove(regimen);
     }

@@ -11,6 +11,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
@@ -21,7 +22,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -53,7 +53,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
     MotechSchedulerService schedulerService;
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     @Autowired
     private AllSchedules allSchedules;
@@ -68,7 +68,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
 
     @Before
     public void setup() {
-        scheduler = schedulerFactoryBean.getScheduler();
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
     @After

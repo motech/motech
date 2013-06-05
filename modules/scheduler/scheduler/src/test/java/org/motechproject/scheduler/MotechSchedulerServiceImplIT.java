@@ -16,11 +16,11 @@ import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -52,13 +52,13 @@ public class MotechSchedulerServiceImplIT {
     EventListenerRegistryService eventListenerRegistryService;
 
     @Autowired
-    SchedulerFactoryBean schedulerFactoryBean;
+    MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     Scheduler scheduler;
 
     @Before
     public void setup() {
-        scheduler = schedulerFactoryBean.getScheduler();
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
     @After

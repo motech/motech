@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.date.model.Time;
+import org.motechproject.scheduler.factory.MotechSchedulerFactoryBean;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
@@ -16,7 +17,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -47,7 +47,7 @@ public class SchedulingWithoutPreferredTimeIT {
     MotechSchedulerService schedulerService;
 
     @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
+    private MotechSchedulerFactoryBean motechSchedulerFactoryBean;
 
     @Autowired
     private AllSchedules allSchedules;
@@ -59,7 +59,7 @@ public class SchedulingWithoutPreferredTimeIT {
 
     @Before
     public void setup() {
-        scheduler = schedulerFactoryBean.getScheduler();
+        scheduler = motechSchedulerFactoryBean.getQuartzScheduler();
     }
 
     @After

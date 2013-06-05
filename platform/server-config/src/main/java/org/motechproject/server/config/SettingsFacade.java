@@ -3,7 +3,6 @@ package org.motechproject.server.config;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -15,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * SettingsFacade provides an interface to access application configuration present in files
+ */
 public class SettingsFacade {
 
     private PlatformSettingsService platformSettingsService;
@@ -29,7 +31,10 @@ public class SettingsFacade {
     private String moduleName;
     private String symbolicName;
 
-    @Autowired(required = false)
+    /**
+     * Set an instance of PlatformSettingsService which is required to accesses properties in files
+     * @see org.motechproject.server.config.service.PlatformSettingsService
+     */
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
     }
