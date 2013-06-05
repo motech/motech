@@ -172,9 +172,6 @@ public class TaskTriggerHandlerTest {
     public void shouldNotRegisterHandler() {
         EventListenerRegistryService eventListenerRegistryService = mock(EventListenerRegistryService.class);
 
-        new TaskTriggerHandler(null, null, eventListenerRegistryService, null, null);
-        verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());
-
         when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
 
         new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
@@ -218,18 +215,11 @@ public class TaskTriggerHandlerTest {
         verify(registryService, never()).registerListener(any(EventListener.class), eq(subject));
     }
 
-    @Test
-    public void shouldNotSendEventWhenTriggerNotFound() throws Exception {
+    @Test(expected = TriggerNotFoundException.class)
+    public void shouldThrowExceptionWhenTriggerNotFound() throws Exception {
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenThrow(new TriggerNotFoundException(""));
 
         handler.handle(createEvent());
-
-        verify(taskService).findTrigger(TRIGGER_SUBJECT);
-
-        verify(taskService, never()).findTasksForTrigger(triggerEvent);
-        verify(taskService, never()).getActionEventFor(task.getActions().get(0));
-        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
-        verify(taskActivityService, never()).addSuccess(task);
     }
 
     @Test

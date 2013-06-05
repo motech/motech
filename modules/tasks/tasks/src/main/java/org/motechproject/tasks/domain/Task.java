@@ -88,6 +88,22 @@ public class Task extends MotechBaseDataObject {
         return additionalData.get(dataProviderId);
     }
 
+    @JsonIgnore
+    public TaskAdditionalData getAdditionalData(String dataProviderId, Long id, String type) {
+        TaskAdditionalData taskAdditionalData = null;
+
+        if (containsAdditionalData(dataProviderId)) {
+            for (TaskAdditionalData ad : getAdditionalData(dataProviderId)) {
+                if (ad.objectEquals(id, type)) {
+                    taskAdditionalData = ad;
+                    break;
+                }
+            }
+        }
+
+        return taskAdditionalData;
+    }
+
     public void addAction(TaskActionInformation action) {
         if (action != null) {
             actions.add(action);

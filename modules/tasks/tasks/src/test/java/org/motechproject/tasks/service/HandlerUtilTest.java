@@ -7,22 +7,17 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskAdditionalData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
@@ -43,7 +38,6 @@ import static org.motechproject.tasks.domain.ParameterType.TIME;
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
 import static org.motechproject.tasks.service.HandlerUtil.convertTo;
-import static org.motechproject.tasks.service.HandlerUtil.findAdditionalData;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 
@@ -92,33 +86,8 @@ public class HandlerUtilTest {
         assertEquals(OBJECT_ID.intValue(), value);
     }
 
-    @Test
-    public void testFindAdditionalData() {
-        Task task = mock(Task.class);
-        KeyInformation key = KeyInformation.parse(String.format("%s.%s.%s#%d.%s", ADDITIONAL_DATA_PREFIX, DATA_PROVIDER_ID, OBJECT_TYPE, OBJECT_ID, KEY_VALUE));
-
-        when(task.containsAdditionalData(DATA_PROVIDER_ID)).thenReturn(false);
-
-        assertNull(findAdditionalData(task, key));
-
-        TaskAdditionalData taskAdditionalData = new TaskAdditionalData();
-        taskAdditionalData.setId(2L);
-        taskAdditionalData.setType("Test2");
-
-        when(task.containsAdditionalData(DATA_PROVIDER_ID)).thenReturn(true);
-        when(task.getAdditionalData(DATA_PROVIDER_ID)).thenReturn(asList(taskAdditionalData));
-
-        assertNull(findAdditionalData(task, key));
-
-        taskAdditionalData.setId(OBJECT_ID);
-        taskAdditionalData.setType(OBJECT_TYPE);
-
-        assertEquals(taskAdditionalData, findAdditionalData(task, key));
-    }
-
     @Test(expected = IllegalStateException.class)
     public void testGetTriggerKey() throws Exception {
-        String empty = "";
         Map<String, Object> parameters = new HashMap<>();
 
         MotechEvent event = mock(MotechEvent.class);
@@ -126,7 +95,7 @@ public class HandlerUtilTest {
 
         when(event.getParameters()).thenReturn(null);
 
-        assertEquals(empty, getTriggerKey(event, key));
+        assertEquals(null, getTriggerKey(event, key));
 
         when(event.getParameters()).thenReturn(parameters);
 

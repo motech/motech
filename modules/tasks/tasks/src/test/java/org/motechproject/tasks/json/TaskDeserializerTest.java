@@ -14,7 +14,6 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskError;
-import org.motechproject.tasks.domain.TaskErrorType;
 import org.motechproject.tasks.domain.TaskEventInformation;
 
 import java.io.IOException;

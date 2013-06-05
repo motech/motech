@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActivity;
 import org.motechproject.tasks.domain.TaskActivityType;
-import org.motechproject.tasks.events.constants.TaskFailureCause;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.repository.AllTaskActivities;
 import org.motechproject.tasks.service.TaskActivityService;

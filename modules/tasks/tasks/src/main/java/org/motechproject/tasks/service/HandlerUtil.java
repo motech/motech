@@ -1,8 +1,10 @@
 package org.motechproject.tasks.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
@@ -10,8 +12,6 @@ import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskAdditionalData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,9 +19,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-
 final class HandlerUtil {
+    private static final int JOIN_PATTERN_BEGIN_INDEX = 5;
+    private static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
+
     private HandlerUtil() {
     }
 
@@ -54,7 +55,7 @@ final class HandlerUtil {
         return value;
     }
 
-    public static Object getFieldValue(Object object, String key) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static Object getFieldValue(Object object, String key) {
         String[] fields = key.split("\\.");
         Object current = object;
 
@@ -64,35 +65,23 @@ final class HandlerUtil {
             } else if (current instanceof Map) {
                 current = ((Map) current).get(field);
             } else {
-                Method method = current.getClass().getMethod("get" + WordUtils.capitalize(field));
-                current = method.invoke(current);
+                try {
+                    Method method = current.getClass().getMethod("get" + WordUtils.capitalize(field));
+                    current = method.invoke(current);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new MotechException(e.getMessage(), e);
+                }
             }
         }
 
         return current;
     }
 
-    public static TaskAdditionalData findAdditionalData(Task task, KeyInformation key) {
-        String dataProviderId = key.getDataProviderId();
-        TaskAdditionalData taskAdditionalData = null;
-
-        if (task.containsAdditionalData(dataProviderId)) {
-            for (TaskAdditionalData ad : task.getAdditionalData(dataProviderId)) {
-                if (ad.objectEquals(key.getObjectId(), key.getObjectType())) {
-                    taskAdditionalData = ad;
-                    break;
-                }
-            }
-        }
-
-        return taskAdditionalData;
-    }
-
-    public static String getTriggerKey(MotechEvent event, KeyInformation key) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        String value = "";
+    public static Object getTriggerKey(MotechEvent event, KeyInformation key) {
+        Object value = null;
 
         if (event.getParameters() != null) {
-            value = getFieldValue(event.getParameters(), key.getKey()).toString();
+            value = getFieldValue(event.getParameters(), key.getKey());
         }
 
         return value;
@@ -127,6 +116,37 @@ final class HandlerUtil {
         }
 
         return filterCheck;
+    }
+
+    public static String manipulate(String manipulation, String value) {
+        String lowerCase = manipulation.toLowerCase();
+        String result = value;
+
+        if (lowerCase.contains("join")) {
+            result = joinManipulation(value, manipulation);
+        } else if (lowerCase.contains("datetime")) {
+            try {
+                result = datetimeManipulation(value, manipulation);
+            } catch (IllegalArgumentException e) {
+                throw new MotechException("error.date.format", e);
+            }
+        } else {
+            switch (lowerCase) {
+                case "toupper":
+                    result = result.toUpperCase();
+                    break;
+                case "tolower":
+                    result = result.toLowerCase();
+                    break;
+                case "capitalize":
+                    result = WordUtils.capitalize(result);
+                    break;
+                default:
+                    throw new MotechException("warning.manipulation");
+            }
+        }
+
+        return result;
     }
 
     private static boolean checkFilterForString(Filter filter, String param) {
@@ -213,7 +233,7 @@ final class HandlerUtil {
     }
 
     private static Object convertToBoolean(String userInput) {
-        if (!equalsIgnoreCase(userInput, "true") && !equalsIgnoreCase(userInput, "false")) {
+        if (!"true".equalsIgnoreCase(userInput) && !"false".equalsIgnoreCase(userInput)) {
             throw new MotechException("error.convertToBoolean");
         }
 
@@ -248,5 +268,19 @@ final class HandlerUtil {
             throw new MotechException("error.convertToDouble", e);
         }
         return value;
+    }
+
+    private static String joinManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(JOIN_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        String[] splitValue = value.split(" ");
+
+        return StringUtils.join(splitValue, pattern);
+    }
+
+    private static String datetimeManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(DATETIME_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTimeFormatter format = DateTimeFormat.forPattern(pattern);
+
+        return format.print(new DateTime(value));
     }
 }

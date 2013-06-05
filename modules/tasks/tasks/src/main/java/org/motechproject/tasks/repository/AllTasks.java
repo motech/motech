@@ -1,13 +1,17 @@
 package org.motechproject.tasks.repository;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.tasks.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
+@View(name = "by_triggerSubject", map = "function(doc) { if(doc.type === 'Task') emit(doc.trigger.subject); }")
 public class AllTasks extends MotechBaseRepository<Task> {
 
     @Autowired
@@ -32,6 +36,10 @@ public class AllTasks extends MotechBaseRepository<Task> {
         } else {
             add(task);
         }
+    }
+
+    public List<Task> byTriggerSubject(final String subject) {
+        return queryView("by_triggerSubject", subject);
     }
 
 }

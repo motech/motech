@@ -257,14 +257,21 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldNotFindTasksForGivenTrigger() {
-        Task t = new Task("name", action, null);
-
         TriggerEvent triggerEvent = new TriggerEvent();
         triggerEvent.setSubject(trigger.getSubject());
 
-        when(allTasks.getAll()).thenReturn(asList(t));
-
         List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
+
+        assertNotNull(tasks);
+        assertTrue(tasks.isEmpty());
+
+        triggerEvent.setSubject(null);
+        tasks = taskService.findTasksForTrigger(triggerEvent);
+
+        assertNotNull(tasks);
+        assertTrue(tasks.isEmpty());
+
+        tasks = taskService.findTasksForTrigger(null);
 
         assertNotNull(tasks);
         assertTrue(tasks.isEmpty());
@@ -275,9 +282,9 @@ public class TaskServiceImplTest {
         Task t = new Task("name", trigger, asList(action));
 
         TriggerEvent triggerEvent = new TriggerEvent();
-        triggerEvent.setSubject("SEND");
+        triggerEvent.setSubject(trigger.getSubject());
 
-        when(allTasks.getAll()).thenReturn(asList(t));
+        when(allTasks.byTriggerSubject("SEND")).thenReturn(asList(t));
 
         List<Task> tasks = taskService.findTasksForTrigger(triggerEvent);
 

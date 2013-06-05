@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
@@ -130,16 +131,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findTasksForTrigger(final TriggerEvent trigger) {
-        List<Task> tasks = allTasks.getAll();
-        List<Task> result = new ArrayList<>(tasks.size());
+        List<Task> list;
 
-        for (Task t : tasks) {
-            if (t.getTrigger().getSubject().equalsIgnoreCase(trigger.getSubject())) {
-                result.add(t);
-            }
+        if (trigger != null && isNotBlank(trigger.getSubject())) {
+            list = allTasks.byTriggerSubject(trigger.getSubject());
+        } else {
+            list = new ArrayList<>();
         }
 
-        return result;
+        return list;
     }
 
     @Override

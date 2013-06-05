@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,6 +110,11 @@ public final class KeyInformation {
         return originalKey;
     }
 
+    public String getOriginalKeyWithoutManipulation() {
+        int questionMarkIndex = originalKey.indexOf('?');
+        return questionMarkIndex == -1 ? originalKey : originalKey.substring(0, questionMarkIndex);
+    }
+
     public String getDataProviderId() {
         return dataProviderId;
     }
@@ -122,6 +129,10 @@ public final class KeyInformation {
 
     public String getKey() {
         return key;
+    }
+
+    public boolean hasManipulations() {
+        return !CollectionUtils.isEmpty(manipulations);
     }
 
     public List<String> getManipulations() {
