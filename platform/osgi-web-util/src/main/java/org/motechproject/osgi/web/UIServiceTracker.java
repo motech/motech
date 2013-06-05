@@ -17,6 +17,7 @@ public class UIServiceTracker extends ServiceTracker {
     public UIServiceTracker(BundleContext context, ModuleRegistrationData moduleRegistrationData) {
         super(context, UIFrameworkService.class.getName(), null);
         this.moduleRegistrationData = moduleRegistrationData;
+        moduleRegistrationData.setBundle(context.getBundle());
     }
 
     public UIServiceTracker(BundleContextWrapper wrapper, ModuleRegistrationData moduleRegistrationData) {

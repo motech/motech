@@ -2,6 +2,7 @@ package org.motechproject.admin.osgi;
 
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.osgi.framework.Bundle;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,11 @@ public class MockUIFrameworkService implements UIFrameworkService {
 
     @Override
     public ModuleRegistrationData getModuleData(String moduleName) {
+        return null;
+    }
+
+    @Override
+    public ModuleRegistrationData getModuleDataByBundle(Bundle bundle) {
         return null;
     }
 

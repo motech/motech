@@ -966,6 +966,9 @@ i.close-channel.icon-remove {
     padding: 0 10px;
 }
 
+.settings-title {
+    margin-left: 15px;
+}
 .popover {
     max-width: none;
 }

@@ -28,7 +28,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams, $http) {
             symbolicName = symbolicName + '-bundle';
         }
 
-        return $.inArray(symbolicName, $scope.bundlesWithSettings) >= 0;
+        return $.inArray(symbolicName, $scope.bundlesWithSettings) >= 0 || (bundle.settingsURL && bundle.settingsURL.length !== 0);
     }
 
     $scope.setOrder = function (prop) {

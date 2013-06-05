@@ -1,0 +1,16 @@
+<div class="tab-frame margin-after"><!------------------------  Settings  ------------------------------------->
+    <h3 class="settings-title">{{msg('settings.title')}}</h3>
+    <form id="tasksSettingsForm" name="tasksSettingsForm" class="form-horizontal" novalidate>
+        <div ng-class="cssClass('taskPossibleErrors')">
+            <label class="control-label" for="taskPossibleErrors">{{msg('settings.label.possibleErrors')}}:</label>
+
+            <div class="controls">
+                <input ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
+                <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('settings.error.possibleErrors')}}</span>
+            </div>
+        </div>
+        <div class="controls">
+            <input ng-disabled="tasksSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('settings.submit')}}" class="btn btn-primary"/>
+        </div>
+    </form>
+</div>

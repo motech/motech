@@ -19,4 +19,8 @@
         return $resource('../tasks/api/datasource');
     });
 
+    angular.module('settingsServices', ['ngResource']).factory('Settings', function($resource) {
+        return $resource('../tasks/api/settings');
+    });
+
 }());

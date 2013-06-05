@@ -119,10 +119,12 @@
                              class="action action-restart"/>
                     </a>
                 </span>
-                    <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
+                <span ng-show="showSettings(bundle)">
+                    <a ng-href="{{(bundle.settingsURL != null && bundle.isActive()) && ('?moduleName=' + bundle.moduleName + '#' + bundle.settingsURL) || ('#/bundleSettings/' + bundle.bundleId)}}">
                         <img src="../admin/img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
                              class="action action-settings"/>
                     </a>
+                </span>
                     <a ng-click="uninstallBundle(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('bundles.uninstall')}}"
                              title="{{msg('bundles.uninstall')}}"

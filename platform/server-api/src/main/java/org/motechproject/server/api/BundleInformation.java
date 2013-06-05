@@ -42,6 +42,8 @@ public class BundleInformation {
     private String name;
     private String location;
     private State state;
+    private String settingsURL;
+    private String moduleName;
 
     public BundleInformation(Bundle bundle) {
         this.bundleId = bundle.getBundleId();
@@ -50,6 +52,14 @@ public class BundleInformation {
         this.location = bundle.getLocation();
         this.state = State.fromInt(bundle.getState());
         this.name = (String) bundle.getHeaders().get(BUNDLE_NAME);
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     public long getBundleId() {
@@ -74,6 +84,14 @@ public class BundleInformation {
 
     public String getName() {
         return name;
+    }
+
+    public String getSettingsURL() {
+        return settingsURL;
+    }
+
+    public void setSettingsURL(String settingsURL) {
+        this.settingsURL = settingsURL;
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.impl.ModuleAdminServiceImpl;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
@@ -84,6 +85,9 @@ public class BundleAdminServiceTest {
 
     @Mock
     PlatformSettingsService platformSettingsService;
+
+    @Mock
+    UIFrameworkService uiFrameworkService;
 
     @Before
     public void setUp() {

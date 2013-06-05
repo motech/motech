@@ -930,4 +930,33 @@
             });
         };
     });
+
+
+    widgetModule.controller('SettingsCtrl', function ($scope, Settings) {
+        $scope.settings = Settings.get();
+
+        $scope.submit = function() {
+            $scope.settings.$save(function() {
+                motechAlert('settings.success.saved', 'main.saved');
+            }, function() {
+                motechAlert('settings.error.saved', 'main.error');
+            });
+        };
+
+        $scope.cssClass = function(prop) {
+            var msg = 'control-group';
+
+            if (!$scope.isNumeric(prop)) {
+                msg = msg.concat(' error');
+            }
+
+            return msg;
+        };
+
+        $scope.isNumeric = function(prop) {
+            return $scope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($scope.settings[prop]);
+        };
+
+    });
+
 }());

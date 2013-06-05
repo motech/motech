@@ -5,6 +5,7 @@ import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,26 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         }
 
         return module;
+    }
+
+    @Override
+    public ModuleRegistrationData getModuleDataByBundle(Bundle bundle) {
+        for (ModuleRegistrationData data: links.values()) {
+            if (bundle.equals(data.getBundle())) {
+                return data;
+            }
+        }
+        for (ModuleRegistrationData data: individuals.values()) {
+            if (bundle.equals(data.getBundle())) {
+                return data;
+            }
+        }
+        for (ModuleRegistrationData data: withoutUI.values()) {
+            if (bundle.equals(data.getBundle())) {
+                return data;
+            }
+        }
+        return null;
     }
 
     private SubmenuInfo getSubmenu(String moduleName, String submenuName) {

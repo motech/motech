@@ -30,6 +30,7 @@
             </map>
         </constructor-arg>
         <constructor-arg name="header" ref="header"/>
+        <property name="settingsURL" value="/settings" />
     </bean>
 
     <osgi:service id="commcareUserServiceOsgi" ref="commcareUserServiceImpl"

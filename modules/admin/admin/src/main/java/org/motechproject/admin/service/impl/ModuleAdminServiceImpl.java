@@ -16,6 +16,8 @@ import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
@@ -54,6 +56,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 
@@ -83,6 +86,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     @Autowired
     private PlatformSettingsService platformSettingsService;
 
+    @Autowired
+    private UIFrameworkService uiFrameworkService;
+
     @Override
     public List<BundleInformation> getBundles() {
         List<BundleInformation> bundles = new ArrayList<>();
@@ -90,7 +96,13 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         List<Bundle> motechBundles = motechBundleFilter.filter(bundleContext.getBundles());
 
         for (Bundle bundle : motechBundles) {
-            bundles.add(new BundleInformation(bundle));
+            BundleInformation bundleInformation = new BundleInformation(bundle);
+            ModuleRegistrationData moduleRegistrationData = uiFrameworkService.getModuleDataByBundle(bundle);
+            if (moduleRegistrationData != null) {
+                bundleInformation.setSettingsURL(moduleRegistrationData.getSettingsURL());
+                bundleInformation.setModuleName(moduleRegistrationData.getModuleName());
+            }
+            bundles.add(bundleInformation);
         }
 
         return bundles;

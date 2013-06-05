@@ -1,5 +1,7 @@
 package org.motechproject.osgi.web;
 
+import org.osgi.framework.Bundle;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,8 @@ public class ModuleRegistrationData {
     private boolean needsAttention;
     private String roleForAccess;
     private String criticalMessage;
+    private String settingsURL;
+    private Bundle bundle;
 
     private List<String> angularModules = new ArrayList<>();
     private Map<String, SubmenuInfo> subMenu = new HashMap<>();
@@ -38,6 +42,14 @@ public class ModuleRegistrationData {
     public ModuleRegistrationData(String moduleName, Map<String, String> i18n) {
         this.moduleName = moduleName;
         this.i18n = i18n;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     public void addAngularModule(String moduleName) {
@@ -184,5 +196,13 @@ public class ModuleRegistrationData {
 
     public void setRoleForAccess(String role) {
         this.roleForAccess = role;
+    }
+
+    public String getSettingsURL() {
+        return settingsURL;
+    }
+
+    public void setSettingsURL(String settingsURL) {
+        this.settingsURL = settingsURL;
     }
 }

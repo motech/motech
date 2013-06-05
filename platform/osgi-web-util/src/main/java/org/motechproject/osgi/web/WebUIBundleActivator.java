@@ -78,6 +78,7 @@ public class WebUIBundleActivator extends org.motechproject.osgi.web.Activator {
         regData.setUrl(resourceRoot + DEFAULT_HOME_PAGE_FOR_MODULE);
         regData.addAngularModule(moduleId());
         regData.addI18N("messages", resourceRoot + DEFAULT_MESSAGES_FOLDER);
+        regData.setBundle(bundleContext.getBundle());
 
         InputStream is = null;
         StringWriter writer = new StringWriter();
