@@ -3,6 +3,7 @@ package org.motechproject.commons.couchdb.service;
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +21,7 @@ public class CouchDbManagerIT {
     @Test
     public void testConnectorRetrieval() throws DbConnectionException {
         CouchDbConnector dbConnector = couchDbManager.getConnector("foo");
-        assertEquals(System.getProperty("user.name") + "_"+"foo", dbConnector.getDatabaseName());
+        String suffixedTenantId = Tenant.current().getSuffixedId();
+        assertEquals(suffixedTenantId + "foo", dbConnector.getDatabaseName());
     }
 }

@@ -61,6 +61,6 @@
     </bean>
 
 
-    <bean id="currentTenant" class="org.motechproject.admin.domain.Tenant" factory-method="current"/>
+    <bean id="currentTenant" class="org.motechproject.commons.api.Tenant" factory-method="current"/>
 
 </beans>

@@ -1,10 +1,23 @@
 package org.motechproject.commons.api;
 
+import org.apache.commons.lang.StringUtils;
+
 final public class TenantIdentity {
-    private TenantIdentity() {
+    private IdentityProvider identityProvider;
+
+    public TenantIdentity() {
+        this(new SystemIdentityProvider());
     }
 
-    public static String getTenantId() {
-        return System.getProperty("user.name");
+    public TenantIdentity(IdentityProvider identityProvider) {
+        this.identityProvider = identityProvider;
+    }
+
+    public String getId() {
+        String identity = identityProvider.getIdentity();
+        if (StringUtils.isNotBlank(identity)) {
+            return identity.toLowerCase();
+        }
+        return identity;
     }
 }

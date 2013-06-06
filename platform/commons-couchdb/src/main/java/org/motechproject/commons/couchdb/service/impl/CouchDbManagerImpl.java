@@ -4,7 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
-import org.motechproject.commons.api.TenantIdentity;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.commons.couchdb.service.DbConnectionException;
 import org.springframework.core.io.FileSystemResource;
@@ -66,6 +66,6 @@ public class CouchDbManagerImpl implements CouchDbManager {
     }
 
     private String getDbPrefix() {
-        return TenantIdentity.getTenantId() + "_";
+        return Tenant.current().getSuffixedId();
     }
 }

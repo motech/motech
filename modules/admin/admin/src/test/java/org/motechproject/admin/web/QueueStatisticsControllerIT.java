@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.domain.QueueMBean;
-import org.motechproject.admin.domain.Tenant;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.admin.jmx.MBeanService;
 import org.motechproject.admin.web.controller.QueueMessage;
 import org.motechproject.admin.web.controller.QueueStatisticsController;

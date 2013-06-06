@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.api.Tenant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -29,7 +30,7 @@ public class EventConfigManagerIT {
 
     @Before
     public void setUp() throws IOException {
-        currentUserPrefix = System.getProperty("user.name") + "_";
+        currentUserPrefix = Tenant.current().getSuffixedId();
 
         configFile = File.createTempFile("activemq", "config");
         FileUtils.writeStringToFile(configFile,

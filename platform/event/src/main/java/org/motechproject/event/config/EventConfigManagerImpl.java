@@ -2,7 +2,7 @@ package org.motechproject.event.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.commons.api.TenantIdentity;
+import org.motechproject.commons.api.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -106,6 +106,6 @@ public class EventConfigManagerImpl implements EventConfigManager {
     }
 
     protected String getQueuePrefix() {
-        return TenantIdentity.getTenantId() + "_";
+        return Tenant.current().getSuffixedId();
     }
 }

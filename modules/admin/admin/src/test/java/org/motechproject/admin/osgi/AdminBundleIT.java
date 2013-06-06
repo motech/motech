@@ -173,8 +173,7 @@ public class AdminBundleIT extends BaseOsgiIT {
     protected List<String> getImports() {
         return Arrays.asList("org.motechproject.osgi.web",
                 "org.motechproject.admin.service",
-                "org.motechproject.admin.messages",
-                "org.motechproject.admin.domain");
+                "org.motechproject.admin.messages");
     }
 }
 

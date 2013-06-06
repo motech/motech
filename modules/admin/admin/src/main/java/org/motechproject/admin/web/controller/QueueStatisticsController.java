@@ -1,6 +1,6 @@
 package org.motechproject.admin.web.controller;
 
-import org.motechproject.admin.domain.Tenant;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.jmx.MBeanService;
 import org.springframework.beans.factory.annotation.Autowired;

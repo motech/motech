@@ -6,6 +6,7 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.dao.BusinessIdNotUniqueException;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
@@ -25,7 +26,8 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
         CouchDbManager service = (CouchDbManager) bundleContext.getService(registryReference);
         assertNotNull(service);
         CouchDbConnector dbConnector = service.getConnector("foo");
-        assertEquals(System.getProperty("user.name") + "_"+"foo", dbConnector.getDatabaseName());
+        String dbName = String.format("%s%s", Tenant.current().getSuffixedId(), "foo");
+        assertEquals(dbName, dbConnector.getDatabaseName());
     }
 
     public void testCommonsCouchDB() throws Exception {
@@ -37,8 +39,7 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
             repository.addOrReplace(new TestRecord("test"));
             fail("Expected BusinessIdNotUniqueException");
         } catch (BusinessIdNotUniqueException e) {
-        }
-        finally {
+        } finally {
             repository.removeAll();
         }
     }
@@ -61,7 +62,7 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
 
     @Override
     protected String[] getConfigLocations() {
-        return new String[] {"/testApplicationCommonsCouchdbBundleContext.xml"};
+        return new String[]{"/testApplicationCommonsCouchdbBundleContext.xml"};
     }
 
     class TestRepository extends MotechBaseRepository<TestRecord> {
@@ -72,8 +73,9 @@ public class CommonsCouchDBBundleIT extends BaseOsgiIT {
         protected void addOrReplace(TestRecord entity) {
             super.addOrReplace(entity, "name", entity.getName());
         }
+
         @GenerateView
-        List<TestRecord> findByName(String name)  {
+        List<TestRecord> findByName(String name) {
             return queryView("by_name", name);
         }
     }
