@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,11 +44,8 @@ import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
 
 public class HandlerUtilTest {
     private static final String EVENT_KEY = "event.key";
-    private static final String OBJECT_TYPE = "Test";
     private static final Long OBJECT_ID = 1L;
-    private static final String DATA_PROVIDER_ID = "123456789";
     private static final String EVENT_KEY_VALUE = "trigger.event.key.value";
-    private static final String KEY_VALUE = "key";
 
     private class HandlerUtilObjectTest {
         private int id;
@@ -109,6 +107,26 @@ public class HandlerUtilTest {
         parameters.clear();
 
         getTriggerKey(event, key);
+    }
+
+    @Test
+    public void testGetNullTriggerKey() throws Exception {
+        Map<String, Object> parameters = new HashMap<>();
+
+        MotechEvent event = mock(MotechEvent.class);
+        KeyInformation key = KeyInformation.parse(String.format("%s.%s", TRIGGER_PREFIX, EVENT_KEY));
+
+        when(event.getParameters()).thenReturn(parameters);
+
+        Map<String, String> child = new HashMap<>();
+        child.put("key", null);
+
+        parameters.put("event", child);
+
+        assertEquals(null, getTriggerKey(event, key));
+
+        // should not throw any exceptions
+        assertNull(getTriggerKey(event, key));
     }
 
     @Test
