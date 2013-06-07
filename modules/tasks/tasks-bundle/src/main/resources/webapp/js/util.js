@@ -324,6 +324,11 @@
                         }
                     });
 
+                    if(ds===undefined)
+                    {
+                        jAlert('Data source cannot be resolved','Error');
+                    }
+
                     replaced.push({
                         find: '{{ad.{0}{1}}}'.format(found[1], found[2]),
                         value: '{{ad.{0}{1}}}'.format(ds.dataSourceId, found[2])
