@@ -128,6 +128,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void updateUserDetailsWithoutPassword(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
+        motechUser.setActive(user.isActive());
         motechUser.setPassword(user.getPassword());
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
@@ -139,6 +140,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     public void updateUserDetailsWithPassword(UserDto user) {
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         motechUser.setEmail(user.getEmail());
+        motechUser.setActive(user.isActive());
         if (!"".equals(user.getPassword())) {
             motechUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }

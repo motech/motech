@@ -2,40 +2,40 @@
     <div class="box-header">{{msg('security.administeringUsers')}}</div>
     <div class="box-content clearfix">
         <div class="well3">
-        <div class="control-group">
-            <a ng-click="addUser()" role="button" class="btn btn-primary"><i class="icon-plus icon-white"></i> {{msg('addUser')}}</a>
-        </div>
-        <form class="form-search form-inline">
-            <label class="control-label">{{msg('searchUsername')}}</label>
-            <input type="text" ng-model="propertyUserName" class="input-medium search-query">
-            <label class="help-inline">{{msg('role')}}</label>
-            <select ng-model="selectedItem" ng-options="role.roleName for role in roleList">
-                <option value="">-- {{msg('chooseRole')}} --</option>
-            </select>
-        </form>
-        <div class="margin-before">
-            <table class="table table-condensed table-bordered table-striped table-lightblue table-user">
-                <thead>
-                <tr>
-                <th>{{msg('userName')}} </th>
-                <th>{{msg('role')}} </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
-                    <td><a>{{user.userName}}</a></td>
-                    <td><span ng-repeat="role in user.roles">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="numberOfPages() &gt; 1">
-            <ul>
-                <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('first')}}</a></li>
-                <li ng-repeat="number in [] | repeat:numberOfPages()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>
-                <li ng-class="{true:'disabled', false:''}[currentPage==(numberOfPages()-1)]"><a ng-click="changeCurrentPage(numberOfPages()-1)">{{msg('last')}}</a></li>
-            </ul>
-        </div>
+            <div class="control-group">
+                <a ng-click="addUser()" role="button" class="btn btn-primary"><i class="icon-plus icon-white"></i> {{msg('addUser')}}</a>
+            </div>
+            <form class="form-search form-inline">
+                <label class="control-label">{{msg('searchUsername')}}</label>
+                <input type="text" ng-model="propertyUserName" class="input-medium search-query">
+                <label class="help-inline">{{msg('role')}}</label>
+                <select ng-model="selectedItem" ng-options="role.roleName for role in roleList">
+                    <option value="">-- {{msg('chooseRole')}} --</option>
+                </select>
+            </form>
+            <div class="margin-before">
+                <table class="table table-condensed table-bordered table-striped table-lightblue table-user">
+                    <thead>
+                    <tr>
+                        <th>{{msg('userName')}} </th>
+                        <th>{{msg('role')}} </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
+                        <td><a>{{user.userName}}</a></td>
+                        <td><span ng-repeat="role in user.roles">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="numberOfPages() &gt; 1">
+                <ul>
+                    <li ng-class="{true:'disabled', false:''}[currentPage==0]"><a ng-click="changeCurrentPage(0)">{{msg('first')}}</a></li>
+                    <li ng-repeat="number in [] | repeat:numberOfPages()" ng-class="{true:'active', false:''}[number==currentPage]"><a ng-click="changeCurrentPage(number)">{{number+1}}</a></li>
+                    <li ng-class="{true:'disabled', false:''}[currentPage==(numberOfPages()-1)]"><a ng-click="changeCurrentPage(numberOfPages()-1)">{{msg('last')}}</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -50,31 +50,31 @@
                 </div>
                 <div class="control-group">
                     <div ng-class="cssClass('userName')">
-                    <label class="control-label">{{msg('userName')}}</label>
-                    <div class="controls">
-                        <input type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('userName')}}" user-name-validate required>
-                        <span ng-hide="pwdNameValidate" class="form-hint">{{msg('userExist')}}</span>
-                        <span ng-hide="hasValue('userName')" class="form-hint">{{msg('userNameRequired')}}</span>
-                    </div>
+                        <label class="control-label">{{msg('userName')}}</label>
+                        <div class="controls">
+                            <input type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('userName')}}" user-name-validate required>
+                            <span ng-hide="pwdNameValidate" class="form-hint">{{msg('userExist')}}</span>
+                            <span ng-hide="hasValue('userName')" class="form-hint">{{msg('userNameRequired')}}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="control-group">
                     <div ng-class="cssClass('email')">
-                    <label class="control-label">{{msg('email')}}</label>
-                    <div class="controls">
-                        <input id="email" name="email" type="email" ng-model="user.email" required>
-                        <span ng-show="createUserForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
-                        <span ng-show="createUserForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
-                    </div>
+                        <label class="control-label">{{msg('email')}}</label>
+                        <div class="controls">
+                            <input id="email" name="email" type="email" ng-model="user.email" required>
+                            <span ng-show="createUserForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
+                            <span ng-show="createUserForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
+                        </div>
                     </div>
                 </div>
                 <div ng-show="!user.generatePassword" class="control-group">
                     <div ng-class="cssClass('password')">
-                    <label class="control-label">{{msg('password')}}</label>
-                    <div class="controls">
-                        <input ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
-                        <span ng-hide="hasValue('password')" class="form-hint">{{msg('passwordRequired')}}</span>
-                    </div>
+                        <label class="control-label">{{msg('password')}}</label>
+                        <div class="controls">
+                            <input ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
+                            <span ng-hide="hasValue('password')" class="form-hint">{{msg('passwordRequired')}}</span>
+                        </div>
                     </div>
                 </div>
                 <div ng-show="!user.generatePassword" class="control-group">
@@ -146,11 +146,11 @@
                     </div>
                 </div>
                 <div class="control-group">
-                        <label class="control-label">{{msg('password')}}</label>
-                        <div class="controls">
-                            <input type="password" ng-model="user.password">
-                            <!--<span class="help-inline"><a class="btn btn-small"  ng-click="generatePassword()">{{msg('generate')}}</a></span>-->
-                        </div>
+                    <label class="control-label">{{msg('password')}}</label>
+                    <div class="controls">
+                        <input type="password" ng-model="user.password">
+                        <!--<span class="help-inline"><a class="btn btn-small"  ng-click="generatePassword()">{{msg('generate')}}</a></span>-->
+                    </div>
                 </div>
                 <div class="control-group">
                     <div ng-class="cssPassword()">
@@ -180,6 +180,16 @@
                                 <li ng-repeat="role in roleList" class="nav-header"><a class="ng-binding" href="" >{{role.roleName}}</a></li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <h4>{{msg('enableUser')}}</h4>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input type="checkbox" ng-model="user.active"> {{msg('enabled')}}
+                        </label>
                     </div>
                 </div>
                 <div class="control-group">
