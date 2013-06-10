@@ -24,18 +24,16 @@ public class ServerEventRelay implements EventRelay {
     private EventListenerRegistry eventListenerRegistry;
     private OutboundEventGateway outboundEventGateway;
     private MetricsAgent metricsAgent;
-
-    private static final String MESSAGE_DESTINATION = "message-destination";
-    private static final String ORIGINAL_PARAMETERS = "original-parameters";
-
-    @Autowired
     private MotechEventConfig motechEventConfig;
 
+    private static final String MESSAGE_DESTINATION = "message-destination";
+
     @Autowired
-    public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsAgent metricsAgent) {
+    public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsAgent metricsAgent, MotechEventConfig motechEventConfig) {
         this.outboundEventGateway = outboundEventGateway;
         this.eventListenerRegistry = eventListenerRegistry;
         this.metricsAgent = metricsAgent;
+        this.motechEventConfig = motechEventConfig;
     }
 
     // @TODO either relayEvent should be made private, or this method moved out to it's own class.
@@ -47,8 +45,8 @@ public class ServerEventRelay implements EventRelay {
 
         if (!listeners.isEmpty()) {
             try {
-            outboundEventGateway.sendEventMessage(event);
-            } catch(Exception e) {
+                outboundEventGateway.sendEventMessage(event);
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 throw e;
             }
@@ -86,14 +84,8 @@ public class ServerEventRelay implements EventRelay {
 
             for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-                    MotechEvent e = event.copy(event.getSubject(),
-                            (Map<String, Object>) event.getParameters().get(ORIGINAL_PARAMETERS));
-
-                    final long startTime = metricsAgent.startTimer();
-                    metricsAgent.logEvent(e.getSubject());
-                    handleEvent(listener, e);
-                    metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
-
+                    MotechEvent e = event.copy(event.getSubject(), event.getParameters());
+                    logTimeAndHandleEvent(event, listener, e);
                     break;
                 }
             } // END while( iter.hasNext() )
@@ -108,12 +100,7 @@ public class ServerEventRelay implements EventRelay {
                 splitEvent(event, listeners);
             } else {
                 // Is there a way to get at a Sets elements other than an iterator?  I know there is only one
-                for (EventListener listener : listeners) {
-                    final long startTime = metricsAgent.startTimer();
-                    metricsAgent.logEvent(event.getSubject());
-                    handleEvent(listener, event);
-                    metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
-                }
+                logTimeAndHandleEvent(event, listeners.iterator().next(), event);
             } // END IF/ELSE if (listeners.size() > 1)
         } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
 
@@ -121,6 +108,13 @@ public class ServerEventRelay implements EventRelay {
         parameters.put("event", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
         metricsAgent.logEvent("motech.event-relay.relayEvent", parameters);
+    }
+
+    private void logTimeAndHandleEvent(MotechEvent event, EventListener listener, MotechEvent e) {
+        final long startTime = metricsAgent.startTimer();
+        metricsAgent.logEvent(e.getSubject());
+        handleEvent(listener, e);
+        metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
     }
 
     /**
@@ -136,11 +130,10 @@ public class ServerEventRelay implements EventRelay {
         Map<String, Object> parameters;
 
         for (EventListener listener : listeners) {
-            parameters = new HashMap<String, Object>();
+            parameters = new HashMap<>();
+            parameters.putAll(event.getParameters());
             parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
-            parameters.put(ORIGINAL_PARAMETERS, event.getParameters());
             enrichedEventMessage = event.copy(event.getSubject(), parameters);
-
             outboundEventGateway.sendEventMessage(enrichedEventMessage);
         }
     }
@@ -155,6 +148,7 @@ public class ServerEventRelay implements EventRelay {
         } catch (Exception e) {
             log.debug("Handling error - " + e.getMessage());
             event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
+            event.getParameters().put(MESSAGE_DESTINATION, listener.getIdentifier());
 
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
                 event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
