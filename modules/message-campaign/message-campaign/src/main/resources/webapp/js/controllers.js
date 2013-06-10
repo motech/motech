@@ -15,7 +15,7 @@
         $scope.campaignName = $routeParams.campaignName;
 
         function getPanelWidth() {
-            return document.getElementById("main-content").offsetWidth-20;
+            return document.getElementById("main-content").offsetWidth-13;
         }
 
         jQuery(window).bind('resize', function() {
@@ -174,4 +174,18 @@
             });
         });
     });
+
+    messageCampaignModule.controller('SettingsCtrl', function ($scope) {
+        $scope.uploadSettings = function () {
+            $("#messageCampaignSettingsForm").ajaxSubmit({
+                success: function() {
+                    motechAlert('settings.success.saved', 'main.saved');
+                },
+                error: function() {
+                    motechAlert('settings.error.save', 'main.error');
+                }
+            });
+        };
+    });
+
 }());

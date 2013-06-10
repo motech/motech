@@ -11,6 +11,9 @@ import java.util.Map;
  * \ingroup MessageCampaign
  */
 public interface MessageCampaignService {
+
+    String MESSAGE_CAMPAIGNS_JSON_FILENAME = "message-campaigns.json";
+
     /**
      * Enrolls the external id into the campaign as specified in the request. The enrolled entity will have events raised against it according to the campaign definition.
      *
@@ -49,4 +52,6 @@ public interface MessageCampaignService {
     List<CampaignRecord> getAllCampaignRecords();
 
     void campaignCompleted(String externalId, String campaignName);
+
+    void loadCampaigns();
 }

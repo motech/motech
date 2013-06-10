@@ -1,14 +1,17 @@
-<div ng-controller="EnrollmentsCtrl">
+<div ng-controller="EnrollmentsCtrl" class="tab-frame">
+    <h4 class="frame-title">{{ msg('msgCampaign.title')}}</h4>
     <table id="enrollmentsTable"></table>
 
-    <div class="btn-group margin-before">
-        <button id='deleteEnrollments' type="submit" class="btn">
-            {{msg('msgCampaign.enrollment.delete')}}
-        </button>
-    </div>
-    <div class="btn-group margin-before offset9">
-        <button id='addEnrollment' type="submit" class="btn">
-            {{msg('msgCampaign.enrollment.add')}}
-        </button>
+    <div class="inside">
+        <div class="btn-group margin-before">
+            <button id='deleteEnrollments' type="submit" class="btn">
+                {{msg('msgCampaign.enrollment.delete')}}
+            </button>
+        </div>
+        <div class="btn-group margin-before offset9">
+            <button id='addEnrollment' type="submit" class="btn">
+                {{msg('msgCampaign.enrollment.add')}}
+            </button>
+        </div>
     </div>
 </div>

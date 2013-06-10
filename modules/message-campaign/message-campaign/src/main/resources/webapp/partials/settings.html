@@ -1,0 +1,24 @@
+<div class="tab-frame margin-after"><!------------------------  Settings  ------------------------------------->
+    <h4 class="frame-title">{{msg('settings.title')}}</h4>
+    <form action="../messagecampaign/settings/" id="messageCampaignSettingsForm" name="messageCampaignSettingsForm"
+          class="form-horizontal margin-before2" method="post" enctype="multipart/form-data" novalidate>
+        <div class="control-group fileupload fileupload-new" data-provides="fileupload">
+            <label class="control-label">{{msg('settings.fileChosen')}}</label>
+            <div class="controls">
+                <div class="uneditable-input input-xlarge fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
+                <span class="btn btn-file">
+                    <span class="fileupload-new">{{msg('button.selectFile')}}</span>
+                    <span class="fileupload-exists">{{msg('button.changeFile')}}</span>
+                    <input type="file" id="messageCampaigns" name="messageCampaigns" class="input-file" />
+                </span>
+                <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('button.remove')}}</a>
+                <span class="form-hint fileupload-new">{{msg('settings.messageCampaignsHint')}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input ng-click="uploadSettings()" type="button" value="{{msg('settings.submit')}}" class="btn btn-primary"/>
+            </div>
+        </div>
+    </form>
+</div>

@@ -24,4 +24,9 @@
     <bean id="messageCampaignDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-message-campaign"/>
     </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000"/>
+    </bean>
+
 </beans>

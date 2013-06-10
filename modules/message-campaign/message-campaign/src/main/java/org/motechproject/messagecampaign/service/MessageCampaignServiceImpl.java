@@ -1,8 +1,10 @@
 package org.motechproject.messagecampaign.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.messagecampaign.EventKeys;
 import org.motechproject.messagecampaign.contract.CampaignRequest;
 import org.motechproject.messagecampaign.dao.AllCampaignEnrollments;
@@ -15,9 +17,12 @@ import org.motechproject.messagecampaign.scheduler.CampaignSchedulerService;
 import org.motechproject.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.messagecampaign.web.ex.EnrollmentNotFoundException;
 import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
@@ -29,8 +34,6 @@ import java.util.Map;
 @Service("messageCampaignService")
 public class MessageCampaignServiceImpl implements MessageCampaignService {
 
-    public static final String MESSAGE_CAMPAIGNS_JSON_FILENAME = "message-campaigns.json";
-
     private CampaignEnrollmentService campaignEnrollmentService;
     private CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper;
     private AllCampaignEnrollments allCampaignEnrollments;
@@ -40,6 +43,12 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     @Autowired
     @Qualifier("messageCampaignSettings")
     private SettingsFacade settingsFacade;
+
+    @Autowired
+    private CommonsMultipartResolver commonsMultipartResolver;
+
+    @Autowired
+    private PlatformSettingsService platformSettingsService;
 
     @Autowired
     public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory,
@@ -166,13 +175,23 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     }
 
     @PostConstruct
-    void loadCampaigns() {
+    @Override
+    public void loadCampaigns() {
         InputStream inputStream = settingsFacade.getRawConfig(MESSAGE_CAMPAIGNS_JSON_FILENAME);
         if (inputStream != null) {
             List<CampaignRecord> records = new CampaignJsonLoader().loadCampaigns(inputStream);
             for (CampaignRecord record : records) {
                 allMessageCampaigns.saveOrUpdate(record);
             }
+        }
+    }
+
+    @MotechListener(subjects = ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT)
+    public void changeMaxUploadSize(MotechEvent event) {
+        String uploadSize = platformSettingsService.getPlatformSettings().getUploadSize();
+
+        if (StringUtils.isNotBlank(uploadSize)) {
+            commonsMultipartResolver.setMaxUploadSize(Long.valueOf(uploadSize));
         }
     }
 }

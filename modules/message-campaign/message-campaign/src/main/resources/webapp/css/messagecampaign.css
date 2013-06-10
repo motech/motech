@@ -1,0 +1,22 @@
+.message-campaign.nav.nav-tabs {
+    border-bottom: medium none;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+.tab-frame .table {
+    margin-bottom: 0;
+}
+
+.tab-content {
+    padding-left: 0;
+}
+
+.frame-title {
+    margin: 10px 10px 20px;
+}
+
+#gbox_enrollmentsTable {
+    width: 100%;
+}

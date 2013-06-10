@@ -69,6 +69,10 @@
             <groupId>javax.servlet</groupId>
             <artifactId>com.springsource.javax.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -211,10 +215,12 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.aopalliance.aop,
+                            org.apache.commons.fileupload,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.context.config,
                             org.springframework.security.config,
+                            org.springframework.web.multipart.commons,
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.event,
                             org.motechproject.event.listener.annotations,
