@@ -440,6 +440,11 @@ function ServerLogCtrl($scope, $http) {
             error(unblockUI());
     }
 
+    //removing the sidebar from <body> before route change
+    $scope.$on('$routeChangeStart', function(event, next, current) {
+        $('div[id^="jquerySideBar"]').remove();
+    });
+
     $scope.refresh();
 }
 
