@@ -1,10 +1,10 @@
 package org.motechproject.callflow;
 
 import org.apache.log4j.Logger;
-import org.motechproject.callflow.domain.CallDetailRecord;
-import org.motechproject.callflow.repository.AllCallDetailRecords;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.ivr.service.contract.CallRecordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,14 +14,15 @@ import static org.motechproject.decisiontree.core.EventKeys.END_OF_CALL_EVENT;
 public class EndOfCallListener {
     private Logger log = Logger.getLogger(EndOfCallListener.class);
 
+
     @Autowired
-    private AllCallDetailRecords allCallDetailRecords;
+    private CallRecordsService callRecordsService;
 
     @MotechListener(subjects = {END_OF_CALL_EVENT})
     public void handleEvent(MotechEvent event) {
         final CallDetailRecord callDetailRecord = (CallDetailRecord) (event.getParameters().get("call_detail_record"));
         if (callDetailRecord != null) {
-            allCallDetailRecords.add(callDetailRecord);
+            callRecordsService.add(callDetailRecord);
         } else {
             log.error("Call detail record is missing:" + event);
         }

@@ -5,10 +5,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.callflow.domain.CallDetailRecord;
-import org.motechproject.callflow.repository.AllCallDetailRecords;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.decisiontree.core.CallDetail;
+import org.motechproject.ivr.domain.CallDetail;
+import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.ivr.domain.CallDisposition;
+import org.motechproject.ivr.repository.AllCallDetailRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,7 +45,7 @@ public class AllCallDetailRecordsIT {
         log.setStartDate(DateUtil.now());
         log.setEndDate(DateUtil.now());
         log.setDuration(duration);
-        log.setDisposition(CallDetailRecord.Disposition.UNKNOWN);
+        log.setDisposition(CallDisposition.UNKNOWN);
         return log;
     }
 
@@ -53,27 +54,27 @@ public class AllCallDetailRecordsIT {
         DateTime endTime = DateTime.now().plusDays(1);
         DateTime startTime = DateTime.now().minusDays(1);
         int maxDuration = MAX_CALL_DURATION;
-        final List<CallDetail> rowList = allCallDetailRecords.search(PHONE_NUMBER_1, startTime, endTime, 0, maxDuration,
-                Arrays.asList(CallDetailRecord.Disposition.UNKNOWN.name()), 0, PAGE_SIZE, null, false);
+        final List<CallDetailRecord> rowList = allCallDetailRecords.search(PHONE_NUMBER_1, startTime, endTime, 0, maxDuration,
+                Arrays.asList(CallDisposition.UNKNOWN.name()), 0, PAGE_SIZE, null, false);
         assertTrue(rowList.size() > 0);
     }
 
     @Test
     public void shouldSearchCallsWithSpecificDuration() throws Exception {
-        final List<CallDetail> rowList = allCallDetailRecords.search(null, null, null, null, null, null, 0, PAGE_SIZE, null, false);
+        final List<CallDetailRecord> rowList = allCallDetailRecords.search(null, null, null, null, null, null, 0, PAGE_SIZE, null, false);
         assertTrue(rowList.size() > 0);
     }
 
     @Test
     public void shouldReturnBasedOnGivenSortByParamInDescendingOrder() throws Exception {
-        List<CallDetail> rowList = allCallDetailRecords.search("99991234*", null, null, null, null, null, 0, PAGE_SIZE, "phoneNumber", true);
+        List<CallDetailRecord> rowList = allCallDetailRecords.search("99991234*", null, null, null, null, null, 0, PAGE_SIZE, "phoneNumber", true);
         assertEquals(rowList.get(0).getPhoneNumber(), PHONE_NUMBER_2);
 
     }
 
     @Test
     public void shouldReturnBasedOnGivenSortByParamInAscendingOrder() throws Exception {
-        List<CallDetail> rowList = allCallDetailRecords.search("99991234*", null, null, null, null, null, 0, PAGE_SIZE, "phoneNumber", false);
+        List<CallDetailRecord> rowList = allCallDetailRecords.search("99991234*", null, null, null, null, null, 0, PAGE_SIZE, "phoneNumber", false);
         assertEquals(PHONE_NUMBER_1, rowList.get(0).getPhoneNumber());
     }
 
@@ -90,7 +91,7 @@ public class AllCallDetailRecordsIT {
 
     @After
     public void tearDown() {
-        final List<CallDetail> logs = allCallDetailRecords.search(PHONE_NUMBER_1, null, null, null, null, null, 0, PAGE_SIZE, null, false);
+        final List<CallDetailRecord> logs = allCallDetailRecords.search(PHONE_NUMBER_1, null, null, null, null, null, 0, PAGE_SIZE, null, false);
         logs.addAll(allCallDetailRecords.search(PHONE_NUMBER_2, null, null, null, null, null, 0, PAGE_SIZE, null, false));
         for (CallDetail log : logs) {
             allCallDetailRecords.remove((CallDetailRecord) log);

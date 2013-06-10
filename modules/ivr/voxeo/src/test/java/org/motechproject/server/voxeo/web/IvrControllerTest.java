@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.contract.CallRequest;
 import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;

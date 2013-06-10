@@ -3,9 +3,9 @@ package org.motechproject.server.voxeo.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.callflow.domain.CallDetailRecord;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.domain.CallDisposition;
+import org.motechproject.ivr.service.contract.CallRequest;
 
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +32,7 @@ public class PhoneCall extends MotechBaseDataObject {
     @JsonProperty
     private Date answerDate;
     @JsonProperty
-    private CallDetailRecord.Disposition disposition;
+    private CallDisposition disposition;
     @JsonProperty
     private Direction direction;
     @JsonProperty
@@ -98,11 +98,11 @@ public class PhoneCall extends MotechBaseDataObject {
         this.callRequest = callRequest;
     }
 
-    public CallDetailRecord.Disposition getDisposition() {
+    public CallDisposition getDisposition() {
         return disposition;
     }
 
-    public void setDisposition(CallDetailRecord.Disposition disposition) {
+    public void setDisposition(CallDisposition disposition) {
         this.disposition = disposition;
     }
 

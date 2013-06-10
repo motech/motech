@@ -1,7 +1,7 @@
 package org.motechproject.ivr;
 
 import org.junit.Test;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.contract.CallRequest;
 
 import static org.junit.Assert.assertEquals;
 

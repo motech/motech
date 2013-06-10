@@ -1,6 +1,6 @@
 package org.motechproject.ivr.osgi;
 
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;

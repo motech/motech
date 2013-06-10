@@ -1,6 +1,6 @@
 package org.motechproject.server.demo.web;
 
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.motechproject.server.demo.service.DemoEventHandler;
 import org.motechproject.server.demo.service.DemoService;
 import org.springframework.beans.factory.InitializingBean;

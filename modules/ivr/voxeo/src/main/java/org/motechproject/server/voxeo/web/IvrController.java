@@ -1,12 +1,13 @@
 package org.motechproject.server.voxeo.web;
 
 import org.ektorp.UpdateConflictException;
-import org.motechproject.callflow.domain.CallDetailRecord;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.ivr.domain.CallDisposition;
 import org.motechproject.ivr.event.IVREventDelegate;
-import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.domain.CallDetailRecord;
+import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
@@ -195,7 +196,7 @@ public class IvrController extends MultiActionController {
 
             case DIALOG_EXIT:
             case DISCONNECTED:
-                phoneCall.setDisposition(CallDetailRecord.Disposition.ANSWERED);
+                phoneCall.setDisposition(CallDisposition.ANSWERED);
 
                 motechEvent = phoneCall.getCallRequest().getOnSuccessEvent();
                 phoneCall.setEndDate(new Date(event.getTimestamp()));
@@ -205,17 +206,17 @@ public class IvrController extends MultiActionController {
                 phoneCall.setEndDate(new Date(event.getTimestamp()));
                 switch (event.getReason()) {
                     case BUSY:
-                        phoneCall.setDisposition(CallDetailRecord.Disposition.BUSY);
+                        phoneCall.setDisposition(CallDisposition.BUSY);
                         motechEvent = phoneCall.getCallRequest().getOnBusyEvent();
                         break;
 
                     case TIMEOUT:
-                        phoneCall.setDisposition(CallDetailRecord.Disposition.NO_ANSWER);
+                        phoneCall.setDisposition(CallDisposition.NO_ANSWER);
                         motechEvent = phoneCall.getCallRequest().getOnNoAnswerEvent();
                         break;
 
                     default:
-                        phoneCall.setDisposition(CallDetailRecord.Disposition.FAILED);
+                        phoneCall.setDisposition(CallDisposition.FAILED);
                         motechEvent = phoneCall.getCallRequest().getOnFailureEvent();
                 }
                 break;

@@ -93,8 +93,8 @@
                             org.motechproject.ivr.domain;version=${project.version},
                             org.motechproject.ivr.event;version=${project.version},
                             org.motechproject.ivr.message;version=${project.version},
-                            org.motechproject.ivr.model;version=${project.version},
-                            org.motechproject.ivr.service;version=${project.version}
+                            org.motechproject.ivr.exception;version=${project.version},
+                            org.motechproject.ivr.service.contract;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.commons.couchdb.service,
@@ -103,6 +103,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.stereotype,
+                            org.springframework.web.servlet.mvc,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-api;inline=true</Embed-Dependency>

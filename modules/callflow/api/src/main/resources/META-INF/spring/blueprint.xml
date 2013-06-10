@@ -19,7 +19,8 @@
     <osgi:service id="flowSessionServiceOsgi" auto-export="interfaces" ref="flowSessionService"
                   interface="org.motechproject.callflow.service.FlowSessionService"/>
 
-    <osgi:service id="calllogSearchServiceOsgi" ref="calllogSearchService" auto-export="interfaces" interface="org.motechproject.callflow.service.CalllogSearchService" />
+
+    <osgi:reference id="callRecordsService" interface="org.motechproject.ivr.service.contract.CallRecordsService" />
 
     <osgi:reference id="decisionTreeService" interface="org.motechproject.decisiontree.core.DecisionTreeService"/>
 

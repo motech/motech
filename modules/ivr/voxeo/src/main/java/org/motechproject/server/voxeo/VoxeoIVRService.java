@@ -4,10 +4,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.motechproject.callflow.domain.CallDetailRecord;
-import org.motechproject.ivr.model.CallInitiationException;
-import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.ivr.domain.CallDisposition;
+import org.motechproject.ivr.exception.CallInitiationException;
+import org.motechproject.ivr.service.contract.CallRequest;
+import org.motechproject.ivr.service.contract.IVRService;
 import org.motechproject.server.voxeo.config.ConfigReader;
 import org.motechproject.server.voxeo.config.VoxeoConfig;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
@@ -70,7 +70,7 @@ public class VoxeoIVRService implements IVRService {
         //Create a call record to track this call
         PhoneCall phoneCall = new PhoneCall(callRequest);
         phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
-        phoneCall.setDisposition(CallDetailRecord.Disposition.UNKNOWN);
+        phoneCall.setDisposition(CallDisposition.UNKNOWN);
         phoneCall.setStartDate(new Date());
         allPhoneCalls.add(phoneCall);
 

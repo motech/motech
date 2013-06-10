@@ -1,17 +1,17 @@
 package org.motechproject.ivr.event;
 
 
-import org.motechproject.ivr.calllog.domain.CallRecord;
+import org.motechproject.ivr.domain.CallDetailRecord;
 
 public interface IVREventDelegate {
 
     String CALL_DETAIL_RECORD_KEY = "CallDetailRecord";
 
-    void onSuccess(CallRecord cdr);
+    void onSuccess(CallDetailRecord cdr);
 
-    void onNoAnswer(CallRecord cdr);
+    void onNoAnswer(CallDetailRecord cdr);
 
-    void onBusy(CallRecord cdr);
+    void onBusy(CallDetailRecord cdr);
 
-    void onFailure(CallRecord cdr);
+    void onFailure(CallDetailRecord cdr);
 }

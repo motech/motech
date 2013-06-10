@@ -5,7 +5,7 @@ import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.core.model.DialStatus;
-import org.motechproject.ivr.service.SessionNotFoundException;
+import org.motechproject.ivr.exception.SessionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

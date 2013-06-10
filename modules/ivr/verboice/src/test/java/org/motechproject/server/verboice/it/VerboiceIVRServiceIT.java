@@ -4,7 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.contract.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.motechproject.server.verboice.web.VerboiceIVRController;
 import org.springframework.beans.factory.annotation.Autowired;

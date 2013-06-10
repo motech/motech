@@ -44,7 +44,7 @@
     <osgi:reference id="eventListenerRegistry"
                     interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
-    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" availability="optional"/>
+    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.contract.IVRService" availability="optional"/>
 
     <bean id="eventAnnotationBeanPostProcessor"
               class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor">

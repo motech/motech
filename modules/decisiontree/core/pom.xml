@@ -29,6 +29,11 @@
             <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-ivr-api-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -39,6 +44,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -62,6 +73,7 @@
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
+                            org.motechproject.ivr.domain,
                             org.motechproject.server.config.service,
                             org.springframework.ui.velocity,
                             org.springframework.web.servlet.config,
