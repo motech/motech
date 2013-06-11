@@ -29,4 +29,8 @@ public class MotechUserProfile implements Serializable {
     public Locale getLocale() {
         return user.getLocale();
     }
+
+    public Boolean getActive() {
+        return user.isActive();
+    }
 }

@@ -19,12 +19,15 @@
                     <tr>
                         <th>{{msg('userName')}} </th>
                         <th>{{msg('role')}} </th>
+                        <th>{{msg('enabled')}} </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-click="getUser(user)" ng-repeat="user in userList | filter:{userName : propertyUserName} | filter:selectedItem.roleName | filterPagination:currentPage*pageSize | limitTo:pageSize">
                         <td><a>{{user.userName}}</a></td>
                         <td><span ng-repeat="role in user.roles">{{role}}<span ng-hide="$index == (user.roles.length-1)">, </span></span></td>
+                        <td ng-show="user.active"><a>{{msg('enabledTrue')}}</a></td>
+                        <td ng-show="!user.active"><a>{{msg('enabledFalse')}}</a></td>
                     </tr>
                     </tbody>
                 </table>
