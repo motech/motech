@@ -28,6 +28,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 @Controller
+@RequestMapping("/web-api")
 public class VerboiceIVRController {
 
     private static final String VERBOICE_CALL_SID = "CallSid";

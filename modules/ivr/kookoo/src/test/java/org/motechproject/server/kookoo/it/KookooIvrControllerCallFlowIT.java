@@ -44,9 +44,9 @@ import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
 public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
     static Server server;
-    static String CONTEXT_PATH = "/motech";
+    static String CONTEXT_PATH = "/kookoo";
 
-    String KOOKOO_CALLBACK_URL = "/kookoo/ivr";
+    String KOOKOO_CALLBACK_URL = "/web-api/ivr";
     String SERVER_URL = "http://localhost:" + TestContext.getKookooPort() + CONTEXT_PATH + KOOKOO_CALLBACK_URL;
 
     @Autowired
@@ -111,13 +111,13 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
         String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&ln=en&sid=shouldPlayPromptsAndRequestDtmfIfNodeHasTransitions", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =  format(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<response>" +
-                "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\">" +
-                "       <playtext>hello</playtext>" +
-                "   </collectdtmf>" +
-                "   <gotourl>http://localhost:%d/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
-                "</response>", TestContext.getKookooPort());
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                        "<response>" +
+                        "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\">" +
+                        "       <playtext>hello</playtext>" +
+                        "   </collectdtmf>" +
+                        "   <gotourl>http://localhost:%d/kookoo/web-api/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
+                        "</response>", TestContext.getKookooPort());
         assertXMLEqual(expectedResponse, response);
     }
 
@@ -138,14 +138,14 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
         String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&ln=en&event=GotDTMF&data=2&sid="+UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse = format(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<response>" +
-                "   <playtext>pressed two</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\">" +
-                "       <playtext>Press star key</playtext>" +
-                "   </collectdtmf>" +
-                "   <gotourl>http://localhost:%d/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
-                "</response>", TestContext.getKookooPort());
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                        "<response>" +
+                        "   <playtext>pressed two</playtext>" +
+                        "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\">" +
+                        "       <playtext>Press star key</playtext>" +
+                        "   </collectdtmf>" +
+                        "   <gotourl>http://localhost:%d/kookoo/web-api/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
+                        "</response>", TestContext.getKookooPort());
         assertXMLEqual(expectedResponse, response);
     }
 
@@ -220,11 +220,11 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
         String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&ln=en&sid=shouldRequestMaxLengthDtmfForArbitraryInput", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse = format(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<response>" +
-                "   <collectdtmf l=\"50\" t=\"#\" o=\"5000\"></collectdtmf>" +
-                "   <gotourl>http://localhost:%d/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
-                "</response>", TestContext.getKookooPort());
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                        "<response>" +
+                        "   <collectdtmf l=\"50\" t=\"#\" o=\"5000\"></collectdtmf>" +
+                        "   <gotourl>http://localhost:%d/kookoo/web-api/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
+                        "</response>", TestContext.getKookooPort());
         assertXMLEqual(expectedResponse, response);
     }
 
@@ -241,12 +241,12 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
         String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&ln=en&event=GotDTMF&data=31415&sid="+ UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse = format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<response>" +
-            "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\">" +
-            "       <playtext>you entered 31415</playtext>" +
-            "   </collectdtmf>" +
-            "   <gotourl>http://localhost:%d/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
-            "</response>", TestContext.getKookooPort());
+                "<response>" +
+                "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\">" +
+                "       <playtext>you entered 31415</playtext>" +
+                "   </collectdtmf>" +
+                "   <gotourl>http://localhost:%d/kookoo/web-api/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
+                "</response>", TestContext.getKookooPort());
         assertXMLEqual(expectedResponse, response);
     }
 

@@ -2,42 +2,48 @@ package org.motechproject.server.kookoo;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.motechproject.ivr.service.contract.IVRService;
+import org.apache.http.client.methods.HttpGet;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class KookooIvrServiceBundleIT extends BaseOsgiIT {
 
+    private PollingHttpClient httpClient = new PollingHttpClient();
 
     public void testThatIVRServiceIsAvailableForImport() throws InvalidSyntaxException {
-        ServiceReference[] references = bundleContext.getServiceReferences(IVRService.class.getName(), "(IvrProvider=Kookoo)");
-        assertNotNull(references);
-        IVRService ivrService = (IVRService) bundleContext.getService(references[0]);
-        assertNotNull(ivrService);
+        assertNotNull(applicationContext.getBean("testKookooIVRService"));
     }
 
+    public void testKooKooCallbackUrlIsNotAuthenticated() throws IOException, InterruptedException {
+        HttpGet httpGet = new HttpGet(String.format("http://localhost:%d/kookoo/web-api/ivr", TestContext.getJettyPort()));
 
-    public void testThatKooKooServiceUrlIsAvailable() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient()
-                .get(String.format("http://localhost:%d/kookoo/kookoo/ivr/callstatus", TestContext.getJettyPort()));
-        assertEquals(HttpStatus.SC_OK,response.getStatusLine().getStatusCode());
+        HttpResponse response = httpClient.execute(httpGet);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     }
 
-    public void testThatKooKooIvrIsAvailable() throws IOException, InterruptedException {
-        HttpResponse response = new PollingHttpClient()
-                .get(String.format("http://localhost:%d/kookoo/kookoo/ivr", TestContext.getJettyPort()));
-        assertEquals(HttpStatus.SC_OK,response.getStatusLine().getStatusCode());
+    public void testKooKooStatusCallbackUrlIsNotAuthenticated() throws IOException, InterruptedException {
+        HttpGet httpGet = new HttpGet(String.format("http://localhost:%d/kookoo/web-api/ivr/callstatus", TestContext.getJettyPort()));
+
+        HttpResponse response = httpClient.execute(httpGet);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     }
 
+    @Override
+    protected List<String> getImports() {
+        return asList("org.motechproject.ivr.service.contract");
+    }
 
     @Override
     protected String[] getConfigLocations() {
         return new String[]{"/META-INF/osgi/testIVRKookooContext.xml"};
     }
-
 }

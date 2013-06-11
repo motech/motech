@@ -30,6 +30,9 @@
 under different authorization schemes.  i.e. no security, api key, etc. -->
     <security:http pattern="/**/commcare/**" security="none"/>
 
+    <!-- kookoo doesn't support urls with basic auth, disabling secuirty for now -->
+    <security:http pattern="/**/kookoo/web-api/**" security="none"/>
+
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
 
     <bean id="basicAuthenticationFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">

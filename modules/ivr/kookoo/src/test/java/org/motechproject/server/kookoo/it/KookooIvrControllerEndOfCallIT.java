@@ -79,7 +79,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             ));
             allTrees.addOrReplace(tree);
 
-            mockKookooIvrController.perform(get("/kookoo/ivr?tree=someTree&ln=en&event=Disconnect&data=31415&sid=123a"));
+            mockKookooIvrController.perform(get("/web-api/ivr?tree=someTree&ln=en&event=Disconnect&data=31415&sid=123a"));
 
             Object lock = listener.getLock();
             synchronized (lock) {
@@ -107,7 +107,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             ));
             allTrees.addOrReplace(tree);
 
-            mockKookooIvrController.perform(get("/kookoo/ivr?tree=someTree&ln=en&event=Hangup&data=31415&sid=123a"));
+            mockKookooIvrController.perform(get("/web-api/ivr?tree=someTree&ln=en&event=Hangup&data=31415&sid=123a"));
 
             Object lock = listener.getLock();
             synchronized (lock) {
@@ -131,8 +131,7 @@ public class KookooIvrControllerEndOfCallIT extends SpringIntegrationTest {
             String sid = "mcid123";
             String phoneNumber = "12345";
             flowSessionService.findOrCreate(sid, phoneNumber);
-
-            String url = String.format("/kookoo/ivr/callstatus?status=ring&status_details=NoAnswer&sid=%s&phone_no=%s", sid, phoneNumber);
+            String url = String.format("/web-api/ivr/callstatus?status=ring&status_details=NoAnswer&sid=%s&phone_no=%s", sid, phoneNumber);
             mockKookooIvrController.perform(post(url));
 
             Object lock = listener.getLock();
