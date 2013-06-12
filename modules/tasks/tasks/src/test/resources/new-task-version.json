@@ -5,20 +5,16 @@
             "@type": "FilterSet",
             "filters": [
                 {
-                    "eventParameter": {
-                        "displayName": "mrs.observation.field.observationConceptName",
-                        "type": "UNICODE",
-                        "eventKey": "ObservationConceptName"
-                    },
+                    "displayName": "Concept name (Trigger)",
+                    "key": "trigger.ObservationConceptName",
+                    "type": "UNICODE",
                     "negationOperator": true,
                     "operator": "equals",
                     "expression": "pregnancy_urine_test"
                 }, {
-                    "eventParameter": {
-                        "displayName": "mrs.observation.field.value",
-                        "type": "UNICODE",
-                        "eventKey": "ObservationValue"
-                    },
+                    "displayName": "Observation value (Trigger)",
+                    "key": "trigger.ObservationValue",
+                    "type": "UNICODE",
                     "negationOperator": true,
                     "operator": "equals",
                     "expression": "positive"

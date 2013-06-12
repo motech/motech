@@ -25,4 +25,18 @@
             };
         });
 
+    widgetModule.filter('orderLessThan', function () {
+                return function (dataSources, order) {
+                    var array = [];
+
+                    angular.forEach(dataSources, function (source) {
+                        if (source.order < order) {
+                            array.push(source);
+                        }
+                    });
+
+                    return array;
+                };
+            });
+
 }());

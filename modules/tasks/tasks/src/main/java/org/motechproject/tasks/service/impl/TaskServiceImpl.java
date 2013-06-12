@@ -85,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
 
             for (TaskActionInformation action : task.getActions()) {
                 errors.addAll(TaskValidator.validateProvider(
-                        action.getValues(), dataSource, provider
+                        action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
                 ));
             }
         }
@@ -235,7 +235,7 @@ public class TaskServiceImpl implements TaskService {
             for (DataSource dataSource : task.getTaskConfig().getDataSources(provider.getId())) {
                 for (TaskActionInformation action : task.getActions()) {
                     Set<TaskError> errors = TaskValidator.validateProvider(
-                            action.getValues(), dataSource, provider
+                            action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
                     );
 
                     setTaskValidationErrors(task, errors,
@@ -296,5 +296,4 @@ public class TaskServiceImpl implements TaskService {
 
         eventRelay.sendEventMessage(motechEvent);
     }
-
 }

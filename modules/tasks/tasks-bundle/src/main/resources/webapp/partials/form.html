@@ -102,24 +102,38 @@
                                                         <div class="control-group">
                                                             <span class="validation-area">
                                                                 <div class="btn-group">
-                                                                    <a class="btn dropdown-toggle dropdown-large-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.eventParameter}">
-                                                                        {{msg((filter.eventParameter && filter.eventParameter.displayName) || 'info.filter.select')}}
+                                                                    <a class="btn dropdown-toggle dropdown-large-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.key}">
+                                                                        <span ng-show="filter.key && filter.displayName">{{filter.displayName}}</span>
+                                                                        <span ng-hide="filter.key && filter.displayName">{{msg('info.filter.select')}}</span>
                                                                         <span class="caret"></span>
                                                                     </a>
                                                                     <ul class="dropdown-menu">
-                                                                        <li ng-repeat="key in selectedTrigger.eventParameters">
-                                                                            <a ng-click="filter.eventParameter = key">{{msg(key.displayName)}}</a>
+                                                                        <li class="dropdown-submenu">
+                                                                            <a tabindex="-1">{{msg('header.trigger')}}</a>
+                                                                            <ul class="dropdown-menu">
+                                                                                <li ng-repeat="option in selectedTrigger.eventParameters">
+                                                                                    <a ng-click="selectParam(filter, 'trigger', option)">{{msg(option.displayName)}}</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </li>
+                                                                        <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in getDataSources() | orderLessThan:step.order">
+                                                                            <a tabindex="-1">{{msg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                                            <ul class="dropdown-menu">
+                                                                                <li ng-repeat="field in findObject(ds.providerId, ds.type).fields">
+                                                                                    <a ng-click="selectParam(filter, 'ad', ds, field)">{{msg(field.displayName)}}</a>
+                                                                                </li>
+                                                                            </ul>
                                                                         </li>
                                                                     </ul>
                                                                 </div>
                                                             </span>
                                                             <span class="validation-area">
                                                                 <div class="btn-group">
-                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined}" ng-disabled="!filter.eventParameter">
+                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined}" ng-disabled="!filter.key">
                                                                         {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'info.filter.' + filter.negationOperator) || 'info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
-                                                                    <ul class="dropdown-menu" ng-hide="!filter.eventParameter">
+                                                                    <ul class="dropdown-menu" ng-hide="!filter.key">
                                                                         <li>
                                                                             <a ng-click="filter.negationOperator = true">{{msg('info.filter.true')}}</a>
                                                                             <a ng-click="filter.negationOperator = false">{{msg('info.filter.false')}}</a>
@@ -134,7 +148,7 @@
                                                                         <span class="caret"></span>
                                                                     </a>
                                                                     <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
-                                                                        <li ng-repeat="operator in operators(filter.eventParameter)">
+                                                                        <li ng-repeat="operator in operators(filter)">
                                                                             <a ng-click="filter.operator = operator">{{msg(operator)}}</a>
                                                                         </li>
                                                                     </ul>

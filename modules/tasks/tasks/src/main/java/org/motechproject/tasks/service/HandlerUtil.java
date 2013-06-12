@@ -7,7 +7,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.OperatorType;
@@ -18,6 +17,10 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
+import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
+import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
+import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 final class HandlerUtil {
     private static final int JOIN_PATTERN_BEGIN_INDEX = 5;
@@ -87,26 +90,30 @@ final class HandlerUtil {
         return value;
     }
 
-    public static boolean checkFilters(List<Filter> filters, Map<String, Object> triggerParameters) {
+    public static boolean checkFilters(List<Filter> filters, Map<String, Object> parameters,
+                                       Map<String, Object> dataSourceObjects) {
         boolean filterCheck = filters == null || filters.isEmpty();
 
-        if (filters != null && triggerParameters != null) {
+        if (filters != null && parameters != null) {
             for (Filter filter : filters) {
-                EventParameter eventParameter = filter.getEventParameter();
+                ParameterType type = filter.getType();
+                KeyInformation key = parse(filter.getKey());
+                Object value = getFilterValue(key, parameters, dataSourceObjects);
 
-                if (triggerParameters.containsKey(eventParameter.getEventKey())) {
-                    ParameterType type = eventParameter.getType();
-                    Object object = triggerParameters.get(eventParameter.getEventKey());
-
+                if (value == null) {
+                    filterCheck = false;
+                } else {
                     if (type.isString()) {
-                        filterCheck = checkFilterForString(filter, (String) object);
+                        filterCheck = checkFilterForString(filter, value.toString());
                     } else if (type.isNumber()) {
-                        filterCheck = checkFilterForNumber(filter, new BigDecimal(object.toString()));
+                        filterCheck = checkFilterForNumber(
+                                filter, new BigDecimal(value.toString())
+                        );
                     }
+                }
 
-                    if (!filter.isNegationOperator()) {
-                        filterCheck = !filterCheck;
-                    }
+                if (!filter.isNegationOperator()) {
+                    filterCheck = !filterCheck;
                 }
 
                 if (!filterCheck) {
@@ -147,6 +154,28 @@ final class HandlerUtil {
         }
 
         return result;
+    }
+
+    private static Object getFilterValue(KeyInformation key, Map<String, Object> parameters,
+                                         Map<String, Object> dataSourceObjects) {
+        Object value = null;
+
+        switch (key.getPrefix()) {
+            case TRIGGER_PREFIX:
+                if (parameters.containsKey(key.getKey())) {
+                    value = parameters.get(key.getKey());
+                }
+                break;
+            case ADDITIONAL_DATA_PREFIX:
+                if (dataSourceObjects.containsKey(key.getObjectId().toString())) {
+                    Object object = dataSourceObjects.get(key.getObjectId().toString());
+                    value = getFieldValue(object, key.getKey());
+                }
+                break;
+            default:
+        }
+
+        return value;
     }
 
     private static boolean checkFilterForString(Filter filter, String param) {

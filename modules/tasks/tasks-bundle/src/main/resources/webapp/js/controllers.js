@@ -177,7 +177,7 @@
                 };
             } else {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                    var triggerChannel, trigger, dataSource, providerId, object, obj, i;
+                    var triggerChannel, trigger, dataSource, object;
 
                     if ($scope.task.trigger) {
                         triggerChannel = $scope.util.find({
@@ -378,6 +378,21 @@
 
         $scope.removeFilter = function (filterSet, filter) {
             filterSet.filters.removeObject(filter);
+        };
+
+        $scope.selectParam = function (filter, type, select, field) {
+            switch(type) {
+            case $scope.util.TRIGGER_PREFIX:
+                filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
+                filter.displayName = "{0} ({1})".format($scope.msg(select.displayName), $scope.msg('header.trigger'));
+                filter.type = select.type;
+                break;
+            case $scope.util.DATA_SOURCE_PREFIX:
+                filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerId, select.type, select.objectId, field.fieldKey);
+                filter.displayName = "{0} ({1}#{2} ({3}))".format($scope.msg(field.displayName), $scope.msg(select.displayName), select.objectId, $scope.msg(select.providerName));
+                filter.type = field.type;
+                break;
+            }
         };
 
         $scope.operators = function (param) {
@@ -705,7 +720,7 @@
 
                     angular.forEach($scope.task.taskConfig.steps, function (step) {
                         if (step['@type'] === 'DataSource') {
-                            step.lookup.value = $scope.util.convertToView($scope, step.lookup.value);
+                            step.lookup.value = $scope.util.convertToView($scope, 'UNICODE', step.lookup.value);
                         }
                     });
 
@@ -733,7 +748,7 @@
                         step.lookup = {};
                     }
 
-                    step.lookup.value = $scope.util.convertToServer($scope, (step && step.lookup && step.lookup.value) || '');
+                    step.lookup.value = $scope.util.convertToServer($scope, step.lookup.value || '');
                 }
             });
 

@@ -28,7 +28,7 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 
 class TaskInitializer {
-    private Map<Object, Object> dataSources;
+    private Map<String, Object> dataSourceObjects;
     private Task task;
     private MotechEvent event;
     private TaskActivityService activityService;
@@ -38,7 +38,7 @@ class TaskInitializer {
         this.event = event;
         this.activityService = activityService;
 
-        this.dataSources = new HashMap<>();
+        this.dataSourceObjects = new HashMap<>();
     }
 
     boolean evalConfigSteps(Map<String, DataProvider> dataProviders) throws TaskHandlerException {
@@ -50,7 +50,9 @@ class TaskInitializer {
 
             if (step instanceof DataSource) {
                 DataSource ds = (DataSource) step;
-                dataSources.put(ds, getDataSourceObject(ds, dataProviders));
+                dataSourceObjects.put(
+                        ds.getObjectId().toString(), getDataSourceObject(ds, dataProviders)
+                );
             } else if (step instanceof FilterSet) {
                 try {
                     result = passFilters((FilterSet) step);
@@ -110,7 +112,9 @@ class TaskInitializer {
         boolean result;
 
         try {
-            result = HandlerUtil.checkFilters(filterSet.getFilters(), event.getParameters());
+            result = HandlerUtil.checkFilters(
+                    filterSet.getFilters(), event.getParameters(), dataSourceObjects
+            );
         } catch (Exception e) {
             throw new TaskHandlerException(FILTER, "error.filterError", e);
         }
@@ -203,7 +207,7 @@ class TaskInitializer {
         DataSource dataSource = task.getTaskConfig().getDataSource(
                 key.getDataProviderId(), key.getObjectId(), key.getObjectType()
         );
-        Object found = dataSources.get(dataSource);
+        Object found = dataSourceObjects.get(dataSource.getObjectId().toString());
         Object value;
 
         if (found == null) {

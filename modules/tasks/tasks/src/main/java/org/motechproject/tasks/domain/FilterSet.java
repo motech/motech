@@ -17,6 +17,12 @@ public class FilterSet extends TaskConfigStep {
         this.filters = filters == null ? new ArrayList<Filter>() : filters;
     }
 
+    public void addFilter(Filter filter) {
+        if (filter != null) {
+            filters.add(filter);
+        }
+    }
+
     public List<Filter> getFilters() {
         return filters;
     }

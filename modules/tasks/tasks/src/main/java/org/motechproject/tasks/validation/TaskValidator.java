@@ -22,11 +22,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 public final class TaskValidator extends GeneralValidator {
     public static final String TASK = "task";
@@ -66,7 +68,7 @@ public final class TaskValidator extends GeneralValidator {
                 errors.addAll(validateActionValues(action.getValues(), triggerEvent));
             }
 
-            errors.addAll(validateFilters(task, triggerEvent));
+            errors.addAll(validateFiltersForTrigger(task, triggerEvent));
             errors.addAll(validateDataSources(task, triggerEvent));
         } else {
             errors.add(new TaskError(
@@ -101,25 +103,55 @@ public final class TaskValidator extends GeneralValidator {
 
     public static Set<TaskError> validateProvider(Map<String, String> actionValues,
                                                   DataSource dataSource,
-                                                  TaskDataProvider provider) {
+                                                  TaskDataProvider provider,
+                                                  SortedSet<FilterSet> filterSets) {
         Set<TaskError> errors = new HashSet<>();
         errors.addAll(validateDataSource(dataSource, provider));
         errors.addAll(validateActionValues(actionValues, provider));
+        errors.addAll(validateFiltersForProvider(filterSets, provider));
 
         return errors;
     }
 
-    private static Set<TaskError> validateFilters(Task task, TriggerEvent triggerEvent) {
+    private static Set<TaskError> validateFiltersForTrigger(Task task, TriggerEvent triggerEvent) {
         Set<TaskError> errors = new HashSet<>();
 
         for (FilterSet filterSet : task.getTaskConfig().getFilters()) {
             for (Filter filter : filterSet.getFilters()) {
-                if (!triggerEvent.containsParameter(filter.getEventParameter().getEventKey())) {
+                KeyInformation key = parse(filter.getKey());
+
+                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
                     errors.add(new TaskError(
                             "validation.error.triggerFieldNotExist",
-                            filter.getEventParameter().getEventKey(),
+                            key.getKey(),
                             triggerEvent.getDisplayName()
                     ));
+                }
+            }
+        }
+
+        return errors;
+    }
+
+    private static Set<TaskError> validateFiltersForProvider(SortedSet<FilterSet> filterSets,
+                                                             TaskDataProvider provider) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (FilterSet filterSet : filterSets) {
+            for (Filter filter : filterSet.getFilters()) {
+                KeyInformation key = parse(filter.getKey());
+
+                if (key.fromAdditionalData() && provider.getId().equals(key.getDataProviderId())) {
+                    TaskDataProviderObject object = provider
+                            .getProviderObject(key.getObjectType());
+
+                    if (!object.containsField(key.getKey())) {
+                        errors.add(new TaskError(
+                                "validation.error.providerObjectFieldNotExist",
+                                key.getKey(),
+                                String.format("%s#%d", key.getObjectType(), key.getObjectId())
+                        ));
+                    }
                 }
             }
         }
@@ -259,24 +291,36 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateFilter(Integer setOrder, int index, Filter filter) {
+    private static Set<TaskError> validateFilter(Integer setOrder, int index, Filter filter,
+                                                 TaskConfig config) {
         Set<TaskError> errors = new HashSet<>();
         String field = String.format("taskConfig.filterSet[%d].filters[%d]", setOrder, index);
+        KeyInformation key = parse(filter.getKey());
+        DataSource dataSource = config.getDataSource(
+                key.getDataProviderId(), key.getObjectId(), key.getObjectType()
+        );
 
         checkNullValue(errors, TASK, field, filter);
 
         if (isEmpty(errors)) {
             String objectName = "task." + field;
 
+            if (key.fromAdditionalData() && dataSource == null) {
+                errors.add(new TaskError(
+                        "validation.error.DataSourceNotExist",
+                        key.getObjectType()
+                ));
+            }
+
+            checkBlankValue(errors, objectName, "key", filter.getKey());
+            checkBlankValue(errors, objectName, "displayName", filter.getDisplayName());
             checkBlankValue(errors, objectName, "operator", filter.getOperator());
+
+            checkNullValue(errors, objectName, "type", filter.getType());
 
             if (OperatorType.fromString(filter.getOperator()) != OperatorType.EXIST) {
                 checkBlankValue(errors, objectName, "expression", filter.getExpression());
             }
-
-            errors.addAll(validateEventParameter(
-                    objectName, "eventParameter", filter.getEventParameter()
-            ));
         }
 
         return errors;
@@ -386,7 +430,7 @@ public final class TaskValidator extends GeneralValidator {
             List<Filter> filters = filterSet.getFilters();
 
             for (int i = 0; i < filters.size(); ++i) {
-                errors.addAll(validateFilter(filterSet.getOrder(), i, filters.get(i)));
+                errors.addAll(validateFilter(filterSet.getOrder(), i, filters.get(i), config));
             }
         }
 
