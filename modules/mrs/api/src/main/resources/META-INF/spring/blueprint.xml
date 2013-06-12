@@ -54,7 +54,9 @@
         <osgi:reference-listener ref="mrsImplementationManager"/>
     </osgi:list>
 
-    <osgi:list id="reqImplAdapterList" interface="org.motechproject.mrs.services.MRSImplReqAdapter" availability="optional"/>
+    <osgi:list id="reqImplAdapterList" interface="org.motechproject.mrs.services.MRSImplReqAdapter" availability="optional">
+        <osgi:reference-listener ref="mrsImplementationManager"/>
+    </osgi:list>
 
     <osgi:list id="conceptAdapterList" interface="org.motechproject.mrs.services.MRSConceptAdapter" availability="optional">
         <osgi:reference-listener ref="mrsImplementationManager"/>
