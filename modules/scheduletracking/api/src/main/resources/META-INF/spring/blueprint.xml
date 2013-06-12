@@ -15,7 +15,7 @@
         <constructor-arg name="moduleName" value="scheduletracking"/>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../scheduletracking/resources/bundles/"/>
+                <entry key="messages" value="../scheduletracking/resources/messages/"/>
             </map>
         </constructor-arg>
     </bean>

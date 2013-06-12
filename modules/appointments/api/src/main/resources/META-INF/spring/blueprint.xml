@@ -15,7 +15,7 @@
         <constructor-arg name="moduleName" value="appointments"/>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../appointments/resources/bundles/"/>
+                <entry key="messages" value="../appointments/resources/messages/"/>
             </map>
         </constructor-arg>
     </bean>

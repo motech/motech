@@ -11,7 +11,7 @@
         <constructor-arg value="scheduler"/>
         <constructor-arg type="java.util.Map">
             <map>
-                <entry key="messages" value="../scheduler/resources/bundles/"/>
+                <entry key="messages" value="../scheduler/resources/messages/"/>
             </map>
         </constructor-arg>
     </bean>

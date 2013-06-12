@@ -30,7 +30,7 @@
         <constructor-arg name="moduleName" value="pillreminder"/>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../pillreminder/resource/bundles/"/>
+                <entry key="messages" value="../pillreminder/resource/messages/"/>
             </map>
         </constructor-arg>
     </bean>

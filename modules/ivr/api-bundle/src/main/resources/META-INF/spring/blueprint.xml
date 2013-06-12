@@ -22,7 +22,7 @@
         </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../ivr/bundles/"/>
+                <entry key="messages" value="../ivr/messages/"/>
             </map>
         </constructor-arg>
         <constructor-arg name="header">

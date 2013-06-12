@@ -17,7 +17,7 @@
     <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/webapp/"/>
+        <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>
     </bean>

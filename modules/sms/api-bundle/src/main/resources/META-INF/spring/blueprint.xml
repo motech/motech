@@ -32,7 +32,7 @@
         </constructor-arg>
         <constructor-arg name="i18n">
             <map>
-                <entry key="messages" value="../sms/resource/bundles/"/>
+                <entry key="messages" value="../sms/resource/messages/"/>
             </map>
         </constructor-arg>
         <constructor-arg name="header" ref="header"/>

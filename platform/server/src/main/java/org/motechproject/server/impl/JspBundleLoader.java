@@ -92,7 +92,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
                 }
 
                 //Search for *.properties files in bundle
-                for (String path : Arrays.asList("/webapp/resources/messages", "/webapp/bundles", "/webapp/messages")) {
+                for (String path : Arrays.asList("/webapp/resources/messages", "/webapp/messages", "/webapp/messages")) {
                     loadBundleMessageFilesFromBundle(bundle, destRoot, path);
                 }
             }
