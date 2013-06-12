@@ -14,6 +14,8 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.commcare"/>
 
+    <bean id="commcareDataProvider" class="org.motechproject.commcare.CommcareDataProvider"/>
+
     <bean id="header" class="org.motechproject.osgi.web.Header"/>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
@@ -32,6 +34,9 @@
         <constructor-arg name="header" ref="header"/>
         <property name="settingsURL" value="/settings" />
     </bean>
+
+    <osgi:service id="commcareDataProviderOsgi" auto-export="interfaces" ref="commcareDataProvider"
+                  interface="org.motechproject.commons.api.DataProvider"/>
 
     <osgi:service id="commcareUserServiceOsgi" ref="commcareUserServiceImpl"
                   interface="org.motechproject.commcare.service.CommcareUserService"/>
