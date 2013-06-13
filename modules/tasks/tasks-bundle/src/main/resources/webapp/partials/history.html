@@ -1,8 +1,8 @@
 <!------------------------  History ------------------------------------->
-<div class="row-fluid" xmlns="http://www.w3.org/1999/html">
+<div class="row-fluid tab-frame" xmlns="http://www.w3.org/1999/html">
     <div class="margin-after history">
-        <div class="box-header">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-header pull-right"><i class="icon-mail-reply icon-white"></i></a></div>
-        <div class="box-content tasks-list">
+        <h4 class="frame-title">{{msg('header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+        <div class="tasks-list">
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
                     <ul class="task-nav">
@@ -108,7 +108,7 @@
             </div>
             <div class="inside">
                 <a href ng-click="clearHistory()" class="btn btn-danger"> {{msg('button.clearHistory')}}</a>
-                <a href="#/task/" class="btn btn-primary"> {{msg('button.back')}}</a>
+                <a href="#/task/" class="btn btn-primary"><i class="icon-mail-reply icon-white"></i> {{msg('button.back')}}</a>
             </div>
         </div>
     </div>
