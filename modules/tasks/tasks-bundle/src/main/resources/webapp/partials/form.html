@@ -171,10 +171,10 @@
                                                 <editable-content ui-if="i.type == 'DATE'" data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="DATE"></editable-content>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio-inline no-margin-top">
-                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($index, 'true')" ng-click="setBooleanValue($index, true)"/> {{msg('yes')}}
+                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'true')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, true)"/> {{msg('yes')}}
                                                     </label>
                                                     <label class="radio-inline no-margin-top">
-                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($index, 'false')" ng-click="setBooleanValue($index, false)"/> {{msg('no')}}
+                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'false')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, false)"/> {{msg('no')}}
                                                     </label>
                                                     <label class="radio-inline input-large-fluid no-margin-bottom">
                                                         <editable-content data="i" index="$index" type="BOOLEAN"></editable-content>

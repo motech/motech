@@ -825,12 +825,12 @@
             return (value === 'true' || value === 'false') ? null : value;
         };
 
-        $scope.setBooleanValue = function (index, value) {
-            $scope.selectedAction.actionParameters[index].value = $scope.util.createBooleanSpan($scope, value);
+        $scope.setBooleanValue = function (action, index, value) {
+            $scope.selectedAction[action].actionParameters[index].value = $scope.util.createBooleanSpan($scope, value);
         };
 
-        $scope.checkedBoolean = function (index, val) {
-            var prop = $scope.selectedAction.actionParameters[index],
+        $scope.checkedBoolean = function (action, index, val) {
+            var prop = $scope.selectedAction[action].actionParameters[index],
                 value = $scope.refactorDivEditable(prop.value === undefined ? '' : prop.value);
 
             return value === val;

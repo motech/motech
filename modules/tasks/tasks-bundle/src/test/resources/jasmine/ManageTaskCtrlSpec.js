@@ -305,7 +305,7 @@
             var yes = '<span contenteditable="false" data-value="true" data-prefix="other" class="badge badge-success">Yes</span>',
                 no = '<span contenteditable="false" data-value="false" data-prefix="other" class="badge badge-important">No</span>';
 
-            scope.selectedAction = {
+            scope.selectedAction[0] = {
                 actionParameters: [ {} ]
             };
 
@@ -313,15 +313,15 @@
                 return key.charAt(0).toUpperCase() + key.slice(1);
             };
 
-            scope.setBooleanValue(0, true);
-            expect(scope.selectedAction.actionParameters[0].value).toEqual(yes);
+            scope.setBooleanValue(0, 0, true);
+            expect(scope.selectedAction[0].actionParameters[0].value).toEqual(yes);
 
-            scope.setBooleanValue(0, false);
-            expect(scope.selectedAction.actionParameters[0].value).toEqual(no);
+            scope.setBooleanValue(0, 0, false);
+            expect(scope.selectedAction[0].actionParameters[0].value).toEqual(no);
         });
 
         it('Should check boolean', function () {
-            scope.selectedAction = {
+            scope.selectedAction[0] = {
                 actionParameters: [
                     { value: '<span contenteditable="false" data-value="true" data-prefix="other" class="badge badge-success">Yes</span>' },
                     { value: '<span contenteditable="false" data-value="false" data-prefix="other" class="badge badge-important">No</span>' },
@@ -331,12 +331,12 @@
 
             scope.BrowserDetect = { browser: 'Chrome' };
 
-            expect(scope.checkedBoolean(0, 'true')).toEqual(true);
-            expect(scope.checkedBoolean(1, 'true')).toEqual(false);
-            expect(scope.checkedBoolean(2, 'true')).toEqual(false);
-            expect(scope.checkedBoolean(0, 'false')).toEqual(false);
-            expect(scope.checkedBoolean(1, 'false')).toEqual(true);
-            expect(scope.checkedBoolean(2, 'false')).toEqual(false);
+            expect(scope.checkedBoolean(0, 0, 'true')).toEqual(true);
+            expect(scope.checkedBoolean(0, 1, 'true')).toEqual(false);
+            expect(scope.checkedBoolean(0, 2, 'true')).toEqual(false);
+            expect(scope.checkedBoolean(0, 0, 'false')).toEqual(false);
+            expect(scope.checkedBoolean(0, 1, 'false')).toEqual(true);
+            expect(scope.checkedBoolean(0, 2, 'false')).toEqual(false);
         });
 
     });
