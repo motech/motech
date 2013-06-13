@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
 import org.motechproject.ivr.domain.CallDisposition;
-import org.motechproject.ivr.domain.CallEvent;
+import org.motechproject.ivr.domain.CallEventLog;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -14,7 +14,7 @@ public class CallDetailRecordTest {
         CallDetailRecord callDetailRecord = CallDetailRecord.create("43435", CallDirection.Inbound, CallDisposition.ANSWERED);
         assertEquals(null, callDetailRecord.lastCallEvent());
         String eventName = "Foo";
-        callDetailRecord.addCallEvent(new CallEvent(eventName));
+        callDetailRecord.addCallEvent(new CallEventLog(eventName));
         assertEquals(eventName, callDetailRecord.lastCallEvent().getName());
     }
 }

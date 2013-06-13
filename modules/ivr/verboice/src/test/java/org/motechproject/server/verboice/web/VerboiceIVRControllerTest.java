@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.callflow.service.CallFlowServer;
 import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
@@ -12,6 +13,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -23,7 +25,7 @@ public class VerboiceIVRControllerTest {
     @Mock
     private FlowSessionService flowSessionService;
     @Mock
-    private CallFlowServer decisionTreeServer;
+    private CallFlowServer callFlowServer;
 
     @Before
     public void setup() {
@@ -42,7 +44,7 @@ public class VerboiceIVRControllerTest {
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
         ModelAndView view = new ModelAndView();
-        when(decisionTreeServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
+        when(callFlowServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
 
         assertEquals(view, verboiceIvrController.handle(request, new MockHttpServletResponse()));
     }
@@ -60,7 +62,7 @@ public class VerboiceIVRControllerTest {
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
         ModelAndView view = new ModelAndView();
-        when(decisionTreeServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
+        when(callFlowServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
 
         verboiceIvrController.handle(request, new MockHttpServletResponse());
 
@@ -82,10 +84,104 @@ public class VerboiceIVRControllerTest {
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
         ModelAndView view = new ModelAndView();
-        when(decisionTreeServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
+        when(callFlowServer.getResponse("123a", "1234567890", "verboice", "sometree", null, "en")).thenReturn(view);
 
         verboiceIvrController.handle(request, new MockHttpServletResponse());
 
         verify(flowSessionService).findOrCreate("123a", "1234567890");
+    }
+
+    @Test
+    public void shouldRaiseCallQueuedEvent() {
+        shouldRaiseCallEvent("queued", IvrEvent.Queued);
+    }
+
+    @Test
+    public void shouldRaiseCallRingingEvent() {
+        shouldRaiseCallEvent("ringing", IvrEvent.Ringing);
+    }
+
+    @Test
+    public void shouldRaiseCallInitiatedEvent() {
+        shouldRaiseCallEvent("in-progress", IvrEvent.Initiated);
+    }
+
+    @Test
+    public void shouldRaiseCallUnansweredEvent() {
+        shouldRaiseCallEvent("no-answer", IvrEvent.Missed);
+    }
+
+    @Test
+    public void shouldRaiseCallBusyEvent() {
+        shouldRaiseCallEvent("busy", IvrEvent.Busy);
+    }
+
+    @Test
+    public void shouldRaiseCallFailureEvent() {
+        shouldRaiseCallEvent("failed", IvrEvent.Failed);
+    }
+
+    @Test
+    public void shouldRaiseCallCompletedEvent() {
+        shouldRaiseCallEvent("completed", IvrEvent.Answered);
+    }
+
+    private void shouldRaiseCallEvent(String callStatus, IvrEvent event) {
+        FlowSession flowSession = new FlowSessionRecord("123a", "1234567890");
+        when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
+
+        ModelAndView view = new ModelAndView();
+        when(callFlowServer.getResponse(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(view);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("CallStatus", callStatus);
+        request.setParameter("CallSid", "123a");
+        request.setParameter("From", "1234567890");
+
+        verboiceIvrController.handleStatus(request);
+
+        verify(callFlowServer).raiseCallEvent(event, "123a");
+    }
+
+    @Test
+    public void shouldRaiseInitiatedEventForConnectCall() {
+        shouldRaiseEventForConnectCall("in-progress", IvrEvent.DialInitiated);
+    }
+
+    @Test
+    public void shouldRaiseAnsweredEventForConnectCall() {
+        shouldRaiseEventForConnectCall("completed", IvrEvent.DialAnswered);
+    }
+
+    @Test
+    public void shouldRaiseMissedEventForConnectCall() {
+        shouldRaiseEventForConnectCall("no-answer", IvrEvent.DialMissed);
+    }
+
+    @Test
+    public void shouldRaiseBusyEventForConnectCall() {
+        shouldRaiseEventForConnectCall("busy", IvrEvent.DialBusy);
+    }
+
+    @Test
+    public void shouldRaiseFailedEventForConnectCall() {
+        shouldRaiseEventForConnectCall("failed", IvrEvent.DialFailed);
+    }
+
+    private void shouldRaiseEventForConnectCall(String dialStatus, IvrEvent event) {
+        FlowSession flowSession = new FlowSessionRecord("123a", "1234567890");
+        when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
+
+        ModelAndView view = new ModelAndView();
+        when(callFlowServer.getResponse(anyString(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(view);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("DialCallStatus", dialStatus);
+        request.setParameter("CallSid", "123a");
+        request.setParameter("From", "1234567890");
+
+        verboiceIvrController.handle(request, new MockHttpServletResponse());
+
+        verify(callFlowServer).raiseCallEvent(event, "123a");
     }
 }

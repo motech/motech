@@ -1,4 +1,4 @@
-package org.motechproject.decisiontree.core;
+package org.motechproject.ivr.domain;
 
 public final class EventKeys {
 
@@ -6,7 +6,8 @@ public final class EventKeys {
         // static utility class
     }
 
-    public static final String END_OF_CALL_EVENT = "end_of_call";
     public static final String CALL_DETAIL_RECORD_PARAM = "call_detail_record";
+
+    public static final String END_OF_CALL_EVENT = "ivr.end_of_call.*";
 
 }

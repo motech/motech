@@ -2,16 +2,15 @@ package org.motechproject.server.verboice.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.domain.CallEventLog;
 import org.motechproject.callflow.domain.FlowSessionRecord;
+import org.motechproject.callflow.domain.IvrEvent;
 import org.motechproject.callflow.service.CallFlowServer;
 import org.motechproject.callflow.service.FlowSessionService;
 import org.motechproject.decisiontree.core.FlowSession;
-import org.motechproject.decisiontree.core.model.CallStatus;
-import org.motechproject.ivr.domain.CallDisposition;
-import org.motechproject.ivr.exception.SessionNotFoundException;
 import org.motechproject.ivr.domain.CallDetailRecord;
 import org.motechproject.ivr.domain.CallDirection;
-import org.motechproject.ivr.domain.CallEvent;
+import org.motechproject.ivr.domain.CallDisposition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -23,8 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -35,6 +33,7 @@ public class VerboiceIVRController {
     private static final String VERBOICE_CALL_SID = "CallSid";
     private static final String VERBOICE_FROM_PHONE_PARAM = "From";
     private Logger logger = Logger.getLogger(VerboiceIVRController.class);
+    private Map<String, IvrEvent> callEvents;
 
     @Autowired
     private FlowSessionService flowSessionService;
@@ -42,6 +41,7 @@ public class VerboiceIVRController {
     private CallFlowServer callFlowServer;
 
     public VerboiceIVRController() {
+        constructCallEvents();
     }
 
     @RequestMapping("/ivr")
@@ -59,6 +59,9 @@ public class VerboiceIVRController {
         String tree = request.getParameter("tree");
         String language = request.getParameter("ln");
         String digits = request.getParameter("DialCallStatus");
+
+        raiseCallEvent("dial&" + digits, verboiceCallId);
+
         if (StringUtils.isBlank(digits)) {
             digits = request.getParameter("Digits");
         }
@@ -80,7 +83,7 @@ public class VerboiceIVRController {
 
     @RequestMapping(value = "/ivr/callstatus", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public void handleMissedCall(HttpServletRequest request) {
+    public void handleStatus(HttpServletRequest request) {
         String callStatus = request.getParameter("CallStatus");
         String callSid = request.getParameter(VERBOICE_CALL_SID);
         String phoneNum = request.getParameter(VERBOICE_FROM_PHONE_PARAM);
@@ -89,25 +92,30 @@ public class VerboiceIVRController {
 
         updateRecord(callStatus, callSid, phoneNum);
 
-        if ("completed".equals(callStatus)) {
-            String language = request.getParameter("ln");
-            String verboiceCallId = request.getParameter(VERBOICE_CALL_SID);
-            String phoneNumber = request.getParameter(VERBOICE_FROM_PHONE_PARAM);
-            String tree = request.getParameter("tree");
-            callFlowServer.getResponse(verboiceCallId, phoneNumber, "verboice", tree, CallStatus.Disconnect.toString(), language);
-        }
+        raiseCallEvent(callStatus, callSid);
+    }
 
-        List<String> missedCallStatuses = Arrays.asList("busy", "failed", "no-answer");
-        if (callStatus == null || callStatus.trim().isEmpty() || !missedCallStatuses.contains(callStatus)) {
-            return;
+    private void raiseCallEvent(String callStatus, String callSid) {
+        IvrEvent ivrEvent = callEvents.get(callStatus);
+        if (ivrEvent != null) {
+            callFlowServer.raiseCallEvent(ivrEvent, callSid);
         }
+    }
 
-        FlowSession session = flowSessionService.getSession(callSid);
-        if (session == null) {
-            throw new SessionNotFoundException("No session found! [Session Id " + callSid + "]");
-        }
-
-        callFlowServer.handleMissedCall(session.getSessionId());
+    private void constructCallEvents() {
+        callEvents = new HashMap<>();
+        callEvents.put("queued", IvrEvent.Queued);
+        callEvents.put("ringing", IvrEvent.Ringing);
+        callEvents.put("in-progress", IvrEvent.Initiated);
+        callEvents.put("no-answer", IvrEvent.Missed);
+        callEvents.put("busy", IvrEvent.Busy);
+        callEvents.put("failed", IvrEvent.Failed);
+        callEvents.put("completed", IvrEvent.Answered);
+        callEvents.put("dial&in-progress", IvrEvent.DialInitiated);
+        callEvents.put("dial&no-answer", IvrEvent.DialMissed);
+        callEvents.put("dial&busy", IvrEvent.DialBusy);
+        callEvents.put("dial&failed", IvrEvent.DialFailed);
+        callEvents.put("dial&completed", IvrEvent.DialAnswered);
     }
 
     private void updateRecord(String callStatus, String callSid, String phoneNumber) {
@@ -115,8 +123,8 @@ public class VerboiceIVRController {
         if (record != null) {
 
             CallDetailRecord callDetail = record.getCallDetailRecord();
-            CallEvent callEvent = new CallEvent(callStatus);
-            callDetail.addCallEvent(callEvent);
+            CallEventLog callEventLog = new CallEventLog(callStatus);
+            callDetail.addCallEvent(callEventLog);
 
             if ("ringing".equals(callStatus)) {
                 callDetail.setDisposition(CallDisposition.UNKNOWN);
