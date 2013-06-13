@@ -59,6 +59,11 @@
     width: auto;
 }
 
+.popover {
+     width: 236px;
+     max-width: 450px;
+}
+
 .custom-rule-fields .popover code {
     display: block;
     margin-top: 4px;
