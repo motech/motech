@@ -16,7 +16,7 @@ import java.io.InputStream;
 import static java.util.Arrays.asList;
 
 
-public class SmsHttpServiceBundleIT extends BaseOsgiIT {
+public class SmsHttpServiceBundleITIgnored extends BaseOsgiIT {
 
     public static final int PORT = 8282;
     public static final int MAX_WAIT_TIME = 2000;
