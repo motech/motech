@@ -1,9 +1,9 @@
 <!------------------------  Tasks  ------------------------------------->
-<div class="row-fluid">
-    <div class="span8 margin-after">
+<div class="row-fluid tab-frame">
+    <div class="span8">
 
-        <div class="box-header">{{msg('header.tasks')}}</div>
-        <div class="box-content clearfix">
+        <h4 class="frame-title">{{msg('header.tasks')}}</h4>
+        <div class="clearfix">
             <div class="inside btn-group">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             </div>
@@ -125,7 +125,7 @@
     <div class="span4">
         <!------------------------  Recent task activity  ------------------------>
         <div class="margin-after2">
-            <div class="box-header">{{msg('header.recentTaskActivity')}}</div>
+            <div class="inbox-header">{{msg('header.recentTaskActivity')}}</div>
             <div class="box-content clearfix">
                 <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
                     <tbody ng-show="activities.length == 0">

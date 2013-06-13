@@ -1,5 +1,28 @@
+.tasks.nav.nav-tabs {
+    border-bottom: medium none;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 10px;
+}
+
 .tab-content {
     padding-left: 0;
+}
+
+.btn-in-frame-header {
+    margin:-10px 0;
+    font-weight: normal;
+}
+
+.tab-frame .frame-header {
+    background: #7DB9E8;
+    border-radius: 4px;
+    box-shadow: 0 0 4px #BEC9DE;
+    color: #224477;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 5px 10px;
 }
 
 #sortable, sortable-no {
@@ -453,6 +476,11 @@ editable-content .actionField.input-block-level span.badge {
     vertical-align: middle;
     margin-top: -1px;
 }
+
+.table-recent-activity tbody + tbody {
+    border-top: 1px solid #DDDDDD;
+}
+
 .table-recent-activity.table-condensed td {
     padding: 1px 5px;
 }
@@ -490,6 +518,11 @@ editable-content .actionField.input-block-level span.badge {
     cursor: default;
 }
 
+.history .box-content {
+    border: none;
+    box-shadow: none;
+}
+
 .recent-activity-task-img {
     height: 26px;
     width: 26px;
@@ -498,6 +531,7 @@ editable-content .actionField.input-block-level span.badge {
 .table-recent-activity-task {
     margin-bottom: 0;
     vertical-align: middle;
+    border-right: 0;
 }
 
 .table-recent-activity-task tbody td:first-child {
@@ -966,8 +1000,8 @@ i.close-channel.icon-remove {
     padding: 0 10px;
 }
 
-.settings-title {
-    margin-left: 15px;
+.frame-title {
+    margin-left: 10px;
 }
 .popover {
     max-width: none;
