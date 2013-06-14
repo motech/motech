@@ -1004,5 +1004,5 @@ i.close-channel.icon-remove {
     margin-left: 10px;
 }
 .popover {
-    max-width: none;
+    max-width: 450px;
 }
