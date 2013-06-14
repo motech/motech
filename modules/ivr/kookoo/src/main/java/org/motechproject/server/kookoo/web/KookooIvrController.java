@@ -22,7 +22,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 @Controller
-@RequestMapping("/kookoo")
+@RequestMapping("/web-api")
 public class KookooIvrController {
 
     public static final String STATUS = "status";

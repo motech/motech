@@ -57,7 +57,8 @@ public class VerboiceIVRControllerEndOfCallIT extends SpringIntegrationTest {
             String motechCallId = "motechId";
             String phoneNumber = "12345";
             flowSessionService.findOrCreate(callSid, phoneNumber);
-            mockVerboiceIvrController.perform(get(format("/ivr/callstatus?CallStatus=no-answer&CallSid=%s&motech_call_id=%s&From=%s", callSid, motechCallId, phoneNumber)));
+            String url = String.format("/web-api/ivr/callstatus?CallStatus=no-answer&CallSid=%s&motech_call_id=%s&From=%s", callSid, motechCallId, phoneNumber);
+            mockVerboiceIvrController.perform(get(url));
 
             Object lock = listener.getLock();
             while (!listener.isEventReceived()) {

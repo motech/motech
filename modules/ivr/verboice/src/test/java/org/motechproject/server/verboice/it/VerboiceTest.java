@@ -13,7 +13,7 @@ abstract public class VerboiceTest extends SpringIntegrationTest{
 
     static private Server server;
     public static final String CONTEXT_PATH = "/verboice";
-    static final String VERBOICE_IVR_URL = "/ivr";
+    static final String VERBOICE_IVR_URL = "/web-api/ivr";
     static final String SERVER_URL = "http://localhost:" + TestContext.getVerboicePort() + CONTEXT_PATH + VERBOICE_IVR_URL;
 
     @BeforeClass
