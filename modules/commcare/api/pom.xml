@@ -128,7 +128,8 @@
                             org.motechproject.commcare.response;version=${project.version},
                             org.motechproject.commcare.events.constants;version=${project.version},
                             org.motechproject.commcare.events;version=${project.version},
-                            org.motechproject.commcare.builder;version=${project.version}
+                            org.motechproject.commcare.builder;version=${project.version},
+                            org.motechproject.commcare.parser;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.event.listener,
