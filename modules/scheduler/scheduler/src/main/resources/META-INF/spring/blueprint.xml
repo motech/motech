@@ -21,4 +21,7 @@
     <osgi:service ref="schedulerActionProxyService" interface="org.motechproject.scheduler.MotechSchedulerActionProxyService"/>
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+
+    <!-- TODO: Without this bean, settings service would not look into .motech/config -->
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 </beans>

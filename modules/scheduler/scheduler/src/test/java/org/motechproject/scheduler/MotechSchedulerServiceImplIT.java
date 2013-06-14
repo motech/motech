@@ -117,28 +117,37 @@ public class MotechSchedulerServiceImplIT {
     }
 
     @Test
+    // org.quartz.jobStore.misfireThreshold=1000 (in quartz.properties) makes the test reliable.
+    // See http://quartz-scheduler.org/documentation/quartz-2.x/configuration/ConfigJobStoreTX
     public void shouldNotIgnoreFiresInPastWhenSchedulingCronJob() throws InterruptedException, SchedulerException {
+        final String eventSubject = "eve";
         try {
             TestEventListener listener = new TestEventListener();
-            eventListenerRegistryService.registerListener(listener, "eve");
+            eventListenerRegistryService.registerListener(listener, eventSubject);
 
-            DateTime now;
-            for (now = now(); now.getSecondOfMinute() > 56 || now.getSecondOfMinute() < 3; now = now()) {   // we don't want triggers now, only misfires
-                Thread.sleep(1000);
-            }
-            DateTime jobStartTime = now.minusMinutes(3);
+            DateTime now = findSuitableTimeToScheduleWithSafeBufferFromTriggerTime();
             Map<String, Object> params = new HashMap<>();
             params.put(MotechSchedulerService.JOB_ID_KEY, "job_id");
-            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent("eve", params), "0 0/1 * 1/1 * ? *", jobStartTime.toDate(), null, false));
+            DateTime jobStartTimeInPast = now.minusMinutes(3);
+            schedulerService.scheduleJob(new CronSchedulableJob(new MotechEvent(eventSubject, params),
+                    "0 0/1 * 1/1 * ? *", jobStartTimeInPast.toDate(), null, false));
 
             synchronized (listener.getReceivedEvents()) {
-                listener.getReceivedEvents().wait(2000);
+                listener.getReceivedEvents().wait(5000);
             }
-            assertTrue(listener.getReceivedEvents().size() > 0);
+            assertTrue("Listener didn't receive misfired events.", listener.getReceivedEvents().size() > 0);
         } finally {
-            eventListenerRegistryService.clearListenersForBean("test");
-            schedulerService.unscheduleAllJobs("test-job_id");
+            eventListenerRegistryService.clearListenersForBean(eventSubject);
+            schedulerService.unscheduleAllJobs(eventSubject+ "-job_id");
         }
+    }
+
+    private DateTime findSuitableTimeToScheduleWithSafeBufferFromTriggerTime() throws InterruptedException {
+        DateTime now;
+        for (now = now(); now.getSecondOfMinute() >= 50 || now.getSecondOfMinute() <= 10; now = now()) {
+            Thread.sleep(1000);
+        }
+        return now;
     }
 
     @Test

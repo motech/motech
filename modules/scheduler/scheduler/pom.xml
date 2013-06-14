@@ -34,10 +34,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -54,6 +50,21 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Quartz -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+        </dependency>
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql.jdbc</groupId>
+            <artifactId>com.springsource.com.mysql.jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-c3p0-fragment-bundle</artifactId>
+        </dependency>
+        <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
@@ -75,6 +86,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>task-channel.json</include>
+                    <include>quartz.properties</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -82,6 +94,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>task-channel.json</exclude>
+                    <exclude>quartz.properties</exclude>
                 </excludes>
                 <filtering>false</filtering>
             </resource>
@@ -143,6 +156,7 @@
                             net.sf.jasperreports.*;resolution:=optional,
                             org.apache.velocity.*;resolution:=optional,
                             org.springframework.jdbc.*;resolution:=optional,
+                            org.motechproject.server.config.service,
                             *
                         </Import-Package>
                         <!-- Spring context support has optional import of Quartz. This gives runtime exception.
@@ -241,7 +255,61 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>2.5</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>pre-it-clean-config</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${user.home}/.motech/config</directory>
+                                            <includes>
+                                                <include>${project.groupId}.${project.artifactId}-bundle/*.properties</include>
+                                            </includes>
+                                            <followSymlinks>false</followSymlinks>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-it-clean-config</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${user.home}/.motech/config</directory>
+                                            <includes>
+                                                <include>${project.groupId}.${project.artifactId}-bundle/*.properties</include>
+                                            </includes>
+                                            <followSymlinks>false</followSymlinks>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
