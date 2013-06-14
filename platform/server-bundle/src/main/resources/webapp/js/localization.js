@@ -1,10 +1,9 @@
-'use strict';
-
 /* localization service */
 
 var localizationModule = angular.module('localization', []);
 
 localizationModule.factory("i18nService", function() {
+    'use strict';
 
     var service = {
         ready : false,
@@ -15,7 +14,7 @@ localizationModule.factory("i18nService", function() {
         getMessage : function(key) {
             var msg = '';
 
-            if (this.ready == true) {
+            if (this.ready === true) {
                 // flatten the arg list and pass to i18n.prop as args
                 msg = jQuery.i18n.prop.apply(null, $.map(arguments, function(n) {
                     return n;
@@ -46,9 +45,8 @@ localizationModule.factory("i18nService", function() {
                     }
                 }
             });
-        },
-
-    }
+        }
+    };
 
     return service;
 });

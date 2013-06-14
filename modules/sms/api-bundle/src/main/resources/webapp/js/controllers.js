@@ -1,37 +1,40 @@
-'use strict';
+(function () {
+    'use strict';
 
-/* Controllers */
+    /* Controllers */
+    var smsModule = angular.module('motech-sms');
 
-function SmsController($scope, $http) {
+    smsModule.controller('SmsController', function ($scope, $http) {
 
-    function resetDeliveryStatus() {
-        $scope.smsDeliveryResult = "";
-        $('.smsAlert').removeClass("alert alert-success alert-error");
-    };
+        function resetDeliveryStatus() {
+            $scope.smsDeliveryResult = "";
+            $('.smsAlert').removeClass("alert alert-success alert-error");
+        }
 
-    function setDeliveryStatus(status){
-       $scope.smsDeliveryResult = status;
-    };
+        function setDeliveryStatus(status){
+           $scope.smsDeliveryResult = status;
+        }
 
-    $scope.sms = {};
+        $scope.sms = {};
 
-    $scope.sendSMS = function () {
-        setDeliveryStatus($scope.msg('sms.sending'));
-        $http.post('../smsapi/outbound', $scope.sms).success(
-            function (data, status, headers, config) {
-                setDeliveryStatus($scope.msg('sms.sent'));
-                $('.smsAlert').removeClass("alert-error").addClass('alert alert-success');
-            }
-        ).error(function (data, status, headers, config) {
-                setDeliveryStatus($scope.msg('sms.failed') + " - " +status);
-                $('.smsAlert').removeClass("alert-success").addClass('alert alert-error');
-            });
-    };
+        $scope.sendSMS = function () {
+            setDeliveryStatus($scope.msg('sms.sending'));
+            $http.post('../smsapi/outbound', $scope.sms).success(
+                function (data, status, headers, config) {
+                    setDeliveryStatus($scope.msg('sms.sent'));
+                    $('.smsAlert').removeClass("alert-error").addClass('alert alert-success');
+                }
+            ).error(function (data, status, headers, config) {
+                    setDeliveryStatus($scope.msg('sms.failed') + " - " +status);
+                    $('.smsAlert').removeClass("alert-success").addClass('alert alert-error');
+                });
+        };
 
-    $scope.smsDeliveryStatus = function () {
-        return $scope.smsDeliveryResult;
-    };
+        $scope.smsDeliveryStatus = function () {
+            return $scope.smsDeliveryResult;
+        };
 
-    resetDeliveryStatus();
+        resetDeliveryStatus();
 
-}
+    });
+}());

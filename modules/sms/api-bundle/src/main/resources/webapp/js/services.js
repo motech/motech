@@ -1,7 +1,9 @@
-'use strict';
+(function () {
+    'use strict';
 
-/* Services */
+    /* Services */
 
-angular.module('smsRecordsService', ['ngResource']).factory('SmsRecords', function($resource) {
-    return $resource('../smsapi/smslogging');
-});
+    angular.module('smsRecordsService', ['ngResource']).factory('SmsRecords', function($resource) {
+        return $resource('../smsapi/smslogging');
+    });
+}());

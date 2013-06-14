@@ -1,36 +1,38 @@
-'use strict';
+(function () {
+    'use strict';
 
-angular.module('AggregationRuleServices', ['ngResource'])
+    angular.module('AggregationRuleServices', ['ngResource'])
 
-    .factory('AggregationRules', function ($resource) {
-        return $resource('../event-aggregation/rules/:ruleName', {}, {
-            all: {
-                method:'GET',
-                params:{},
-                isArray:true
-            },
-            find: {
-                method:'GET',
-                params:{
-                    ruleName: 'ruleName'
+        .factory('AggregationRules', function ($resource) {
+            return $resource('../event-aggregation/rules/:ruleName', {}, {
+                all: {
+                    method:'GET',
+                    params:{},
+                    isArray:true
                 },
-                isArray:false
-            },
-            update: {
-                method:'PUT'
-            }
-        });
-    })
-
-    .factory('Aggregations', function ($resource) {
-        return $resource('../event-aggregation/aggregations/:ruleName/:eventStatus', {}, {
-            find: {
-                method:'GET',
-                params:{
-                    ruleName: 'ruleName',
-                    eventStatus: 'eventStatus'
+                find: {
+                    method:'GET',
+                    params:{
+                        ruleName: 'ruleName'
+                    },
+                    isArray:false
                 },
-                isArray:true
-            }
+                update: {
+                    method:'PUT'
+                }
+            });
+        })
+
+        .factory('Aggregations', function ($resource) {
+            return $resource('../event-aggregation/aggregations/:ruleName/:eventStatus', {}, {
+                find: {
+                    method:'GET',
+                    params:{
+                        ruleName: 'ruleName',
+                        eventStatus: 'eventStatus'
+                    },
+                    isArray:true
+                }
+            });
         });
-    });
+}());

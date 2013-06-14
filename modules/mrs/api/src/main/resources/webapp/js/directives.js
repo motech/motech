@@ -1,38 +1,42 @@
-var widgetModule = angular.module('motech-mrs');
+(function () {
+    'use strict';
 
-widgetModule.directive('datepicker', function() {
+    var widgetModule = angular.module('motech-mrs');
 
-    var momentDateFormat = 'DD/MM/YYYY';
+    widgetModule.directive('datepicker', function() {
 
-    function fromFormattedDate(formattedDate) {
-        return moment(parseInt(moment(formattedDate, momentDateFormat).valueOf().toString())).format();
-    }
+        var momentDateFormat = 'DD/MM/YYYY';
 
-    function toFormattedDate(startTimeInMillis) {
-        if (startTimeInMillis == null) {
-            return null;
-        } else if (typeof(startTimeInMillis) != 'undefined') {
-            return moment(parseInt(startTimeInMillis)).format(momentDateFormat);
+        function fromFormattedDate(formattedDate) {
+            return moment(parseInt(moment(formattedDate, momentDateFormat).valueOf().toString(), 10)).format();
         }
-    }
 
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function(scope, element, attrs, ngModel) {
-            ngModel.$formatters.push(toFormattedDate);
-            ngModel.$parsers.push(fromFormattedDate);
-            element.datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "-120:-0",
-                maxDate: +0,
-                onSelect: function(formattedDate) {
-                    ngModel.$setViewValue(element.val());
-                    scope.$apply();
-                }
-            });
+        function toFormattedDate(startTimeInMillis) {
+            if (startTimeInMillis === null) {
+                return null;
+            } else if (typeof(startTimeInMillis) !== 'undefined') {
+                return moment(parseInt(startTimeInMillis, 10)).format(momentDateFormat);
+            }
         }
-    }
-});
+
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, element, attrs, ngModel) {
+                ngModel.$formatters.push(toFormattedDate);
+                ngModel.$parsers.push(fromFormattedDate);
+                element.datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-120:-0",
+                    maxDate: +0,
+                    onSelect: function(formattedDate) {
+                        ngModel.$setViewValue(element.val());
+                        scope.$apply();
+                    }
+                });
+            }
+        };
+    });
+}());

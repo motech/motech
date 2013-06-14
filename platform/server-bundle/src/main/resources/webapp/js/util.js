@@ -1,73 +1,86 @@
-'use strict';
-
 /* Utilities */
 
 Array.prototype.remove = function (from, to) {
+    'use strict';
     var rest = this.slice((to || from) + 1 || this.length);
     this.length = from < 0 ? this.length + from : from;
     return this.push.apply(this, rest);
 };
 
 Array.prototype.removeObject = function (element) {
+    'use strict';
     var i = this.indexOf(element);
-    if (i != -1) {
+    if (i !== -1) {
         this.splice(i, 1);
     }
 };
 
 Array.prototype.isArray = true;
 
-if (typeof String.prototype.startsWith != 'function') {
-  String.prototype.startsWith = function (str){
-    return this.slice(0, str.length) == str;
-  };
+if (typeof String.prototype.startsWith !== 'function') {
+    String.prototype.startsWith = function (str){
+        'use strict';
+        return this.slice(0, str.length) === str;
+    };
 }
 
-if (typeof String.prototype.endsWith != 'function') {
-  String.prototype.endsWith = function (str){
-    return this.slice(-str.length) == str;
-  };
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function (str) {
+        'use strict';
+        return this.slice(-str.length) === str;
+    };
 }
 
 String.prototype.format = function() {
-  var args = arguments;
-  return this.replace(/{(\d+)}/g, function(match, number) {
-    return typeof args[number] != 'undefined'
+    'use strict';
+    var args = arguments;
+    return this.replace(/\{(\d+)\}/g, function(match, number) {
+    return typeof args[number] !== 'undefined'
       ? args[number]
       : match
     ;
-  });
+    });
 };
 
 if(!Array.prototype.last) {
     Array.prototype.last = function() {
+        'use strict';
         return this[this.length - 1];
-    }
+    };
 }
 
 String.prototype.insert = function (index, string) {
-  if (index > 0)
+  'use strict';
+  if (index > 0) {
     return this.substring(0, index) + string + this.substring(index, this.length);
-  else
+  }
+  else {
     return string + this;
+  }
 };
 
 Array.prototype.insert = function (index, item) {
+  'use strict';
   this.splice(index, 0, item);
 };
 
 function arraysEqual(arr1, arr2) {
-    if(arr1.length !== arr2.length)
+    'use strict';
+    var i;
+    if(arr1.length !== arr2.length) {
         return false;
-    for(var i = arr1.length; i--;) {
-        if(arr1[i] !== arr2[i])
+    }
+    for(i = arr1.length; i>0; i-=1) {
+        if(arr1[i] !== arr2[i]) {
             return false;
+        }
     }
 
     return true;
 }
 
 function toLocale(lang) {
+    'use strict';
     var locale = lang.replace("-", "_").split("_");
     return {
         language : locale[0],
@@ -92,10 +105,11 @@ function toLocale(lang) {
 }
 
 function cloneObj(obj) {
-    var clone = {};
+    'use strict';
+    var clone = {}, i;
 
-    for (var i in obj) {
-        if (typeof obj[i] == 'object') {
+    for (i in obj) {
+        if (typeof obj[i] === 'object') {
             clone[i] = cloneObj(obj[i]);
         } else {
             clone[i] = obj[i];

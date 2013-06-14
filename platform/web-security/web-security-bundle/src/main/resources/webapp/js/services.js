@@ -1,15 +1,17 @@
-'use strict';
+(function () {
+    'use strict';
 
-/* Services */
+    /* Services */
 
-angular.module('roleService', ['ngResource']).factory('Roles', function($resource) {
-    return $resource('../websecurity/api/roles');
-});
+    angular.module('roleService', ['ngResource']).factory('Roles', function($resource) {
+        return $resource('../websecurity/api/roles');
+    });
 
-angular.module('userService', ['ngResource']).factory('Users', function($resource) {
-    return $resource('../websecurity/api/users');
-});
+    angular.module('userService', ['ngResource']).factory('Users', function($resource) {
+        return $resource('../websecurity/api/users');
+    });
 
-angular.module('permissionService', ['ngResource']).factory('Permissions', function($resource) {
-    return $resource('../websecurity/api/permissions');
-});
+    angular.module('permissionService', ['ngResource']).factory('Permissions', function($resource) {
+        return $resource('../websecurity/api/permissions');
+    });
+}());

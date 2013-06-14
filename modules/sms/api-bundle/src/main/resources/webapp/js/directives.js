@@ -12,6 +12,7 @@
                 var elem = angular.element(element),
                     table = angular.element('#' + attrs.jqgridSearch),
                     eventType = elem.data('event-type'),
+                    timeoutHnd,
                     filter = function (time) {
                         var field = elem.data('search-field'),
                             value = elem.data('search-value'),
@@ -72,8 +73,7 @@
                                 url: '../smsapi/smslogging' + params
                             }).trigger('reloadGrid');
                         }, time || 0);
-                    },
-                    timeoutHnd;
+                    };
 
                 switch (eventType) {
                 case 'keyup':
@@ -95,9 +95,8 @@
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element);
-
-                var endDateTextBox = angular.element('#dateTimeTo');
+                var elem = angular.element(element),
+                    endDateTextBox = angular.element('#dateTimeTo');
 
                 elem.datetimepicker({
                     dateFormat: "yy-mm-dd",
@@ -110,16 +109,15 @@
                     }
                 });
             }
-        }
+        };
     });
 
     widgetModule.directive('gridDatePickerTo', function() {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element);
-
-                var startDateTextBox = angular.element('#dateTimeFrom');
+                var elem = angular.element(element),
+                    startDateTextBox = angular.element('#dateTimeFrom');
 
                 elem.datetimepicker({
                     dateFormat: "yy-mm-dd",
@@ -132,15 +130,14 @@
                     }
                 });
             }
-        }
+        };
     });
 
     widgetModule.directive('loggingGrid', function($compile, $http, $templateCache) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                var elem = angular.element(element);
-                var filters;
+                var elem = angular.element(element), filters;
 
                 elem.jqGrid({
                     url: '../smsapi/smslogging?phoneNumber=&messageContent=&timeFrom=&timeTo=&deliveryStatus=DISPATCHED,DELIVERY_CONFIRMED,KEEPTRYING,ABORTED,UNKNOWN,PENDING,RECEIVED&smsType=INBOUND,OUTBOUND',
@@ -201,8 +198,8 @@
                             $(this).find('table').width('100%');
                        });
 
-                       var startDateTextBox = angular.element('#dateTimeFrom');
-                       var endDateTextBox = angular.element('#dateTimeTo');
+                       var startDateTextBox = angular.element('#dateTimeFrom'),
+                           endDateTextBox = angular.element('#dateTimeTo');
                     }
                 });
             }

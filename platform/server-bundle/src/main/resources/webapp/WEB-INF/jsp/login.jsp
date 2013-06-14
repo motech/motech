@@ -31,10 +31,10 @@
 
     <script src="../server/resources/lib/bootstrap/bootstrap.min.js"></script>
 
+    <script src="../server/resources/js/app.js"></script>
     <script src="../server/resources/js/util.js" type="text/javascript"></script>
     <script src="../server/resources/js/common.js" type="text/javascript"></script>
     <script src="../server/resources/js/localization.js"></script>
-    <script src="../server/resources/js/app.js"></script>
     <script src="../server/resources/js/controllers.js"></script>
 
     <script src="../server/resources/js/dashboard.js"></script>
