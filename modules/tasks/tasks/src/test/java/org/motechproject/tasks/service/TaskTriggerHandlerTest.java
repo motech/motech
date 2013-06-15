@@ -18,12 +18,13 @@ import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
@@ -513,7 +514,6 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
         when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
@@ -524,7 +524,6 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(dataProvider, never()).supports(anyString());
@@ -551,7 +550,6 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
-        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
         when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
 
         assertTrue(task.isEnabled());
@@ -562,7 +560,6 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(dataProvider, never()).supports(anyString());
@@ -606,7 +603,6 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(dataProvider).lookup("TestObjectField", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
@@ -649,7 +645,6 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(taskService).getActionEventFor(task.getActions().get(0));
         verify(dataProvider).lookup("TestObjectField", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
@@ -758,7 +753,7 @@ public class TaskTriggerHandlerTest {
         setActionEvent();
         setFilters();
 
-        task.getFilters().add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EXIST.getValue(), ""));
+        task.getTaskConfig().add(new FilterSet(asList(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, EXIST.getValue(), ""))));
 
         when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
@@ -1204,13 +1199,8 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
         actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>(2);
-        additionalData.put("12345", asList(
-                new TaskAdditionalData(1L, "TestObjectField", "id", "{{trigger.externalId}}", isFail),
-                new TaskAdditionalData(2L, "TestObject", "id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}", isFail)
-        ));
-
-        task.setAdditionalData(additionalData);
+        task.getTaskConfig().add(new DataSource("12345", 1L, "TestObjectField", new DataSource.Lookup("id", "{{trigger.externalId}}"), isFail));
+        task.getTaskConfig().add(new DataSource("12345", 2L, "TestObject", new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}"), isFail));
 
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
     }
@@ -1262,7 +1252,7 @@ public class TaskTriggerHandlerTest {
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), true, EXIST.getValue(), ""));
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
 
-        task.setFilters(filters);
+        task.getTaskConfig().add(new FilterSet(filters));
     }
 
     private MotechEvent createEvent() {

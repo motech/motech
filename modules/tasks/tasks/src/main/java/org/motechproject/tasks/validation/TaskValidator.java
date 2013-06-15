@@ -4,12 +4,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.KeyInformation;
 import org.motechproject.tasks.domain.OperatorType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskAdditionalData;
+import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.domain.TaskError;
@@ -47,15 +49,7 @@ public final class TaskValidator extends GeneralValidator {
             errors.addAll(validateAction(i, task.getActions().get(i)));
         }
 
-        for (int i = 0; i < task.getFilters().size(); ++i) {
-            errors.addAll(validateFilter(i, task.getFilters().get(i)));
-        }
-
-        for (Map.Entry<String, List<TaskAdditionalData>> entry : task.getAdditionalData().entrySet()) {
-            for (int i = 0; i < entry.getValue().size(); ++i) {
-                errors.addAll(validateAdditionalData(entry.getKey(), i, entry.getValue().get(i)));
-            }
-        }
+        errors.addAll(validateTaskConfig(task.getTaskConfig()));
 
         return errors;
     }
@@ -73,15 +67,20 @@ public final class TaskValidator extends GeneralValidator {
             }
 
             errors.addAll(validateFilters(task, triggerEvent));
-            errors.addAll(validateAdditionalData(task, triggerEvent));
+            errors.addAll(validateDataSources(task, triggerEvent));
         } else {
-            errors.add(new TaskError("validation.error.triggerNotExist", triggerInformation.getDisplayName(), channel.getDisplayName()));
+            errors.add(new TaskError(
+                    "validation.error.triggerNotExist",
+                    triggerInformation.getDisplayName(),
+                    channel.getDisplayName()
+            ));
         }
 
         return errors;
     }
 
-    public static Set<TaskError> validateAction(TaskActionInformation actionInformation, Channel channel) {
+    public static Set<TaskError> validateAction(TaskActionInformation actionInformation,
+                                                Channel channel) {
         Set<TaskError> errors = new HashSet<>();
         boolean exists = channel.containsAction(actionInformation);
 
@@ -90,15 +89,21 @@ public final class TaskValidator extends GeneralValidator {
 
             errors.addAll(validateActionValues(actionInformation.getValues(), actionEvent));
         } else {
-            errors.add(new TaskError("validation.error.actionNotExist", actionInformation.getDisplayName(), channel.getDisplayName()));
+            errors.add(new TaskError(
+                    "validation.error.actionNotExist",
+                    actionInformation.getDisplayName(),
+                    channel.getDisplayName()
+            ));
         }
 
         return errors;
     }
 
-    public static Set<TaskError> validateProvider(Map<String, String> actionValues, List<TaskAdditionalData> additionalData, TaskDataProvider provider) {
+    public static Set<TaskError> validateProvider(Map<String, String> actionValues,
+                                                  DataSource dataSource,
+                                                  TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
-        errors.addAll(validateAdditionalData(additionalData, provider));
+        errors.addAll(validateDataSource(dataSource, provider));
         errors.addAll(validateActionValues(actionValues, provider));
 
         return errors;
@@ -107,22 +112,14 @@ public final class TaskValidator extends GeneralValidator {
     private static Set<TaskError> validateFilters(Task task, TriggerEvent triggerEvent) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (Filter filter : task.getFilters()) {
-            if (!triggerEvent.containsParameter(filter.getEventParameter().getEventKey())) {
-                errors.add(new TaskError("validation.error.triggerFieldNotExist", filter.getEventParameter().getEventKey(), triggerEvent.getDisplayName()));
-            }
-        }
-
-        return errors;
-    }
-
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues, TriggerEvent triggerEvent) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (String input : actionValues.values()) {
-            for (KeyInformation key : KeyInformation.parseAll(input)) {
-                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
-                    errors.add(new TaskError("validation.error.triggerFieldNotExist", key.getKey(), triggerEvent.getDisplayName()));
+        for (FilterSet filterSet : task.getTaskConfig().getFilters()) {
+            for (Filter filter : filterSet.getFilters()) {
+                if (!triggerEvent.containsParameter(filter.getEventParameter().getEventKey())) {
+                    errors.add(new TaskError(
+                            "validation.error.triggerFieldNotExist",
+                            filter.getEventParameter().getEventKey(),
+                            triggerEvent.getDisplayName()
+                    ));
                 }
             }
         }
@@ -130,19 +127,44 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues, ActionEvent actionEvent) {
+    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
+                                                       TriggerEvent triggerEvent) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (String inputKey : actionValues.keySet()) {
-            if (!actionEvent.containsParameter(inputKey)) {
-                errors.add(new TaskError("validation.error.actionInputFieldNotExist", inputKey, actionEvent.getDisplayName()));
+        for (String input : actionValues.values()) {
+            for (KeyInformation key : KeyInformation.parseAll(input)) {
+                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
+                    errors.add(new TaskError(
+                            "validation.error.triggerFieldNotExist",
+                            key.getKey(),
+                            triggerEvent.getDisplayName()
+                    ));
+                }
             }
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues, TaskDataProvider provider) {
+    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
+                                                       ActionEvent actionEvent) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (String inputKey : actionValues.keySet()) {
+            if (!actionEvent.containsParameter(inputKey)) {
+                errors.add(new TaskError(
+                        "validation.error.actionInputFieldNotExist",
+                        inputKey,
+                        actionEvent.getDisplayName()
+                ));
+            }
+        }
+
+        return errors;
+    }
+
+    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
+                                                       TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
         for (String input : actionValues.values()) {
@@ -168,7 +190,15 @@ public final class TaskValidator extends GeneralValidator {
                         DateTimeFormat.forPattern(matcher.group(2)).print(now);
                     } catch (IllegalArgumentException e) {
                         String[] objectFields = matcher.group(1).split("\\.");
-                        errors.add(new TaskError("validation.error.dateFormat", String.format("%s.%s", objectFields[objectFields.length - 2], objectFields[objectFields.length - 1]), entry.getKey()));
+                        errors.add(new TaskError(
+                                "validation.error.dateFormat",
+                                String.format(
+                                        "%s.%s",
+                                        objectFields[objectFields.length - 2],
+                                        objectFields[objectFields.length - 1]
+                                ),
+                                entry.getKey()
+                        ));
                     }
                 }
             }
@@ -198,7 +228,10 @@ public final class TaskValidator extends GeneralValidator {
             checkNullValue(errors, objectName, "values", action.getValues());
 
             for (Map.Entry<String, String> entry : action.getValues().entrySet()) {
-                checkBlankValue(errors, String.format("%s.values", objectName), entry.getKey(), entry.getValue());
+                checkBlankValue(
+                        errors, String.format("%s.values", objectName),
+                        entry.getKey(), entry.getValue()
+                );
             }
 
             errors.addAll(validateDateFormat(action.getValues()));
@@ -226,9 +259,9 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateFilter(int index, Filter filter) {
+    private static Set<TaskError> validateFilter(Integer setOrder, int index, Filter filter) {
         Set<TaskError> errors = new HashSet<>();
-        String field = "filters[" + index + "]";
+        String field = String.format("taskConfig.filterSet[%d].filters[%d]", setOrder, index);
 
         checkNullValue(errors, TASK, field, filter);
 
@@ -241,23 +274,26 @@ public final class TaskValidator extends GeneralValidator {
                 checkBlankValue(errors, objectName, "expression", filter.getExpression());
             }
 
-            errors.addAll(validateEventParameter(objectName, "eventParameter", filter.getEventParameter()));
+            errors.addAll(validateEventParameter(
+                    objectName, "eventParameter", filter.getEventParameter()
+            ));
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateAdditionalData(Task task, TriggerEvent triggerEvent) {
+    private static Set<TaskError> validateDataSources(Task task, TriggerEvent triggerEvent) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (List<TaskAdditionalData> list : task.getAdditionalData().values()) {
-            for (TaskAdditionalData tad : list) {
-                String lookupValue = tad.getLookupValue();
+        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
+            String lookupValue = dataSource.getLookup().getValue();
 
-                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
-                    if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
-                        errors.add(new TaskError("validation.error.triggerFieldNotExist", key.getKey(), triggerEvent.getDisplayName()));
-                    }
+            for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
+                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
+                    errors.add(new TaskError(
+                            "validation.error.triggerFieldNotExist", key.getKey(),
+                            triggerEvent.getDisplayName()
+                    ));
                 }
             }
         }
@@ -265,62 +301,97 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateAdditionalData(List<TaskAdditionalData> additionalData, TaskDataProvider provider) {
+    private static Set<TaskError> validateDataSource(DataSource dataSource,
+                                                     TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (TaskAdditionalData object : additionalData) {
-            boolean contains = provider.containsProviderObject(object.getType());
+        boolean contains = provider.containsProviderObject(dataSource.getType());
 
-            if (!contains) {
-                errors.add(new TaskError("validation.error.providerObjectNotExist", object.getType(), provider.getName()));
-            } else if (!provider.containsProviderObjectLookup(object.getType(), object.getLookupField())) {
-                errors.add(new TaskError("validation.error.providerObjectLookupNotExist", object.getLookupField(), object.getType(), provider.getName()));
-            }
+        if (!contains) {
+            errors.add(new TaskError(
+                    "validation.error.providerObjectNotExist",
+                    dataSource.getType(),
+                    provider.getName()
+            ));
+        } else if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getLookup().getField())) {
+            errors.add(new TaskError(
+                    "validation.error.providerObjectLookupNotExist",
+                    dataSource.getLookup().getField(),
+                    dataSource.getType(),
+                    provider.getName()
+            ));
+        }
 
-            String lookupValue = object.getLookupValue();
+        String lookupValue = dataSource.getLookup().getValue();
 
-            if (lookupValue != null) {
-                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
-                    errors.addAll(validateKeyInformation(provider, key));
-                }
+        if (lookupValue != null) {
+            for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
+                errors.addAll(validateKeyInformation(provider, key));
             }
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateKeyInformation(TaskDataProvider provider, KeyInformation key) {
+    private static Set<TaskError> validateKeyInformation(TaskDataProvider provider,
+                                                         KeyInformation key) {
         Set<TaskError> errors = new HashSet<>();
 
-        if (key.fromAdditionalData() && equalsIgnoreCase(key.getDataProviderId(), provider.getId())) {
+        if (equalsIgnoreCase(key.getDataProviderId(), provider.getId())) {
             if (provider.containsProviderObject(key.getObjectType())) {
-                TaskDataProviderObject providerObject = provider.getProviderObject(key.getObjectType());
+                TaskDataProviderObject providerObject = provider
+                        .getProviderObject(key.getObjectType());
 
                 if (!providerObject.containsField(key.getKey())) {
-                    errors.add(new TaskError("validation.error.providerObjectFieldNotExist", key.getKey(), providerObject.getDisplayName()));
+                    errors.add(new TaskError(
+                            "validation.error.providerObjectFieldNotExist",
+                            key.getKey(),
+                            providerObject.getDisplayName()
+                    ));
                 }
             } else {
-                errors.add(new TaskError("validation.error.providerObjectNotExist", key.getObjectType(), provider.getName()));
+                errors.add(new TaskError(
+                        "validation.error.providerObjectNotExist",
+                        key.getObjectType(),
+                        provider.getName()
+                ));
             }
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateAdditionalData(String key, int index, TaskAdditionalData additionalData) {
+    private static Set<TaskError> validateDataSource(DataSource dataSource) {
         Set<TaskError> errors = new HashSet<>();
-        String field = "additionalData[" + key + "][" + index + "]";
-
-        checkNullValue(errors, TASK, field, additionalData);
+        String field = "taskConfig.dataSource[" + dataSource.getOrder() + "]";
 
         if (isEmpty(errors)) {
             String objectName = "task." + field;
 
-            checkNullValue(errors, objectName, "id", additionalData.getId());
+            checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
 
-            checkBlankValue(errors, objectName, "type", additionalData.getType());
-            checkBlankValue(errors, objectName, "lookupField", additionalData.getLookupField());
-            checkBlankValue(errors, objectName, "lookupValue", additionalData.getLookupValue());
+            checkBlankValue(errors, objectName, "providerId", dataSource.getProviderId());
+            checkBlankValue(errors, objectName, "type", dataSource.getType());
+            checkBlankValue(errors, objectName, "lookup.field", dataSource.getLookup().getField());
+            checkBlankValue(errors, objectName, "lookup.value", dataSource.getLookup().getValue());
+        }
+
+        return errors;
+    }
+
+    private static Set<TaskError> validateTaskConfig(TaskConfig config) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (FilterSet filterSet : config.getFilters()) {
+            List<Filter> filters = filterSet.getFilters();
+
+            for (int i = 0; i < filters.size(); ++i) {
+                errors.addAll(validateFilter(filterSet.getOrder(), i, filters.get(i)));
+            }
+        }
+
+        for (DataSource dataSource : config.getDataSources()) {
+            errors.addAll(validateDataSource(dataSource));
         }
 
         return errors;

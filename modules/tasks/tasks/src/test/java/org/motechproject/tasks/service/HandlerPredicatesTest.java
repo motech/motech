@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.commons.collections.CollectionUtils.find;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -26,7 +27,7 @@ public class HandlerPredicatesTest {
         list.add(expected);
         list.add(new MotechListenerEventProxy("ghi", null, null));
 
-        MotechListenerAbstractProxy actual = (MotechListenerAbstractProxy) CollectionUtils.find(list, HandlerPredicates.withServiceName("def"));
+        MotechListenerAbstractProxy actual = (MotechListenerAbstractProxy) find(list, HandlerPredicates.withServiceName("def"));
 
         assertTrue(actual instanceof MotechListenerEventProxy);
         assertEquals(expected.getIdentifier(), actual.getIdentifier());
@@ -39,19 +40,19 @@ public class HandlerPredicatesTest {
         list.add(new MotechListenerEventProxy("def", null, null));
         list.add(new MotechListenerEventProxy("ghi", null, null));
 
-        MotechListenerAbstractProxy actual = (MotechListenerAbstractProxy) CollectionUtils.find(list, HandlerPredicates.withServiceName("abc"));
+        MotechListenerAbstractProxy actual = (MotechListenerAbstractProxy) find(list, HandlerPredicates.withServiceName("abc"));
 
         assertNull(actual);
     }
 
     @Test
     public void shouldRemoveDisabledTasks() {
-        Task enabledTask1 = new Task("enabledTask1", null, null, null, null, true);
-        Task enabledTask2 = new Task("enabledTask2", null, null, null, null, true);
+        Task enabledTask1 = new Task("enabledTask1", null, null, null, true);
+        Task enabledTask2 = new Task("enabledTask2", null, null, null, true);
 
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task("disabledTask1", null, null, null, null, false));
-        tasks.add(new Task("disabledTask2", null, null, null, null, false));
+        tasks.add(new Task("disabledTask1", null, null, null, false));
+        tasks.add(new Task("disabledTask2", null, null, null, false));
         tasks.add(enabledTask1);
         tasks.add(enabledTask2);
 

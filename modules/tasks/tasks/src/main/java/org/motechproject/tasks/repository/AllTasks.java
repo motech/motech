@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@View(name = "by_triggerSubject", map = "function(doc) { if(doc.type === 'Task') emit(doc.trigger.subject); }")
 public class AllTasks extends MotechBaseRepository<Task> {
 
     @Autowired
@@ -24,10 +23,9 @@ public class AllTasks extends MotechBaseRepository<Task> {
             Task existing = get(task.getId());
 
             existing.setActions(task.getActions());
-            existing.setAdditionalData(task.getAdditionalData());
             existing.setDescription(task.getDescription());
             existing.setEnabled(task.isEnabled());
-            existing.setFilters(task.getFilters());
+            existing.setTaskConfig(task.getTaskConfig());
             existing.setTrigger(task.getTrigger());
             existing.setName(task.getName());
             existing.setValidationErrors(task.getValidationErrors());
@@ -38,6 +36,10 @@ public class AllTasks extends MotechBaseRepository<Task> {
         }
     }
 
+    @View(
+            name = "by_triggerSubject",
+            map = "function(doc) { if(doc.type === 'Task') emit(doc.trigger.subject); }"
+    )
     public List<Task> byTriggerSubject(final String subject) {
         return queryView("by_triggerSubject", subject);
     }

@@ -5,46 +5,44 @@
 
     angular.module('manageTaskUtils', []).factory('ManageTaskUtils', function () {
         return {
-            FILTER_SET_PATH: '../tasks/partials/widgets/filter-set.html',
-            FILTER_SET_ID: '#filter-set',
-            DATA_SOURCE_PATH: '../tasks/partials/widgets/data-source.html',
-            DATA_SOURCE_PREFIX_ID: '#data-source-',
-            BUILD_AREA_ID: "#build-area",
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
             find: function (data) {
                 var where = (data && data.where) || [],
-                    found;
+                    unique = (data && data.unique === false) ? false : true,
+                    found = [],
+                    by = [],
+                    isTrue,
+                    item,
+                    i,
+                    j;
 
-                angular.forEach(where, function (item) {
-                    var isTrue = true;
+                if (data && data.by) {
+                    if (data.by.isArray) {
+                        by = data.by;
+                    } else if (data.by.what && data.by.equalTo) {
+                        by = [data.by];
+                    }
+                }
 
-                    if (!found) {
-                        if (data.by && data.by.isArray) {
-                            angular.forEach(data.by, function (b) {
-                                if (data.msg !== undefined) {
-                                    isTrue = isTrue && (item[b.what] === b.equalTo || data.msg(item[b.what]) === b.equalTo);
-                                } else {
-                                    isTrue = isTrue && item[b.what] === b.equalTo;
-                                }
-                            });
-                        } else if (data.by !== undefined && data.by.what !== undefined) {
-                            if (data.msg !== undefined) {
-                                isTrue = item[data.by.what] === data.by.equalTo || data.msg(item[data.by.what]) === data.by.equalTo;
-                            } else {
-                                isTrue = item[data.by.what] === data.by.equalTo;
-                            }
+                for (i = 0; i < where.length; i += 1) {
+                    isTrue = (by.length > 0) ? true : false;
+                    item = where[i];
+
+                    for (j = 0; j < by.length; j += 1) {
+                        if (data.msg !== undefined) {
+                            isTrue = isTrue && (item[by[j].what] === by[j].equalTo || data.msg(item[by[j].what]) === by[j].equalTo);
                         } else {
-                            isTrue = false;
-                        }
-
-                        if (isTrue) {
-                            found = item;
+                            isTrue = isTrue && item[by[j].what] === by[j].equalTo;
                         }
                     }
-                });
 
-                return found;
+                    if (isTrue) {
+                        found.push(item);
+                    }
+                }
+
+                return unique ? found[0] : found;
             },
             channels: {
                 withTriggers: function (channels) {
@@ -136,8 +134,8 @@
             },
             dataSource: {
                 select: function (scope, data, selected) {
-                    data.dataSourceName = selected.name;
-                    data.dataSourceId = selected._id;
+                    data.providerName = selected.name;
+                    data.providerId = selected._id;
 
                     delete data.displayName;
                     delete data.type;
@@ -229,8 +227,8 @@
                 span.attr('data-type', data.param.type);
                 span.attr('data-object', data.param.displayName);
 
-                if (data.dataSourceName) {
-                    span.attr('data-source', data.dataSourceName);
+                if (data.providerName) {
+                    span.attr('data-source', data.providerName);
                 }
 
                 if (data.object) {
@@ -245,7 +243,7 @@
                     break;
                 case this.DATA_SOURCE_PREFIX:
                     span.text("{0}.{1}#{2}.{3}".format(
-                        data.msg(data.dataSourceName),
+                        data.msg(data.providerName),
                         data.msg(data.object.displayName),
                         data.object.id,
                         data.msg(data.param.displayName)
@@ -283,16 +281,19 @@
                 } else {
                     while ((found = regex.exec(val)) !== null) {
                         ds = this.find({
-                            where: scope.selectedDataSources,
-                            by: {
-                                what: 'dataSourceId',
+                            where: scope.task.taskConfig.steps,
+                            by: [{
+                                what: '@type',
+                                equalTo: 'DataSource'
+                            }, {
+                                what: 'providerId',
                                 equalTo: found[1]
-                            }
+                            }]
                         });
 
                         replaced.push({
                             find: '{{ad.{0}{1}}}'.format(found[1], found[2]),
-                            value: '{{ad.{0}{1}}}'.format(scope.msg(ds.dataSourceName), found[2])
+                            value: '{{ad.{0}{1}}}'.format(scope.msg(ds.providerName), found[2])
                         });
                     }
 
@@ -317,21 +318,23 @@
                 while ((found = regex.exec(val)) !== null) {
                     ds = this.find({
                         msg: scope.msg,
-                        where: scope.selectedDataSources,
-                        by: {
-                            what: 'dataSourceName',
+                        where: scope.task.taskConfig.steps,
+                        by: [{
+                            what: '@type',
+                            equalTo: 'DataSource'
+                        }, {
+                            what: 'providerName',
                             equalTo: found[1]
-                        }
+                        }]
                     });
 
-                    if(ds===undefined)
-                    {
-                        jAlert('Data source cannot be resolved','Error');
+                    if (ds === undefined) {
+                        jAlert('Data source cannot be resolved', 'Error');
                     }
 
                     replaced.push({
                         find: '{{ad.{0}{1}}}'.format(found[1], found[2]),
-                        value: '{{ad.{0}{1}}}'.format(ds.dataSourceId, found[2])
+                        value: '{{ad.{0}{1}}}'.format(ds.providerId, found[2])
                     });
                 }
 

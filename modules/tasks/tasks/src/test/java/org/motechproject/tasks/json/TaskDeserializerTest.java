@@ -8,18 +8,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskAdditionalData;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,9 +40,6 @@ public class TaskDeserializerTest {
         filters.add(new Filter(new EventParameter("mrs.observation.field.observationConceptName", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
         filters.add(new Filter(new EventParameter("mrs.observation.field.value", "ObservationValue"), true, "equals", "positive"));
 
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
-        additionalData.put("6899548ec91d9ad04e3aad9cf2aa19f9", Arrays.asList(new TaskAdditionalData(1L, "Person", "mrs.person.lookupField.id", "trigger.PatientId", false)));
-
         String name = "Pregnancy SMS";
         boolean enabled = false;
 
@@ -61,8 +58,8 @@ public class TaskDeserializerTest {
         String revision = "0c023b58f6fa64f0a7896e9d5083f210";
 
         EXPECTED_TASK = new Task();
-        EXPECTED_TASK.setFilters(filters);
-        EXPECTED_TASK.setAdditionalData(additionalData);
+        EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId"), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(enabled);
         EXPECTED_TASK.setActions(asList(actionInformation));

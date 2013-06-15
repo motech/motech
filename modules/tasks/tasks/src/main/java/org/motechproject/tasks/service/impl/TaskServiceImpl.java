@@ -5,6 +5,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
@@ -67,18 +69,24 @@ public class TaskServiceImpl implements TaskService {
         TaskEventInformation trigger = task.getTrigger();
 
         if (trigger != null) {
-            errors.addAll(validateTriggerTask(task, channelService.getChannel(trigger.getModuleName())));
+            errors.addAll(validateTriggerTask(
+                    task, channelService.getChannel(trigger.getModuleName())
+            ));
         }
 
         for (TaskActionInformation action : task.getActions()) {
-            errors.addAll(validateActionTask(action, channelService.getChannel(action.getModuleName())));
+            errors.addAll(validateActionTask(
+                    action, channelService.getChannel(action.getModuleName())
+            ));
         }
 
-        for (String providerId : task.getAdditionalData().keySet()) {
-            TaskDataProvider provider = providerService.getProviderById(providerId);
+        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
+            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
 
             for (TaskActionInformation action : task.getActions()) {
-                errors.addAll(TaskValidator.validateProvider(action.getValues(), task.getAdditionalData(provider.getId()), provider));
+                errors.addAll(TaskValidator.validateProvider(
+                        action.getValues(), dataSource, provider
+                ));
             }
         }
 
@@ -93,7 +101,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         allTasks.addOrUpdate(task);
-        LOG.info(String.format("Saved task: %s", task.getId()));
+        LOG.info(format("Saved task: %s", task.getId()));
     }
 
     /**
@@ -106,7 +114,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation) throws ActionNotFoundException {
+    public ActionEvent getActionEventFor(TaskActionInformation taskActionInformation)
+            throws ActionNotFoundException {
         Channel channel = channelService.getChannel(taskActionInformation.getModuleName());
         ActionEvent event = null;
 
@@ -118,7 +127,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (event == null) {
-            throw new ActionNotFoundException(String.format("Cant find action on the basic of information: %s", taskActionInformation));
+            throw new ActionNotFoundException(format(
+                    "Cant find action on the basic of information: %s", taskActionInformation
+            ));
         }
 
         return event;
@@ -161,7 +172,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (trigger == null) {
-            throw new TriggerNotFoundException(String.format("Cant find trigger for subject: %s", subject));
+            throw new TriggerNotFoundException(format(
+                    "Cant find trigger for subject: %s", subject
+            ));
         }
 
         return trigger;
@@ -177,7 +190,7 @@ public class TaskServiceImpl implements TaskService {
         Task t = getTask(taskId);
 
         if (t == null) {
-            throw new IllegalArgumentException(String.format("Not found task with ID: %s", taskId));
+            throw new IllegalArgumentException(format("Not found task with ID: %s", taskId));
         }
 
         allTasks.remove(t);
@@ -219,9 +232,11 @@ public class TaskServiceImpl implements TaskService {
         TaskDataProvider provider = providerService.getProvider(providerName);
 
         for (Task task : getAllTasks()) {
-            if (task.getAdditionalData().containsKey(provider.getId())) {
+            for (DataSource dataSource : task.getTaskConfig().getDataSources(provider.getId())) {
                 for (TaskActionInformation action : task.getActions()) {
-                    Set<TaskError> errors = TaskValidator.validateProvider(action.getValues(), task.getAdditionalData(provider.getId()), provider);
+                    Set<TaskError> errors = TaskValidator.validateProvider(
+                            action.getValues(), dataSource, provider
+                    );
 
                     setTaskValidationErrors(task, errors,
                             "validation.error.providerObjectFieldNotExist",
@@ -244,7 +259,8 @@ public class TaskServiceImpl implements TaskService {
         return errors;
     }
 
-    private Set<TaskError> validateActionTask(TaskActionInformation actionInformation, Channel channel) {
+    private Set<TaskError> validateActionTask(TaskActionInformation actionInformation,
+                                              Channel channel) {
         Set<TaskError> errors = null;
 
         if (channel.getModuleName().equalsIgnoreCase(actionInformation.getModuleName())) {
@@ -272,7 +288,7 @@ public class TaskServiceImpl implements TaskService {
 
     private void publishTaskDisabledMessage(String taskName, String level) {
         Map<String, Object> params = new HashMap<>();
-        params.put("message", String.format("Task: %s was disabled due to validation errors.", taskName));
+        params.put("message", format("Task: %s was disabled due to validation errors.", taskName));
         params.put("level", level);
         params.put("moduleName", "tasks");
 

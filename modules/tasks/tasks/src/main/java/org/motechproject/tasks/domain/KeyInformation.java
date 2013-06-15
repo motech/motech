@@ -106,13 +106,12 @@ public final class KeyInformation {
         return prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX);
     }
 
-    public String getOriginalKey() {
-        return originalKey;
+    public String getPrefix() {
+        return prefix;
     }
 
-    public String getOriginalKeyWithoutManipulation() {
-        int questionMarkIndex = originalKey.indexOf('?');
-        return questionMarkIndex == -1 ? originalKey : originalKey.substring(0, questionMarkIndex);
+    public String getOriginalKey() {
+        return originalKey;
     }
 
     public String getDataProviderId() {

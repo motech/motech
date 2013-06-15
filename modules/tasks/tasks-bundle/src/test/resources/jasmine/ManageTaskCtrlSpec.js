@@ -260,10 +260,11 @@
             scope.msg = function (key) { return key; };
 
             scope.selectedTrigger = channels[1].triggerTaskEvents[0];
-            scope.selectedDataSources = [{
-                id: 0,
-                dataSourceName: 'ds-1',
-                dataSourceId: '123',
+            scope.task.taskConfig.steps = [{
+                '@type': 'DataSource',
+                objectId: 0,
+                providerName: 'ds-1',
+                providerId: '123',
                 displayName: 'obj.1',
                 type: 'TestType1',
                 lookup: {
@@ -271,7 +272,6 @@
                     value: 'def'
                 }
             }];
-
 
             expect(scope.createDraggableElement(value)).toEqual(expected);
         });

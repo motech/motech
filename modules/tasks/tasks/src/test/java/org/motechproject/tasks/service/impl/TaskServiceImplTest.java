@@ -9,10 +9,11 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskAdditionalData;
+import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.domain.TaskEvent;
@@ -108,12 +109,11 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
-        additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
 
         action.setValues(map);
 
-        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
+        Task task = new Task("name", trigger, asList(action), config, true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
@@ -129,7 +129,7 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldSaveTaskWithEmptyActionInputFields() {
-        Task task = new Task("name", trigger, asList(action), null, null, false);
+        Task task = new Task("name", trigger, asList(action), null, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
@@ -150,12 +150,11 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
-        additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
 
         action.setValues(map);
 
-        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
+        Task task = new Task("name", trigger, asList(action), config, true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
 
         ActionEvent actionEvent = new ActionEvent("receive", "RECEIVE", "", null);
@@ -380,12 +379,11 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        Map<String, List<TaskAdditionalData>> additionalData = new HashMap<>();
-        additionalData.put("1234", asList(new TaskAdditionalData(1L, "Test", "id", "trigger.value", true)));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
 
         action.setValues(map);
 
-        Task task = new Task("name", trigger, asList(action), null, additionalData, true);
+        Task task = new Task("name", trigger, asList(action), config, true);
         when(allTasks.getAll()).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);

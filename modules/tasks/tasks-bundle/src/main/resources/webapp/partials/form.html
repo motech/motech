@@ -79,13 +79,197 @@
                 </div>
 
                 <div ng-hide="!task.trigger.subject">
-                    <div id="build-area"></div>
+                    <div ng-repeat="step in task.taskConfig.steps">
+                        <div ui-if="step['@type'] == 'FilterSet'" class="accordion" id="step-{{step.order}}" overflow-change expand-accordion>
+                            <div class="task-group">
+                                <div class="accordion-heading">
+                                    <div class="pull-right">
+                                        <button ng-click="removeFilterSet(step)" class="btn btn-danger btn-in-heading">
+                                            <i class="icon-remove icon-white"></i>
+                                        </button>
+                                    </div>
+                                    <a class="accordion-toggle inbox-header">
+                                        <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" href="#collapse-step-{{step.order}}" style="cursor: pointer;"></i>
+                                        {{msg('section.filters')}}
+                                    </a>
+                                </div>
+                                <div id="collapse-step-{{step.order}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
+                                    <div class="accordion-inner centered inside">
+                                        <form id="filtersForm" name="filterForm" class="form-horizontal">
+                                            <div class="margin-center margin-before">
+                                                <div ng-repeat="filter in step.filters">
+                                                    <div class="form-inline">
+                                                        <div class="control-group">
+                                                            <span class="validation-area">
+                                                                <div class="btn-group">
+                                                                    <a class="btn dropdown-toggle dropdown-large-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.eventParameter}">
+                                                                        {{msg((filter.eventParameter && filter.eventParameter.displayName) || 'info.filter.select')}}
+                                                                        <span class="caret"></span>
+                                                                    </a>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li ng-repeat="key in selectedTrigger.eventParameters">
+                                                                            <a ng-click="filter.eventParameter = key">{{msg(key.displayName)}}</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </span>
+                                                            <span class="validation-area">
+                                                                <div class="btn-group">
+                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined}" ng-disabled="!filter.eventParameter">
+                                                                        {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'info.filter.' + filter.negationOperator) || 'info.filter.select')}}
+                                                                        <span class="caret"></span>
+                                                                    </a>
+                                                                    <ul class="dropdown-menu" ng-hide="!filter.eventParameter">
+                                                                        <li>
+                                                                            <a ng-click="filter.negationOperator = true">{{msg('info.filter.true')}}</a>
+                                                                            <a ng-click="filter.negationOperator = false">{{msg('info.filter.false')}}</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </span>
+                                                            <span class="validation-area">
+                                                                <div class="btn-group">
+                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                                                        {{msg(filter.operator || 'info.filter.select')}}
+                                                                        <span class="caret"></span>
+                                                                    </a>
+                                                                    <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
+                                                                        <li ng-repeat="operator in operators(filter.eventParameter)">
+                                                                            <a ng-click="filter.operator = operator">{{msg(operator)}}</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </span>
+                                                            <span class="validation-area" ng-class="{error: filter.operator != 'exist' && !filter.expression}">
+                                                                <input ng-disabled="!filter.operator || filter.operator == 'exist'" ng-model="filter.expression" class="input-medium" type="text" value=""/>
+                                                            </span>
+                                                            <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('button.addFilter')}}</button>
+                                                <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('button.addAnotherFilter')}}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ui-if="step['@type'] == 'DataSource'" class="accordion" id="step-{{step.order}}" overflow-change expand-accordion>
+                            <div class="task-group">
+                                <div class="accordion-heading">
+                                    <div class="pull-right">
+                                        <button ng-click="removeData(step)" class="btn btn-danger btn-in-heading">
+                                            <i class="icon-remove icon-white"></i>
+                                        </button>
+                                    </div>
+                                    <a class="accordion-toggle inbox-header" style="cursor: auto;">
+                                        <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#data-source-{{step.order}}" href="#collapse-step-{{step.order}}" style="cursor: pointer;"></i> {{msg('subsection.data')}}
+                                        <span ng-hide="!step.displayName">
+                                            &raquo; {{msg(step.providerName)}} : {{msg(step.displayName)}}
+                                        </span>
+                                        <span ng-hide="!step.lookup.field">
+                                            {{msg('by')}} {{msg(step.lookup.field)}}
+                                        </span>
+                                    </a>
+                                </div>
+                                <div id="collapse-step-{{step.order}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
+                                    <div class="accordion-inner inside">
+                                        <div class="control-group control-section">
+                                            <label class="control-label task-label">{{msg('info.availableFields')}}:</label>
+                                            <div class="controls move-element">
+                                                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
+                                                <span ng-repeat="ds in getDataSources() | idLessThan:step.objectId">
+                                                    <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                                                          data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
+                                                          data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
+                                                        {{msg(ds.providerName)}}.{{msg(ds.displayName)}}#{{ds.objectId}}.{{msg(i.displayName)}}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <span class="control-label">{{msg('subsubsection.source')}}:</span>
+                                            <div class="btn-group interval">
+                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                    {{msg(step.providerName || 'select')}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li ng-repeat="dataSource in dataSources">
+                                                        <a ng-click="selectDataSource(step, dataSource)">{{msg(dataSource.name)}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <span class="interval2">{{msg('subsubsection.object')}}:</span>
+                                            <div class="btn-group interval">
+                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                    {{msg(step.displayName || 'select')}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li ng-repeat="object in findDataSource(step.providerId).objects">
+                                                        <a ng-click="selectObject(step, object)">{{msg(object.displayName)}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="control-group" ui-if="step.displayName">
+                                            <span class="control-label">{{msg('subsubsection.lookup')}}:</span>
+                                            <div class="btn-group interval">
+                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                    {{msg(step.lookup.field || 'select')}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li ng-repeat="lookup in findObject(step.providerId, step.type).lookupFields">
+                                                        <a ng-click="selectLookup(step, lookup)">{{msg(lookup)}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="control-group" ui-if="step.displayName">
+                                            <span class="control-label">{{msg('subsubsection.failIfDataNotFound')}}</span>
+                                            <div class="controls">
+                                                <div class="btn-group">
+                                                    <input type="checkbox" ng-model="step.failIfDataNotFound"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div ui-if="step.lookup.field">
+                                            <div class="control-group" ng-class="{error: actionCssClass(step.lookup)}" class="control-group form-inline clearfix">
+                                                <label class="control-label">{{msg(step.lookup.field)}}</label>
+
+                                                <!------------------------ Chrome & IE ------------------------>
+                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                                    <editable-content data="step.lookup" index="$index" type="UNICODE"></editable-content>
+                                                </div>
+
+                                                <!------------------------ Other browsers  ------------------------>
+                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
+                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group margin-before3 control-section" ng-hide="step.displayName == undefined">
+                                            <label class="control-label task-label">{{msg('subsubsection.objectFields')}}</label>
+                                            <div class="controls move-element">
+                                                <span ng-repeat="field in findObject(step.providerId, step.type).fields" class="badge badge-warning">{{msg(field.displayName)}}</span>​
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!------------------------ ADDING BUTTONS ------------------------>
                     <div class="row-fluid inside section-additives">
                         <div class="control-group centered">
                             <div class="btn-group">
-                                <button ui-if="!task.filters" class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('button.addFilter')}}</button>
+                                <button class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('button.addFilterSet')}}</button>
                                 <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('button.addDataSource')}}</button>
                                 <button class="btn btn-warning" ng-click="addAction()"><i class="icon-white icon-plus"></i> {{msg('button.addAction')}}</button>
                             </div>
@@ -114,11 +298,11 @@
                                         <label class="control-label task-label">{{msg('info.availableFields')}}:</label>
                                         <div class="controls move-element">
                                             <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
-                                            <span ng-repeat="data in selectedDataSources">
-                                                <span contenteditable="false" ng-repeat="i in findObject(data.dataSourceId, data.type).fields" class="badge badge-warning triggerField" draggable
-                                                      data-prefix="ad" data-source="{{data.dataSourceName}}" data-object="{{data.displayName}}" data-object-type="{{data.type}}"
-                                                      data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{data.id}}" data-type="{{i.type}}">
-                                                    {{msg(data.dataSourceName)}}.{{msg(data.displayName)}}#{{data.id}}.{{msg(i.displayName)}}
+                                            <span ng-repeat="ds in getDataSources()">
+                                                <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                                                      data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
+                                                      data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}">
+                                                    {{msg(ds.providerName)}}.{{msg(ds.displayName)}}#{{ds.objectId}}.{{msg(i.displayName)}}
                                                 </span>
                                             </span>
                                         </div>

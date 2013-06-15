@@ -9,10 +9,13 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
+import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskAdditionalData;
+import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.slf4j.Logger;
@@ -31,7 +34,8 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
     private JsonNode jsonNode;
 
     @Override
-    public Task deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public Task deserialize(JsonParser jsonParser,
+                            DeserializationContext deserializationContext) throws IOException {
         jsonNode = jsonParser.readValueAsTree();
         task = new Task();
 
@@ -52,24 +56,70 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("description", stringType);
         setProperty("name", stringType);
         setProperty("enabled", stringType);
-        setProperty("filters", typeFactory.constructCollectionType(List.class, Filter.class));
-        setProperty("additionalData", typeFactory.constructMapType(Map.class, stringType, typeFactory.constructCollectionType(List.class, TaskAdditionalData.class)));
+        setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
         setProperty("trigger", typeFactory.constructType(TaskEventInformation.class));
-        setProperty("validationErrors", typeFactory.constructCollectionType(Set.class, TaskError.class));
 
+        setProperty(
+                "validationErrors",
+                typeFactory.constructCollectionType(Set.class, TaskError.class)
+        );
+
+        if (jsonNode.has("filters")) {
+            /* backward compatibility */
+            List<Filter> filters = mapper.readValue(
+                    jsonNode.get("filters"),
+                    typeFactory.constructCollectionType(List.class, Filter.class)
+            );
+
+            task.getTaskConfig().removeFilterSets().add(new FilterSet(filters));
+        }
+
+        if (jsonNode.has("additionalData")) {
+            /* backward compatibility */
+            Map<String, List<TaskAdditionalData>> additionalData = mapper.readValue(
+                    jsonNode.get("additionalData"), typeFactory.constructMapType(
+                            Map.class, stringType, typeFactory.constructCollectionType(
+                                    List.class, TaskAdditionalData.class
+                            )
+                    )
+            );
+
+            task.getTaskConfig().removeDataSources();
+
+            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
+                for (TaskAdditionalData data : entry.getValue()) {
+                    DataSource.Lookup lookup = new DataSource.Lookup(
+                            data.getLookupField(), data.getLookupValue()
+                    );
+
+                    task.getTaskConfig().add(new DataSource(entry.getKey(), data.getId(),
+                            data.getType(), lookup, data.isFailIfDataNotFound()
+                    ));
+                }
+            }
+        }
 
         if (jsonNode.has("action")) {
             /* backward compatibility */
-            TaskActionInformation action = mapper.readValue(jsonNode.get("action"), TaskActionInformation.class);
+            TaskActionInformation action = mapper.readValue(
+                    jsonNode.get("action"), TaskActionInformation.class
+            );
 
             if (jsonNode.has("actionInputFields")) {
-                Map<String, String> values = mapper.readValue(jsonNode.get("actionInputFields"), typeFactory.constructMapType(Map.class, stringType, stringType));
+                Map<String, String> values = mapper.readValue(
+                        jsonNode.get("actionInputFields"),
+                        typeFactory.constructMapType(Map.class, stringType, stringType)
+                );
+
                 action.setValues(values);
             }
 
             task.addAction(action);
         } else {
-            setProperty("actions", typeFactory.constructCollectionType(List.class, TaskActionInformation.class));
+            setProperty(
+                    "actions",
+                    typeFactory.constructCollectionType(List.class, TaskActionInformation.class)
+            );
         }
 
         return task;

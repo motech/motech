@@ -14,11 +14,6 @@
         }));
 
         it('Should contain constants variables', function () {
-            expect(utils.FILTER_SET_PATH).toEqual('../tasks/partials/widgets/filter-set.html');
-            expect(utils.FILTER_SET_ID).toEqual('#filter-set');
-            expect(utils.DATA_SOURCE_PATH).toEqual('../tasks/partials/widgets/data-source.html');
-            expect(utils.DATA_SOURCE_PREFIX_ID).toEqual('#data-source-');
-            expect(utils.BUILD_AREA_ID).toEqual('#build-area');
             expect(utils.TRIGGER_PREFIX).toEqual('trigger');
             expect(utils.DATA_SOURCE_PREFIX).toEqual('ad');
         });
@@ -78,6 +73,21 @@
             data.by = { equalTo: 1 };
 
             expect(utils.find(data)).toEqual(undefined);
+        });
+
+        it('Should return array with objects for which criteria passed', function () {
+            var list = [ { number: 1 }, { number: 1 }, { number: 2 } ],
+                expected = [ { number: 1}, {number: 1} ],
+                data = {
+                    where: list,
+                    by: {
+                        what: 'number',
+                        equalTo: 1
+                    },
+                    unique: false
+                };
+
+            expect(utils.find(data)).toEqual(expected);
         });
 
         it('Should return array with trigger channels', function () {
@@ -197,8 +207,8 @@
 
         it('Should select data source', function () {
             var data = {
-                    dataSourceName: 'abc',
-                    dataSourceId: '123',
+                    providerName: 'abc',
+                    providerId: '123',
                     displayName: 'displayName',
                     type: 'type',
                     lookup: {
@@ -213,8 +223,8 @@
 
             utils.dataSource.select(scope, data, selected);
 
-            expect(data.dataSourceName).toEqual(selected.name);
-            expect(data.dataSourceId).toEqual(selected._id);
+            expect(data.providerName).toEqual(selected.name);
+            expect(data.providerId).toEqual(selected._id);
 
             expect(data.displayName).toEqual(undefined);
             expect(data.type).toEqual(undefined);
@@ -315,7 +325,7 @@
 
             data.prefix = 'ad';
             data.param.type = 'DATE';
-            data.dataSourceName = 'DS';
+            data.providerName = 'DS';
             data.object = {
                 id: 0,
                 displayName: 'object',
@@ -359,10 +369,15 @@
             expect(utils.convertToView(scope, 'BOOLEAN', '{{trigger.value}}')).toEqual('<div>{{trigger.value}}</div>');
 
             scope.BrowserDetect.browser = 'FireFox';
-            scope.selectedDataSources = [{
-                dataSourceId: 'a234',
-                dataSourceName: 'abc'
-            }];
+            scope.task = {
+                taskConfig: {
+                    steps: [{
+                        '@type': 'DataSource',
+                        providerId: 'a234',
+                        providerName: 'abc'
+                    }]
+                }
+            };
 
             expect(utils.convertToView(scope, 'UNICODE', '{{ad.a234.obj#1.field}} abc')).toEqual('{{ad.Abc.obj#1.field}} abc');
             expect(utils.convertToView(scope, 'NUMBER', '{{trigger.value}}')).toEqual('{{trigger.value}}');
@@ -376,13 +391,18 @@
             };
 
             scope.msg = function (key) {
-                return key.charAt(0).toUpperCase() + key.slice(1);
+                return key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
             };
 
-            scope.selectedDataSources = [{
-                dataSourceId: 'a234',
-                dataSourceName: 'abc'
-            }];
+            scope.task = {
+                taskConfig: {
+                    steps: [{
+                        '@type': 'DataSource',
+                        providerId: 'a234',
+                        providerName: 'abc'
+                    }]
+                }
+            };
 
             expect(utils.convertToServer(scope, '<div>{{trigger.value}}</div>')).toEqual('{{trigger.value}}');
             expect(utils.convertToServer(scope, '<div>{{ad.Abc.obj#1.field}} abc</div>')).toEqual('{{ad.a234.obj#1.field}} abc');

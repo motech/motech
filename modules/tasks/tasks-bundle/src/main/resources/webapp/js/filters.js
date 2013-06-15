@@ -16,7 +16,7 @@
                 var array = [];
 
                 angular.forEach(dataSources, function (source) {
-                    if (source.id < id) {
+                    if (source.objectId < id) {
                         array.push(source);
                     }
                 });

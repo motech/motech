@@ -160,7 +160,6 @@
 
     widgetModule.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
         $scope.util = ManageTaskUtils;
-        $scope.selectedDataSources = [];
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
 
@@ -171,10 +170,14 @@
             $scope.dataSources = data[1];
 
             if ($routeParams.taskId === undefined) {
-                $scope.task = {};
+                $scope.task = {
+                    taskConfig: {
+                        steps: []
+                    }
+                };
             } else {
                 $scope.task = Tasks.get({ taskId: $routeParams.taskId }, function () {
-                    var triggerChannel, trigger, dataSource, dataSourceId, object, obj, i;
+                    var triggerChannel, trigger, dataSource, providerId, object, obj, i;
 
                     if ($scope.task.trigger) {
                         triggerChannel = $scope.util.find({
@@ -198,65 +201,29 @@
                         }
                     }
 
-                    if ($scope.task.filters.length > 0) {
-                        $http.get($scope.util.FILTER_SET_PATH).success(function (html) {
-                            angular.element($scope.util.BUILD_AREA_ID).append($compile(html)($scope));
-                            angular.element($scope.util.BUILD_AREA_ID + ' #filter-set #collapse-filter').collapse('hide');
-                        });
-                    }
+                    angular.forEach($scope.task.taskConfig.steps, function (step) {
+                        var source, object;
 
-                    for (dataSourceId in $scope.task.additionalData) {
-                        if ($scope.task.additionalData.hasOwnProperty(dataSourceId)) {
-                            dataSource = $scope.util.find({
-                                where: $scope.dataSources,
+                        angular.element('#collapse-step-' + step.order).livequery(function() {
+                            $(this).collapse('hide');
+                        });
+
+                        if (step['@type'] === 'DataSource') {
+                            source = $scope.findDataSource(step.providerId);
+                            object = $scope.util.find({
+                                where: source.objects,
                                 by: {
-                                    what: '_id',
-                                    equalTo: dataSourceId
+                                    what: 'type',
+                                    equalTo: step.type
                                 }
                             });
 
-                            for (i = 0; i < $scope.task.additionalData[dataSourceId].length; i += 1) {
-                                object = $scope.task.additionalData[dataSourceId][i];
-
-                                obj = $scope.util.find({
-                                    where: dataSource.objects,
-                                    by: {
-                                        what: 'type',
-                                        equalTo: object.type
-                                    }
-                                });
-
-                                $scope.selectedDataSources.push({
-                                    id: object.id,
-                                    dataSourceId: dataSource._id,
-                                    dataSourceName: dataSource.name,
-                                    displayName: obj.displayName,
-                                    type: object.type,
-                                    failIfDataNotFound: object.failIfDataNotFound,
-                                    lookup: {
-                                        field: object.lookupField,
-                                        value: object.lookupValue
-                                    }
-                                });
+                            if (source && object) {
+                                step.providerName = source.name;
+                                step.displayName = object.displayName;
+                                step.lookup.value = $scope.util.convertToView($scope, 'UNICODE', step.lookup.value);
                             }
                         }
-                    }
-
-                    $scope.selectedDataSources.sort(function (one, two) {
-                        return one.id - two.id;
-                    });
-
-                    $http.get($scope.util.DATA_SOURCE_PATH).success(function (html) {
-                        angular.forEach($scope.selectedDataSources, function (data) {
-                            var childScope = $scope.$new();
-
-                            data.lookup.value = $scope.util.convertToView($scope, 'UNICODE', data.lookup.value);
-                            childScope.data = data;
-
-                            angular.element($scope.util.BUILD_AREA_ID).append($compile(html)(childScope));
-                        });
-
-                        angular.element($scope.util.BUILD_AREA_ID + " .accordion-body").collapse('hide');
                     });
 
                     angular.forEach($scope.task.actions, function (info, idx) {
@@ -384,18 +351,19 @@
         };
 
         $scope.addFilterSet = function () {
-            $scope.task.filters = [];
+            var lastStep = $scope.task.taskConfig.steps.last();
 
-            $http.get($scope.util.FILTER_SET_PATH).success(function (html) {
-                angular.element($scope.util.BUILD_AREA_ID).append($compile(html)($scope));
+            $scope.task.taskConfig.steps.push({
+                '@type': 'FilterSet',
+                filters: [],
+                order: (lastStep && lastStep.order + 1) || 0
             });
         };
 
-        $scope.removeFilterSet = function () {
+        $scope.removeFilterSet = function (data) {
             motechConfirm('task.confirm.filterSet', "header.confirm", function (val) {
                 if (val) {
-                    delete $scope.task.filters;
-                    angular.element($scope.util.BUILD_AREA_ID).children($scope.util.FILTER_SET_ID).remove();
+                    $scope.task.taskConfig.steps.removeObject(data);
 
                     if (!$scope.$$phase) {
                         $scope.$apply($scope.task);
@@ -404,12 +372,12 @@
             });
         };
 
-        $scope.addFilter = function () {
-            $scope.task.filters.push({});
+        $scope.addFilter = function (filterSet) {
+            filterSet.filters.push({});
         };
 
-        $scope.removeFilter = function (filter) {
-            $scope.task.filters.removeObject(filter);
+        $scope.removeFilter = function (filterSet, filter) {
+            filterSet.filters.removeObject(filter);
         };
 
         $scope.operators = function (param) {
@@ -427,44 +395,54 @@
         };
 
         $scope.addDataSource = function () {
-            var childScope = $scope.$new(),
-                length = $scope.selectedDataSources.length,
-                lastData = $scope.selectedDataSources[length - 1];
+            var sources = $scope.getDataSources(),
+                lastStep = $scope.task.taskConfig.steps.last(),
+                last;
 
-            childScope.data = { id: (lastData && lastData.id + 1) || 0 };
+            last = sources && sources.last();
 
-            $scope.selectedDataSources.push(childScope.data);
-
-            $http.get($scope.util.DATA_SOURCE_PATH).success(function (html) {
-                angular.element($scope.util.BUILD_AREA_ID).append($compile(html)(childScope));
+            $scope.task.taskConfig.steps.push({
+                '@type': 'DataSource',
+                objectId: (last && last.objectId + 1) || 0,
+                order: (lastStep && lastStep.order + 1) || 0
             });
         };
 
-        $scope.removeData = function (data) {
+        $scope.removeData = function (dataSource) {
             motechConfirm('task.confirm.dataSource', "header.confirm", function (val) {
                 if (val) {
-                    $scope.selectedDataSources.removeObject(data);
-                    angular.element($scope.util.BUILD_AREA_ID).children($scope.util.DATA_SOURCE_PREFIX_ID + data.id).remove();
+                    $scope.task.taskConfig.steps.removeObject(dataSource);
 
                     if (!$scope.$$phase) {
-                        $scope.$apply($scope.selectedDataSources);
+                        $scope.$apply($scope.task);
                     }
                 }
             });
         };
 
-        $scope.findDataSource = function (dataSourceId) {
+        $scope.getDataSources = function () {
+            return $scope.util.find({
+                where: $scope.task.taskConfig.steps,
+                by: [{
+                    what: '@type',
+                    equalTo: 'DataSource'
+                }],
+                unique: false
+            });
+        };
+
+        $scope.findDataSource = function (providerId) {
             return $scope.util.find({
                 where: $scope.dataSources,
                 by: {
                     what: '_id',
-                    equalTo: dataSourceId
+                    equalTo: providerId
                 }
             });
         };
 
-        $scope.findObject = function (dataSourceId, type, id) {
-            var dataSource = $scope.findDataSource(dataSourceId),
+        $scope.findObject = function (providerId, type, id) {
+            var dataSource = $scope.findDataSource(providerId),
                 by,
                 found;
 
@@ -488,27 +466,27 @@
             return found;
         };
 
-        $scope.selectDataSource = function (data, selected) {
-            if (data.dataSourceId) {
+        $scope.selectDataSource = function (dataSource, selected) {
+            if (dataSource.providerId) {
                 motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (val) {
                     if (val) {
-                        $scope.util.dataSource.select($scope, data, selected);
+                        $scope.util.dataSource.select($scope, dataSource, selected);
                     }
                 });
             } else {
-                $scope.util.dataSource.select($scope, data, selected);
+                $scope.util.dataSource.select($scope, dataSource, selected);
             }
         };
 
-        $scope.selectObject = function (data, selected) {
-            if (data.type) {
+        $scope.selectObject = function (object, selected) {
+            if (object.type) {
                 motechConfirm('task.confirm.changeObject', 'header.confirm', function (val) {
                     if (val) {
-                        $scope.util.dataSource.selectObject($scope, data, selected);
+                        $scope.util.dataSource.selectObject($scope, object, selected);
                     }
                 });
             } else {
-                $scope.util.dataSource.selectObject($scope, data, selected);
+                $scope.util.dataSource.selectObject($scope, object, selected);
             }
         };
 
@@ -611,7 +589,7 @@
                     dataArray = data.slice(indexOf + 1, -2).split("?"),
                     key = dataArray[0],
                     manipulations = dataArray.slice(1),
-                    span, cuts, param, type, field, dataSource, dataSourceId, object, id;
+                    span, cuts, param, type, field, dataSource, providerId, object, id;
 
                 switch (prefix) {
                 case $scope.util.TRIGGER_PREFIX:
@@ -640,7 +618,7 @@
                 case $scope.util.DATA_SOURCE_PREFIX:
                     cuts = key.split('.');
 
-                    dataSourceId = cuts[0];
+                    providerId = cuts[0];
                     type = cuts[1].split('#');
                     id = type.last();
 
@@ -651,20 +629,23 @@
                     type = type.join('#');
 
                     dataSource = $scope.util.find({
-                        where: $scope.selectedDataSources,
+                        where: $scope.task.taskConfig.steps,
                         by: [{
-                            what: 'dataSourceId',
-                            equalTo: dataSourceId
+                            what: '@type',
+                            equalTo: 'DataSource'
+                        }, {
+                            what: 'providerId',
+                            equalTo: providerId
                         }, {
                             what: 'type',
                             equalTo: type
                         }, {
-                            what: 'id',
+                            what: 'objectId',
                             equalTo: +id
                         }]
                     });
 
-                    object = dataSource && $scope.findObject(dataSource.dataSourceId, dataSource.type);
+                    object = dataSource && $scope.findObject(dataSource.providerId, dataSource.type);
 
                     param = object && $scope.util.find({
                         where: object.fields,
@@ -686,7 +667,7 @@
                         param: param,
                         prefix: prefix,
                         manipulations: manipulations,
-                        dataSourceName: dataSource.dataSourceName,
+                        providerName: dataSource.providerName,
                         object: {
                             id: id,
                             type: type,
@@ -704,45 +685,37 @@
         };
 
         $scope.save = function (enabled) {
-            $scope.task.enabled = enabled;
-            $scope.task.additionalData = {};
+            var success = function () {
+                    var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
 
-            angular.forEach($scope.selectedDataSources, function (data) {
-                var exists = false, lookupValue = (data.lookup && data.lookup.value) || '',
-                    additionalData, object, i;
+                    motechAlert(msg, 'header.saved', function () {
+                        unblockUI();
+                        loc = window.location.toString();
+                        indexOf = loc.indexOf('#');
 
-                lookupValue = $scope.util.convertToServer($scope, lookupValue);
-
-                if ($scope.task.additionalData[data.dataSourceId] === undefined) {
-                    $scope.task.additionalData[data.dataSourceId] = [];
-                }
-
-                additionalData = $scope.task.additionalData[data.dataSourceId];
-
-                for (i = 0; i < additionalData.length; i += 1) {
-                    object = additionalData[i];
-
-                    if (object.id === data.id) {
-                        object.type = data.type;
-                        object.lookupField = data.lookup.field;
-                        object.lookupValue = lookupValue;
-                        object.failIfDataNotFound = data.failIfDataNotFound;
-
-                        exists = true;
-                        break;
-                    }
-                }
-
-                if (!exists) {
-                    additionalData.push({
-                        id: data.id,
-                        type: data.type,
-                        lookupField: (data.lookup && data.lookup.field),
-                        lookupValue: lookupValue,
-                        failIfDataNotFound: data.failIfDataNotFound
+                        window.location = "{0}#/dashboard".format(loc.substring(0, indexOf));
                     });
-                }
-            });
+                },
+                error = function (response) {
+                    var data = (response && response.data) || response;
+
+                    angular.forEach($scope.task.actions, function (action) {
+                        delete action.values;
+                    });
+
+                    angular.forEach($scope.task.taskConfig.steps, function (step) {
+                        if (step['@type'] === 'DataSource') {
+                            step.lookup.value = $scope.util.convertToView($scope, step.lookup.value);
+                        }
+                    });
+
+                    delete $scope.task.enabled;
+
+                    unblockUI();
+                    jAlert($scope.util.createErrorMessage($scope, data), 'header.error');
+                };
+
+            $scope.task.enabled = enabled;
 
             angular.forEach($scope.selectedAction, function (action, idx) {
                 if ($scope.task.actions[idx].values === undefined) {
@@ -754,54 +727,22 @@
                 });
             });
 
+            angular.forEach($scope.task.taskConfig.steps, function (step) {
+                if (step['@type'] === 'DataSource') {
+                    if (step.lookup === undefined) {
+                        step.lookup = {};
+                    }
+
+                    step.lookup.value = $scope.util.convertToServer($scope, (step && step.lookup && step.lookup.value) || '');
+                }
+            });
+
             blockUI();
 
             if (!$routeParams.taskId) {
-                $http.post('../tasks/api/task/save', $scope.task)
-                    .success(function () {
-                        var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
-
-                        motechAlert(msg, 'header.saved', function () {
-                            unblockUI();
-                            loc = window.location.toString();
-                            indexOf = loc.indexOf('#');
-
-                            window.location = "{0}#/dashboard".format(loc.substring(0, indexOf));
-                        });
-                    })
-                    .error(function (response) {
-                        angular.forEach($scope.task.actions, function (action) {
-                            delete action.values;
-                        });
-
-                        delete $scope.task.enabled;
-                        delete $scope.task.additionalData;
-
-                        unblockUI();
-                        jAlert($scope.util.createErrorMessage($scope, response), 'header.error');
-                    });
+                $http.post('../tasks/api/task/save', $scope.task).success(success).error(error);
             } else {
-                $scope.task.$save(function() {
-                    var loc, indexOf;
-
-                    motechAlert('task.success.saved', 'header.saved', function () {
-                        unblockUI();
-                        loc = window.location.toString();
-                        indexOf = loc.indexOf('#');
-
-                        window.location = "{0}#/dashboard".format(loc.substring(0, indexOf));
-                    });
-                }, function (response) {
-                    angular.forEach($scope.task.actions, function (action) {
-                        delete action.values;
-                    });
-
-                    delete $scope.task.enabled;
-                    delete $scope.task.additionalData;
-
-                    unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, response.data), 'header.error');
-                });
+                $scope.task.$save(success, error);
             }
         };
 

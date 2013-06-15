@@ -23,14 +23,13 @@ import static java.util.Arrays.asList;
 public class Task extends MotechBaseDataObject {
     private static final long serialVersionUID = -8754186387983558616L;
 
-    private List<Filter> filters;
-    private Map<String, List<TaskAdditionalData>> additionalData;
     private String description;
     private String name;
     private List<TaskActionInformation> actions;
     private TaskEventInformation trigger;
     private boolean enabled;
     private Set<TaskError> validationErrors;
+    private TaskConfig taskConfig;
 
     public Task() {
         this(null, null, null);
@@ -40,68 +39,61 @@ public class Task extends MotechBaseDataObject {
      * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List)}
      */
     @Deprecated
-    public Task(String name, TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields) {
+    public Task(String name, TaskEventInformation trigger, TaskActionInformation action,
+                Map<String, String> actionInputFields) {
         this(name, trigger, action, actionInputFields, null, null, true);
     }
 
-    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions) {
-       this(name, trigger, actions, null, null, true);
-    }
-
     /**
-     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List, java.util.List, java.util.Map, boolean)}
+     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List, TaskConfig, boolean)}
      */
     @Deprecated
-    public Task(String name, TaskEventInformation trigger, TaskActionInformation action, Map<String, String> actionInputFields,
-                List<Filter> filters, Map<String, List<TaskAdditionalData>> additionalData, boolean enabled) {
+    public Task(String name, TaskEventInformation trigger, TaskActionInformation action,
+                Map<String, String> actionInputFields, List<Filter> filters,
+                Map<String, List<TaskAdditionalData>> additionalData, boolean enabled) {
         this.enabled = enabled;
-        this.additionalData = additionalData == null ? new HashMap<String, List<TaskAdditionalData>>() : additionalData;
-        this.filters = filters == null ? new ArrayList<Filter>() : filters;
         this.trigger = trigger;
         this.name = name;
         this.validationErrors = new HashSet<>();
+        this.taskConfig = new TaskConfig();
 
         if (action != null) {
             action.setValues(actionInputFields);
             this.actions = asList(action);
         }
-    }
 
-    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions,
-                List<Filter> filters, Map<String, List<TaskAdditionalData>> additionalData, boolean enabled) {
-        this.enabled = enabled;
-        this.additionalData = additionalData == null ? new HashMap<String, List<TaskAdditionalData>>() : additionalData;
-        this.filters = filters == null ? new ArrayList<Filter>() : filters;
-        this.actions = actions == null ? new ArrayList<TaskActionInformation>() : actions;
-        this.trigger = trigger;
-        this.name = name;
-        this.validationErrors = new HashSet<>();
-    }
+        if (filters != null) {
+            taskConfig.add(new FilterSet(filters));
+        }
 
-    @JsonIgnore
-    public boolean containsAdditionalData(String dataProviderId) {
-        return additionalData.containsKey(dataProviderId);
-    }
+        if (additionalData != null) {
+            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
+                for (TaskAdditionalData data : entry.getValue()) {
+                    DataSource.Lookup lookup = new DataSource.Lookup(
+                            data.getLookupField(), data.getLookupValue()
+                    );
 
-    @JsonIgnore
-    public List<TaskAdditionalData> getAdditionalData(String dataProviderId) {
-        return additionalData.get(dataProviderId);
-    }
-
-    @JsonIgnore
-    public TaskAdditionalData getAdditionalData(String dataProviderId, Long id, String type) {
-        TaskAdditionalData taskAdditionalData = null;
-
-        if (containsAdditionalData(dataProviderId)) {
-            for (TaskAdditionalData ad : getAdditionalData(dataProviderId)) {
-                if (ad.objectEquals(id, type)) {
-                    taskAdditionalData = ad;
-                    break;
+                    taskConfig.add(new DataSource(
+                            entry.getKey(), data.getId(), data.getType(),
+                            lookup, data.isFailIfDataNotFound()
+                    ));
                 }
             }
         }
+    }
 
-        return taskAdditionalData;
+    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions) {
+        this(name, trigger, actions, null, true);
+    }
+
+    public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions,
+                TaskConfig taskConfig, boolean enabled) {
+        this.name = name;
+        this.actions = actions == null ? new ArrayList<TaskActionInformation>() : actions;
+        this.trigger = trigger;
+        this.enabled = enabled;
+        this.taskConfig = taskConfig == null ? new TaskConfig() : taskConfig;
+        this.validationErrors = new HashSet<>();
     }
 
     public void addAction(TaskActionInformation action) {
@@ -157,7 +149,7 @@ public class Task extends MotechBaseDataObject {
     }
 
     /**
-     * @deprecated As of release 0.20, replaced by {@link org.motechproject.tasks.domain.TaskActionInformation#getValues()}
+     * @deprecated As of release 0.20, replaced by {@link TaskActionInformation#getValues()}
      */
     @Deprecated
     @JsonIgnore
@@ -166,7 +158,7 @@ public class Task extends MotechBaseDataObject {
     }
 
     /**
-     * @deprecated As of release 0.20, replaced by {@link org.motechproject.tasks.domain.TaskActionInformation#setValues(java.util.Map)}
+     * @deprecated As of release 0.20, replaced by {@link TaskActionInformation#setValues(java.util.Map)}
      */
     @Deprecated
     @JsonIgnore
@@ -182,28 +174,80 @@ public class Task extends MotechBaseDataObject {
         this.enabled = enabled;
     }
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link TaskConfig#getDataSources()}
+     */
+    @Deprecated
+    @JsonIgnore
     public Map<String, List<TaskAdditionalData>> getAdditionalData() {
-        return additionalData;
+        Map<String, List<TaskAdditionalData>> map = new HashMap<>();
+
+        for (DataSource dataSource : taskConfig.getDataSources()) {
+            if (!map.containsKey(dataSource.getProviderId())) {
+                map.put(dataSource.getProviderId(), new ArrayList<TaskAdditionalData>());
+            }
+
+            map.get(dataSource.getProviderId()).add(new TaskAdditionalData(
+                    dataSource.getObjectId(),
+                    dataSource.getType(),
+                    dataSource.getLookup().getField(),
+                    dataSource.getLookup().getValue(),
+                    dataSource.isFailIfDataNotFound()
+            ));
+        }
+
+        return map;
     }
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link TaskConfig#add(TaskConfigStep...)}
+     */
+    @Deprecated
+    @JsonIgnore
     public void setAdditionalData(final Map<String, List<TaskAdditionalData>> additionalData) {
-        this.additionalData.clear();
-
         if (additionalData != null) {
-            this.additionalData.putAll(additionalData);
+            taskConfig.removeDataSources();
+
+            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
+                for (TaskAdditionalData data : entry.getValue()) {
+                    DataSource.Lookup lookup = new DataSource.Lookup(
+                            data.getLookupField(), data.getLookupValue()
+                    );
+
+                    taskConfig.add(new DataSource(
+                            entry.getKey(), data.getId(), data.getType(),
+                            lookup, data.isFailIfDataNotFound()
+                    ));
+                }
+            }
         }
     }
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link TaskConfig#getFilters()}
+     */
+    @Deprecated
+    @JsonIgnore
     public List<Filter> getFilters() {
-        return filters;
+        FilterSet first;
+
+        try {
+            first = taskConfig.getFilters().first();
+        } catch (Exception e) {
+            first = new FilterSet();
+        }
+
+        return first.getFilters();
     }
 
+    /**
+     * @deprecated As of release 0.20, replaced by {@link TaskConfig#add(TaskConfigStep...)}
+     */
+    @Deprecated
+    @JsonIgnore
     public void setFilters(final List<Filter> filters) {
-        this.filters.clear();
-
-        if (filters != null) {
-            this.filters.addAll(filters);
-        }
+        taskConfig.removeFilterSets();
+        taskConfig.add(new FilterSet(filters));
     }
 
     public String getDescription() {
@@ -222,7 +266,8 @@ public class Task extends MotechBaseDataObject {
         TaskError taskError = (TaskError) CollectionUtils.find(validationErrors, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return object instanceof TaskError && ((TaskError) object).getMessage().equalsIgnoreCase(message);
+                return object instanceof TaskError
+                        && ((TaskError) object).getMessage().equalsIgnoreCase(message);
             }
         });
 
@@ -241,46 +286,47 @@ public class Task extends MotechBaseDataObject {
         return validationErrors;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Task task = (Task) o;
-
-        return taskObjectCompare(task);
+    public TaskConfig getTaskConfig() {
+        return taskConfig;
     }
 
-    private boolean taskObjectCompare(Task task) {
-        boolean isEqualTo = Objects.equals(enabled, task.enabled) && Objects.equals(actions, task.actions);
-
-        if (isEqualTo) {
-            isEqualTo = Objects.equals(additionalData, task.additionalData) && Objects.equals(filters, task.filters) &&
-                    Objects.equals(trigger, task.trigger);
-        }
-
-        if (isEqualTo) {
-            isEqualTo = Objects.equals(description, task.description) &&
-                    Objects.equals(name, task.name) &&
-                    Objects.equals(validationErrors, task.validationErrors);
-        }
-
-        return isEqualTo;
+    public void setTaskConfig(TaskConfig taskConfig) {
+        this.taskConfig = taskConfig;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(filters, additionalData, description, name, actions, trigger, enabled, validationErrors);
+        return Objects.hash(
+                description, name, actions, trigger, enabled, validationErrors, taskConfig
+        );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final Task other = (Task) obj;
+
+        return Objects.equals(this.description, other.description)
+                && Objects.equals(this.name, other.name)
+                && Objects.equals(this.actions, other.actions)
+                && Objects.equals(this.trigger, other.trigger)
+                && Objects.equals(this.enabled, other.enabled)
+                && Objects.equals(this.validationErrors, other.validationErrors)
+                && Objects.equals(this.taskConfig, other.taskConfig);
     }
 
     @Override
     public String toString() {
-        return String.format("Task{filters=%s, additionalData=%s, description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s}",
-                filters, additionalData, description, name, actions, trigger, enabled, validationErrors);
+        return String.format(
+                "Task{description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s} ",
+                description, name, actions, trigger, enabled, validationErrors, taskConfig
+        );
     }
 }

@@ -5,6 +5,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * @deprecated As of release 0.20, replaced by {@link DataSource}
+ */
+@Deprecated
 public class TaskAdditionalData implements Serializable {
     private static final long serialVersionUID = 6652124746431496660L;
 
@@ -18,7 +22,8 @@ public class TaskAdditionalData implements Serializable {
         this(null, null, null, null, false);
     }
 
-    public TaskAdditionalData(Long id, String type, String lookupField, String lookupValue, boolean failIfDataNotFound) {
+    public TaskAdditionalData(Long id, String type, String lookupField, String lookupValue,
+                              boolean failIfDataNotFound) {
         this.id = id;
         this.type = type;
         this.lookupField = lookupField;
@@ -95,7 +100,9 @@ public class TaskAdditionalData implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("TaskAdditionalData{id=%d, type='%s', lookupField='%s', lookupValue='%s', failIfDataNotFound='%s'}",
-                id, type, lookupField, lookupValue, failIfDataNotFound);
+        return String.format(
+                "TaskAdditionalData{id=%d, type='%s', lookupField='%s', lookupValue='%s', failIfDataNotFound='%s'}",
+                id, type, lookupField, lookupValue, failIfDataNotFound
+        );
     }
 }

@@ -1,0 +1,40 @@
+{
+    "steps":[
+        {
+            "@type": "FilterSet",
+            "filters":[
+                {
+                    "eventParameter":{
+                        "displayName":"mrs.observation.field.observationConceptName",
+                        "type":"UNICODE",
+                        "eventKey":"ObservationConceptName"
+                    },
+                    "negationOperator":true,
+                    "operator":"equals",
+                    "expression":"pregnancy_urine_test"
+                },
+                {
+                    "eventParameter":{
+                        "displayName":"mrs.observation.field.value",
+                        "type":"UNICODE",
+                        "eventKey":"ObservationValue"
+                    },
+                    "negationOperator":true,
+                    "operator":"equals",
+                    "expression":"positive"
+                }
+            ]
+        },
+        {
+            "@type": "DataSource",
+            "providerId":"6899548ec91d9ad04e3aad9cf2aa19f9",
+            "objectId":1,
+            "type":"Person",
+            "lookup":{
+                "field":"mrs.person.lookupField.id",
+                "value":"trigger.PatientId"
+            },
+            "failIfDataNotFound":false
+        }
+    ]
+}
