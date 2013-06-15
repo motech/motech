@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FormValueElementTest {
 
@@ -199,6 +200,164 @@ public class FormValueElementTest {
         assertEquals(2, searchedElements.size());
         assertEquals("Value2", searchedElements.get(0).getValue());
         assertEquals("Value3", searchedElements.get(1).getValue());
+    }
+
+    /**
+     * This test asserts that while looking up for all matching elements with a name, the search should start with the current element and it should be part of the returned list.
+     */
+    @Test
+    public void shouldSearchWithCurrentElementWhenLookingForAllElementsWithName() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        List<FormValueElement> foundElements = rootElement.getAllElements("child");
+        assertEquals(3, foundElements.size());
+        assertEquals("value", foundElements.get(0).getValue());
+        assertEquals("value1", foundElements.get(1).getValue());
+        assertEquals("value2", foundElements.get(2).getValue());
+    }
+
+    /**
+     * This test asserts that while looking up for a matching element with a name, the search should start with the current element and it should be returned if has matching name.
+     */
+    @Test
+    public void shouldSearchWithCurrentElementWhenLookingForElementWithName() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        FormValueElement foundElement = rootElement.getElement("child");
+        assertEquals(rootElement, foundElement);
+    }
+
+    /**
+     * This test asserts that while looking up for a matching element with a name, all the restricted elements and their descendants should be ignored.
+     */
+    @Test
+    public void shouldConsiderRestrictedElementsWhileSearchingForElementByName() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("root");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build());
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        FormValueElement foundElement = rootElement.getElement("root", Arrays.asList("root"));
+        assertNull(foundElement);
+
+        rootElement.setElementName("root");
+        foundElement = rootElement.getElement("child", Arrays.asList("child1"));
+        assertEquals("value2", foundElement.getValue());
+    }
+
+    /**
+     * This test asserts that while looking up for matching elements with a name, all the restricted elements and their descendants should be ignored.
+     */
+    @Test
+    public void shouldConsiderRestrictedElementsWhileSearchingForElementsByName() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        List<FormValueElement> foundElements = rootElement.getAllElements("child", Arrays.asList("child"));
+        assertTrue(foundElements.isEmpty());
+
+        foundElements = rootElement.getAllElements("child", Arrays.asList("child1"));
+        assertEquals(2, foundElements.size());
+        assertEquals("value", foundElements.get(0).getValue());
+        assertEquals("value2", foundElements.get(1).getValue());
+    }
+
+    /**
+     * This test asserts search with "//" path should return this element.
+     */
+    @Test
+    public void shouldReturnCurrentElementWhenSearchPathIsSelf() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        FormNode foundElement = rootElement.searchFirst("//");
+        assertEquals(rootElement, foundElement);
+
+        List<FormNode> foundElements = rootElement.search("//");
+        assertEquals(1, foundElements.size());
+        assertEquals(rootElement, foundElements.get(0));
+    }
+
+    /**
+     * This test asserts search with "//#foo" path should return this element.
+     */
+    @Test
+    public void shouldReturnCurrentElementWhenSearchPathIsSelfValue() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        FormNode foundElement = rootElement.searchFirst("//#something");
+        assertEquals(rootElement, foundElement);
+
+        List<FormNode> foundElements = rootElement.search("//#something");
+        assertEquals(1, foundElements.size());
+        assertEquals(rootElement, foundElements.get(0));
+    }
+
+    /**
+     * This test asserts search with "//@foo" path should return the attribute node from this element.
+     */
+    @Test
+    public void shouldReturnAttrubuteValueFromCurrentElementWhenSearchPathIsSelf() {
+        FormValueElementBuilder childElementBuilder1 = new FormValueElementBuilder("child1")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value1").build());
+
+        FormValueElementBuilder childElementBuilder2 = new FormValueElementBuilder("child2")
+                .withSubElement(new FormValueElementBuilder("child").withValue("value2").build());
+
+        FormValueElementBuilder rootElementBuilder = new FormValueElementBuilder("child");
+        rootElementBuilder.withSubElement(childElementBuilder1.build()).withSubElement(childElementBuilder2.build()).withValue("value");
+        rootElementBuilder.withAttribute("attribute1", "value1");
+        FormValueElement rootElement = rootElementBuilder.build();
+
+        FormNode foundAttribute = rootElement.searchFirst("//@attribute1");
+        assertEquals("value1", foundAttribute.getValue());
+
+        List<FormNode> foundAttributes = rootElement.search("//@attribute1");
+        assertEquals(1, foundAttributes.size());
+        assertEquals("value1", foundAttributes.get(0).getValue());
     }
 
     private class FormValueElementBuilder {
