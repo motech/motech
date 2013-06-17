@@ -7,11 +7,14 @@ import java.util.Map;
 
 public class PeriodicDispatchEvent {
 
+    public static final String SCHEDULE_JOB_ID_KEY = "JobID";
+
     private MotechEvent event;
 
     public PeriodicDispatchEvent(String aggregationRuleName) {
         Map<String, Object> params = new HashMap<>();
         params.put(EventStrings.AGGREGATION_RULE_NAME, aggregationRuleName);
+        params.put(SCHEDULE_JOB_ID_KEY, aggregationRuleName);
         event = new MotechEvent(EventStrings.PERIODIC_DISPATCH_EVENT, params);
     }
 

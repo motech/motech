@@ -1,5 +1,6 @@
 package org.motechproject.event.aggregation.aggregate;
 
+import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.aggregation.model.AggregatedEventRecord;
 import org.motechproject.event.aggregation.model.AggregationRuleRecord;
@@ -21,6 +22,8 @@ public class EventAggregator implements EventListener {
     private List<String> fields;
     private AllAggregationRules allAggregationRules;
 
+    private Logger logger = Logger.getLogger(EventAggregator.class);
+
     public EventAggregator(String aggregationRuleName, List<String> fields, AllAggregatedEvents allAggregatedEvents, AllAggregationRules allAggregationRules) {
         this.aggregationRuleName = aggregationRuleName;
         this.fields = fields;
@@ -35,8 +38,14 @@ public class EventAggregator implements EventListener {
 
     @Override
     public void handle(MotechEvent event) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("aggregating: " + event);
+        }
         AggregationRuleRecord rule = allAggregationRules.findByName(aggregationRuleName);
         if (rule.getState().equals(AggregationState.Paused)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("aggregation[" + aggregationRuleName + "] is paused, ignoring events.");
+            }
             return;
         }
 
@@ -50,6 +59,7 @@ public class EventAggregator implements EventListener {
             }
         }
         AggregatedEventRecord aggregatedEvent = new AggregatedEventRecord(aggregationRuleName, aggregationParameters, nonAggregationParameters, hasFieldMissing(event));
+
         allAggregatedEvents.add(aggregatedEvent);
     }
 

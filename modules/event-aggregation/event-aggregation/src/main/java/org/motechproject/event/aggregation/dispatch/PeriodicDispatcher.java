@@ -1,5 +1,6 @@
 package org.motechproject.event.aggregation.dispatch;
 
+import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.aggregation.model.event.EventStrings;
 import org.motechproject.event.aggregation.model.event.PeriodicDispatchEvent;
@@ -12,6 +13,8 @@ public class PeriodicDispatcher {
 
     private EventDispatcher eventDispatcher;
 
+    private Logger logger = Logger.getLogger(PeriodicDispatcher.class);
+
     @Autowired
     public PeriodicDispatcher(EventDispatcher eventDispatcher) {
         this.eventDispatcher = eventDispatcher;
@@ -19,6 +22,9 @@ public class PeriodicDispatcher {
 
     @MotechListener(subjects = EventStrings.PERIODIC_DISPATCH_EVENT)
     public void handle(MotechEvent event) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("periodic dispatcher callback " + event);
+        }
         eventDispatcher.dispatch(new PeriodicDispatchEvent(event).getAggregationRuleName());
     }
 }

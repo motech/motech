@@ -57,6 +57,6 @@ public class MotechSchedulerFactoryBean {
     }
 
     private boolean getBooleanWithDefault(String s, boolean defaultValue) {
-        return s != null? getBoolean(s) : defaultValue;
+        return s != null ? getBoolean(s) : defaultValue;
     }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util    http://www.springframework.org/schema/util/spring-util-3.1.xsd
+    ">
+
+    <import resource="classpath*:/META-INF/motech/*.xml"/>
+
+    <util:properties id="quartzProperties" location="classpath:quartz-couchdb.properties"/>
+
+    <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="waitForJobsToCompleteOnShutdown" value="#{quartzProperties[waitForJobsToCompleteOnShutdown]?:true}"/>
+        <property name="configLocation" value="classpath:quartz-couchdb.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
+
+</beans>

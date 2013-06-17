@@ -20,7 +20,7 @@
 
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r012</external.dependency.release.tag>
+        <external.dependency.release.tag>r016</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -689,6 +689,21 @@
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
                 <version>2.1.5-${external.dependency.release.tag}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.motechproject</groupId>
+                <artifactId>quartz-couchdb-store-bundle</artifactId>
+                <version>0.9.4-${external.dependency.release.tag}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ektorp</groupId>
+                        <artifactId>org.ektorp</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.ektorp</groupId>
+                        <artifactId>org.ektorp.spring</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>

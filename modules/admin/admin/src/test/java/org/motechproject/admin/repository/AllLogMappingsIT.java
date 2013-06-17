@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +56,8 @@ public class AllLogMappingsIT extends SpringIntegrationTest {
 
         List<LogMapping> actual = allLogMappings.getAll();
 
-        assertEquals(expected, actual);
+        assertTrue(actual.contains(expected.get(0)));
+        assertTrue(actual.contains(expected.get(1)));
 
         expected.get(0).setLogLevel(Level.INFO.toString());
 
@@ -63,7 +65,8 @@ public class AllLogMappingsIT extends SpringIntegrationTest {
 
         actual = allLogMappings.getAll();
 
-        assertEquals(expected, actual);
+        assertTrue(actual.contains(expected.get(0)));
+        assertTrue(actual.contains(expected.get(1)));
 
         markForDeletion(actual);
     }
@@ -77,7 +80,7 @@ public class AllLogMappingsIT extends SpringIntegrationTest {
 
         allLogMappings.removeByLogName(REPOSITORY_LOG_NAME);
 
-        assertTrue(allLogMappings.getAll().isEmpty());
+        assertNull(allLogMappings.byLogName(REPOSITORY_LOG_NAME));
     }
 
     @Override

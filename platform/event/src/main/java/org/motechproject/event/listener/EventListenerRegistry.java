@@ -58,6 +58,10 @@ public class EventListenerRegistry implements EventListenerRegistryService {
             throw new IllegalArgumentException(errorMessage);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("registering handler for " + subject + " to " + this.toString());
+        }
+
         final long startTime = metricsAgent.startTimer();
         listenerTree.addListener(listener, subject);
         metricsAgent.stopTimer("motech.listener-registry.addListener", startTime);
