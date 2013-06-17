@@ -15,11 +15,6 @@ form.form-horizontal {
     margin: 0;
 }
 
-.box-content > div.settings-form:first-child,
-.box-content > div.settings-form:nth-child(2) {
-    border-top: none;
-}
-
 h4.settings-section {
     padding: 10px 0 0 10px;
 }
@@ -29,9 +24,19 @@ h4.settings-section {
     width: 49.99%;
 }
 
-.box-content.lightblue-settings, .lightblue-settings  {
+.box-content .lightblue-settings, .lightblue-settings  {
     background: #dbedf7 url("../../server/resources/img/frame-set-bg.jpg") repeat-x 0 0;
     border-left:1px solid #D4E1F9;
+}
+
+.box-content > div.settings-form:first-child {
+    border: transparent;
+}
+
+.box-content > div.settings-form:first-child,
+.box-content > div.settings-form:nth-child(2) {
+    border-top: none;
+    background: none;
 }
 
 .form-save {
@@ -42,6 +47,16 @@ h4.settings-section {
 
 .lightblue-2 {
     background: #EDF5F9;
+}
+
+.interval {
+    min-height: 20px;
+    padding-left: 20px;
+}
+
+.interval2 {
+    min-height: 20px;
+    padding-left: 40px;
 }
 
 .inside form {
