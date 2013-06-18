@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class CouchEventLog extends MotechBaseDataObject {
     }
 
     public DateTime getTimeStamp() {
-        return timeStamp;
+        return DateUtil.setTimeZoneUTC(timeStamp);
     }
 
     public void setTimeStamp(DateTime timeStamp) {

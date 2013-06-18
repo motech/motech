@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public DateTime getLastRun() {
-        return lastRun;
+        return DateUtil.setTimeZoneUTC(lastRun);
     }
 
     public void setLastRun(final DateTime lastRun) {

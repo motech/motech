@@ -74,7 +74,7 @@ public class TaskActivity extends MotechBaseDataObject implements Comparable<Tas
     }
 
     public DateTime getDate() {
-        return DateUtil.setTimeZone(date);
+        return DateUtil.setTimeZoneUTC(date);
     }
 
     public void setDate(final DateTime date) {

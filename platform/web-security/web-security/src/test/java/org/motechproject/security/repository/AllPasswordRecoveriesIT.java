@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.testing.utils.BaseUnitTest;
@@ -30,7 +31,7 @@ public class AllPasswordRecoveriesIT extends BaseUnitTest {
     private static final String USERNAME = "username";
     private static final String OTHER_USERNAME = "other-user";
 
-    private final DateTime EXPIRATION = DateTime.now();
+    private final DateTime EXPIRATION = DateUtil.nowUTC();
 
     @Autowired
     private AllPasswordRecoveries allPasswordRecoveries;

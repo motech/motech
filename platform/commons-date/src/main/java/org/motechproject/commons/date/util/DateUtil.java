@@ -1,5 +1,4 @@
 package org.motechproject.commons.date.util;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -26,6 +25,10 @@ public final class DateUtil {
 
     public static DateTime now() {
         return DateTimeSourceUtil.now();
+    }
+
+    public static DateTime nowUTC() {
+        return setTimeZoneUTC(now());
     }
 
     public static LocalDate today() {
@@ -63,6 +66,10 @@ public final class DateUtil {
 
     public static DateTime setTimeZone(DateTime dateTime) {
         return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeSourceUtil.timeZone());
+    }
+
+    public static DateTime setTimeZoneUTC(DateTime dateTime) {
+        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeZone.UTC);
     }
 
     public static DateTime newDateTime(Date date) {

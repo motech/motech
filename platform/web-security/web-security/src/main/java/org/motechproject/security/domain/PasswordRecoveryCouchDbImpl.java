@@ -65,7 +65,7 @@ public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements
 
     @Override
     public DateTime getExpirationDate() {
-        return DateUtil.setTimeZone(expirationDate);
+        return DateUtil.setTimeZoneUTC(expirationDate);
     }
 
     @Override

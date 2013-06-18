@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
@@ -41,7 +42,7 @@ public class AdminBundleIT extends BaseOsgiIT {
     private static final String DEBUG_MSG = "test-debug";
     private static final String WARNING_MSG = "test-warn";
     private static final String MODULE_NAME = "test-module";
-    private static final DateTime TIMEOUT = DateTime.now().plusHours(1);
+    private static final DateTime TIMEOUT = DateUtil.nowUTC().plusHours(1);
 
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
