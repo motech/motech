@@ -12,13 +12,13 @@
                 <fieldset>
                     <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="control-group">
                         <label class="control-label" for="{{setting.key}}">{{setting.key}}</label>
-                        <div>
-                            <input class="input-lxlarge" type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
+                        <div class="controls">
+                            <input class="span10" type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
                         </div>
                     </div>
 
                     <div class="control-group">
-                        <div>
+                        <div class="controls">
                         <input type="hidden" name="section" value="{{mSettings.section}}" />
                         <input type="button" class="btn" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
                         <input type="button" class="btn" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
@@ -29,18 +29,28 @@
         </div>
         <div class="clearfix"></div>
 
-        <div class="well2" ng-repeat="rawFile in rawFiles">
+        <div class="" ng-repeat="rawFile in rawFiles">
             <h4 class="settings-section">{{rawFile}}</h4>
             <div class="clearfix">
-                <form class="form-inline inside" id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw"
+                <form class="form-horizontal inside" id="_raw_{{rawFile}}" action="../admin/api/settings/{{module.bundleId}}/raw"
                       method="post" enctype="multipart/form-data">
-                    <span><input type="file" name="file" />
-                        <input type="hidden" value="{{rawFile}}" name="filename" />
-                    </span>
-                    <span class="interval">
-                        <span class="btn" ng-click="uploadRaw(rawFile)">{{msg('submit')}}</span>
-                        <span class="btn" ng-click="uploadRaw(rawFile, true)">{{msg('submitAndRestart')}}</span>
-                    </span>
+                    <div class="control-group fileupload fileupload-new" data-provides="fileupload">
+                        <label class="control-label">{{msg('info.fileChosen')}}</label>
+                        <div class="controls">
+                            <div class="uneditable-input input-xlarge fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
+                            <span class="btn btn-file">
+                                <span class="fileupload-new">{{msg('button.selectFile')}}</span>
+                                <span class="fileupload-exists">{{msg('button.changeFile')}}</span>
+                                <input type="file" id="bundleSettings" name="file" class="input-file"/>
+                            </span>
+                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('button.remove')}}</a>
+                            <input type="hidden" value="{{rawFile}}" name="filename" />
+                            <span class="interval">
+                                <span class="btn" ng-click="uploadRaw(rawFile)">{{msg('submit')}}</span>
+                                <span class="btn" ng-click="uploadRaw(rawFile, true)">{{msg('submitAndRestart')}}</span>
+                            </span>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
