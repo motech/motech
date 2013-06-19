@@ -1,0 +1,192 @@
+{
+    "name": "commcare.name",
+    "objects": [
+        {
+            "displayName": "commcare.user.name",
+            "type": "CommcareUser",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName": "commcare.user.field.defaultPhoneNumber",
+                    "fieldKey": "defaultPhoneNumber"
+                },
+                {
+                    "displayName": "commcare.user.field.email",
+                    "fieldKey": "email"
+                },
+                {
+                    "displayName": "commcare.user.field.firstName",
+                    "fieldKey": "firstName"
+                },
+                {
+                    "displayName": "commcare.user.field.id",
+                    "fieldKey": "id"
+                },
+                {
+                    "displayName": "commcare.user.field.lastName",
+                    "fieldKey": "lastName"
+                },
+                {
+                    "displayName": "commcare.user.field.resourceUi",
+                    "fieldKey": "resourceUi"
+                },
+                {
+                    "displayName": "commcare.user.field.username",
+                    "fieldKey": "username"
+                },
+                {
+                    "displayName": "commcare.user.field.groups",
+                    "fieldKey": "groups",
+                    "type": "LIST"
+                },
+                {
+                     "displayName": "commcare.user.field.userData",
+                     "fieldKey": "userData",
+                     "type": "MAP"
+                },
+                {
+                     "displayName": "commcare.user.field.phoneNumbers",
+                     "fieldKey": "phoneNumbers",
+                     "type": "LIST"
+                }
+            ]
+        },
+
+        {
+             "displayName": "commcare.fixture.name",
+             "type": "CommcareFixture",
+             "lookupFields": ["id"],
+             "fields": [
+                 {
+                     "displayName": "commcare.fixture.field.id",
+                     "fieldKey": "id"
+                 },
+                 {
+                     "displayName": "commcare.fixture.field.fixtureType",
+                     "fieldKey": "fixtureType"
+                 },
+                 {
+                     "displayName": "commcare.fixture.field.fields",
+                     "fieldKey": "fields",
+                     "type": "MAP"
+                 }
+             ]
+        },
+
+        {
+            "displayName": "commcare.form.name",
+            "type": "CommcareForm",
+            "lookupFields": ["id"],
+            "fields": [
+                 {
+                    "displayName" : "commcare.form.field.form",
+                    "fieldKey" : "form"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.id",
+                    "fieldKey" : "id"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.md5",
+                    "fieldKey" : "md5"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.metadata",
+                    "fieldKey" : "metadata",
+                    "type" : "MAP"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.resourceUri",
+                    "fieldKey" : "resourceUri"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.type",
+                    "fieldKey" : "type"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.uiversion",
+                    "fieldKey" : "uiversion"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.version",
+                    "fieldKey" : "version"
+                 },
+                 {
+                    "displayName" : "commcare.form.field.archived",
+                    "fieldKey" : "archived"
+                 }
+            ]
+        },
+
+        {
+            "displayName": "commcare.case.name",
+            "type": "CaseInfo",
+            "lookupFields": ["id"],
+            "fields": [
+                {
+                    "displayName" : "commcare.case.field.caseId",
+                    "fieldKey" : "caseId"
+                },
+                {
+                    "displayName" : "commcare.case.field.userId",
+                    "fieldKey" : "userId"
+                },
+                {
+                     "displayName" : "commcare.case.field.dateClosed",
+                     "fieldKey" : "dateClosed"
+                },
+                {
+                    "displayName" : "commcare.case.field.domain",
+                    "fieldKey" : "domain"
+                },
+                {
+                    "displayName" : "commcare.case.field.xFormIds",
+                    "fieldKey" : "xFormIds",
+                    "type" : "LIST"
+                },
+                {
+                    "displayName" : "commcare.case.field.version",
+                    "fieldKey" : "version"
+                },
+                {
+                    "displayName" : "commcare.case.field.serverDateOpened",
+                    "fieldKey" : "serverDateOpened"
+                },
+                {
+                    "displayName" : "commcare.case.field.caseType",
+                    "fieldKey" : "caseType"
+                },
+                {
+                    "displayName" : "commcare.case.field.dateOpened",
+                    "fieldKey" : "dateOpened"
+                },
+                {
+                    "displayName" : "commcare.case.field.ownerId",
+                    "fieldKey" : "ownerId"
+                },
+                {
+                    "displayName" : "commcare.case.field.caseName",
+                    "fieldKey" : "caseName"
+                },
+                {
+                    "displayName" : "commcare.case.field.fieldValues",
+                    "fieldKey" : "fieldValues",
+                    "type" : "MAP"
+                },
+                {
+                    "displayName" : "commcare.case.field.serverDateModified",
+                    "fieldKey" : "serverDateModified"
+                },
+                {
+                    "displayName" : "commcare.case.field.closed",
+                    "fieldKey" : "closed"
+                },
+                {
+                    "displayName" : "commcare.case.field.indices",
+                    "fieldKey" : "indices",
+                    "type" : "MAP"
+                }
+            ]
+        }
+    ]
+}
