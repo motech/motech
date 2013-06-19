@@ -24,6 +24,12 @@ name="Maven archetype motech module" >
                 <include>**/*</include>
             </includes>
         </fileSet>
+        <fileSet filtered="true" encoding="UTF-8" packaged="false">
+            <directory>src/test/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
         <fileSet filtered="true" packaged="false">
             <directory/>
             <includes>

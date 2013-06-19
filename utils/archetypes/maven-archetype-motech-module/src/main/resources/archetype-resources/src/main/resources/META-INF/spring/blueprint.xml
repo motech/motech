@@ -24,7 +24,10 @@
         <property name="moduleName" value="${artifactId}"/>
     </bean>
 
-
     <osgi:reference id="schedulerServiceOsgi" interface="org.motechproject.scheduler.MotechSchedulerService" />
+
+    <bean id="helloService" class="${groupId}.service.impl.HelloServiceImpl"/>
+
+    <osgi:service ref="helloService" interface="${groupId}.service.HelloService"/>
 
 </beans>
