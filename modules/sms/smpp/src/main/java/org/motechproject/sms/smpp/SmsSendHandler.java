@@ -39,7 +39,10 @@ public class SmsSendHandler implements SmsEventHandler {
         DateTime deliveryTime = (DateTime) event.getParameters().get(EventDataKeys.DELIVERY_TIME);
 
         for (String recipient : recipients) {
-            smsAuditService.log(new SmsRecord(OUTBOUND, recipient, text, DateUtil.now(), PENDING, Integer.toString(random.nextInt())));
+            smsAuditService.log(new SmsRecord(
+                    OUTBOUND, recipient, text, DateUtil.now(), PENDING,
+                    Integer.toString(Math.abs(random.nextInt()))
+            ));
         }
 
         if (deliveryTime == null) {

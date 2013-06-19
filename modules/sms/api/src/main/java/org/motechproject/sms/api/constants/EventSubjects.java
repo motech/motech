@@ -7,6 +7,7 @@ public final class EventSubjects {
      * number - List<String> containing the recipients for the message
      * message - String containing the message text
      * delivery_time - org.joda.DateTime used to schedule the delivery of the message at the specified time
+     * failure_count - number of failed attempts
      */
     public static final String SEND_SMS = "SendSMS";
     public static final String SEND_SMSDT = "SendSMSDT";
@@ -21,10 +22,11 @@ public final class EventSubjects {
     public static final String INBOUND_SMS = "inbound_sms";
 
     /**
-     * This event is raised when an sms remains undelivered after the delivery has been retried max_retries number of times.
+     * This event is raised when an sms remains undelivered.
      * Payload:
      * RECIPIENT - the recipient for which the message delivery has failed
      * MESSAGE - the message text
+     * FAILURE_COUNT - number of failed attempts
      */
     public static final String SMS_FAILURE_NOTIFICATION = "sms_failure_notification";
 

@@ -22,6 +22,7 @@ import static org.motechproject.commons.date.util.DateUtil.newDateTime;
 import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
 import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
 import static org.motechproject.sms.api.SMSType.OUTBOUND;
+import static org.motechproject.sms.api.constants.EventDataKeys.FAILURE_COUNT;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.api.constants.EventDataKeys.RECIPIENT;
 import static org.motechproject.sms.api.constants.EventSubjects.SMS_FAILURE_NOTIFICATION;
@@ -64,6 +65,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
+        parameters.put(FAILURE_COUNT, msg.getRetryCount());
         eventRelay.sendEventMessage(new MotechEvent(SMS_FAILURE_NOTIFICATION, parameters));
         smsAuditService.log(new SmsRecord(OUTBOUND, msg.getRecipient(), msg.getText(), sentTime, ABORTED, msg.getRefNo()));
     }

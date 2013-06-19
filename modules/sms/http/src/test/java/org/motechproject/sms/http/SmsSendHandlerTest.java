@@ -73,7 +73,7 @@ public class SmsSendHandlerTest extends BaseUnitTest {
         MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, eventParameters);
 
         handler.handle(motechEvent);
-        verify(smsHttpService).sendSms(recipients, messageText);
+        verify(smsHttpService).sendSms(recipients, messageText, 0);
         assertSmsRecord("message_text", asList("recipient_1", "recipient_2"));
     }
 
@@ -82,15 +82,17 @@ public class SmsSendHandlerTest extends BaseUnitTest {
         HashMap<String, Object> eventParameters = new HashMap<String, Object>();
         List<String> recipients = asList("recipient_1", "recipient_2");
         String messageText = "message_text";
+        int failureCount = 5;
 
         eventParameters.put(EventDataKeys.RECIPIENTS, recipients);
         eventParameters.put(EventDataKeys.MESSAGE, messageText);
         eventParameters.put(EventDataKeys.DELIVERY_TIME, new DateTime(2013, 04, 05, 4, 40, 0, 0));
+        eventParameters.put(EventDataKeys.FAILURE_COUNT, failureCount);
 
         MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMSDT, eventParameters);
 
         handler.handle(motechEvent);
-        verify(smsHttpService).sendSms(recipients, messageText,new DateTime(2013, 04, 05, 4, 40, 0, 0));
+        verify(smsHttpService).sendSms(recipients, messageText, failureCount, new DateTime(2013, 04, 05, 4, 40, 0, 0));
         assertSmsRecord("message_text", asList("recipient_1", "recipient_2"));
     }
 
