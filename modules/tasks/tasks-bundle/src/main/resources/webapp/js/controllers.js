@@ -801,6 +801,10 @@
 
             return $scope.msg(error.message, array);
         };
+
+        $scope.showHelp = function () {
+            $('#helpModalDate').modal();
+        };
     });
 
     widgetModule.controller('LogCtrl', function ($scope, Tasks, Activities, $routeParams, $filter) {

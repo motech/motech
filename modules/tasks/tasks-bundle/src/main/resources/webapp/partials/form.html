@@ -404,14 +404,13 @@
 
                                         <!------------------------ Help button  ------------------------>
                                         <a ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" href="#helpModalDate" role="button" class="btn btn-primary" data-toggle="modal">{{msg('help')}}</a>
-
-                                        <!------------------------ Help Manipulation  ------------------------>
-                                        <div class="interval control-help" ng-include="'../tasks/partials/help/manipulation.html'"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!------------------------ Help Manipulation  ------------------------>
+                    <div ng-include="'../tasks/partials/help/manipulation.html'"></div>
 
                     <!------------------------ SAVE ------------------------>
                     <div class="control-group inside">
