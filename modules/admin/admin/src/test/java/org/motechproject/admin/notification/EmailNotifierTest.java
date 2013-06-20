@@ -77,7 +77,7 @@ public class EmailNotifierTest {
         Mockito.verify(emailSenderService).send(argument.capture());
         Mail mail = argument.getValue();
 
-        Assert.assertEquals(text, mail.getText());
+        Assert.assertEquals(text, mail.getMessage());
         Assert.assertEquals("recipients", mail.getToAddress());
         Assert.assertEquals("noreply@serverurl",mail.getFromAddress());
     }

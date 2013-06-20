@@ -46,6 +46,22 @@
             <artifactId>com.springsource.javax.mail</artifactId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test-mvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>org.motechproject.org.subethamail</artifactId>
             <scope>test</scope>
@@ -101,6 +117,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Context-File>META-INF/osgi/applicationEmail.xml</Context-File>
                         <Context-Path>email</Context-Path>
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
@@ -110,10 +127,32 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.velocity.exception,
+                            org.motechproject.server.config.service,
                             *
                         </Import-Package>                                                          `
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                        <configuration>
+                            <sourceJsFolder>${basedir}/src/main/resources/webapp/js</sourceJsFolder>
+                            <disallowIncrAndDecr>true</disallowIncrAndDecr>
+                            <requireUseStrict>true</requireUseStrict>
+                            <predefinedVars>
+                                $, angular, motechAlert, handleWithStackTrace
+                            </predefinedVars>
+                            <failOnIssues>${jslint.enable}</failOnIssues>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,0 +1,35 @@
+<!------------------------  Settings  ------------------------------------->
+<div class="row-fluid tab-frame">
+    <h4 class="frame-title">{{ msg('email.settings.title')}}</h4>
+    <div class="inside">
+        <div class="clearfix margin-before">
+            <form id="emailSettingsForm" name="emailSettingsForm" class="form-horizontal" novalidate>
+
+                <div class="control-group" ng-class="{'error': !settings.host}">
+                    <label class="control-label" for="settingsHost">{{msg('email.settings.host')}}:</label>
+
+                    <div class="controls">
+                        <input ng-model="settings.host" type="text" id="settingsHost" required/>
+                        <span ng-hide="settings.host" class="form-hint">{{msg('field.required', msg('email.settings.host'))}}</span>
+                    </div>
+                </div>
+
+                <div class="control-group" ng-class="{'error': !settings.port}">
+                    <label class="control-label" for="settingsPort">{{msg('email.settings.port')}}:</label>
+
+                    <div class="controls">
+                        <input ng-model="settings.port" type="text" id="settingsPort" required/>
+                        <span ng-hide="settings.port" class="form-hint">{{msg('field.required', msg('email.settings.port'))}}</span>
+                        <span ng-hide="isNumeric('port')" class="form-hint">{{msg('field.numeric', msg('email.settings.port'))}}</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+

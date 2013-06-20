@@ -278,7 +278,7 @@ form.inside {
 
 .tab-content {
     overflow:visible;
-    padding: 10px 10px 20px 10px;
+    padding: 0;
     margin-bottom: 30px;
 }
 
@@ -384,8 +384,7 @@ select {
 }
 
 .tab-frame {
-    margin: -10px 0 0 0;
-    padding: 30px 0 10px;
+    margin: 0;
     border: 1px solid #D4E1F9;
     border-radius: 4px 4px 4px 4px;
     padding: 0;
@@ -393,6 +392,10 @@ select {
     -webkit-box-shadow: 0 1px 2px #bec9de;
        -moz-box-shadow: 0 1px 2px #bec9de;
             box-shadow: 0 1px 2px #bec9de;
+}
+
+.frame-title {
+    margin: 15px 10px;
 }
 
 .inside {

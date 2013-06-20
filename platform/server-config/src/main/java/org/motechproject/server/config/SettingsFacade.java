@@ -289,7 +289,7 @@ public class SettingsFacade {
         StringBuilder sb = new StringBuilder();
 
         if (moduleName.startsWith("motech-")) {
-            sb.append("org.motechproject");
+            sb.append("org.motechproject.");
         } else if (!moduleName.startsWith("org.motechproject")) {
             sb.append("org.motechproject.motech-");
         }
