@@ -3,14 +3,15 @@ package org.motechproject.commcare.util;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.io.IOUtils;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.parser.OpenRosaResponseParser;
+import org.motechproject.commcare.request.json.CaseRequest;
 import org.motechproject.commcare.response.OpenRosaResponse;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
@@ -20,11 +21,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 @Component
 public class CommCareAPIHttpClient {
-    private static final String COMMCARE_USER_API_FILE_NAME = "commcareUserApi.properties";
+    static final String COMMCARE_USER_API_FILE_NAME = "commcareUserApi.properties";
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -50,8 +52,8 @@ public class CommCareAPIHttpClient {
         return this.getRequest(commcareFormUrl(formId), null);
     }
 
-    public String casesRequest(NameValuePair[] queryParams) {
-        return this.getRequest(commcaseCasesUrl(), queryParams);
+    public String casesRequest(CaseRequest caseRequest) {
+        return this.getRequest(commcareCasesUrl(), caseRequest);
     }
     
     public String singleCaseRequest(String caseId) {
@@ -66,36 +68,29 @@ public class CommCareAPIHttpClient {
         return this.getRequest(commcareFixtureUrl(fixtureId), null);
     }
 
-    private HttpMethod buildRequest(String url, NameValuePair[] queryParams) {
+    private HttpMethod buildRequest(String url, CaseRequest caseRequest) {
         HttpMethod requestMethod = new GetMethod(url);
 
         authenticate();
-
-        if (queryParams != null) {
-            requestMethod.setQueryString(queryParams);
-        }
+        requestMethod.setQueryString(caseRequest.toQueryString());
 
         return requestMethod;
     }
 
-    private String getRequest(String requestUrl, NameValuePair[] queryParams) {
+    private String getRequest(String requestUrl, CaseRequest caseRequest) {
 
-        HttpMethod getMethod = buildRequest(requestUrl, queryParams);
-
-        String response = null;
+        HttpMethod getMethod = buildRequest(requestUrl, caseRequest);
 
         try {
             commonsHttpClient.executeMethod(getMethod);
-            response = getMethod.getResponseBodyAsString();
+            InputStream responseBodyAsStream = getMethod.getResponseBodyAsStream();
+            return IOUtils.toString(responseBodyAsStream);
         } catch (HttpException e) {
             logger.warn("HttpException while sending request to CommCare: " + e.getMessage());
-            return null;
         } catch (IOException e) {
             logger.warn("IOException while sending request to CommCare: " + e.getMessage());
-            return null;
         }
-
-        return response;
+        return null;
     }
 
     private void authenticate() {
@@ -152,31 +147,31 @@ public class CommCareAPIHttpClient {
 
     }
 
-    private String commcareUserUrl() {
-        return String.format("%s/%s/api/v0.3/user/?format=json", getCommcareBaseUrl(), getCommcareDomain());
+    String commcareUserUrl() {
+        return String.format("%s/%s/api/v%s/user/?format=json", getCommcareBaseUrl(), getCommcareDomain(), getCommcareApiVersion());
     }
 
-    private String commcareFormUrl(String formId) {
-        return String.format("%s/%s/api/v0.3/form/%s/?format=json", getCommcareBaseUrl(), getCommcareDomain(), formId);
+    String commcareFormUrl(String formId) {
+        return String.format("%s/%s/api/v%s/form/%s/?format=json", getCommcareBaseUrl(), getCommcareDomain(), getCommcareApiVersion(), formId);
     }
 
-    private String commcareFixturesUrl() {
-        return String.format("%s/%s/api/v0.3/fixture/", getCommcareBaseUrl(), getCommcareDomain());
+    String commcareFixturesUrl() {
+        return String.format("%s/%s/api/v%s/fixture/", getCommcareBaseUrl(), getCommcareDomain(), getCommcareApiVersion());
     }
 
-    private String commcareFixtureUrl(String fixtureId) {
+    String commcareFixtureUrl(String fixtureId) {
         return String.format("%s%s/", commcareFixturesUrl(), fixtureId);
     }
 
-    private String commcaseCasesUrl() {
-        return String.format("%s/%s/api/v0.3/case/", getCommcareBaseUrl(), getCommcareDomain());
+    String commcareCasesUrl() {
+        return String.format("%s/%s/api/v%s/case/", getCommcareBaseUrl(), getCommcareDomain(), getCommcareApiVersion());
     }
 
-    private String commcareCaseUrl(String caseId) {
-        return String.format("%s/%s/api/v0.3/case/%s/", getCommcareBaseUrl(), getCommcareDomain(), caseId);
+    String commcareCaseUrl(String caseId) {
+        return String.format("%s/%s/api/v%s/case/%s/", getCommcareBaseUrl(), getCommcareDomain(), getCommcareApiVersion(), caseId);
     }
 
-    private String commcareCaseUploadUrl() {
+    String commcareCaseUploadUrl() {
         return String.format("%s/%s/receiver/", getCommcareBaseUrl(), getCommcareDomain());
     }
 
@@ -192,6 +187,10 @@ public class CommCareAPIHttpClient {
 
     private String getCommcareDomain() {
         return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("commcareDomain");
+    }
+
+    private String getCommcareApiVersion() {
+        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("apiVersion");
     }
 
     private String getUsername() {

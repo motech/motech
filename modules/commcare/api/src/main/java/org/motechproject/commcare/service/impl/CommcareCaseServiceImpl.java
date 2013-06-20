@@ -1,12 +1,14 @@
 package org.motechproject.commcare.service.impl;
 
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.commcare.domain.CaseInfo;
+import org.motechproject.commcare.domain.CaseJson;
 import org.motechproject.commcare.domain.CaseResponseJson;
 import org.motechproject.commcare.domain.CaseTask;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.gateway.CaseTaskXmlConverter;
+import org.motechproject.commcare.request.json.CaseRequest;
 import org.motechproject.commcare.response.OpenRosaResponse;
 import org.motechproject.commcare.service.CommcareCaseService;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
@@ -42,11 +44,10 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
 
     @Override
     public CaseInfo getCaseByCaseIdAndUserId(String caseId, String userId) {
-        NameValuePair[] queryParams = new NameValuePair[2];
-        queryParams[0] = new NameValuePair("user_id", userId);
-        queryParams[1] = new NameValuePair("case_id", caseId);
-        String response = commcareHttpClient.casesRequest(queryParams);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
+        CaseRequest request = new CaseRequest();
+        request.setCaseId(caseId);
+        request.setUserId(userId);
+        List<CaseJson> caseResponses = getCases(request);
         List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
         if (cases.size() == 0) {
             return null;
@@ -58,95 +59,106 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
     public CaseInfo getCaseByCaseId(String caseId) {
         String response = commcareHttpClient.singleCaseRequest(caseId);
 
-        CaseResponseJson caseResponses = parseSingleCaseFromResponse(response);
+        CaseJson caseResponses = parseSingleCaseFromResponse(response);
 
         return generateCaseFromCaseResponse(caseResponses);
     }
 
     @Override
     public List<CaseInfo> getAllCases() {
-        String response = commcareHttpClient.casesRequest(null);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
-        return generateCasesFromCaseResponse(caseResponses);
+        List<CaseJson> cases = getCases(new CaseRequest());
+        return generateCasesFromCaseResponse(cases);
     }
 
     @Override
     public List<CaseInfo> getAllCasesByType(String type) {
-        NameValuePair[] queryParams = new NameValuePair[1];
-        queryParams[0] = new NameValuePair("type", type);
-        String response = commcareHttpClient.casesRequest(queryParams);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
+        CaseRequest request = new CaseRequest();
+        request.setType(type);
+        List<CaseJson> caseResponses = getCases(request);
         return generateCasesFromCaseResponse(caseResponses);
     }
 
     @Override
     public List<CaseInfo> getAllCasesByUserId(String userId) {
-        NameValuePair[] queryParams = new NameValuePair[1];
-        queryParams[0] = new NameValuePair("user_id", userId);
-        String response = commcareHttpClient.casesRequest(queryParams);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
+        CaseRequest request = new CaseRequest();
+        request.setUserId(userId);
+        List<CaseJson> caseResponses = getCases(request);
         return generateCasesFromCaseResponse(caseResponses);
     }
 
     @Override
     public List<CaseInfo> getAllCasesByUserIdAndType(String userId, String type) {
-        NameValuePair[] queryParams = new NameValuePair[2];
-        queryParams[0] = new NameValuePair("user_id", type);
-        queryParams[1] = new NameValuePair("type", type);
-        String response = commcareHttpClient.casesRequest(queryParams);
-        List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
+        CaseRequest request = new CaseRequest();
+        request.setUserId(userId);
+        request.setType(type);
+
+        List<CaseJson> caseResponses = getCases(request);
         return generateCasesFromCaseResponse(caseResponses);
     }
 
-    private List<CaseResponseJson> parseCasesFromResponse(String response) {
-        Type commcareCaseType = new TypeToken<List<CaseResponseJson>>() {
-        } .getType();
+    private List<CaseJson> getCases(CaseRequest caseRequest) {
+        int offset = 0;
+        caseRequest.setLimit(0);
+        String nextPageQueryString;
+        List<CaseJson> caseJsons = new ArrayList<>();
 
-        List<CaseResponseJson> allCases = new ArrayList<CaseResponseJson>();
+        do {
+            caseRequest.setOffset(offset);
+            CaseResponseJson caseResponseJson;
+            try {
+                String response = commcareHttpClient.casesRequest(caseRequest);
+                caseResponseJson = parseCasesFromResponse(response);
+                caseJsons.addAll(caseResponseJson.getCases());
+            } catch (Exception e) {
+                logger.error(String.format("Exception while trying to read in case JSON: %s", e.getMessage()), e);
+                return new ArrayList<>();
+            }
 
-        try {
-            allCases = (List<CaseResponseJson>) motechJsonReader
-                    .readFromString(response, commcareCaseType);
-        } catch (Exception e) {
-            logger.warn("Exception while trying to read in case JSON: " + e.getMessage());
-        }
+            nextPageQueryString = caseResponseJson.getMetadata().getNextPageQueryString();
+            offset += caseResponseJson.getMetadata().getLimit();
+        } while (!StringUtils.isBlank(nextPageQueryString));
 
-        return allCases;
+        return caseJsons;
     }
 
-    private CaseResponseJson parseSingleCaseFromResponse(String response) {
-        CaseResponseJson caseReturned = null;
+    private CaseResponseJson parseCasesFromResponse(String response) {
+        Type caseResponseType = new TypeToken<CaseResponseJson>() {}.getType();
+        return (CaseResponseJson) motechJsonReader.readFromString(response, caseResponseType);
+    }
+
+    private CaseJson parseSingleCaseFromResponse(String response) {
+        CaseJson caseReturned = null;
 
         try {
-            caseReturned = (CaseResponseJson) motechJsonReader
-                    .readFromString(response, CaseResponseJson.class);
+            caseReturned = (CaseJson) motechJsonReader
+                    .readFromString(response, CaseJson.class);
         } catch (Exception e) {
             logger.warn("Exception while trying to read in case JSON: " + e.getMessage());
         }
 
-        return caseReturned; 
+        return caseReturned;
     }
 
     private List<CaseInfo> generateCasesFromCaseResponse(
-            List<CaseResponseJson> caseResponses) {
+            List<CaseJson> caseResponses) {
         List<CaseInfo> caseList = new ArrayList<CaseInfo>();
 
         if (caseResponses == null) {
             return Collections.emptyList();
         }
 
-        for (CaseResponseJson caseResponse : caseResponses) {
+        for (CaseJson caseResponse : caseResponses) {
             caseList.add(populateCaseInfo(caseResponse));
         }
 
         return caseList;
     }
 
-    private CaseInfo generateCaseFromCaseResponse(CaseResponseJson caseResponse) {
+    private CaseInfo generateCaseFromCaseResponse(CaseJson caseResponse) {
         return populateCaseInfo(caseResponse);
     }
 
-    private CaseInfo populateCaseInfo(CaseResponseJson caseResponse) {
+    private CaseInfo populateCaseInfo(CaseJson caseResponse) {
         if (caseResponse == null) {
             return null;
         }

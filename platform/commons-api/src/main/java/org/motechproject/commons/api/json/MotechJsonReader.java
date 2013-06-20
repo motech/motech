@@ -6,11 +6,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDate;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.api.model.MotechProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ public class MotechJsonReader {
     static {
         standardTypeAdapters.put(Date.class, new DateDeserializer());
         standardTypeAdapters.put(LocalDate.class, new LocalDateDeserializer());
+        standardTypeAdapters.put(MotechProperties.class, new MotechPropertiesDeserializer());
     }
 
     public Object readFromStream(InputStream stream, Type ofType) {
@@ -90,6 +93,22 @@ public class MotechJsonReader {
         @Override
         public LocalDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return new LocalDate(jsonElement.getAsJsonPrimitive().getAsString());
+        }
+    }
+
+    private static class MotechPropertiesDeserializer implements JsonDeserializer<MotechProperties> {
+        @Override
+        public MotechProperties deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            MotechProperties motechProperties = new MotechProperties();
+            for (Map.Entry<String, JsonElement> property : jsonObject.entrySet()) {
+                if (property.getValue().isJsonPrimitive()) {
+                    motechProperties.put(property.getKey(), property.getValue().getAsString());
+                } else if (property.getValue().isJsonNull()) {
+                    motechProperties.put(property.getKey(), null);
+                }
+            }
+            return motechProperties;
         }
     }
 }
