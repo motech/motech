@@ -26,8 +26,6 @@ import java.io.UnsupportedEncodingException;
 
 @Component
 public class CommCareAPIHttpClient {
-    static final String COMMCARE_USER_API_FILE_NAME = "commcareUserApi.properties";
-
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private HttpClient commonsHttpClient;
@@ -176,7 +174,7 @@ public class CommCareAPIHttpClient {
     }
 
     private String getCommcareBaseUrl() {
-        String commcareBaseUrl = settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("commcareBaseUrl");
+        String commcareBaseUrl = settingsFacade.getProperty("commcareBaseUrl");
 
         if (commcareBaseUrl.endsWith("/")) {
             commcareBaseUrl = commcareBaseUrl.substring(0, commcareBaseUrl.length() - 1);
@@ -186,18 +184,18 @@ public class CommCareAPIHttpClient {
     }
 
     private String getCommcareDomain() {
-        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("commcareDomain");
+        return settingsFacade.getProperty("commcareDomain");
     }
 
     private String getCommcareApiVersion() {
-        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("apiVersion");
+        return settingsFacade.getProperty("apiVersion");
     }
 
     private String getUsername() {
-        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("username");
+        return settingsFacade.getProperty("username");
     }
 
     private String getPassword() {
-        return settingsFacade.getProperties(COMMCARE_USER_API_FILE_NAME).getProperty("password");
+        return settingsFacade.getProperty("password");
     }
 }
