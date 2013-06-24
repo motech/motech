@@ -15,7 +15,7 @@
     <bean id="commcareAPISettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
-                <value>classpath:commcareUserApi.properties</value>
+                <value>classpath:commcare.properties</value>
             </list>
         </property>
         <property name="moduleName" value="commcare-api"/>

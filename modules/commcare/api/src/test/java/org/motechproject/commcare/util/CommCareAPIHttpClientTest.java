@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.server.config.SettingsFacade;
 
-import java.util.Properties;
-
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -28,11 +26,9 @@ public class CommCareAPIHttpClientTest {
     @Before
     public void setUp() {
         initMocks(this);
-        Properties properties = new Properties();
-        properties.put("commcareBaseUrl", baseUrl);
-        properties.put("commcareDomain", domain);
-        properties.put("apiVersion", apiVersion);
-        when(settingsFacade.getProperties(CommCareAPIHttpClient.COMMCARE_USER_API_FILE_NAME)).thenReturn(properties);
+        when(settingsFacade.getProperty("commcareBaseUrl")).thenReturn(baseUrl);
+        when(settingsFacade.getProperty("commcareDomain")).thenReturn(domain);
+        when(settingsFacade.getProperty("apiVersion")).thenReturn(apiVersion);
 
         commCareAPIHttpClient = new CommCareAPIHttpClient(httpClient, settingsFacade);
     }
