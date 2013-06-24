@@ -14,10 +14,10 @@ public class StubCommcareAccountServiceImpl implements CommcareAccountService {
         if (!commcareAccountSettings.canMakeConnection()) {
             throw new IllegalArgumentException("Account settings are not valid.");
         }
-        if (!commcareAccountSettings.getCommcareBaseUrl().contains("commcarehq.org")) {
+        if (commcareAccountSettings.getCommcareBaseUrl().equals("fail")) {
             throw new CommcareConnectionFailureException("Motech was unable to connect to CommCareHQ. Please verify the URL is correct.");
         }
-        if (!commcareAccountSettings.getUsername().equals("foo") || !commcareAccountSettings.getPassword().equals("bar")) {
+        if (commcareAccountSettings.getUsername().equals("fail") && commcareAccountSettings.getPassword().equals("fail")) {
             throw new CommcareAuthenticationException("Motech was unable to authenticate to CommCareHQ. Please verify the username and password.");
         }
         return true;
