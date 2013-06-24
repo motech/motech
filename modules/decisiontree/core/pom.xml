@@ -4,7 +4,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.20</version>
+        <version>0.20.1-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
 
@@ -12,7 +12,7 @@
     <artifactId>motech-decisiontree-core</artifactId>
     <packaging>bundle</packaging>
     <name>MOTECH Decision Tree Core</name>
-    <version>0.20</version>
+    <version>0.20.1-SNAPSHOT</version>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

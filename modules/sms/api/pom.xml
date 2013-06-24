@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.20</version>
+        <version>0.20.1-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-api</artifactId>
-    <version>0.20</version>
+    <version>0.20.1-SNAPSHOT</version>
     <name>MOTECH SMS API</name>
     <description>MOTECH SMS API</description>
     <properties>
