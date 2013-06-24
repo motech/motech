@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.20-SNAPSHOT</version>
+        <version>0.20</version>
         <relativePath>../../</relativePath>
     </parent>
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-commons-couchdb</artifactId>
-    <version>0.20-SNAPSHOT</version>
+    <version>0.20</version>
     <name>MOTECH Platform Commons Couchdb</name>
     <packaging>bundle</packaging>
 
