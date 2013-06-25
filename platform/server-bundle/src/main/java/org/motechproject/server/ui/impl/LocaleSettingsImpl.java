@@ -44,9 +44,11 @@ public class LocaleSettingsImpl implements LocaleSettings, BundleContextAware {
     @Override
     public void setUserLocale(final HttpServletRequest request, final HttpServletResponse response, final Locale locale) {
         SecurityContext context = (SecurityContext) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
-        Authentication authentication = context.getAuthentication();
-        User userInSession = (User) authentication.getPrincipal();
-        userService.setLocale(userInSession.getUsername(), locale);
+        if (context != null) {
+            Authentication authentication = context.getAuthentication();
+            User userInSession = (User) authentication.getPrincipal();
+            userService.setLocale(userInSession.getUsername(), locale);
+        }
         cookieLocaleResolver.setLocale(request, response, locale);
     }
 
