@@ -28,17 +28,17 @@
     <script src="../server/resources/lib/angular/angular-bootstrap.js" type="text/javascript"></script>
     <script src="../server/resources/lib/angular/angular-ui.min.js" type="text/javascript"></script>
 
-    <script src="../server/resources/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="../server/resources/lib/bootstrap/bootstrap.min.js" type="text/javascript"></script>
 
-    <script src="../server/resources/js/app.js"></script>
+    <script src="../server/resources/js/app.js" type="text/javascript"></script>
     <script src="../server/resources/js/util.js" type="text/javascript"></script>
     <script src="../server/resources/js/common.js" type="text/javascript"></script>
-    <script src="../server/resources/js/localization.js"></script>
-    <script src="../server/resources/js/directives.js"></script>
-    <script src="../server/resources/js/controllers.js"></script>
+    <script src="../server/resources/js/localization.js" type="text/javascript"></script>
+    <script src="../server/resources/js/directives.js" type="text/javascript"></script>
+    <script src="../server/resources/js/controllers.js" type="text/javascript"></script>
 
-    <script src="../server/resources/js/startup.js"></script>
-    <script src="../server/resources/js/dashboard.js"></script>
+    <script src="../server/resources/js/startup.js" type="text/javascript"></script>
+    <script src="../server/resources/js/dashboard.js" type="text/javascript"></script>
 
     <script type="text/javascript">
         $(window).load(function() {
@@ -66,7 +66,7 @@
                         <label class="control-label"><fmt:message key="select.language" bundle="${bundle}"/></label>
                         <div class="controls">
                             <c:forEach var="lang" items="${languages}">
-                                <input ng-click="setUserLang('${lang}')" type="radio" value="${lang}" name="language" <c:if test="${startupSettings.language == lang}">checked</c:if> /><i class="flag flag-${lang}"></i>
+                                <input ng-click="setUserLang('${lang}')" type="radio" value="${lang}" name="language" <c:if test="${startupSettings.language == lang}">checked</c:if> /><i class="flag flag-${lang} label-flag-radio"></i>
                             </c:forEach>
                         </div>
                     </div>
@@ -75,10 +75,10 @@
                         <div class="controls">
                             <input type="text" class="input-large" name="queueUrl" value="${startupSettings.queueUrl}"/>
                             <c:if test="${ not empty suggestions.queueUrls }">
-                                <div id="queue.urls">
+                                <div id="queue.urls" class="queue-urls">
                                 <c:forEach var="url" items="${suggestions.queueUrls}" varStatus="status">
                                     <div id="queue.url.${status.count}">
-                                        <span><i><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: </i>${url}</span>
+                                        <span><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: &nbsp;${url}</span>
                                         <button type="button" class="btn btn-mini"><fmt:message key="use" bundle="${bundle}"/></button>
                                     </div>
                                 </c:forEach>
@@ -105,8 +105,8 @@
                     <div class="control-group">
                          <label class="control-label"><fmt:message key="select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls" ng-init="loginMode('${loginMode}')">
-                                 <input type="radio" value="repository" name="loginMode" ng-click="loginMode('repository')" <c:if test="${loginMode == 'repository'}">checked</c:if>/><span><fmt:message key="repository" bundle="${bundle}"/></span>
-                                 <input type="radio" value="openid" name="loginMode" ng-click="loginMode('openid')" <c:if test="${loginMode == 'openid'}">checked</c:if> /><span><fmt:message key="openId" bundle="${bundle}"/></span>
+                                 <input type="radio" value="repository" name="loginMode" ng-click="loginMode('repository')" <c:if test="${loginMode == 'repository'}">checked</c:if>/><span class="label-radio"><fmt:message key="repository" bundle="${bundle}"/></span>
+                                 <input type="radio" value="openid" name="loginMode" ng-click="loginMode('openid')" <c:if test="${loginMode == 'openid'}">checked</c:if> /><span class="label-radio"><fmt:message key="openId" bundle="${bundle}"/></span>
                          </div>
                      </div>
                     <div ng-show="securityMode=='repository'" class="control-group">

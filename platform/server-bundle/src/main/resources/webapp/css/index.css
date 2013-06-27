@@ -578,7 +578,7 @@ select {
     height:70px;
     display:block;
     margin: auto;
-    padding: 0 0 0 10px;
+    padding: 5px 0 0 8px;
     text-align: center;
 }
 
@@ -599,18 +599,24 @@ select {
 .startup-strip {
     float: left;
     width: 100%;
-    height: 40px;
+    height: auto;
     margin: auto;
     padding: 0;
     background: #cbe4f4;
     text-align: center;
+    display: block;
 }
+
 .startup-strip .title {
     color: #224477;
-    font-size: 22px;
-    line-height: 37px;
+    font-size: 20px;
+    line-height: 34px;
     text-align: center;
     margin: auto;
+}
+
+.startup-strip .control-group {
+    margin-bottom: 0;
 }
 
 .startup-form {
@@ -645,7 +651,32 @@ select {
     -webkit-box-shadow: 0 2px 5px #89aedb;
        -moz-box-shadow: 0 2px 5px #89aedb;
             box-shadow: 0 2px 5px #89aedb;
+}
 
+.flag.label-flag-radio {
+    margin: 6px 0 4px 5px;
+    padding-left: 20px;
+}
+
+.label-radio {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin: 5px 20px 0 5px;
+    vertical-align: middle;
+}
+
+.queue-urls {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin: 2px 5px 0 0;
+}
+
+.queue-urls span {
+    font-size: 12px;
+    margin: 1px 5px 0 0;
+    vertical-align: bottom;
 }
 
 /*----- login ------*/
