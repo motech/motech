@@ -20,7 +20,7 @@
 
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r017</external.dependency.release.tag>
+        <external.dependency.release.tag>r018</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -860,22 +860,22 @@
             <dependency>
                 <groupId>org.simpleframework</groupId>
                 <artifactId>org.motechproject.org.simpleframework.xml</artifactId>
-                <version>1.6.2</version>
+                <version>1.6.2-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>ca.uhn.hapi</groupId>
                 <artifactId>org.motechproject.com.ca.uhn.hapi</artifactId>
-                <version>0.5.0</version>
+                <version>0.5.0-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.openmrs.liquibase</groupId>
                 <artifactId>org.motechproject.org.openmrs.liquibase</artifactId>
-                <version>1.9.4</version>
+                <version>1.9.4-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.azeckoski</groupId>
                 <artifactId>org.motechproject.org.azeckoski.reflectutils</artifactId>
-                <version>0.9.14</version>
+                <version>0.9.14-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.subethamail</groupId>
