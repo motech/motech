@@ -1218,7 +1218,7 @@
         <module>modules/ivr/kookoo-bundle</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
-        <module>modules/message-campaign/message-campaign</module>
+        <!--<module>modules/message-campaign/message-campaign</module>-->       <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api</module>
         <module>modules/openmrs/api-bundle</module>
@@ -1226,10 +1226,10 @@
         <module>modules/openmrs/domain-bundle</module>
         <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
-        <module>modules/pillreminder/api</module>
+        <!--<module>modules/pillreminder/api</module>-->                        <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
         <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler</module>
-        <module>modules/scheduletracking/api</module>
+        <!--<module>modules/scheduletracking/api</module>-->                    <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
         <module>modules/sms/api-bundle</module>
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
