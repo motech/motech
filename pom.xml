@@ -823,16 +823,6 @@
                 <version>2.0beta1-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.smslib</groupId>
-                <artifactId>org.motechproject.org.smslib</artifactId>
-                <version>3.5.1-${external.dependency.release.tag}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.googlecode.jsmpp</groupId>
-                <artifactId>org.motechproject.com.googlecode.jsmpp</artifactId>
-                <version>2.1.0-${external.dependency.release.tag}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>com.springsource.javax.management.j2ee</artifactId>
                 <version>1.0.1</version>
@@ -868,11 +858,6 @@
                 <version>0.5.0-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
-                <groupId>org.openmrs.liquibase</groupId>
-                <artifactId>org.motechproject.org.openmrs.liquibase</artifactId>
-                <version>1.9.4-${external.dependency.release.tag}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.azeckoski</groupId>
                 <artifactId>org.motechproject.org.azeckoski.reflectutils</artifactId>
                 <version>0.9.14-${external.dependency.release.tag}</version>
@@ -895,157 +880,6 @@
                     <exclusion>
                         <artifactId>com.springsource.slf4j.api</artifactId>
                         <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.module</groupId>
-                <artifactId>idgen-core</artifactId>
-                <version>1.5.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <!-- OpenMRS -->
-            <dependency>
-                <groupId>org.openmrs.api</groupId>
-                <artifactId>openmrs-api</artifactId>
-                <version>1.8.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-io</groupId>
-                        <artifactId>commons-io</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.azeckoski</groupId>
-                        <artifactId>reflectutils</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-beans</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-context</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-aop</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-orm</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-tx</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-jdbc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.antlr</groupId>
-                        <artifactId>antlr-runtime</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>ca.uhn.hapi</groupId>
-                        <artifactId>hapi-structures-v25</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.openmrs.simpleframework</groupId>
-                        <artifactId>simple-xml</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>stax</groupId>
-                        <artifactId>stax</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.openmrs.hibernate</groupId>
-                        <artifactId>hibernate</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.thoughtworks.xstream</groupId>
-                        <artifactId>xstream</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.openmrs.liquibase</groupId>
-                        <artifactId>liquibase-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>cglib-nodep</artifactId>
-                        <groupId>cglib</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>slf4j-api</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>slf4j-log4j12</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-oxm</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.web</groupId>
-                <artifactId>openmrs-web</artifactId>
-                <version>1.8.2</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>spring-web</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-webmvc</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-core</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-context</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-oxm</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.test</groupId>
-                <artifactId>openmrs-test</artifactId>
-                <version>1.8.2</version>
-                <type>pom</type>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>slf4j-api</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-oxm</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-test</artifactId>
-                        <groupId>org.springframework</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1170,21 +1004,7 @@
         <!-- Non-OSGI modules -->
         <module>platform/server</module>
         <module>platform/web-security/web-security</module>
-        <module>modules/ivr/api</module>
-        <module>modules/ivr/asterisk</module>
-        <module>modules/ivr/kookoo</module>
-        <module>modules/ivr/verboice</module>
-        <module>modules/ivr/voxeo</module>
-        <module>modules/mobileforms/api</module>
-        <module>modules/openmrs/api</module>
-        <module>modules/openmrs/atomfeed</module>
-        <module>modules/openmrs/omod</module>
-        <module>modules/openmrs/ws</module>
-        <module>modules/outbox/outbox</module>
         <module>modules/rules/api</module>
-        <module>modules/sms/api</module>
-        <module>modules/sms/http</module>
-        <module>modules/sms/smpp</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/testing-utils/testing-utils</module>
@@ -1204,36 +1024,10 @@
         <module>platform/web-security/web-security-bundle</module>
         <module>platform/email</module>
         <module>modules/admin/admin</module>
-        <module>modules/alerts/api</module>
-        <module>modules/appointments/api</module>
-        <module>modules/callflow/api</module>
-        <module>modules/cmslite/api</module>
-        <module>modules/commcare/api</module>
-        <module>modules/couchmrs/mrs-couchdb</module>
-        <module>modules/decisiontree/core</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
-        <module>modules/ivr/api-bundle</module>
-        <module>modules/ivr/asterisk-bundle</module>
-        <module>modules/ivr/kookoo-bundle</module>
-        <module>modules/ivr/verboice-bundle</module>
-        <module>modules/ivr/voxeo-bundle</module>
-        <!--<module>modules/message-campaign/message-campaign</module>-->       <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
-        <module>modules/mobileforms/api-bundle</module>
-        <module>modules/mrs/api</module>
-        <module>modules/openmrs/api-bundle</module>
-        <module>modules/openmrs/atomfeed-bundle</module>
-        <module>modules/openmrs/domain-bundle</module>
-        <module>modules/openmrs/ws-bundle</module>
-        <module>modules/outbox/outbox-bundle</module>
-        <!--<module>modules/pillreminder/api</module>-->                        <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
         <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler</module>
-        <!--<module>modules/scheduletracking/api</module>-->                    <!-- moved to https://github.com/motech/platform-campaigns; please checkin over there -->
-        <module>modules/sms/api-bundle</module>
-        <module>modules/sms/http-bundle</module>
-        <module>modules/sms/smpp-bundle</module>
-        <module>modules/demo/demo</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
 

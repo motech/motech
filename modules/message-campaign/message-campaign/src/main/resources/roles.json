@@ -1,6 +1,0 @@
-[
-    {
-        "roleName": "Campaign Manager",
-        "permissionNames": ["manageCampaigns", "manageEnrollments"]
-    }
-]

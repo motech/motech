@@ -1,1 +1,0 @@
-java -cp smppsim.jar;lib\junit.jar;.\classes;lib\smpp.jar junit.swingui.TestRunner tests.SmppsimTests

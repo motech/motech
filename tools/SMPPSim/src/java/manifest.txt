@@ -1,2 +1,0 @@
-Main-Class: com.seleniumsoftware.SMPPSim.SMPPSim
-Class-Path: . lib/jakarta-regexp-1.2.jar

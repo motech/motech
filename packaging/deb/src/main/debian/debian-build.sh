@@ -177,4 +177,5 @@ export BUILD_DIR
 export CONTENT_DIR
 export ARTIFACT_DIR
 
-$CONTENT_DIR/modules/build-modules.sh
+# Demo module has been moved out as a separate repo.
+# $CONTENT_DIR/modules/build-modules.sh
