@@ -8,12 +8,19 @@ import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
+import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.service.ChannelRequest;
 import org.motechproject.tasks.service.ChannelService;
+import org.motechproject.tasks.service.EventParameterRequest;
+import org.motechproject.tasks.service.TriggerEventRequest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -28,6 +35,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertArrayEquals;
@@ -86,9 +94,9 @@ public class ChannelServiceImplTest {
         String channel = String.format("{displayName: %s, moduleName: %s, moduleVersion: %s, triggerTaskEvents: [%s]}", MODULE_NAME, MODULE_NAME, VERSION, triggerEvent);
         InputStream stream = new ByteArrayInputStream(channel.getBytes(Charset.forName("UTF-8")));
 
-        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         channelService.registerChannel(stream);
 
+        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
         verify(allChannels).addOrUpdate(captor.capture());
 
         Channel c = captor.getValue();
@@ -98,6 +106,33 @@ public class ChannelServiceImplTest {
         assertEquals(VERSION, c.getModuleVersion());
         assertEquals(1, c.getTriggerTaskEvents().size());
         assertEquals(new TriggerEvent("displayName", "subject", null, asList(new EventParameter("displayName", "eventKey"))), c.getTriggerTaskEvents().get(0));
+    }
+
+    @Test
+    public void shouldRegisterChannelFromChannelRequest() {
+        List<ActionEventRequest> actionEventRequests = asList(new ActionEventRequest("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameterRequest>()));
+        List<TriggerEventRequest> triggerEventsRequest = asList(new TriggerEventRequest("displayName", "subject.foo", "description", asList(new EventParameterRequest("displayName", "eventKey"))));
+        ChannelRequest channelRequest = new ChannelRequest(MODULE_NAME, MODULE_NAME, VERSION, "", triggerEventsRequest, actionEventRequests);
+        channelService.registerChannel(channelRequest);
+
+        ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
+        verify(allChannels).addOrUpdate(captor.capture());
+
+        Channel channelToBeCreated = captor.getValue();
+
+        assertEquals(MODULE_NAME, channelToBeCreated.getDisplayName());
+        assertEquals(MODULE_NAME, channelToBeCreated.getModuleName());
+        assertEquals(VERSION, channelToBeCreated.getModuleVersion());
+
+        assertEquals(1, channelToBeCreated.getTriggerTaskEvents().size());
+        TriggerEvent expectedTrigger = new TriggerEvent("displayName", "subject.foo", "description", asList(new EventParameter("displayName", "eventKey")));
+        TriggerEvent actualTrigger = channelToBeCreated.getTriggerTaskEvents().get(0);
+        assertEquals(expectedTrigger, actualTrigger);
+
+        assertEquals(1, channelToBeCreated.getActionTaskEvents().size());
+        ActionEvent expectedAction = new ActionEvent("actionName", "subject.foo", "action description", "some.interface", "method", new TreeSet<ActionParameter>());
+        ActionEvent actualAction = channelToBeCreated.getActionTaskEvents().get(0);
+        assertEquals(expectedAction, actualAction);
     }
 
     @Test
@@ -214,6 +249,7 @@ public class ChannelServiceImplTest {
         assertArrayEquals(image, bundleIcon.getIcon());
         assertEquals(image.length, bundleIcon.getContentLength());
     }
+
 
     private void whenGetChannelIcon(URL iconUrl) throws IOException {
         when(bundle.getSymbolicName()).thenReturn(String.format("org.motechproject.%s", MODULE_NAME));

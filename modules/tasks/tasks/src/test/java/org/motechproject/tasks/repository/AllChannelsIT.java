@@ -6,9 +6,10 @@ import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.json.ActionEventDeserializer;
+import org.motechproject.tasks.json.ActionEventRequestDeserializer;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ChannelRequest;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,11 +81,11 @@ public class AllChannelsIT extends SpringIntegrationTest {
     }
 
     private List<Channel> loadChannels() throws IOException {
-        Type type = new TypeToken<Channel>() {
+        Type type = new TypeToken<ChannelRequest>() {
         }.getType();
 
         HashMap<Type, Object> typeAdapters = new HashMap<>();
-        typeAdapters.put(ActionEvent.class, new ActionEventDeserializer());
+        typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
 
         List<StringWriter> writers = new ArrayList<>(2);
 
@@ -97,13 +98,14 @@ public class AllChannelsIT extends SpringIntegrationTest {
             }
         }
 
-        List<Channel> channels = new ArrayList<>(2);
+        List<Channel> channelRequests = new ArrayList<>(2);
 
         for (StringWriter writer : writers) {
-            channels.add((Channel) motechJsonReader.readFromString(writer.toString(), type, typeAdapters));
+            ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            channelRequests.add(new Channel(channelRequest));
         }
 
-        return channels;
+        return channelRequests;
     }
 
     @Override

@@ -7,12 +7,13 @@ import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
-import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
-import org.motechproject.tasks.json.ActionEventDeserializer;
+import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.AllChannels;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ChannelRequest;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
@@ -55,7 +56,7 @@ public class ChannelServiceImpl implements ChannelService {
     private BundleContext bundleContext;
 
     static {
-        typeAdapters.put(ActionEvent.class, new ActionEventDeserializer());
+        typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
     }
 
     @Autowired
@@ -67,16 +68,21 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    public void registerChannel(ChannelRequest channelRequest) {
+        addOrUpdate(new Channel(channelRequest));
+    }
+
+    @Override
     public void registerChannel(final InputStream stream) {
-        Type type = new TypeToken<Channel>() {
+        Type type = new TypeToken<ChannelRequest>() {
         }.getType();
         StringWriter writer = new StringWriter();
 
         try {
             IOUtils.copy(stream, writer);
-            Channel channel = (Channel) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
 
-            addOrUpdate(channel);
+            addOrUpdate(new Channel(channelRequest));
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }

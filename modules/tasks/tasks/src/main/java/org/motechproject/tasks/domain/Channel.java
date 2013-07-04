@@ -2,6 +2,9 @@ package org.motechproject.tasks.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ChannelRequest;
+import org.motechproject.tasks.service.TriggerEventRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +16,8 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 public class Channel extends MotechBaseDataObject {
     private static final long serialVersionUID = -5528351408863732084L;
 
-    private List<ActionEvent> actionTaskEvents;
-    private List<TriggerEvent> triggerTaskEvents;
+    private List<ActionEvent> actionTaskEvents = new ArrayList<>();
+    private List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
     private String description;
     private String displayName;
     private String moduleName;
@@ -35,8 +38,32 @@ public class Channel extends MotechBaseDataObject {
         this.moduleVersion = moduleVersion;
         this.description = description;
 
-        this.actionTaskEvents = actionTaskEvents == null ? new ArrayList<ActionEvent>() : actionTaskEvents;
-        this.triggerTaskEvents = triggerTaskEvents == null ? new ArrayList<TriggerEvent>() : triggerTaskEvents;
+        if (actionTaskEvents != null) {
+            this.actionTaskEvents.addAll(actionTaskEvents);
+        }
+        if (triggerTaskEvents != null) {
+            this.triggerTaskEvents.addAll(triggerTaskEvents);
+        }
+    }
+
+    public Channel(ChannelRequest channelRequest) {
+        this(channelRequest.getDisplayName(), channelRequest.getModuleName(), channelRequest.getModuleVersion(), channelRequest.getDescription(), getTriggerTaskEvents(channelRequest), getActionTaskEvents(channelRequest));
+    }
+
+    private static List<TriggerEvent> getTriggerTaskEvents(ChannelRequest channelRequest) {
+        List<TriggerEvent> triggerTaskEvents = new ArrayList<>();
+        for (TriggerEventRequest triggerEventRequest : channelRequest.getTriggerTaskEvents()) {
+            triggerTaskEvents.add(new TriggerEvent(triggerEventRequest));
+        }
+        return triggerTaskEvents;
+    }
+
+    private static List<ActionEvent> getActionTaskEvents(ChannelRequest channelRequest) {
+        List<ActionEvent> actionTaskEvents = new ArrayList<>();
+        for (ActionEventRequest actionEventRequest : channelRequest.getActionTaskEvents()) {
+            actionTaskEvents.add(new ActionEvent(actionEventRequest));
+        }
+        return actionTaskEvents;
     }
 
     public boolean containsTrigger(TaskEventInformation triggerInformation) {

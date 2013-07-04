@@ -1,5 +1,8 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.tasks.service.EventParameterRequest;
+import org.motechproject.tasks.service.TriggerEventRequest;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +21,19 @@ public class TriggerEvent extends TaskEvent {
     public TriggerEvent(String displayName, String subject, String description, List<EventParameter> eventParameters) {
         super(description, displayName, subject);
         this.eventParameters = eventParameters == null ? new ArrayList<EventParameter>() : eventParameters;
+    }
+
+    public TriggerEvent(TriggerEventRequest triggerEventRequest) {
+        this(triggerEventRequest.getDisplayName(), triggerEventRequest.getSubject(), triggerEventRequest.getDescription(),
+                getEventParameters(triggerEventRequest));
+    }
+
+    private static List<EventParameter> getEventParameters(TriggerEventRequest triggerEventRequest) {
+        List<EventParameter> parameters = new ArrayList<>();
+        for (EventParameterRequest eventParameterRequest : triggerEventRequest.getEventParameters()) {
+            parameters.add(new EventParameter(eventParameterRequest));
+        }
+        return parameters;
     }
 
     @Override

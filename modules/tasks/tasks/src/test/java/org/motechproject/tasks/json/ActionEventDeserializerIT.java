@@ -6,14 +6,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.motechproject.commons.api.json.MotechJsonReader;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.Channel;
-import org.motechproject.tasks.domain.ParameterType;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.service.ChannelRequest;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +28,14 @@ import static org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ActionEventDeserializerIT {
     private Map<Type, Object> typeAdapters = new HashMap<>();
-    private Type type = new TypeToken<Channel>() {
+    private Type type = new TypeToken<ChannelRequest>() {
     }.getType();
     private MotechJsonReader reader = new MotechJsonReader();
     private String channelAsString;
-    private List<ActionEvent> expected;
+    private List<ActionEventRequest> expected;
 
-    public ActionEventDeserializerIT(String path, List<ActionEvent> events) throws IOException {
-        typeAdapters.put(ActionEvent.class, new ActionEventDeserializer());
+    public ActionEventDeserializerIT(String path, List<ActionEventRequest> events) throws IOException {
+        typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
 
         StringWriter writer = new StringWriter();
         IOUtils.copy(this.getClass().getResourceAsStream(path), writer);
@@ -54,51 +54,41 @@ public class ActionEventDeserializerIT {
 
     @Test
     public void shouldDeserializeJson() {
-        Channel channel = (Channel) reader.readFromString(channelAsString, type, typeAdapters);
+        ChannelRequest channelRequest = (ChannelRequest) reader.readFromString(channelAsString, type, typeAdapters);
 
-        assertEquals(expected, channel.getActionTaskEvents());
+        List<ActionEventRequest> actionTaskEvents = channelRequest.getActionTaskEvents();
+        assertEquals(expected, actionTaskEvents);
     }
 
-    private static List<ActionEvent> getPillReminderEvents() {
-        ActionEvent event = new ActionEvent();
-        event.setDisplayName("pillreminder.event.subject.scheduler");
-        event.setSubject("org.motechproject.server.pillreminder.scheduler-reminder");
+    private static List<ActionEventRequest> getPillReminderEvents() {
+        SortedSet<ActionParameterRequest> parameters = new TreeSet<>();
+        parameters.add(new ActionParameterRequest("DosageID", "pillreminder.dossageID", 0));
+        parameters.add(new ActionParameterRequest("ExternalID", "pillreminder.externalID", 1));
+        parameters.add(new ActionParameterRequest("times-reminders-sent", "pillreminder.times.sent", 2, "INTEGER"));
+        parameters.add(new ActionParameterRequest("times-reminders-to-be-sent", "pillreminder.total.times.sent", 3, "INTEGER"));
+        parameters.add(new ActionParameterRequest("retry-interval", "pillreminder.retry.interval", 4, "INTEGER"));
 
-        SortedSet<ActionParameter> parameters = new TreeSet<>();
-        parameters.add(new ActionParameter("pillreminder.dossageID", "DosageID", 0));
-        parameters.add(new ActionParameter("pillreminder.externalID", "ExternalID", 1));
-        parameters.add(new ActionParameter("pillreminder.times.sent", "times-reminders-sent", ParameterType.INTEGER, 2));
-        parameters.add(new ActionParameter("pillreminder.total.times.sent", "times-reminders-to-be-sent", ParameterType.INTEGER, 3));
-        parameters.add(new ActionParameter("pillreminder.retry.interval", "retry-interval", ParameterType.INTEGER, 4));
+        ActionEventRequest event = new ActionEventRequest("pillreminder.event.subject.scheduler", "org.motechproject.server.pillreminder.scheduler-reminder", "description", null, null, parameters);
 
-        event.setActionParameters(parameters);
-
-        return asList(event);
+        List<ActionEventRequest> events = new ArrayList<>();
+        events.add(event);
+        return events;
     }
 
-    private static List<ActionEvent> getMessageCampaignEvents() {
-        ActionEvent event1 = new ActionEvent();
-        event1.setDisplayName("messagecampaign.send.message");
-        event1.setSubject("org.motechproject.messagecampaign.fired-campaign-message");
+    private static List<ActionEventRequest> getMessageCampaignEvents() {
+        SortedSet<ActionParameterRequest> parameters1 = new TreeSet<>();
+        parameters1.add(new ActionParameterRequest("CampaignName", "messagecampaign.campaign.name", 0));
+        parameters1.add(new ActionParameterRequest("ExternalID", "messagecampaign.externalID", 1));
+        parameters1.add(new ActionParameterRequest("MessageKey", "messagecampaign.message.key", 2));
 
-        SortedSet<ActionParameter> parameters1 = new TreeSet<>();
-        parameters1.add(new ActionParameter("messagecampaign.campaign.name", "CampaignName", 0));
-        parameters1.add(new ActionParameter("messagecampaign.externalID", "ExternalID", 1));
-        parameters1.add(new ActionParameter("messagecampaign.message.key", "MessageKey", 2));
+        ActionEventRequest event1 = new ActionEventRequest("messagecampaign.send.message", "org.motechproject.messagecampaign.fired-campaign-message", "description", null, null, parameters1);
 
-        event1.setActionParameters(parameters1);
 
-        ActionEvent event2 = new ActionEvent();
-        event2.setDisplayName("messagecampaign.campaign.completed");
-        event2.setServiceInterface("org.motechproject.messagecampaign.service.MessageCampaignService");
-        event2.setServiceMethod("campaignCompleted");
-        event2.setSubject("org.motechproject.messagecampaign.campaign-completed");
+        SortedSet<ActionParameterRequest> parameters2 = new TreeSet<>();
+        parameters2.add(new ActionParameterRequest("ExternalID", "messagecampaign.externalID", 0));
+        parameters2.add(new ActionParameterRequest("CampaignName", "messagecampaign.campaign.name", 1));
 
-        SortedSet<ActionParameter> parameters2 = new TreeSet<>();
-        parameters2.add(new ActionParameter("messagecampaign.externalID", "ExternalID", 0));
-        parameters2.add(new ActionParameter("messagecampaign.campaign.name", "CampaignName", 1));
-
-        event2.setActionParameters(parameters2);
+        ActionEventRequest event2 = new ActionEventRequest("messagecampaign.campaign.completed", "org.motechproject.messagecampaign.campaign-completed", "description", "org.motechproject.messagecampaign.service.MessageCampaignService", "campaignCompleted", parameters2);
 
         return asList(event1, event2);
     }

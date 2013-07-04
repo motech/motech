@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.tasks.service.ActionParameterRequest;
+
 import java.util.Objects;
 
 import static org.motechproject.tasks.domain.ParameterType.UNICODE;
@@ -31,6 +33,10 @@ public class ActionParameter extends Parameter implements Comparable<ActionParam
 
         this.order = order;
         this.key = key;
+    }
+
+    public ActionParameter(ActionParameterRequest actionParameterRequest) {
+        this(actionParameterRequest.getDisplayName(), actionParameterRequest.getKey(), ParameterType.fromString(actionParameterRequest.getType()), actionParameterRequest.getOrder());
     }
 
     public Integer getOrder() {

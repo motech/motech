@@ -1,6 +1,8 @@
 package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.tasks.service.ActionEventRequest;
+import org.motechproject.tasks.service.ActionParameterRequest;
 
 import java.util.Objects;
 import java.util.SortedSet;
@@ -36,6 +38,18 @@ public class ActionEvent extends TaskEvent {
         this.actionParameters = actionParameters == null ? new TreeSet<ActionParameter>() : actionParameters;
         this.serviceInterface = serviceInterface;
         this.serviceMethod = serviceMethod;
+    }
+
+    public ActionEvent(ActionEventRequest actionEventRequest) {
+        this(actionEventRequest.getDisplayName(), actionEventRequest.getSubject(), actionEventRequest.getDescription(), actionEventRequest.getServiceInterface(), actionEventRequest.getServiceMethod(), mapActionParameters(actionEventRequest.getActionParameters()));
+    }
+
+    private static SortedSet<ActionParameter> mapActionParameters(SortedSet<ActionParameterRequest> actionParameterRequests) {
+        SortedSet<ActionParameter> parameters = new TreeSet<>();
+        for (ActionParameterRequest actionParameterRequest : actionParameterRequests) {
+            parameters.add(new ActionParameter(actionParameterRequest));
+        }
+        return parameters;
     }
 
     @JsonIgnore

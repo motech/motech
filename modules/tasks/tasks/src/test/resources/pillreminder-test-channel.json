@@ -1,67 +1,70 @@
 {
-  "displayName" : "pillreminder.name",
-  "moduleName" : "pillreminder-test",
-  "moduleVersion" : "0.15",
-  "triggerTaskEvents" : [
-    {
-      "displayName" : "pillreminder.event.subject",
-      "subject" : "org.motechproject.server.pillreminder.pill-reminder",
-      "eventParameters" : [
+    "displayName":"pillreminder.name",
+    "moduleName":"pillreminder-test",
+    "moduleVersion":"0.15",
+    "triggerTaskEvents":[
         {
-          "eventKey" : "DosageID",
-          "displayName" : "pillreminder.dossageID"
-        },
-        {
-          "eventKey" : "ExternalID",
-          "displayName" : "pillreminder.externalID"
-        },
-        {
-          "eventKey" : "times-reminders-sent",
-          "displayName" : "pillreminder.times.sent",
-          "type": "INTEGER"
-        },
-        {
-          "eventKey" :  "times-reminders-to-be-sent",
-          "displayName" : "pillreminder.total.times.sent",
-          "type": "INTEGER"
-        },
-        {
-          "eventKey" :  "retry-interval",
-          "displayName" : "pillreminder.retry.interval",
-          "type": "INTEGER"
+            "displayName":"pillreminder.event.subject",
+            "subject":"org.motechproject.server.pillreminder.pill-reminder",
+            "eventParameters":[
+                {
+                    "eventKey":"DosageID",
+                    "displayName":"pillreminder.dossageID"
+                },
+                {
+                    "eventKey":"ExternalID",
+                    "displayName":"pillreminder.externalID"
+                },
+                {
+                    "eventKey":"times-reminders-sent",
+                    "displayName":"pillreminder.times.sent",
+                    "type":"INTEGER"
+                },
+                {
+                    "eventKey":"times-reminders-to-be-sent",
+                    "displayName":"pillreminder.total.times.sent",
+                    "type":"INTEGER"
+                },
+                {
+                    "eventKey":"retry-interval",
+                    "displayName":"pillreminder.retry.interval",
+                    "type":"INTEGER"
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "actionTaskEvents" : [
-    {
-      "displayName" : "pillreminder.event.subject.scheduler",
-      "subject" : "org.motechproject.server.pillreminder.scheduler-reminder",
-      "actionParameters" : [
+    ],
+    "actionTaskEvents":[
         {
-          "key" : "DosageID",
-          "displayName" : "pillreminder.dossageID"
-        },
-        {
-          "key" : "ExternalID",
-          "displayName" : "pillreminder.externalID"
-        },
-        {
-          "key" : "times-reminders-sent",
-          "displayName" : "pillreminder.times.sent",
-          "type": "INTEGER"
-        },
-        {
-          "key" :  "times-reminders-to-be-sent",
-          "displayName" : "pillreminder.total.times.sent",
-          "type": "INTEGER"
-        },
-        {
-          "key" :  "retry-interval",
-          "displayName" : "pillreminder.retry.interval",
-          "type": "INTEGER"
+            "displayName":"pillreminder.event.subject.scheduler",
+            "subject":"org.motechproject.server.pillreminder.scheduler-reminder",
+            "description":"description",
+            "serviceInterface":"",
+            "serviceMethod":"",
+            "actionParameters":[
+                {
+                    "key":"DosageID",
+                    "displayName":"pillreminder.dossageID"
+                },
+                {
+                    "key":"ExternalID",
+                    "displayName":"pillreminder.externalID"
+                },
+                {
+                    "key":"times-reminders-sent",
+                    "displayName":"pillreminder.times.sent",
+                    "type":"INTEGER"
+                },
+                {
+                    "key":"times-reminders-to-be-sent",
+                    "displayName":"pillreminder.total.times.sent",
+                    "type":"INTEGER"
+                },
+                {
+                    "key":"retry-interval",
+                    "displayName":"pillreminder.retry.interval",
+                    "type":"INTEGER"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

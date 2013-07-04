@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface ChannelService {
 
+    void registerChannel(ChannelRequest channelRequest);
+
     void registerChannel(InputStream stream);
 
     void addOrUpdate(Channel channel);

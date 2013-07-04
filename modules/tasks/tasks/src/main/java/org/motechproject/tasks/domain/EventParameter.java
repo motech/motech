@@ -1,5 +1,7 @@
 package org.motechproject.tasks.domain;
 
+import org.motechproject.tasks.service.EventParameterRequest;
+
 import java.util.Objects;
 
 public class EventParameter extends Parameter {
@@ -18,6 +20,10 @@ public class EventParameter extends Parameter {
     public EventParameter(final String displayName, final String eventKey, final ParameterType type) {
         super(displayName, type);
         this.eventKey = eventKey;
+    }
+
+    public EventParameter(EventParameterRequest eventParameterRequest) {
+        this(eventParameterRequest.getDisplayName(), eventParameterRequest.getEventKey(), ParameterType.fromString(eventParameterRequest.getType()));
     }
 
     public String getEventKey() {
