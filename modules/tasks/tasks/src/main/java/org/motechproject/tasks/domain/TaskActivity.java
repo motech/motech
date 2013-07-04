@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'TaskActivity'")
-public class TaskActivity extends MotechBaseDataObject {
+public class TaskActivity extends MotechBaseDataObject implements Comparable<TaskActivity>{
     private static final long serialVersionUID = 4700697701096557098L;
 
     private String message;
@@ -126,5 +126,10 @@ public class TaskActivity extends MotechBaseDataObject {
     public String toString() {
         return String.format("TaskActivity{message='%s', task='%s', field='%s', date=%s, activityType=%s, stackTrace=%s}",
                 message, task, Arrays.toString(fields), date, activityType, stackTraceElement);
+    }
+
+    @Override
+    public int compareTo(TaskActivity o) {
+        return getDate().compareTo(o.getDate());
     }
 }

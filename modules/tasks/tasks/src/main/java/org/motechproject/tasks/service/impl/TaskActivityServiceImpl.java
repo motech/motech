@@ -60,12 +60,13 @@ public class TaskActivityServiceImpl implements TaskActivityService {
     @Override
     public List<TaskActivity> errorsFromLastRun(Task task) {
         List<TaskActivity> messages = allTaskActivities.byTaskId(task.getId());
+        Collections.sort(messages);
         List<TaskActivity> result = new ArrayList<>(messages.size());
 
         for (int i = messages.size() - 1; i >= 0; --i) {
             TaskActivity msg = messages.get(i);
 
-            if (msg.getActivityType() != TaskActivityType.ERROR) {
+            if (msg.getMessage().equals("warning.taskDisabled")  || msg.getActivityType() == TaskActivityType.SUCCESS) {
                 break;
             }
 
