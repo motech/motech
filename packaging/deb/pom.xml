@@ -67,11 +67,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-demo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -192,11 +187,6 @@
                                             <file>${basedir}/target/motech-base_${project.version}.deb</file>
                                             <type>deb</type>
                                             <classifier>base</classifier>
-                                        </artifact>
-                                        <artifact>
-                                            <file>${basedir}/target/motech-demo_${project.version}.deb</file>
-                                            <type>deb</type>
-                                            <classifier>demo</classifier>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
