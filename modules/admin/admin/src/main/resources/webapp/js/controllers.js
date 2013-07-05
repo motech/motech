@@ -195,10 +195,15 @@
         $scope.submitBundle = function () {
             blockUI();
             $('#bundleUploadForm').ajaxSubmit({
-                success:function (data) {
-                    $scope.bundles = Bundle.query();
-                    $scope.reloadPage();
-    //                unblockUI();
+                success:function (data, textStatus, jqXHR) {
+                    if (jqXHR.status === 0 && data) {
+                        handleWithStackTrace('error', 'bundles.error.start', data);
+                        unblockUI();
+                    } else {
+                        $scope.bundles = Bundle.query();
+                        $scope.reloadPage();
+                    }
+    //              unblockUI();
                 },
                 error:function (response) {
                     handleWithStackTrace('error', 'bundles.error.start', response);
