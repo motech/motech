@@ -70,7 +70,7 @@ public class EmailNotifierTest {
 
         String msgLink = "http://serverurl/module/server/?moduleName=admin#/messages";
         Assert.assertEquals(msgLink, velocityArgumentCaptor.getValue().get("msgLink"));
-        Assert.assertEquals("12/20/10 10:50 AM", velocityArgumentCaptor.getValue().get("dateTime"));
+        Assert.assertTrue(velocityArgumentCaptor.getValue().get("dateTime").toString().matches("^(12[./]20|20[./]12)[./]10 10:50(| AM)$"));
         Assert.assertEquals(moduleName, velocityArgumentCaptor.getValue().get("module"));
 
         ArgumentCaptor<Mail> argument = ArgumentCaptor.forClass(Mail.class);
