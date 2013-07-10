@@ -78,7 +78,7 @@
                                 <div id="queue.urls" class="queue-urls">
                                 <c:forEach var="url" items="${suggestions.queueUrls}" varStatus="status">
                                     <div id="queue.url.${status.count}">
-                                        <span><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: &nbsp;${url}</span>
+                                        <span><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: ${url}</span>
                                         <button type="button" class="btn btn-mini"><fmt:message key="use" bundle="${bundle}"/></button>
                                     </div>
                                 </c:forEach>
