@@ -443,7 +443,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         Date jobStartDate = schedulableJob.getStartDate();
         assertArgumentNotNull("Job start date", jobStartDate);
-        Date currentDate = DateUtil.today().toDate();
+        Date currentDate = DateUtil.now().toDate();
         if (jobStartDate.before(currentDate)) {
             String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
                     " Job start date: " + jobStartDate.toString() +
