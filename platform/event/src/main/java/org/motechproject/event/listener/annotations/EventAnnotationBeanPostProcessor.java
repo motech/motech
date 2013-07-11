@@ -72,18 +72,18 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                         MotechListenerAbstractProxy proxy = null;
                         switch (annotation.type()) {
                             case ORDERED_PARAMETERS:
-                                proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+                                proxy = new MotechListenerOrderedParametersProxy(bean.getClass().getName()+":"+beanName, bean, method);
                                 break;
                             case MOTECH_EVENT:
-                                proxy = new MotechListenerEventProxy(beanName, bean, method);
+                                proxy = new MotechListenerEventProxy(bean.getClass().getName()+":"+beanName, bean, method);
                                 break;
                             case NAMED_PARAMETERS:
-                                proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+                                proxy = new MotechListenerNamedParametersProxy(bean.getClass().getName()+":"+beanName, bean, method);
                                 break;
                             default:
                         }
 
-                        logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
+                        logger.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: %s", annotation.type().toString()+":"+beanName, bean.getClass().getName(), method.toGenericString(), subjects));
 
                         if (eventListenerRegistry != null) {
                             eventListenerRegistry.registerListener(proxy, subjects);
