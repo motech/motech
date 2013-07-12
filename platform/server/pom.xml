@@ -32,6 +32,10 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
         <!-- web listener and proxy -->
         <dependency>
             <groupId>org.apache.felix</groupId>
