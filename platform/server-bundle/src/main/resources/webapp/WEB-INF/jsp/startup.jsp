@@ -14,9 +14,9 @@
     <link rel="stylesheet" type="text/css" href="../server/resources/css/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="../server/resources/css/index.css" />
 
-    <script src="../server/resources/lib/jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../server/resources/lib/jquery/jquery.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.form.js" type="text/javascript"></script>
-    <script src="../server/resources/lib/jquery/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="../server/resources/lib/jquery/jquery-ui.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.alerts.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.tools.min.js" type="text/javascript"></script>

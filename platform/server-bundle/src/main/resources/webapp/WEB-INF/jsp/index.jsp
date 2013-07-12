@@ -30,9 +30,9 @@
     <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-switch.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css" />
 
-    <script src="../server/resources/lib/jquery/jquery-1.8.2.js" type="text/javascript"></script>
+    <script src="../server/resources/lib/jquery/jquery.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.form.js" type="text/javascript"></script>
-    <script src="../server/resources/lib/jquery/jquery-ui-1.9.2.js" type="text/javascript"></script>
+    <script src="../server/resources/lib/jquery/jquery-ui.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.alerts.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
     <script src="../server/resources/lib/jquery/jquery.tools.min.js" type="text/javascript"></script>
