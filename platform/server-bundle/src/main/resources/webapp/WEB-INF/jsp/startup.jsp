@@ -36,9 +36,9 @@
     <script src="../server/resources/js/localization.js" type="text/javascript"></script>
     <script src="../server/resources/js/directives.js" type="text/javascript"></script>
     <script src="../server/resources/js/controllers.js" type="text/javascript"></script>
-
     <script src="../server/resources/js/startup.js" type="text/javascript"></script>
     <script src="../server/resources/js/dashboard.js" type="text/javascript"></script>
+    <script src="../server/resources/js/browser-detect.js"></script>
 
     <script type="text/javascript">
         $(window).load(function() {

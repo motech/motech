@@ -36,8 +36,8 @@
     <script src="../server/resources/js/common.js" type="text/javascript"></script>
     <script src="../server/resources/js/localization.js"></script>
     <script src="../server/resources/js/controllers.js"></script>
-
     <script src="../server/resources/js/dashboard.js"></script>
+    <script src="../server/resources/js/browser-detect.js"></script>
 
     <c:if test="${! empty currentModule}">
        ${currentModule.header}
