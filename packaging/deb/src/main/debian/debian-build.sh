@@ -82,7 +82,7 @@ mkdir -p motech-base/usr/share/motech/motech-default/
 cp $MOTECH_BASE/packaging/motech-manage-tenants motech-base/usr/share/motech/
 
 # copy motech-base
-cp -r $CONTENT_DIR/motech-base .
+cp -R $CONTENT_DIR/motech-base .
 mv $WARNAME ./motech-base/var/lib/motech/motech-default/webapps/ROOT.war
 
 # handle changelogs
@@ -96,17 +96,17 @@ gzip --best ./motech-base/usr/share/doc/motech-base/changelog.Debian
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
 
 #Copy config
-cp -r $CONFIG_DIR ./motech-base/var/lib/motech/motech-default/data
+cp -R $CONFIG_DIR ./motech-base/var/lib/motech/motech-default/data
 rm -f ./motech-base/var/lib/motech/motech-default/data/config/motech-settings.conf
 
 
 # Platofrm bundles
-cp -r $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
+cp -R $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 # Include motech-admin
-cp -r $ARTIFACT_DIR/motech-admin*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
+cp -R $ARTIFACT_DIR/motech-admin*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # Include dependencies
-cp -r $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles
+cp -R $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
@@ -138,7 +138,7 @@ echo "Building motech"
 echo "====================="
 
 # copy files
-cp -r $CONTENT_DIR/motech .
+cp -R $CONTENT_DIR/motech .
 
 # handle changelogs
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech/usr/share/doc/motech/changelog
@@ -170,12 +170,3 @@ echo "Done! Created $MOTECH_PACKAGENAME"
 cd $CURRENT_DIR
 rm -r $TMP_DIR
 
-# build modules
-export MOTECH_BASE
-export MOTECH_VERSION
-export BUILD_DIR
-export CONTENT_DIR
-export ARTIFACT_DIR
-
-# Demo module has been moved out as a separate repo.
-# $CONTENT_DIR/modules/build-modules.sh
