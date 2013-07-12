@@ -60,7 +60,8 @@
     <script src="../server/resources/lib/jquery-cron/jquery-gentleSelect.js"></script>
     <script src="../server/resources/lib/jquery-cron/jquery-cron.js "></script>
 
-    <script src="../server/resources/lib/moment/moment-1.7.2.js "></script>
+    <script src="../server/resources/lib/moment/moment.js "></script>
+    <script src="../server/resources/lib/moment/langs.js "></script>
 
     <script src="../server/resources/lib/parseuri/parseuri.js"></script>
 
