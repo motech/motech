@@ -3,7 +3,9 @@
 
     /* App Module */
 
-    angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui', 'motech-widgets']).config(['$httpProvider', function($httpProvider) {
+    var serverModule = angular.module('motech-dashboard', ['localization', 'ngCookies', 'ui', 'motech-widgets', 'browserDetect']);
+
+    serverModule.config(['$httpProvider', function($httpProvider) {
         var interceptor = ['$rootScope','$q', function(scope, $q) {
             function success(response) {
                 return response;
