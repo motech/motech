@@ -11,4 +11,11 @@
     <import resource="classpath:/META-INF/motech/eventQueueConsumer.xml"/>
     <osgi:service ref="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
     <osgi:service ref="eventListenerRegistry" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+    <osgi:service id="reloadBrokerConfigHandlerService" ref="reloadBrokerConfigHandler" interface="org.osgi.service.event.EventHandler">
+        <osgi:service-properties>
+            <entry key="event.topics" value="org/motechproject/osgi/event/RELOAD"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+    <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
 </beans>

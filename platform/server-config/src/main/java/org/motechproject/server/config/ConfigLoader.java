@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +20,25 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 
 @Component
 public class ConfigLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLoader.class);
-
+    private static final String BROKER_URL = "broker.url";
     private List<Resource> configLocations;
     private File configLocationsFile = new File(String.format("%s/.motech/config-locations.conf", System.getProperty("user.home")));
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired (required = false)
+    private EventAdmin eventAdmin;
 
     public ConfigLoader() throws IOException {
         if (configLocationsFile.exists()) {
@@ -82,6 +90,14 @@ public class ConfigLoader {
 
                     configFileSettings = loadSettingsFromStream(motechSettings, activemq);
                     configFileSettings.setFileURL(location.getURL());
+                    if (eventAdmin != null) {
+                        Map<String,String> properties = new HashMap<>();
+                        Properties activemqProperties = configFileSettings.getActivemqProperties();
+                        if (activemqProperties != null && activemqProperties.containsKey(BROKER_URL)) {
+                            properties.put(BROKER_URL, activemqProperties.getProperty(BROKER_URL));
+                            eventAdmin.postEvent(new Event("org/motechproject/osgi/event/RELOAD", properties));
+                        }
+                    }
                     break;
                 } catch (IOException e) {
                     LOGGER.warn("Problem reading motech-settings.conf from location: " + location.toString());
@@ -89,7 +105,6 @@ public class ConfigLoader {
                 }
             }
         }
-
         return configFileSettings;
     }
 

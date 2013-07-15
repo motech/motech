@@ -1,16 +1,22 @@
 package org.motechproject.event.osgi;
 
+import org.motechproject.event.config.ReloadBrokerConfigHandler;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
 public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+    private static final String RELOAD_BROKER_CONFIG_TOPIC = "org/motechproject/osgi/event/RELOAD";
 
 
     private BlueprintApplicationContextTracker applicationContextTracker;
@@ -18,6 +24,10 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(final BundleContext bundleContext) {
+
+        Hashtable<String, String> properties = new Hashtable<>();
+        properties.put(EventConstants.EVENT_TOPIC, RELOAD_BROKER_CONFIG_TOPIC);
+        bundleContext.registerService(EventHandler.class.getName(), new ReloadBrokerConfigHandler(), properties);
 
         eventListenerRegistryServiceTracker = new ServiceTracker(bundleContext, EventListenerRegistryService.class.getName(), null) {
             @Override
