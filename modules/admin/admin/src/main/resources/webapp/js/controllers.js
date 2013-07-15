@@ -6,17 +6,17 @@
 
     var adminModule = angular.module('motech-admin');
 
-    adminModule.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http) {
+    adminModule.controller('BundleListCtrl', function($scope, Bundle, i18nService, $routeParams, $http, $timeout) {
 
-        var LOADING_STATE = 'LOADING';
+        var LOADING_STATE = 'LOADING', MODULE_LIST_REFRESH_TIMEOUT = 5 * 1000;
 
         $scope.orderProp = 'name';
         $scope.invert = false;
         $scope.startUpload = false;
         $scope.versionOrder = ["version.major", "version.minor", "version.micro", "version.qualifier"];
 
-        $scope.reloadPage = function () {
-            location.reload();
+        $scope.refreshModuleList = function () {
+            $scope.$emit('module.list.refresh');
         };
 
         $scope.bundlesWithSettings = [];
@@ -124,15 +124,29 @@
 
         $scope.stopBundle = function (bundle) {
             bundle.state = LOADING_STATE;
-            bundle.$stop(dummyHandler, function (response) {
+            bundle.$stop($scope.refreshModuleList, function (response) {
                 bundle.state = 'RESOLVED';
                 handleWithStackTrace('error', 'bundles.error.stop', response);
             });
         };
 
         $scope.startBundle = function (bundle) {
+            var previousState = bundle.state;
+
             bundle.state = LOADING_STATE;
-            bundle.$start(dummyHandler, function (response) {
+            bundle.$start(function () {
+                blockUI();
+
+                $timeout(function () {
+                    if (previousState === 'INSTALLED') {
+                        $scope.$emit('lang.refresh');
+                    }
+
+                    $scope.refreshModuleList();
+
+                    unblockUI();
+                }, MODULE_LIST_REFRESH_TIMEOUT);
+            }, function (response) {
                 bundle.state = 'RESOLVED';
                 handleWithStackTrace('error', 'bundles.error.start', response);
             });
@@ -142,6 +156,9 @@
             bundle.state = LOADING_STATE;
             bundle.$restart(dummyHandler, function () {
                 bundle.state = 'RESOLVED';
+                $scope.$emit('lang.refresh');
+                $scope.refreshModuleList();
+
                 motechAlert('bundles.error.restart', 'error');
             });
         };
@@ -157,9 +174,9 @@
                     bundle.$uninstall(function () {
                             // remove bundle from list
                             $scope.bundles.removeObject(bundle);
-                            $scope.reloadPage();
-                        },
-                        function () {
+                            $scope.refreshModuleList();
+                            unblockUI();
+                        }, function () {
                             motechAlert('bundles.error.uninstall', 'error');
                             bundle.state = oldState;
                             unblockUI();
@@ -195,17 +212,25 @@
         $scope.submitBundle = function () {
             blockUI();
             $('#bundleUploadForm').ajaxSubmit({
-                success:function (data, textStatus, jqXHR) {
+                success: function (data, textStatus, jqXHR) {
                     if (jqXHR.status === 0 && data) {
                         handleWithStackTrace('error', 'bundles.error.start', data);
                         unblockUI();
                     } else {
-                        $scope.bundles = Bundle.query();
-                        $scope.reloadPage();
+                        $scope.bundles = Bundle.query(function () {
+                            if ($scope.startUpload) {
+                                $timeout(function () {
+                                    $scope.$emit('lang.refresh');
+                                    $scope.refreshModuleList();
+                                    unblockUI();
+                                }, MODULE_LIST_REFRESH_TIMEOUT);
+                            } else {
+                                unblockUI();
+                            }
+                        });
                     }
-    //              unblockUI();
                 },
-                error:function (response) {
+                error: function (response) {
                     handleWithStackTrace('error', 'bundles.error.start', response);
                     unblockUI();
                 }

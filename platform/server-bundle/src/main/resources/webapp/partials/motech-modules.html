@@ -1,0 +1,24 @@
+<div id="side-nav" class="span2" ng-show="ready">
+    <ul class="nav nav-tabs nav-stacked modulesWithSubMenu" ng-repeat="module in modulesWithSubMenu">
+        <li class="nav-header">
+            <i ui-if="module.needsAttention" class="icon icon-exclamation-sign icon-red"></i>
+            {{msg(module.moduleName)}}
+        </li>
+        <li ng-repeat="(key, value) in module.subMenu" ng-class="active('{{value.url}}')">
+            <a href="?moduleName={{module.moduleName}}{{value.url}}">
+                <i ui-if="value.needsAttention" class="icon icon-exclamation-sign icon-red"></i>
+                {{msg(key)}}
+            </a>
+        </li>
+        <li class="divider"></li>
+    </ul>
+    <ul class="nav nav-tabs nav-stacked modulesWithoutSubMenu">
+        <li ui-if="modulesWithoutSubMenu && modulesWithoutSubMenu.length > 0" class="nav-header">{{msg('modules')}}</li>
+        <li ng-repeat="module in modulesWithoutSubMenu" ng-class="{'active': getCurrentModuleName() == module.moduleName}">
+            <a href="?moduleName={{module.moduleName}}">
+                <i ui-if="module.needsAttention" class="icon icon-exclamation-sign icon-red"></i>
+                {{msg(module.moduleName)}}
+            </a>
+        </li>
+    </ul>
+</div>

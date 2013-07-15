@@ -142,7 +142,8 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, angular, jQuery, jAlert, jConfirm, window, jAlertStackTrace, toLocale
+                                $, angular, jQuery, jAlert, jConfirm, window, jAlertStackTrace,
+                                toLocale, moment, parseUri
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
@@ -224,12 +225,84 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-module-js</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jasmine/js</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/webapp/js</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-platform-js</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jasmine/js/core</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/js</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jasmine-spec-lib</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jasmine/spec/lib</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib/angular</directory>
+                                    <includes>
+                                        <inlude>angular.min.js</inlude>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/test/resources/lib</directory>
+                                    <includes>
+                                        <include>angular-mocks.js</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jasmine-spec</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jasmine/spec/spec</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/test/resources/jasmine</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>com.github.searls</groupId>
                 <artifactId>jasmine-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.3.1.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -241,19 +314,16 @@
                     <skipTests>${maven.test.skip}</skipTests>
                     <serverPort>${jasmine.server.port}</serverPort>
 
-                    <jsSrcDir>${project.basedir}/src/main/resources/webapp</jsSrcDir>
+                    <jsSrcDir>${project.build.directory}/jasmine</jsSrcDir>
                     <sourceIncludes>
-                        <include>lib/angular/angular.min.js</include>
-                        <include>lib/angular/angular-resource.min.js</include>
-                        <include>lib/angular/angular-mocks.js</include>
-                        <include>lib/jquery/jquery.js</include>
-                        <include>lib/**/*.js</include>
-                        <include>js/util.js</include>
-                        <include>js/common.js</include>
+                        <include>js/core/angular/angular.min.js</include>
+                        <include>js/core/angular/angular-resource.min.js</include>
+                        <include>js/core/jquery/jquery.js</include>
+                        <include>js/core/**/*.js</include>
                         <include>js/*.js</include>
                     </sourceIncludes>
 
-                    <jsTestSrcDir>${project.basedir}/src/test/resources/</jsTestSrcDir>
+                    <jsTestSrcDir>${project.build.directory}/jasmine/spec</jsTestSrcDir>
                     <specIncludes>
                         <include>lib/*.js</include>
                         <include>spec/*.js</include>

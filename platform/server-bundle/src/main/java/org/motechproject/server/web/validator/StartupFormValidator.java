@@ -15,10 +15,10 @@ import java.util.Arrays;
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
 
-    private final static String ERROR_REQUIRED = "error.required.%s";
-    private final static String PROVIDER_NAME = "providerName";
-    private final static String PROVIDER_URL = "providerUrl";
-    private final static String LOGIN_MODE = "loginMode";
+    private static final String ERROR_REQUIRED = "error.required.%s";
+    private static final String PROVIDER_NAME = "providerName";
+    private static final String PROVIDER_URL = "providerUrl";
+    private static final String LOGIN_MODE = "loginMode";
 
     public StartupFormValidator() {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);

@@ -1,16 +1,18 @@
 package org.motechproject.server.web.form;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+
 public class StartupForm {
-    private String language;
-    private String queueUrl;
-    private String schedulerUrl;
-    private String adminLogin;
-    private String adminPassword;
-    private String adminConfirmPassword;
-    private String adminEmail;
-    private String loginMode;
-    private String providerName;
-    private String providerUrl;
+    private String language = EMPTY;
+    private String queueUrl = EMPTY;
+    private String schedulerUrl = EMPTY;
+    private String adminLogin = EMPTY;
+    private String adminPassword = EMPTY;
+    private String adminConfirmPassword = EMPTY;
+    private String adminEmail = EMPTY;
+    private String loginMode = EMPTY;
+    private String providerName = EMPTY;
+    private String providerUrl = EMPTY;
 
     public String getProviderName() {
         return providerName;

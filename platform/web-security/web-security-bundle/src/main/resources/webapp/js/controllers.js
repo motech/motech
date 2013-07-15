@@ -112,6 +112,7 @@
                        $scope.userList = Users.query();
                        $scope.showUsersView=!$scope.editUserView;
                        $scope.editUserView=!$scope.editUserView;
+                       $scope.$emit('module.list.refresh');
                    }).error(angularHandler('main.error', 'security.update.user.error'));
            };
 
@@ -244,6 +245,7 @@
                        motechAlert('security.update.role.saved', 'security.update');
                        $scope.roleList=Roles.query();
                        $scope.addRoleView=!$scope.addRoleView;
+                       $scope.$emit('module.list.refresh');
                        }).
                        error(function(){motechAlert('security.update.role.error', 'main.error');});
                 }

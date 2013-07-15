@@ -196,11 +196,11 @@ public class StartupControllerTest {
     private void verifyUserRegistration() {
         verify(userService).register(eq("motech"), eq("motech"), eq("motech@motech.com"), eq((String) null),
                 argThat(new ArgumentMatcher<List<String>>() {
-            @Override
-            public boolean matches(Object argument) {
-                List<String> val = (List<String>) argument;
-                return val.equals(Arrays.asList("User Admin", "Admin Bundle"));
-            }
-        }), eq(Locale.ENGLISH));
+                    @Override
+                    public boolean matches(Object argument) {
+                        List<String> val = (List<String>) argument;
+                        return val.equals(Arrays.asList("User Admin", "Admin Bundle"));
+                    }
+                }), eq(Locale.ENGLISH));
     }
 }

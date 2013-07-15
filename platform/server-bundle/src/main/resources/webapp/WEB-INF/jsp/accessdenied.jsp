@@ -1,10 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<fmt:setLocale value="${pageLang}" />
-<fmt:setBundle basename="org.motechproject.resources.messages" var="bundle"/>
 
 <!DOCTYPE html>
 <html>
@@ -25,95 +21,25 @@
 </head>
 
 <body ng-controller="MasterCtrl"  ng-class="showDashboardLogo.backgroudUpDown()">
+    <div id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
 
-<div class="bodywrap">
-    <div class="header">
-        <div class="container-fluid">
-            <div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div>
-            <div class="header-title" ng-show="showDashboardLogo.showDashboard"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
-        </div>
-    </div>
-    <div class="clearfix"></div>
-
-    <div class="header-nav navbar">
-        <div class="navbar-inner navbar-inverse navbar-inner-bg">
-            <div class="container-fluid">
-                <a class="btn btn-navbar btn-blue" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
-
-                <div class="nav-collapse">
-                    <ul class="nav" role="navigation">
-                        <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
-                        <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
-                        <li class="divider-vertical divider-vertical-sub"></li>
-                        <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
-                        <li class="divider-vertical divider-vertical-sub"></li>
-                        <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
-                    </ul>
-                    <a id="minimize" class="btn btn-mini btn-blue" ng-click="minimizeHeader()">
-                        <img src="../server/resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}"
-                        alt="{{msg(showDashboardLogo.changeTitle())}}"
-                        ng-class="showDashboardLogo.changeClass()"/>
-                    </a>
-                    <ul class="nav pull-right menu-left">
-                        <c:if test="${securityLaunch}">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Logged in as <strong>${userName}</strong><strong class="caret"></strong></a>
-                            <ul id="localization" class="dropdown-menu" role="menu">
-                                <li><a href="#" tabindex="-1"><i class="icon-user"></i> Profile</a></li>
-                                <li class="divider"></li>
-                                <li class="dropdown-submenu pull-left">
-                                    <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
-                                        <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
-                                        <span class="text-capitalize">${pageLang.getDisplayLanguage(pageLang)}</span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li ng-repeat="(key, value) in languages">
-                                            <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="${contextPath}/j_spring_security_logout" class=""><i class="icon-off"></i> Sign Out</a></li>
-                            </ul>
-                        </li>
-                        </c:if>
-                    </ul>
+    <div id="content" class="container-fluid">
+        <div class="row-fluid">
+            <div id="main-content" class="span10">
+                <div>
+                    <div class="splash splash-alert">
+                        <div class="splash-logo"></div>
+                        <div class="clearfix"></div>
+                        <div class="splash-loader splash-header-alert">{{msg('accessDenied')}}</div>
+                        <div class="clearfix"></div>
+                        <div class="splash-msg splash-msg-alert">{{msg('accessDeniedAlert')}}</div>
+                        <div class="clearfix"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="clearfix"></div>
-
-    <div id="content" class="container-fluid">
-        <div class="row-fluid">
-            <div id="main-content" class="span10">
-                    <div>
-                        <div class="splash splash-alert">
-                            <div class="splash-logo"></div>
-                            <div class="clearfix"></div>
-                            <div class="splash-loader splash-header-alert">{{msg('accessDenied')}}</div>
-                            <div class="clearfix"></div>
-                            <div class="splash-msg splash-msg-alert">{{msg('accessDeniedAlert')}}</div>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-<footer class="inside">
-<strong> <fmt:message key="generatedAt" bundle="${bundle}"/>&#58; </strong> <%= new java.util.Date() %>&#59;
-<strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}&#59;
-<strong> <fmt:message key="projectVersion" bundle="${bundle}"/>&#58; </strong> <fmt:message key="version" bundle="${bundle}"/>
-</footer>
+    <div ng-include="'../server/resources/partials/footer.html'"></div>
 </body>
 </html>

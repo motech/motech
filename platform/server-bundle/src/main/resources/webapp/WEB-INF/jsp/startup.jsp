@@ -37,7 +37,7 @@
                         <label class="control-label"><fmt:message key="select.language" bundle="${bundle}"/></label>
                         <div class="controls">
                             <c:forEach var="lang" items="${languages}">
-                                <input ng-click="setUserLang('${lang}')" type="radio" value="${lang}" name="language" <c:if test="${startupSettings.language == lang}">checked</c:if> /><i class="flag flag-${lang} label-flag-radio"></i>
+                                <input ng-click="setUserLang('${lang}', true)" type="radio" value="${lang}" name="language" <c:if test="${startupSettings.language == lang}">checked</c:if> /><i class="flag flag-${lang} label-flag-radio"></i>
                             </c:forEach>
                         </div>
                     </div>
@@ -75,9 +75,9 @@
                     </div>
                     <div class="control-group">
                          <label class="control-label"><fmt:message key="select.loginMode" bundle="${bundle}"/></label>
-                         <div class="controls" ng-init="loginMode('${loginMode}')">
-                                 <input type="radio" value="repository" name="loginMode" ng-click="loginMode('repository')" <c:if test="${loginMode == 'repository'}">checked</c:if>/><span class="label-radio"><fmt:message key="repository" bundle="${bundle}"/></span>
-                                 <input type="radio" value="openid" name="loginMode" ng-click="loginMode('openid')" <c:if test="${loginMode == 'openid'}">checked</c:if> /><span class="label-radio"><fmt:message key="openId" bundle="${bundle}"/></span>
+                         <div class="controls">
+                             <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span>{{msg('repository')}}</span>
+                             <input type="radio" value="openid" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span>{{msg('openId')}}</span>
                          </div>
                      </div>
                     <div ng-show="securityMode=='repository'" class="control-group">

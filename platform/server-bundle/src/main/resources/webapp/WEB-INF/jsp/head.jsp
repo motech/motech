@@ -1,4 +1,4 @@
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>MOTECH - Mobile Technology for Community Health</title>
 
 <link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-1.9.1-redmond.css">
@@ -7,18 +7,18 @@
 <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-responsive.css">
 <link rel="stylesheet" type="text/css" href="resources/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-fileupload.min.css">
-<link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-min.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-min.css"/>
 <link rel="stylesheet" type="text/css" href="resources/css/tagsinput/jquery.tagsinput.css">
 <link rel="stylesheet" type="text/css" href="resources/css/timepicker/jquery-ui-timepicker-addon.css">
 <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-gentleSelect.css">
 <link rel="stylesheet" type="text/css" href="resources/css/jquery-cron/jquery-cron.css">
-<link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/jquery-sidebar.css"/>
 <link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.css"/>
-<link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.override.css" />
-<link rel="stylesheet" type="text/css" href="resources/css/index.css" />
-<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css" />
-<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-switch.css" />
-<link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/jqGrid/ui.jqgrid.override.css"/>
+<link rel="stylesheet" type="text/css" href="resources/css/index.css"/>
+<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css"/>
+<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-switch.css"/>
+<link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css"/>
 
 <script type="text/javascript" src="resources/lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="resources/lib/jquery/jquery.form.js"></script>
@@ -50,8 +50,8 @@
 <script type="text/javascript" src="resources/lib/jquery-cron/jquery-gentleSelect.js"></script>
 <script type="text/javascript" src="resources/lib/jquery-cron/jquery-cron.js "></script>
 
-<script type="text/javascript" src="resources/lib/moment/moment.js "></script>
-<script type="text/javascript" src="resources/lib/moment/langs.js "></script>
+<script type="text/javascript" src="resources/lib/moment/moment.js"></script>
+<script type="text/javascript" src="resources/lib/moment/langs.js"></script>
 
 <script type="text/javascript" src="resources/lib/parseuri/parseuri.js"></script>
 

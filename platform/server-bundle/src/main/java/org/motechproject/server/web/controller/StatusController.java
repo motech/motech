@@ -12,7 +12,7 @@ public class StatusController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping("web-api/status")
-    public String status(){
+    public String status() {
         return "OK";
     }
 

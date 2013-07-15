@@ -25,124 +25,12 @@
 </head>
 
 <body ng-controller="MasterCtrl"  ng-class="showDashboardLogo.backgroudUpDown()">
-
 <div class="bodywrap">
-    <div class="header">
-        <div class="container-fluid">
-            <a href="."><div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div></a>
-            <div class="header-title" ng-show="showDashboardLogo.showDashboard"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
-        </div>
-    </div>
-    <div class="clearfix"></div>
+    <div ng-show="ready" id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
 
-    <div class="header-nav navbar">
-        <div class="navbar-inner navbar-inverse navbar-inner-bg">
-            <div class="container-fluid">
-                <a class="btn btn-navbar btn-blue" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a id="brand" class="brand" ng-hide="showDashboardLogo.showDashboard" href="#">MOTECH</a>
-
-                <div class="nav-collapse">
-                    <ul class="nav" role="navigation">
-                        <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
-                        <li class="current"><a  role="menu"  href="."><fmt:message key="home" bundle="${bundle}"/></a></li>
-                        <li class="divider-vertical divider-vertical-sub"></li>
-                        <li><a role="menu"><fmt:message key="motech" bundle="${bundle}"/> <fmt:message key="project" bundle="${bundle}"/></a></li>
-                        <li class="divider-vertical divider-vertical-sub"></li>
-                        <li><a role="menu"><fmt:message key="community" bundle="${bundle}"/></a></li>
-                    </ul>
-                    <a id="minimize" class="btn btn-mini btn-blue" ng-click="minimizeHeader()">
-                        <img src="../server/resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}"
-                        alt="{{msg(showDashboardLogo.changeTitle())}}"
-                        ng-class="showDashboardLogo.changeClass()"/>
-                    </a>
-                    <ul class="nav pull-right menu-left">
-
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                                <fmt:message key="loggedAs" bundle="${bundle}"/> <strong>${userName}</strong><strong class="caret"></strong>
-                            </a>
-                            <ul id="localization" class="dropdown-menu" role="menu">
-                                <c:if test="${securityLaunch}">
-                                <li>
-                                    <a href="home?moduleName=websecurity#/profile/${userName}" tabindex="-1">
-                                        <i class="icon-user"></i> <fmt:message key="profile" bundle="${bundle}"/>
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                </c:if>
-                                <li class="dropdown-submenu pull-left">
-                                    <a class="menu-flag dropdown-toggle" tabindex="-1" data-toggle="dropdown" href="#">
-                                        <i class="flag flag-${pageLang.language}" title="${pageLang.language}" alt="${pageLang.language}"></i>
-                                        <span class="text-capitalize">${pageLang.getDisplayLanguage(pageLang)}</span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li ng-repeat="(key, value) in languages">
-                                            <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <c:if test="${securityLaunch}">
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="${contextPath}j_spring_security_logout" class="">
-                                        <i class="icon-off"></i> <fmt:message key="signOut" bundle="${bundle}"/>
-                                    </a>
-                                </li>
-                                </c:if>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div id="content" class="container-fluid">
+    <div id="content" class="container-fluid" ng-controller="HomeCtrl">
         <div class="row-fluid">
-
-            <div id="side-nav" class="span2">
-                <ul class="nav nav-tabs nav-stacked">
-                    <c:forEach var="module" items="${individuals}">
-                        <li class="nav-header">
-                            <c:if test="${module.needsAttention}">
-                                <i class="icon icon-exclamation-sign icon-red"></i>
-                            </c:if>
-                            <fmt:message key="${module.moduleName}" bundle="${bundle}"/>
-                        </li>
-                        <c:forEach var="entry" items="${module.subMenu}">
-                            <li ng-class="active('?moduleName=${module.moduleName}${entry.value.url}')">
-                                <a href="?moduleName=${module.moduleName}${entry.value.url}">
-                                    <c:if test="${entry.value.needsAttention}">
-                                        <i class="icon icon-exclamation-sign icon-red"></i>
-                                    </c:if>
-                                    <fmt:message key="${entry.key}" bundle="${bundle}"/>
-                                </a>
-                            </li>
-                        </c:forEach>
-                        <li class="divider"></li>
-                    </c:forEach>
-
-                    <c:if test="${not empty links}">
-                        <li class="nav-header"><fmt:message key="modules" bundle="${bundle}"/></li>
-                        <c:forEach var="module" items="${links}">
-                            <li <c:if test="${module.moduleName == currentModule.moduleName}">class='active'</c:if>>
-                                <a href="?moduleName=${module.moduleName}">
-                                    <c:if test="${module.needsAttention}">
-                                        <i class="icon icon-exclamation-sign icon-red"></i>
-                                    </c:if>
-                                    <fmt:message key="${module.moduleName}" bundle="${bundle}"/>
-                                </a>
-                            </li>
-                        </c:forEach>
-                    </c:if>
-                </ul>
-            </div>
+            <motech-modules></motech-modules>
 
             <div id="main-content" class="span10">
                 <c:if test="${! empty currentModule}">
@@ -152,7 +40,7 @@
                             <div class="clearfix"></div>
                             <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
                             <div class="clearfix"></div>
-                            <div class="splash-msg"><fmt:message key="module.loading" bundle="${bundle}"/></div>
+                            <div class="splash-msg">{{msg('module.loading')}}</div>
                             <div class="clearfix"></div>
                         </div>
                         <c:if test="${criticalNotification != null && criticalNotification != ''}">
@@ -172,23 +60,7 @@
         </div>
     </div>
 
-    <div id="footer">
-        <script type="text/javascript">
-              getTime();
-              window.setInterval(getTime, 60000);
-
-              function getTime() {
-                  $.post('gettime', function(time) {
-                       $('#serverTime').text(time);
-                  });
-              }
-        </script>
-        <span class="inside">
-            <strong> <fmt:message key="server.localTime" bundle="${bundle}"/>&#58; </strong> <span id="serverTime"> </span>&#59;
-            <strong> <fmt:message key="server.time" bundle="${bundle}"/>&#58; </strong>${uptime}&#59;
-            <strong> <fmt:message key="projectVersion" bundle="${bundle}"/>&#58; </strong> <fmt:message key="version" bundle="${bundle}"/>
-        </span>
-    </div>
+    <div ng-show="ready" ng-include="'../server/resources/partials/footer.html'"></div>
 
 </div>
 </body>

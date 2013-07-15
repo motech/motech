@@ -1,5 +1,6 @@
 package org.motechproject.osgi.web;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
@@ -44,26 +45,32 @@ public class ModuleRegistrationData {
         this.i18n = i18n;
     }
 
+    @JsonIgnore
     public Bundle getBundle() {
         return bundle;
     }
 
+    @JsonIgnore
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
 
+    @JsonIgnore
     public void addAngularModule(String moduleName) {
         angularModules.add(moduleName);
     }
 
+    @JsonIgnore
     public void removeAngularModule(String moduleName) {
         angularModules.remove(moduleName);
     }
 
+    @JsonIgnore
     public void addSubMenu(String url, String label) {
         subMenu.put(label, new SubmenuInfo(url));
     }
 
+    @JsonIgnore
     public void addI18N(String fileName, String fileLocation) {
         i18n.put(fileName, fileLocation);
     }
@@ -96,6 +103,7 @@ public class ModuleRegistrationData {
         this.subMenu = subMenu;
     }
 
+    @JsonIgnore
     public Map<String, String> getI18n() {
         return i18n;
     }
@@ -124,6 +132,7 @@ public class ModuleRegistrationData {
         this.criticalMessage = criticalMessage;
     }
 
+    @JsonIgnore
     public String getAngularModulesStr() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -140,6 +149,7 @@ public class ModuleRegistrationData {
         return sb.toString();
     }
 
+    @JsonIgnore
     public void subMenuNeedsAttention(String submenu) {
         SubmenuInfo submenuInfo = subMenu.get(submenu);
         if (submenuInfo != null) {
@@ -147,6 +157,7 @@ public class ModuleRegistrationData {
         }
     }
 
+    @JsonIgnore
     public void submenuBackToNormal(String submenu) {
         SubmenuInfo submenuInfo = subMenu.get(submenu);
         if (submenuInfo != null) {
@@ -190,18 +201,22 @@ public class ModuleRegistrationData {
         return result;
     }
 
+    @JsonIgnore
     public String getRoleForAccess() {
         return roleForAccess;
     }
 
+    @JsonIgnore
     public void setRoleForAccess(String role) {
         this.roleForAccess = role;
     }
 
+    @JsonIgnore
     public String getSettingsURL() {
         return settingsURL;
     }
 
+    @JsonIgnore
     public void setSettingsURL(String settingsURL) {
         this.settingsURL = settingsURL;
     }

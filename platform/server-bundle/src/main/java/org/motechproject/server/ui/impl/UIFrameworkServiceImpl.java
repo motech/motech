@@ -31,7 +31,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
             throw new AlreadyRegisteredException("Module already registered");
         }
 
-        if (StringUtils.isNotBlank(module.getUrl())){
+        if (StringUtils.isNotBlank(module.getUrl())) {
             if (module.getSubMenu().isEmpty()) {
                 links.put(moduleName, module);
             } else {
@@ -84,17 +84,17 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
 
     @Override
     public ModuleRegistrationData getModuleDataByBundle(Bundle bundle) {
-        for (ModuleRegistrationData data: links.values()) {
+        for (ModuleRegistrationData data : links.values()) {
             if (bundle.equals(data.getBundle())) {
                 return data;
             }
         }
-        for (ModuleRegistrationData data: individuals.values()) {
+        for (ModuleRegistrationData data : individuals.values()) {
             if (bundle.equals(data.getBundle())) {
                 return data;
             }
         }
-        for (ModuleRegistrationData data: withoutUI.values()) {
+        for (ModuleRegistrationData data : withoutUI.values()) {
             if (bundle.equals(data.getBundle())) {
                 return data;
             }

@@ -56,7 +56,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 
