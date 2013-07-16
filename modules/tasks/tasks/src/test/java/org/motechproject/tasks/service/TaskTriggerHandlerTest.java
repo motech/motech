@@ -1199,8 +1199,8 @@ public class TaskTriggerHandlerTest {
         actionEvent.addParameter(new ActionParameter("Data source by trigger", "dataSourceTrigger"), true);
         actionEvent.addParameter(new ActionParameter("Data source by data source object", "dataSourceObject"), true);
 
-        task.getTaskConfig().add(new DataSource("12345", 1L, "TestObjectField", new DataSource.Lookup("id", "{{trigger.externalId}}"), isFail));
-        task.getTaskConfig().add(new DataSource("12345", 2L, "TestObject", new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}"), isFail));
+        task.getTaskConfig().add(new DataSource("12345", 1L, "TestObjectField", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}")), isFail));
+        task.getTaskConfig().add(new DataSource("12345", 2L, "TestObject", "id", asList(new DataSource.Lookup("id", "{{trigger.externalId}}-{{ad.12345.TestObjectField#1.id}}")), isFail));
 
         handler.addDataProvider(TASK_DATA_PROVIDER_ID, dataProvider);
     }

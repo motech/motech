@@ -47,7 +47,15 @@ public final class TaskDataProviderValidator extends GeneralValidator {
 
             if (!empty) {
                 for (int i = 0; i < object.getLookupFields().size(); ++i) {
-                    checkBlankValue(errors, objectName, "lookupFields[" + i + "]", object.getLookupFields().get(i));
+                    checkBlankValue(errors, objectName, "lookupFields[" + i + "]", object.getLookupFields().get(i).getDisplayName());
+                }
+            }
+
+            empty = checkEmpty(errors, objectName, "fields", object.getFields());
+
+            if (!empty) {
+                for (int i = 0; i < object.getFields().size(); ++i) {
+                    errors.addAll(validateFieldParameter(objectName, "fields[" + i + "]", object.getFields().get(i)));
                 }
             }
         }

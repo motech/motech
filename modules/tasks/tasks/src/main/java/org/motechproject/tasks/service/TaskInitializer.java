@@ -138,10 +138,11 @@ class TaskInitializer {
             );
         }
 
-        String value = convert(dataSource.getLookup().getValue());
 
         Map<String, String> lookupFields = new HashMap<>();
-        lookupFields.put(dataSource.getLookup().getField(), value);
+        for(DataSource.Lookup lookup : dataSource.getLookup()) {
+            lookupFields.put(lookup.getField(), convert(lookup.getValue()));
+        }
 
         return provider.lookup(dataSource.getType(), lookupFields);
     }

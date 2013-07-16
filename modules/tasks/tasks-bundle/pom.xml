@@ -275,16 +275,6 @@
     <profiles>
         <profile>
             <id>IT</id>
-            <dependencies>
-                <!-- TODO: Instead of using mrs and adding mrs dependency in test scope, please use something
-                else from this repo itself. -->
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>motech-mrs-api</artifactId>
-                    <version>0.20</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>

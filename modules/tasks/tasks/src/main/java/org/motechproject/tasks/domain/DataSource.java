@@ -4,7 +4,12 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Objects;
+
+import static java.util.Arrays.asList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSource extends TaskConfigStep {
@@ -66,19 +71,32 @@ public class DataSource extends TaskConfigStep {
     private String providerId;
     private Long objectId;
     private String type;
-    private Lookup lookup;
+    private String name;
+    private List<Lookup> lookup;
     private boolean failIfDataNotFound;
 
     public DataSource() {
-        this(null, null, null, null, true);
+        this(null, null, null, "id", (List <Lookup>) null, true);
     }
 
+    public DataSource(String providerId, Long objectId, String type, String name, List<Lookup> lookup,
+                      boolean failIfDataNotFound) {
+        this.providerId = providerId;
+        this.objectId = objectId;
+        this.type = type;
+        this.name = name;
+        this.lookup = lookup;
+        this.failIfDataNotFound = failIfDataNotFound;
+    }
+
+    @Deprecated
     public DataSource(String providerId, Long objectId, String type, Lookup lookup,
                       boolean failIfDataNotFound) {
         this.providerId = providerId;
         this.objectId = objectId;
         this.type = type;
-        this.lookup = lookup;
+        this.name = "id";
+        this.lookup = asList(lookup);
         this.failIfDataNotFound = failIfDataNotFound;
     }
 
@@ -106,12 +124,35 @@ public class DataSource extends TaskConfigStep {
         this.type = type;
     }
 
-    public Lookup getLookup() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Lookup> getLookup() {
         return lookup;
     }
 
-    public void setLookup(Lookup lookup) {
-        this.lookup = lookup;
+    public void setLookup(Object lookup) {
+        this.lookup = new ArrayList<>();
+        if (lookup instanceof List) {
+            for (Object lookupEntity : (List) lookup) {
+                LinkedHashMap<String, String> lookupMap = (LinkedHashMap) lookupEntity;
+                Lookup l = new Lookup();
+                l.setField(lookupMap.get("field"));
+                l.setValue(lookupMap.get("value"));
+                this.lookup.add(l);
+            }
+        } else {
+            LinkedHashMap<String, String> newLookup = (LinkedHashMap) lookup;
+            Lookup l = new Lookup();
+            l.setField(newLookup.get("field"));
+            l.setValue(newLookup.get("value"));
+            this.lookup.add(l);
+        }
     }
 
     public boolean isFailIfDataNotFound() {

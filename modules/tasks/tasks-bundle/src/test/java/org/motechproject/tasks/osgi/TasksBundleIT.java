@@ -11,7 +11,9 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -47,6 +49,12 @@ public class TasksBundleIT extends BaseOsgiIT {
 
     public void testDataProviderService() throws InterruptedException {
         TaskDataProviderService taskDataProviderService = getService(TaskDataProviderService.class);
+        Resource resource = applicationContext.getResource("classpath:task-data-provider.json");
+        try {
+            taskDataProviderService.registerProvider(resource.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         TaskDataProvider fromFile;
         int tries = 0;
 

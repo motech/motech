@@ -184,8 +184,8 @@
                                         <span ng-hide="!step.displayName">
                                             &raquo; {{msg(step.providerName)}} : {{msg(step.displayName)}}
                                         </span>
-                                        <span ng-hide="!step.lookup.field">
-                                            {{msg('by')}} {{msg(step.lookup.field)}}
+                                        <span ng-hide="!step.name">
+                                            {{msg('by')}} {{msg(step.name)}}
                                         </span>
                                     </a>
                                 </div>
@@ -230,18 +230,35 @@
                                                 </ul>
                                             </div>
                                         </div>
-                                        <div class="control-group" ui-if="step.displayName">
-                                            <span class="control-label">{{msg('subsubsection.lookup')}}:</span>
-                                            <div class="btn-group interval">
-                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                                    {{msg(step.lookup.field || 'select')}}
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li ng-repeat="lookup in findObject(step.providerId, step.type).lookupFields">
-                                                        <a ng-click="selectLookup(step, lookup)">{{msg(lookup)}}</a>
-                                                    </li>
-                                                </ul>
+                                        <div>
+                                            <div class="control-group" ui-if="step.displayName">
+                                                <span class="control-label">{{msg('subsubsection.lookup')}}:</span>
+                                                <div class="btn-group interval">
+                                                    <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                        {{msg(step.name || 'select')}}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li ng-repeat="lookup in findObject(step.providerId, step.type).lookupFields">
+                                                            <a ng-click="selectLookup(step, lookup)">{{msg(lookup.displayName)}}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div ng-repeat="lookupField in step.lookup">
+                                                <div class="control-group" ng-class="{error: actionCssClass(lookupField)}" class="control-group form-inline clearfix">
+                                                    <label class="control-label">{{msg(lookupField.field)}}</label>
+
+                                                    <!------------------------ Chrome & IE ------------------------>
+                                                    <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                                        <editable-content data="lookupField" index="$index" type="UNICODE"></editable-content>
+                                                    </div>
+
+                                                    <!------------------------ Other browsers  ------------------------>
+                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
+                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="control-group" ui-if="step.displayName">
@@ -249,21 +266,6 @@
                                             <div class="controls">
                                                 <div class="btn-group">
                                                     <input type="checkbox" ng-model="step.failIfDataNotFound"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div ui-if="step.lookup.field">
-                                            <div class="control-group" ng-class="{error: actionCssClass(step.lookup)}" class="control-group form-inline clearfix">
-                                                <label class="control-label">{{msg(step.lookup.field)}}</label>
-
-                                                <!------------------------ Chrome & IE ------------------------>
-                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
-                                                    <editable-content data="step.lookup" index="$index" type="UNICODE"></editable-content>
-                                                </div>
-
-                                                <!------------------------ Other browsers  ------------------------>
-                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
-                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
                                                 </div>
                                             </div>
                                         </div>

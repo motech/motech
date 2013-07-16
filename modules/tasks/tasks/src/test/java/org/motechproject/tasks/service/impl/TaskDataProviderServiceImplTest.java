@@ -10,6 +10,7 @@ import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.tasks.domain.FieldParameter;
+import org.motechproject.tasks.domain.LookupFieldsParameter;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.ex.ValidationException;
@@ -80,9 +81,9 @@ public class TaskDataProviderServiceImplTest {
         }.getType();
         List<TaskDataProviderObject> objects = new ArrayList<>();
 
-        List<String> lookupField = asList("lookupField");
+        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
         List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
-        objects.add(new TaskDataProviderObject("displayName", "type", lookupField, fields));
+        objects.add(new TaskDataProviderObject("displayName", "type", lookupFields, fields));
 
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 
@@ -105,11 +106,11 @@ public class TaskDataProviderServiceImplTest {
         }.getType();
         StringWriter writer = new StringWriter();
 
-        List<String> lookupField = asList("lookupField");
+        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
         List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
 
         List<TaskDataProviderObject> objects = new ArrayList<>();
-        objects.add(new TaskDataProviderObject("displayName", "type", lookupField, fields));
+        objects.add(new TaskDataProviderObject("displayName", "type", lookupFields, fields));
 
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 
@@ -134,9 +135,9 @@ public class TaskDataProviderServiceImplTest {
         }.getType();
         List<TaskDataProviderObject> objects = new ArrayList<>();
 
-        List<String> lookupField = asList("lookupField");
+        List<LookupFieldsParameter> lookupFields = asList(new LookupFieldsParameter("lookupField",asList("lookupField")));
         List<FieldParameter> fields = asList(new FieldParameter("displayName", "fieldKey"));
-        objects.add(new TaskDataProviderObject("displayName", "type", lookupField, fields));
+        objects.add(new TaskDataProviderObject("displayName", "type", lookupFields, fields));
 
         TaskDataProvider provider = new TaskDataProvider(PROVIDER_NAME, objects);
 

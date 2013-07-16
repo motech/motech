@@ -30,10 +30,11 @@
             "providerId":"6899548ec91d9ad04e3aad9cf2aa19f9",
             "objectId":1,
             "type":"Person",
-            "lookup":{
+            "displayName":"id",
+            "lookup":[{
                 "field":"mrs.person.lookupField.id",
                 "value":"trigger.PatientId"
-            },
+            }],
             "failIfDataNotFound":false
         }
     ]

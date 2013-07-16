@@ -221,7 +221,9 @@
                             if (source && object) {
                                 step.providerName = source.name;
                                 step.displayName = object.displayName;
-                                step.lookup.value = $scope.util.convertToView($scope, 'UNICODE', step.lookup.value);
+                                angular.forEach(step.lookup, function(lookupField) {
+                                    lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
+                                });
                             }
                         }
                     });
@@ -485,6 +487,7 @@
             if (dataSource.providerId) {
                 motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (val) {
                     if (val) {
+                        dataSource.name = '';
                         $scope.util.dataSource.select($scope, dataSource, selected);
                     }
                 });
@@ -497,6 +500,7 @@
             if (object.type) {
                 motechConfirm('task.confirm.changeObject', 'header.confirm', function (val) {
                     if (val) {
+                        object.name = '';
                         $scope.util.dataSource.selectObject($scope, object, selected);
                     }
                 });
@@ -506,8 +510,12 @@
         };
 
         $scope.selectLookup = function(data, lookup) {
-            data.lookup = {};
-            data.lookup.field = lookup;
+            data.lookup = [];
+            data.name=lookup.displayName;
+            angular.forEach(lookup.fields, function(lookupField) {
+                data.lookup.push({field:lookupField, value:''});
+            });
+
         };
 
         $scope.refactorDivEditable = function (value) {
@@ -720,7 +728,9 @@
 
                     angular.forEach($scope.task.taskConfig.steps, function (step) {
                         if (step['@type'] === 'DataSource') {
-                            step.lookup.value = $scope.util.convertToView($scope, 'UNICODE', step.lookup.value);
+                            angular.forEach(step.lookup, function(lookupField) {
+                                lookupField.value = $scope.util.convertToView($scope, 'UNICODE', lookupField.value);
+                            });
                         }
                     });
 
@@ -745,10 +755,12 @@
             angular.forEach($scope.task.taskConfig.steps, function (step) {
                 if (step['@type'] === 'DataSource') {
                     if (step.lookup === undefined) {
-                        step.lookup = {};
+                        step.lookup = [];
                     }
+                    angular.forEach(step.lookup, function(lookupField) {
+                        lookupField.value = $scope.util.convertToServer($scope, lookupField.value || '');
+                    });
 
-                    step.lookup.value = $scope.util.convertToServer($scope, step.lookup.value || '');
                 }
             });
 

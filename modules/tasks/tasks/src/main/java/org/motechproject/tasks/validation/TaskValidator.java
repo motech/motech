@@ -13,6 +13,7 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -68,6 +69,7 @@ public final class TaskValidator extends GeneralValidator {
             }
 
             errors.addAll(validateFiltersForTrigger(task, triggerEvent));
+            errors.addAll(validateDataSources(task, triggerEvent));
         } else {
             errors.add(new TaskError(
                     "validation.error.triggerNotExist",
@@ -106,6 +108,7 @@ public final class TaskValidator extends GeneralValidator {
         Set<TaskError> errors = new HashSet<>();
         errors.addAll(validateDataSource(dataSource, provider));
         errors.addAll(validateActionValues(actionValues, provider));
+        errors.addAll(validateFiltersForProvider(filterSets, provider));
 
         return errors;
     }
@@ -123,6 +126,32 @@ public final class TaskValidator extends GeneralValidator {
                             key.getKey(),
                             triggerEvent.getDisplayName()
                     ));
+                }
+            }
+        }
+
+        return errors;
+    }
+
+    private static Set<TaskError> validateFiltersForProvider(SortedSet<FilterSet> filterSets,
+                                                             TaskDataProvider provider) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (FilterSet filterSet : filterSets) {
+            for (Filter filter : filterSet.getFilters()) {
+                KeyInformation key = parse(filter.getKey());
+
+                if (key.fromAdditionalData() && provider.getId().equals(key.getDataProviderId())) {
+                    TaskDataProviderObject object = provider
+                            .getProviderObject(key.getObjectType());
+
+                    if (!object.containsField(key.getKey())) {
+                        errors.add(new TaskError(
+                                "validation.error.providerObjectFieldNotExist",
+                                key.getKey(),
+                                String.format("%s#%d", key.getObjectType(), key.getObjectId())
+                        ));
+                    }
                 }
             }
         }
@@ -297,32 +326,54 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
+    private static Set<TaskError> validateDataSources(Task task, TriggerEvent triggerEvent) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
+            for (DataSource.Lookup lookup : dataSource.getLookup()) {
+                String lookupValue = lookup.getValue();
+
+                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
+                    if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
+                        errors.add(new TaskError(
+                                "validation.error.triggerFieldNotExist", key.getKey(),
+                                triggerEvent.getDisplayName()
+                        ));
+                    }
+                }
+            }
+        }
+
+        return errors;
+    }
+
     private static Set<TaskError> validateDataSource(DataSource dataSource,
                                                      TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
 
         boolean contains = provider.containsProviderObject(dataSource.getType());
+        for (DataSource.Lookup lookup : dataSource.getLookup()) {
+            if (!contains) {
+                errors.add(new TaskError(
+                        "validation.error.providerObjectNotExist",
+                        dataSource.getType(),
+                        provider.getName()
+                ));
+            } else if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getName())) {
+                errors.add(new TaskError(
+                        "validation.error.providerObjectLookupNotExist",
+                        lookup.getField(),
+                        dataSource.getType(),
+                        provider.getName()
+                ));
+            }
 
-        if (!contains) {
-            errors.add(new TaskError(
-                    "validation.error.providerObjectNotExist",
-                    dataSource.getType(),
-                    provider.getName()
-            ));
-        } else if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getLookup().getField())) {
-            errors.add(new TaskError(
-                    "validation.error.providerObjectLookupNotExist",
-                    dataSource.getLookup().getField(),
-                    dataSource.getType(),
-                    provider.getName()
-            ));
-        }
+            String lookupValue = lookup.getValue();
 
-        String lookupValue = dataSource.getLookup().getValue();
-
-        if (lookupValue != null) {
-            for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
-                errors.addAll(validateKeyInformation(provider, key));
+            if (lookupValue != null) {
+                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
+                    errors.addAll(validateKeyInformation(provider, key));
+                }
             }
         }
 
@@ -334,7 +385,18 @@ public final class TaskValidator extends GeneralValidator {
         Set<TaskError> errors = new HashSet<>();
 
         if (equalsIgnoreCase(key.getDataProviderId(), provider.getId())) {
-            if (!provider.containsProviderObject(key.getObjectType())) {
+            if (provider.containsProviderObject(key.getObjectType())) {
+                TaskDataProviderObject providerObject = provider
+                        .getProviderObject(key.getObjectType());
+
+                if (!providerObject.containsField(key.getKey())) {
+                    errors.add(new TaskError(
+                            "validation.error.providerObjectFieldNotExist",
+                            key.getKey(),
+                            providerObject.getDisplayName()
+                    ));
+                }
+            } else {
                 errors.add(new TaskError(
                         "validation.error.providerObjectNotExist",
                         key.getObjectType(),
@@ -349,18 +411,18 @@ public final class TaskValidator extends GeneralValidator {
     private static Set<TaskError> validateDataSource(DataSource dataSource) {
         Set<TaskError> errors = new HashSet<>();
         String field = "taskConfig.dataSource[" + dataSource.getOrder() + "]";
+        for (DataSource.Lookup lookup : dataSource.getLookup()) {
+            if (isEmpty(errors)) {
+                String objectName = "task." + field;
 
-        if (isEmpty(errors)) {
-            String objectName = "task." + field;
+                checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
 
-            checkNullValue(errors, objectName, "objectId", dataSource.getObjectId());
-
-            checkBlankValue(errors, objectName, "providerId", dataSource.getProviderId());
-            checkBlankValue(errors, objectName, "type", dataSource.getType());
-            checkBlankValue(errors, objectName, "lookup.field", dataSource.getLookup().getField());
-            checkBlankValue(errors, objectName, "lookup.value", dataSource.getLookup().getValue());
+                checkBlankValue(errors, objectName, "providerId", dataSource.getProviderId());
+                checkBlankValue(errors, objectName, "type", dataSource.getType());
+                checkBlankValue(errors, objectName, "lookup.field", lookup.getField());
+                checkBlankValue(errors, objectName, "lookup.value", lookup.getValue());
+            }
         }
-
         return errors;
     }
 

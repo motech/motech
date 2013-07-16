@@ -2,9 +2,11 @@ package org.motechproject.tasks.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 public class TaskDataProviderObject implements Serializable {
@@ -12,17 +14,17 @@ public class TaskDataProviderObject implements Serializable {
 
     private String displayName;
     private String type;
-    private List<String> lookupFields;
+    private List<LookupFieldsParameter> lookupFields;
     private List<FieldParameter> fields;
 
     public TaskDataProviderObject() {
         this(null, null, null, null);
     }
 
-    public TaskDataProviderObject(String displayName, String type, List<String> lookupFields, List<FieldParameter> fields) {
+    public TaskDataProviderObject(String displayName, String type, List<LookupFieldsParameter> lookupFields, List<FieldParameter> fields) {
         this.displayName = displayName;
         this.type = type;
-        this.lookupFields = lookupFields == null ? new ArrayList<String>() : lookupFields;
+        this.lookupFields = lookupFields == null ? new ArrayList<LookupFieldsParameter>(): lookupFields;
         this.fields = fields == null ? new ArrayList<FieldParameter>() : fields;
     }
 
@@ -55,15 +57,28 @@ public class TaskDataProviderObject implements Serializable {
         this.type = type;
     }
 
-    public List<String> getLookupFields() {
+    public List<LookupFieldsParameter> getLookupFields() {
         return lookupFields;
     }
 
-    public void setLookupFields(List<String> lookupFields) {
+    // Setter, with backwards compatibility
+    public void setLookupFields(List<Object> lookupFields) {
         this.lookupFields.clear();
-
         if (lookupFields != null) {
-            this.lookupFields.addAll(lookupFields);
+            if (lookupFields.get(0) instanceof String) {
+                LookupFieldsParameter param = new LookupFieldsParameter();
+                param.setDisplayName("id");
+                param.setFields(asList((String) lookupFields.get(0)));
+                this.lookupFields.add(param);
+            } else {
+                for (Object o : lookupFields) {
+                    LinkedHashMap<String, Object> map = (LinkedHashMap) o;
+                    LookupFieldsParameter param = new LookupFieldsParameter();
+                    param.setDisplayName(map.get("displayName").toString());
+                    param.setFields((ArrayList<String>)map.get("fields"));
+                    this.lookupFields.add(param);
+                }
+            }
         }
     }
 

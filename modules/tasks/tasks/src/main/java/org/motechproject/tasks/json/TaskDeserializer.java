@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 
 public class TaskDeserializer extends JsonDeserializer<Task> {
@@ -114,7 +115,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
                     );
 
                     task.getTaskConfig().add(new DataSource(entry.getKey(), data.getId(),
-                            data.getType(), lookup, data.isFailIfDataNotFound()
+                            data.getType(), lookup.getField(), asList(lookup), data.isFailIfDataNotFound()
                     ));
                 }
             }

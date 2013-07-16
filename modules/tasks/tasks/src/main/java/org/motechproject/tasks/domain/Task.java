@@ -67,18 +67,7 @@ public class Task extends MotechBaseDataObject {
         }
 
         if (additionalData != null) {
-            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
-                for (TaskAdditionalData data : entry.getValue()) {
-                    DataSource.Lookup lookup = new DataSource.Lookup(
-                            data.getLookupField(), data.getLookupValue()
-                    );
-
-                    taskConfig.add(new DataSource(
-                            entry.getKey(), data.getId(), data.getType(),
-                            lookup, data.isFailIfDataNotFound()
-                    ));
-                }
-            }
+            addDataSources(additionalData);
         }
     }
 
@@ -186,14 +175,15 @@ public class Task extends MotechBaseDataObject {
             if (!map.containsKey(dataSource.getProviderId())) {
                 map.put(dataSource.getProviderId(), new ArrayList<TaskAdditionalData>());
             }
-
-            map.get(dataSource.getProviderId()).add(new TaskAdditionalData(
-                    dataSource.getObjectId(),
-                    dataSource.getType(),
-                    dataSource.getLookup().getField(),
-                    dataSource.getLookup().getValue(),
-                    dataSource.isFailIfDataNotFound()
-            ));
+            for(DataSource.Lookup lookup : dataSource.getLookup()) {
+                map.get(dataSource.getProviderId()).add(new TaskAdditionalData(
+                        dataSource.getObjectId(),
+                        dataSource.getType(),
+                        lookup.getField(),
+                        lookup.getValue(),
+                        dataSource.isFailIfDataNotFound()
+                ));
+            }
         }
 
         return map;
@@ -207,19 +197,7 @@ public class Task extends MotechBaseDataObject {
     public void setAdditionalData(final Map<String, List<TaskAdditionalData>> additionalData) {
         if (additionalData != null) {
             taskConfig.removeDataSources();
-
-            for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
-                for (TaskAdditionalData data : entry.getValue()) {
-                    DataSource.Lookup lookup = new DataSource.Lookup(
-                            data.getLookupField(), data.getLookupValue()
-                    );
-
-                    taskConfig.add(new DataSource(
-                            entry.getKey(), data.getId(), data.getType(),
-                            lookup, data.isFailIfDataNotFound()
-                    ));
-                }
-            }
+            addDataSources(additionalData);
         }
     }
 
@@ -292,6 +270,21 @@ public class Task extends MotechBaseDataObject {
 
     public void setTaskConfig(TaskConfig taskConfig) {
         this.taskConfig = taskConfig;
+    }
+
+    private void addDataSources(Map<String,List<TaskAdditionalData>> additionalData) {
+        for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
+            for (TaskAdditionalData data : entry.getValue()) {
+                DataSource.Lookup lookup = new DataSource.Lookup(
+                        data.getLookupField(), data.getLookupValue()
+                );
+
+                taskConfig.add(new DataSource(
+                        entry.getKey(), data.getId(), data.getType(), lookup.getField(),
+                        asList(lookup), data.isFailIfDataNotFound()
+                ));
+            }
+        }
     }
 
     @Override

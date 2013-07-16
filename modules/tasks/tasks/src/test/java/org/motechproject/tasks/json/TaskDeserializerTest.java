@@ -59,7 +59,7 @@ public class TaskDeserializerTest {
 
         EXPECTED_TASK = new Task();
         EXPECTED_TASK.getTaskConfig().add(new FilterSet(filters));
-        EXPECTED_TASK.getTaskConfig().add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId"), false));
+        EXPECTED_TASK.getTaskConfig().add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(enabled);
         EXPECTED_TASK.setActions(asList(actionInformation));

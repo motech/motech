@@ -72,7 +72,12 @@ public class MotechJsonReader {
             gsonBuilder.registerTypeAdapter(entry.getKey(), entry.getValue());
         }
         Gson gson = gsonBuilder.create();
-        return gson.fromJson(text, ofType);
+        try {
+            return gson.fromJson(text, ofType);
+        } catch (JsonParseException ex) {
+            LOG.error(ex.getMessage(), ex);
+            throw new JsonParseException(ex);
+        }
     }
 
     private static class DateDeserializer implements JsonDeserializer<Date> {

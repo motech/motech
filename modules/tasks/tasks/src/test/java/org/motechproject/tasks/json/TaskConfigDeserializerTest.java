@@ -16,6 +16,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class TaskConfigDeserializerTest {
 
     @Test
@@ -34,7 +36,7 @@ public class TaskConfigDeserializerTest {
 
         TaskConfig config = new TaskConfig()
                 .add(new FilterSet(filters))
-                .add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId"), false));
+                .add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
 
         Assert.assertEquals(config, new TaskConfigDeserializer().deserialize(jsonParser, null));
     }

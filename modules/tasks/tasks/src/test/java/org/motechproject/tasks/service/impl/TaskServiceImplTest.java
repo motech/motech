@@ -11,6 +11,7 @@ import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.LookupFieldsParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
@@ -27,10 +28,7 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
@@ -109,14 +107,14 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
         Task task = new Task("name", trigger, asList(action), config, true);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
-        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
+        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id",asList("id"))), null)));
         provider.setId("1234");
 
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
@@ -132,7 +130,7 @@ public class TaskServiceImplTest {
         Task task = new Task("name", trigger, asList(action), null, false);
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
-        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
+        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id",asList("id"))), null)));
         provider.setId("1234");
 
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
@@ -150,7 +148,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -161,7 +159,7 @@ public class TaskServiceImplTest {
         actionEvent.addParameter(new ActionParameter("Phone", "phone"), true);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(actionEvent));
 
-        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList("id"), null)));
+        TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", asList(new LookupFieldsParameter("id",asList("id"))), null)));
         provider.setId("1234");
 
         when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
@@ -373,13 +371,13 @@ public class TaskServiceImplTest {
 
     @Test
     public void shouldValidateTasksAfterUpdateEvents() {
-        List<String> lookupFields = new ArrayList<>();
-        lookupFields.add("property");
+        List<LookupFieldsParameter> lookupFields = new ArrayList<>();
+        lookupFields.add(new LookupFieldsParameter("property", asList("property")));
 
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", new DataSource.Lookup("id", "trigger.value"), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -426,7 +424,13 @@ public class TaskServiceImplTest {
         assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.triggerNotExist"))));
         assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
 
-        provider.getObjects().get(0).setLookupFields(asList("id"));
+        LinkedHashMap hashMap = new LinkedHashMap<String, List<Object>>();
+        hashMap.put("displayName", "id");
+        ArrayList list = new ArrayList<String>();
+        list.add("id");
+        hashMap.put("fields", list);
+
+        provider.getObjects().get(0).setLookupFields(asList((Object) hashMap));
         ((TaskServiceImpl) taskService).validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
         verify(allTasks, times(4)).addOrUpdate(captor.capture());
