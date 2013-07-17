@@ -4,7 +4,8 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.commons.date.util.DateUtil;
+
+import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
 @TypeDiscriminator("doc.type === 'StatusMessage'")
 public class StatusMessage extends MotechBaseDataObject {
@@ -26,7 +27,7 @@ public class StatusMessage extends MotechBaseDataObject {
     }
 
     public DateTime getTimeout() {
-        return DateUtil.setTimeZone(timeout);
+        return setTimeZoneUTC(timeout);
     }
 
     public void setTimeout(DateTime timeout) {
@@ -34,7 +35,7 @@ public class StatusMessage extends MotechBaseDataObject {
     }
 
     public DateTime getDate() {
-        return date;
+        return setTimeZoneUTC(date);
     }
 
     public void setDate(DateTime date) {

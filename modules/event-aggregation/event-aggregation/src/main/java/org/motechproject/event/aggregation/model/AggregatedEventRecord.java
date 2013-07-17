@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.aggregation.service.AggregatedEvent;
 
 import java.util.Map;
@@ -63,10 +64,9 @@ public class AggregatedEventRecord extends MotechBaseDataObject implements Aggre
         return nonAggregationParams;
     }
 
-    @JsonIgnore
     @Override
     public DateTime getTimeStamp() {
-        return timeStamp;
+        return DateUtil.setTimeZoneUTC(timeStamp);
     }
 
     @JsonIgnore

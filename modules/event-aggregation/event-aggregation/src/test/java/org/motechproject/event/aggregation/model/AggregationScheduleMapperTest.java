@@ -1,5 +1,6 @@
 package org.motechproject.event.aggregation.model;
 
+import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 
 import static junit.framework.Assert.assertEquals;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
+import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
 public class AggregationScheduleMapperTest {
 
@@ -25,9 +27,10 @@ public class AggregationScheduleMapperTest {
 
     @Test
     public void shouldMapPeriodicScheduleRequest() {
-        PeriodicAggregationRecord record = (PeriodicAggregationRecord) mapper.toRecord(new PeriodicAggregationRequest("1 day", newDateTime(2012, 5, 22)));
+        DateTime startTime = newDateTime(2012, 5, 22);
+        PeriodicAggregationRecord record = (PeriodicAggregationRecord) mapper.toRecord(new PeriodicAggregationRequest("1 day", startTime));
         assertEquals(Period.days(1), record.getPeriod());
-        assertEquals(newDateTime(2012, 5, 22), record.getStartTime());
+        assertEquals(setTimeZoneUTC(startTime), record.getStartTime());
     }
 
     @Test

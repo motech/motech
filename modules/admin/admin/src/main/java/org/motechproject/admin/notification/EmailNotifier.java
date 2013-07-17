@@ -14,6 +14,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
+
 @Component
 public class EmailNotifier {
 
@@ -54,7 +56,7 @@ public class EmailNotifier {
     private Map<String, Object> templateParams(StatusMessage statusMessage) {
         Map<String, Object> params = new HashMap<>();
 
-        String dateTime = DateTimeFormat.shortDateTime().print(statusMessage.getDate());
+        String dateTime = DateTimeFormat.shortDateTime().print(setTimeZone(statusMessage.getDate()));
 
         params.put("dateTime", dateTime);
         params.put("msg", statusMessage.getText());
