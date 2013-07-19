@@ -29,12 +29,12 @@
         <constructor-arg name="header" ref="header"/>
         <property name="subMenu">
             <map>
-                <entry key="manageModules" value="#/bundles"/>
-                <entry key="messages" value="#/messages"/>
-                <entry key="settings" value="#/settings"/>
-                <entry key="operations" value="#/operations"/>
-                <entry key="log" value="#/log"/>
-                <entry key="queues" value="#/queues"/>
+                <entry key="admin.manageModules" value="#/bundles"/>
+                <entry key="admin.messages" value="#/messages"/>
+                <entry key="admin.settings" value="#/settings"/>
+                <entry key="admin.operations" value="#/operations"/>
+                <entry key="admin.log" value="#/log"/>
+                <entry key="admin.queues" value="#/queues"/>
             </map>
         </property>
     </bean>

@@ -1,17 +1,17 @@
 <div class="well2">
     <div class="box-header">
-        {{msg('queue.statistics')}}
+        {{msg('admin.queue.statistics')}}
     </div>
     <div class="box-content inside" ng-show="dataAvailable">
         <table class="table table-bordered table-striped table-lightblue">
             <thead>
             <tr>
-                <th class="ng-binding">{{msg('queue.name')}}</th>
-                <th class="ng-binding">{{msg('queue.size')}}</th>
-                <th class="ng-binding">{{msg('queue.consumer.count')}}</th>
-                <th class="ng-binding">{{msg('queue.enqueue.count')}}</th>
-                <th class="ng-binding">{{msg('queue.dequeue.count')}}</th>
-                <th class="ng-binding">{{msg('queue.expired.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.name')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.size')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.consumer.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.enqueue.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.dequeue.count')}}</th>
+                <th class="ng-binding">{{msg('admin.queue.expired.count')}}</th>
             </tr>
             </thead>
             <tbody ng-repeat="queue in queues">
@@ -29,6 +29,6 @@
         </table>
     </div>
     <div class="box-content inside" ng-show="!dataAvailable">
-        {{msg('queue.error')}}
+        {{msg('admin.queue.error')}}
     </div>
 </div>

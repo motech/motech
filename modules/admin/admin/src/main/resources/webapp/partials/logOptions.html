@@ -1,15 +1,15 @@
 <div class="well2">
     <div class="box-header">
-        {{msg('log.options')}}
+        {{msg('admin.log.options')}}
         <a href="#/log" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
     </div>
     <div class="box-content log-options">
         <form id="changeLogLevels" class="form-vertical">
             <div class="control-group log">
                 <div class="form-inline">
-                    <span class="label-logAll">{{ msg('log.setForAll') }}</span>
+                    <span class="label-logAll">{{ msg('admin.log.setForAll') }}</span>
                     <div id="changeForAll" class="btn-group" data-toggle="buttons-radio">
-                        <button class="btn" ng-class="levelsCss(level)" ng-repeat="level in availableLevels" ng-click="forAll(level)">{{ msg('log.level.' + level) | uppercase }}</button>
+                        <button class="btn" ng-class="levelsCss(level)" ng-repeat="level in availableLevels" ng-click="forAll(level)">{{ msg('admin.log.level.' + level) | uppercase }}</button>
                     </div>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li ng-repeat="level in availableLevels" ng-click="changeRoot(level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                            <li ng-repeat="level in availableLevels" ng-click="changeRoot(level)"><a>{{ msg('admin.log.level.' + level) | uppercase }}</a></li>
                         </ul>
                     </div>
                     <label class="control-label">{{config.root.logName}}</label>
@@ -37,7 +37,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li ng-repeat="level in availableLevels" ng-click="change(logger, level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                            <li ng-repeat="level in availableLevels" ng-click="change(logger, level)"><a>{{ msg('admin.log.level.' + level) | uppercase }}</a></li>
                         </ul>
                     </div>
                     <label class="control-label">{{logger.logName}}</label>
@@ -52,15 +52,15 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li ng-repeat="level in availableLevels" ng-click="changeEntry(level)"><a>{{ msg('log.level.' + level) | uppercase }}</a></li>
+                            <li ng-repeat="level in availableLevels" ng-click="changeEntry(level)"><a>{{ msg('admin.log.level.' + level) | uppercase }}</a></li>
                         </ul>
                     </div>
                     <input class="input-xxlarge" ng-model="entry.name"/>
                 </div>
             </div>
             <div class="form-actions">
-                <input type="button" class="btn btn-primary" ng-click="save()" value="{{msg('save')}}"/>
-                <a class="btn" href="#/log">{{msg('cancel')}}</a>
+                <input type="button" class="btn btn-primary" ng-click="save()" value="{{msg('admin.save')}}"/>
+                <a class="btn" href="#/log">{{msg('admin.cancel')}}</a>
             </div>
         </form>
     </div>

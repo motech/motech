@@ -48,7 +48,7 @@ public class MessageControllerTest {
 
         assertEquals(statusMessages, result);
         verify(statusMessageService).getAllMessages();
-        verify(uiFrameworkService).moduleBackToNormal("admin", "messages");
+        verify(uiFrameworkService).moduleBackToNormal("admin", "admin.messages");
     }
 
     @Test

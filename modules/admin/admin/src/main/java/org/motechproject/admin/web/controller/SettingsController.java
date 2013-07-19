@@ -31,7 +31,7 @@ public class SettingsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SettingsController.class);
 
-    private static final String PLATFORM_SETTINGS_SAVED = "{settings.saved}";
+    private static final String PLATFORM_SETTINGS_SAVED = "{admin.settings.saved}";
     private static final String ADMIN_MODULE_NAME = "admin";
 
     @Autowired
@@ -116,7 +116,7 @@ public class SettingsController {
     void uploadRawFile(@PathVariable long bundleId, @RequestParam(required = true) String filename,
                        @RequestParam(required = true) MultipartFile file) {
         settingsService.saveRawFile(file, filename, bundleId);
-        statusMessageService.info("{settings.saved.file}", ADMIN_MODULE_NAME);
+        statusMessageService.info("{admin.settings.saved.file}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

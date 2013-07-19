@@ -29,7 +29,7 @@ public class MessageController {
 
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
     @ResponseBody public List<StatusMessage> getMessages(@RequestParam(defaultValue = "false") boolean all) {
-        uiFrameworkService.moduleBackToNormal("admin", "messages");
+        uiFrameworkService.moduleBackToNormal("admin", "admin.messages");
         return (all ? statusMessageService.getAllMessages() : statusMessageService.getActiveMessages());
     }
 
