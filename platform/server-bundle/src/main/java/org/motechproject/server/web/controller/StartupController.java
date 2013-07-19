@@ -31,6 +31,9 @@ import java.util.Locale;
 @Controller
 public class StartupController {
 
+    public static final String BUNDLE_ADMIN_ROLE = "Bundle Admin";
+    public static final String USER_ADMIN_ROLE = "User Admin";
+
     private StartupManager startupManager = StartupManager.getInstance();
 
     @Autowired
@@ -137,7 +140,7 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList("User Admin", "Admin Bundle");
+        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE);
 
         userService.register(login, password, email, null, roles, locale);
     }

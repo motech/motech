@@ -199,7 +199,7 @@ public class StartupControllerTest {
                     @Override
                     public boolean matches(Object argument) {
                         List<String> val = (List<String>) argument;
-                        return val.equals(Arrays.asList("User Admin", "Admin Bundle"));
+                        return val.equals(Arrays.asList(StartupController.USER_ADMIN_ROLE, StartupController.BUNDLE_ADMIN_ROLE));
                     }
                 }), eq(Locale.ENGLISH));
     }
