@@ -63,6 +63,9 @@ TOMCAT_USER=motech-default
 # Define the tomcat log file
 TOMCAT_LOG=/var/log/motech/motech-default/catalina.out
 
+# Define motech log file
+MOTECH_LOG=/var/log/motech/motech-default/
+
 # Directory where the Tomcat 7 binary distribution resides
 CATALINA_HOME=/usr/share/tomcat7
 
