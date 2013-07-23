@@ -38,15 +38,19 @@
         $scope.setUserLang = function (lang, refresh) {
             var locale = toLocale(lang);
 
-            $http({ method: "POST", url: "lang", params: locale }).success(function () {
-                $scope.loadI18n(lang);
-                $scope.userLang = $scope.getLanguage(locale);
-                moment.lang(lang);
-            });
+            $http({ method: "POST", url: "lang", params: locale })
+                .success(function () {
+                    $scope.loadI18n(lang);
+                    $scope.userLang = $scope.getLanguage(locale);
+                    moment.lang(lang);
 
-            if (refresh) {
-                window.location.reload();
-            }
+                    if (refresh) {
+                        window.location.reload();
+                    }
+                })
+                .error(function (response) {
+                    handleResponse('header.error', 'error.setLangError', response);
+                });
         };
 
         $scope.msg = function (key, value) {
