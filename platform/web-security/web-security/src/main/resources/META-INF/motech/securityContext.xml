@@ -32,7 +32,6 @@ under different authorization schemes.  i.e. no security, api key, etc. -->
 
     <!-- ICAPPR project uses callbacks from Verboice that don't support security, should be removed once new web security is in -->
     <security:http pattern="/**/icappr/**" security="none"/>
-    <security:http pattern="/**/verboice/**" security="none"/>
 
     <!-- kookoo doesn't support urls with basic auth, disabling security for now -->
     <security:http pattern="/**/kookoo/web-api/**" security="none"/>
