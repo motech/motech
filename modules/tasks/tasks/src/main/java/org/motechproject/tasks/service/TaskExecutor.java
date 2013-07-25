@@ -43,7 +43,7 @@ class TaskExecutor {
             if (!serviceAvailable) {
                 activityService.addWarning(
                         initializer.getTask(),
-                        "warning.serviceUnavailable",
+                        "task.warning.serviceUnavailable",
                         action.getServiceInterface()
                 );
             }
@@ -56,7 +56,7 @@ class TaskExecutor {
         }
 
         if ((!invokeMethod || !serviceAvailable) && !sendEvent) {
-            throw new TaskHandlerException(ACTION, "error.cantExecuteAction");
+            throw new TaskHandlerException(ACTION, "task.error.cantExecuteAction");
         }
     }
 
@@ -67,7 +67,7 @@ class TaskExecutor {
         try {
             action = taskService.getActionEventFor(actionInformation);
         } catch (ActionNotFoundException e) {
-            throw new TaskHandlerException(TRIGGER, "error.actionNotFound", e);
+            throw new TaskHandlerException(TRIGGER, "task.error.actionNotFound", e);
         }
 
         return action;
@@ -94,13 +94,13 @@ class TaskExecutor {
                     method.invoke(service, objects);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new TaskHandlerException(
-                            ACTION, "error.serviceMethodInvokeError", e,
+                            ACTION, "task.error.serviceMethodInvokeError", e,
                             serviceMethod, action.getServiceInterface()
                     );
                 }
             } catch (NoSuchMethodException e) {
                 throw new TaskHandlerException(
-                        ACTION, "error.notFoundMethodForService", e,
+                        ACTION, "task.error.notFoundMethodForService", e,
                         serviceMethod, action.getServiceInterface()
                 );
             }

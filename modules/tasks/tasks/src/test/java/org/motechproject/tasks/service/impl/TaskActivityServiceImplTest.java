@@ -107,7 +107,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskSuccessActivity() {
-        String messageKey = "success.ok";
+        String messageKey = "task.success.ok";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 
@@ -120,7 +120,7 @@ public class TaskActivityServiceImplTest {
 
     @Test
     public void shouldAddTaskWarningActivity() {
-        String messageKey = "warning.taskDisabled";
+        String messageKey = "task.warning.taskDisabled";
 
         ArgumentCaptor<TaskActivity> captor = ArgumentCaptor.forClass(TaskActivity.class);
 

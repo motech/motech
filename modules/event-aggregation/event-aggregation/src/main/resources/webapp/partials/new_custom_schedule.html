@@ -1,18 +1,18 @@
 <div class='custom-rule-fields'>
     <div class="control-group">
-        <label class="control-label">{{ msg('new.custom.rule.expression.label') }}</label>
+        <label class="control-label">{{ msg('aggregation.new.custom.rule.expression.label') }}</label>
         <div class="controls">
             <input class="input-xlarge-fluid" type="text" ng-model='rule.aggregationSchedule.rule' tooltip='#rule_tooltip_text'/>
         </div>
     </div>
     <div style="display: none;" id='rule_tooltip_text'>
-        <div>{{msg('new.custom.rule.examples')}}</div>
+        <div>{{msg('aggregation.new.custom.rule.examples')}}</div>
         <div>
-            <p>{{msg('new.custom.rule.p1')}}</p>
+            <p>{{msg('aggregation.new.custom.rule.p1')}}</p>
             <code>firstEvent.timeStamp.isBefore(now.minusMinutes(30))</code>
-            <p>{{msg('new.custom.rule.p2')}}</p>
+            <p>{{msg('aggregation.new.custom.rule.p2')}}</p>
             <code>lastEvent.timeStamp.isBefore(now.minusHours(2))</code>
-            <p>{{msg('new.custom.rule.p3')}}</p>
+            <p>{{msg('aggregation.new.custom.rule.p3')}}</p>
             <code>events.size() > 10</code>
         </div>
     </div>

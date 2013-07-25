@@ -2,17 +2,17 @@
 <div class="row-fluid tab-frame">
     <div class="span8">
 
-        <h4 class="frame-title">{{msg('header.tasks')}}</h4>
+        <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
         <div class="clearfix">
             <div class="inside btn-group">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             </div>
             <div class="inside form-inline">
-                <label >{{msg('header.searchTasks')}}</label>
-                <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('header.searchByNameOrDescription')}}">
+                <label >{{msg('task.header.searchTasks')}}</label>
+                <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
                 <div data-toggle="buttons-checkbox" class="btn-group">
-                    <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('header.activeTasks')}}</button>
-                    <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('header.pausedTasks')}}</button>
+                    <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
+                    <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
                 </div>
             </div>
             <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
@@ -69,19 +69,19 @@
                             <ul class="task-nav">
                                 <li class="task-element task-offset"></li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('button.edit')}}</div></a>
+                                    <a href="#/task/{{item.task._id}}/edit"><div class="button-task-in"><i class="icon-edit icon-white"></i> {{msg('task.button.edit')}}</div></a>
                                 </li>
                                 <li ng-show="item.task.enabled" class="task-element task-buttons">
-                                    <a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause icon-white"></i> {{msg('button.pause')}}</div></a>
+                                    <a ng-click="enableTask(item, false)"><div class="button-task-in"><i class="icon-pause icon-white"></i> {{msg('task.button.pause')}}</div></a>
                                 </li>
                                 <li ng-hide="item.task.enabled" class="task-element task-buttons">
-                                    <a ng-click="enableTask(item, true)"><div class="button-task-in"><i class="icon-play icon-white"></i> {{msg('button.enable')}}</div></a>
+                                    <a ng-click="enableTask(item, true)"><div class="button-task-in"><i class="icon-play icon-white"></i> {{msg('task.button.enable')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash icon-white"></i> {{msg('button.delete')}}</div></a>
+                                    <a ng-click="deleteTask(item)"><div class="button-task-in"><i class="icon-trash icon-white"></i> {{msg('task.button.delete')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('button.history')}}</div></a>
+                                    <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
                                 </li>
                                 <li class="task-element task-offset"></li>
                                 <li class="divider-vertical"></li>
@@ -89,9 +89,9 @@
                             </ul>
                             <div class="task-nav">
                                 <ul class="task-list">
-                                    <li class="info"><i class="icon icon-share icon-blue"></i> {{msg('info.executedTimes', item.success)}}</li>
-                                    <li class="error" ng-hide="item.error == 0"><i class="icon icon-exclamation-sign icon-red"></i> {{msg('info.errorsLastDays', item.error)}}</li>
-                                    <li class="success" ng-show="item.error == 0"><i class="icon icon-ok-sign icon-green"></i> {{msg('info.errorsLastDays', item.error)}}</li>
+                                    <li class="info"><i class="icon icon-share icon-blue"></i> {{msg('task.info.executedTimes', item.success)}}</li>
+                                    <li class="error" ng-hide="item.error == 0"><i class="icon icon-exclamation-sign icon-red"></i> {{msg('task.info.errorsLastDays', item.error)}}</li>
+                                    <li class="success" ng-show="item.error == 0"><i class="icon icon-ok-sign icon-green"></i> {{msg('task.info.errorsLastDays', item.error)}}</li>
                                 </ul>
                             </div>
                         </div>
@@ -116,8 +116,8 @@
             </div>
 
             <div class="tasks-list alert" ng-show="allTasks.length == 0">
-                <strong>{{msg('warning')}}:</strong>
-                {{msg('info.notFoundTasks')}}
+                <strong>{{msg('task.warning')}}:</strong>
+                {{msg('task.info.notFoundTasks')}}
             </div>
 
         </div>
@@ -125,12 +125,12 @@
     <div class="span4">
         <!------------------------  Recent task activity  ------------------------>
         <div class="margin-after2">
-            <div class="inbox-header">{{msg('header.recentTaskActivity')}}</div>
+            <div class="inbox-header">{{msg('task.header.recentTaskActivity')}}</div>
             <div class="box-content clearfix">
                 <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
                     <tbody ng-show="activities.length == 0">
                     <tr>
-                        <td>{{msg('info.notFoundActivities')}}</td>
+                        <td>{{msg('task.info.notFoundActivities')}}</td>
                     </tr>
                     </tbody>
                     <tbody ng-hide="activities.length == 0">
@@ -153,7 +153,7 @@
                         <td><span class="recent-name-first">{{ activity.name }}<br></span>
                             <span>{{ activity.date | fromNow }}</span>
                         </td>
-                        <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('tooltip.clickToSeeDetails')}}">
+                        <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('task.tooltip.clickToSeeDetails')}}">
                             <div>
                                 <a href="#/task/{{activity.task}}/log">
                                     <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>

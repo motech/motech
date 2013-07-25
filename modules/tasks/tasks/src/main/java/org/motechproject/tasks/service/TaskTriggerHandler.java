@@ -117,7 +117,7 @@ public class TaskTriggerHandler {
                 handleError(event, task, e);
             } catch (Exception e) {
                 handleError(event, task,
-                        new TaskHandlerException(TRIGGER, "error.unrecognizedError", e)
+                        new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e)
                 );
             }
         }

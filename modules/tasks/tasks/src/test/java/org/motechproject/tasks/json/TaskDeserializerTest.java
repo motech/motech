@@ -52,7 +52,7 @@ public class TaskDeserializerTest {
         TaskEventInformation triggerInformation = new TaskEventInformation(null, "mrs.name", "motech-mrs-api", "0.19.0.SNAPSHOT", "org.motechproject.mrs.api.Observaion.Created");
 
         Set<TaskError> validationErrors = new HashSet<>();
-        validationErrors.add(new TaskError("validation.error.providerObjectLookupNotExist", "mrs.person.lookupField.id", "Person", "mrs.name"));
+        validationErrors.add(new TaskError("task.validation.error.providerObjectLookupNotExist", "mrs.person.lookupField.id", "Person", "mrs.name"));
 
         String id = "6899548ec91d9ad04e3aad9cf2ad4e05";
         String revision = "0c023b58f6fa64f0a7896e9d5083f210";

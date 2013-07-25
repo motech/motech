@@ -149,7 +149,7 @@ final class HandlerUtil {
                     result = WordUtils.capitalize(result);
                     break;
                 default:
-                    throw new MotechException("warning.manipulation");
+                    throw new MotechException("task.warning.manipulation");
             }
         }
 
@@ -246,7 +246,7 @@ final class HandlerUtil {
         try {
             value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
         } catch (Exception e) {
-            throw new MotechException("error.convertToDate", e);
+            throw new MotechException("task.error.convertToDate", e);
         }
         return value;
     }
@@ -256,14 +256,14 @@ final class HandlerUtil {
         try {
             value = DateTime.parse(userInput, DateTimeFormat.forPattern("HH:mm Z"));
         } catch (Exception e) {
-            throw new MotechException("error.convertToTime", e);
+            throw new MotechException("task.error.convertToTime", e);
         }
         return value;
     }
 
     private static Object convertToBoolean(String userInput) {
         if (!"true".equalsIgnoreCase(userInput) && !"false".equalsIgnoreCase(userInput)) {
-            throw new MotechException("error.convertToBoolean");
+            throw new MotechException("task.error.convertToBoolean");
         }
 
         return Boolean.valueOf(userInput);
@@ -274,7 +274,7 @@ final class HandlerUtil {
         try {
             value = Long.valueOf(userInput);
         } catch (Exception e) {
-            throw new MotechException("error.convertToLong", e);
+            throw new MotechException("task.error.convertToLong", e);
         }
         return value;
     }
@@ -284,7 +284,7 @@ final class HandlerUtil {
         try {
             value = Integer.valueOf(userInput);
         } catch (Exception e) {
-            throw new MotechException("error.convertToInteger", e);
+            throw new MotechException("task.error.convertToInteger", e);
         }
         return value;
     }
@@ -294,7 +294,7 @@ final class HandlerUtil {
         try {
             value = Double.valueOf(userInput);
         } catch (Exception e) {
-            throw new MotechException("error.convertToDouble", e);
+            throw new MotechException("task.error.convertToDouble", e);
         }
         return value;
     }

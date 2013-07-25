@@ -12,10 +12,10 @@
                 {},
                 $scope.mail,
                 function () {
-                    motechAlert('header.success', 'email.sent');
+                    motechAlert('email.header.success', 'email.sent');
                 },
                 function (response) {
-                    handleWithStackTrace('header.error', 'error', response);
+                    handleWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };
@@ -29,11 +29,11 @@
                 {},
                 $scope.settings,
                 function () {
-                    motechAlert('header.success', 'email.settings.saved');
+                    motechAlert('email.header.success', 'email.settings.saved');
                     $scope.settings = SettingsService.get();
                 },
                 function (response) {
-                    handleWithStackTrace('header.error', 'error', response);
+                    handleWithStackTrace('email.header.error', 'server.error', response);
                 }
             );
         };

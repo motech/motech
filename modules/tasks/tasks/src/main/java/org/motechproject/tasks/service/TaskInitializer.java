@@ -57,7 +57,7 @@ class TaskInitializer {
                 try {
                     result = passFilters((FilterSet) step);
                 } catch (Exception e) {
-                    throw new TaskHandlerException(FILTER, "error.filterError", e);
+                    throw new TaskHandlerException(FILTER, "task.error.filterError", e);
                 }
             }
         }
@@ -75,7 +75,7 @@ class TaskInitializer {
 
             if (!info.getValues().containsKey(key)) {
                 throw new TaskHandlerException(
-                        TRIGGER, "error.taskActionNotContainsField", action.getDisplayName(), key
+                        TRIGGER, "task.error.taskActionNotContainsField", action.getDisplayName(), key
                 );
             }
 
@@ -83,7 +83,7 @@ class TaskInitializer {
 
             if (template == null) {
                 throw new TaskHandlerException(
-                        TRIGGER, "error.templateNull", key, action.getDisplayName()
+                        TRIGGER, "task.error.templateNull", key, action.getDisplayName()
                 );
             }
 
@@ -116,7 +116,7 @@ class TaskInitializer {
                     filterSet.getFilters(), event.getParameters(), dataSourceObjects
             );
         } catch (Exception e) {
-            throw new TaskHandlerException(FILTER, "error.filterError", e);
+            throw new TaskHandlerException(FILTER, "task.error.filterError", e);
         }
 
         return result;
@@ -126,7 +126,7 @@ class TaskInitializer {
             throws TaskHandlerException {
         if (providers == null || providers.isEmpty()) {
             throw new TaskHandlerException(
-                    DATA_SOURCE, "error.notFoundDataProvider", dataSource.getType()
+                    DATA_SOURCE, "task.error.notFoundDataProvider", dataSource.getType()
             );
         }
 
@@ -134,7 +134,7 @@ class TaskInitializer {
 
         if (provider == null) {
             throw new TaskHandlerException(
-                    DATA_SOURCE, "error.notFoundDataProvider", dataSource.getType()
+                    DATA_SOURCE, "task.error.notFoundDataProvider", dataSource.getType()
             );
         }
 
@@ -160,7 +160,7 @@ class TaskInitializer {
                         value = triggerKey == null ? "" : triggerKey.toString();
                     } catch (Exception e) {
                         throw new TaskHandlerException(
-                                TRIGGER, "error.objectNotContainsField", e, key.getKey()
+                                TRIGGER, "task.error.objectNotContainsField", e, key.getKey()
                         );
                     }
                     break;
@@ -193,7 +193,7 @@ class TaskInitializer {
             } catch (MotechException e) {
                 String msg = e.getMessage();
 
-                if ("warning.manipulation".equalsIgnoreCase(msg)) {
+                if ("task.warning.manipulation".equalsIgnoreCase(msg)) {
                     activityService.addWarning(task, msg, manipulation);
                 } else {
                     throw new TaskHandlerException(TRIGGER, msg, e, manipulation);
@@ -214,11 +214,11 @@ class TaskInitializer {
         if (found == null) {
             if (dataSource.isFailIfDataNotFound()) {
                 throw new TaskHandlerException(
-                        DATA_SOURCE, "error.notFoundObjectForType", key.getObjectType()
+                        DATA_SOURCE, "task.error.notFoundObjectForType", key.getObjectType()
                 );
             } else {
                 activityService.addWarning(
-                        task, "warning.notFoundObjectForType", key.getObjectType()
+                        task, "task.warning.notFoundObjectForType", key.getObjectType()
                 );
             }
         }
@@ -228,10 +228,10 @@ class TaskInitializer {
         } catch (Exception e) {
             if (dataSource.isFailIfDataNotFound()) {
                 throw new TaskHandlerException(
-                        DATA_SOURCE, "error.objectNotContainsField", e, key.getKey()
+                        DATA_SOURCE, "task.error.objectNotContainsField", e, key.getKey()
                 );
             } else {
-                activityService.addWarning(task, "warning.objectNotContainsField", key.getKey(), e);
+                activityService.addWarning(task, "task.warning.objectNotContainsField", key.getKey(), e);
                 value = "";
             }
         }

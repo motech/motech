@@ -228,9 +228,9 @@
         });
 
         it('Should return proper operators', function () {
-            var string = [ 'exist', 'equals', 'contains', 'startsWith', 'endsWith' ],
-                number = [ 'exist', 'gt', 'lt', 'equal' ],
-                other = [ 'exist' ];
+            var string = [ 'task.exist', 'task.equals', 'task.contains', 'task.startsWith', 'task.endsWith' ],
+                number = [ 'task.exist', 'task.gt', 'task.lt', 'task.equal' ],
+                other = [ 'task.exist' ];
 
             expect(scope.operators({ type: 'UNICODE' })).toEqual(string);
             expect(scope.operators({ type: 'INTEGER' })).toEqual(number);

@@ -136,9 +136,9 @@
 
                         if (dragElement.hasClass('triggerField')) {
                             switch (element.data('type')) {
-                            case 'DATE': emText = 'placeholder.dateOnly'; break;
-                            case 'TIME': emText = 'placeholder.timeOnly'; break;
-                            case 'BOOLEAN': emText = 'placeholder.booleanOnly'; break;
+                            case 'DATE': emText = 'task.placeholder.dateOnly'; break;
+                            case 'TIME': emText = 'task.placeholder.timeOnly'; break;
+                            case 'BOOLEAN': emText = 'task.placeholder.booleanOnly'; break;
                             default:
                             }
 

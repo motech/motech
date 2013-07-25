@@ -39,12 +39,12 @@ public class TaskActivityServiceImpl implements TaskActivityService {
 
     @Override
     public void addSuccess(Task task) {
-        allTaskActivities.add(new TaskActivity("success.ok", task.getId(), TaskActivityType.SUCCESS));
+        allTaskActivities.add(new TaskActivity("task.success.ok", task.getId(), TaskActivityType.SUCCESS));
     }
 
     @Override
     public void addWarning(Task task) {
-        allTaskActivities.add(new TaskActivity("warning.taskDisabled", task.getId(), TaskActivityType.WARNING));
+        allTaskActivities.add(new TaskActivity("task.warning.taskDisabled", task.getId(), TaskActivityType.WARNING));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         for (int i = messages.size() - 1; i >= 0; --i) {
             TaskActivity msg = messages.get(i);
 
-            if (msg.getMessage().equals("warning.taskDisabled")  || msg.getActivityType() == TaskActivityType.SUCCESS) {
+            if (msg.getMessage().equals("task.warning.taskDisabled")  || msg.getActivityType() == TaskActivityType.SUCCESS) {
                 break;
             }
 

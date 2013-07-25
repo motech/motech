@@ -408,8 +408,8 @@ public class TaskServiceImplTest {
         assertFalse(captured.getValidationErrors().isEmpty());
 
         ArrayList<Object> arrayList = new ArrayList<Object>(captured.getValidationErrors());
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.triggerNotExist"))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.triggerNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.actionNotExist"))));
 
         ((TaskServiceImpl) taskService).validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
@@ -420,9 +420,9 @@ public class TaskServiceImplTest {
         assertFalse(captured.getValidationErrors().isEmpty());
 
         arrayList = new ArrayList<Object>(captured.getValidationErrors());
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.providerObjectLookupNotExist"))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.triggerNotExist"))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.providerObjectLookupNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.triggerNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.actionNotExist"))));
 
         LinkedHashMap hashMap = new LinkedHashMap<String, List<Object>>();
         hashMap.put("displayName", "id");
@@ -440,9 +440,9 @@ public class TaskServiceImplTest {
         assertFalse(captured.getValidationErrors().isEmpty());
 
         arrayList = new ArrayList<Object>(captured.getValidationErrors());
-        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("validation.error.providerObjectLookupNotExist")))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.triggerNotExist"))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
+        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("task.validation.error.providerObjectLookupNotExist")))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.triggerNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.actionNotExist"))));
 
         triggerChannel.getTriggerTaskEvents().get(0).setSubject("SEND");
         ((TaskServiceImpl) taskService).validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
@@ -454,9 +454,9 @@ public class TaskServiceImplTest {
         assertFalse(captured.getValidationErrors().isEmpty());
 
         arrayList = new ArrayList<Object>(captured.getValidationErrors());
-        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("validation.error.providerObjectLookupNotExist")))));
-        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("validation.error.triggerNotExist")))));
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
+        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("task.validation.error.providerObjectLookupNotExist")))));
+        assertThat(arrayList, not(hasItem(hasProperty("message", equalTo("task.validation.error.triggerNotExist")))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.actionNotExist"))));
 
         ((TaskServiceImpl) taskService).validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent("abc"));
         verify(allTasks, times(5)).addOrUpdate(captor.capture());
@@ -466,7 +466,7 @@ public class TaskServiceImplTest {
         assertFalse(captured.getValidationErrors().isEmpty());
 
         arrayList = new ArrayList<Object>(captured.getValidationErrors());
-        assertThat(arrayList, hasItem(hasProperty("message", equalTo("validation.error.actionNotExist"))));
+        assertThat(arrayList, hasItem(hasProperty("message", equalTo("task.validation.error.actionNotExist"))));
     }
 
     private MotechEvent getChannelUpdateEvent(TaskEventInformation info) {

@@ -72,7 +72,7 @@ public final class TaskValidator extends GeneralValidator {
             errors.addAll(validateDataSources(task, triggerEvent));
         } else {
             errors.add(new TaskError(
-                    "validation.error.triggerNotExist",
+                    "task.validation.error.triggerNotExist",
                     triggerInformation.getDisplayName(),
                     channel.getDisplayName()
             ));
@@ -92,7 +92,7 @@ public final class TaskValidator extends GeneralValidator {
             errors.addAll(validateActionValues(actionInformation.getValues(), actionEvent));
         } else {
             errors.add(new TaskError(
-                    "validation.error.actionNotExist",
+                    "task.validation.error.actionNotExist",
                     actionInformation.getDisplayName(),
                     channel.getDisplayName()
             ));
@@ -122,7 +122,7 @@ public final class TaskValidator extends GeneralValidator {
 
                 if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
                     errors.add(new TaskError(
-                            "validation.error.triggerFieldNotExist",
+                            "task.validation.error.triggerFieldNotExist",
                             key.getKey(),
                             triggerEvent.getDisplayName()
                     ));
@@ -147,7 +147,7 @@ public final class TaskValidator extends GeneralValidator {
 
                     if (!object.containsField(key.getKey())) {
                         errors.add(new TaskError(
-                                "validation.error.providerObjectFieldNotExist",
+                                "task.validation.error.providerObjectFieldNotExist",
                                 key.getKey(),
                                 String.format("%s#%d", key.getObjectType(), key.getObjectId())
                         ));
@@ -167,7 +167,7 @@ public final class TaskValidator extends GeneralValidator {
             for (KeyInformation key : KeyInformation.parseAll(input)) {
                 if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
                     errors.add(new TaskError(
-                            "validation.error.triggerFieldNotExist",
+                            "task.validation.error.triggerFieldNotExist",
                             key.getKey(),
                             triggerEvent.getDisplayName()
                     ));
@@ -185,7 +185,7 @@ public final class TaskValidator extends GeneralValidator {
         for (String inputKey : actionValues.keySet()) {
             if (!actionEvent.containsParameter(inputKey)) {
                 errors.add(new TaskError(
-                        "validation.error.actionInputFieldNotExist",
+                        "task.validation.error.actionInputFieldNotExist",
                         inputKey,
                         actionEvent.getDisplayName()
                 ));
@@ -223,7 +223,7 @@ public final class TaskValidator extends GeneralValidator {
                     } catch (IllegalArgumentException e) {
                         String[] objectFields = matcher.group(1).split("\\.");
                         errors.add(new TaskError(
-                                "validation.error.dateFormat",
+                                "task.validation.error.dateFormat",
                                 String.format(
                                         "%s.%s",
                                         objectFields[objectFields.length - 2],
@@ -254,7 +254,7 @@ public final class TaskValidator extends GeneralValidator {
             checkVersion(errors, objectName, MODULE_VERSION, action.getModuleVersion());
 
             if (!action.hasSubject() && !action.hasService()) {
-                errors.add(new TaskError("validation.error.taskAction"));
+                errors.add(new TaskError("task.validation.error.taskAction"));
             }
 
             checkNullValue(errors, objectName, "values", action.getValues());
@@ -307,7 +307,7 @@ public final class TaskValidator extends GeneralValidator {
 
             if (key.fromAdditionalData() && dataSource == null) {
                 errors.add(new TaskError(
-                        "validation.error.DataSourceNotExist",
+                        "task.validation.error.DataSourceNotExist",
                         key.getObjectType()
                 ));
             }
@@ -336,7 +336,7 @@ public final class TaskValidator extends GeneralValidator {
                 for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
                     if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
                         errors.add(new TaskError(
-                                "validation.error.triggerFieldNotExist", key.getKey(),
+                                "task.validation.error.triggerFieldNotExist", key.getKey(),
                                 triggerEvent.getDisplayName()
                         ));
                     }
@@ -355,13 +355,13 @@ public final class TaskValidator extends GeneralValidator {
         for (DataSource.Lookup lookup : dataSource.getLookup()) {
             if (!contains) {
                 errors.add(new TaskError(
-                        "validation.error.providerObjectNotExist",
+                        "task.validation.error.providerObjectNotExist",
                         dataSource.getType(),
                         provider.getName()
                 ));
             } else if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getName())) {
                 errors.add(new TaskError(
-                        "validation.error.providerObjectLookupNotExist",
+                        "task.validation.error.providerObjectLookupNotExist",
                         lookup.getField(),
                         dataSource.getType(),
                         provider.getName()
@@ -391,14 +391,14 @@ public final class TaskValidator extends GeneralValidator {
 
                 if (!providerObject.containsField(key.getKey())) {
                     errors.add(new TaskError(
-                            "validation.error.providerObjectFieldNotExist",
+                            "task.validation.error.providerObjectFieldNotExist",
                             key.getKey(),
                             providerObject.getDisplayName()
                     ));
                 }
             } else {
                 errors.add(new TaskError(
-                        "validation.error.providerObjectNotExist",
+                        "task.validation.error.providerObjectNotExist",
                         key.getObjectType(),
                         provider.getName()
                 ));

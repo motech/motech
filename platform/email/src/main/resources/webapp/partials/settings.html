@@ -10,7 +10,7 @@
 
                     <div class="controls">
                         <input ng-model="settings.host" type="text" id="settingsHost" required/>
-                        <span ng-hide="settings.host" class="form-hint">{{msg('field.required', msg('email.settings.host'))}}</span>
+                        <span ng-hide="settings.host" class="form-hint">{{msg('email.field.required', msg('email.settings.host'))}}</span>
                     </div>
                 </div>
 
@@ -19,8 +19,8 @@
 
                     <div class="controls">
                         <input ng-model="settings.port" type="text" id="settingsPort" required/>
-                        <span ng-hide="settings.port" class="form-hint">{{msg('field.required', msg('email.settings.port'))}}</span>
-                        <span ng-hide="isNumeric('port')" class="form-hint">{{msg('field.numeric', msg('email.settings.port'))}}</span>
+                        <span ng-hide="settings.port" class="form-hint">{{msg('email.field.required', msg('email.settings.port'))}}</span>
+                        <span ng-hide="isNumeric('port')" class="form-hint">{{msg('email.field.numeric', msg('email.settings.port'))}}</span>
                     </div>
                 </div>
 

@@ -63,7 +63,7 @@
                 "Person",
                 "mrs.name"
             ],
-            "message": "validation.error.providerObjectLookupNotExist"
+            "message": "task.validation.error.providerObjectLookupNotExist"
         }
     ],
     "_id": "6899548ec91d9ad04e3aad9cf2ad4e05",

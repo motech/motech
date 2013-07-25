@@ -209,8 +209,8 @@ public class TaskServiceImpl implements TaskService {
 
                 if (errors != null) {
                     setTaskValidationErrors(task, errors,
-                            "validation.error.triggerNotExist",
-                            "validation.error.triggerFieldNotExist"
+                            "task.validation.error.triggerNotExist",
+                            "task.validation.error.triggerFieldNotExist"
                     );
                 }
             }
@@ -219,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
                 errors = validateActionTask(action, channel);
 
                 if (errors != null) {
-                    setTaskValidationErrors(task, errors, "validation.error.actionNotExist");
+                    setTaskValidationErrors(task, errors, "task.validation.error.actionNotExist");
                 }
             }
         }
@@ -239,9 +239,9 @@ public class TaskServiceImpl implements TaskService {
                     );
 
                     setTaskValidationErrors(task, errors,
-                            "validation.error.providerObjectFieldNotExist",
-                            "validation.error.providerObjectNotExist",
-                            "validation.error.providerObjectLookupNotExist"
+                            "task.validation.error.providerObjectFieldNotExist",
+                            "task.validation.error.providerObjectNotExist",
+                            "task.validation.error.providerObjectLookupNotExist"
                     );
                 }
             }

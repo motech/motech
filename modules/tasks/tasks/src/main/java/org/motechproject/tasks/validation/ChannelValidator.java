@@ -30,7 +30,7 @@ public final class ChannelValidator extends GeneralValidator {
         boolean containsActions = !isEmpty(channel.getActionTaskEvents());
 
         if (!containsTriggers && !containsActions) {
-            errors.add(new TaskError("validation.error.channel"));
+            errors.add(new TaskError("task.validation.error.channel"));
         } else {
             if (containsTriggers) {
                 for (int i = 0; i < channel.getTriggerTaskEvents().size(); ++i) {
@@ -80,7 +80,7 @@ public final class ChannelValidator extends GeneralValidator {
             checkBlankValue(errors, objectName, "displayName", action.getDisplayName());
 
             if (!action.hasSubject() && !action.hasService()) {
-                errors.add(new TaskError("validation.error.channelAction"));
+                errors.add(new TaskError("task.validation.error.channelAction"));
             }
 
             for (ActionParameter parameter : action.getActionParameters()) {

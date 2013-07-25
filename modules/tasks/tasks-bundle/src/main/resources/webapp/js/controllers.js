@@ -99,17 +99,17 @@
 
             item.task.$save(dummyHandler, function (response) {
                 item.task.enabled = !enabled;
-                handleResponse('error.actionNotChangeTitle', 'error.actionNotChange', response);
+                handleResponse('task.error.actionNotChangeTitle', 'task.error.actionNotChange', response);
             });
         };
 
         $scope.deleteTask = function (item) {
-            jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("header.confirm"), function (val) {
+            jConfirm(jQuery.i18n.prop('task.confirm.remove'), jQuery.i18n.prop("task.header.confirm"), function (val) {
                 if (val) {
                     item.task.$remove(function () {
                         $scope.allTasks.removeObject(item);
                         $scope.search();
-                    }, alertHandler('task.error.removed', 'header.error'));
+                    }, alertHandler('task.error.removed', 'task.header.error'));
                 }
             });
         };
@@ -275,7 +275,7 @@
 
         $scope.selectTrigger = function (channel, trigger) {
             if ($scope.task.trigger) {
-                motechConfirm('task.confirm.trigger', "header.confirm", function (val) {
+                motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.trigger.remove($scope);
                         $scope.util.trigger.select($scope, channel, trigger);
@@ -289,7 +289,7 @@
         $scope.removeTrigger = function ($event) {
             $event.stopPropagation();
 
-            motechConfirm('task.confirm.trigger', "header.confirm", function (val) {
+            motechConfirm('task.confirm.trigger', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.util.trigger.remove($scope);
                 }
@@ -305,7 +305,7 @@
         };
 
         $scope.removeAction = function (idx) {
-            motechConfirm('task.confirm.action', "header.confirm", function (val) {
+            motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.task.actions.remove(idx);
                     $scope.selectedActionChannel.remove(idx);
@@ -320,7 +320,7 @@
 
         $scope.selectActionChannel = function (idx, channel) {
             if ($scope.selectedActionChannel[idx] && $scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "header.confirm", function (val) {
+                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.task.actions[idx] = {};
                         $scope.selectedActionChannel[idx] = channel;
@@ -342,7 +342,7 @@
 
         $scope.selectAction = function (idx, action) {
             if ($scope.selectedAction[idx]) {
-                motechConfirm('task.confirm.action', "header.confirm", function (val) {
+                motechConfirm('task.confirm.action', "task.header.confirm", function (val) {
                     if (val) {
                         $scope.util.action.select($scope, idx, action);
                     }
@@ -363,7 +363,7 @@
         };
 
         $scope.removeFilterSet = function (data) {
-            motechConfirm('task.confirm.filterSet', "header.confirm", function (val) {
+            motechConfirm('task.confirm.filterSet', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.task.taskConfig.steps.removeObject(data);
 
@@ -386,7 +386,7 @@
             switch(type) {
             case $scope.util.TRIGGER_PREFIX:
                 filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
-                filter.displayName = "{0} ({1})".format($scope.msg(select.displayName), $scope.msg('header.trigger'));
+                filter.displayName = "{0} ({1})".format($scope.msg(select.displayName), $scope.msg('task.header.trigger'));
                 filter.type = select.type;
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
@@ -398,13 +398,13 @@
         };
 
         $scope.operators = function (param) {
-            var array = ['exist'];
+            var array = ['task.exist'];
 
             if (param) {
                 if ($scope.util.isText(param.type)) {
-                    $.merge(array, ["equals", "contains", "startsWith", "endsWith"]);
+                    $.merge(array, ["task.equals", "task.contains", "task.startsWith", "task.endsWith"]);
                 } else if ($scope.util.isNumber(param.type)) {
-                    $.merge(array, ["gt", "lt", "equal"]);
+                    $.merge(array, ["task.gt", "task.lt", "task.equal"]);
                 }
             }
 
@@ -426,7 +426,7 @@
         };
 
         $scope.removeData = function (dataSource) {
-            motechConfirm('task.confirm.dataSource', "header.confirm", function (val) {
+            motechConfirm('task.confirm.dataSource', "task.header.confirm", function (val) {
                 if (val) {
                     $scope.task.taskConfig.steps.removeObject(dataSource);
 
@@ -485,7 +485,7 @@
 
         $scope.selectDataSource = function (dataSource, selected) {
             if (dataSource.providerId) {
-                motechConfirm('task.confirm.changeDataSource', 'header.confirm', function (val) {
+                motechConfirm('task.confirm.changeDataSource', 'task.header.confirm', function (val) {
                     if (val) {
                         dataSource.name = '';
                         $scope.util.dataSource.select($scope, dataSource, selected);
@@ -498,7 +498,7 @@
 
         $scope.selectObject = function (object, selected) {
             if (object.type) {
-                motechConfirm('task.confirm.changeObject', 'header.confirm', function (val) {
+                motechConfirm('task.confirm.changeObject', 'task.header.confirm', function (val) {
                     if (val) {
                         object.name = '';
                         $scope.util.dataSource.selectObject($scope, object, selected);
@@ -711,7 +711,7 @@
             var success = function () {
                     var msg = enabled ? 'task.success.savedAndEnabled' : 'task.success.saved', loc, indexOf;
 
-                    motechAlert(msg, 'header.saved', function () {
+                    motechAlert(msg, 'task.header.saved', function () {
                         unblockUI();
                         loc = window.location.toString();
                         indexOf = loc.indexOf('#');
@@ -737,7 +737,7 @@
                     delete $scope.task.enabled;
 
                     unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, data), 'header.error');
+                    jAlert($scope.util.createErrorMessage($scope, data), 'task.header.error');
                 };
 
             $scope.task.enabled = enabled;
@@ -892,7 +892,7 @@
         };
 
         $scope.clearHistory = function () {
-            motechConfirm('history.confirm.clearHistory', 'history.confirm.clear',function (r) {
+            motechConfirm('task.history.confirm.clearHistory', 'task.history.confirm.clear',function (r) {
                 if (!r) {
                     return;
                 }
@@ -909,9 +909,9 @@
 
         $scope.submit = function() {
             $scope.settings.$save(function() {
-                motechAlert('settings.success.saved', 'main.saved');
+                motechAlert('task.settings.success.saved', 'main.saved');
             }, function() {
-                motechAlert('settings.error.saved', 'main.error');
+                motechAlert('task.settings.error.saved', 'main.error');
             });
         };
 
