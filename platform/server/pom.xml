@@ -378,5 +378,36 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>copy-config</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <id>copy-motech-settings-file</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../server-config/src/main/config</directory>
+                                            <includes>
+                                                <include>motech-settings.conf</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
