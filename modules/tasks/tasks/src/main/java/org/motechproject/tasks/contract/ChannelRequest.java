@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service layer object denoting a {@link org.motechproject.tasks.domain.Channel}. Used by {@link ChannelService}
+ */
 public class ChannelRequest {
 
     private String displayName;
@@ -49,6 +52,14 @@ public class ChannelRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public void setModuleVersion(String moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
     @Override

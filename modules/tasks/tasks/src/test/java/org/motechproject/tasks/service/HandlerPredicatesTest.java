@@ -47,12 +47,12 @@ public class HandlerPredicatesTest {
 
     @Test
     public void shouldRemoveDisabledTasks() {
-        Task enabledTask1 = new Task("enabledTask1", null, null, null, true);
-        Task enabledTask2 = new Task("enabledTask2", null, null, null, true);
+        Task enabledTask1 = new Task("enabledTask1", null, null, null, true, true);
+        Task enabledTask2 = new Task("enabledTask2", null, null, null, true, true);
 
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task("disabledTask1", null, null, null, false));
-        tasks.add(new Task("disabledTask2", null, null, null, false));
+        tasks.add(new Task("disabledTask1", null, null, null, false, false));
+        tasks.add(new Task("disabledTask2", null, null, null, false, false));
         tasks.add(enabledTask1);
         tasks.add(enabledTask2);
 

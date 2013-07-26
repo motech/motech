@@ -58,6 +58,7 @@
         "subject": "org.motechproject.mrs.api.Observaion.Created"
     },
     "enabled": false,
+    "hasRegisteredChannel": true,
     "validationErrors": [
         {
             "args": [

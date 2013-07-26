@@ -3,6 +3,7 @@ package org.motechproject.tasks.domain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
@@ -18,6 +19,9 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 
+/**
+ * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their respective {@link Channel}s.
+ */
 @TypeDiscriminator("doc.type == 'Task'")
 @JsonDeserialize(using = TaskDeserializer.class)
 public class Task extends MotechBaseDataObject {
@@ -30,6 +34,7 @@ public class Task extends MotechBaseDataObject {
     private boolean enabled;
     private Set<TaskError> validationErrors;
     private TaskConfig taskConfig;
+    private boolean hasRegisteredChannel;
 
     public Task() {
         this(null, null, null);
@@ -45,7 +50,7 @@ public class Task extends MotechBaseDataObject {
     }
 
     /**
-     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List, TaskConfig, boolean)}
+     * @deprecated As of release 0.20, replaced by {@link #Task(String, TaskEventInformation, java.util.List}
      */
     @Deprecated
     public Task(String name, TaskEventInformation trigger, TaskActionInformation action,
@@ -72,15 +77,16 @@ public class Task extends MotechBaseDataObject {
     }
 
     public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions) {
-        this(name, trigger, actions, null, true);
+        this(name, trigger, actions, null, true, true);
     }
 
     public Task(String name, TaskEventInformation trigger, List<TaskActionInformation> actions,
-                TaskConfig taskConfig, boolean enabled) {
+                TaskConfig taskConfig, boolean enabled, boolean hasRegisteredChannel) {
         this.name = name;
         this.actions = actions == null ? new ArrayList<TaskActionInformation>() : actions;
         this.trigger = trigger;
         this.enabled = enabled;
+        this.hasRegisteredChannel = hasRegisteredChannel;
         this.taskConfig = taskConfig == null ? new TaskConfig() : taskConfig;
         this.validationErrors = new HashSet<>();
     }
@@ -294,7 +300,7 @@ public class Task extends MotechBaseDataObject {
         );
     }
 
-    @Override
+    @Override   // NO CHECKSTYLE CyclomaticComplexity
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -311,6 +317,7 @@ public class Task extends MotechBaseDataObject {
                 && Objects.equals(this.actions, other.actions)
                 && Objects.equals(this.trigger, other.trigger)
                 && Objects.equals(this.enabled, other.enabled)
+                && Objects.equals(this.hasRegisteredChannel, other.hasRegisteredChannel)
                 && Objects.equals(this.validationErrors, other.validationErrors)
                 && Objects.equals(this.taskConfig, other.taskConfig);
     }
@@ -318,8 +325,18 @@ public class Task extends MotechBaseDataObject {
     @Override
     public String toString() {
         return String.format(
-                "Task{description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s} ",
-                description, name, actions, trigger, enabled, validationErrors, taskConfig
+                "Task{description='%s', name='%s', actions=%s, trigger=%s, enabled=%s, validationErrors=%s, taskConfig=%s, hasRegisteredChannel=%s} ",
+                description, name, actions, trigger, enabled, validationErrors, taskConfig, hasRegisteredChannel
         );
+    }
+
+    @JsonProperty("hasRegisteredChannel")
+    public void setHasRegisteredChannel(boolean hasRegisteredChannel) {
+        this.hasRegisteredChannel = hasRegisteredChannel;
+    }
+
+    @JsonProperty("hasRegisteredChannel")
+    public boolean hasRegisteredChannel() {
+        return hasRegisteredChannel;
     }
 }

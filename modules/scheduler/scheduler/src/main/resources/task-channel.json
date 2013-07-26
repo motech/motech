@@ -1,7 +1,5 @@
 {
   "displayName": "scheduler",
-  "moduleName": "${project.artifactId}",
-  "moduleVersion": "${parsedVersion.osgiVersion}",
   "actionTaskEvents": [
     {
       "displayName": "scheduler.scheduleCronJob",

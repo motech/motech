@@ -1,7 +1,5 @@
 {
     "displayName":"pillreminder.name",
-    "moduleName":"pillreminder-test",
-    "moduleVersion":"0.15",
     "triggerTaskEvents":[
         {
             "displayName":"pillreminder.event.subject",

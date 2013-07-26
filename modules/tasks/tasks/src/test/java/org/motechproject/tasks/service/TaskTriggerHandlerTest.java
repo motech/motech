@@ -16,7 +16,18 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.*;
+import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionParameter;
+import org.motechproject.tasks.domain.DataSource;
+import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
+import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskActivity;
+import org.motechproject.tasks.domain.TaskConfig;
+import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -24,24 +35,57 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
-import static java.util.Arrays.asList;
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.OperatorType.*;
-import static org.motechproject.tasks.domain.ParameterType.*;
+import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
+import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
+import static org.motechproject.tasks.domain.OperatorType.EQUALS;
+import static org.motechproject.tasks.domain.OperatorType.EXIST;
+import static org.motechproject.tasks.domain.OperatorType.GT;
+import static org.motechproject.tasks.domain.OperatorType.LT;
+import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
+import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
+import static org.motechproject.tasks.domain.ParameterType.DATE;
+import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
+import static org.motechproject.tasks.domain.ParameterType.INTEGER;
+import static org.motechproject.tasks.domain.ParameterType.LIST;
+import static org.motechproject.tasks.domain.ParameterType.LONG;
+import static org.motechproject.tasks.domain.ParameterType.MAP;
+import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
+import static org.motechproject.tasks.domain.ParameterType.TIME;
+import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.*;
+import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
+import static org.motechproject.tasks.events.constants.TaskFailureCause.DATA_SOURCE;
+import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -543,10 +587,11 @@ public class TaskTriggerHandlerTest {
         actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
         task.setId("taskId");
+        task.setHasRegisteredChannel(true);
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
 
         List<Task> tasks = asList(task);
 
@@ -596,10 +641,11 @@ public class TaskTriggerHandlerTest {
         actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
         task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
         task.setId("taskId");
+        task.setHasRegisteredChannel(true);
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
 
         List<Task> tasks = asList(task);
 
@@ -637,11 +683,12 @@ public class TaskTriggerHandlerTest {
         task.setName("task");
         task.setId("taskId");
         task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setHasRegisteredChannel(true);
         task.setActions(Collections.EMPTY_LIST);
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
@@ -682,11 +729,12 @@ public class TaskTriggerHandlerTest {
         task.setName("task");
         task.setId("taskId");
         task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setHasRegisteredChannel(true);
         task.setActions(Collections.EMPTY_LIST);
 
         TaskConfig taskConfig = new TaskConfig();
         task.setTaskConfig(taskConfig);
-        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
         taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
 
         List<Task> tasks = asList(task);
@@ -868,6 +916,24 @@ public class TaskTriggerHandlerTest {
         when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
 
         task.setEnabled(false);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService, never()).getActionEventFor(task.getActions().get(0));
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(taskActivityService, never()).addSuccess(task);
+    }
+
+    @Test
+    public void shouldNotSendEventWhenTasksChannelIsDeregistered() throws Exception {
+        setTriggerEvent();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+
+        task.setHasRegisteredChannel(false);
 
         handler.handle(createEvent());
 
@@ -1380,6 +1446,7 @@ public class TaskTriggerHandlerTest {
         task.setTrigger(trigger);
         task.addAction(action);
         task.setId("taskId1");
+        task.setHasRegisteredChannel(true);
         tasks.add(task);
     }
 
@@ -1511,7 +1578,7 @@ public class TaskTriggerHandlerTest {
         param.put("endDate", new LocalDate(2012, 11, 29));
         param.put("facilityId", 987654321);
         param.put("eventName", "event name");
-        param.put("list", Arrays.asList(1, 2, 3));
+        param.put("list", asList(1, 2, 3));
         param.put("format", "%s || %s || %s");
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
@@ -1519,8 +1586,8 @@ public class TaskTriggerHandlerTest {
 
     private List<Object> getExpectedList() {
         List<Object> list = new ArrayList<>();
-        list.addAll(Arrays.asList("4", "5"));
-        list.addAll(Arrays.asList(1, 2, 3));
+        list.addAll(asList("4", "5"));
+        list.addAll(asList(1, 2, 3));
         list.add(123456789);
         list.add(6789);
 
@@ -1535,6 +1602,10 @@ public class TaskTriggerHandlerTest {
         map.put("event name", 6789);
 
         return map;
+    }
+
+    private static <T> List<T> asList(T... items) {
+        return new ArrayList<>(Arrays.asList(items));
     }
 
 }

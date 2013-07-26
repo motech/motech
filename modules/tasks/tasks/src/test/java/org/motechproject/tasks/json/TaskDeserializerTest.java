@@ -42,6 +42,7 @@ public class TaskDeserializerTest {
 
         String name = "Pregnancy SMS";
         boolean enabled = false;
+        boolean hasRegisteredChannel = true;
 
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("delivery_time", "12:00");
@@ -62,6 +63,7 @@ public class TaskDeserializerTest {
         EXPECTED_TASK.getTaskConfig().add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
         EXPECTED_TASK.setName(name);
         EXPECTED_TASK.setEnabled(enabled);
+        EXPECTED_TASK.setHasRegisteredChannel(hasRegisteredChannel);
         EXPECTED_TASK.setActions(asList(actionInformation));
         EXPECTED_TASK.setTrigger(triggerInformation);
         EXPECTED_TASK.setValidationErrors(validationErrors);
