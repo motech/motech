@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+/**
+ * A listener for {@link ChannelService}, effectively serves as a tasks-bundle start handler, that sets up tracking of start/stop events of all other bundles
+ */
 public class ChannelServiceRegistrationListener implements OsgiServiceRegistrationListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceRegistrationListener.class);
@@ -26,7 +29,11 @@ public class ChannelServiceRegistrationListener implements OsgiServiceRegistrati
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof ChannelService && tracker == null) {
             LOG.info("ChannelService registered, starting BlueprintApplicationContextTracker");
-            tracker = new BlueprintApplicationContextTracker(bundleContext, (ChannelService) service);
+
+            ChannelService channelService = (ChannelService) service;
+            channelService.deregisterAllChannels();
+
+            tracker = new BlueprintApplicationContextTracker(bundleContext, channelService);
             tracker.open(true);
         }
     }

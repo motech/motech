@@ -4,6 +4,9 @@ import org.apache.commons.collections.Predicate;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.tasks.domain.Task;
 
+/**
+ * Utility class defining filters over some collections.
+ */
 final class HandlerPredicates {
     private HandlerPredicates() {
     }
@@ -12,7 +15,7 @@ final class HandlerPredicates {
         return new Predicate() {
             @Override
             public boolean evaluate(Object object) {
-                return object instanceof Task && ((Task) object).isEnabled();
+                return object instanceof Task && ((Task) object).isEnabled() && ((Task) object).hasRegisteredChannel();
             }
         };
     }

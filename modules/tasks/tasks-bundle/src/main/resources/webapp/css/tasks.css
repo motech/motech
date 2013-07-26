@@ -169,6 +169,10 @@ editable-content .actionField.input-block-level span.badge {
     text-align: center;
 }
 
+.tasks-list .task-status {
+    color: darkgrey;
+}
+
 .tasks-list .task-nav.pull-right {
     font-weight: normal;
 }
@@ -631,6 +635,10 @@ h3.popover-title {
 
 .task-bar {
     overflow: visible;
+}
+
+.task-bar.channel-deregistered {
+    padding: 5px;
 }
 
 .task-bar .task-nav {

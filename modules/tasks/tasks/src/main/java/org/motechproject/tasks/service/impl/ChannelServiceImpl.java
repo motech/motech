@@ -8,6 +8,8 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.ChannelDeregisterEvent;
+import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
@@ -40,6 +42,9 @@ import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
+/**
+ * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel} over a couchdb database.
+ */
 @Service("channelService")
 public class ChannelServiceImpl implements ChannelService {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceImpl.class);
@@ -53,11 +58,11 @@ public class ChannelServiceImpl implements ChannelService {
     private ResourceLoader resourceLoader;
     private EventRelay eventRelay;
 
-    private BundleContext bundleContext;
-
     static {
         typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
     }
+
+    private BundleContext bundleContext;
 
     @Autowired
     public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay) {
@@ -70,10 +75,11 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public void registerChannel(ChannelRequest channelRequest) {
         addOrUpdate(new Channel(channelRequest));
+        eventRelay.sendEventMessage(new ChannelRegisterEvent(channelRequest.getModuleName()).toMotechEvent());
     }
 
     @Override
-    public void registerChannel(final InputStream stream) {
+    public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         Type type = new TypeToken<ChannelRequest>() {
         }.getType();
         StringWriter writer = new StringWriter();
@@ -81,10 +87,20 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             IOUtils.copy(stream, writer);
             ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            channelRequest.setModuleName(moduleName);
+            channelRequest.setModuleVersion(moduleVersion);
 
-            addOrUpdate(new Channel(channelRequest));
+            registerChannel(channelRequest);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deregisterChannel(String moduleName) {
+        Channel channel = getChannel(moduleName);
+        if (channel != null) {
+            deregisterChannel(channel);
         }
     }
 
@@ -115,6 +131,18 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public Channel getChannel(final String moduleName) {
         return allChannels.byModuleName(moduleName);
+    }
+
+    @Override
+    public void deregisterAllChannels() {
+        for (Channel channel : getAllChannels()) {
+            deregisterChannel(channel);
+        }
+    }
+
+    private void deregisterChannel(Channel channel) {
+        allChannels.remove(channel);
+        eventRelay.sendEventMessage(new ChannelDeregisterEvent(channel.getModuleName()).toMotechEvent());
     }
 
     @Override
@@ -185,5 +213,4 @@ public class ChannelServiceImpl implements ChannelService {
             IOUtils.closeQuietly(is);
         }
     }
-
 }

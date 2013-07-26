@@ -17,8 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml"})
@@ -96,9 +100,34 @@ public class AllTasksIT extends SpringIntegrationTest {
         markForDeletion(allTasks.getAll());
     }
 
+    @Test
+    public void shouldFindTasksThatDependOnAModule() {
+        TaskEventInformation trigger1 = new TaskEventInformation("trigger1", "best", "test", "0.14", "RECEIVE-1");
+        TaskEventInformation trigger2 = new TaskEventInformation("trigger2", "lest", "jest", "0.14", "RECEIVE-2");
+
+        TaskActionInformation action1 = new TaskActionInformation("action1", "test", "test", "0.15", "SEND");
+        TaskActionInformation action2 = new TaskActionInformation("action2", "fest", "test", "0.12", "actionSubject");
+        TaskActionInformation action3 = new TaskActionInformation("action2", "fest", "jest", "0.12", "actionSubject");
+
+        Task[] tasks = new Task[]{
+            new Task("task1", trigger1, asList(action1)),
+            new Task("task2", trigger2, asList(action3)),
+            new Task("task3", trigger1, asList(action2)),
+            new Task("task4", trigger2, asList(action1)),
+        };
+        for (Task task : tasks) {
+            allTasks.addOrUpdate(task);
+        }
+
+        List<String> tasksUsingTestModule = extract(allTasks.dependentOnModule("test"), on(Task.class).getName());
+        assertTrue(tasksUsingTestModule.contains("task1"));
+        assertTrue(tasksUsingTestModule.contains("task3"));
+        assertTrue(tasksUsingTestModule.contains("task4"));
+        assertFalse(tasksUsingTestModule.contains("task2"));
+    }
+
     @Override
     public CouchDbConnector getDBConnector() {
         return couchDbConnector;
     }
-
 }

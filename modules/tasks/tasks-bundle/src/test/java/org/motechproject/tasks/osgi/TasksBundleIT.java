@@ -1,15 +1,20 @@
 package org.motechproject.tasks.osgi;
 
-import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.Task;
+import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskDataProvider;
+import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.repository.AllChannels;
 import org.motechproject.tasks.repository.AllTaskDataProviders;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
+import org.motechproject.tasks.service.TaskService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.Resource;
 
@@ -21,10 +26,29 @@ import static java.util.Arrays.asList;
 public class TasksBundleIT extends BaseOsgiIT {
     private static final Integer TRIES_COUNT = 50;
 
+    static boolean firstTime = true;
+    static int channelsLoadedOnStartup;
+
+    @Override
+    protected void onSetUp() throws Exception {
+        super.onSetUp();
+
+        // @BeforeClass workaround for junit3
+        if (firstTime) {
+            firstTime = false;
+            ChannelService channelService = getService(ChannelService.class);
+            channelsLoadedOnStartup = channelService.getAllChannels().size();
+        }
+    }
+
     public void testCoreServiceReferences() {
         assertNotNull(bundleContext.getServiceReference(PlatformSettingsService.class.getName()));
-        assertNotNull(bundleContext.getServiceReference(EventListenerRegistryService.class.getName()));
         assertNotNull(bundleContext.getServiceReference(EventRelay.class.getName()));
+        assertNotNull(bundleContext.getServiceReference(TaskService.class.getName()));
+    }
+
+    public void testOnlyChannelsCreatedDuringStartupArePresent() throws BundleException, InterruptedException {
+        assertEquals(2, channelsLoadedOnStartup);    // one each from motech-tasks-test-bundle and TasksBundleIT bundle
     }
 
     public void testChannelService() throws InterruptedException {
@@ -32,8 +56,9 @@ public class TasksBundleIT extends BaseOsgiIT {
         Channel fromFile;
         int tries = 0;
 
+        String testBundleName = bundleContext.getBundle().getSymbolicName();
         do {
-            fromFile = channelService.getChannel("test");
+            fromFile = channelService.getChannel(testBundleName);
             ++tries;
             Thread.sleep(500);
         } while (fromFile == null && tries < TRIES_COUNT);
@@ -41,7 +66,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         assertNotNull(fromFile);
 
         AllChannels allChannels = getApplicationContext().getBean(AllChannels.class);
-        Channel fromDB = allChannels.byModuleName("test");
+        Channel fromDB = allChannels.byModuleName(testBundleName);
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
@@ -71,6 +96,59 @@ public class TasksBundleIT extends BaseOsgiIT {
 
         assertNotNull(fromDB);
         assertEquals(fromDB, fromFile);
+    }
+
+    public void testChannelRegistration() throws BundleException, InterruptedException {
+        String moduleName = "motech-tasks-test-bundle";
+
+        ChannelService channelService = getService(ChannelService.class);
+
+        Channel channel = channelService.getChannel(moduleName);
+        assertNotNull(channel);
+    }
+
+    public void testChannelDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException, InterruptedException {
+        TaskService taskService = getService(TaskService.class);
+
+        String moduleName = "motech-tasks-test-bundle";
+
+        TaskEventInformation trigger = new TaskEventInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
+        Task task = new Task("testTask", trigger, asList(new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")), null, true, true);
+        taskService.save(task);
+
+        Bundle module = findBundleByName(moduleName);
+        module.stop();
+
+        ChannelService channelService = getService(ChannelService.class);
+        Channel channel = channelService.getChannel(moduleName);
+        assertNull(channel);
+
+        for (int i = 0; i < TRIES_COUNT; i++) {
+            Task existingTask = findTask(taskService, "testTask");
+            if (!existingTask.hasRegisteredChannel()) {
+                return;
+            }
+        }
+        fail();
+    }
+
+    private Task findTask(TaskService taskService, String name) {
+        for (Task task : taskService.getAllTasks()) {
+            if (task.getName().equals(name)) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    private Bundle findBundleByName(String name) {
+        for (Bundle bundle : bundleContext.getBundles()) {
+            String symbolicName = bundle.getSymbolicName();
+            if (symbolicName != null && symbolicName.contains(name)) {
+                return bundle;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -110,5 +188,4 @@ public class TasksBundleIT extends BaseOsgiIT {
 
         return serviceReference;
     }
-
 }

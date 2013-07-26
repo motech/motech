@@ -1,6 +1,10 @@
 package org.motechproject.tasks.events.constants;
 
+/**
+ * Utility class containing various event subject values used throughout the tasks module
+ */
 public final class EventSubjects {
+
     private EventSubjects() {
     }
 
@@ -8,6 +12,8 @@ public final class EventSubjects {
 
     public static final String CHANNEL_SUBJECT = BASE_SUBJECT + "channel.";
     public static final String CHANNEL_UPDATE_SUBJECT = CHANNEL_SUBJECT + "update";
+    public static final String CHANNEL_REGISTER_SUBJECT = CHANNEL_SUBJECT + "register";
+    public static final String CHANNEL_DEREGISTER_SUBJECT = CHANNEL_SUBJECT + "deregister";
 
     public static final String DATA_PROVIDER_SUBJECT = BASE_SUBJECT + "dataProvider.";
     public static final String DATA_PROVIDER_UPDATE_SUBJECT = DATA_PROVIDER_SUBJECT + "update";

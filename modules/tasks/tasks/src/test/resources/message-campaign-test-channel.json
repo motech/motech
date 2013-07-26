@@ -1,7 +1,5 @@
 {
     "displayName":"msgCampaign.name",
-    "moduleName":"message-campaign-test",
-    "moduleVersion":"0.15",
     "description":"msgCampaign.description",
     "triggerTaskEvents":[
         {
