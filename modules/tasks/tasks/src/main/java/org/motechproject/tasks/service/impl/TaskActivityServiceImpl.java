@@ -66,7 +66,7 @@ public class TaskActivityServiceImpl implements TaskActivityService {
         for (int i = messages.size() - 1; i >= 0; --i) {
             TaskActivity msg = messages.get(i);
 
-            if (msg.getMessage().equals("task.warning.taskDisabled")  || msg.getActivityType() == TaskActivityType.SUCCESS) {
+            if ("task.warning.taskDisabled".equals(msg.getMessage()) || msg.getActivityType() == TaskActivityType.SUCCESS) {
                 break;
             }
 

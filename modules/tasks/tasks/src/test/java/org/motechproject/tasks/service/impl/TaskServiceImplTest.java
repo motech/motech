@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,6 +16,7 @@ import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.LookupFieldsParameter;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskDataProviderObject;
@@ -21,6 +24,7 @@ import org.motechproject.tasks.domain.TaskEvent;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllTasks;
@@ -28,7 +32,11 @@ import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.service.TaskDataProviderService;
 import org.motechproject.tasks.service.TaskService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
@@ -44,6 +52,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.tasks.domain.DataSource.Lookup;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
@@ -107,7 +116,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -148,7 +157,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 
@@ -360,13 +369,48 @@ public class TaskServiceImplTest {
         verify(allTasks).remove(expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenTaskNotFound() {
+    @Test(expected = TaskNotFoundException.class)
+    public void shouldThrowExceptionDuringDeletionIfTaskNotFound() {
         String taskId = "12345";
 
         when(allTasks.get(taskId)).thenReturn(null);
 
         taskService.deleteTask(taskId);
+    }
+
+    @Test
+    public void shouldConvertTaskToJSON() throws Exception {
+        String taskId = "12345";
+        Task expected = new TaskBuilder()
+                .withName("test")
+                .withTrigger(trigger)
+                .addAction(action)
+                .addDataSource(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .isEnabled(true)
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        when(allTasks.get(taskId)).thenReturn(expected);
+
+        String json = taskService.exportTask(taskId);
+        JsonNode node = mapper.readTree(json);
+
+        for (String field : asList("validationErrors", "type", "_id", "_rev")) {
+            assertFalse(node.has(field));
+        }
+
+        assertEquals(expected, mapper.readValue(node, Task.class));
+    }
+
+    @Test(expected = TaskNotFoundException.class)
+    public void shouldThrowExceptionDuringExportingIfTaskNotFound() {
+        String taskId = "12345";
+
+        when(allTasks.get(taskId)).thenReturn(null);
+
+        taskService.exportTask(taskId);
     }
 
     @Test
@@ -377,7 +421,7 @@ public class TaskServiceImplTest {
         Map<String, String> map = new HashMap<>();
         map.put("phone", "12345");
 
-        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new DataSource.Lookup("id", "trigger.value")), true));
+        TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
 
         action.setValues(map);
 

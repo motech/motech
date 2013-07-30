@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;

@@ -175,7 +175,7 @@ public class Task extends MotechBaseDataObject {
             if (!map.containsKey(dataSource.getProviderId())) {
                 map.put(dataSource.getProviderId(), new ArrayList<TaskAdditionalData>());
             }
-            for(DataSource.Lookup lookup : dataSource.getLookup()) {
+            for (DataSource.Lookup lookup : dataSource.getLookup()) {
                 map.get(dataSource.getProviderId()).add(new TaskAdditionalData(
                         dataSource.getObjectId(),
                         dataSource.getType(),
@@ -272,7 +272,7 @@ public class Task extends MotechBaseDataObject {
         this.taskConfig = taskConfig;
     }
 
-    private void addDataSources(Map<String,List<TaskAdditionalData>> additionalData) {
+    private void addDataSources(Map<String, List<TaskAdditionalData>> additionalData) {
         for (Map.Entry<String, List<TaskAdditionalData>> entry : additionalData.entrySet()) {
             for (TaskAdditionalData data : entry.getValue()) {
                 DataSource.Lookup lookup = new DataSource.Lookup(

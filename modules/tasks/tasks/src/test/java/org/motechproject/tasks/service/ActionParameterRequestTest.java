@@ -1,11 +1,7 @@
 package org.motechproject.tasks.service;
 
-import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
-import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.domain.ParameterType;
-
-import java.lang.reflect.Type;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;

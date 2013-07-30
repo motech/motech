@@ -30,4 +30,6 @@ public interface TaskService {
     Task getTask(String taskId);
 
     void deleteTask(String taskId);
+
+    String exportTask(String taskId);
 }

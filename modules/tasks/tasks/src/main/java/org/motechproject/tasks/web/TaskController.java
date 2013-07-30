@@ -1,5 +1,7 @@
 package org.motechproject.tasks.web;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
@@ -17,12 +19,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
+import static java.net.URLEncoder.encode;
+import static org.apache.commons.lang.CharEncoding.UTF_8;
+import static org.codehaus.jackson.map.SerializationConfig.Feature.INDENT_OUTPUT;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @Controller
 public class TaskController {
+    private static final String JSON_NAME_FIELD = "name";
+
     private TaskService taskService;
     private TaskActivityService activityService;
     private TaskTriggerHandler triggerHandler;
@@ -59,6 +70,28 @@ public class TaskController {
     public void deleteTask(@PathVariable String taskId) {
         taskService.deleteTask(taskId);
         activityService.deleteActivitiesForTask(taskId);
+    }
+
+    @RequestMapping(value = "/task/{taskId}/export", method = RequestMethod.GET)
+    public void exportTask(@PathVariable String taskId, HttpServletResponse response)
+            throws IOException {
+        ObjectMapper mapper = new ObjectMapper().enable(INDENT_OUTPUT);
+
+        String json = taskService.exportTask(taskId);
+        JsonNode node = mapper.readTree(json);
+
+        String fileName = node.has(JSON_NAME_FIELD)
+                ? node.get(JSON_NAME_FIELD).getTextValue()
+                : "task";
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(UTF_8);
+        response.setHeader(
+                "Content-Disposition",
+                format("attachment; filename=%s.json", encode(fileName, UTF_8))
+        );
+
+        response.getWriter().write(mapper.writeValueAsString(node));
     }
 
     @RequestMapping(value = "/task/save", method = RequestMethod.POST)

@@ -1,7 +1,11 @@
 package org.motechproject.tasks.web;
 
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -12,14 +16,20 @@ import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import static java.lang.String.format;
+import static java.net.URLEncoder.encode;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -27,6 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class TaskControllerTest {
     private static final String TASK_ID = "12345";
@@ -39,6 +50,12 @@ public class TaskControllerTest {
 
     @Mock
     EventListenerRegistryService eventListenerRegistryService;
+
+    @Mock
+    HttpServletResponse response;
+
+    @Mock
+    PrintWriter printWriter;
 
     TaskTriggerHandler taskTriggerHandler;
 
@@ -129,5 +146,37 @@ public class TaskControllerTest {
         verify(taskService).save(expected);
         verify(eventListenerRegistryService).getListeners(subject);
         verify(eventListenerRegistryService).registerListener(any(EventListener.class), eq(subject));
+    }
+
+    @Test
+    public void shouldExportTaskWithGivenID() throws Exception {
+        String taskId = "12345";
+        StringWriter writer = new StringWriter();
+        ObjectMapper mapper = new ObjectMapper();
+
+        IOUtils.copy(this.getClass().getResourceAsStream("/new-task-version.json"), writer);
+        ObjectNode node = (ObjectNode) mapper.readTree(writer.toString());
+        node.remove(asList("validationErrors", "type", "_id", "_rev"));
+
+        when(response.getWriter()).thenReturn(printWriter);
+        when(taskService.exportTask(taskId)).thenReturn(node.toString());
+
+        controller.exportTask(taskId, response);
+
+        ArgumentCaptor<String> headerCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(response).setContentType(APPLICATION_JSON_VALUE);
+        verify(response).setCharacterEncoding(UTF_8);
+        verify(response).setHeader(eq("Content-Disposition"), headerCaptor.capture());
+
+        verify(printWriter).write(jsonCaptor.capture());
+
+        assertEquals(
+                format("attachment; filename=%s.json", encode("Pregnancy SMS", UTF_8)),
+                headerCaptor.getValue()
+        );
+
+        assertEquals(node, mapper.readTree(jsonCaptor.getValue()));
     }
 }

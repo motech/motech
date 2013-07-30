@@ -24,7 +24,7 @@ public class TaskDataProviderObject implements Serializable {
     public TaskDataProviderObject(String displayName, String type, List<LookupFieldsParameter> lookupFields, List<FieldParameter> fields) {
         this.displayName = displayName;
         this.type = type;
-        this.lookupFields = lookupFields == null ? new ArrayList<LookupFieldsParameter>(): lookupFields;
+        this.lookupFields = lookupFields == null ? new ArrayList<LookupFieldsParameter>() : lookupFields;
         this.fields = fields == null ? new ArrayList<FieldParameter>() : fields;
     }
 
@@ -75,7 +75,7 @@ public class TaskDataProviderObject implements Serializable {
                     LinkedHashMap<String, Object> map = (LinkedHashMap) o;
                     LookupFieldsParameter param = new LookupFieldsParameter();
                     param.setDisplayName(map.get("displayName").toString());
-                    param.setFields((ArrayList<String>)map.get("fields"));
+                    param.setFields((ArrayList<String>) map.get("fields"));
                     this.lookupFields.add(param);
                 }
             }

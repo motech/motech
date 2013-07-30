@@ -1,5 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -13,6 +15,7 @@ import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
+import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.repository.AllTasks;
@@ -33,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
@@ -190,7 +194,7 @@ public class TaskServiceImpl implements TaskService {
         Task t = getTask(taskId);
 
         if (t == null) {
-            throw new IllegalArgumentException(format("Not found task with ID: %s", taskId));
+            throw new TaskNotFoundException(taskId);
         }
 
         allTasks.remove(t);
@@ -245,6 +249,21 @@ public class TaskServiceImpl implements TaskService {
                     );
                 }
             }
+        }
+    }
+
+    @Override
+    public String exportTask(String taskId) {
+        Task task = getTask(taskId);
+
+        if (null != task) {
+            ObjectNode node = new ObjectMapper().valueToTree(task);
+            // remove unnecessary fields
+            node.remove(asList("validationErrors", "type", "_id", "_rev"));
+
+            return node.toString();
+        } else {
+            throw new TaskNotFoundException(taskId);
         }
     }
 

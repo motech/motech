@@ -4,7 +4,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.io.Serializable;
 import java.util.Objects;
-import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parse;

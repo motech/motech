@@ -140,7 +140,7 @@ class TaskInitializer {
 
 
         Map<String, String> lookupFields = new HashMap<>();
-        for(DataSource.Lookup lookup : dataSource.getLookup()) {
+        for (DataSource.Lookup lookup : dataSource.getLookup()) {
             lookupFields.put(lookup.getField(), convert(lookup.getValue()));
         }
 

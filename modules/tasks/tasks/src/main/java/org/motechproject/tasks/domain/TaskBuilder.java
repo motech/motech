@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskBuilder {
+    private String id;
     private String description;
     private String name;
     private List<TaskActionInformation> actions;
@@ -13,8 +14,14 @@ public class TaskBuilder {
 
     public TaskBuilder() {
         taskConfig = new TaskConfig();
-        actions = new ArrayList<TaskActionInformation>();
+        actions = new ArrayList<>();
         enabled = false;
+    }
+
+    public TaskBuilder withId(String id) {
+        this.id = id;
+
+        return this;
     }
 
     public TaskBuilder withName(String name) {
@@ -84,6 +91,10 @@ public class TaskBuilder {
         task.setEnabled(enabled);
         task.setActions(actions);
         task.setTaskConfig(taskConfig);
+
+        if (null != id) {
+            task.setId(id);
+        }
 
         return task;
     }
