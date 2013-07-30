@@ -6,13 +6,13 @@ import org.codehaus.jackson.annotate.JsonValue;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public enum OperatorType {
-    EQUALS("equals"),
-    CONTAINS("contains"),
-    EXIST("exist"),
-    STARTSWITH("startsWith"),
-    ENDSWITH("endsWith"),
-    GT("gt"),
-    LT("lt");
+    EQUALS("task.equals"),
+    CONTAINS("task.contains"),
+    EXIST("task.exist"),
+    STARTSWITH("task.startsWith"),
+    ENDSWITH("task.endsWith"),
+    GT("task.gt"),
+    LT("task.lt");
 
 
     private final String value;
