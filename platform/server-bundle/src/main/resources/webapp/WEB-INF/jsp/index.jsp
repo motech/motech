@@ -40,7 +40,7 @@
                             <div class="clearfix"></div>
                             <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
                             <div class="clearfix"></div>
-                            <div class="splash-msg">{{msg('module.loading')}}</div>
+                            <div class="splash-msg">{{msg('server.module.loading')}}</div>
                             <div class="clearfix"></div>
                         </div>
                         <c:if test="${criticalNotification != null && criticalNotification != ''}">

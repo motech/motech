@@ -13,7 +13,7 @@
         <li class="divider"></li>
     </ul>
     <ul class="nav nav-tabs nav-stacked modulesWithoutSubMenu">
-        <li ui-if="modulesWithoutSubMenu && modulesWithoutSubMenu.length > 0" class="nav-header">{{msg('modules')}}</li>
+        <li ui-if="modulesWithoutSubMenu && modulesWithoutSubMenu.length > 0" class="nav-header">{{msg('server.modules')}}</li>
         <li ng-repeat="module in modulesWithoutSubMenu" ng-class="{'active': getCurrentModuleName() == module.moduleName}">
             <a href="?moduleName={{module.moduleName}}">
                 <i ui-if="module.needsAttention" class="icon icon-exclamation-sign icon-red"></i>

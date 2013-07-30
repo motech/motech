@@ -53,7 +53,7 @@
                 <value>classpath:jmx.properties</value>
             </list>
         </property>
-        <property name="moduleName" value="admin"/>
+        <property name="moduleName" value="admin.module"/>
     </bean>
 
 

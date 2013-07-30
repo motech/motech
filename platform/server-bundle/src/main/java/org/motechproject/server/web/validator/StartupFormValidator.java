@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
 
-    private static final String ERROR_REQUIRED = "error.required.%s";
+    private static final String ERROR_REQUIRED = "server.error.required.%s";
     private static final String PROVIDER_NAME = "providerName";
     private static final String PROVIDER_URL = "providerUrl";
     private static final String LOGIN_MODE = "loginMode";
@@ -39,7 +39,7 @@ public class StartupFormValidator implements Validator {
             String value = errors.getFieldValue(field).toString().replace("localhost", "127.0.0.1");
 
             if (errors.getFieldErrorCount(field) == 0 && !urlValidator.isValid(value)) {
-                errors.rejectValue(field, String.format("error.invalid.%s", field), null, null);
+                errors.rejectValue(field, String.format("server.error.invalid.%s", field), null, null);
             }
         }
 
@@ -59,7 +59,7 @@ public class StartupFormValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_URL, String.format(ERROR_REQUIRED, PROVIDER_URL));
 
         if (errors.getFieldErrorCount(PROVIDER_URL) == 0 && !urlValidator.isValid(providerUrl)) {
-            errors.rejectValue(PROVIDER_URL, String.format("error.invalid.%s", PROVIDER_URL), null, null);
+            errors.rejectValue(PROVIDER_URL, String.format("server.error.invalid.%s", PROVIDER_URL), null, null);
         }
     }
 
@@ -73,11 +73,11 @@ public class StartupFormValidator implements Validator {
         }
 
         if (errors.getFieldErrorCount(password) == 0 && errors.getFieldErrorCount(passwordConfirm) == 0 && !password.equals(passwordConfirm)) {
-            errors.rejectValue("adminPassword", "error.invalid.password", null, null);
+            errors.rejectValue("adminPassword", "server.error.invalid.password", null, null);
         }
 
         if (!EmailValidator.getInstance().isValid(adminEmail)) {
-            errors.rejectValue("adminEmail", "error.invalid.email", null, null);
+            errors.rejectValue("adminEmail", "server.error.invalid.email", null, null);
         }
     }
 }

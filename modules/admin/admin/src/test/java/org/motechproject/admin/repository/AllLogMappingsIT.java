@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(locations = {"classpath*:testApplicationAdmin.xml"})
 public class AllLogMappingsIT extends SpringIntegrationTest {
     private static final String ADMIN_LOG_NAME = "org.motechproject.admin";
-    private static final String REPOSITORY_LOG_NAME = ADMIN_LOG_NAME + ".repository";
+    private static final String REPOSITORY_LOG_NAME = ADMIN_LOG_NAME + ".server.repository";
 
     @Autowired
     private AllLogMappings allLogMappings;

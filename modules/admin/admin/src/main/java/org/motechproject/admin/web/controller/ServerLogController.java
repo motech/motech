@@ -41,7 +41,7 @@ public class ServerLogController {
         File logFile = getLogFile();
 
         if (!logFile.exists()) {
-            writer.write("tomcat.error.logFileNotFound");
+            writer.write("server.tomcat.error.logFileNotFound");
         } else {
             long readSize = FileUtils.ONE_MB;
             long fileSize = logFile.length();

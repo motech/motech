@@ -481,7 +481,7 @@
             $http({method:'GET', url:'../admin/api/log'}).
                 success(
                 function (data) {
-                    if (data === 'tomcat.error.logFileNotFound') {
+                    if (data === 'server.tomcat.error.logFileNotFound') {
                         $('#logContent').html($scope.msg(data));
                     } else {
                         $('#logContent').html(data.replace(/\r\n|\n/g, "<br/>"));

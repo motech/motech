@@ -30,7 +30,7 @@
         <div class="clearfix"></div>
         <div class="startup-strip">
             <div class="control-group">
-            <h2 class="title ng-binding"><fmt:message key="welcome.startup" bundle="${bundle}"/></h2>
+            <h2 class="title ng-binding"><fmt:message key="server.welcome.startup" bundle="${bundle}"/></h2>
             </div>
         </div>
         <div class="clearfix"></div>
@@ -38,7 +38,7 @@
             <div class="diver">
                 <form action="startup.do" method="POST" class="form-horizontal">
                     <div class="control-group">
-                        <label class="control-label"><fmt:message key="select.language" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.select.language" bundle="${bundle}"/></label>
                         <div class="controls">
                             <div class="btn-group">
                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -58,15 +58,15 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label"><fmt:message key="enter.queueUrl" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.queueUrl" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="queueUrl" value="${startupSettings.queueUrl}"/>
                             <c:if test="${ not empty suggestions.queueUrls }">
                                 <div id="queue.urls" class="queue-urls">
                                 <c:forEach var="url" items="${suggestions.queueUrls}" varStatus="status">
                                     <div id="queue.url.${status.count}">
-                                        <span><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: ${url}</span>
-                                        <button type="button" class="btn btn-mini"><fmt:message key="use" bundle="${bundle}"/></button>
+                                        <span><fmt:message key="server.suggestion" bundle="${bundle}"/> #${status.count}: ${url}</span>
+                                        <button type="button" class="btn btn-mini"><fmt:message key="server.use" bundle="${bundle}"/></button>
                                     </div>
                                 </c:forEach>
                                 </div>
@@ -74,15 +74,15 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label"><fmt:message key="enter.schedulerUrl" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.schedulerUrl" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="schedulerUrl" value="${startupSettings.schedulerUrl}"/>
                             <c:if test="${ not empty suggestions.schedulerUrls }">
                                 <div id="scheduler.urls">
                                 <c:forEach var="url" items="${suggestions.schedulerUrls}" varStatus="status">
                                     <div id="scheduler.url.${status.count}">
-                                        <span><i><fmt:message key="suggestion" bundle="${bundle}"/> #${status.count}: </i>${url}</span>
-                                        <button type="button" class="btn btn-mini"><fmt:message key="use" bundle="${bundle}"/></button>
+                                        <span><i><fmt:message key="server.suggestion" bundle="${bundle}"/> #${status.count}: </i>${url}</span>
+                                        <button type="button" class="btn btn-mini"><fmt:message key="server.use" bundle="${bundle}"/></button>
                                     </div>
                                 </c:forEach>
                                 </div>
@@ -90,44 +90,44 @@
                         </div>
                     </div>
                     <div class="control-group">
-                         <label class="control-label"><fmt:message key="select.loginMode" bundle="${bundle}"/></label>
+                         <label class="control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls">
-                             <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('repository')}}</span>
-                             <input type="radio" value="openid" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('openId')}}</span>
+                             <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('server.repository')}}</span>
+                             <input type="radio" value="openid" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('server.openId')}}</span>
                          </div>
                      </div>
                     <div ng-show="securityMode=='repository'" class="control-group">
-                        <label class="control-label"><fmt:message key="enter.adminLogin" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.adminLogin" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="adminLogin" value="${startupSettings.adminLogin}"/>
                         </div>
                     </div>
                     <div ng-show="securityMode=='repository'" class="control-group">
-                        <label class="control-label"><fmt:message key="enter.adminPassword" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.adminPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-xlarge" name="adminPassword" value="${startupSettings.adminPassword}"/>
                         </div>
                     </div>
                     <div ng-show="securityMode=='repository'" class="control-group">
-                        <label class="control-label"><fmt:message key="enter.adminComfirmPassword" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.adminComfirmPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-xlarge" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
                         </div>
                     </div>
                      <div ng-show="securityMode=='repository'" class="control-group">
-                        <label class="control-label"><fmt:message key="enter.adminEmail" bundle="${bundle}"/></label>
+                        <label class="control-label"><fmt:message key="server.enter.adminEmail" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="email" class="input-xlarge" name="adminEmail" value="${startupSettings.adminEmail}"/>
                         </div>
                      </div>
                      <div ng-show="securityMode=='openid'" class="control-group">
-                         <label class="control-label"><fmt:message key="enter.providerName" bundle="${bundle}"/></label>
+                         <label class="control-label"><fmt:message key="server.enter.providerName" bundle="${bundle}"/></label>
                          <div class="controls">
                              <input type="text" class="input-xlarge" name="providerName" value="${startupSettings.providerName}"/>
                          </div>
                      </div>
                      <div ng-show="securityMode=='openid'" class="control-group">
-                          <label class="control-label"><fmt:message key="enter.providerUrl" bundle="${bundle}"/></label>
+                          <label class="control-label"><fmt:message key="server.enter.providerUrl" bundle="${bundle}"/></label>
                           <div class="controls">
                               <input type="text" class="input-xlarge" name="providerUrl" value="${startupSettings.providerUrl}"/>
                           </div>
@@ -135,7 +135,7 @@
                     <div class="control-group">
                         <div class="controls">
                             <input type="hidden" name="language" value="${startupSettings.language}"/>
-                            <input class="btn btn-primary" type="submit" name="START" value="<fmt:message key="submit" bundle="${bundle}"/>"/>
+                            <input class="btn btn-primary" type="submit" name="START" value="<fmt:message key="server.submit" bundle="${bundle}"/>"/>
                         </div>
                     </div>
                     <c:if test="${not empty errors}">

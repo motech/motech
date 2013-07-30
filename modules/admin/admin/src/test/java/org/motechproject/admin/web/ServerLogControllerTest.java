@@ -93,7 +93,7 @@ public class ServerLogControllerTest {
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
-                content().string("tomcat.error.logFileNotFound")
+                content().string("server.tomcat.error.logFileNotFound")
         );
     }
 

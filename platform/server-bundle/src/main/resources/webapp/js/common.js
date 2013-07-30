@@ -34,7 +34,7 @@ var jFormErrorHandler = function(response) {
 
     handleResponse = function(title, defaultMsg, response) {
         'use strict';
-        var msg = "error",
+        var msg = "server.error",
             responseData = (typeof(response) === 'string') ? response : response.data;
 
         unblockUI();
@@ -56,7 +56,7 @@ var jFormErrorHandler = function(response) {
 
     handleWithStackTrace = function(title, defaultMsg, response) {
         'use strict';
-        var msg = "error";
+        var msg = "server.error";
         if (response) {
             if(response.responseText) {
                 response = response.responseText;

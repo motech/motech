@@ -28,7 +28,7 @@
                 return this.showDashboard ? "minimize action-minimize-up" : "minimize action-minimize-down";
             },
             changeTitle : function () {
-                return this.showDashboard ? "minimizeLogo" : "expandLogo";
+                return this.showDashboard ? "server.minimizeLogo" : "server.expandLogo";
             },
             backgroudUpDown : function () {
                 return this.showDashboard ? "body-down" : "body-up";
@@ -49,7 +49,7 @@
                     }
                 })
                 .error(function (response) {
-                    handleResponse('header.error', 'error.setLangError', response);
+                    handleResponse('server.header.error', 'server.error.setLangError', response);
                 });
         };
 

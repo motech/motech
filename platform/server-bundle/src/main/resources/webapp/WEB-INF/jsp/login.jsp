@@ -29,7 +29,7 @@
         <div class="container">
             <a href="."><div class="dashboard-logo"></div></a>
             <div class="nav-collapse">
-                <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
+                <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                             <div class="control-group open-id">
-                                <p><fmt:message key="oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                                <p><fmt:message key="server.oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
                             </div>
                         </form>
                     </div></div>
@@ -135,7 +135,7 @@
                                             </div>
                                         </div>
                                         <div class="control-group open-id">
-                                            <p><fmt:message key="oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                                            <p><fmt:message key="server.oneTimeToken" bundle="${bundle}"/>&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
                                         </div>
                                     </form>
                                 </div></div>

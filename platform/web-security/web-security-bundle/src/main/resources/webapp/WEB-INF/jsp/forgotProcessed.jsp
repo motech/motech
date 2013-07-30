@@ -24,7 +24,7 @@
         <div class="container">
             <a href="."><div class="dashboard-logo"></div></a>
             <div class="nav-collapse">
-                <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
+                <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
             </div>
             <div class="clearfix"></div>
         </div>

@@ -1,7 +1,7 @@
 <div class="header">
     <div class="container-fluid">
         <a href="."><div class="dashboard-logo" ng-show="showDashboardLogo.showDashboard"></div></a>
-        <div class="header-title" ng-show="showDashboardLogo.showDashboard">{{msg('motechTitle')}}</div>
+        <div class="header-title" ng-show="showDashboardLogo.showDashboard">{{msg('server.motechTitle')}}</div>
     </div>
 </div>
 <div class="clearfix"></div>
@@ -19,11 +19,11 @@
             <div class="nav-collapse">
                 <ul class="nav" role="navigation">
                     <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
-                    <li class="current"><a role="menu" href=".">{{msg('home')}}</a></li>
+                    <li class="current"><a role="menu" href=".">{{msg('server.home')}}</a></li>
                     <li class="divider-vertical divider-vertical-sub"></li>
-                    <li><a role="menu">{{msg('motech')}} {{msg('project')}}</a></li>
+                    <li><a role="menu">{{msg('server.motech')}} {{msg('server.project')}}</a></li>
                     <li class="divider-vertical divider-vertical-sub"></li>
-                    <li><a role="menu">{{msg('community')}}</a></li>
+                    <li><a role="menu">{{msg('server.community')}}</a></li>
                 </ul>
                 <a id="minimize" class="btn btn-mini btn-blue" ng-click="minimizeHeader()">
                     <img src="resources/img/trans.gif" title="{{msg(showDashboardLogo.changeTitle())}}"
@@ -34,12 +34,12 @@
 
                     <li class="dropdown">
                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                            <span>{{msg('loggedAs')}} <strong>{{ user.userName }}</strong><strong class="caret"></strong></span>
+                            <span>{{msg('server.loggedAs')}} <strong>{{ user.userName }}</strong><strong class="caret"></strong></span>
                         </a>
                         <ul id="localization" class="dropdown-menu" role="menu">
                             <li ui-if="user.securityLaunch">
                                 <a href="#/websecurity/profile/{{user.userName}}" tabindex="-1">
-                                    <i class="icon-user"></i> {{msg('profile')}}
+                                    <i class="icon-user"></i> {{msg('server.profile')}}
                                 </a>
                             </li>
                             <li ui-if="user.securityLaunch" class="divider"></li>
@@ -57,7 +57,7 @@
                             <li ui-if="user.securityLaunch" class="divider"></li>
                             <li ui-if="user.securityLaunch">
                                 <a href="{{contextPath}}j_spring_security_logout" class="">
-                                    <i class="icon-off"></i> {{msg('signOut')}}
+                                    <i class="icon-off"></i> {{msg('server.signOut')}}
                                 </a>
                             </li>
                         </ul>

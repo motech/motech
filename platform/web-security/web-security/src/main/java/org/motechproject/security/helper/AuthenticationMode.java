@@ -6,7 +6,7 @@ public final class AuthenticationMode {
         // static utility class
     }
 
-    public static final String REPOSITORY = "repository";
-    public static final String OPEN_ID = "openId";
+    public static final String REPOSITORY = "server.repository";
+    public static final String OPEN_ID = "server.openId";
     public static final String ADMIN_MODE = "adminMode";
 }

@@ -84,7 +84,7 @@ public class DashboardControllerTest {
         Locale en = new Locale("en");
         when(localeSettings.getUserLocale(request)).thenReturn(en);
         when(request.getUserPrincipal()).thenReturn(principal);
-        when(principal.getName()).thenReturn("admin");
+        when(principal.getName()).thenReturn("server.admin");
         when(request.getSession()).thenReturn(session);
         when(session.getServletContext()).thenReturn(context);
         when(context.getContextPath()).thenReturn("/");
@@ -116,7 +116,7 @@ public class DashboardControllerTest {
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(moduleRegistrationData);
         UserDto userDto = new UserDto();
         userDto.setRoles(Arrays.asList("some role"));
-        when(userService.getUser("admin")).thenReturn(userDto);
+        when(userService.getUser("server.admin")).thenReturn(userDto);
 
         Map<String, Collection<ModuleRegistrationData>> hashMap = new HashMap<>();
         hashMap.put(MODULES_WITHOUT_SUBMENU, Arrays.asList(moduleRegistrationData));
@@ -132,7 +132,7 @@ public class DashboardControllerTest {
         String requiredRole = "testRole";
         when(moduleRegistrationData.getRoleForAccess()).thenReturn(requiredRole);
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(moduleRegistrationData);
-        when(userService.getRoles("admin")).thenReturn(Arrays.asList("admin-role"));
+        when(userService.getRoles("server.admin")).thenReturn(Arrays.asList("admin-role"));
 
         Map<String, Collection<ModuleRegistrationData>> hashMap = new HashMap<>();
         hashMap.put(MODULES_WITHOUT_SUBMENU, Arrays.asList(moduleRegistrationData));
@@ -156,7 +156,7 @@ public class DashboardControllerTest {
         when(uiFrameworkService.getModuleData(MODULE_NAME)).thenReturn(moduleRegistrationData);
         UserDto userDto = new UserDto();
         userDto.setRoles(Arrays.asList("admin-role"));
-        when(userService.getUser("admin")).thenReturn(userDto);
+        when(userService.getUser("server.admin")).thenReturn(userDto);
 
         Map<String, Collection<ModuleRegistrationData>> hashMap = new HashMap<>();
         hashMap.put(MODULES_WITHOUT_SUBMENU, Arrays.asList(moduleRegistrationData));
