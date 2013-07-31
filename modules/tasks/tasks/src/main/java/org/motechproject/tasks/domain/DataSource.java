@@ -76,7 +76,7 @@ public class DataSource extends TaskConfigStep {
     private boolean failIfDataNotFound;
 
     public DataSource() {
-        this(null, null, null, "id", (List <Lookup>) null, true);
+        this(null, null, null, "id", (List <Lookup>) null, false);
     }
 
     public DataSource(String providerId, Long objectId, String type, String name, List<Lookup> lookup,
