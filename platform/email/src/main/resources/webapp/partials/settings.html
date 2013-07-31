@@ -24,6 +24,49 @@
                     </div>
                 </div>
 
+                <h4 class="settings-section">{{msg('email.settings.log.title1')}}</h4>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="" for="settingsLogAddress">
+                            <input ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
+                                   ng-true-value="true" ng-false-value="false" />
+                            {{msg('email.settings.log.address')}}
+                        </label>
+                    </div>
+
+                    <div class="controls">
+                        <label class="" for="settingsLogSubject">
+                            <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
+                                   ng-true-value="true" ng-false-value="false" />
+                            {{msg('email.settings.log.subject')}}
+                        </label>
+                    </div>
+
+                    <div class="controls">
+                        <label class="" for="settingsLogBody">
+                            <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
+                                   ng-true-value="true" ng-false-value="false" />
+                            {{msg('email.settings.log.body')}}
+                        </label>
+                    </div>
+                </div>
+
+                <h4 class="settings-section">{{msg('email.settings.log.title2')}}</h4>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
+                               ng-true-value="true" ng-false-value="false" />
+                        {{msg('email.settings.log.purge')}}
+
+                        <input purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
+
+                        <select ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" >
+                        </select>
+                    </div>
+                    </div>
+
                 <div class="controls">
                     <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
                 </div>

@@ -24,6 +24,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.email.model.SettingsDto.EMAIL_PROPERTIES_FILE_NAME;
 import static org.motechproject.email.model.SettingsDto.MAIL_HOST_PROPERTY;
 import static org.motechproject.email.model.SettingsDto.MAIL_PORT_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_ADDRESS_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_SUBJECT_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_BODY_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_ENABLE_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
+import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY;
 import static org.motechproject.testing.utils.rest.RestTestUtil.jsonMatcher;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
@@ -38,6 +44,12 @@ public class SettingsControllerTest {
 
     private static final String HOST = "localhost";
     private static final String PORT = "8099";
+    private static final String LOG_ADDRESS = "true";
+    private static final String LOG_SUBJECT = "true";
+    private static final String LOG_BODY = "true";
+    private static final String LOG_PURGE = "true";
+    private static final String LOG_TIME = "1";
+    private static final String LOG_MULTIPLIER = "weeks";
 
     @Mock
     private SettingsFacade settingsFacade;
@@ -53,6 +65,13 @@ public class SettingsControllerTest {
 
         when(settingsFacade.getProperty(MAIL_HOST_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(HOST);
         when(settingsFacade.getProperty(MAIL_PORT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(PORT);
+        when(settingsFacade.getProperty(MAIL_LOG_ADDRESS_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_ADDRESS);
+        when(settingsFacade.getProperty(MAIL_LOG_SUBJECT_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_SUBJECT);
+        when(settingsFacade.getProperty(MAIL_LOG_BODY_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_BODY);
+        when(settingsFacade.getProperty(MAIL_LOG_PURGE_ENABLE_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_PURGE);
+        when(settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_PROPERY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_TIME);
+        when(settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_MULTIPLIER);
+
 
         controller = MockMvcBuilders.standaloneSetup(new SettingsController(settingsFacade, javaMailSender)).build();
     }
@@ -64,7 +83,9 @@ public class SettingsControllerTest {
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         ).andExpect(
-                content().string(jsonMatcher(settingsJson(HOST, PORT)))
+                content().string(jsonMatcher(
+                        settingsJson(HOST, PORT, LOG_ADDRESS, LOG_SUBJECT, LOG_BODY, LOG_PURGE, LOG_TIME, LOG_MULTIPLIER)
+                ))
         );
     }
 
@@ -72,14 +93,27 @@ public class SettingsControllerTest {
     public void shouldChangeSettings() throws Exception {
         String remotehost = "remotehost";
         String port = "9999";
+        String logAddress = "false";
+        String logSubject = "false";
+        String logBody = "false";
+        String logPurge = "false";
+        String logPurgeTime = "0";
+        String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(remotehost, port).getBytes()).contentType(APPLICATION_JSON)
+                post("/settings").body(
+                        settingsJson(
+                                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,
+                                logPurgeMultiplier
+                        ).getBytes()
+                ).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_OK)
         );
 
-        Properties properties = new SettingsDto(remotehost, port).toProperties();
+        Properties properties = new SettingsDto(
+                remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+        ).toProperties();
 
         verify(settingsFacade).saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, properties);
         verify(javaMailSender).setHost(remotehost);
@@ -89,9 +123,17 @@ public class SettingsControllerTest {
     @Test
     public void shouldNotChangeSettingsWhenHostIsBlank() throws Exception {
         String port = "9999";
+        String logAddress = "false";
+        String logSubject = "false";
+        String logBody = "false";
+        String logPurge = "false";
+        String logPurgeTime = "0";
+        String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson("", port).getBytes()).contentType(APPLICATION_JSON)
+                post("/settings").body(settingsJson(
+                        "", port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
         ).andExpect(
@@ -106,9 +148,17 @@ public class SettingsControllerTest {
     @Test
     public void shouldNotChangeSettingsWhenPortIsBlank() throws Exception {
         String remotehost = "remotehost";
+        String logAddress = "false";
+        String logSubject = "false";
+        String logBody = "false";
+        String logPurge = "false";
+        String logPurgeTime = "0";
+        String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(remotehost, "").getBytes()).contentType(APPLICATION_JSON)
+                post("/settings").body(settingsJson(
+                        remotehost, "", logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
         ).andExpect(
@@ -124,9 +174,17 @@ public class SettingsControllerTest {
     public void shouldNotChangeSettingsWhenPortIsNotNumeric() throws Exception {
         String remotehost = "remotehost";
         String port = "9999a";
+        String logAddress = "false";
+        String logSubject = "false";
+        String logBody = "false";
+        String logPurge = "false";
+        String logPurgeTime = "0";
+        String logPurgeMultiplier = "days";
 
         controller.perform(
-                post("/settings").body(settingsJson(remotehost, port).getBytes()).contentType(APPLICATION_JSON)
+                post("/settings").body(settingsJson(
+                        remotehost, port, logAddress, logSubject, logBody, logPurge, logPurgeTime,logPurgeMultiplier
+                ).getBytes()).contentType(APPLICATION_JSON)
         ).andExpect(
                 status().is(HttpStatus.SC_NOT_FOUND)
         ).andExpect(
@@ -138,10 +196,19 @@ public class SettingsControllerTest {
         verify(javaMailSender, never()).setPort(anyInt());
     }
 
-    private String settingsJson(String host, String port) {
+    private String settingsJson(String host, String port, String logAddress, String logSubject, String logBody,
+                                String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
+
         ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put("host", host);
         jsonNode.put("port", port);
+        jsonNode.put("logAddress", logAddress);
+        jsonNode.put("logSubject", logSubject);
+        jsonNode.put("logBody", logBody);
+        jsonNode.put("logPurgeEnable", logPurgeEnable);
+        jsonNode.put("logPurgeTime", logPurgeTime);
+        jsonNode.put("logPurgeTimeMultiplier", logPurgeTimeMultiplier);
+
 
         return jsonNode.toString();
     }
