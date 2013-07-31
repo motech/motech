@@ -8,8 +8,11 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
+import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskConfigStep;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
@@ -28,21 +31,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.tasks.domain.DataSource.Lookup;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
+import static org.motechproject.tasks.validation.TaskValidator.TASK;
 
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
@@ -67,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
         Set<TaskError> errors = TaskValidator.validate(task);
 
         if (task.isEnabled() && !isEmpty(errors)) {
-            throw new ValidationException(TaskValidator.TASK, errors);
+            throw new ValidationException(TASK, errors);
         }
 
         TaskEventInformation trigger = task.getTrigger();
@@ -87,16 +94,20 @@ public class TaskServiceImpl implements TaskService {
         for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
             TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
 
-            for (TaskActionInformation action : task.getActions()) {
-                errors.addAll(TaskValidator.validateProvider(
-                        action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
-                ));
+            if (null != provider) {
+                for (TaskActionInformation action : task.getActions()) {
+                    errors.addAll(TaskValidator.validateProvider(
+                            action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
+                    ));
+                }
+            } else {
+                errors.add(new TaskError("task.validation.error.providerNotExist", dataSource.getProviderName()));
             }
         }
 
         if (!isEmpty(errors)) {
             if (task.isEnabled()) {
-                throw new ValidationException(TaskValidator.TASK, errors);
+                throw new ValidationException(TASK, errors);
             } else {
                 task.setValidationErrors(errors);
             }
@@ -265,6 +276,70 @@ public class TaskServiceImpl implements TaskService {
         } else {
             throw new TaskNotFoundException(taskId);
         }
+    }
+
+    @Override
+    public void importTask(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Task task = mapper.readValue(json, Task.class);
+        SortedSet<DataSource> sources = task.getTaskConfig().getDataSources();
+
+        // update data provider IDs
+        for (DataSource ds : sources) {
+            TaskDataProvider provider = findProviderByName(ds);
+
+            if (null != provider) {
+                String oldId = ds.getProviderId();
+                String newId = provider.getId();
+
+                if (!oldId.equalsIgnoreCase(newId)) {
+                    replaceProviderId(task, oldId, newId);
+                    ds.setProviderId(newId);
+                }
+            }
+        }
+
+        save(task);
+    }
+
+    private void replaceProviderId(Task task, String oldId, String newId) {
+        for (TaskConfigStep step : task.getTaskConfig().getSteps()) {
+            if (step instanceof DataSource) {
+                DataSource source = (DataSource) step;
+
+                for (Lookup lookup : source.getLookup()) {
+                    lookup.setValue(lookup.getValue().replace(oldId, newId));
+                }
+            } else if (step instanceof FilterSet) {
+                FilterSet set = (FilterSet) step;
+
+                for (Filter filter : set.getFilters()) {
+                    filter.setKey(filter.getKey().replace(oldId, newId));
+                }
+            }
+        }
+
+        for (TaskActionInformation action : task.getActions()) {
+            for (Map.Entry<String, String> row : action.getValues().entrySet()) {
+                action.getValues().put(
+                        row.getKey(),
+                        row.getValue().replace(oldId, newId)
+                );
+            }
+        }
+    }
+
+    private TaskDataProvider findProviderByName(DataSource ds) {
+        TaskDataProvider provider = null;
+
+        for (TaskDataProvider p : providerService.getProviders()) {
+            if (p.getName().equalsIgnoreCase(ds.getProviderName())) {
+                provider = p;
+                break;
+            }
+        }
+
+        return provider;
     }
 
     private Set<TaskError> validateTriggerTask(Task task, Channel channel) {

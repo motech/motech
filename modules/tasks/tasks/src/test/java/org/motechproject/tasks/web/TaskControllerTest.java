@@ -15,8 +15,11 @@ import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -56,6 +59,9 @@ public class TaskControllerTest {
 
     @Mock
     PrintWriter printWriter;
+
+    @Mock
+    MultipartFile file;
 
     TaskTriggerHandler taskTriggerHandler;
 
@@ -149,7 +155,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void shouldExportTaskWithGivenID() throws Exception {
+    public void shouldExportTask() throws Exception {
         String taskId = "12345";
         StringWriter writer = new StringWriter();
         ObjectMapper mapper = new ObjectMapper();
@@ -178,5 +184,21 @@ public class TaskControllerTest {
         );
 
         assertEquals(node, mapper.readTree(jsonCaptor.getValue()));
+    }
+
+    @Test
+    public void shouldImportTask() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(this.getClass().getResourceAsStream("/new-task-version.json"), writer);
+        ObjectNode node = (ObjectNode) mapper.readTree(writer.toString());
+        node.remove(asList("validationErrors", "type", "_rev"));
+        String json = node.toString();
+
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(json.getBytes()));
+
+        controller.importTask(file);
+
+        verify(taskService).importTask(json);
     }
 }

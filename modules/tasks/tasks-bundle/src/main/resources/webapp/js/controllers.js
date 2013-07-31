@@ -42,7 +42,6 @@
                 return result;
             };
 
-        $scope.resetItemsPagination();
         $scope.allTasks = [];
         $scope.activities = [];
         $scope.hideActive = false;
@@ -51,48 +50,52 @@
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
 
-        tasks = Tasks.query(function () {
-            activities = Activities.query(function () {
-                var item, i, j;
+        $scope.getTasks = function () {
+            $scope.allTasks = [];
 
-                for (i = 0; i < tasks.length; i += 1) {
-                    item = {
-                        task: tasks[i],
-                        success: 0,
-                        error: 0
-                    };
+            tasks = Tasks.query(function () {
+                activities = Activities.query(function () {
+                    var item, i, j;
 
-                    for (j = 0; j < activities.length; j += 1) {
-                        if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
-                            item.success += 1;
+                    for (i = 0; i < tasks.length; i += 1) {
+                        item = {
+                            task: tasks[i],
+                            success: 0,
+                            error: 0
+                        };
+
+                        for (j = 0; j < activities.length; j += 1) {
+                            if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
+                                item.success += 1;
+                            }
+
+                            if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
+                                item.error += 1;
+                            }
                         }
+                        $scope.allTasks.push(item);
+                    }
 
-                        if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
-                            item.error += 1;
+                    for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
+                        for (j = 0; j < tasks.length; j += 1) {
+                            if (activities[i].task === tasks[j]._id) {
+                                $scope.activities.push({
+                                    task: activities[i].task,
+                                    trigger: tasks[j].trigger,
+                                    actions: tasks[j].actions,
+                                    date: activities[i].date,
+                                    type: activities[i].activityType,
+                                    name: tasks[j].name
+                                });
+                                break;
+                            }
                         }
                     }
-                    $scope.allTasks.push(item);
-                }
 
-                for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
-                    for (j = 0; j < tasks.length; j += 1) {
-                        if (activities[i].task === tasks[j]._id) {
-                            $scope.activities.push({
-                                task: activities[i].task,
-                                trigger: tasks[j].trigger,
-                                actions: tasks[j].actions,
-                                date: activities[i].date,
-                                type: activities[i].activityType,
-                                name: tasks[j].name
-                            });
-                            break;
-                        }
-                    }
-                }
-
-                $scope.search();
+                    $scope.search();
+                });
             });
-        });
+        };
 
         $scope.enableTask = function (item, enabled) {
             item.task.enabled = enabled;
@@ -155,6 +158,30 @@
             $scope.currentFilter = method;
             $scope.search();
         };
+
+        $scope.importTask = function () {
+            blockUI();
+
+            $('#importTaskForm').ajaxSubmit({
+                success: function () {
+                    $scope.getTasks();
+                    $('#importTaskForm').resetForm();
+                    $('#importTaskModal').modal('hide');
+                    unblockUI();
+                },
+                error: function (response) {
+                    handleResponse('task.header.error', 'task.error.import', response);
+                }
+            });
+        };
+
+        $scope.closeImportTaskModal = function () {
+            $('#importTaskForm').resetForm();
+            $('#importTaskModal').modal('hide');
+        };
+
+        $scope.resetItemsPagination();
+        $scope.getTasks();
 
     });
 

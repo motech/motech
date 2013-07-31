@@ -1,0 +1,27 @@
+<div id="importTaskModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="importTaskModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="closeImportTaskModal()">×</button>
+        <h3 id="importTaskModalLabel">{{msg('task.import')}}</h3>
+    </div>
+    <div class="modal-body">
+        <form id="importTaskForm" name="importTaskForm" class="form-horizontal" action="../tasks/api/task/import" enctype="multipart/form-data" method="POST">
+            <div class="control-group fileupload fileupload-new" data-provides="fileupload">
+                <label class="control-label">{{msg('task.fileChosen')}}</label>
+                <div class="controls">
+                    <div class="uneditable-input input-xlarge fileupload-exists"><i class="icon-file"></i><span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">{{msg('task.button.selectFile')}}</span>
+                        <span class="fileupload-exists">{{msg('task.button.changeFile')}}</span>
+                        <input type="file" id="jsonFile" name="jsonFile" class="input-file"/>
+                    </span>
+                    <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('task.button.delete')}}</a>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="importTask()">{{msg('task.button.import')}}</button>
+        <button class="btn" ng-click="closeImportTaskModal()">{{msg('task.close')}}</button>
+    </div>
+</div>

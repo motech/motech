@@ -1,5 +1,6 @@
 package org.motechproject.tasks.web;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.tasks.domain.Task;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +53,15 @@ public class TaskController {
     @ResponseBody
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();
+    }
+
+    @RequestMapping(value = "/task/import", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void importTask(@RequestParam(value = "jsonFile") MultipartFile jsonFile) throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(jsonFile.getInputStream(), writer);
+
+        taskService.importTask(writer.toString());
     }
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.GET)
@@ -106,5 +119,12 @@ public class TaskController {
     @ResponseBody
     public Set<TaskError> handleException(ValidationException e) throws IOException {
         return e.getTaskErrors();
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public String handleException(Exception e) throws IOException {
+        return e.getMessage();
     }
 }

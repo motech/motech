@@ -1,6 +1,7 @@
 package org.motechproject.tasks.service.impl;
 
 import com.google.gson.reflect.TypeToken;
+import org.ektorp.DocumentNotFoundException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -83,7 +84,11 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
 
     @Override
     public TaskDataProvider getProviderById(String providerId) {
-        return allTaskDataProviders.get(providerId);
+        try {
+            return allTaskDataProviders.get(providerId);
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
     }
 
     @Override

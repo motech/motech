@@ -6,6 +6,7 @@
         <div class="clearfix">
             <div class="inside btn-group">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
+                <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-upload-alt icon-white"></i> {{msg('task.import')}}</a>
             </div>
             <div class="inside form-inline">
                 <label >{{msg('task.header.searchTasks')}}</label>
@@ -171,4 +172,5 @@
             </div>
         </div>
     </div>
+    <div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
 </div>

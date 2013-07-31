@@ -7,6 +7,7 @@ import org.motechproject.tasks.domain.TriggerEvent;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TaskService {
@@ -32,4 +33,6 @@ public interface TaskService {
     void deleteTask(String taskId);
 
     String exportTask(String taskId);
+
+    void importTask(String json) throws IOException;
 }

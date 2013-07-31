@@ -13,7 +13,12 @@ import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.EventParameter;
+import org.motechproject.tasks.domain.FieldParameter;
+import org.motechproject.tasks.domain.Filter;
+import org.motechproject.tasks.domain.FilterSet;
 import org.motechproject.tasks.domain.LookupFieldsParameter;
+import org.motechproject.tasks.domain.OperatorType;
+import org.motechproject.tasks.domain.ParameterType;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskBuilder;
@@ -53,6 +58,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.tasks.domain.DataSource.Lookup;
+import static org.motechproject.tasks.domain.ParameterType.UNICODE;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
@@ -411,6 +417,60 @@ public class TaskServiceImplTest {
         when(allTasks.get(taskId)).thenReturn(null);
 
         taskService.exportTask(taskId);
+    }
+
+    @Test
+    public void shouldImportTaskAndUpdateDataSourceIDs() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        action.getValues().put("phone", "{{ad.1234.Test#1.id}}");
+
+        Task given = new TaskBuilder()
+                .withName("test")
+                .withTrigger(trigger)
+                .addAction(action)
+                .addDataSource(new DataSource("providerName", "1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addFilterSet(new FilterSet(asList(new Filter("displayName", "ad.1234.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .isEnabled(true)
+                .build();
+
+        TaskDataProvider provider = new TaskDataProvider();
+        provider.setName("providerName");
+        provider.setId("56789");
+        provider.setObjects(
+                asList(new TaskDataProviderObject("display", "Test",
+                        asList(new LookupFieldsParameter("id", asList("id"))),
+                        asList(new FieldParameter("display", "id", UNICODE))
+                ))
+        );
+
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
+
+        ActionEvent actionEvent = new ActionEvent("receive", "RECEIVE", "", null);
+        actionEvent.addParameter(new ActionParameter("Phone", "phone"), true);
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(actionEvent));
+
+        when(providerService.getProviders()).thenReturn(asList(provider));
+        when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
+        when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+        when(providerService.getProviderById("56789")).thenReturn(provider);
+
+        String json = mapper.writeValueAsString(given);
+
+        taskService.importTask(json);
+
+        action.getValues().put("phone", "{{ad.56789.Test#1.id}}");
+
+        Task expected = new TaskBuilder()
+                .withName("test")
+                .withTrigger(trigger)
+                .addAction(action)
+                .addDataSource(new DataSource("providerName", "56789", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true))
+                .addFilterSet(new FilterSet(asList(new Filter("", "ad.56789.Test#1.id", UNICODE, true, OperatorType.EXIST.getValue(), ""))))
+                .isEnabled(true)
+                .build();
+
+        verify(providerService).getProviders();
+        verify(allTasks).addOrUpdate(expected);
     }
 
     @Test

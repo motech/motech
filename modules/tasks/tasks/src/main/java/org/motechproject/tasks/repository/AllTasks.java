@@ -1,6 +1,7 @@
 package org.motechproject.tasks.repository;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.tasks.domain.Task;
@@ -19,9 +20,21 @@ public class AllTasks extends MotechBaseRepository<Task> {
     }
 
     public void addOrUpdate(Task task) {
-        if (task.getId() != null) {
-            Task existing = get(task.getId());
+        boolean exists = null != task.getId();
+        Task existing = null;
 
+        if (exists) {
+            // When a user imports a task it contains '_id' property
+            // but in database a task with this id may not exist
+            // that's why we have to check if the task really exists in db
+            try {
+                existing = get(task.getId());
+            } catch (DocumentNotFoundException ex) {
+                exists = false;
+            }
+        }
+
+        if (exists) {
             existing.setActions(task.getActions());
             existing.setDescription(task.getDescription());
             existing.setEnabled(task.isEnabled());

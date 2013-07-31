@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
+import org.motechproject.tasks.domain.TaskBuilder;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,24 @@ public class AllTasksIT extends SpringIntegrationTest {
         tasks = allTasks.getAll();
 
         assertEquals(asList(actual), tasks);
+
+        markForDeletion(allTasks.getAll());
+    }
+
+    @Test
+    public void shouldAddTaskAsNewIfItHasIDAndTaskNotExistInDB() {
+        Task expected = new TaskBuilder()
+                .withId("12345")
+                .withName("name")
+                .withTrigger(new TaskEventInformation("receive", "test", "test", "0.14", "RECEIVE"))
+                .addAction(new TaskActionInformation("send", "test", "test", "0.15", "SEND", new HashMap<String, String>()))
+                .build();
+
+        allTasks.addOrUpdate(expected);
+
+        List<Task> tasks = allTasks.getAll();
+
+        assertEquals(asList(expected), tasks);
 
         markForDeletion(allTasks.getAll());
     }

@@ -68,6 +68,7 @@ public class DataSource extends TaskConfigStep {
         }
     }
 
+    private String providerName;
     private String providerId;
     private Long objectId;
     private String type;
@@ -81,6 +82,12 @@ public class DataSource extends TaskConfigStep {
 
     public DataSource(String providerId, Long objectId, String type, String name, List<Lookup> lookup,
                       boolean failIfDataNotFound) {
+        this("", providerId, objectId, type, name, lookup, failIfDataNotFound);
+    }
+
+    public DataSource(String providerName, String providerId, Long objectId, String type,
+                      String name, List<Lookup> lookup, boolean failIfDataNotFound) {
+        this.providerName = providerName;
         this.providerId = providerId;
         this.objectId = objectId;
         this.type = type;
@@ -98,6 +105,14 @@ public class DataSource extends TaskConfigStep {
         this.name = "id";
         this.lookup = asList(lookup);
         this.failIfDataNotFound = failIfDataNotFound;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 
     public String getProviderId() {
@@ -185,6 +200,7 @@ public class DataSource extends TaskConfigStep {
         final DataSource other = (DataSource) obj;
 
         return objectEquals(other.providerId, other.objectId, other.type)
+                && Objects.equals(this.providerName, other.providerName)
                 && Objects.equals(this.lookup, other.lookup)
                 && Objects.equals(this.failIfDataNotFound, other.failIfDataNotFound);
     }
@@ -199,8 +215,8 @@ public class DataSource extends TaskConfigStep {
     @Override
     public String toString() {
         return String.format(
-                "DataSource{providerId='%s', objectId=%d, type='%s', lookup=%s, failIfDataNotFound=%s} %s",
-                providerId, objectId, type, lookup, failIfDataNotFound, super.toString()
+                "DataSource{providerName='%s', providerId='%s', objectId=%d, type='%s', name='%s', lookup=%s, failIfDataNotFound=%s} %s",
+                providerName, providerId, objectId, type, name, lookup, failIfDataNotFound, super.toString()
         );
     }
 }
