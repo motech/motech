@@ -246,7 +246,7 @@
                                                 </div>
                                             </div>
                                             <div ng-repeat="lookupField in step.lookup">
-                                                <div class="control-group" ng-class="{error: actionCssClass(lookupField)}" class="control-group form-inline clearfix">
+                                                <div class="control-group" ng-class="{error: actionCssClassError(lookupField)}" class="control-group form-inline clearfix">
                                                     <label class="control-label">{{msg(lookupField.field)}}</label>
 
                                                     <!------------------------ Chrome & IE ------------------------>
@@ -353,12 +353,15 @@
                                         <label class="control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
                                     <div ui-if="selectedAction[$index]">
-                                        <div class="control-group" ng-class="{error: actionCssClass(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="control-group form-inline clearfix">
+                                        <div class="control-group" ng-class="{warning: actionCssClassWarning(i), error: actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="control-group form-inline clearfix">
                                             <label class="control-label tip">
                                                 {{msg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
                                                 <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="icon-question-sign"></i></span>
                                                 <span class="help-inline" ui-if="i.type == 'MAP'" help-popover="map" data-title="{{msg('task.header.mapHelp')}}"><i class="icon-question-sign"></i></span>
+                                                <span class="help-inline" ui-if="actionCssClassWarning(i)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="icon-exclamation-sign"></i></span>
+                                                <span class="help-inline" ui-if="actionCssClassError(i)" help-popover="error" data-title="{{msg('task.header.error')}}"><i class="icon-exclamation-sign"></i></span>
+                                            </label>
                                             </label>
 
                                             <!------------------------ Chrome & IE ------------------------>

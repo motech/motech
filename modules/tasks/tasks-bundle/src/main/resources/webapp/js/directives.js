@@ -27,22 +27,6 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                angular.element(element).on({
-                    show: function () {
-                        $(this).find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
-                    },
-                    hide: function () {
-                        $(this).find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
-                    }
-                });
-            }
-        };
-    });
-
-    widgetModule.directive('expandaccordion', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
                 $('.accordion').on('show', function (e) {
                     $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });

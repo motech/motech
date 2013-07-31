@@ -310,7 +310,7 @@
                         displayName: 'displayName'
                     }
                 },
-                spanOther = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-important" data-prefix="other" data-type="UNKNOWN" data-object="displayName">displayName</span>',
+                spanOther = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-unknown" data-prefix="other" data-type="UNKNOWN" data-object="displayName">displayName</span>',
                 spanTrigger = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="" manipulate="toLower capitalize" data-prefix="trigger" data-type="UNICODE" data-object="displayName">displayname</span>',
                 spanDataSource = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="" manipulate="toLower capitalize" data-prefix="ad" data-type="DATE" data-object="displayName" data-source="DS" data-object-id="0" data-object-type="TestType" data-field="field">ds.object#0.displayname</span>';
 

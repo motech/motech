@@ -630,6 +630,47 @@
             return result.text();
         };
 
+        $scope.hasUnknownTrigger = function (value) {
+            var unknown = false,
+                regex, found, data, indexOf, prefix, dataArray, key, param;
+
+            // check bubbles
+            if ($scope.util.canHandleModernDragAndDrop($scope)) {
+                prefix = $scope.util.TRIGGER_PREFIX;
+                regex = new RegExp('<span.*data-prefix="'+ prefix +'".*data-type="UNKNOWN".*>\\[.*\\]</span>', "g");
+                unknown = regex.exec(value) !== null;
+            }
+
+            // check regular string in the input
+            if (!unknown) {
+                regex = new RegExp("\\{\\{.*?\\}\\}", "g");
+                while ((found = regex.exec(value)) !== null) {
+                    data = found[0];
+                    indexOf = data.indexOf('.');
+                    prefix = data.slice(2, indexOf);
+                    dataArray = data.slice(indexOf + 1, -2).split("?");
+                    key = dataArray[0];
+
+                    if (prefix === $scope.util.TRIGGER_PREFIX) {
+                        param = $scope.util.find({
+                            where: $scope.selectedTrigger.eventParameters,
+                            by: {
+                                what: 'eventKey',
+                                equalTo: key
+                            }
+                        });
+
+                        if (!param) {
+                            unknown = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return unknown;
+        };
+
         $scope.createDraggableElement = function (value) {
             var regex = new RegExp("\\{\\{.*?\\}\\}", "g"), element;
 
@@ -800,10 +841,23 @@
             }
         };
 
-        $scope.actionCssClass = function (prop) {
+        $scope.actionCssClassWarning = function(prop) {
             var value, expression = false;
 
             if ($scope.selectedTrigger !== undefined) {
+                value = prop.value === undefined ? '' : prop.value;
+                expression = $scope.hasUnknownTrigger(value);
+            }
+
+            return expression;
+        };
+
+        $scope.actionCssClassError = function (prop) {
+            var value, expression = false;
+
+            if ($scope.actionCssClassWarning(prop)) {
+                return expression;
+            } else if ($scope.selectedTrigger !== undefined) {
                 value = prop.value === undefined ? '' : prop.value;
 
                 if ($scope.util.canHandleModernDragAndDrop($scope)) {

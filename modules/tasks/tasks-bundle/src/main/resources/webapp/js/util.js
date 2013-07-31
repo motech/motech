@@ -203,7 +203,7 @@
                 span.addClass('popoverEvent nonEditable triggerField pointer badge');
 
                 if (data.param.type === 'UNKNOWN') {
-                    span.addClass('badge-important');
+                    span.addClass('badge-unknown');
                 } else {
                     switch (data.prefix) {
                     case this.TRIGGER_PREFIX:

@@ -276,29 +276,74 @@
             expect(scope.createDraggableElement(value)).toEqual(expected);
         });
 
-        it('Should return correct boolean value according to property value for action css class', function () {
-            scope.BrowserDetect = { browser: 'FireFox' };
-
-            expect(scope.actionCssClass(undefined)).toEqual(false);
-            expect(scope.actionCssClass(null)).toEqual(false);
-            expect(scope.actionCssClass({ value: '' })).toEqual(false);
-
-            scope.selectedTrigger = channels[1].triggerTaskEvents[0];
-
-            expect(scope.actionCssClass({ value: '' })).toEqual(true);
-            expect(scope.actionCssClass({ value: '{{trigger.value}}' })).toEqual(false);
-
-            scope.BrowserDetect = { browser: 'Chrome' };
-
-            expect(scope.actionCssClass({ value: '<br/>' })).toEqual(true);
-            expect(scope.actionCssClass({ value: '<span>Value</span>' })).toEqual(false);
-        });
-
         it('Should get boolean value', function () {
             expect(scope.getBooleanValue('false')).toEqual(null);
             expect(scope.getBooleanValue('true')).toEqual(null);
             expect(scope.getBooleanValue('abc')).toEqual('abc');
             expect(scope.getBooleanValue('abc')).not.toEqual(null);
+        });
+
+        it('Should return correct boolean value if triggers in input are unknown', function () {
+            scope.BrowserDetect = { browser: 'FireFox' };
+
+            expect(scope.hasUnknownTrigger(null)).toEqual(false);
+            expect(scope.hasUnknownTrigger(undefined)).toEqual(false);
+            expect(scope.hasUnknownTrigger('')).toEqual(false);
+            expect(scope.hasUnknownTrigger('value')).toEqual(false);
+            expect(scope.hasUnknownTrigger('{{value.value}}')).toEqual(false);
+
+            scope.selectedTrigger = channels[1].triggerTaskEvents[0];
+
+            expect(scope.hasUnknownTrigger('{{trigger.value}}')).toEqual(true);
+            expect(scope.hasUnknownTrigger('{{trigger.key_1}}')).toEqual(false);
+            expect(scope.hasUnknownTrigger('{{trigger.value?toUpper?}}')).toEqual(true);
+            expect(scope.hasUnknownTrigger('{{trigger.key_1?toUpper?}}')).toEqual(false);
+            expect(scope.hasUnknownTrigger('value {{trigger.key_1}} value')).toEqual(false);
+            expect(scope.hasUnknownTrigger('{{trigger.value}}{{trigger.key_1}}')).toEqual(true);
+        });
+
+        it('Should return correct boolean value according to property value for action css class (error)', function () {
+            var spanTest = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-unknown ng-scope" data-prefix="trigger" data-type="UNKNOWN" data-object="TestId" style="position: relative;">[TestId]</span>';
+
+            scope.BrowserDetect = { browser: 'FireFox' };
+
+            expect(scope.actionCssClassError(undefined)).toEqual(false);
+            expect(scope.actionCssClassError(null)).toEqual(false);
+            expect(scope.actionCssClassError({ value: '' })).toEqual(false);
+
+            scope.selectedTrigger = channels[1].triggerTaskEvents[0];
+
+            expect(scope.actionCssClassError({ value: '' })).toEqual(true);
+            expect(scope.actionCssClassError({ value: '{{trigger.value}}' })).toEqual(false);
+
+            scope.BrowserDetect = { browser: 'Chrome' };
+
+            expect(scope.actionCssClassError({ value: '<br/>' })).toEqual(true);
+            expect(scope.actionCssClassError({ value: '<span>Value</span>' })).toEqual(false);
+            expect(scope.actionCssClassError({ value: spanTest })).toEqual(false);
+        });
+
+        it('Should return correct boolean value according to property value for action css class (warning)', function () {
+            var spanTest = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-warning ng-scope" data-prefix="trigger" data-type="UNKNOWN" data-object="TestId" style="position: relative;">[TestId]</span>';
+
+            scope.BrowserDetect = { browser: 'FireFox' };
+
+            expect(scope.actionCssClassWarning(undefined)).toEqual(false);
+            expect(scope.actionCssClassWarning(null)).toEqual(false);
+            expect(scope.actionCssClassWarning({ value: '' })).toEqual(false);
+
+            scope.selectedTrigger = channels[1].triggerTaskEvents[0];
+
+            expect(scope.actionCssClassWarning({ value: '{{trigger.key_1}}' })).toEqual(false);
+            expect(scope.actionCssClassWarning({ value: '{{trigger.value}}' })).toEqual(true);
+
+            scope.BrowserDetect = { browser: 'Chrome' };
+
+            expect(scope.actionCssClassWarning({ value: '{{trigger.key_1}}' })).toEqual(false);
+            expect(scope.actionCssClassWarning({ value: '{{trigger.value}}' })).toEqual(true);
+            expect(scope.actionCssClassWarning({ value: '<br/>' })).toEqual(false);
+            expect(scope.actionCssClassWarning({ value: '<span>Value</span>' })).toEqual(false);
+            expect(scope.actionCssClassWarning({ value: spanTest })).toEqual(true);
         });
 
         it('Should set boolean value', function () {
