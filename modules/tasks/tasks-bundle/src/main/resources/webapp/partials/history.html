@@ -89,16 +89,16 @@
                 </div>
                 <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
                     <ul>
-                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('pagination.first')}}</a></li>
-                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('pagination.prev')}}</a></li>
+                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
+                        <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
                         <li ng-repeat="number in range(pagedItems.length)"
                             ng-hide="hidePages(number)"
                             ng-class="{active: number == currentPage}"
                             ng-click="setPage()">
                             <a href ng-bind="number + 1">1</a>
                         </li>
-                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('pagination.next')}}</a></li>
-                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('pagination.last')}}</a></li>
+                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
+                        <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
                     </ul>
                 </div>
                 <div class="alert" ng-show="activities.length == 0">

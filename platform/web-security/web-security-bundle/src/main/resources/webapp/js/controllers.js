@@ -76,8 +76,8 @@
                         $scope.addUserView=!$scope.addUserView;
                     }).
                     error(function(response) {
-                        handleResponse('main.error', 'security.create.user.error', response);
-                        if (response && response.startsWith('key:sendEmailException')) {
+                        handleResponse('server.error', 'security.create.user.error', response);
+                        if (response && response.startsWith('key:security.sendEmailException')) {
                             $scope.userList = Users.query();
                             $scope.showUsersView=!$scope.addUserView;
                             $scope.addUserView=!$scope.addUserView;
@@ -113,17 +113,17 @@
                        $scope.showUsersView=!$scope.editUserView;
                        $scope.editUserView=!$scope.editUserView;
                        $scope.$emit('module.list.refresh');
-                   }).error(angularHandler('main.error', 'security.update.user.error'));
+                   }).error(angularHandler('server.error', 'security.update.user.error'));
            };
 
            $scope.deleteUser = function() {
                $http.post('../websecurity/api/users/delete', $scope.user).
                     success(function(){
-                        motechAlert('security.delete.user.saved', 'security.delete');
+                        motechAlert('security.delete.user.saved', 'security.deleted');
                         $scope.showUsersView=!$scope.editUserView;
                         $scope.editUserView=!$scope.editUserView;
                         $scope.userList = Users.query();
-                    }).error(function(){motechAlert('security.delete.user.error', 'main.error');});
+                    }).error(function(){motechAlert('security.delete.user.error', 'server.error');});
            };
 
            $scope.resetValues = function() {
@@ -151,7 +151,7 @@
            $scope.cssPassword = function() {
                var msg = 'control-group';
                   if ($scope.user.password!==$scope.confirmPassword || (!$scope.hasValue('password') && $scope.editUserView)) {
-                     msg = msg.concat(' error');
+                     msg = msg.concat(' server.error');
                   }
                return msg;
            };
@@ -159,7 +159,7 @@
            $scope.cssClass = function(prop, pass) {
                var msg = 'control-group';
                if (!$scope.hasValue(prop)) {
-                    msg = msg.concat(' error');
+                    msg = msg.concat(' server.error');
                }
                return msg;
            };
@@ -238,7 +238,7 @@
                        $scope.roleList=Roles.query();
                        $scope.addRoleView=!$scope.addRoleView;
                        }).
-                       error(function(){motechAlert('security.create.role.error', 'main.error');});
+                       error(function(){motechAlert('security.create.role.error', 'server.error');});
                 } else {
                    $http.post('../websecurity/api/roles/update', $scope.role).
                        success(function() {
@@ -247,7 +247,7 @@
                        $scope.addRoleView=!$scope.addRoleView;
                        $scope.$emit('module.list.refresh');
                        }).
-                       error(function(){motechAlert('security.update.role.error', 'main.error');});
+                       error(function(){motechAlert('security.update.role.error', 'server.error');});
                 }
             };
 
@@ -264,7 +264,7 @@
             $scope.deleteRole = function() {
                 $http.post('../websecurity/api/users/delete', $scope.role).
                     success(function(){motechAlert('security.delete.role.saved', 'security.delete');}).
-                    error(function(){motechAlert('security.delete.role.error', 'main.error');});
+                    error(function(){motechAlert('security.delete.role.error', 'server.error');});
             };
 
             $scope.addRole = function() {
@@ -289,7 +289,7 @@
                 var msg = 'control-group';
 
                 if (!$scope.hasValue(prop)) {
-                    msg = msg.concat(' error');
+                    msg = msg.concat(' server.error');
                 }
 
                 return msg;
@@ -313,7 +313,7 @@
             var msg = 'control-group';
 
             if ($scope.hasValue('newPassword') && $scope.newPassword !== $scope.confirmPassword) {
-                msg = msg.concat(' error');
+                msg = msg.concat(' server.error');
             }
 
             return msg;
@@ -323,7 +323,7 @@
             var msg = 'control-group';
 
             if (!$scope.hasValue(prop)) {
-                 msg = msg.concat(' error');
+                 msg = msg.concat(' server.error');
             }
 
             return msg;
@@ -336,7 +336,7 @@
         $scope.changeEmail = function () {
             $http.post('../websecurity/api/users/' + $scope.userName + '/change/email', $scope.email).
                 success(alertHandler('security.update.email.saved', 'security.update')).
-                error(angularHandler('main.error', 'security.update.email.error'));
+                error(angularHandler('server.error', 'security.update.email.error'));
         };
 
         $scope.changePassword = function () {
@@ -346,7 +346,7 @@
                     delete $scope.user.oldPassword;
                     delete $scope.user.newPassword;
                     delete $scope.confirmPassword;
-                }).error(alertHandler('security.update.userPass.error', 'main.error'));
+                }).error(alertHandler('security.update.userPass.error', 'server.error'));
         };
     });
 }());

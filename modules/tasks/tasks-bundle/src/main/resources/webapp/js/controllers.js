@@ -974,9 +974,9 @@
 
         $scope.submit = function() {
             $scope.settings.$save(function() {
-                motechAlert('task.settings.success.saved', 'main.saved');
+                motechAlert('task.settings.success.saved', 'server.saved');
             }, function() {
-                motechAlert('task.settings.error.saved', 'main.error');
+                motechAlert('task.settings.error.saved', 'server.error');
             });
         };
 
@@ -984,7 +984,7 @@
             var msg = 'control-group';
 
             if (!$scope.isNumeric(prop)) {
-                msg = msg.concat(' error');
+                msg = msg.concat('server.error');
             }
 
             return msg;

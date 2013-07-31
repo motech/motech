@@ -59,7 +59,7 @@ public class ForgotPasswordControllerTest {
 
         assertEquals("forgotProcessed", mav.getViewName());
         assertEquals(Locale.ENGLISH, mav.getModel().get("pageLang"));
-        assertEquals("security.forgot.noSuchUser", mav.getModel().get("error"));
+        assertEquals("security.forgot.noSuchUser", mav.getModel().get("server.error"));
         verify(recoveryService).passwordRecoveryRequest(EMAIL);
     }
 }

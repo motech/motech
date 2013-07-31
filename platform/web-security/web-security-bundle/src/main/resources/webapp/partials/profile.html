@@ -1,25 +1,25 @@
 <div class="well2 spn8">
-    <div class="box-header">{{msg('profile')}}</div>
+    <div class="box-header">{{msg('security.profile')}}</div>
     <div class="box-content clearfix">
         <div class="well3">
             <form name="emailForm" class="form-horizontal">
                 <!------------------ user ------------------->
                 <div class="control-group">
-                    <h4>{{msg('user')}}: {{userName}}</h4>
+                    <h4>{{msg('security.user')}}: {{security.userName}}</h4>
                 </div>
                 <div class="control-group">
                     <div ng-class="cssClass('email')">
-                        <label class="control-label">{{msg('email')}}</label>
+                        <label class="control-label">{{msg('security.email')}}</label>
                         <div class="controls">
                             <input name="email" type="email" ng-model="email" required>
-                            <span ng-show="emailForm.email.$error.required" class="form-hint">{{msg('emailRequired')}}</span>
-                            <span ng-show="emailForm.email.$error.email" class="form-hint">{{msg('emailFormat')}}</span>
+                            <span ng-show="emailForm.email.$error.required" class="form-hint">{{msg('security.emailRequired')}}</span>
+                            <span ng-show="emailForm.email.$error.email" class="form-hint">{{msg('security.emailFormat')}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <input class="btn btn-primary" type="submit" value="{{msg('save')}}" ng-click="changeEmail()" ng-disabled="emailForm.$invalid"/>
+                        <input class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="changeEmail()" ng-disabled="emailForm.$invalid"/>
                     </div>
                 </div>
             </form>
@@ -27,31 +27,31 @@
                 <!------------------ password ------------------->
                 <div class="top-line"></div>
                 <div class="control-group">
-                    <h4 class=" ">{{msg('password')}}</h4>
+                    <h4 class=" ">{{msg('security.password')}}</h4>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">{{msg('oldPassword')}}</label>
+                    <label class="control-label">{{msg('security.oldPassword')}}</label>
                     <div class="controls">
                         <input type="password" ng-model="oldPassword" name="oldPassword">
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label">{{msg('newPassword')}}</label>
+                    <label class="control-label">{{msg('security.newPassword')}}</label>
                     <div class="controls">
                         <input type="password" ng-model="newPassword" name="newPassword">
                     </div>
                 </div>
                 <div ng-class="cssPassword()">
-                    <label class="control-label">{{msg('confirmPassword')}}</label>
+                    <label class="control-label">{{msg('security.confirmPassword')}}</label>
                     <div class="controls">
                         <input type="password" ng-model="confirmPassword" name="confirmPassword" required confirm-password="newPassword">
-                        <span ng-show="passwordForm.confirmPassword.$error.equal" class="form-hint">{{msg('samePassword')}}</span>
+                        <span ng-show="passwordForm.confirmPassword.$error.equal" class="form-hint">{{msg('security.samePassword')}}</span>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label"></label>
                     <div class="controls">
-                        <input class="btn btn-primary" type="button" value="{{msg('save')}}" ng-click="changePassword()" ng-disabled="passwordForm.$invalid"/>
+                        <input class="btn btn-primary" type="button" value="{{msg('security.save')}}" ng-click="changePassword()" ng-disabled="passwordForm.$invalid"/>
                     </div>
                 </div>
             </form>

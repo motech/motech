@@ -109,7 +109,7 @@ public class UserController {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         try (Writer writer = response.getWriter()) {
-            writer.write("key:emailTaken");
+            writer.write("key:security.emailTaken");
         }
     }
 
@@ -118,7 +118,7 @@ public class UserController {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         try (Writer writer = response.getWriter()) {
-            writer.write("key:sendEmailException");
+            writer.write("key:security.sendEmailException");
         }
     }
 

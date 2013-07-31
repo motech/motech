@@ -77,18 +77,18 @@ public class ActionEventDeserializerIT {
 
     private static List<ActionEventRequest> getMessageCampaignEvents() {
         SortedSet<ActionParameterRequest> parameters1 = new TreeSet<>();
-        parameters1.add(new ActionParameterRequest("CampaignName", "messagecampaign.campaign.name", 0));
-        parameters1.add(new ActionParameterRequest("ExternalID", "messagecampaign.externalID", 1));
-        parameters1.add(new ActionParameterRequest("MessageKey", "messagecampaign.message.key", 2));
+        parameters1.add(new ActionParameterRequest("CampaignName", "msgCampaign.campaign.name", 0));
+        parameters1.add(new ActionParameterRequest("ExternalID", "msgCampaign.externalID", 1));
+        parameters1.add(new ActionParameterRequest("MessageKey", "msgCampaign.message.key", 2));
 
-        ActionEventRequest event1 = new ActionEventRequest("messagecampaign.send.message", "org.motechproject.messagecampaign.fired-campaign-message", "description", null, null, parameters1);
+        ActionEventRequest event1 = new ActionEventRequest("msgCampaign.send.message", "org.motechproject.messagecampaign.fired-campaign-message", "description", null, null, parameters1);
 
 
         SortedSet<ActionParameterRequest> parameters2 = new TreeSet<>();
-        parameters2.add(new ActionParameterRequest("ExternalID", "messagecampaign.externalID", 0));
-        parameters2.add(new ActionParameterRequest("CampaignName", "messagecampaign.campaign.name", 1));
+        parameters2.add(new ActionParameterRequest("ExternalID", "msgCampaign.externalID", 0));
+        parameters2.add(new ActionParameterRequest("CampaignName", "msgCampaign.campaign.name", 1));
 
-        ActionEventRequest event2 = new ActionEventRequest("messagecampaign.campaign.completed", "org.motechproject.messagecampaign.campaign-completed", "description", "org.motechproject.messagecampaign.service.MessageCampaignService", "campaignCompleted", parameters2);
+        ActionEventRequest event2 = new ActionEventRequest("msgCampaign.campaign.completed", "org.motechproject.messagecampaign.campaign-completed", "description", "org.motechproject.messagecampaign.service.MessageCampaignService", "campaignCompleted", parameters2);
 
         return asList(event1, event2);
     }

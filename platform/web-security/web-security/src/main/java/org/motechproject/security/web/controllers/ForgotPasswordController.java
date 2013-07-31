@@ -21,7 +21,7 @@ public class ForgotPasswordController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForgotPasswordController.class);
 
-    private static final String ERROR = "error";
+    private static final String ERROR = "server.error";
     private static final String PAGE_LANG = "pageLang";
 
     @Autowired
