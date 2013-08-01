@@ -12,11 +12,6 @@ public interface MotechSettings {
     String AMQ_CONCURRENT_CONSUMERS = "concurrentConsumers";
     String AMQ_MAX_CONCURRENT_CONSUMERS = "maxConcurrentConsumers";
 
-    String QUARTZ_SCHEDULER_NAME = "org.quartz.scheduler.instanceName";
-    String QUARTZ_THREAD_POOL_CLASS = "org.quartz.threadPool.class";
-    String QUARTZ_THREAD_POOL_THREAD_COUNT = "org.quartz.threadPool.threadCount";
-    String QUARTZ_JOB_STORE_CLASS = "org.quartz.jobStore.class";
-
     String GRAPHITE_URL = "graphite.url";
 
     String SCHEDULER_URL = "scheduler.url";
@@ -47,8 +42,6 @@ public interface MotechSettings {
     String getUploadSize();
 
     Properties getActivemqProperties();
-
-    Properties getQuartzProperties();
 
     Properties getMetricsProperties();
 

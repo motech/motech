@@ -28,7 +28,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private byte[] configFileChecksum = new byte[0];
 
     private Properties activemqProperties = new Properties();
-    private Properties quartzProperties;
     private Properties metricsProperties;
     private Properties schedulerProperties;
 
@@ -45,11 +44,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public Properties getActivemqProperties() {
         return activemqProperties;
-    }
-
-    @Override
-    public Properties getQuartzProperties() {
-        return quartzProperties;
     }
 
     @Override
@@ -91,10 +85,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     public void setActivemqProperties(final Properties activemqProperties) {
         this.activemqProperties = activemqProperties;
-    }
-
-    public void setQuartzProperties(final Properties quartzProperties) {
-        this.quartzProperties = quartzProperties;
     }
 
     public void setMetricsProperties(final Properties metricsProperties) {
@@ -161,7 +151,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setLanguage(settings.getLanguage());
         setStatusMsgTimeout(settings.getStatusMsgTimeout());
         setActivemqProperties(settings.getActivemqProperties());
-        setQuartzProperties(settings.getQuartzProperties());
         setMetricsProperties(settings.getMetricsProperties());
         setSchedulerProperties(settings.getSchedulerProperties());
         setLoginMode(settings.getLoginMode());
@@ -172,10 +161,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public void updateFromProperties(final Properties props) {
-        if (quartzProperties == null || quartzProperties.isEmpty()) {
-            quartzProperties = emptyQuartzProperties();
-        }
-
         if (metricsProperties == null || metricsProperties.isEmpty()) {
             metricsProperties = emptyMetricsProperties();
         }
@@ -222,21 +207,12 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     private void handleMiscProperty(String key, String value) {
-        for (Properties p : Arrays.asList(getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
+        for (Properties p : Arrays.asList(getMetricsProperties(), getSchedulerProperties())) {
             if (p.containsKey(key)) {
                 p.put(key, value);
                 break;
             }
         }
-    }
-
-    private Properties emptyQuartzProperties() {
-        Properties props = new Properties();
-        props.put(QUARTZ_JOB_STORE_CLASS, "");
-        props.put(QUARTZ_SCHEDULER_NAME, "");
-        props.put(QUARTZ_THREAD_POOL_CLASS, "");
-        props.put(QUARTZ_THREAD_POOL_THREAD_COUNT, "");
-        return props;
     }
 
     private Properties emptyMetricsProperties() {
