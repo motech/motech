@@ -678,7 +678,33 @@ select {
 /*----- login ------*/
 
 .spnw5 {
+    max-width: 100%;
     width: 350px;
+}
+
+.spnw55 {
+    max-width: 100%;
+    width: 400px;
+}
+
+.spnw6 {
+    max-width: 100%;
+    width: 460px;
+}
+
+.spnw10 {
+    max-width: 100%;
+    width: 780px;
+}
+
+.top-divider-login {
+    border-top: 1px solid #7bb5fc;
+    margin-top: 1px;
+    padding-top: 10px;
+}
+
+.control-group.margin-after {
+    margin-bottom: 10px;
 }
 
 .margin-before05 {

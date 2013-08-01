@@ -16,7 +16,9 @@
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
-    <script src="../server/resources/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="../../server/resources/lib/jquery/jquery.js"></script>
+    <script src="../../server/resources/lib/bootstrap/bootstrap.min.js"></script>
+</head>
 
 <body class="body-down">
 <div class="bodywrap">
@@ -42,7 +44,7 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <div class="well2 margin-center spnw5">
+                <div class="well2 margin-center margin-before spnw5">
                 <div class="box-header"><fmt:message key="security.forgotPassword" bundle="${bundle}"/></div>
 
                 <div class="box-content well3">
@@ -59,7 +61,7 @@
                             <div class="control-group login-error">
                                 <p><fmt:message key="${error}" bundle="${bundle}"/></p>
                             </div>
-                            <div class="control-group login-error">      <a ></a>
+                            <div class="control-group login-error">
                                 <a href="."><input type="button" class="btn btn-primary" value="<fmt:message key="security.back" bundle="${bundle}"/>" /></a>
                             </div>
                         </c:otherwise>

@@ -16,7 +16,8 @@
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
-    <script src="../server/resources/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="../../server/resources/lib/jquery/jquery.js"></script>
+    <script src="../../server/resources/lib/bootstrap/bootstrap.min.js"></script>
 </head>
 
 <body class="body-down">
@@ -43,7 +44,7 @@
     <div id="content" class="container">
         <div class="row-fluid">
             <div id="main-content">
-                <div class="well2 margin-center margin-before2 spn6">
+                <div class="well2 margin-center margin-before spnw6">
                     <div class="box-header"><fmt:message key="security.resetInstructions" bundle="${bundle}"/></div>
                     <div class="box-content">
                         <form class="inside" method="post">
