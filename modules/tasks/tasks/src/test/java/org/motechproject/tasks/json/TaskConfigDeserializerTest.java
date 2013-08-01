@@ -21,7 +21,7 @@ import static java.util.Arrays.asList;
 public class TaskConfigDeserializerTest {
 
     @Test
-    public void shouldDeserializeJson() throws Exception {
+    public void shouldDeserializeJsonWithFailWhenObjectNotFound() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory jsonFactory = new JsonFactory(mapper);
 
@@ -34,11 +34,39 @@ public class TaskConfigDeserializerTest {
         filters.add(new Filter(new EventParameter("mrs.observation.field.observationConceptName", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
         filters.add(new Filter(new EventParameter("mrs.observation.field.value", "ObservationValue"), true, "equals", "positive"));
 
-        TaskConfig config = new TaskConfig()
+        TaskConfig expected = new TaskConfig()
+                .add(new FilterSet(filters))
+                .add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), true));
+
+        TaskConfig actual = new TaskConfigDeserializer().deserialize(jsonParser, null);
+
+        Assert.assertEquals(expected.getDataSources().first().isFailIfDataNotFound(), actual.getDataSources().first().isFailIfDataNotFound());
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDeserializeJsonWithoutFailWhenObjectNotFound() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonFactory jsonFactory = new JsonFactory(mapper);
+
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(this.getClass().getResourceAsStream("/task-config-data-not-found.json"), writer);
+
+        JsonParser jsonParser = jsonFactory.createJsonParser(writer.toString());
+
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new Filter(new EventParameter("mrs.observation.field.observationConceptName", "ObservationConceptName"), true, "equals", "pregnancy_urine_test"));
+        filters.add(new Filter(new EventParameter("mrs.observation.field.value", "ObservationValue"), true, "equals", "positive"));
+
+        TaskConfig expected = new TaskConfig()
                 .add(new FilterSet(filters))
                 .add(new DataSource("6899548ec91d9ad04e3aad9cf2aa19f9", 1L, "Person", "id", asList(new DataSource.Lookup("mrs.person.lookupField.id", "trigger.PatientId")), false));
 
-        Assert.assertEquals(config, new TaskConfigDeserializer().deserialize(jsonParser, null));
+        TaskConfig actual = new TaskConfigDeserializer().deserialize(jsonParser, null);
+
+
+        Assert.assertEquals(expected.getDataSources().first().isFailIfDataNotFound(), actual.getDataSources().first().isFailIfDataNotFound());
+        Assert.assertEquals(expected, actual);
     }
 
     @Test

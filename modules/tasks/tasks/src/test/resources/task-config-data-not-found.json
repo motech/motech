@@ -34,8 +34,7 @@
             "lookup":[{
                 "field":"mrs.person.lookupField.id",
                 "value":"trigger.PatientId"
-            }],
-            "failIfDataNotFound":true
+            }]
         }
     ]
 }
