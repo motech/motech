@@ -1,5 +1,5 @@
 {
-    "displayName": "email.module",
+    "displayName": "email",
     "moduleName": "${project.artifactId}",
     "moduleVersion": "${parsedVersion.osgiVersion}",
     "triggerTaskEvents" : [],
