@@ -100,18 +100,6 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     @Override
-    public Properties getQuartzProperties() {
-        Properties quartzProperties = new Properties();
-
-        putPropertyIfNotNull(quartzProperties, "org.quartz.scheduler.instanceName", motechSettings.getProperty(QUARTZ_SCHEDULER_NAME));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.class", motechSettings.getProperty(QUARTZ_THREAD_POOL_CLASS));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.threadPool.threadCount", motechSettings.getProperty(QUARTZ_THREAD_POOL_THREAD_COUNT));
-        putPropertyIfNotNull(quartzProperties, "org.quartz.jobStore.class", motechSettings.getProperty(QUARTZ_JOB_STORE_CLASS));
-
-        return quartzProperties;
-    }
-
-    @Override
     public Properties getMetricsProperties() {
         Properties metricsProperties = new Properties();
 

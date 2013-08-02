@@ -46,10 +46,6 @@ public class SettingsServiceImpl implements SettingsService {
             Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
             settingsList.add(activemqSettings);
 
-            Properties quartzProperties = motechSettings.getQuartzProperties();
-            Settings quartzSettings = new Settings("quartz", ParamParser.parseProperties(quartzProperties));
-            settingsList.add(quartzSettings);
-
             Properties metricsProperties = motechSettings.getMetricsProperties();
             Settings metricsSettings = new Settings("metrics", ParamParser.parseProperties(metricsProperties));
             settingsList.add(metricsSettings);

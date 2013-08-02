@@ -198,7 +198,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         if (dbSettings != null) {
             export.putAll(dbSettings.getActivemqProperties());
-            export.putAll(dbSettings.getQuartzProperties());
             export.put(MotechSettings.LANGUAGE, dbSettings.getLanguage());
         }
 
@@ -380,8 +379,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             } else if (MotechSettings.UPLOAD_SIZE.equals(key)) {
                 dbSettings.setUploadSize(value);
             } else {
-                for (Properties p : Arrays.asList(dbSettings.getQuartzProperties(),
-                        dbSettings.getMetricsProperties())) {
+                for (Properties p : Arrays.asList(dbSettings.getMetricsProperties())) {
                     if (p.containsKey(key)) {
                         p.put(key, value);
 
