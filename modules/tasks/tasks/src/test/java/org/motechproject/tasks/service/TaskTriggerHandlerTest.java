@@ -1128,6 +1128,43 @@ public class TaskTriggerHandlerTest {
         assertEquals("Hello, world! I'm second action", motechEventAction2.getParameters().get("message"));
     }
 
+    @Test
+    public void shouldHandleFormatManipulation() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+        setFormatManipulation();
+        setAdditionalData(true);
+
+        Map<String, String> testObjectLookup = new HashMap<>();
+        testObjectLookup.put("id", "123456789-6789");
+
+        TestObject testObject = new TestObject();
+        TestObjectField testObjectField = new TestObjectField();
+
+        Map<String, String> testObjectFieldLookup = new HashMap<>();
+        testObjectFieldLookup.put("id", "123456789");
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(any(TaskActionInformation.class))).thenReturn(actionEvent);
+
+        when(dataProvider.getName()).thenReturn("TEST");
+        when(dataProvider.supports("TestObject")).thenReturn(true);
+        when(dataProvider.lookup("TestObject", testObjectLookup)).thenReturn(testObject);
+
+        when(dataProvider.supports("TestObjectField")).thenReturn(true);
+        when(dataProvider.lookup("TestObjectField", testObjectFieldLookup)).thenReturn(testObjectField);
+
+        ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
+
+        handler.handle(createEvent());
+
+        verify(eventRelay, times(2)).sendEventMessage(captor.capture());
+
+        MotechEvent event = captor.getAllValues().get(0);
+        assertEquals("123456789 || 6789 || YourName", event.getParameters().get("format"));
+    }
+
     private void initTask() throws Exception {
         Map<String, String> actionValues = new HashMap<>();
         actionValues.put("phone", "123456");
@@ -1155,6 +1192,11 @@ public class TaskTriggerHandlerTest {
     private void setManipulation() {
         task.getActions().get(0).getValues().put("manipulations", "String manipulation: {{trigger.eventName?toUpper?toLower?capitalize?join(-)}}, Date manipulation: {{trigger.startDate?dateTime(yyyyMMdd)}}");
         actionEvent.addParameter(new ActionParameter("Manipulations", "manipulations", TEXTAREA), true);
+    }
+
+    private void setFormatManipulation() {
+        task.getActions().get(0).getValues().put("format", "{{trigger.format?format({{trigger.externalId}},{{ad.12345.TestObject#2.field.id}},YourName)}}");
+        actionEvent.addParameter(new ActionParameter("Format", "format"), true);
     }
 
     private void setDateField() {
@@ -1264,6 +1306,7 @@ public class TaskTriggerHandlerTest {
         param.put("facilityId", 987654321);
         param.put("eventName", "event name");
         param.put("list", Arrays.asList(1, 2, 3));
+        param.put("format", "%s || %s || %s");
 
         return new MotechEvent(TRIGGER_SUBJECT, param);
     }

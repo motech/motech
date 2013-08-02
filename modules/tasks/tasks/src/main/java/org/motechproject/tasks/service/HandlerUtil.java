@@ -23,8 +23,9 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 final class HandlerUtil {
-    private static final int JOIN_PATTERN_BEGIN_INDEX = 5;
-    private static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
+    public static final int JOIN_PATTERN_BEGIN_INDEX = 5;
+    public static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
+    public static final int FORMAT_PATTERN_BEGIN_INDEX = 7;
 
     private HandlerUtil() {
     }

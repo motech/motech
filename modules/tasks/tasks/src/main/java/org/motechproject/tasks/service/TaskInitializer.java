@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.DATA_SOURCE;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.service.HandlerUtil.FORMAT_PATTERN_BEGIN_INDEX;
 
 class TaskInitializer {
     private Map<String, Object> dataSourceObjects;
@@ -151,25 +153,7 @@ class TaskInitializer {
         String conversionTemplate = template;
 
         for (KeyInformation key : KeyInformation.parseAll(template)) {
-            String value = "";
-
-            switch (key.getPrefix()) {
-                case TRIGGER_PREFIX:
-                    try {
-                        Object triggerKey = HandlerUtil.getTriggerKey(event, key);
-                        value = triggerKey == null ? "" : triggerKey.toString();
-                    } catch (Exception e) {
-                        throw new TaskHandlerException(
-                                TRIGGER, "task.error.objectNotContainsField", e, key.getKey()
-                        );
-                    }
-                    break;
-                case ADDITIONAL_DATA_PREFIX:
-                    Object additionalDataValue = getDataSourceObjectValue(key);
-                    value = additionalDataValue == null ? "" : additionalDataValue.toString();
-                    break;
-                default:
-            }
+            String value = getValue(key);
 
             if (key.hasManipulations()) {
                 value = manipulateValue(value, key.getManipulations());
@@ -188,15 +172,34 @@ class TaskInitializer {
         String manipulateValue = value;
 
         for (String manipulation : manipulations) {
-            try {
-                manipulateValue = HandlerUtil.manipulate(manipulation, manipulateValue);
-            } catch (MotechException e) {
-                String msg = e.getMessage();
+            if (manipulation.contains("format")) {
+                String formatElements = manipulation.substring(FORMAT_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
 
-                if ("task.warning.manipulation".equalsIgnoreCase(msg)) {
-                    activityService.addWarning(task, msg, manipulation);
-                } else {
-                    throw new TaskHandlerException(TRIGGER, msg, e, manipulation);
+                if (isNotBlank(formatElements)) {
+                    String[] items = formatElements.split(",");
+
+                    for (int i = 0; i < items.length; ++i) {
+                        String key = items[i];
+
+                        if (key.startsWith("{{") && key.endsWith("}}")) {
+                            key = key.substring(2, key.length() - 2);
+                            items[i] = getValue(KeyInformation.parse(key));
+                        }
+                    }
+
+                    manipulateValue = String.format(manipulateValue, items);
+                }
+            } else {
+                try {
+                    manipulateValue = HandlerUtil.manipulate(manipulation, manipulateValue);
+                } catch (MotechException e) {
+                    String msg = e.getMessage();
+
+                    if ("task.warning.manipulation".equalsIgnoreCase(msg)) {
+                        activityService.addWarning(task, msg, manipulation);
+                    } else {
+                        throw new TaskHandlerException(TRIGGER, msg, e, manipulation);
+                    }
                 }
             }
         }
@@ -304,6 +307,30 @@ class TaskInitializer {
         }
 
         return result;
+    }
+
+    private String getValue(KeyInformation key) throws TaskHandlerException {
+        String value = "";
+
+        switch (key.getPrefix()) {
+            case TRIGGER_PREFIX:
+                try {
+                    Object triggerKey = HandlerUtil.getTriggerKey(event, key);
+                    value = triggerKey == null ? "" : triggerKey.toString();
+                } catch (Exception e) {
+                    throw new TaskHandlerException(
+                            TRIGGER, "task.error.objectNotContainsField", e, key.getKey()
+                    );
+                }
+                break;
+            case ADDITIONAL_DATA_PREFIX:
+                Object additionalDataValue = getDataSourceObjectValue(key);
+                value = additionalDataValue == null ? "" : additionalDataValue.toString();
+                break;
+            default:
+        }
+
+        return value;
     }
 
     Task getTask() {

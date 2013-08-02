@@ -11,8 +11,24 @@ import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+/**
+ * Object representation of dragged field from trigger or data source.
+ * <p/>
+ * This class represents a single dragged field from trigger or data source. This class does not
+ * expose a public constructor. You have to use {@link #parse(String)} method if you want to parse
+ * single field or {@link #parseAll(String)} if you want ot get all fields from a given string.
+ *
+ * @since 0.18
+ */
 public final class KeyInformation {
+    /**
+     * Prefix which is used for trigger fields.
+     */
     public static final String TRIGGER_PREFIX = "trigger";
+
+    /**
+     * Prefix which is used for data source fields.
+     */
     public static final String ADDITIONAL_DATA_PREFIX = "ad";
 
     private static final int DATA_PROVIDER_ID_IDX = 1;
@@ -46,6 +62,34 @@ public final class KeyInformation {
         this.manipulations = manipulations;
     }
 
+    /**
+     * Parse given string to instance of {@link KeyInformation}.
+     * <p/>
+     * This method should be used to convert string representation of dragged field to instance of
+     * {@link KeyInformation}.
+     * <p/>
+     * Argument has adhere to one of the following format:
+     * <ul>
+     * <li>trigger field format: <b>trigger.<i>eventKey</i></b></li>
+     * <li>data source format: <b>ad.<i>dataProviderId</i>.<i>objectType</i>#<i>objectId</i>.<i>fieldKey</i></b></li>
+     * </ul>
+     * <p/>
+     * Argument can also contain list of manipulation which should be executed on field before it
+     * will be used by {@link org.motechproject.tasks.service.TaskTriggerHandler} class.
+     * Manipulations should be connected together by the <b>?</b> character.
+     * <p/>
+     * Example of input argument:
+     * <ul>
+     * <li>ad.279f5fdf60700d9717270b1ae3011eb1.CaseInfo#0.fieldValues.phu_id</li>
+     * <li>trigger.message?format(Ala,cat)?capitalize</li>
+     * </ul>
+     *
+     * @param input string representation of a dragged field from trigger or data source
+     * @return Object representation of a dragged field
+     * @throws IllegalArgumentException exception is thrown if format for data source field is
+     *                                  incorrect or if the dragged field is not from trigger or
+     *                                  data source.
+     */
     public static KeyInformation parse(String input) {
         List<String> manipulations = new ArrayList<>();
         KeyInformation key;
@@ -86,9 +130,42 @@ public final class KeyInformation {
         return key;
     }
 
+    /**
+     * Find all fields from given input and convert them to the instance of {@link KeyInformation}.
+     * <p/>
+     * This method should be used to find and convert all of string representation of the field
+     * from trigger and/or data sources. Fields in input have to adhere to one of the following formats:
+     * <ul>
+     * <li>trigger field format: <b>{{trigger.<i>eventKey</i>}}</b></li>
+     * <li>data source format: <b>{{ad.<i>dataProviderId</i>.<i>objectType</i>#<i>objectId</i>.<i>fieldKey</i>}}</b></li>
+     * </ul>
+     * <p/>
+     * To find fields in the input argument this method uses regular expression. When field is found
+     * it is converted to an instance of {@link KeyInformation} by using the {@link #parse(String)}
+     * method.
+     * <p/>
+     * Fields are found by the following regular expression: <b>\{\{((.*?)(\(.*?\))?)\}\}</b>.
+     * The expression searches for strings that start with <i>{{</i> and end with <i>}}</i>.
+     * Because of manipulations which contain additional data in <i>(...)</i> needed to
+     * execute manipulation on the field (e.g.: join needs to have the join character) and the text
+     * in <i>(...)</i> can be another string representation of the dragged field, the expression
+     * has to check if the field has this kind of manipulation.
+     * <p/>
+     * Example of input argument:
+     * <ul>
+     * <li>{{trigger.message?format(Ala,cat)?capitalize}}</li>
+     * <li>You get the following message: {{trigger.message}}</li>
+     * </ul>
+     *
+     * @param input string with one or more string representation of dragged fields from trigger
+     *              and/or data sources
+     * @return list of object representation of dragged fields.
+     * @throws IllegalArgumentException in the same situations as the {@link #parse(String)}
+     *                                  method.
+     */
     public static List<KeyInformation> parseAll(String input) {
         List<KeyInformation> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\{\\{(.*?)\\}\\}");
+        Pattern pattern = Pattern.compile("\\{\\{((.*?)(\\(.*?\\))?)\\}\\}");
         Matcher matcher = pattern.matcher(isEmpty(input) ? "" : input);
 
         while (matcher.find()) {
@@ -98,10 +175,20 @@ public final class KeyInformation {
         return keys;
     }
 
+    /**
+     * Check if the field is from the trigger.
+     *
+     * @return true if the field is from the trigger otherwise false
+     */
     public boolean fromTrigger() {
         return prefix.equalsIgnoreCase(TRIGGER_PREFIX);
     }
 
+    /**
+     * Check if the field is from the data source.
+     *
+     * @return true if the field is from the data source otherwise false
+     */
     public boolean fromAdditionalData() {
         return prefix.equalsIgnoreCase(ADDITIONAL_DATA_PREFIX);
     }
@@ -110,6 +197,11 @@ public final class KeyInformation {
         return prefix;
     }
 
+    /**
+     * Get original representation of the dragged field.
+     *
+     * @return string representation of the field
+     */
     public String getOriginalKey() {
         return originalKey;
     }
@@ -130,10 +222,20 @@ public final class KeyInformation {
         return key;
     }
 
+    /**
+     * Check if the field has any manipulations.
+     *
+     * @return true if the field has manipulations otherwise false
+     */
     public boolean hasManipulations() {
         return !CollectionUtils.isEmpty(manipulations);
     }
 
+    /**
+     * Get manipulations assigned to the field.
+     *
+     * @return list of manipulations
+     */
     public List<String> getManipulations() {
         return manipulations;
     }
