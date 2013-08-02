@@ -24,7 +24,16 @@
     emailModule.controller('SettingsController', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
 
+        $scope.timeMultipliers = {
+            'hours': $scope.msg('email.settings.log.units.hours'),
+            'days': $scope.msg('email.settings.log.units.days'),
+            'weeks': $scope.msg('email.settings.log.units.weeks'),
+            'months': $scope.msg('email.settings.log.units.months'),
+            'years': $scope.msg('email.settings.log.units.years')
+        };
+
         $scope.submit = function () {
+
             SettingsService.save(
                 {},
                 $scope.settings,
@@ -38,10 +47,17 @@
             );
         };
 
-        $scope.isNumeric = function(prop) {
+        $scope.isNumeric = function (prop) {
             return $scope.settings.hasOwnProperty(prop) && /^[0-9]+$/.test($scope.settings[prop]);
         };
 
-    });
+        $scope.purgeTimeControlsDisabled = function () {
+            if ($scope.settings.logPurgeEnable.localeCompare("true") === 0) {
+                return false;
+            } else {
+                return true;
+            }
+        };
 
+    });
 }());
