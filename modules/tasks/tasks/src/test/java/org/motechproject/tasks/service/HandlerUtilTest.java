@@ -2,6 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
@@ -49,6 +50,7 @@ import static org.motechproject.tasks.service.HandlerUtil.checkFilters;
 import static org.motechproject.tasks.service.HandlerUtil.convertTo;
 import static org.motechproject.tasks.service.HandlerUtil.getFieldValue;
 import static org.motechproject.tasks.service.HandlerUtil.getTriggerKey;
+import static org.motechproject.tasks.service.HandlerUtil.manipulate;
 
 public class HandlerUtilTest {
     private static final String EVENT_KEY = "event.key";
@@ -234,6 +236,23 @@ public class HandlerUtilTest {
         filters.add(new Filter("MRS.Person#1.Age", "ad.b1a0a7356621106bded4487f8500a13b.Person#1.age", INTEGER, true, "abc", ""));
 
         assertFalse(checkFilters(filters, triggerParameters, dataSources));
+    }
+
+    @Test(expected = MotechException.class)
+    public void testManipulate() throws Exception {
+        DateTime now = DateUtil.now();
+        String toString = now.toString();
+        String toStringWithPattern = now.toString("yyyy-MM-dd");
+
+        assertEquals("lower_case", manipulate("tolower", "LOWER_CASE"));
+        assertEquals("UPPER_CASE", manipulate("toupper", "upper_case"));
+        assertEquals("Capitalize", manipulate("capitalize", "capitalize"));
+        assertEquals("67890", manipulate("substring(5)", "1234567890"));
+        assertEquals("67", manipulate("substring(5,7)", "1234567890"));
+        assertEquals("ala-has-a-cat", manipulate("join(-)", "ala has a cat"));
+        assertEquals(toStringWithPattern, manipulate("datetime(yyyy-MM-dd)", toString));
+
+        manipulate("undefined", "something");
     }
 
     private void assertTime(DateTime expected, DateTime actual) {

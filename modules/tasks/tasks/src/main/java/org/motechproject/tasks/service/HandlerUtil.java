@@ -41,6 +41,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <li><b>JOIN_PATTERN_BEGIN_INDEX</b> - index of opening bracket in join manipulation,</li>
  * <li><b>DATETIME_PATTERN_BEGIN_INDEX</b> - index of opening bracket in date manipulation,</li>
  * <li><b>FORMAT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in format manipulation.</li>
+ * <li><b>SUBSTRING_PATTERN_BEGIN_INDEX</b> - index of opening bracket in substring manipulation.</li>
  * </ul>
  *
  * @see {@link TaskTriggerHandler}
@@ -50,6 +51,7 @@ final class HandlerUtil {
     public static final int JOIN_PATTERN_BEGIN_INDEX = 5;
     public static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
     public static final int FORMAT_PATTERN_BEGIN_INDEX = 7;
+    public static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
 
     private HandlerUtil() {
     }
@@ -150,6 +152,8 @@ final class HandlerUtil {
             } catch (IllegalArgumentException e) {
                 throw new MotechException("error.date.format", e);
             }
+        } else if (lowerCase.contains("substring")) {
+            result = substringManipulation(value, manipulation);
         } else {
             switch (lowerCase) {
                 case "toupper":
@@ -386,5 +390,24 @@ final class HandlerUtil {
         DateTimeFormatter format = DateTimeFormat.forPattern(pattern);
 
         return format.print(new DateTime(value));
+    }
+
+    private static String substringManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(SUBSTRING_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        String[] splitValue = pattern.contains(",") ? pattern.split(",") : new String[]{pattern};
+        int[] indexes = new int[splitValue.length];
+
+        for (int i = 0; i < splitValue.length; ++i) {
+            indexes[i] = Integer.parseInt(splitValue[i]);
+        }
+
+        switch (indexes.length) {
+            case 1:
+                return value.substring(indexes[0]);
+            case 2:
+                return value.substring(indexes[0], indexes[1]);
+            default:
+                throw new IllegalArgumentException("Incorrect pattern for substring manipulation");
+        }
     }
 }
