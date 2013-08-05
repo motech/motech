@@ -3,9 +3,11 @@ package org.motechproject.tasks.service;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.KeyInformation;
@@ -22,6 +24,28 @@ import static org.motechproject.tasks.domain.KeyInformation.ADDITIONAL_DATA_PREF
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
 
+/**
+ * The <code>HandlerUtil</code> class provides utility methods for {@link TaskTriggerHandler} class.
+ * <p/>
+ * <ul>
+ * <li><b>convertTo</b> - convert a given value to a correct type,</li>
+ * <li><b>getFieldValue</b> - get value of a field defined in the key from the given object,</li>
+ * <li><b>getTriggerKey</b> - get value of a trigger event parameter,</li>
+ * <li><b>checkFilters</b> - executed defined filters for a task,</li>
+ * <li><b>manipulate</b> - executed the given manipulation on the given string value.</li>
+ * </ul>
+ * <p/>
+ * The <code>HandlerUtil</code> class defines certain indexes related to manipulation.
+ * <p/>
+ * <ul>
+ * <li><b>JOIN_PATTERN_BEGIN_INDEX</b> - index of opening bracket in join manipulation,</li>
+ * <li><b>DATETIME_PATTERN_BEGIN_INDEX</b> - index of opening bracket in date manipulation,</li>
+ * <li><b>FORMAT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in format manipulation.</li>
+ * </ul>
+ *
+ * @see {@link TaskTriggerHandler}
+ * @since 0.19
+ */
 final class HandlerUtil {
     public static final int JOIN_PATTERN_BEGIN_INDEX = 5;
     public static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
@@ -97,21 +121,9 @@ final class HandlerUtil {
 
         if (filters != null && parameters != null) {
             for (Filter filter : filters) {
-                ParameterType type = filter.getType();
                 KeyInformation key = parse(filter.getKey());
                 Object value = getFilterValue(key, parameters, dataSourceObjects);
-
-                if (value == null) {
-                    filterCheck = false;
-                } else {
-                    if (type.isString()) {
-                        filterCheck = checkFilterForString(filter, value.toString());
-                    } else if (type.isNumber()) {
-                        filterCheck = checkFilterForNumber(
-                                filter, new BigDecimal(value.toString())
-                        );
-                    }
-                }
+                filterCheck = value != null && checkValue(filter, value);
 
                 if (!filter.isNegationOperator()) {
                     filterCheck = !filterCheck;
@@ -179,6 +191,23 @@ final class HandlerUtil {
         return value;
     }
 
+    private static boolean checkValue(Filter filter, Object value) {
+        ParameterType type = filter.getType();
+        boolean filterCheck;
+
+        if (type.isString()) {
+            filterCheck = checkFilterForString(filter, value.toString());
+        } else if (type.isNumber()) {
+            filterCheck = checkFilterForNumber(filter, new BigDecimal(value.toString()));
+        } else if (type == ParameterType.DATE) {
+            filterCheck = checkFilterForDate(filter, DateTime.parse(value.toString()));
+        } else {
+            filterCheck = false;
+        }
+
+        return filterCheck;
+    }
+
     private static boolean checkFilterForString(Filter filter, String param) {
         OperatorType operatorType = OperatorType.fromString(filter.getOperator());
         String expression = filter.getExpression();
@@ -240,6 +269,51 @@ final class HandlerUtil {
         }
 
         return result;
+    }
+
+    private static boolean checkFilterForDate(Filter filter, DateTime param) {
+        OperatorType operatorType = OperatorType.fromString(filter.getOperator());
+        String expression = filter.getExpression();
+        boolean result = false;
+
+        if (operatorType != null) {
+            switch (operatorType) {
+                case EXIST:
+                    result = true;
+                    break;
+                case EQUALS:
+                    result = param.isEqual(DateTime.parse(expression));
+                    break;
+                case AFTER:
+                    result = param.isAfter(DateTime.parse(expression));
+                    break;
+                case AFTER_NOW:
+                    result = param.isAfterNow();
+                    break;
+                case BEFORE:
+                    result = param.isBefore(DateTime.parse(expression));
+                    break;
+                case BEFORE_NOW:
+                    result = param.isBeforeNow();
+                    break;
+                case LESS_DAYS_FROM_NOW:
+                    result = countNumberOfDays(param) < Integer.valueOf(expression);
+                    break;
+                case MORE_DAYS_FROM_NOW:
+                    result = countNumberOfDays(param) > Integer.valueOf(expression);
+                    break;
+                default:
+                    result = false;
+            }
+        }
+
+        return result;
+    }
+
+    private static int countNumberOfDays(DateTime param) {
+        return param.isBeforeNow()
+                ? Days.daysBetween(param, DateUtil.now()).getDays()
+                : Days.daysBetween(DateUtil.now(), param).getDays();
     }
 
     private static Object convertToDate(String userInput) {

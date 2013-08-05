@@ -148,14 +148,19 @@
                                                                         <span class="caret"></span>
                                                                     </a>
                                                                     <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
-                                                                        <li ng-repeat="operator in operators(filter)">
-                                                                            <a ng-click="filter.operator = operator">{{msg(operator)}}</a>
+                                                                        <li class="dropdown-submenu" ng-repeat="(key, value) in util.getFilterOperators()">
+                                                                            <a tabindex="-1">{{msg(key)}}</a>
+                                                                            <ul class="dropdown-menu">
+                                                                                <li ng-repeat="operator in value.options">
+                                                                                    <a ng-click="filter.operator = operator; filter.type = value.type">{{msg(operator)}}</a>
+                                                                                </li>
+                                                                            </ul>
                                                                         </li>
                                                                     </ul>
                                                                 </div>
                                                             </span>
-                                                            <span class="validation-area" ng-class="{error: filter.operator != 'task.exist' && !filter.expression}">
-                                                                <input ng-disabled="!filter.operator || filter.operator == 'task.exist'" ng-model="filter.expression" class="input-medium" type="text" value=""/>
+                                                            <span class="validation-area" ng-class="{error: util.needExpression(filter.operator) && !filter.expression}">
+                                                                <input ng-disabled="!filter.operator || !util.needExpression(filter.operator)" ng-model="filter.expression" class="input-medium" type="text" value=""/>
                                                             </span>
                                                             <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a>
                                                         </div>

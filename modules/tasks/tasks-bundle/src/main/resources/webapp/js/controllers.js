@@ -414,28 +414,12 @@
             case $scope.util.TRIGGER_PREFIX:
                 filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
                 filter.displayName = "{0} ({1})".format($scope.msg(select.displayName), $scope.msg('task.header.trigger'));
-                filter.type = select.type;
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
                 filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerId, select.type, select.objectId, field.fieldKey);
                 filter.displayName = "{0} ({1}#{2} ({3}))".format($scope.msg(field.displayName), $scope.msg(select.displayName), select.objectId, $scope.msg(select.providerName));
-                filter.type = field.type;
                 break;
             }
-        };
-
-        $scope.operators = function (param) {
-            var array = ['task.exist'];
-
-            if (param) {
-                if ($scope.util.isText(param.type)) {
-                    $.merge(array, ["task.equals", "task.contains", "task.startsWith", "task.endsWith"]);
-                } else if ($scope.util.isNumber(param.type)) {
-                    $.merge(array, ["task.gt", "task.lt", "task.equal"]);
-                }
-            }
-
-            return array;
         };
 
         $scope.addDataSource = function () {
