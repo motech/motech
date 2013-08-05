@@ -29,6 +29,19 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.service.HandlerUtil.FORMAT_PATTERN_BEGIN_INDEX;
 
+/**
+ * The <code>TaskInitializer</code> class provides methods which prepare an action in the task
+ * definition to execution.
+ * <p/>
+ * <ul>
+ * <li><b>evalConfigSteps</b> - executes all config steps (load data sources, check filters) defined in the task,</li>
+ * <li><b>createParameters</b> - creates correct parameters for an action.</li>
+ * </ul>
+ *
+ * @see TaskTriggerHandler
+ * @see TaskExecutor
+ * @since 0.20
+ */
 class TaskInitializer {
     private Map<String, Object> dataSourceObjects;
     private Task task;
@@ -75,35 +88,40 @@ class TaskInitializer {
         for (ActionParameter param : actionParameters) {
             String key = param.getKey();
 
-            if (!info.getValues().containsKey(key)) {
-                throw new TaskHandlerException(
-                        TRIGGER, "task.error.taskActionNotContainsField", action.getDisplayName(), key
-                );
-            }
+            if (info.getValues().containsKey(key)) {
+                String template = info.getValues().get(key);
 
-            String template = info.getValues().get(key);
+                if (template == null) {
+                    throw new TaskHandlerException(
+                            TRIGGER, "task.error.templateNull", key, action.getDisplayName()
+                    );
+                }
 
-            if (template == null) {
-                throw new TaskHandlerException(
-                        TRIGGER, "task.error.templateNull", key, action.getDisplayName()
-                );
-            }
-
-            switch (param.getType()) {
-                case LIST:
-                    parameters.put(key, convertToList(template));
-                    break;
-                case MAP:
-                    parameters.put(key, convertToMap(template));
-                    break;
-                default:
-                    try {
-                        String userInput = convert(template);
-                        Object obj = HandlerUtil.convertTo(param.getType(), userInput);
-                        parameters.put(key, obj);
-                    } catch (MotechException ex) {
-                        throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
-                    }
+                switch (param.getType()) {
+                    case LIST:
+                        parameters.put(key, convertToList(template));
+                        break;
+                    case MAP:
+                        parameters.put(key, convertToMap(template));
+                        break;
+                    default:
+                        try {
+                            String userInput = convert(template);
+                            Object obj = HandlerUtil.convertTo(param.getType(), userInput);
+                            parameters.put(key, obj);
+                        } catch (MotechException ex) {
+                            throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
+                        }
+                }
+            } else {
+                if (param.isRequired()) {
+                    throw new TaskHandlerException(
+                            TRIGGER, "task.error.taskActionNotContainsField",
+                            action.getDisplayName(), key
+                    );
+                } else {
+                    parameters.put(key, null);
+                }
             }
         }
 

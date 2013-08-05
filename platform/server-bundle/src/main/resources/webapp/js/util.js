@@ -108,3 +108,8 @@ function cloneObj(obj) {
     'use strict';
     return jQuery.extend(true, {}, obj);
 }
+
+function isBlank(str) {
+    'use strict';
+    return (!str || /^\s*$/.test(str));
+}

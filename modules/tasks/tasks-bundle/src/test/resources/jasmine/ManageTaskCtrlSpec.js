@@ -296,18 +296,18 @@
 
             expect(scope.actionCssClassError(undefined)).toEqual(false);
             expect(scope.actionCssClassError(null)).toEqual(false);
-            expect(scope.actionCssClassError({ value: '' })).toEqual(false);
+            expect(scope.actionCssClassError({ required: true, value: '' })).toEqual(false);
 
             scope.selectedTrigger = channels[1].triggerTaskEvents[0];
 
-            expect(scope.actionCssClassError({ value: '' })).toEqual(true);
-            expect(scope.actionCssClassError({ value: '{{trigger.value}}' })).toEqual(false);
+            expect(scope.actionCssClassError({ required: true, value: '' })).toEqual(true);
+            expect(scope.actionCssClassError({ required: true, value: '{{trigger.value}}' })).toEqual(false);
 
             scope.BrowserDetect = { browser: 'Chrome' };
 
-            expect(scope.actionCssClassError({ value: '<br/>' })).toEqual(true);
-            expect(scope.actionCssClassError({ value: '<span>Value</span>' })).toEqual(false);
-            expect(scope.actionCssClassError({ value: spanTest })).toEqual(false);
+            expect(scope.actionCssClassError({ required: true, value: '<br/>' })).toEqual(true);
+            expect(scope.actionCssClassError({ required: true, value: '<span>Value</span>' })).toEqual(false);
+            expect(scope.actionCssClassError({ required: true, value: spanTest })).toEqual(false);
         });
 
         it('Should return correct boolean value according to property value for action css class (warning)', function () {

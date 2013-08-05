@@ -80,7 +80,8 @@
                             <predefinedVars>
                                 $, jQuery, angular, DashboardCtrl, ManageTaskCtrl, LogCtrl, moment,
                                 dummyHandler, handleResponse, jConfirm, alertHandler, window,
-                                blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj
+                                blockUI, unblockUI, motechAlert, motechConfirm, jAlert, cloneObj,
+                                isBlank
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                             <excludes>

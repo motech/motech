@@ -45,7 +45,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <li><b>SPLIT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in split manipulation.</li>
  * </ul>
  *
- * @see {@link TaskTriggerHandler}
+ * @see TaskTriggerHandler
  * @since 0.19
  */
 final class HandlerUtil {

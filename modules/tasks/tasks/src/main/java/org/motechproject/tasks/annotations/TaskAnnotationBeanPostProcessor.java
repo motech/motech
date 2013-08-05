@@ -19,11 +19,21 @@ import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+/**
+ * Factory class which is looking for classes with {@link TaskChannel} annotation to add them to
+ * the channel definition as channel action.
+ *
+ * @see TaskAction
+ * @see TaskActionParam
+ * @see TaskChannel
+ * @since 0.19
+ */
 public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
     private BundleContext bundleContext;
     private ChannelService channelService;
 
-    public TaskAnnotationBeanPostProcessor(BundleContext bundleContext, ChannelService channelService) {
+    public TaskAnnotationBeanPostProcessor(BundleContext bundleContext,
+                                           ChannelService channelService) {
         this.bundleContext = bundleContext;
         this.channelService = channelService;
     }
@@ -43,7 +53,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
 
                 @Override
                 public void doWith(Method method) throws IllegalAccessException {
-                    Method targetMethod = findMethod(targetClass, method.getName(), method.getParameterTypes());
+                    Method targetMethod = findMethod(
+                            targetClass, method.getName(), method.getParameterTypes()
+                    );
 
                     if (targetMethod != null) {
                         TaskAction taskAction = targetMethod.getAnnotation(TaskAction.class);
@@ -68,7 +80,8 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private void addActionTaskEvent(Channel channel, String serviceInterface, Method method, TaskAction taskAction) {
+    private void addActionTaskEvent(Channel channel, String serviceInterface, Method method,
+                                    TaskAction taskAction) {
         ActionEvent action = getAction(channel, serviceInterface, method);
         boolean foundAction = action != null;
 
@@ -103,8 +116,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
     }
 
     private ActionEvent getAction(Channel channel, String serviceInterface, Method method) {
-        TaskActionInformation info = new TaskActionInformation(channel.getDisplayName(), channel.getDisplayName(),
-                channel.getModuleName(), channel.getModuleVersion(), serviceInterface, method.getName());
+        TaskActionInformation info = new TaskActionInformation(channel.getDisplayName(),
+                channel.getDisplayName(), channel.getModuleName(), channel.getModuleVersion(),
+                serviceInterface, method.getName());
         ActionEvent actionEvent = null;
 
         for (ActionEvent action : channel.getActionTaskEvents()) {
@@ -126,7 +140,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
                 if (annotation instanceof TaskActionParam) {
                     TaskActionParam param = (TaskActionParam) annotation;
 
-                    parameters.add(new ActionParameter(param.displayName(), param.key(), param.type(), order));
+                    parameters.add(new ActionParameter(
+                            param.displayName(), param.key(), param.type(), order, param.required()
+                    ));
                     ++order;
                 }
             }

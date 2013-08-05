@@ -4,6 +4,12 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+/**
+ * Object representation of a parameter in the channel action request definition.
+ *
+ * @see ActionEventRequest
+ * @since 0.21
+ */
 public class ActionParameterRequest implements Comparable<ActionParameterRequest> {
 
     private static final String UNICODE = "UNICODE";
@@ -12,16 +18,23 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
     private String key;
     private String displayName;
     private String type;
+    private boolean required;
 
     private ActionParameterRequest() {
-        this.type = UNICODE;
+        this(null, null, null, UNICODE, true);
     }
 
-    public ActionParameterRequest(String key, String displayName, Integer order, String type) {
+    public ActionParameterRequest(String key, String displayName, Integer order, String type,
+                                  boolean required) {
         this.key = key;
         this.displayName = displayName;
         this.order = order;
         this.type = isBlank(type) ? UNICODE : type;
+        this.required = required;
+    }
+
+    public ActionParameterRequest(String key, String displayName, Integer order, String type) {
+        this(key, displayName, order, type, true);
     }
 
     public ActionParameterRequest(String key, String displayName, Integer order) {
@@ -52,6 +65,10 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
         this.order = order;
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
     @Override
     public int compareTo(ActionParameterRequest o) {
         return Integer.compare(this.order, o.order);
@@ -59,7 +76,7 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, key);
+        return Objects.hash(order, key, displayName, type, required);
     }
 
     @Override
@@ -72,15 +89,20 @@ public class ActionParameterRequest implements Comparable<ActionParameterRequest
             return false;
         }
 
-
         final ActionParameterRequest other = (ActionParameterRequest) obj;
 
-        return Objects.equals(this.order, other.order) &&
-                Objects.equals(this.key, other.key);
+        return Objects.equals(this.order, other.order)
+                && Objects.equals(this.key, other.key)
+                && Objects.equals(this.displayName, other.displayName)
+                && Objects.equals(this.type, other.type)
+                && Objects.equals(this.required, other.required);
     }
 
     @Override
     public String toString() {
-        return String.format("ActionParameter{order=%d, key='%s'}", order, key);
+        return String.format(
+                "ActionParameter{order=%d, key='%s', displayName='%s', type='%s', required=%s}",
+                order, key, displayName, type, required
+        );
     }
 }

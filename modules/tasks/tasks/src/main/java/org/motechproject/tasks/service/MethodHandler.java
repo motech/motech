@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+/**
+ * Utility class used by {@link TaskTriggerHandler} to construct a list of parameter
+ * types of the method in the correct order.
+ *
+ * @see TaskTriggerHandler
+ */
 class MethodHandler {
     private boolean parametrized;
     private Class[] classes;
@@ -32,8 +38,10 @@ class MethodHandler {
                         classes[idx] = Map.class;
                     } else if (obj instanceof List) {
                         classes[idx] = List.class;
-                    } else {
+                    } else if (obj != null) {
                         classes[idx] = obj.getClass();
+                    } else {
+                        classes[idx] = Object.class;
                     }
                 }
             }

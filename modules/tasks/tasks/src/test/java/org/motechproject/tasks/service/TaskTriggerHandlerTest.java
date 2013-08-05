@@ -50,6 +50,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
@@ -784,6 +785,8 @@ public class TaskTriggerHandlerTest {
         setListField();
         setMapField();
 
+        setNonRequiredField();
+
         Map<String, String> testObjectLookup = new HashMap<>();
         testObjectLookup.put("id", "123456789-6789");
 
@@ -831,7 +834,7 @@ public class TaskTriggerHandlerTest {
         Map<String, Object> motechEventParameters = motechEvent.getParameters();
 
         assertNotNull(motechEventParameters);
-        assertEquals(12, motechEventParameters.size());
+        assertEquals(13, motechEventParameters.size());
         assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
         assertEquals("Hello 123456789, You have an appointment on 2012-11-20", motechEventParameters.get("message"));
         assertEquals("String manipulation: Event-Name, Date manipulation: 20121120", motechEventParameters.get("manipulations"));
@@ -843,6 +846,7 @@ public class TaskTriggerHandlerTest {
         assertEquals(true, motechEventParameters.get("boolean"));
         assertEquals(getExpectedList(), motechEventParameters.get("list"));
         assertEquals(getExpectedMap(), motechEventParameters.get("map"));
+        assertNull(motechEventParameters.get("delivery_time"));
     }
 
     @Test
@@ -1295,6 +1299,10 @@ public class TaskTriggerHandlerTest {
         filters.add(new Filter(new EventParameter("ExternalID", "externalId", INTEGER), false, GT.getValue(), "1234567891"));
 
         task.getTaskConfig().add(new FilterSet(filters));
+    }
+
+    private void setNonRequiredField() {
+        actionEvent.addParameter(new ActionParameter("Delivery time", "delivery_time", DATE, false), true);
     }
 
     private MotechEvent createEvent() {

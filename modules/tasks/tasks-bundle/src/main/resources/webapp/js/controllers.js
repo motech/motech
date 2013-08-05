@@ -801,6 +801,10 @@
 
                 angular.forEach(action.actionParameters, function (param) {
                     $scope.task.actions[idx].values[param.key] = $scope.util.convertToServer($scope, param.value);
+
+                    if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
+                        delete $scope.task.actions[idx].values[param.key];
+                    }
                 });
             });
 
@@ -837,9 +841,9 @@
         };
 
         $scope.actionCssClassError = function (prop) {
-            var value, expression = false;
+            var value, expression = false, required = prop && prop.required;
 
-            if ($scope.actionCssClassWarning(prop)) {
+            if (!required || $scope.actionCssClassWarning(prop)) {
                 return expression;
             } else if ($scope.selectedTrigger !== undefined) {
                 value = prop.value === undefined ? '' : prop.value;
