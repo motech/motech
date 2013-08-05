@@ -13,7 +13,6 @@ import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
-import org.motechproject.tasks.domain.TaskDataProviderObject;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
@@ -69,7 +68,6 @@ public final class TaskValidator extends GeneralValidator {
             }
 
             errors.addAll(validateFiltersForTrigger(task, triggerEvent));
-            errors.addAll(validateDataSources(task, triggerEvent));
         } else {
             errors.add(new TaskError(
                     "task.validation.error.triggerNotExist",
@@ -108,7 +106,6 @@ public final class TaskValidator extends GeneralValidator {
         Set<TaskError> errors = new HashSet<>();
         errors.addAll(validateDataSource(dataSource, provider));
         errors.addAll(validateActionValues(actionValues, provider));
-        errors.addAll(validateFiltersForProvider(filterSets, provider));
 
         return errors;
     }
@@ -126,32 +123,6 @@ public final class TaskValidator extends GeneralValidator {
                             key.getKey(),
                             triggerEvent.getDisplayName()
                     ));
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    private static Set<TaskError> validateFiltersForProvider(SortedSet<FilterSet> filterSets,
-                                                             TaskDataProvider provider) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (FilterSet filterSet : filterSets) {
-            for (Filter filter : filterSet.getFilters()) {
-                KeyInformation key = parse(filter.getKey());
-
-                if (key.fromAdditionalData() && provider.getId().equals(key.getDataProviderId())) {
-                    TaskDataProviderObject object = provider
-                            .getProviderObject(key.getObjectType());
-
-                    if (!object.containsField(key.getKey())) {
-                        errors.add(new TaskError(
-                                "task.validation.error.providerObjectFieldNotExist",
-                                key.getKey(),
-                                String.format("%s#%d", key.getObjectType(), key.getObjectId())
-                        ));
-                    }
                 }
             }
         }
@@ -326,27 +297,6 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateDataSources(Task task, TriggerEvent triggerEvent) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
-            for (DataSource.Lookup lookup : dataSource.getLookup()) {
-                String lookupValue = lookup.getValue();
-
-                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
-                    if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
-                        errors.add(new TaskError(
-                                "task.validation.error.triggerFieldNotExist", key.getKey(),
-                                triggerEvent.getDisplayName()
-                        ));
-                    }
-                }
-            }
-        }
-
-        return errors;
-    }
-
     private static Set<TaskError> validateDataSource(DataSource dataSource,
                                                      TaskDataProvider provider) {
         Set<TaskError> errors = new HashSet<>();
@@ -385,18 +335,7 @@ public final class TaskValidator extends GeneralValidator {
         Set<TaskError> errors = new HashSet<>();
 
         if (equalsIgnoreCase(key.getDataProviderId(), provider.getId())) {
-            if (provider.containsProviderObject(key.getObjectType())) {
-                TaskDataProviderObject providerObject = provider
-                        .getProviderObject(key.getObjectType());
-
-                if (!providerObject.containsField(key.getKey())) {
-                    errors.add(new TaskError(
-                            "task.validation.error.providerObjectFieldNotExist",
-                            key.getKey(),
-                            providerObject.getDisplayName()
-                    ));
-                }
-            } else {
+            if (!provider.containsProviderObject(key.getObjectType())) {
                 errors.add(new TaskError(
                         "task.validation.error.providerObjectNotExist",
                         key.getObjectType(),
