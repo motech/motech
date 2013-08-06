@@ -179,6 +179,9 @@
             canHandleModernDragAndDrop: function (scope) {
                 return this.isChrome(scope) || this.isIE(scope);
             },
+            needExpression: function (param) {
+                return param && $.inArray(param, ['task.exist', 'task.afterNow', 'task.beforeNow']) === -1;
+            },
             createBooleanSpan: function (scope, value) {
                 var badgeType = (value ? 'success' : 'important'),
                     msg = (value ? scope.msg('yes') : scope.msg('no')),
@@ -263,6 +266,42 @@
                 });
 
                 return msg;
+            },
+            getFilterOperators: function () {
+                return {
+                    'task.string': {
+                        'type': 'UNICODE',
+                        'options': [
+                            'task.exist',
+                            'task.equals',
+                            'task.contains',
+                            'task.startsWith',
+                            'task.endsWith'
+                        ]
+                    },
+                    'task.number': {
+                        'type': 'DOUBLE',
+                        'options': [
+                            'task.exist',
+                            'task.equal',
+                            'task.gt',
+                            'task.lt'
+                        ]
+                    },
+                    'task.date': {
+                        'type': 'DATE',
+                        'options': [
+                            'task.exist',
+                            'task.equals',
+                            'task.after',
+                            'task.afterNow',
+                            'task.before',
+                            'task.beforeNow',
+                            'task.lessDaysFromNow',
+                            'task.moreDaysFromNow'
+                        ]
+                    }
+                };
             },
             convertToView: function (scope, type, value) {
                 var regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),

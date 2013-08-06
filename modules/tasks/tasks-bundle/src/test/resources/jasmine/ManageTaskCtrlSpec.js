@@ -227,19 +227,6 @@
             expect(scope.task.actions[0]).toEqual(actionInfo);
         });
 
-        it('Should return proper operators', function () {
-            var string = [ 'task.exist', 'task.equals', 'task.contains', 'task.startsWith', 'task.endsWith' ],
-                number = [ 'task.exist', 'task.gt', 'task.lt', 'task.equal' ],
-                other = [ 'task.exist' ];
-
-            expect(scope.operators({ type: 'UNICODE' })).toEqual(string);
-            expect(scope.operators({ type: 'INTEGER' })).toEqual(number);
-
-            expect(scope.operators(null)).toEqual(other);
-            expect(scope.operators(undefined)).toEqual(other);
-            expect(scope.operators({})).toEqual(other);
-        });
-
         it('Should refactor editable div', function () {
             var value = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="" data-prefix="trigger" data-type="UNICODE" data-object="Key 1">Key 1</span> - <span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="" data-prefix="ad" data-type="UNICODE" data-object="fieldDisplayName1" data-source="ds-1" data-object-id="0" data-object-type="TestType1" data-field="filedKey1">ds-1.obj.1#0.fieldDisplayName1</span>',
                 expected = '{{trigger.key_1}} - {{ad.ds-1.TestType1#0.filedKey1}}';

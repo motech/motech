@@ -3,6 +3,7 @@ package org.motechproject.tasks.service;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.commons.date.util.DateTimeSourceUtil;
+import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.tasks.domain.EventParameter;
 import org.motechproject.tasks.domain.Filter;
@@ -21,12 +22,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
+import static org.motechproject.tasks.domain.OperatorType.AFTER;
+import static org.motechproject.tasks.domain.OperatorType.AFTER_NOW;
+import static org.motechproject.tasks.domain.OperatorType.BEFORE;
+import static org.motechproject.tasks.domain.OperatorType.BEFORE_NOW;
 import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
 import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
 import static org.motechproject.tasks.domain.OperatorType.EQUALS;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
+import static org.motechproject.tasks.domain.OperatorType.LESS_DAYS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.LT;
+import static org.motechproject.tasks.domain.OperatorType.MORE_DAYS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
 import static org.motechproject.tasks.domain.ParameterType.DATE;
@@ -132,6 +139,8 @@ public class HandlerUtilTest {
 
     @Test
     public void testCheckFilters() {
+        DateTime dateTime = DateTime.now().minusDays(2);
+
         assertTrue(checkFilters(null, null, null));
         assertTrue(checkFilters(new ArrayList<Filter>(), null, null));
 
@@ -180,6 +189,35 @@ public class HandlerUtilTest {
         triggerParameters.put("externalId", "123456789");
         dataSources.put("0", new StreamContent("name"));
         dataSources.put("1", new Person(46));
+
+        assertTrue(checkFilters(filters, triggerParameters, dataSources));
+
+        Filter equals = new Filter(new EventParameter("Test date", "test_date", DATE), true, EQUALS.getValue(), dateTime.toString());
+        Filter after = new Filter(new EventParameter("Test date", "test_date", DATE), false, AFTER.getValue(), DateUtil.now().toString());
+        Filter afterNow = new Filter(new EventParameter("Test date", "test_date", DATE), false, AFTER_NOW.getValue(), "");
+        Filter before = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE.getValue(), DateUtil.now().toString());
+        Filter beforeNow = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE_NOW.getValue(), "");
+
+        filters.add(equals);
+        filters.add(after);
+        filters.add(afterNow);
+        filters.add(before);
+        filters.add(beforeNow);
+        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, EXIST.getValue(), ""));
+        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_DAYS_FROM_NOW.getValue(), "3"));
+        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_DAYS_FROM_NOW.getValue(), "0"));
+
+        triggerParameters.put("test_date", dateTime.toString());
+        assertTrue(checkFilters(filters, triggerParameters, dataSources));
+
+        dateTime = dateTime.plusDays(4);
+        triggerParameters.put("test_date", dateTime.toString());
+
+        equals.setExpression(dateTime.toString());
+        after.setNegationOperator(!after.isNegationOperator());
+        afterNow.setNegationOperator(!afterNow.isNegationOperator());
+        before.setNegationOperator(!before.isNegationOperator());
+        beforeNow.setNegationOperator(!beforeNow.isNegationOperator());
 
         assertTrue(checkFilters(filters, triggerParameters, dataSources));
 
