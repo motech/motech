@@ -43,8 +43,12 @@ import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 import static org.motechproject.tasks.service.HandlerPredicates.activeTasks;
 import static org.motechproject.tasks.service.HandlerPredicates.withServiceName;
 
+/**
+ * The <code>TaskTriggerHandler</code> receives events and executes tasks for which the trigger
+ * event subject is the same as the received event subject.
+ */
 @Service
-public class TaskTriggerHandler {
+public class TaskTriggerHandler implements TriggerHandler {
     private static final String TASK_POSSIBLE_ERRORS_KEY = "task.possible.errors";
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskTriggerHandler.class);
@@ -75,6 +79,7 @@ public class TaskTriggerHandler {
         }
     }
 
+    @Override
     public final void registerHandlerFor(String subject) {
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
@@ -97,6 +102,7 @@ public class TaskTriggerHandler {
         }
     }
 
+    @Override
     public void handle(MotechEvent event) throws TriggerNotFoundException {
         TriggerEvent trigger = taskService.findTrigger(event.getSubject());
         List<Task> tasks = taskService.findTasksForTrigger(trigger);

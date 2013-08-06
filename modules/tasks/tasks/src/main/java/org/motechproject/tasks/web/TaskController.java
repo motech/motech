@@ -8,7 +8,7 @@ import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
-import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -34,16 +34,20 @@ import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.codehaus.jackson.map.SerializationConfig.Feature.INDENT_OUTPUT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * REST API for managing tasks.
+ */
 @Controller
 public class TaskController {
     private static final String JSON_NAME_FIELD = "name";
 
     private TaskService taskService;
     private TaskActivityService activityService;
-    private TaskTriggerHandler triggerHandler;
+    private TriggerHandler triggerHandler;
 
     @Autowired
-    public TaskController(TaskService taskService, TaskActivityService activityService, TaskTriggerHandler triggerHandler) {
+    public TaskController(TaskService taskService, TaskActivityService activityService,
+                          TriggerHandler triggerHandler) {
         this.taskService = taskService;
         this.activityService = activityService;
         this.triggerHandler = triggerHandler;
@@ -57,7 +61,8 @@ public class TaskController {
 
     @RequestMapping(value = "/task/import", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void importTask(@RequestParam(value = "jsonFile") MultipartFile jsonFile) throws IOException {
+    public void importTask(@RequestParam(value = "jsonFile") MultipartFile jsonFile)
+            throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(jsonFile.getInputStream(), writer);
 

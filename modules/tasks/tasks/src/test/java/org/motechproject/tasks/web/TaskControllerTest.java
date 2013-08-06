@@ -15,11 +15,11 @@ import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.service.TaskActivityService;
 import org.motechproject.tasks.service.TaskService;
 import org.motechproject.tasks.service.TaskTriggerHandler;
+import org.motechproject.tasks.service.TriggerHandler;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class TaskControllerTest {
     @Mock
     MultipartFile file;
 
-    TaskTriggerHandler taskTriggerHandler;
+    TriggerHandler triggerHandler;
 
     TaskController controller;
 
@@ -71,8 +71,8 @@ public class TaskControllerTest {
     public void setup() throws Exception {
         initMocks(this);
 
-        taskTriggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
-        controller = new TaskController(taskService, messageService, taskTriggerHandler);
+        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, null);
+        controller = new TaskController(taskService, messageService, triggerHandler);
     }
 
     @Test

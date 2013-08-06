@@ -54,7 +54,7 @@
                   interface="org.motechproject.tasks.service.TaskService"/>
 
     <osgi:service id="taskTriggerHandlerOsgi" auto-export="interfaces" ref="taskTriggerHandler"
-                  interface="org.motechproject.tasks.service.TaskTriggerHandler"/>
+                  interface="org.motechproject.tasks.service.TriggerHandler"/>
 
     <osgi:set id="dataProvidersOSGi" interface="org.motechproject.commons.api.DataProvider" availability="optional">
         <osgi:reference-listener ref="managementDataProvider"/>
