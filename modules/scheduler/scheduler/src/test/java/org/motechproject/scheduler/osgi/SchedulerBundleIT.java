@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.osgi;
 
+import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
@@ -44,11 +45,10 @@ public class SchedulerBundleIT extends BaseOsgiIT {
         final MotechEvent motechEvent = new MotechEvent(TEST_SUBJECT);
         motechEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, "jobId");
         schedulerService.unscheduleAllJobs("SchedulerBundleIT");
-        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(motechEvent, new Date()));
+        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(motechEvent, DateTime.now().plusSeconds(5).toDate()));
         synchronized (receivedEvents) {
             System.out.print("\nEvent waiting " + new Date() + "\n");
-            receivedEvents.wait(10000);
-
+            receivedEvents.wait(15000);
         }
         assertEquals(1, receivedEvents.size());
         assertEquals(receivedEvents.get(0), TEST_SUBJECT);
