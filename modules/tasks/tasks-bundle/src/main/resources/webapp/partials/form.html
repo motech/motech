@@ -400,10 +400,10 @@
                                                 <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio radio-inline">
-                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('task.yes')}}
+                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('yes')}}
                                                     </label>
                                                     <label class="radio radio-inline">
-                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="false"/> {{msg('task.no')}}
+                                                        <input type="radio" ng-model="i.value" class="input-block-level" value="false"/> {{msg('no')}}
                                                     </label>
                                                     <label class="radio-inline input-large-fluid">
                                                         <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('task.placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
