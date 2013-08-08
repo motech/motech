@@ -42,6 +42,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <li><b>DATETIME_PATTERN_BEGIN_INDEX</b> - index of opening bracket in date manipulation,</li>
  * <li><b>FORMAT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in format manipulation.</li>
  * <li><b>SUBSTRING_PATTERN_BEGIN_INDEX</b> - index of opening bracket in substring manipulation.</li>
+ * <li><b>SPLIT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in split manipulation.</li>
  * </ul>
  *
  * @see {@link TaskTriggerHandler}
@@ -52,6 +53,7 @@ final class HandlerUtil {
     public static final int DATETIME_PATTERN_BEGIN_INDEX = 9;
     public static final int FORMAT_PATTERN_BEGIN_INDEX = 7;
     public static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
+    public static final int SPLIT_PATTERN_BEGIN_INDEX = 6;
 
     private HandlerUtil() {
     }
@@ -154,6 +156,8 @@ final class HandlerUtil {
             }
         } else if (lowerCase.contains("substring")) {
             result = substringManipulation(value, manipulation);
+        } else if (lowerCase.contains("split")) {
+            result = splitManipulation(value, manipulation);
         } else {
             switch (lowerCase) {
                 case "toupper":
@@ -409,5 +413,14 @@ final class HandlerUtil {
             default:
                 throw new IllegalArgumentException("Incorrect pattern for substring manipulation");
         }
+    }
+
+    private static String splitManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(SPLIT_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        String[] splitValue = pattern.split(",");
+        String regex = splitValue[0];
+        int idx = Integer.parseInt(splitValue[1]);
+
+        return value.split(regex)[idx];
     }
 }

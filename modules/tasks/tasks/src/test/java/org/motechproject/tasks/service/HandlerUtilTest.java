@@ -240,6 +240,7 @@ public class HandlerUtilTest {
 
     @Test(expected = MotechException.class)
     public void testManipulate() throws Exception {
+        String string = "ala-has-a-cat";
         DateTime now = DateUtil.now();
         String toString = now.toString();
         String toStringWithPattern = now.toString("yyyy-MM-dd");
@@ -249,7 +250,9 @@ public class HandlerUtilTest {
         assertEquals("Capitalize", manipulate("capitalize", "capitalize"));
         assertEquals("67890", manipulate("substring(5)", "1234567890"));
         assertEquals("67", manipulate("substring(5,7)", "1234567890"));
-        assertEquals("ala-has-a-cat", manipulate("join(-)", "ala has a cat"));
+        assertEquals(string, manipulate("join(-)", "ala has a cat"));
+        assertEquals("ala", manipulate("split(-,0)", string));
+        assertEquals("cat", manipulate("split(-,3)", string));
         assertEquals(toStringWithPattern, manipulate("datetime(yyyy-MM-dd)", toString));
 
         manipulate("undefined", "something");
