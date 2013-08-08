@@ -127,6 +127,11 @@ h4.settings-section {
     background-position: -93px -25px;
 }
 
+.bundle-back:hover {
+    color: #bec9de;
+    text-decoration:none;
+}
+
 /* ----- table ----- */
 
 .table-content {

@@ -44,6 +44,10 @@ html, body {
     color: #0044cc;
 }
 
+.icon.icon-light-blue {
+    color: #c2eafe;
+}
+
 .icon.icon-green {
     color: #0D800B;
 }
