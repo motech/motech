@@ -13,6 +13,12 @@
         };
     });
 
+    widgetModule.directive('elementFocus', function() {
+        return function (scope, element, atts) {
+            element[0].focus();
+        };
+    });
+
     widgetModule.directive('goToTop', function () {
         return function (scope, element, attrs) {
             $(element).click(function () {

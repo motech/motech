@@ -57,7 +57,7 @@
                                     <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="security.motechId" bundle="${bundle}"/></h4>
                                 </div>
                                 <div class="control-group margin-before2">
-                                    <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>"/>
+                                    <input element-focus class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
                                     <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="security.password" bundle="${bundle}"/>"/>
@@ -114,7 +114,7 @@
                                                 <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="security.motechId" bundle="${bundle}"/></h4>
                                             </div>
                                             <div class="control-group margin-before2">
-                                                <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>">
+                                                <input element-focus class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>">
                                             </div>
                                             <div class="control-group">
                                                 <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="security.password" bundle="${bundle}"/>">
