@@ -289,7 +289,7 @@ public final class TaskValidator extends GeneralValidator {
 
             checkNullValue(errors, objectName, "type", filter.getType());
 
-            if (OperatorType.fromString(filter.getOperator()) != OperatorType.EXIST) {
+            if (OperatorType.needExpression(filter.getOperator())) {
                 checkBlankValue(errors, objectName, "expression", filter.getExpression());
             }
         }

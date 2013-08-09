@@ -47,4 +47,15 @@ public enum OperatorType {
 
         return result;
     }
+
+    public static boolean needExpression(String string) {
+        OperatorType type = fromString(string);
+        boolean need = true;
+
+        if (type != null && (type == EXIST || type == AFTER_NOW || type == BEFORE_NOW)) {
+            need = false;
+        }
+
+        return need;
+    }
 }
