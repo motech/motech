@@ -194,7 +194,7 @@
                             }
                         }
 
-                        parent.$apply();
+                        parent.$digest();
                     }
                 });
             }
@@ -323,7 +323,7 @@
                 element.bind('blur keyup change mouseleave', function (event) {
                     event.stopPropagation();
                     if (ngModel.$viewValue !== $.trim(element.html())) {
-                        return scope.$apply(read);
+                        return scope.$eval(read);
                     }
                 });
 
