@@ -44,6 +44,7 @@ import static org.motechproject.tasks.domain.KeyInformation.parse;
  * <li><b>FORMAT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in format manipulation.</li>
  * <li><b>SUBSTRING_PATTERN_BEGIN_INDEX</b> - index of opening bracket in substring manipulation.</li>
  * <li><b>SPLIT_PATTERN_BEGIN_INDEX</b> - index of opening bracket in split manipulation.</li>
+ * <li><b>PLUS_DAYS_PATTERN_BEGIN_INDEX</b> - index of opening bracket in plusDays manipulation.</li>
  * </ul>
  *
  * @see TaskTriggerHandler
@@ -55,6 +56,7 @@ final class HandlerUtil {
     public static final int FORMAT_PATTERN_BEGIN_INDEX = 7;
     public static final int SUBSTRING_PATTERN_BEGIN_INDEX = 10;
     public static final int SPLIT_PATTERN_BEGIN_INDEX = 6;
+    public static final int PLUS_DAYS_PATTERN_BEGIN_INDEX = 9;
 
     private HandlerUtil() {
     }
@@ -159,6 +161,8 @@ final class HandlerUtil {
             result = substringManipulation(value, manipulation);
         } else if (lowerCase.contains("split")) {
             result = splitManipulation(value, manipulation);
+        } else if (lowerCase.contains("plusDays")) {
+            result = plusDaysManipulation(value, manipulation);
         } else {
             switch (lowerCase) {
                 case "toupper":
@@ -454,5 +458,12 @@ final class HandlerUtil {
         int idx = Integer.parseInt(splitValue[1]);
 
         return value.split(regex)[idx];
+    }
+
+    private static String plusDaysManipulation(String value, String manipulation) {
+        String pattern = manipulation.substring(PLUS_DAYS_PATTERN_BEGIN_INDEX, manipulation.length() - 1);
+        DateTime dateTime = new DateTime(value);
+
+        return dateTime.plusDays(Integer.parseInt(pattern)).toString();
     }
 }
