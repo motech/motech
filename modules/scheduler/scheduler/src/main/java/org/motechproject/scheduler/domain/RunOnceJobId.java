@@ -4,7 +4,7 @@ import org.motechproject.event.MotechEvent;
 
 public class RunOnceJobId extends JobId {
 
-    private static final String SUFFIX_RUNONCEJOBID = "-runonce";
+    public static final String SUFFIX_RUNONCEJOBID = "-runonce";
 
     public RunOnceJobId(String subject, String id) {
         super(subject, id, SUFFIX_RUNONCEJOBID);

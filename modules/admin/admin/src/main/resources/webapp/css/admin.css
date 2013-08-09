@@ -337,3 +337,127 @@ p#settingsMsg:empty {
     padding: 0;
     margin: 0;
 }
+
+/*---------- scheduler ----------*/
+
+.scheduler .count-characters {
+    border-top: 1px solid #eeeeee;
+    padding: 5px 20px 5px 0;
+    font-size:0.9em;
+}
+
+.scheduler .s-ico {
+    float: right;
+    margin-right: 2px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    padding: 8px 2px;
+}
+
+.scheduler fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.scheduler legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.scheduler legend + .control-group {
+    margin-top: 2px;
+}
+
+.scheduler .pointer {
+    cursor: pointer;
+}
+
+.scheduler #operations-resource {
+    margin: 10px;
+}
+
+.scheduler .btn-group > .btn.active {
+   z-index: 1;
+}
+
+#t_schedulerTable {
+    min-height: 25px;
+    height: auto;
+    padding: 5px 0;
+}
+
+#t_schedulerTable .control-group {
+    margin-bottom: 2px;
+}
+
+.ui-jqgrid input.ui-pg-input {
+    width: auto;
+    height: 14px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.ui-jqgrid select.ui-pg-selbox {
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.ui-th-column-header {
+    text-align: center;
+}
+
+.ui-jqgrid tr.jqgrow td.finished {
+    color: #fff;
+    background: #0D800B;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.stopped {
+    color: #fff;
+    background: #dc1c0d;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.active {
+    color: #fff;
+    background: #549edb;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.notstarted {
+    color: #fff;
+    background: #aea884;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow .parameters {
+    border-bottom: 1px solid #D4DDEE;
+    margin: 0 -6px;
+    padding: 4px 6px;
+}
+
+.ui-jqgrid tr.jqgrow .parameters:first-child {
+    margin: -4px -6px 0;
+}
+
+.ui-jqgrid tr.jqgrow .parameters:last-child {
+    margin: 0 -6px -4px;
+}
+
+.overrideJqgridTable .table-lightblue .ui-widget-content {
+    border: 0 solid #D4E1F9;
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}

@@ -6,6 +6,8 @@ import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.JobBasicInfo;
+import org.motechproject.scheduler.domain.JobDetailedInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -155,4 +157,8 @@ public interface MotechSchedulerService {
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
+
+    List<JobBasicInfo> getScheduledJobsBasicInfo();
+
+    JobDetailedInfo getScheduledJobDetailedInfo(JobBasicInfo jobBasicInfo);
 }

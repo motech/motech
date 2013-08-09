@@ -3,13 +3,14 @@
 
     /* App Module */
 
-    angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'platformSettingsServices',
+    angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'platformSettingsServices', 'motechSchedulerService',
         'moduleSettingsServices', 'logService', 'ngCookies', 'bootstrap', "notificationRuleServices", "notificationRuleDtoServices"])
         .config(['$routeProvider', function($routeProvider) {
           $routeProvider.
               when('/bundles', {templateUrl: '../admin/partials/bundles.html', controller: 'BundleListCtrl'}).
               when('/messages', {templateUrl: '../admin/partials/messages.html', controller: 'StatusMsgCtrl'}).
               when('/settings', {templateUrl: '../admin/partials/settings.html', controller: 'SettingsCtrl'}).
+              when('/scheduler', {templateUrl: '../admin/partials/scheduler.html', controller: 'SchedulerCtrl'}).
               when('/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'ModuleCtrl'}).
               when('/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'BundleSettingsCtrl'}).
               when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
@@ -24,11 +25,5 @@
         return function (input) {
             return input.replace(/(motech\s|\sapi|\sbundle)/ig, '');
         };
-    }).directive('sidebar', function () {
-       return function (scope, element, attrs) {
-           $(element).sidebar({
-               position:"right"
-           });
-       };
     });
 }());

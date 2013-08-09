@@ -665,5 +665,10 @@
 
 
     });
+
+    adminModule.controller('SchedulerCtrl', function($scope, $http, $routeParams, MotechScheduler) {
+
+    });
+
 }());
 
