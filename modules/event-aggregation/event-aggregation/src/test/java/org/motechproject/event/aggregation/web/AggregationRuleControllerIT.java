@@ -7,12 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.aggregation.model.AggregationRuleRecord;
 import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.event.EventStrings;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.aggregation.service.AggregationRuleRequest;
 import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
 import org.motechproject.event.aggregation.service.CustomAggregationRequest;
 import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,9 +28,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
@@ -43,6 +43,9 @@ public class AggregationRuleControllerIT {
 
     @Autowired
     AllAggregationRules allAggregationRules;
+
+    @Autowired
+    private MotechSchedulerService schedulerService;
 
     private AggregationRuleMapper aggregationRuleMapper;
 
@@ -89,37 +92,50 @@ public class AggregationRuleControllerIT {
 
     @Test
     public void shouldCreateARule() throws Exception {
-        AggregationRuleRequest ruleRequest = new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running);
+        final String externalId = "aggregation1";
+        AggregationRuleRequest ruleRequest = new AggregationRuleRequest(externalId, "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running);
 
-        mockAggregationRuleController.perform(
-            put("/rules")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ObjectMapper().writeValueAsString(ruleRequest).getBytes("UTF-8")))
-            .andExpect(
-                status().is(201)
-            );
-        assertNotNull(allAggregationRules.findByName("aggregation1"));
+        try {
+            mockAggregationRuleController.perform(
+                    put("/rules")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(new ObjectMapper().writeValueAsString(ruleRequest).getBytes("UTF-8")))
+                    .andExpect(
+                            status().is(201)
+                    );
+            assertNotNull(allAggregationRules.findByName(externalId));
+        } finally {
+            schedulerService.safeUnscheduleJob(EventStrings.PERIODIC_DISPATCH_EVENT, externalId);
+        }
     }
 
     @Test
     public void shouldReplaceAnExistingRule() throws Exception {
+        final String externalId1 = "aggregation1";
+        final String externalId2 = "aggregation1";
         List<AggregationRuleRecord> rules = asList(
-            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation1", "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running)),
-            aggregationRuleMapper.toRecord(new AggregationRuleRequest("aggregation2", "", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest(""), "publishEvent2", AggregationState.Running))
+                aggregationRuleMapper.toRecord(new AggregationRuleRequest(externalId1, "", "subscribedEvent1", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent1", AggregationState.Running)),
+                aggregationRuleMapper.toRecord(new AggregationRuleRequest(externalId2, "", "subscribedEvent2", asList("fuu"), new CustomAggregationRequest(""), "publishEvent2", AggregationState.Running))
         );
-        allAggregationRules.addOrReplace(rules.get(0));
-        allAggregationRules.addOrReplace(rules.get(1));
 
-        AggregationRuleRequest updatedRule = new AggregationRuleRequest("aggregation1", "", "subscribedEvent3", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent3", AggregationState.Running);
+        try {
+            allAggregationRules.addOrReplace(rules.get(0));
+            allAggregationRules.addOrReplace(rules.get(1));
 
-        mockAggregationRuleController.perform(
-            put("/rules")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ObjectMapper().writeValueAsString(updatedRule).getBytes("UTF-8")))
-            .andExpect(
-                status().is(201)
-            );
-        assertEquals("subscribedEvent3", allAggregationRules.findByName("aggregation1").getSubscribedTo());
+            AggregationRuleRequest updatedRule = new AggregationRuleRequest(externalId1, "", "subscribedEvent3", asList("foo"), new CronBasedAggregationRequest("* * * * * ?"), "publishEvent3", AggregationState.Running);
+
+            mockAggregationRuleController.perform(
+                    put("/rules")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(new ObjectMapper().writeValueAsString(updatedRule).getBytes("UTF-8")))
+                    .andExpect(
+                            status().is(201)
+                    );
+            assertEquals("subscribedEvent3", allAggregationRules.findByName(externalId1).getSubscribedTo());
+        } finally {
+            schedulerService.safeUnscheduleJob(EventStrings.PERIODIC_DISPATCH_EVENT, externalId1);
+            schedulerService.safeUnscheduleRepeatingJob(EventStrings.PERIODIC_DISPATCH_EVENT, externalId2);
+        }
     }
 
     @Test

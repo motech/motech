@@ -57,25 +57,29 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
         EventAggregationService eventAggregationService = (EventAggregationService) bundleContext.getService(eventAggregationServiceReference);
         assertNotNull(eventAggregationService);
 
-        String eventSubject = id("testEvent");
-        eventAggregationService.createRule(
-            new AggregationRuleRequest("test_aggregation", "test aggregation subscription",
-                eventSubject, asList("foo"),
-                new PeriodicAggregationRequest("2 seconds", now()),
-                aggregationEvent, AggregationState.Running));
+        try {
+            String eventSubject = id("testEvent");
+            eventAggregationService.createRule(
+                new AggregationRuleRequest("test_aggregation", "test aggregation subscription",
+                    eventSubject, asList("foo"),
+                    new PeriodicAggregationRequest("2 seconds", now()),
+                    aggregationEvent, AggregationState.Running));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("foo", "bar");
-        params.put("fuu", "baz");
-        params.put(MotechSchedulerService.JOB_ID_KEY, id("simulatedEventJob"));
-        final MotechEvent motechEvent = new MotechEvent(eventSubject, params);
-        schedulerService.safeScheduleRepeatingJob(
-                new RepeatingSchedulableJob(motechEvent, now().plusSeconds(2).toDate(), null, totalEvents - 1, 1000L, false));
+            Map<String, Object> params = new HashMap<>();
+            params.put("foo", "bar");
+            params.put("fuu", "baz");
+            params.put(MotechSchedulerService.JOB_ID_KEY, id("simulatedEventJob"));
+            final MotechEvent motechEvent = new MotechEvent(eventSubject, params);
+            schedulerService.safeScheduleRepeatingJob(
+                    new RepeatingSchedulableJob(motechEvent, now().plusSeconds(2).toDate(), null, totalEvents - 1, 1000L, false));
 
-        synchronized (aggregatedEvents) {
-            aggregatedEvents.wait(30000);
+            synchronized (aggregatedEvents) {
+                aggregatedEvents.wait(30000);
+            }
+            assertEquals(totalEvents, aggregatedEvents.size());
+        } finally {
+            schedulerService.safeUnscheduleRepeatingJob("periodic_dispatching_event", "test_aggregation");
         }
-        assertEquals(totalEvents, aggregatedEvents.size());
     }
 
     private String id(String s) {
