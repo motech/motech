@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.Months;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.commons.api.MotechException;
@@ -280,8 +281,13 @@ final class HandlerUtil {
     }
 
     private static boolean checkFilterForDate(Filter filter, DateTime param) {
-        OperatorType operatorType = OperatorType.fromString(filter.getOperator());
-        String expression = filter.getExpression();
+        return OperatorType.needExpression(filter.getOperator())
+                ? checkFilterForDate(param, filter.getOperator(), filter.getExpression())
+                : checkFilterForDate(param, filter.getOperator());
+    }
+
+    private static boolean checkFilterForDate(DateTime param, String operator) {
+        OperatorType operatorType = OperatorType.fromString(operator);
         boolean result = false;
 
         if (operatorType != null) {
@@ -289,26 +295,46 @@ final class HandlerUtil {
                 case EXIST:
                     result = true;
                     break;
+                case AFTER_NOW:
+                    result = param.isAfterNow();
+                    break;
+                case BEFORE_NOW:
+                    result = param.isBeforeNow();
+                    break;
+                default:
+                    result = false;
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean checkFilterForDate(DateTime param, String operator, String expression) {
+        OperatorType operatorType = OperatorType.fromString(operator);
+        boolean result = false;
+
+        if (operatorType != null) {
+            switch (operatorType) {
                 case EQUALS:
                     result = param.isEqual(DateTime.parse(expression));
                     break;
                 case AFTER:
                     result = param.isAfter(DateTime.parse(expression));
                     break;
-                case AFTER_NOW:
-                    result = param.isAfterNow();
-                    break;
                 case BEFORE:
                     result = param.isBefore(DateTime.parse(expression));
-                    break;
-                case BEFORE_NOW:
-                    result = param.isBeforeNow();
                     break;
                 case LESS_DAYS_FROM_NOW:
                     result = countNumberOfDays(param) < Integer.valueOf(expression);
                     break;
+                case LESS_MONTHS_FROM_NOW:
+                    result = countNumberOfMonths(param) < Integer.valueOf(expression);
+                    break;
                 case MORE_DAYS_FROM_NOW:
                     result = countNumberOfDays(param) > Integer.valueOf(expression);
+                    break;
+                case MORE_MONTHS_FROM_NOW:
+                    result = countNumberOfMonths(param) > Integer.valueOf(expression);
                     break;
                 default:
                     result = false;
@@ -322,6 +348,12 @@ final class HandlerUtil {
         return param.isBeforeNow()
                 ? Days.daysBetween(param, DateUtil.now()).getDays()
                 : Days.daysBetween(DateUtil.now(), param).getDays();
+    }
+
+    private static int countNumberOfMonths(DateTime param) {
+        return param.isBeforeNow()
+                ? Months.monthsBetween(param, DateUtil.now()).getMonths()
+                : Months.monthsBetween(DateUtil.now(), param).getMonths();
     }
 
     private static Object convertToDate(String userInput) {

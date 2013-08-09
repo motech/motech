@@ -33,8 +33,10 @@ import static org.motechproject.tasks.domain.OperatorType.EQUALS;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LESS_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.OperatorType.LESS_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.MORE_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.OperatorType.MORE_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
 import static org.motechproject.tasks.domain.ParameterType.DATE;
@@ -199,6 +201,8 @@ public class HandlerUtilTest {
         Filter afterNow = new Filter(new EventParameter("Test date", "test_date", DATE), false, AFTER_NOW.getValue(), "");
         Filter before = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE.getValue(), DateUtil.now().toString());
         Filter beforeNow = new Filter(new EventParameter("Test date", "test_date", DATE), true, BEFORE_NOW.getValue(), "");
+        Filter lessDays = new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_DAYS_FROM_NOW.getValue(), "3");
+        Filter moreDays = new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_DAYS_FROM_NOW.getValue(), "0");
 
         filters.add(equals);
         filters.add(after);
@@ -206,14 +210,33 @@ public class HandlerUtilTest {
         filters.add(before);
         filters.add(beforeNow);
         filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, EXIST.getValue(), ""));
-        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_DAYS_FROM_NOW.getValue(), "3"));
-        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_DAYS_FROM_NOW.getValue(), "0"));
+        filters.add(lessDays);
+        filters.add(moreDays);
 
         triggerParameters.put("test_date", dateTime.toString());
         assertTrue(checkFilters(filters, triggerParameters, dataSources));
 
         dateTime = dateTime.plusDays(4);
         triggerParameters.put("test_date", dateTime.toString());
+
+        filters.remove(equals);
+        filters.remove(after);
+        filters.remove(afterNow);
+        filters.remove(before);
+        filters.remove(beforeNow);
+        filters.remove(lessDays);
+        filters.remove(moreDays);
+        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, LESS_MONTHS_FROM_NOW.getValue(), "5"));
+        filters.add(new Filter(new EventParameter("Test date", "test_date", DATE), true, MORE_MONTHS_FROM_NOW.getValue(), "1"));
+        dateTime = DateTime.now().minusMonths(3);
+
+        triggerParameters.put("test_date", dateTime.toString());
+        assertTrue(checkFilters(filters, triggerParameters, dataSources));
+
+        dateTime = dateTime.plusMonths(6);
+
+        triggerParameters.put("test_date", dateTime.toString());
+        assertTrue(checkFilters(filters, triggerParameters, dataSources));
 
         equals.setExpression(dateTime.toString());
         after.setNegationOperator(!after.isNegationOperator());

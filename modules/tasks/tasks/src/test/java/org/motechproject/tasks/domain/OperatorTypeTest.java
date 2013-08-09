@@ -17,8 +17,10 @@ import static org.motechproject.tasks.domain.OperatorType.EQUALS;
 import static org.motechproject.tasks.domain.OperatorType.EXIST;
 import static org.motechproject.tasks.domain.OperatorType.GT;
 import static org.motechproject.tasks.domain.OperatorType.LESS_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.OperatorType.LESS_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.LT;
 import static org.motechproject.tasks.domain.OperatorType.MORE_DAYS_FROM_NOW;
+import static org.motechproject.tasks.domain.OperatorType.MORE_MONTHS_FROM_NOW;
 import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
 import static org.motechproject.tasks.domain.OperatorType.fromString;
 import static org.motechproject.tasks.domain.OperatorType.needExpression;
@@ -52,6 +54,8 @@ public class OperatorTypeTest {
         assertTrue(needExpression(BEFORE.getValue()));
         assertTrue(needExpression(LESS_DAYS_FROM_NOW.getValue()));
         assertTrue(needExpression(MORE_DAYS_FROM_NOW.getValue()));
+        assertTrue(needExpression(LESS_MONTHS_FROM_NOW.getValue()));
+        assertTrue(needExpression(MORE_MONTHS_FROM_NOW.getValue()));
     }
 
     @Test

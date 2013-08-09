@@ -20,7 +20,9 @@ public enum OperatorType {
     BEFORE("task.before"),
     BEFORE_NOW("task.beforeNow"),
     LESS_DAYS_FROM_NOW("task.lessDaysFromNow"),
-    MORE_DAYS_FROM_NOW("task.moreDaysFromNow");
+    MORE_DAYS_FROM_NOW("task.moreDaysFromNow"),
+    LESS_MONTHS_FROM_NOW("task.lessMonthsFromNow"),
+    MORE_MONTHS_FROM_NOW("task.moreMonthsFromNow");
 
     private final String value;
 
