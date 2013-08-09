@@ -26,7 +26,7 @@
                 <div class="container">
                     <a href="."><div class="dashboard-logo"></div></a>
                     <div class="nav-collapse">
-                        <div class="header-title"><fmt:message key="motechTitle" bundle="${bundle}"/></div>
+                        <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -61,16 +61,16 @@
                                             <h4><fmt:message key="security.enterNewPassword" bundle="${bundle}"/></h4>
                                         </div>
                                         <div class="control-group">
-                                            <label><fmt:message key="password" bundle="${bundle}"/></label>
+                                            <label><fmt:message key="security.password" bundle="${bundle}"/></label>
                                             <input class="span12" type="password" id="password" name="password">
                                         </div>
                                         <div class="control-group">
-                                            <label><fmt:message key="confirmPassword" bundle="${bundle}"/></label>
+                                            <label><fmt:message key="security.confirmPassword" bundle="${bundle}"/></label>
                                             <input class="span12" type="password" id="passwordConfirmation" name="passwordConfirmation" />
                                         </div>
                                         <div class="control-group">
-                                            <input class="btn btn-primary" type="submit" value="<fmt:message key="changePassword" bundle="${bundle}"/>"/>
-                                            <input class="btn" type="button" value="<fmt:message key="cancel" bundle="${bundle}"/>"/>
+                                            <input class="btn btn-primary" type="submit" value="<fmt:message key="security.changePassword" bundle="${bundle}"/>"/>
+                                            <input class="btn" type="button" value="<fmt:message key="security.cancel" bundle="${bundle}"/>"/>
                                         </div>
                                     </form>
                                 </div>

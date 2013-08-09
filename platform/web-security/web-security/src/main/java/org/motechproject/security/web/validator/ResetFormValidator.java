@@ -14,11 +14,11 @@ public class ResetFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password" ,"passwordRequired");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passwordConfirmation", "confirmationRequired");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "security.password" ,"security.passwordRequired");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passwordConfirmation", "security.confirmationRequired");
 
-        if (!errors.getFieldValue("password").toString().equals(errors.getFieldValue("passwordConfirmation").toString())) {
-            errors.reject("samePassword");
+        if (!errors.getFieldValue("security.password").toString().equals(errors.getFieldValue("passwordConfirmation").toString())) {
+            errors.reject("security.samePassword");
         }
     }
 }

@@ -54,16 +54,16 @@
                         <div class="well3">
                             <form action="${contextPath}j_spring_security_check" method="POST" class="inside">
                                 <div class="control-group">
-                                    <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="motechId" bundle="${bundle}"/></h4>
+                                    <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="security.motechId" bundle="${bundle}"/></h4>
                                 </div>
                                 <div class="control-group margin-before2">
-                                    <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>"/>
+                                    <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
-                                    <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>"/>
+                                    <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="security.password" bundle="${bundle}"/>"/>
                                 </div>
                                 <div class="control-group">
-                                    <input class="btn btn-primary" value="<fmt:message key="signin" bundle="${bundle}"/>" type="submit"/>
+                                    <input class="btn btn-primary" value="<fmt:message key="security.signin" bundle="${bundle}"/>" type="submit"/>
                                     <span class="pull-right margin-before05"><a href="../../module/websecurity/api/forgot"><fmt:message key="security.signInQuestions" bundle="${bundle}"/></a></span>
                                 </div>
                             </form>
@@ -78,7 +78,7 @@
                                     </div>
                                     <div class="control-group open-id">
                                         <p><fmt:message key="server.oneTimeToken" bundle="${bundle}"/>&nbsp;
-                                           <a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                                           <a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="security.clickHere" bundle="${bundle}"/></a></p>
                                     </div>
                                 </form>
                             </div>
@@ -94,14 +94,14 @@
                             <div class="span6 inside">
                                 <div class="well3">
                                     <div class="control-group margin-before">
-                                        <h4 class="login-error"><fmt:message key="wrongPassword" bundle="${bundle}"/></h4>
+                                        <h4 class="login-error"><fmt:message key="security.wrongPassword" bundle="${bundle}"/></h4>
                                     </div>
                                     <div class="control-group margin-before2">
                                         <h5 class="login-error"><fmt:message key="security.didnotRecognizeMsg" bundle="${bundle}"/></h5>
                                     </div>
                                     <div class="control-group margin-before2">
                                         <h5><fmt:message key="security.donotRememberMsg1" bundle="${bundle}"/>
-                                            <a href="../../module/websecurity/api/forgot"><fmt:message key="clickHere" bundle="${bundle}"/></a>
+                                            <a href="../../module/websecurity/api/forgot"><fmt:message key="security.clickHere" bundle="${bundle}"/></a>
                                             <fmt:message key="security.donotRememberMsg2" bundle="${bundle}"/></h5>
                                     </div>
                                 </div>
@@ -111,16 +111,16 @@
                                     <div class="left-divider">
                                         <form class="inside" action="${contextPath}j_spring_security_check" method="POST">
                                             <div class="control-group">
-                                                <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="motechId" bundle="${bundle}"/></h4>
+                                                <h4><fmt:message key="security.signInWithId" bundle="${bundle}"/>&nbsp;<fmt:message key="security.motechId" bundle="${bundle}"/></h4>
                                             </div>
                                             <div class="control-group margin-before2">
-                                                <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="userName" bundle="${bundle}"/>">
+                                                <input class="span12" type="text" name="j_username" placeholder="<fmt:message key="security.userName" bundle="${bundle}"/>">
                                             </div>
                                             <div class="control-group">
-                                                <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="password" bundle="${bundle}"/>">
+                                                <input class="span12" type="password" name="j_password" placeholder="<fmt:message key="security.password" bundle="${bundle}"/>">
                                             </div>
                                             <div class="control-group">
-                                                <input class="btn btn-primary" type="submit" value="<fmt:message key="signin" bundle="${bundle}"/>"/>
+                                                <input class="btn btn-primary" type="submit" value="<fmt:message key="security.signin" bundle="${bundle}"/>"/>
                                             </div>
                                         </form>
                                         <div class="top-divider-login">
@@ -132,7 +132,7 @@
                                                     <input class="btn btn-primary" type="submit" value="${msg} ${openIdProviderName}"/>
                                                 </div>
                                                 <div class="control-group open-id">
-                                                    <p><fmt:message key="server.oneTimeToken" bundle="${bundle}"/>&nbsp;&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="clickHere" bundle="${bundle}"/></a></p>
+                                                    <p><fmt:message key="server.oneTimeToken" bundle="${bundle}"/>&nbsp;&nbsp;<a href="../../module/websecurity/api/forgotOpenId"><fmt:message key="security.clickHere" bundle="${bundle}"/></a></p>
                                                 </div>
                                             </form>
                                         </div>

@@ -132,8 +132,8 @@ public class Activator implements BundleActivator {
         regData.setModuleName(MODULE_NAME);
         regData.setUrl("../websecurity/");
         regData.addAngularModule("motech-web-security");
-        regData.addSubMenu("#/users", "manageUsers");
-        regData.addSubMenu("#/roles", "manageRoles");
+        regData.addSubMenu("#/users", "security.manageUsers");
+        regData.addSubMenu("#/roles", "security.manageRoles");
         regData.addI18N("messages", "../websecurity/messages/");
 
         InputStream is = null;

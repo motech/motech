@@ -55,7 +55,7 @@
                             <c:otherwise>
                                 <div>
                                     <p><fmt:message key="security.resetSuccess" bundle="${bundle}"/></p>
-                                    <p><a href="../../.."><fmt:message key="login" bundle="${bundle}"/></a></p>
+                                    <p><a href="../../.."><fmt:message key="security.login" bundle="${bundle}"/></a></p>
                                 </div>
                             </c:otherwise>
                         </c:choose>
