@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-base</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
@@ -233,7 +233,7 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>rpm</goal>
+                                    <goal>attached-rpm</goal>
                                 </goals>
                             </execution>
                         </executions>
