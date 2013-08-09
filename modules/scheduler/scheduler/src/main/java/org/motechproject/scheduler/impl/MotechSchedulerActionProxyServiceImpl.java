@@ -69,6 +69,11 @@ public class MotechSchedulerActionProxyServiceImpl implements MotechSchedulerAct
         scheduler.scheduleDayOfWeekJob(job);
     }
 
+    @Override
+    public void unscheduleJobs(String subject) {
+        scheduler.safeUnscheduleAllJobs(subject);
+    }
+
     private List<DayOfWeek> createDayOfWeeks(List<Object> list) {
         List<DayOfWeek> dayOfWeeks = new ArrayList<>(list.size());
 

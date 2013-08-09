@@ -14,4 +14,6 @@ public interface MotechSchedulerActionProxyService {
     void scheduleRunOnceJob(String subject, Map<Object, Object> parameters, DateTime startDate);
 
     void scheduleDayOfWeekJob(String subject, Map<Object, Object> parameters, DateTime start, DateTime end, List<Object> days, DateTime time, Boolean ignorePastFiresAtStart);
+
+    void unscheduleJobs(String subject);
 }

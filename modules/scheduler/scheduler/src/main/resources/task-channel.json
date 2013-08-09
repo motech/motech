@@ -125,6 +125,17 @@
           "type": "BOOLEAN"
         }
       ]
+    },
+    {
+      "displayName": "scheduler.unscheduleJobs",
+      "serviceInterface": "org.motechproject.scheduler.MotechSchedulerActionProxyService",
+      "serviceMethod": "unscheduleJobs",
+      "actionParameters": [
+        {
+          "key": "subject",
+          "displayName": "scheduler.subject"
+        }
+      ]
     }
   ]
 }
