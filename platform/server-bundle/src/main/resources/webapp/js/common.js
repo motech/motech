@@ -82,7 +82,7 @@ var jFormErrorHandler = function(response) {
         'use strict';
         return function() {
             unblockUI();
-            motechAlert(msg, 'success', callback);
+            motechAlert(msg, 'server.success', callback);
         };
     },
 

@@ -49,14 +49,14 @@ public class SettingsController {
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
     public void saveBundleSettings(@PathVariable long bundleId, @RequestBody Settings bundleSettings) throws IOException {
         settingsService.saveBundleSettings(bundleSettings, bundleId);
-        statusMessageService.info("{settings.saved.bundle}", ADMIN_MODULE_NAME);
+        statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/list", method = RequestMethod.POST)
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
         settingsService.savePlatformSettings(Arrays.asList(platformSettings));
-        statusMessageService.info("{settings.saved.bundle}", ADMIN_MODULE_NAME);
+        statusMessageService.info("{admin.settings.saved.bundle}", ADMIN_MODULE_NAME);
     }
 
     @ResponseStatus(HttpStatus.OK)
