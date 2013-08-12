@@ -72,13 +72,13 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                         MotechListenerAbstractProxy proxy = null;
                         switch (annotation.type()) {
                             case ORDERED_PARAMETERS:
-                                proxy = new MotechListenerOrderedParametersProxy(bean.getClass().getName()+":"+beanName, bean, method);
+                                proxy = new MotechListenerOrderedParametersProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
                                 break;
                             case MOTECH_EVENT:
-                                proxy = new MotechListenerEventProxy(bean.getClass().getName()+":"+beanName, bean, method);
+                                proxy = new MotechListenerEventProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
                                 break;
                             case NAMED_PARAMETERS:
-                                proxy = new MotechListenerNamedParametersProxy(bean.getClass().getName()+":"+beanName, bean, method);
+                                proxy = new MotechListenerNamedParametersProxy(getFullyQualifiedBeanName(bean.getClass(), beanName), bean, method);
                                 break;
                             default:
                         }
@@ -108,7 +108,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
 
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) {
-        clearListenerForBean(beanName);
+        clearListenerForBean(getFullyQualifiedBeanName(bean.getClass(), beanName));
     }
 
 
@@ -120,7 +120,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
 
     public void clearListeners(ApplicationContext applicationContext) {
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            clearListenerForBean(beanName);
+            clearListenerForBean(getFullyQualifiedBeanName(applicationContext.getType(beanName), beanName));
         }
     }
 
@@ -128,5 +128,9 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     @Autowired(required = false)
     public void setEventListenerRegistry(EventListenerRegistryService eventListenerRegistry) {
         this.eventListenerRegistry = eventListenerRegistry;
+    }
+
+    private String getFullyQualifiedBeanName(Class<?> beanClass, String beanName) {
+        return beanClass.getName()+":"+beanName;
     }
 }
