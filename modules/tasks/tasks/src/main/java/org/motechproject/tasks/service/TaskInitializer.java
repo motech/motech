@@ -274,7 +274,10 @@ class TaskInitializer {
                     mapKey = getValue(array[0]);
                     mapValue = getValue(array[1]);
 
-                    tempMap.put(mapKey, mapValue);
+                    tempMap.put(
+                            HandlerUtil.convertTo(mapKey.getClass(), convert(array[0])),
+                            HandlerUtil.convertTo(mapValue.getClass(), convert(array[1]))
+                    );
                     break;
                 case 1:
                     mapValue = getValue(array[0]);
@@ -297,7 +300,7 @@ class TaskInitializer {
             if (value instanceof Collection) {
                 tempList.addAll((Collection) value);
             } else {
-                tempList.add(value);
+                tempList.add(HandlerUtil.convertTo(value.getClass(), convert(row)));
             }
         }
 

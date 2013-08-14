@@ -90,6 +90,26 @@ final class HandlerUtil {
         return value;
     }
 
+    public static Object convertTo(Class<?> clazz, String userInput) {
+        Object value;
+
+        if (clazz.equals(Double.class) || clazz.equals(Double.TYPE)) {
+            value = convertToDouble(userInput);
+        } else if (clazz.equals(Integer.class) || clazz.equals(Integer.TYPE)) {
+            value = convertToInteger(userInput);
+        } else if (clazz.equals(Long.class) || clazz.equals(Long.TYPE)) {
+            value = convertToLong(userInput);
+        } else if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
+            value = convertToBoolean(userInput);
+        } else if (clazz.equals(DateTime.class)) {
+            value = convertToDate(userInput);
+        } else {
+            value = userInput;
+        }
+
+        return value;
+    }
+
     public static Object getFieldValue(Object object, String key) {
         String[] fields = key.split("\\.");
         Object current = object;
