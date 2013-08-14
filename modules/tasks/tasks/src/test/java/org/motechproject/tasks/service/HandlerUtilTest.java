@@ -277,6 +277,7 @@ public class HandlerUtilTest {
         assertEquals("ala", manipulate("split(-,0)", string));
         assertEquals("cat", manipulate("split(-,3)", string));
         assertEquals(toStringWithPattern, manipulate("datetime(yyyy-MM-dd)", toString));
+        assertEquals(now.plusDays(1).toString(), manipulate("plusDays(1)", toString));
 
         manipulate("undefined", "something");
     }
