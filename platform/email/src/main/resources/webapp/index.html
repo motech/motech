@@ -1,7 +1,7 @@
 <div> <!-- Only required for left/right tabs -->
     <ul id="content-tabs" class="nav nav-tabs email">
-        <li class="active"><a data-target="main-content" href="#/send" data-toggle="tab">{{msg('email.send')}}</a></li>
-        <li><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('email.settings')}}</a></li>
+        <li ng-class="active('#/send')"><a data-target="main-content" href="#/send" data-toggle="tab">{{msg('email.send')}}</a></li>
+        <li ng-class="active('#/settings')"><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('email.settings')}}</a></li>
     </ul>
     <div class="tab-content email"  id="tab-content">
         <div id="main-content" class="tab-pane active">
