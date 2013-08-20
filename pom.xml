@@ -1045,6 +1045,7 @@
         <module>modules/scheduler/scheduler</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
+        <module>modules/osgi-integration-tests/osgi-integration-tests</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/maven-archetype-motech-module</module>
