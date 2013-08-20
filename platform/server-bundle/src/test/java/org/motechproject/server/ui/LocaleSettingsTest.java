@@ -8,7 +8,11 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.ui.impl.LocaleSettingsImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Locale;
 import java.util.NavigableMap;
 
 import static java.lang.String.format;
@@ -40,6 +44,15 @@ public class LocaleSettingsTest {
 
     @Mock
     private Bundle bundleWithout;
+
+    @Mock
+    private Principal principal;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private CookieLocaleResolver cookieLocaleResolver;
 
     @InjectMocks
     private LocaleSettings localeSettings = new LocaleSettingsImpl();
@@ -77,5 +90,23 @@ public class LocaleSettingsTest {
 
         assertTrue(map.containsKey("fr"));
         assertEquals("Français", map.get("fr"));
+    }
+
+    @Test
+    public void shouldRetrieveLocales() {
+        when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.CHINA);
+
+        assertEquals(Locale.CHINA, localeSettings.getUserLocale(request));
+
+        when(userService.getLocale("user")).thenReturn(Locale.GERMANY);
+        when(request.getUserPrincipal()).thenReturn(principal);
+        when(principal.getName()).thenReturn("user");
+
+        assertEquals(Locale.GERMANY, localeSettings.getUserLocale(request));
+
+        when(userService.getLocale("user")).thenReturn(null);
+        when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.CANADA);
+
+        assertEquals(Locale.CANADA, localeSettings.getUserLocale(request));
     }
 }
