@@ -9,7 +9,7 @@
           $routeProvider.
               when('/bundles', {templateUrl: '../admin/partials/bundles.html', controller: 'BundleListCtrl'}).
               when('/messages', {templateUrl: '../admin/partials/messages.html', controller: 'StatusMsgCtrl'}).
-              when('/settings', {templateUrl: '../admin/partials/settings.html', controller: 'SettingsCtrl'}).
+              when('/platform-settings', {templateUrl: '../admin/partials/settings.html', controller: 'SettingsCtrl'}).
               when('/scheduler', {templateUrl: '../admin/partials/scheduler.html', controller: 'SchedulerCtrl'}).
               when('/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'ModuleCtrl'}).
               when('/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'BundleSettingsCtrl'}).
