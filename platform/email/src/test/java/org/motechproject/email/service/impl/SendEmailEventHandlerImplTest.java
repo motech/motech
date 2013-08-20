@@ -19,19 +19,15 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
-import static org.motechproject.email.constants.SendEmailConstants.FROM_ADDRESS;
-import static org.motechproject.email.constants.SendEmailConstants.MESSAGE;
-import static org.motechproject.email.constants.SendEmailConstants.SEND_EMAIL_SUBJECT;
-import static org.motechproject.email.constants.SendEmailConstants.SUBJECT;
-import static org.motechproject.email.constants.SendEmailConstants.TO_ADDRESS;
+import static org.motechproject.email.constants.SendEmailConstants.*;
 
 public class SendEmailEventHandlerImplTest {
 
-    @InjectMocks
-    SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl();
-
     @Mock
     EmailSenderService emailSenderService;
+
+    @InjectMocks
+    SendEmailEventHandlerImpl emailEventHandler = new SendEmailEventHandlerImpl(emailSenderService);
 
     @Before
     public void setUp() {

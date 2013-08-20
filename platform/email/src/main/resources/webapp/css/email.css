@@ -4,3 +4,117 @@
     margin-left: 0;
     margin-right: 0;
 }
+
+.email.tab-content {
+    padding-left: 0;
+}
+
+.email.nav.nav-tabs {
+    border-bottom: none;
+    margin-left: 0;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.email #operations-email-logging {
+    margin: 10px;
+}
+
+.email .btn-group > .btn.active {
+    z-index: 1;
+}
+
+.email .s-ico {
+    float: right;
+    margin-right: 2px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    padding: 8px 2px;
+}
+
+.email fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.email legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.email legend + .control-group {
+    margin-top: 2px;
+}
+
+.email .pointer {
+    cursor: pointer;
+}
+
+#t_emailLoggingTable {
+    min-height: 25px;
+    height: auto;
+    padding: 5px;
+}
+
+#t_emailLoggingTable .control-group {
+    margin-bottom: 2px;
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}
+
+.input-xlarge-fluid {
+    max-width: 470px;
+    min-width: 270px;
+    width: 66%;
+}
+
+.ui-jqgrid input.ui-pg-input {
+    width: auto;
+    height: 14px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.ui-jqgrid select.ui-pg-selbox {
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.overrideJqgridTable .table-lightblue .ui-widget-content {
+    border: 0 solid #D4E1F9;
+}
+
+.ui-datepicker-header select {
+    height: 24px;
+    line-height: 20px;
+    padding: 2px 3px;
+}
+
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
+    height: 2.1em;
+    width: 2em;
+}
+
+#exportEmailLogModal.modal, #exportEmailLogModal .modal-body {
+    overflow: visible;
+}
+
+.nodays table {
+    display: none;
+}
+
+.email .controls > .radio:first-child, .email .controls > .checkbox:first-child {
+    padding-top: 0;
+}

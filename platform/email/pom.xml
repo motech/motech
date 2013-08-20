@@ -72,6 +72,24 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.ldriscoll</groupId>
+            <artifactId>org.motechproject.ektorplucene</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -142,7 +160,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/osgi/applicationEmail.xml</Context-File>
+                        <Context-File>META-INF/motech/applicationEmail.xml</Context-File>
                         <Context-Path>email</Context-Path>
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
@@ -151,8 +169,10 @@
                             org.motechproject.email.model;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            org.motechproject.commons.couchdb.service,
                             org.apache.velocity.exception,
                             org.motechproject.server.config.service,
+                            org.motechproject.security.model,
                             *
                         </Import-Package>                                                          `
                     </instructions>
@@ -172,7 +192,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, angular, motechAlert, handleWithStackTrace
+                                $, jQuery, angular, motechAlert, handleWithStackTrace, parseUri, window
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

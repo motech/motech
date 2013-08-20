@@ -62,7 +62,8 @@ public class EmailChannelIT extends BaseOsgiIT {
     protected List<String> getImports() {
         return asList(
                 "org.springframework.mail.javamail",
-                "org.motechproject.email.service"
+                "org.motechproject.email.service",
+                "org.motechproject.security.model"
         );
     }
 

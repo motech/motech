@@ -8,11 +8,20 @@ import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * The <code>SendEmailEventHandlerImpl</code> class is responsible for listening to and handling events
+ * connected with sending e-mails
+ */
+
 @Service
 public class SendEmailEventHandlerImpl {
 
-    @Autowired
     private EmailSenderService emailSenderService;
+
+    @Autowired
+    public SendEmailEventHandlerImpl(EmailSenderService emailSenderService) {
+        this.emailSenderService = emailSenderService;
+    }
 
     @MotechListener (subjects = { SendEmailConstants.SEND_EMAIL_SUBJECT })
     public void handle(MotechEvent event) {
@@ -24,4 +33,3 @@ public class SendEmailEventHandlerImpl {
         emailSenderService.send(new Mail(fromAddress, toAddress, subject, message));
     }
 }
-
