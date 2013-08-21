@@ -120,7 +120,7 @@
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <input ng-disabled="isFormValid()" class="btn btn-primary" type="button" value="{{msg('security.save')}}" ng-click="saveUser()"/>
+                        <input class="btn btn-primary" type="button" value="{{msg('security.save')}}" ng-click="saveUser()" ng-disabled="!isFormValid()"/>
                         <input class="btn" type="button" value="{{msg('security.cancel')}}" ng-click="cancelAddUser()"/>
                     </div>
                 </div>
