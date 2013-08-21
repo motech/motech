@@ -376,13 +376,13 @@
                 }
 
                 if (elType === 'UNICODE' || elType === 'TEXTAREA') {
-                    title = msgScope.msg('stringManipulation', '');
+                    title = msgScope.msg('task.stringManipulation', '');
                     loader = $http.get('../tasks/partials/widgets/string-manipulation.html', {cache: $templateCache})
                         .success(function (html) {
                             manipulationOptions = html;
                         });
                 } else if (elType === 'DATE') {
-                    title = msgScope.msg('dateManipulation', '');
+                    title = msgScope.msg('task.dateManipulation', '');
                     loader = $http.get('../tasks/partials/widgets/date-manipulation.html', {cache: $templateCache})
                         .success(function (html) {
                             manipulationOptions = html;
