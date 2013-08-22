@@ -947,6 +947,21 @@
                 <artifactId>spring-test-mvc</artifactId>
                 <version>1.0.0.M1</version>
                 <scope>test</scope>
+                <!-- excluding bundle dependencies so they won't be loaded in BundleITs -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-webmvc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-test</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mortbay.jetty</groupId>
