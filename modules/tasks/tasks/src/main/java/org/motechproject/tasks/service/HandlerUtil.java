@@ -181,7 +181,7 @@ final class HandlerUtil {
             result = substringManipulation(value, manipulation);
         } else if (lowerCase.contains("split")) {
             result = splitManipulation(value, manipulation);
-        } else if (lowerCase.contains("plusDays")) {
+        } else if (lowerCase.contains("plusdays")) {
             result = plusDaysManipulation(value, manipulation);
         } else {
             switch (lowerCase) {
