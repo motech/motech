@@ -35,6 +35,7 @@ import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_N
 import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_URL;
 import static org.motechproject.server.config.settings.MotechSettings.SCHEDULER_URL;
 
+/*StartupController manage register process */
 @Controller
 public class StartupController {
 
@@ -54,7 +55,7 @@ public class StartupController {
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new StartupFormValidator());
+        binder.setValidator(new StartupFormValidator(userService));
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.GET)
