@@ -34,7 +34,7 @@
                         return true;
                     }
                } else {
-                    return $scope.createUserForm.$isValid;
+                    return $scope.createUserForm.$valid;
                }
            };
 
