@@ -6,7 +6,7 @@
         <div class="clearfix">
             <div class="inside btn-group">
                 <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
-                <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-upload-alt icon-white"></i> {{msg('task.import')}}</a>
+                <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
             </div>
             <div class="inside form-inline">
                 <label >{{msg('task.header.searchTasks')}}</label>
@@ -85,7 +85,7 @@
                                     <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-download-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
+                                    <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-upload-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
                                 </li>
                                 <li class="task-element task-offset"></li>
                                 <li class="divider-vertical"></li>
