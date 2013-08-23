@@ -1,16 +1,13 @@
 <div class="well2 scheduler">
+
     <div class="box-header">
-        {{msg('admin.scheduler.title')}}
+        {{msg('admin.scheduler.jobs')}}
     </div>
     <div class="box-content">
 
-
-        <h4 class="frame-title">{{msg('admin.scheduler.jobs')}}</h4>
-        <div id="operations-scheduler" class="control-group inside">
-            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#collapse-scheduler">
-                <i class="icon-eject icon-white"></i>&nbsp;{{msg('admin.scheduler.filters')}}
-            </button>
-        </div>
+        <button type="button"  class="btn btn-info frame-title" data-toggle="collapse" data-target="#collapse-scheduler">
+            <i class="icon-eject icon-white"></i>&nbsp;{{msg('admin.scheduler.filters')}}
+        </button>
 
         <div class="collapse" id="collapse-scheduler">
             <div class="inside">

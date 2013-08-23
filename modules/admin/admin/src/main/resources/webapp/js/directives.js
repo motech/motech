@@ -24,7 +24,6 @@
         };
     });
 
-
     widgetModule.directive('gridDatePickerFrom', function() {
         return {
             restrict: 'A',
@@ -273,6 +272,7 @@
                             $(this).find('#schedulerTable').width('100%');
                             $(this).find('table').width('100%');
                         });
+
                         rows = $("#schedulerTable").getDataIDs();
                         for (k = 0; k < rows.length; k+=1) {
                             activity = $("#schedulerTable").getCell(rows[k],"activity").toLowerCase();
@@ -294,32 +294,35 @@
                                     default:
                                         break;
                                 }
+
                                 switch (status) {
                                     case 'ok':
+
                                         if (activity === 'active') {
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-ok-sign icon-large icon icon-green"></i>','ok',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-ok-sign icon-large icon icon-green"></i>','ok',{ },'');
                                         } else if (activity === 'notstarted' || activity === 'finished'){
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-time icon-large icon icon-gold"></i>','waiting',{ },'' );
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-time icon-large icon icon-gold"></i>','waiting',{ },'' );
                                         } else if (activity === 'error'){
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
                                         } else {
-                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-spinner icon-spin icon-large icon icon-green"></i>','idle',{ },'');
+                                            $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-spinner icon-spin icon-large icon icon-green"></i>','idle',{ },'');
                                         }
                                         break;
                                     case 'paused':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-pause icon-large icon icon-gold"></i>','waiting',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-pause icon-large icon icon-gold"></i>','waiting',{ },'');
                                         break;
                                     case 'blocked':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-minus-sign icon-large icon icon-red"></i>','waiting',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-minus-sign icon-large icon icon-red"></i>','waiting',{ },'');
                                         break;
                                     case 'error':
-                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
+                                        $("#schedulerTable").jqGrid('setCell',rows[k],'status','<i title="'+scope.msg('admin.scheduler.' + status).toUpperCase()+'" class="icon-exclamation-sign icon-large icon icon-red"></i>','error',{ },'');
                                         break;
                                     default:
                                         break;
                                 }
                             }
                         }
+
                     }
                 });
             }
