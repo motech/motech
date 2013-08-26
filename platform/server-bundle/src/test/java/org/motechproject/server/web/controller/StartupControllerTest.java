@@ -95,7 +95,6 @@ public class StartupControllerTest {
         NavigableMap<String, String> map = new TreeMap<>();
 
         when(startupManager.canLaunchBundles()).thenReturn(false);
-        when(startupManager.findCouchDBInstance(anyString())).thenReturn(false);
         when(startupManager.findActiveMQInstance(anyString())).thenReturn(false);
         when(startupManager.findSchedulerInstance(anyString())).thenReturn(false);
         when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
