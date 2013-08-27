@@ -3,7 +3,7 @@
  
     var templates = {
         "font-styles": "<li class='dropdown'>" +
-                           "<a class='btn dropdown-toggle' data-toggle='dropdown' href='#'>" +
+                           "<a tabindex='-1' class='btn dropdown-toggle' data-toggle='dropdown' href='#'>" +
                                "<i class='icon-font'></i>&nbsp;<span class='current-font'>Normal text</span>&nbsp;<b class='caret'></b>" +
                            "</a>" +
                            "<ul class='dropdown-menu'>" +
@@ -14,17 +14,17 @@
                        "</li>",
         "emphasis":    "<li>" +
                            "<div class='btn-group'>" +
-                               "<a class='btn' data-wysihtml5-command='bold' title='CTRL+B'><i class='icon-bold'></i></a></a>" +
-                               "<a class='btn' data-wysihtml5-command='italic' title='CTRL+I'><i class='icon-italic'></i></a>" +
-                               "<a class='btn' data-wysihtml5-command='underline' title='CTRL+U'><i class='icon-underline'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='bold' title='CTRL+B'><i class='icon-bold'></i></a></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='italic' title='CTRL+I'><i class='icon-italic'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='underline' title='CTRL+U'><i class='icon-underline'></i></a>" +
                            "</div>" +
                        "</li>",
         "lists":       "<li>" +
                            "<div class='btn-group'>" +
-                               "<a class='btn' data-wysihtml5-command='insertUnorderedList' title='Unordered List'><i class='icon-list-ul'></i></a>" +
-                               "<a class='btn' data-wysihtml5-command='insertOrderedList' title='Ordered List'><i class='icon-list-ol'></i></a>" +
-                               "<a class='btn' data-wysihtml5-command='Indent' title='Indent'><i class='icon-indent-right'></i></a>" +
-                               "<a class='btn' data-wysihtml5-command='Outdent' title='Outdent'><i class='icon-indent-left'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='insertUnorderedList' title='Unordered List'><i class='icon-list-ul'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='insertOrderedList' title='Ordered List'><i class='icon-list-ol'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='Indent' title='Indent'><i class='icon-indent-right'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-command='Outdent' title='Outdent'><i class='icon-indent-left'></i></a>" +
                            "</div>" +
                        "</li>",
         "link":        "<li>" +
@@ -68,7 +68,7 @@
         "html":
                        "<li>" +
                            "<div class='btn-group'>" +
-                               "<a class='btn' data-wysihtml5-action='change_view' title='Edit HTML'><i class='icon-pencil'></i></a>" +
+                               "<a tabindex='-1' class='btn' data-wysihtml5-action='change_view' title='Edit HTML'><i class='icon-pencil'></i></a>" +
                            "</div>" +
                        "</li>"
     };
