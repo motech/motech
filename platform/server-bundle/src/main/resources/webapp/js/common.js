@@ -18,7 +18,7 @@ function motechAlertStackTrace(msg, title, response, callback) {
 function blockUI() {
     'use strict';
     // TODO: Please use correct load.gif file.
-    $.blockUI({message : '<h3><img src="../../../../../../../../modules/ivr/motech-calllog/src/main/resources/webapp/img/load.gif" alt="loading" /></h3>'});
+    $.blockUI({message : '<h3><img src="../server/resources/img/load.gif" alt="loading" /></h3>'});
 }
 
 function unblockUI() {
