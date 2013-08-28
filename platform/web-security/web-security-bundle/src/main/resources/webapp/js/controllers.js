@@ -97,6 +97,7 @@
            $scope.getUser = function(user)  {
                $scope.successfulMessage='';
                $scope.failureMessage='';
+               $scope.deleteU=false;
                $http.post('../websecurity/api/users/getuser', user.userName).success(function(data) {
                        $scope.user = data;
                        $scope.user.password='';
