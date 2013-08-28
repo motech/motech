@@ -37,16 +37,19 @@
 
         $scope.setUserLang = function (lang, refresh) {
             var locale = toLocale(lang);
-
             $http({ method: "POST", url: "lang", params: locale })
                 .success(function () {
+
                     $scope.loadI18n(lang);
                     $scope.userLang = $scope.getLanguage(locale);
                     moment.lang(lang);
 
-                    if (refresh) {
-                        window.location.reload();
-                    }
+                    motechAlert('server.success.changed.language', 'server.changed.language',function(){
+                        if (refresh ) {
+                            window.location.reload();
+                        }
+                    });
+
                 })
                 .error(function (response) {
                     handleResponse('server.header.error', 'server.error.setLangError', response);

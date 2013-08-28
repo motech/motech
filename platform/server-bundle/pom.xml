@@ -142,7 +142,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, angular, jQuery, jAlert, jConfirm, window, jAlertStackTrace,
+                                $, angular, jQuery, jAlert, motechAlert, jConfirm, window, jAlertStackTrace,
                                 toLocale, moment, parseUri, handleResponse
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
