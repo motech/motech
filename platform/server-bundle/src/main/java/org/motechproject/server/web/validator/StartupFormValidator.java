@@ -3,6 +3,7 @@ package org.motechproject.server.web.validator;
 import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
 import org.motechproject.security.helper.AuthenticationMode;
+import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.springframework.validation.Errors;
@@ -11,17 +12,20 @@ import org.springframework.validation.Validator;
 
 import java.util.Arrays;
 
-
+/*StartupFormValidator validate user information during register process*/
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
+
+    private MotechUserService userService;
 
     private static final String ERROR_REQUIRED = "server.error.required.%s";
     private static final String PROVIDER_NAME = "providerName";
     private static final String PROVIDER_URL = "providerUrl";
     private static final String LOGIN_MODE = "loginMode";
 
-    public StartupFormValidator() {
+    public StartupFormValidator(MotechUserService userService) {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
+        this.userService = userService;
     }
 
     @Override
@@ -64,12 +68,18 @@ public class StartupFormValidator implements Validator {
     }
 
     private void validateRepository(Errors errors) {
+        String login = errors.getFieldValue("adminLogin").toString();
         String password = errors.getFieldValue("adminPassword").toString();
         String passwordConfirm = errors.getFieldValue("adminConfirmPassword").toString();
         String adminEmail = errors.getFieldValue("adminEmail").toString();
 
         for (String field : Arrays.asList("adminLogin", "adminPassword", "adminConfirmPassword")) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
+        }
+
+        if (errors.getFieldErrorCount(login) == 0 && userService.hasUser(login)) {
+            errors.rejectValue("adminLogin", "server.error.user.exist", null, null);
+
         }
 
         if (errors.getFieldErrorCount(password) == 0 && errors.getFieldErrorCount(passwordConfirm) == 0 && !password.equals(passwordConfirm)) {
