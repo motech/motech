@@ -46,4 +46,6 @@ public interface MotechUserService {
     void setLocale(String userName, Locale locale);
 
     List<String> getRoles(String userName);
+
+    void refreshAllUsersContextIfActive();
 }
