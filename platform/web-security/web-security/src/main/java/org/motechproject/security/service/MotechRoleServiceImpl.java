@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service to manage roles in Motech
+ *
+ * @see MotechRole
+ */
 @Service("motechRoleService")
 public class MotechRoleServiceImpl implements MotechRoleService {
 
@@ -20,6 +25,9 @@ public class MotechRoleServiceImpl implements MotechRoleService {
 
     @Autowired
     private AllMotechUsers allMotechUsers;
+
+    @Autowired
+    private MotechUserService motechUserService;
 
     @Override
     public List<RoleDto> getRoles() {
@@ -63,5 +71,6 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     public void createRole(RoleDto role) {
         MotechRole motechRole = new MotechRoleCouchdbImpl(role.getRoleName(), role.getPermissionNames());
         allMotechRoles.add(motechRole);
+        motechUserService.refreshAllUsersContextIfActive();
     }
 }

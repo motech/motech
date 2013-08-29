@@ -26,6 +26,11 @@ import java.util.Locale;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+/**
+ * Implementation of MotechUserService. Allows to search and manage users.
+ *
+ * @see MotechUserService
+ */
 @Service("motechUserService")
 public class MotechUserServiceImpl implements MotechUserService {
 
@@ -181,23 +186,46 @@ public class MotechUserServiceImpl implements MotechUserService {
         for (HttpSession session : sessions) {
             SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
             Authentication authentication = context.getAuthentication();
-            AbstractAuthenticationToken token = null;
+            AbstractAuthenticationToken token;
             User userInSession = (User) authentication.getPrincipal();
             if (userInSession.getUsername().equals(userName)) {
-                if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                    UsernamePasswordAuthenticationToken oldToken = (UsernamePasswordAuthenticationToken) authentication;
-                    token = new UsernamePasswordAuthenticationToken(oldToken.getPrincipal(),
-                            oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
-
-                } else if (authentication instanceof OpenIDAuthenticationToken) {
-                    OpenIDAuthenticationToken oldToken = (OpenIDAuthenticationToken) authentication;
-                    token = new OpenIDAuthenticationToken(oldToken.getPrincipal(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles),
-                            user.getOpenId(), oldToken.getAttributes());
-                }
+                token = getToken(authentication, user);
                 context.setAuthentication(token);
             }
         }
 
+    }
+
+    @Override
+    public void refreshAllUsersContextIfActive() {
+        Collection<HttpSession> sessions = sessionHandler.getAllSessions();
+        MotechUser user;
+
+        for (HttpSession session : sessions) {
+            SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+            Authentication authentication = context.getAuthentication();
+            AbstractAuthenticationToken token;
+            User userInSession = (User) authentication.getPrincipal();
+            user = allMotechUsers.findByUserName(userInSession.getUsername());
+            token =  getToken(authentication, user);
+            context.setAuthentication(token);
+        }
+
+    }
+
+    private AbstractAuthenticationToken getToken(Authentication authentication, MotechUser user) {
+        AbstractAuthenticationToken token = null;
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken oldToken = (UsernamePasswordAuthenticationToken) authentication;
+            token = new UsernamePasswordAuthenticationToken(oldToken.getPrincipal(),
+                    oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
+
+        } else if (authentication instanceof OpenIDAuthenticationToken) {
+            OpenIDAuthenticationToken oldToken = (OpenIDAuthenticationToken) authentication;
+            token = new OpenIDAuthenticationToken(oldToken.getPrincipal(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles),
+                    user.getOpenId(), oldToken.getAttributes());
+        }
+        return token;
     }
 }
 
