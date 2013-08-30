@@ -29,6 +29,8 @@ public interface MotechUserService {
     @PreAuthorize("hasRole('editUser')")
     UserDto getUser(String userName);
 
+    UserDto getUserByEmail(String email);
+
     Locale getLocale(String userName);
 
     @PreAuthorize("hasRole('manageUser')")
