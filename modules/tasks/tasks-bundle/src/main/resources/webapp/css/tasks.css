@@ -585,7 +585,7 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 .section-source .popover-title {
-    display: none;
+    display: block;
 }
 
 .section-source .popover {
@@ -626,6 +626,7 @@ h3.popover-title {
 .section-source .task-selector {
     float: left;
     list-style-type: none;
+    position: relative;
 }
 
 .task-bar {
@@ -763,6 +764,9 @@ h3.popover-title {
 
 span.pointer, .pointer {
     cursor: pointer;
+}
+.cursor-auto {
+    cursor: auto;
 }
 
 li.padding-botton6 {
