@@ -8,7 +8,6 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.startup.MotechPlatformState;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.UserInfo;
@@ -35,16 +34,12 @@ import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU
 @Controller
 public class DashboardController {
     private StartupManager startupManager = StartupManager.getInstance();
-
     @Autowired
     private UIFrameworkService uiFrameworkService;
-
     @Autowired
     private LocaleSettings localeSettings;
-
     @Autowired
     private MotechUserService userService;
-
     @Autowired
     private MotechRoleService roleService;
 
@@ -53,7 +48,7 @@ public class DashboardController {
         ModelAndView mav;
 
         // check if this is the first run
-        if (startupManager.getPlatformState() == MotechPlatformState.NEED_CONFIG) {
+        if (startupManager.isConfigRequired()) {
             mav = new ModelAndView("redirect:startup.do");
         } else {
             mav = new ModelAndView("index");

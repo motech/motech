@@ -17,6 +17,7 @@ import org.osgi.service.event.EventAdmin;
 
 import java.util.Properties;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -69,7 +70,7 @@ public class StartupManagerTest {
 
         startupManager.startup();
 
-        assertEquals(NEED_CONFIG, startupManager.getPlatformState());
+        assertTrue(startupManager.isConfigRequired());
         assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
         verify(configLoader).loadConfig();

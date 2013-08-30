@@ -1,20 +1,12 @@
 package org.motechproject.server.startup;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.DateTime;
-import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
 import org.motechproject.server.config.settings.ConfigFileSettings;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -25,34 +17,23 @@ import javax.annotation.PostConstruct;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
 
 public final class StartupManager {
-    private static StartupManager instance;
-
     private static final String SETTINGS_DB = "motech-platform-startup";
-    private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin";
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
-
+    private static StartupManager instance;
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
     private ConfigFileSettings configFileSettings;
-
     @Autowired
     private ConfigLoader configLoader;
-
     @Autowired
     private CouchDbManager couchDbManager;
-
     @Autowired
     private EventAdmin eventAdmin;
-
-    @Autowired
-    private BundleContext bundleContext;
 
     private StartupManager() {
 
@@ -66,16 +47,12 @@ public final class StartupManager {
         return instance;
     }
 
-    public MotechPlatformState getPlatformState() {
-        return platformState;
+    public boolean isConfigRequired() {
+        return platformState == MotechPlatformState.NEED_CONFIG;
     }
 
     @PostConstruct
     public void startup() {
-        startup(true);
-    }
-
-    public void startup(boolean startAllBundles) {
         if (configFileSettings != null) {
             configFileSettings = null;
         }
@@ -96,29 +73,8 @@ public final class StartupManager {
         }
 
         if (canLaunchBundles()) {
-            if (startAllBundles) {
-                // send an OSGI event indicating that the modules can be started
-                eventAdmin.postEvent(new Event(STARTUP_TOPIC, (Map) null));
-            } else {
-                // only start the admin bundle
-                startAdmin();
-            }
-        }
-    }
-
-    private void startAdmin() {
-        Bundle adminBundle = getAdminBundle();
-
-        if (adminBundle == null) {
-            LOGGER.warn("Admin bundle not installed");
-        } else if (adminBundle.getState() == Bundle.ACTIVE) {
-            LOGGER.warn("Admin bundle already active");
-        } else {
-            try {
-                adminBundle.start();
-            } catch (BundleException e) {
-                throw new MotechException("Cannot start admin bundle", e);
-            }
+            // send an OSGI event indicating that the modules can be started
+            eventAdmin.postEvent(new Event(STARTUP_TOPIC, (Map) null));
         }
     }
 
@@ -128,26 +84,6 @@ public final class StartupManager {
 
     public ConfigFileSettings getLoadedConfig() {
         return configFileSettings;
-    }
-
-    public boolean findCouchDBInstance(final String url) {
-        boolean found = false;
-
-        try {
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet request = new HttpGet(url);
-            request.addHeader("accept", "application/json");
-
-            HttpResponse response = httpClient.execute(request);
-
-            if (response.getStatusLine().getStatusCode() == 200) {
-                found = true;
-            }
-        } catch (IOException e) {
-            found = false;
-        }
-
-        return found;
     }
 
     public boolean findActiveMQInstance(final String url) {
@@ -176,15 +112,6 @@ public final class StartupManager {
 
     public boolean findSchedulerInstance(final String url) {
         return false;
-    }
-
-    private Bundle getAdminBundle() {
-        for (Bundle bundle : bundleContext.getBundles()) {
-            if (bundle.getSymbolicName().equals(ADMIN_SYMBOLIC_NAME)) {
-                return bundle;
-            }
-        }
-        return null;
     }
 
     private void syncSettingsWithDb() {

@@ -2,7 +2,6 @@ package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.startup.MotechPlatformState;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.LoginForm;
@@ -19,16 +18,14 @@ public class LoginController {
 
     @Autowired
     private LocaleSettings localeSettings;
-
     @Autowired
     private PlatformSettingsService settingsService;
-
     @Autowired
     private StartupManager startupManager;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(final HttpServletRequest request) {
-        if (startupManager.getPlatformState() == MotechPlatformState.NEED_CONFIG) {
+        if (startupManager.isConfigRequired()) {
             return new ModelAndView("redirect:startup.do");
         }
 
