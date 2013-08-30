@@ -3,6 +3,7 @@ package org.motechproject.server.web.validator;
 import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
 import org.motechproject.security.helper.AuthenticationMode;
+import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
@@ -79,7 +80,6 @@ public class StartupFormValidator implements Validator {
 
         if (errors.getFieldErrorCount(login) == 0 && userService.hasUser(login)) {
             errors.rejectValue("adminLogin", "server.error.user.exist", null, null);
-
         }
 
         if (errors.getFieldErrorCount(password) == 0 && errors.getFieldErrorCount(passwordConfirm) == 0 && !password.equals(passwordConfirm)) {
@@ -88,6 +88,11 @@ public class StartupFormValidator implements Validator {
 
         if (!EmailValidator.getInstance().isValid(adminEmail)) {
             errors.rejectValue("adminEmail", "server.error.invalid.email", null, null);
+        }
+
+        UserDto user = userService.getUserByEmail(adminEmail);
+        if (user != null && !user.getUserName().equals(login)) {
+            errors.rejectValue("adminEmail", "server.error.email.exist", null, null);
         }
     }
 }

@@ -116,6 +116,15 @@ public class MotechUserServiceImpl implements MotechUserService {
     }
 
     @Override
+    public UserDto getUserByEmail(String email) {
+        MotechUser user = allMotechUsers.findUserByEmail(email);
+        if (user == null ) {
+            return null;
+        }
+        return new UserDto(user);
+    }
+
+    @Override
     public Locale getLocale(String userName) {
         return allMotechUsers.findByUserName(userName).getLocale();
     }
