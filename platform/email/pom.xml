@@ -16,7 +16,7 @@
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
-    <artifactId>motech-platform-email</artifactId>
+    <artifactId>motech-email-bundle</artifactId>
     <name>MOTECH Email</name>
     <dependencies>
         <dependency>
@@ -111,7 +111,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-platform-email-bundle</directory>
+                                    <directory>${user.home}/.motech/config/org.motechproject.motech-email-bundle</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
