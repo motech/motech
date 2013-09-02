@@ -31,7 +31,7 @@ public class StartupFormValidatorTest {
     private static final String LOGIN2 = "motech2";
     private static final String PASSWORD = "password001";
     private static final String EMAIL = "motech@gmail.com";
-    private static final String LOCALHOST = "localhost";
+    private static final String LOCALHOST = "tcp://localhost:61616";
     private static final String USER_EXIST = "server.error.user.exist";
     private static final String EMAIL_EXIST = "server.error.email.exist";
 

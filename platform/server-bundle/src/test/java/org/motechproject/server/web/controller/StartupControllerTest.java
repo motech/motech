@@ -15,11 +15,14 @@ import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.validator.StartupFormValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +34,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -50,6 +54,19 @@ public class StartupControllerTest {
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
     private static final String LANGUAGES_KEY = "languages";
     private static final String PAGE_LANG_KEY = "pageLang";
+    private Errors errors;
+    private static  final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
+                                                                        "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
+                                                                        "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100","failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
+                                                                        "failover:(tcp://127.0.0.1:61616,tcp://1217.0.0.1:61616)?initialReconnectDelay=100","failover://(tcp://137.0.0.1:61616,tcp://137.0.0.1:61616)?timeout=3000",
+                                                                        "fanout:(static:(tcp:///localhost:61629,tcp://localhost:61639,tcp://localhost:61649))", "fanout:(staatic:(tcp://localhost:61629,tcp://localhost:61639,tcp://localhost:61649))",
+                                                                        "vm:(brooker:(tcp://localhost:6000)?persistent=false)?marshal=false", "wjfwwfeweffwwewf", "  ", ".....");
+
+    private static  final List<String> uriAssertTrueList = Arrays.asList("failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://117.0.0.1:61616,tcp://117.0.0.1:61616)?randomize=false",
+                                                                        "fanout:(static:(tcp://127.0.0.1:61629,tcp://127.0.0.1:61639,tcp://127.0.0.1:61649))", "failover:(tcp://192.168.42.100:61616,tcp://192.168.42.101:61616)",
+                                                                        "failover:(tcp://137.0.0.1:61616,udp://137.0.0.1:61616)?randomize=false&priorityBackup=true", "vm:(broker:(tcp://127.0.0.1:6000)?persistent=false)?marshal=false",
+                                                                        "failover:(vm://137.0.0.1:61616,http://137.0.0.1:61616,https://137.0.0.1:61616)?randomize=false&priorityBackup=true&priorityURIs=tcp://137.0.0.1:61616,tcp://137.0.0.1:61616",
+                                                                        "vm:(static:(tcp://137.0.0.1:6000)?persistent=false)?marshal=false", "ssl://137.0.0.1:61616?transport.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
 
     @Mock
     private StartupManager startupManager;
@@ -166,6 +183,24 @@ public class StartupControllerTest {
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
 
         assertEquals("redirect:home", result.getViewName());
+    }
+
+    @Test
+    public void testUriValidation() {
+        StartupForm startupForm = startupForm();
+        StartupFormValidator validator =  new StartupFormValidator(userService);
+
+        for(String uri : uriAssertFalseList) {
+            errors = new BeanPropertyBindingResult(startupForm,"validQueue");
+            validator.validateQueueUrl(errors, uri, "queueUrl");
+            assertTrue(errors.hasErrors());
+        }
+
+        for(String uri : uriAssertTrueList) {
+            errors = new BeanPropertyBindingResult(startupForm,"validQueue");
+            validator.validateQueueUrl(errors, uri, "queueUrl");
+            assertFalse(errors.hasErrors());
+        }
     }
 
     private void assertModelMap(final ModelMap modelMap, String... keys) {
