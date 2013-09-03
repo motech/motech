@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-email</artifactId>
+            <artifactId>motech-email-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
