@@ -11,7 +11,13 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+
+import static org.apache.activemq.util.URISupport.CompositeData;
+import static org.apache.activemq.util.URISupport.isCompositeURI;
+import static org.apache.activemq.util.URISupport.parseComposite;
 
 /*StartupFormValidator validate user information during register process*/
 public class StartupFormValidator implements Validator {
@@ -20,6 +26,7 @@ public class StartupFormValidator implements Validator {
     private MotechUserService userService;
 
     private static final String ERROR_REQUIRED = "server.error.required.%s";
+    private static final String ERROR_INVALID = "server.error.invalid.%s";
     private static final String PROVIDER_NAME = "providerName";
     private static final String PROVIDER_URL = "providerUrl";
     private static final String LOGIN_MODE = "loginMode";
@@ -42,10 +49,7 @@ public class StartupFormValidator implements Validator {
 
         for (String field : Arrays.asList("queueUrl")) {
             String value = errors.getFieldValue(field).toString().replace("localhost", "127.0.0.1");
-
-            if (errors.getFieldErrorCount(field) == 0 && !urlValidator.isValid(value)) {
-                errors.rejectValue(field, String.format("server.error.invalid.%s", field), null, null);
-            }
+            validateQueueUrl(errors, value, field);
         }
 
         if (AuthenticationMode.REPOSITORY.equals(errors.getFieldValue("loginMode").toString())) {
@@ -64,7 +68,7 @@ public class StartupFormValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_URL, String.format(ERROR_REQUIRED, PROVIDER_URL));
 
         if (errors.getFieldErrorCount(PROVIDER_URL) == 0 && !urlValidator.isValid(providerUrl)) {
-            errors.rejectValue(PROVIDER_URL, String.format("server.error.invalid.%s", PROVIDER_URL), null, null);
+            errors.rejectValue(PROVIDER_URL, String.format(ERROR_INVALID, PROVIDER_URL), null, null);
         }
     }
 
@@ -93,6 +97,61 @@ public class StartupFormValidator implements Validator {
         UserDto user = userService.getUserByEmail(adminEmail);
         if (user != null && !user.getUserName().equals(login)) {
             errors.rejectValue("adminEmail", "server.error.email.exist", null, null);
+        }
+    }
+
+    public void validateQueueUrl(Errors errors, String value, String field) {
+        try {
+            URI brokerURL = new URI(value);
+            if (isCompositeURI(brokerURL)) {
+                CompositeData data = parseComposite(brokerURL);
+                String scheme = data.getScheme();
+                if (scheme!=null && (scheme.equals("failover") || scheme.equals("fanout") || scheme.equals("vm"))) {
+                    for (URI uri : data.getComponents()) {
+                        validateUriContainSpecificScheme(errors, field, uri);
+                    }
+                } else {
+                    isNotValidUri(errors, field);
+                }
+            } else {
+                isValidUri(errors, field, value);
+            }
+        } catch (URISyntaxException e) {
+            isNotValidUri(errors, field);
+        }
+    }
+
+    private void validateCompositeDataUri(CompositeData data, Errors errors, String field) {
+        for (URI uri : data.getComponents()) {
+            isValidUri(errors, field, uri.toString());
+        }
+    }
+
+    private void isValidUri(Errors errors, String field, String uri) {
+        if (errors.getFieldErrorCount(field) == 0 && !urlValidator.isValid(uri)) {
+            isNotValidUri(errors, field);
+        }
+    }
+
+    private void isNotValidUri(Errors errors, String field) {
+        errors.rejectValue(field, String.format(ERROR_INVALID, field), null, null);
+    }
+
+    private void validateUriContainSpecificScheme(Errors errors, String field, URI uri) {
+        String scheme = uri.getScheme();
+        if (scheme!=null && (scheme.equals("static") || scheme.equals("broker"))) {
+            if (isCompositeURI(uri)) {
+                try {
+                    CompositeData data = parseComposite(uri);
+                    validateCompositeDataUri(data, errors, field);
+                } catch (URISyntaxException e) {
+                    isNotValidUri(errors, field);
+                }
+            } else {
+                isValidUri(errors, field, uri.toString());
+            }
+        } else {
+            isValidUri(errors, field, uri.toString());
         }
     }
 }
