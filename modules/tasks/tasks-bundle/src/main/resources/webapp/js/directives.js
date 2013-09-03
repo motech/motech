@@ -747,6 +747,27 @@
                     } else {
                         li.addClass('active');
                         content.show();
+                        content.removeClass('left right bottom top');
+                        content.parent().find('div.arrow').css({'top':'50%'});
+                        if (($(window).width() - $(this).offset().left) < 138 + $(content).width() && $(this).offset().left > $(content).width()) {
+                            content.addClass('left');
+                            content.css({'left': function() {return -($(content).width() + 3);}});
+                            content.css({'top': function() {return -($(content).height()/2 - 60);}});
+                        } else if (($(window).width() - ($(this).offset().left + 138)) > $(content).width() && $(content).width() < $(this).offset().left)  {
+                            content.addClass('right');
+                            content.css({'left': '125px'});
+                            content.css({'top': function() {return -($(content).height()/2 - 60);}});
+                        } else if ($(document).height() - $(this).offset().top < $(content).height() + 125) {
+                            content.addClass('top');
+                            content.css({'top': function() {return -($(content).height()+8);}});
+                            content.css({'left': function() {return -($(content).width()/2 - 60);}});
+                            content.parent().find('div.arrow').css({'top': function() {return ($(content).height()+2);}});
+                        } else {
+                            content.addClass('bottom');
+                            content.css({'top': '115px'});
+                            content.css({'left': function() {return -($(content).width()/2 - 60);}});
+                            content.parent().find('div.arrow').css({'top':'-11px'});
+                        }
                     }
             });
         };

@@ -38,8 +38,8 @@
                 <div class="accordion" id="select-trigger" overflow-change expand-accordion>
                     <div class="task-group">
                         <div class="accordion-heading">
-                            <div class="accordion-toggle inbox-header" style="cursor: auto;">
-                                <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#select-trigger" href="#collapse-trigger" style="cursor: pointer;"></i> {{msg('task.header.trigger')}}
+                            <div class="accordion-toggle inbox-header cursor-auto">
+                                <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
                                 <span ng-hide="!task.trigger.displayName">
                                     &raquo; {{msg(task.trigger.channelName)}} : {{msg(task.trigger.displayName)}}
                                 </span>
@@ -48,8 +48,8 @@
                         <div id="collapse-trigger" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
                             <div class="accordion-inner">
                                 <div class="section-source">
-                                    <ul class="task-selector" style="position: relative;">
-                                        <li class="task-panel" style="cursor: pointer;" ng-repeat="channel in util.channels.withTriggers(channels)">
+                                    <ul class="task-selector">
+                                        <li class="task-panel pointer" ng-repeat="channel in util.channels.withTriggers(channels)">
                                             <div id="trigger-{{channel.moduleName}}" select-event="trigger">
                                                 <div>
                                                     <a ng-click="removeTrigger($event)" ui-if="task.trigger && task.trigger.moduleName == channel.moduleName">
@@ -58,8 +58,9 @@
                                                     <img ng-src="../tasks/api/channel/icon?moduleName={{channel.moduleName}}&moduleVersion={{channel.moduleVersion}}" class="panel-img" />
                                                 </div>
                                                 <span>{{msg(channel.displayName)}}</span>
-                                                <div class="content-task popover right" style="display:none; margin-left:125px;">
-                                                    <h3 class="popover-title" style="display: block;">{{msg('task.tooltip.availableTriggers')}}</h3>
+                                                <div class="content-task popover fade in">
+                                                    <div class="arrow"></div>
+                                                    <h3 class="popover-title">{{msg('task.tooltip.availableTriggers')}}</h3>
                                                     <div class="popover-content">
                                                         <ul>
                                                             <li ng-repeat="trigger in channel.triggerTaskEvents">
@@ -89,7 +90,7 @@
                                         </button>
                                     </div>
                                     <a class="accordion-toggle inbox-header">
-                                        <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" href="#collapse-step-{{step.order}}" style="cursor: pointer;"></i>
+                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" href="#collapse-step-{{step.order}}"></i>
                                         {{msg('task.section.filters')}}
                                     </a>
                                 </div>
@@ -184,8 +185,8 @@
                                             <i class="icon-remove icon-white"></i>
                                         </button>
                                     </div>
-                                    <a class="accordion-toggle inbox-header" style="cursor: auto;">
-                                        <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#data-source-{{step.order}}" href="#collapse-step-{{step.order}}" style="cursor: pointer;"></i> {{msg('task.subsection.data')}}
+                                    <a class="accordion-toggle inbox-header cursor-auto">
+                                        <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
                                         <span ng-hide="!step.displayName">
                                             &raquo; {{msg(step.providerName)}} : {{msg(step.displayName)}}
                                         </span>
@@ -306,8 +307,8 @@
                                         <i class="icon-remove icon-white"></i>
                                     </button>
                                 </div>
-                                <a class="accordion-toggle inbox-header" style="cursor: auto;" action-sortable-cursor>
-                                    <i class="icon-caret-down icon-fixed-width icon-large" data-toggle="collapse" data-parent="#select-action-{{$index}}" href="#collapse-action-{{$index}}" style="cursor: pointer;"></i> {{msg('task.header.action')}}
+                                <a class="accordion-toggle inbox-header cursor-auto" action-sortable-cursor>
+                                    <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
                                     <span ng-hide="!action.displayName">
                                         &raquo; {{msg(action.channelName)}} : {{msg(action.displayName)}}
                                     </span>
