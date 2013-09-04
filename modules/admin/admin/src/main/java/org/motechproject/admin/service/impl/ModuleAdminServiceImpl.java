@@ -292,9 +292,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
         RepositorySystem system = locator.getService(RepositorySystem.class);
 
-        //RepositorySystem system = null;
         try {
-            //system = new DefaultPlexusContainer().lookup(RepositorySystem.class);
 
             MavenRepositorySystemSession mvnRepository = new MavenRepositorySystemSession();
 
