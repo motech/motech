@@ -95,7 +95,7 @@ public class ServerEventRelay implements EventRelay {
                     logTimeAndHandleEvent(event, listener, e);
                     break;
                 }
-            } // END while( iter.hasNext() )
+            }
 
         } else {
 
@@ -108,8 +108,8 @@ public class ServerEventRelay implements EventRelay {
             } else {
                 // Is there a way to get at a Sets elements other than an iterator?  I know there is only one
                 logTimeAndHandleEvent(event, listeners.iterator().next(), event);
-            } // END IF/ELSE if (listeners.size() > 1)
-        } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
+            }
+        }
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("event", event.getSubject());

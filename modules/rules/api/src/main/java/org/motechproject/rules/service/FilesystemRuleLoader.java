@@ -51,10 +51,8 @@ public class FilesystemRuleLoader {
             }
         }
 
-        // Map<String, ClassLoader> bundleClassLoaderLookup = osgiFrameworkService.getBundleClassLoaderLookup();
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
         classLoaders.add(Thread.currentThread().getContextClassLoader());
-        // classLoaders.addAll(bundleClassLoaderLookup.values());
 
         for (File file : ruleFiles) {
             if (file.getName().toLowerCase().endsWith(".drl")) {
@@ -79,8 +77,4 @@ public class FilesystemRuleLoader {
     public void setKnowledgeBaseManager(KnowledgeBaseManagerInterface knowledgeBaseManager) {
         this.knowledgeBaseManager = knowledgeBaseManager;
     }
-
-    /* public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
-        this.osgiFrameworkService = osgiFrameworkService;
-    }*/
 }
