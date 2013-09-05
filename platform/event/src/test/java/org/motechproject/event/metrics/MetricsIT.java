@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.metrics.impl.LoggingAgentBackendImpl;
 import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.event.metrics.impl.StatsdAgentBackendImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,7 +44,8 @@ public class MetricsIT {
     public void shouldEnableLogginAgentOnlyByDefault() throws Exception {
         MultipleMetricsAgentImpl impl = (MultipleMetricsAgentImpl) metricsAgent;
 
-        assertEquals(1, impl.getMetricsAgents().size());
+        assertEquals(2, impl.getMetricsAgents().size());
         assertEquals(LoggingAgentBackendImpl.class, impl.getMetricsAgents().get(0).getClass());
+        assertEquals(StatsdAgentBackendImpl.class, impl.getMetricsAgents().get(1).getClass());
     }
 }

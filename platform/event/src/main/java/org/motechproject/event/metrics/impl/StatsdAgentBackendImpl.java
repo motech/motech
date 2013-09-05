@@ -1,10 +1,17 @@
 package org.motechproject.event.metrics.impl;
 
+import org.apache.commons.io.FileUtils;
 import org.motechproject.event.metrics.MetricsAgentBackend;
+import org.motechproject.event.metrics.StatsdAgentBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -13,22 +20,26 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A very simple metric backend that logs all metrics over UDP.
  * The intended receiver is a statsd server
  * (http://codeascraft.etsy.com/2011/02/15/measure-anything-measure-everything/)
  */
-public class StatsdAgentBackendImpl implements MetricsAgentBackend {
+public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentBackend {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private String serverHost;
     private int serverPort;
     private boolean generateHostBasedStats;
 
+
     private InetAddress serverAddr;
     private String hostName;
     private DatagramSocket socket;
+    private String configFileLocation = System.getProperty("user.home") + "/.motech/config/org." +
+            "motechproject.motech-platform-event/statsdAgent.properties";
 
     public StatsdAgentBackendImpl() {
         try {
@@ -43,7 +54,6 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
             log.error("Unable to get local hostname", e);
         }
     }
-
 
     /**
      * Reports an occurrence of metric, incrementing it's count. Ignores parameters
@@ -147,5 +157,46 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
 
     public void setGenerateHostBasedStats(boolean generateHostBasedStats) {
         this.generateHostBasedStats = generateHostBasedStats;
+    }
+
+    //Loads config data from properties file
+    @PostConstruct
+    public void loadProperties() {
+        File file = new File(configFileLocation);
+            if (file.exists()) {
+                try (InputStream in = new FileInputStream(file)) {
+                    Properties statsdAgentConfig = new Properties();
+                    statsdAgentConfig.load(in);
+                    in.close();
+                    serverHost = statsdAgentConfig.getProperty("serverHost");
+                    serverPort = Integer.parseInt(statsdAgentConfig.getProperty("serverPort"));
+                    generateHostBasedStats = "true".equals(statsdAgentConfig.getProperty("generateHostBasedStats"));
+                }
+                catch (IOException e) {
+                    log.error("Error while loading activemq configuration from " + configFileLocation, e);
+                }
+            }
+    }
+     //Saves config data to properties file
+    public void saveProperties() {
+        File file = new File(configFileLocation);
+        if (!file.exists()) {
+            try {
+                FileUtils.touch(file);
+            } catch (IOException e) {
+                log.error("Error while saving statsdAgent config", e);
+            }
+        }
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            Properties statsdAgentConfig = new Properties();
+            statsdAgentConfig.setProperty("serverHost", serverHost);
+            statsdAgentConfig.setProperty("serverPort", Integer.toString(serverPort));
+            statsdAgentConfig.setProperty("generateHostBasedStats", String.valueOf(generateHostBasedStats));
+            statsdAgentConfig.store(out, null);
+            out.close();
+        }
+        catch (IOException e) {
+            log.error("Error while saving statsdAgent config", e);
+        }
     }
 }
