@@ -18,10 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The <code>ConfigFileMonitor</code> is used to monitor changes in config files and send
+ * appropriate events.
+ */
 @Component
 public class ConfigFileMonitor implements FileListener {
     public static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
@@ -42,12 +47,11 @@ public class ConfigFileMonitor implements FileListener {
 
     private boolean monitorStart;
 
-    @Override
-    protected void finalize() throws Throwable {
+    @PreDestroy
+    public void stop() throws FileSystemException {
+        remove();
         this.fileMonitor.stop();
         LOGGER.info("Stopped monitoring system.");
-
-        super.finalize();
     }
 
     @PostConstruct

@@ -1,11 +1,15 @@
 package org.motechproject.event;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
 
+/**
+ * The <code>MotechCachingConnectionFactory</code> is used to created connection to ActiveMQ.
+ */
 public class MotechCachingConnectionFactory extends CachingConnectionFactory {
 
     private String username;
@@ -17,6 +21,12 @@ public class MotechCachingConnectionFactory extends CachingConnectionFactory {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setBrokerUrl(String brokerURL) {
+        if (getTargetConnectionFactory() instanceof ActiveMQConnectionFactory) {
+            ((ActiveMQConnectionFactory) getTargetConnectionFactory()).setBrokerURL(brokerURL);
+        }
     }
 
     @Override

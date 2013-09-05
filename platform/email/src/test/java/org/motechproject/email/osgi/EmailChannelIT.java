@@ -41,7 +41,7 @@ public class EmailChannelIT extends BaseOsgiIT {
             eventRelay.sendEventMessage(new MotechEvent(SendEmailConstants.SEND_EMAIL_SUBJECT, values));
 
             synchronized (this) {
-                this.wait(3000);
+                this.wait(6000);
             }
 
             List<WiserMessage> messages = wiser.getMessages();

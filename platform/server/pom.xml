@@ -381,6 +381,24 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>POST IT - check if tomcat is stopped</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${basedir}/tomcat-shutdown.sh</executable>
+                                    <workingDirectory>${basedir}</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>com.googlecode.t7mp</groupId>
                         <artifactId>maven-t7-plugin</artifactId>
                         <version>0.9.10.M5</version>

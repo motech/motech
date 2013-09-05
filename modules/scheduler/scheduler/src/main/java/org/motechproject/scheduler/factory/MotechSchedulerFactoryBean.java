@@ -1,6 +1,7 @@
 package org.motechproject.scheduler.factory;
 
 import org.motechproject.scheduler.exception.SchedulerInstantiationException;
+import org.motechproject.scheduler.exception.SchedulerShutdownException;
 import org.motechproject.server.config.SettingsFacade;
 import org.quartz.Scheduler;
 import org.slf4j.Logger;
@@ -11,10 +12,14 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Properties;
 
 import static java.lang.Boolean.getBoolean;
 
+/**
+ * The <code>MotechSchedulerFactoryBean</code> is used to created scheduler and start it.
+ */
 @Component
 public class MotechSchedulerFactoryBean {
 
@@ -45,6 +50,16 @@ public class MotechSchedulerFactoryBean {
         } catch (Exception e) {
             log.error("Failed to instantiate scheduler with configuration from quartz.properties");
             throw new SchedulerInstantiationException(e);
+        }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        try {
+            schedulerFactoryBean.destroy();
+        } catch (Exception e) {
+            log.error("Failed to shutdown scheduler");
+            throw new SchedulerShutdownException(e);
         }
     }
 
