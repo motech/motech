@@ -160,7 +160,11 @@
                                 value = element.val() || '';
 
                                 if (element.hasClass('actionField')) {
-                                    parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = value.insert(pos, eventKey);
+                                    if(parent.selectedAction[element.data('action')].actionParameters[element.data('index')].type === "DATE") {
+                                        parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = eventKey;
+                                    } else {
+                                        parent.selectedAction[element.data('action')].actionParameters[element.data('index')].value = value.insert(pos, eventKey);
+                                    }
                                 } else if (element.hasClass('dataSourceField')) {
                                     if (dataSource) {
                                         dataSource.lookup.value = value.insert(pos, eventKey);
@@ -542,6 +546,8 @@
                     useLocalTimezone: true,
                     dateFormat: 'yy-mm-dd',
                     timeFormat: 'HH:mm z',
+                    showOn: true,
+                    constrainInput: false,
                     onSelect: function (dateTex) {
                         parent.selectedAction[$(this).data('action')].actionParameters[$(this).data('index')].value = dateTex;
                         parent.$apply();

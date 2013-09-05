@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.commons.api.DataProvider;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
@@ -27,6 +28,7 @@ import static org.motechproject.tasks.domain.KeyInformation.TRIGGER_PREFIX;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.DATA_SOURCE;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.FILTER;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.service.HandlerUtil.DATETIME_PATTERN_BEGIN_INDEX;
 import static org.motechproject.tasks.service.HandlerUtil.FORMAT_PATTERN_BEGIN_INDEX;
 
 /**
@@ -104,10 +106,20 @@ class TaskInitializer {
                     case MAP:
                         parameters.put(key, convertToMap(template));
                         break;
+                    case DATE:
+                        try {
+                            String userInput = convert(template);
+                            String pattern = getPattern(template);
+                            Object obj = HandlerUtil.convertTo(param.getType(), userInput, pattern);
+                            parameters.put(key, obj);
+                        } catch (MotechException ex) {
+                            throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
+                        }
+                        break;
                     default:
                         try {
                             String userInput = convert(template);
-                            Object obj = HandlerUtil.convertTo(param.getType(), userInput);
+                            Object obj = HandlerUtil.convertTo(param.getType(), userInput, null);
                             parameters.put(key, obj);
                         } catch (MotechException ex) {
                             throw new TaskHandlerException(TRIGGER, ex.getMessage(), ex, key);
@@ -126,6 +138,18 @@ class TaskInitializer {
         }
 
         return parameters;
+    }
+
+    private String getPattern(String template) {
+        if (template.startsWith("{{") && template.endsWith("}}")) {
+            if (template.contains("?")) {
+                return template.substring(template.indexOf('?') + DATETIME_PATTERN_BEGIN_INDEX + 1, template.indexOf("}}") - 1);
+            } else {
+                return "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+            }
+        } else {
+            return "yyyy-MM-dd HH:mm Z";
+        }
     }
 
     private boolean passFilters(FilterSet filterSet) throws TaskHandlerException {
@@ -265,18 +289,19 @@ class TaskInitializer {
         Map<Object, Object> tempMap = new HashMap<>(rows.length);
 
         for (String row : rows) {
-            String[] array = row.split(":");
+            String[] array = row.split(":", 2);
             Object mapKey;
             Object mapValue;
 
             switch (array.length) {
                 case 2:
+                    array[1] = array[1].trim();
                     mapKey = getValue(array[0]);
                     mapValue = getValue(array[1]);
 
                     tempMap.put(
-                            HandlerUtil.convertTo(mapKey.getClass(), convert(array[0])),
-                            HandlerUtil.convertTo(mapValue.getClass(), convert(array[1]))
+                            HandlerUtil.convertTo(mapKey.getClass(), convert(array[0]), DateTime.class.equals(mapKey.getClass())? getPattern(array[0]) : null),
+                            HandlerUtil.convertTo(mapValue.getClass(), convert(array[1]), DateTime.class.equals(mapValue.getClass())? getPattern(array[1]) : null)
                     );
                     break;
                 case 1:
@@ -295,12 +320,12 @@ class TaskInitializer {
         List<Object> tempList = new ArrayList<>(rows.length);
 
         for (String row : rows) {
-            Object value = getValue(row);
+            Object value = getValue(row.trim());
 
             if (value instanceof Collection) {
                 tempList.addAll((Collection) value);
             } else {
-                tempList.add(HandlerUtil.convertTo(value.getClass(), convert(row)));
+                tempList.add(HandlerUtil.convertTo(value.getClass(), convert(row.trim()), DateTime.class.equals(value.getClass())? getPattern(row.trim()) : null));
             }
         }
 

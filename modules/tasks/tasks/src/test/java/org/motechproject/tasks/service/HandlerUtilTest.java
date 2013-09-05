@@ -75,17 +75,17 @@ public class HandlerUtilTest {
     public void testConvertTo() {
         DateTime now = DateTimeSourceUtil.now().withSecondOfMinute(0).withMillis(0);
 
-        assertEquals("text", convertTo(UNICODE, "text"));
-        assertEquals("text\nline2", convertTo(TEXTAREA, "text\nline2"));
-        assertEquals(123, convertTo(INTEGER, "123"));
-        assertEquals(100000000000L, convertTo(LONG, "100000000000"));
-        assertEquals(123.45, convertTo(DOUBLE, "123.45"));
-        assertEquals(now, convertTo(DATE, now.toString("yyyy-MM-dd HH:mm Z")));
-        assertEquals(true, convertTo(BOOLEAN, "true"));
-        assertEquals("key:value\nkey2:value2", convertTo(MAP, "key:value\nkey2:value2"));
-        assertEquals("value\nvalue2", convertTo(LIST, "value\nvalue2"));
+        assertEquals("text", convertTo(UNICODE, "text", null));
+        assertEquals("text\nline2", convertTo(TEXTAREA, "text\nline2", null));
+        assertEquals(123, convertTo(INTEGER, "123", null));
+        assertEquals(100000000000L, convertTo(LONG, "100000000000", null));
+        assertEquals(123.45, convertTo(DOUBLE, "123.45", null));
+        assertEquals(now, convertTo(DATE, now.toString("yyyy-MM-dd HH:mm Z"), "yyyy-MM-dd HH:mm Z"));
+        assertEquals(true, convertTo(BOOLEAN, "true", null));
+        assertEquals("key:value\nkey2:value2", convertTo(MAP, "key:value\nkey2:value2", null));
+        assertEquals("value\nvalue2", convertTo(LIST, "value\nvalue2", null));
 
-        assertTime(now, (DateTime) convertTo(TIME, now.toString("HH:mm Z")));
+        assertTime(now, (DateTime) convertTo(TIME, now.toString("HH:mm Z"), null));
     }
 
     @Test
