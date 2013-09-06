@@ -469,6 +469,56 @@ public class TaskTriggerHandlerTest {
     }
 
     @Test
+    public void shouldSendEventAndConverseDateWithAndWithoutManipulation() throws Exception {
+        setTriggerEvent();
+        setActionEvent();
+
+        when(taskService.findTrigger(TRIGGER_SUBJECT)).thenReturn(triggerEvent);
+        when(taskService.findTasksForTrigger(triggerEvent)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(actionEvent);
+
+        task.getActions().get(0).getValues().put("date1", "2012-12-21 21:21 +0100");
+        actionEvent.addParameter(new ActionParameter("Date1", "date1", DATE), true);
+        task.getActions().get(0).getValues().put("date2", "{{trigger.startDate?datetime(yyyyy.MMMMM.dd GGG hh:mm aaa)}}");
+        actionEvent.addParameter(new ActionParameter("Date2", "date2", DATE), true);
+
+        handler.handle(createEvent());
+
+        verify(taskService).findTrigger(TRIGGER_SUBJECT);
+        verify(taskService).findTasksForTrigger(triggerEvent);
+        verify(taskService).getActionEventFor(task.getActions().get(0));
+        verify(taskActivityService).addSuccess(eq(task));
+
+        ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
+
+        assertEquals(createHandlerSuccessSubject(task.getName()), captorEvent.getValue().getSubject());
+
+        List<MotechEvent> events = captorEvent.getAllValues();
+
+        assertEquals(asList(ACTION_SUBJECT, createHandlerSuccessSubject(task.getName())),
+                extract(events, on(MotechEvent.class).getSubject()));
+
+        MotechEvent motechEvent = (MotechEvent) CollectionUtils.find(events, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return object instanceof MotechEvent && ((MotechEvent) object).getSubject().equalsIgnoreCase(ACTION_SUBJECT);
+            }
+        });
+
+        assertEquals(ACTION_SUBJECT, motechEvent.getSubject());
+
+        Map<String, Object> motechEventParameters = motechEvent.getParameters();
+
+        assertNotNull(motechEventParameters);
+
+        assertEquals(task.getActions().get(0).getValues().get("phone"), motechEventParameters.get("phone").toString());
+        assertEquals(4, motechEventParameters.size());
+        assertNotNull(motechEventParameters.get("date1"));
+        assertNotNull(motechEventParameters.get("date2"));
+    }
+
+    @Test
     public void shouldDisableTaskWhenNumberPossibleErrorsIsExceeded() throws Exception {
         setTriggerEvent();
         setActionEvent();

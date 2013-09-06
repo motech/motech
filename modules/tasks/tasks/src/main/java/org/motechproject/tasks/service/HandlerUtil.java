@@ -61,7 +61,7 @@ final class HandlerUtil {
     private HandlerUtil() {
     }
 
-    public static Object convertTo(ParameterType type, String userInput) {
+    public static Object convertTo(ParameterType type, String userInput, String pattern) {
         Object value;
 
         switch (type) {
@@ -81,7 +81,7 @@ final class HandlerUtil {
                 value = convertToTime(userInput);
                 break;
             case DATE:
-                value = convertToDate(userInput);
+                value = convertToDate(userInput, pattern);
                 break;
             default:
                 value = userInput;
@@ -90,7 +90,7 @@ final class HandlerUtil {
         return value;
     }
 
-    public static Object convertTo(Class<?> clazz, String userInput) {
+    public static Object convertTo(Class<?> clazz, String userInput, String pattern) {
         Object value;
 
         if (clazz.equals(Double.class) || clazz.equals(Double.TYPE)) {
@@ -102,7 +102,7 @@ final class HandlerUtil {
         } else if (clazz.equals(Boolean.class) || clazz.equals(Boolean.TYPE)) {
             value = convertToBoolean(userInput);
         } else if (clazz.equals(DateTime.class)) {
-            value = convertToDate(userInput);
+            value = convertToDate(userInput, pattern);
         } else {
             value = userInput;
         }
@@ -380,10 +380,10 @@ final class HandlerUtil {
                 : Months.monthsBetween(DateUtil.now(), param).getMonths();
     }
 
-    private static Object convertToDate(String userInput) {
+    private static Object convertToDate(String userInput, String pattern) {
         Object value;
         try {
-            value = DateTime.parse(userInput, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z"));
+            value = DateTime.parse(userInput, DateTimeFormat.forPattern(pattern));
         } catch (Exception e) {
             throw new MotechException("task.error.convertToDate", e);
         }
