@@ -6,6 +6,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.email.InitializeSettings;
 import org.motechproject.email.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -17,19 +18,9 @@ import java.util.Properties;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.email.model.SettingsDto.EMAIL_PROPERTIES_FILE_NAME;
-import static org.motechproject.email.model.SettingsDto.MAIL_HOST_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_PORT_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_ADDRESS_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_SUBJECT_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_BODY_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_ENABLE_PROPERTY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_TIME_PROPERY;
-import static org.motechproject.email.model.SettingsDto.MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY;
+import static org.motechproject.email.model.SettingsDto.*;
 import static org.motechproject.testing.utils.rest.RestTestUtil.jsonMatcher;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
@@ -57,6 +48,9 @@ public class SettingsControllerTest {
     @Mock
     private JavaMailSenderImpl javaMailSender;
 
+    @Mock
+    private InitializeSettings initializeSettings;
+
     private MockMvc controller;
 
     @Before
@@ -72,8 +66,7 @@ public class SettingsControllerTest {
         when(settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_PROPERY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_TIME);
         when(settingsFacade.getProperty(MAIL_LOG_PURGE_TIME_MULTIPLIER_PROPERTY, EMAIL_PROPERTIES_FILE_NAME)).thenReturn(LOG_MULTIPLIER);
 
-
-        controller = MockMvcBuilders.standaloneSetup(new SettingsController(settingsFacade, javaMailSender)).build();
+        controller = MockMvcBuilders.standaloneSetup(new SettingsController(settingsFacade, javaMailSender, initializeSettings)).build();
     }
 
     @Test

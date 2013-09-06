@@ -24,11 +24,11 @@
                     </div>
                 </div>
 
-                <h4 class="settings-section">{{msg('email.settings.log.title1')}}</h4>
+                <h5>{{msg('email.settings.log.title1')}}</h5>
 
                 <div class="control-group">
                     <div class="controls">
-                        <label class="" for="settingsLogAddress">
+                        <label class="checkbox" for="settingsLogAddress">
                             <input ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
                                    ng-true-value="true" ng-false-value="false" />
                             {{msg('email.settings.log.address')}}
@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="controls">
-                        <label class="" for="settingsLogSubject">
+                        <label class="checkbox" for="settingsLogSubject">
                             <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
                                    ng-true-value="true" ng-false-value="false" />
                             {{msg('email.settings.log.subject')}}
@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="controls">
-                        <label class="" for="settingsLogBody">
+                        <label class="checkbox" for="settingsLogBody">
                             <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
                                    ng-true-value="true" ng-false-value="false" />
                             {{msg('email.settings.log.body')}}
@@ -52,13 +52,15 @@
                     </div>
                 </div>
 
-                <h4 class="settings-section">{{msg('email.settings.log.title2')}}</h4>
+                <h5>{{msg('email.settings.log.title2')}}</h5>
 
                 <div class="control-group">
                     <div class="controls">
-                        <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
+                        <label class="checkbox inline">
+                            <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
                                ng-true-value="true" ng-false-value="false" />
-                        {{msg('email.settings.log.purge')}}
+                            {{msg('email.settings.log.purge')}}
+                        </label>
 
                         <input purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
 

@@ -11,6 +11,10 @@
 
     <mvc:annotation-driven/>
 
+    <bean id="updateMailPurgeJob" class="org.motechproject.email.UpdateMailPurgeJob" />
+
+    <bean id="initializeSettings" class="org.motechproject.email.InitializeSettings" />
+
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.email"/>
 
@@ -50,12 +54,27 @@
         </constructor-arg>
     </bean>
 
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:service ref="emailSenderService"
                   interface="org.motechproject.email.service.EmailSenderService"
                   auto-export="interfaces"/>
 
+    <osgi:service ref="emailAuditService"
+                  interface="org.motechproject.email.service.EmailAuditService"
+                  auto-export="interfaces"/>
+
     <osgi:reference id="platformSettingsServiceOsgi"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
+
+    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
+
+    <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService" />
+
+    <osgi:reference id="roleService" interface="org.motechproject.security.service.MotechRoleService" />
+
+    <bean id="emailDBConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-email-audit"/>
+    </bean>
 
 </beans>

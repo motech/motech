@@ -5,7 +5,7 @@
     "externalId":"",
     "password":"$2a$10$bpiIpFGO/TVM4pDBCluKh.T45mpPSjHyWD.iOl68/e7uwd1L9DIB.",
     "email":"motech@motech.com",
-    "roles":["User Admin", "Bundle Admin"],
+    "roles":["User Admin", "Bundle Admin", "Email Admin"],
     "active":true,
     "openId":"",
     "locale":"en"

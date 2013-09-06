@@ -47,7 +47,7 @@ public class EmailBundleIT extends BaseOsgiIT {
     @Override
     protected List<String> getImports() {
         return asList(
-                "org.springframework.mail.javamail", "org.motechproject.event.listener"
+                "org.springframework.mail.javamail", "org.motechproject.event.listener", "org.motechproject.security.model"
         );
     }
 

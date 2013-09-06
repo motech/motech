@@ -7,8 +7,11 @@
         return $resource('../email/send');
     });
 
+    angular.module('emailAuditService', ['ngResource']).factory('EmailAuditService', function($resource) {
+        return $resource('../email/emails');
+    });
+
     angular.module('settingsService', ['ngResource']).factory('SettingsService', function($resource) {
         return $resource('../email/settings');
     });
-
 }());

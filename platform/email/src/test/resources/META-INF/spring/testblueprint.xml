@@ -8,5 +8,6 @@
 
     <osgi:reference id="emailSenderService"  interface="org.motechproject.email.service.EmailSenderService"/>
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
+    <osgi:reference id="emailAuditService"  interface="org.motechproject.email.service.EmailAuditService"/>
 
 </beans>

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.email.model.Mail;
+import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailSenderService;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -15,6 +16,9 @@ public class EmailSenderServiceTest {
 
     @InjectMocks
     private EmailSenderService emailSender = new EmailSenderServiceImpl();
+
+    @Mock
+    private EmailAuditService emailAuditService;
 
     @Mock
     private JavaMailSender javaMailSender;
