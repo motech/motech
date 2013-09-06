@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationEmail.xml"})
-public class AllEmailRecordsTest {
+public class AllEmailRecordsIT {
 
     @Autowired
     private AllEmailRecords allEmailRecords;
