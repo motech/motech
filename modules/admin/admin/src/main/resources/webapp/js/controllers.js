@@ -473,6 +473,31 @@
                     $scope.graphiteUrl = "http://" + $scope.graphiteUrl;
                 }
             });
+
+        $scope.statsdAgentConfig = {
+            serverPort : "",
+            serverHost : "",
+            generateHostBasedStats : false
+        };
+
+        $http({method:'GET', url:'../admin/api/metrics'}).
+                success(
+                function(data) {
+                    $scope.statsdAgentConfig = data;
+                });
+
+        $scope.saveStatsdAgentConfig = function() {
+            $http.post('../admin/api/metrics/save', $scope.statsdAgentConfig).
+                success(alertHandler('admin.settings.saved', 'admin.success')).
+                error(function(response) {
+                var msg = 'admin.error',
+                responseData = (typeof(response) === 'string') ? response : response.data;
+                if (typeof(responseData) === 'string') {
+                            msg = responseData;
+                }
+                motechAlert(msg, 'admin.error');
+                });
+            };
     });
 
     adminModule.controller('ServerLogCtrl', function($scope, $http) {
