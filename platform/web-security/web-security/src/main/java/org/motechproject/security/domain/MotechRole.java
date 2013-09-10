@@ -8,7 +8,11 @@ public interface MotechRole {
 
     List<String> getPermissionNames();
 
+    boolean isDeletable();
+
     void setRoleName(String roleName);
 
     void setPermissionNames(List<String> perrmissionNames);
+
+    void setDeletable(boolean deletable);
 }

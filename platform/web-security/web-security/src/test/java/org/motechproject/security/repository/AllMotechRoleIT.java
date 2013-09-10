@@ -26,7 +26,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void findByUserName() {
-        allMotechRoles.add(new MotechRoleCouchdbImpl("testRole", asList("per1", "per2")));
+        allMotechRoles.add(new MotechRoleCouchdbImpl("testRole", asList("per1", "per2"), false));
         MotechRole testRole = allMotechRoles.findByRoleName("testRole");
         assertEquals("testRole", testRole.getRoleName());
     }
@@ -34,8 +34,8 @@ public class AllMotechRoleIT {
     @Test
     public void shouldNotCreateNewRoleIfRoleAlreadyExists() {
         String roleName = "sameRole";
-        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per1", "per2")));
-        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per3", "per4")));
+        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per1", "per2"), false));
+        allMotechRoles.add(new MotechRoleCouchdbImpl(roleName, asList("per3", "per4"), false));
 
         MotechRole motechRole = allMotechRoles.findByRoleName(roleName);
         final List<MotechRoleCouchdbImpl> allRoles = ((AllMotechRolesCouchdbImpl) allMotechRoles).getAll();
@@ -47,7 +47,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void editRole() {
-        MotechRole motechRoleBeforeEdit = new MotechRoleCouchdbImpl("roleBeforeEdit", asList("per1", "per2"));
+        MotechRole motechRoleBeforeEdit = new MotechRoleCouchdbImpl("roleBeforeEdit", asList("per1", "per2"), false);
         allMotechRoles.add(motechRoleBeforeEdit);
         MotechRole motechRoleAfterEdit = allMotechRoles.findByRoleName("roleBeforeEdit");
         motechRoleAfterEdit.setRoleName("roleAfterEdit");
@@ -58,7 +58,7 @@ public class AllMotechRoleIT {
 
     @Test
     public void removeRole() {
-        MotechRole motechRoleToRemove = new MotechRoleCouchdbImpl("roleToRemove", asList("per1", "per2"));
+        MotechRole motechRoleToRemove = new MotechRoleCouchdbImpl("roleToRemove", asList("per1", "per2"), false);
         allMotechRoles.add(motechRoleToRemove);
         assertEquals("roleToRemove", allMotechRoles.findByRoleName("roleToRemove").getRoleName());
         allMotechRoles.remove(motechRoleToRemove);

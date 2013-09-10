@@ -186,7 +186,8 @@
            $scope.role = {
                 roleName : '',
                 originalRoleName:'',
-                permissionNames : []
+                permissionNames : [],
+                deletable : false
            };
            $scope.addRoleView=true;
            $scope.pwdNameValidate=true;
@@ -233,7 +234,8 @@
 
             $scope.saveRole = function() {
                 if ($scope.addOrEdit==="add") {
-                   $http.post('../websecurity/api/roles/create', $scope.role).
+                    $scope.role.deletable = true;
+                    $http.post('../websecurity/api/roles/create', $scope.role).
                        success(function() {
                        motechAlert('security.create.role.saved', 'security.create');
                        $scope.roleList=Roles.query();
@@ -241,7 +243,7 @@
                        }).
                        error(function(){motechAlert('security.create.role.error', 'server.error');});
                 } else {
-                   $http.post('../websecurity/api/roles/update', $scope.role).
+                    $http.post('../websecurity/api/roles/update', $scope.role).
                        success(function() {
                        motechAlert('security.update.role.saved', 'security.update');
                        $scope.roleList=Roles.query();
@@ -259,20 +261,26 @@
                        $scope.role.originalRoleName=role.roleName;
                 });
                 $scope.addRoleView=!$scope.addRoleView;
-
+                $scope.deleteR = false;
             };
 
             $scope.deleteRole = function() {
-                $http.post('../websecurity/api/users/delete', $scope.role).
-                    success(function(){motechAlert('security.delete.role.saved', 'security.delete');}).
-                    error(function(){motechAlert('security.delete.role.error', 'server.error');});
+                $http.post('../websecurity/api/roles/delete', $scope.role).
+                success(function(){
+                    motechAlert('security.delete.role.saved', 'security.deleted');
+                    $scope.addRoleView=!$scope.addRoleView;
+                    $scope.roleList = Roles.query();
+                }).error(function(response){
+                    handleResponse('server.error', 'security.delete.role.error', response);
+                });
             };
 
             $scope.addRole = function() {
                 $scope.role = {
                         roleName : '',
                         originalRoleName:'',
-                        permissionNames : []
+                        permissionNames : [],
+                        deletable : false
                 };
                 $scope.addOrEdit = "add";
                 $scope.addRoleView=!$scope.addRoleView;

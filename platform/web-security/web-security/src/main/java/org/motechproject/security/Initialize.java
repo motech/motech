@@ -60,7 +60,7 @@ public class Initialize {
         MotechPermission viewDetailedLogs = new MotechPermissionCouchdbImpl("viewDetailedEmailLogs", EMAIL);
 
         //initialize startup role
-        MotechRole userAdmin = new MotechRoleCouchdbImpl(USER_ADMIN, Arrays.asList(addUserPermission.getPermissionName(), editUserPermission.getPermissionName(), deleteUserPermission.getPermissionName(), manageUserPermission.getPermissionName(), activeUserPermission.getPermissionName(), manageRolePermission.getPermissionName()));
+        MotechRole userAdmin = new MotechRoleCouchdbImpl(USER_ADMIN, Arrays.asList(addUserPermission.getPermissionName(), editUserPermission.getPermissionName(), deleteUserPermission.getPermissionName(), manageUserPermission.getPermissionName(), activeUserPermission.getPermissionName(), manageRolePermission.getPermissionName()), false);
 
         //add created permissions
         allMotechPermissions.add(addUserPermission);

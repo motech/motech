@@ -1,6 +1,7 @@
 [
     {
         "roleName":"Test Role",
-        "permissionNames": ["perm1", "perm2"]
+        "permissionNames": ["perm1", "perm2"],
+        "deletable": false
     }
 ]

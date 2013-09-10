@@ -41,7 +41,7 @@ public class SecurityRoleLoaderTest {
 
     @Test
     public void shouldUpdateExistingRoles() throws IOException {
-        when(roleService.getRole("Test Role")).thenReturn(new RoleDto("Test Role", Collections.<String>emptyList()));
+        when(roleService.getRole("Test Role")).thenReturn(new RoleDto("Test Role", Collections.<String>emptyList(), false));
         when(applicationContext.getResource("roles.json")).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(getClass().getClassLoader().getResourceAsStream("roles.json"));

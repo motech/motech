@@ -42,7 +42,7 @@ public class MotechAuthenticationProviderTest {
     @Test
     public void shouldRetrieveUserFromDatabase() {
         MotechUser motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", "", asList("some_role"), "", Locale.ENGLISH);
-        MotechRole motechRole = new MotechRoleCouchdbImpl("some_role", asList("some_permission"));
+        MotechRole motechRole = new MotechRoleCouchdbImpl("some_role", asList("some_permission"), false);
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
         when(allMotechRoles.findByRoleName("some_role")).thenReturn(motechRole);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "password");
