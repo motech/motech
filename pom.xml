@@ -1024,6 +1024,7 @@
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
+        <module>utils/pmd-rules</module>
 
         <!-- OSGI modules -->
         <module>platform/commons-api</module>
@@ -1195,6 +1196,13 @@
                     <targetJdk>${jdk.version}</targetJdk>
                     <skip>${pmd.skip}</skip>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.motechproject</groupId>
+                        <artifactId>pmd-rules</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <phase>compile</phase>
