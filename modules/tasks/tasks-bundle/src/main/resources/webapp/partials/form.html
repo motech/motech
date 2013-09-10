@@ -102,30 +102,31 @@
                                                     <div class="form-inline">
                                                         <div class="control-group">
                                                             <span class="validation-area">
-                                                                <div class="btn-group">
-                                                                    <a class="btn dropdown-toggle dropdown-large-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.key}">
-                                                                        <span ng-show="filter.key && filter.displayName">{{filter.displayName}}</span>
-                                                                        <span ng-hide="filter.key && filter.displayName">{{msg('task.info.filter.select')}}</span>
-                                                                        <span class="caret"></span>
-                                                                    </a>
-                                                                    <ul class="dropdown-menu">
-                                                                        <li class="dropdown-submenu">
-                                                                            <a tabindex="-1">{{msg('task.header.trigger')}}</a>
-                                                                            <ul class="dropdown-menu">
-                                                                                <li ng-repeat="option in selectedTrigger.eventParameters">
-                                                                                    <a ng-click="selectParam(filter, 'trigger', option)">{{msg(option.displayName)}}</a>
-                                                                                </li>
-                                                                            </ul>
-                                                                        </li>
-                                                                        <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in getDataSources() | orderLessThan:step.order">
-                                                                            <a tabindex="-1">{{msg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
-                                                                            <ul class="dropdown-menu">
-                                                                                <li ng-repeat="field in findObject(ds.providerId, ds.type).fields">
-                                                                                    <a ng-click="selectParam(filter, 'ad', ds, field)">{{msg(field.displayName)}}</a>
-                                                                                </li>
-                                                                            </ul>
-                                                                        </li>
-                                                                    </ul>
+                                                                <div class="input-append">
+                                                                    <input ng-trigger="selectParam(filter, 'trigger', option)" name="autocomplete" type="text" id="appendedDropdownButton" ng-model="filter.displayName"/>
+                                                                    <div class="btn-group">
+                                                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                                                            <span class="caret"></span>
+                                                                        </button>
+                                                                        <ul class="dropdown-menu">
+                                                                            <li class="dropdown-submenu">
+                                                                                <a tabindex="-1">{{msg('task.header.trigger')}}</a>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li ng-repeat="option in selectedTrigger.eventParameters">
+                                                                                        <a ng-click="selectParam(filter, 'trigger', option)">{{msg(option.displayName)}}</a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </li>
+                                                                            <li ng-show="ds.displayName != undefined" class="dropdown-submenu" ng-repeat="ds in task.taskConfig.steps">
+                                                                                <a tabindex="-1">{{msg(ds.displayName)}}#{{ds.objectId}} ({{msg(ds.providerName)}})</a>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li ng-repeat="field in findObject(ds.providerId, ds.type).fields">
+                                                                                        <a ng-click="selectParam(filter, 'ad', ds, field)">{{msg(field.displayName)}}</a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
                                                             </span>
                                                             <span class="validation-area">
@@ -149,7 +150,7 @@
                                                                         <span class="caret"></span>
                                                                     </a>
                                                                     <ul class="dropdown-menu" ng-hide="filter.negationOperator == undefined">
-                                                                        <li class="dropdown-submenu" ng-repeat="(key, value) in util.getFilterOperators()">
+                                                                        <li class="dropdown-submenu" ng-repeat="(key, value) in util.FILTER_OPERATORS">
                                                                             <a tabindex="-1">{{msg(key)}}</a>
                                                                             <ul class="dropdown-menu">
                                                                                 <li ng-repeat="operator in value.options">
@@ -169,6 +170,7 @@
                                                 </div>
                                             </div>
                                             <div class="control-group">
+                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                                                 <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
                                                 <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
                                             </div>
@@ -273,6 +275,24 @@
                                                 <div class="btn-group">
                                                     <input type="checkbox" ng-model="step.failIfDataNotFound"/>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div ui-if="step.lookup.field">
+                                            <div class="control-group" ng-class="{error: actionCssClass(step.lookup)}" class="control-group form-inline clearfix">
+                                                <label class="control-label">{{msg(step.lookup.field)}}</label>
+
+                                                <!------------------------ Chrome & IE ------------------------>
+                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                                    <editable-content data="step.lookup" index="$index" type="UNICODE"></editable-content>
+                                                </div>
+
+                                                <!------------------------ Other browsers  ------------------------>
+                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
+                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <a href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                                             </div>
                                         </div>
                                         <div class="control-group margin-before3 control-section" ng-hide="step.displayName == undefined">
@@ -415,7 +435,8 @@
                                         </div>
 
                                         <!------------------------ Help button  ------------------------>
-                                        <a ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" href="#helpModalDate" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help')}}</a>
+                                        <a ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" href="#helpModalDate" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.modifications')}}</a>
+                                        <a href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -423,6 +444,8 @@
                     </div>
                     <!------------------------ Help Manipulation  ------------------------>
                     <div ng-include="'../tasks/partials/help/manipulation.html'"></div>
+                    <div ng-include="'../tasks/partials/help/customFieldSyntax.html'"></div>
+                    <div ng-include="'../tasks/partials/help/customFieldSyntaxWithBrackets.html'"></div>
 
                     <!------------------------ SAVE ------------------------>
                     <div class="control-group inside">
