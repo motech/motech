@@ -44,6 +44,11 @@ public class ImportExportResolver {
         bundleInfo.setBundleImports(imports);
     }
 
+    public void refreshPackage(Bundle bundle) {
+        Bundle[] bundles = {bundle};
+        packageAdmin.refreshPackages(bundles);
+    }
+
     private boolean isImportedByBundle(ExportedPackage exportedPackage, Bundle bundle) {
         Bundle[] importingBundles = exportedPackage.getImportingBundles();
         return ArrayUtils.contains(importingBundles, bundle);
