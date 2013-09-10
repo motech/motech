@@ -25,6 +25,14 @@
     <dependencies>
         <!-- MOTECH dependencies -->
         <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>org.motechproject.org.apache.activemq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-startup</artifactId>
             <version>${project.version}</version>
@@ -336,4 +344,37 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>drop DB =&gt; motech-alert</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

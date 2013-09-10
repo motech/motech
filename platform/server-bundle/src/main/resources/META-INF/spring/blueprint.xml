@@ -2,12 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-
-
-       http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
     <import resource="classpath*:META-INF/motech/*.xml"/>
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.server.startup"/>
+
+    <bean id="startupManager" class="org.motechproject.server.startup.StartupManager" factory-method="getInstance"/>
+
+    <bean id="settingsDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-platform-startup"/>
+    </bean>
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="server-bundle"/>

@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.startup.StartupManager;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.Errors;
 import org.motechproject.server.web.form.StartupForm;
