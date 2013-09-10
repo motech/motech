@@ -733,6 +733,14 @@
         };
     });
 
+    widgetModule.directive('ngTrigger', function (ManageTaskUtils, $compile) {
+        return function(scope, elem, attrs) {
+            elem.bind("focusout keyup", function(event) {
+                    scope.$apply(attrs.ngTrigger);
+            });
+        };
+    });
+
     widgetModule.directive('selectEvent', function() {
         return function(scope, element, attrs) {
             $(element).click(function (event) {

@@ -15,7 +15,6 @@ import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
 
 import java.util.HashSet;
 import java.util.List;
@@ -60,15 +59,7 @@ public final class TaskValidator extends GeneralValidator {
         TaskEventInformation triggerInformation = task.getTrigger();
         boolean exists = channel.containsTrigger(triggerInformation);
 
-        if (exists) {
-            TriggerEvent triggerEvent = channel.getTrigger(triggerInformation);
-
-            for (TaskActionInformation action : task.getActions()) {
-                errors.addAll(validateActionValues(action.getValues(), triggerEvent));
-            }
-
-            errors.addAll(validateFiltersForTrigger(task, triggerEvent));
-        } else {
+        if (!exists) {
             errors.add(new TaskError(
                     "task.validation.error.triggerNotExist",
                     triggerInformation.getDisplayName(),
@@ -110,54 +101,16 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateFiltersForTrigger(Task task, TriggerEvent triggerEvent) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (FilterSet filterSet : task.getTaskConfig().getFilters()) {
-            for (Filter filter : filterSet.getFilters()) {
-                KeyInformation key = parse(filter.getKey());
-
-                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
-                    errors.add(new TaskError(
-                            "task.validation.error.triggerFieldNotExist",
-                            key.getKey(),
-                            triggerEvent.getDisplayName()
-                    ));
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
-                                                       TriggerEvent triggerEvent) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (String input : actionValues.values()) {
-            for (KeyInformation key : KeyInformation.parseAll(input)) {
-                if (key.fromTrigger() && !triggerEvent.containsParameter(key.getKey())) {
-                    errors.add(new TaskError(
-                            "task.validation.error.triggerFieldNotExist",
-                            key.getKey(),
-                            triggerEvent.getDisplayName()
-                    ));
-                }
-            }
-        }
-
-        return errors;
-    }
-
     private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
                                                        ActionEvent actionEvent) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (String inputKey : actionValues.keySet()) {
-            if (!actionEvent.containsParameter(inputKey)) {
+        for (Map.Entry<String, String> input : actionValues.entrySet()) {
+            KeyInformation.parseAll(input.getValue());
+            if (!actionEvent.containsParameter(input.getKey())) {
                 errors.add(new TaskError(
                         "task.validation.error.actionInputFieldNotExist",
-                        inputKey,
+                        input.getKey(),
                         actionEvent.getDisplayName()
                 ));
             }

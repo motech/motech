@@ -7,6 +7,40 @@
         return {
             TRIGGER_PREFIX: 'trigger',
             DATA_SOURCE_PREFIX: 'ad',
+            FILTER_OPERATORS: {
+                    'task.string': {
+                        'type': 'UNICODE',
+                        'options': [
+                            'task.exist',
+                            'task.equals',
+                            'task.contains',
+                            'task.startsWith',
+                            'task.endsWith'
+                        ]
+                    },
+                    'task.number': {
+                        'type': 'DOUBLE',
+                        'options': [
+                            'task.exist',
+                            'task.equal',
+                            'task.gt',
+                            'task.lt'
+                        ]
+                    },
+                    'task.date': {
+                        'type': 'DATE',
+                        'options': [
+                            'task.exist',
+                            'task.equals',
+                            'task.after',
+                            'task.afterNow',
+                            'task.before',
+                            'task.beforeNow',
+                            'task.lessDaysFromNow',
+                            'task.moreDaysFromNow'
+                        ]
+                    }
+                },
             find: function (data) {
                 var where = (data && data.where) || [],
                     unique = (data && data.unique === false) ? false : true,
@@ -261,47 +295,15 @@
             createErrorMessage: function (scope, response) {
                 var msg = scope.msg('task.error.saved') + '\n';
 
-                angular.forEach(response, function (r) {
-                    msg += ' - ' + scope.msg(r.message, r.args) + '\n';
-                });
+                if(jQuery.type(response) === "array") {
+                    angular.forEach(response, function (r) {
+                        msg += ' - ' + scope.msg(r.message, r.args) + '\n';
+                    });
+                } else {
+                   msg += ' - ' + response + '\n';
+                }
 
                 return msg;
-            },
-            getFilterOperators: function () {
-                return {
-                    'task.string': {
-                        'type': 'UNICODE',
-                        'options': [
-                            'task.exist',
-                            'task.equals',
-                            'task.contains',
-                            'task.startsWith',
-                            'task.endsWith'
-                        ]
-                    },
-                    'task.number': {
-                        'type': 'DOUBLE',
-                        'options': [
-                            'task.exist',
-                            'task.equal',
-                            'task.gt',
-                            'task.lt'
-                        ]
-                    },
-                    'task.date': {
-                        'type': 'DATE',
-                        'options': [
-                            'task.exist',
-                            'task.equals',
-                            'task.after',
-                            'task.afterNow',
-                            'task.before',
-                            'task.beforeNow',
-                            'task.lessDaysFromNow',
-                            'task.moreDaysFromNow'
-                        ]
-                    }
-                };
             },
             convertToView: function (scope, type, value) {
                 var regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
@@ -345,7 +347,7 @@
             },
             convertToServer: function (scope, value) {
                 var val = value || '',
-                    regex = new RegExp('\\{\\{ad\\.(.+?)(\\..*?)\\}\\}', "g"),
+                    regex = new RegExp('\\{\\{ad\\.(.+?(\\.name)?)(\\..*?)\\}\\}', "g"),
                     replaced = [],
                     found,
                     ds;
@@ -354,7 +356,7 @@
                     val = scope.refactorDivEditable(val);
                 }
 
-                while ((found = regex.exec(val)) !== null) {
+                while ( (found = regex.exec(val)) !== null )  {
                     ds = this.find({
                         msg: scope.msg,
                         where: scope.task.taskConfig.steps,
@@ -372,8 +374,8 @@
                     }
 
                     replaced.push({
-                        find: '{{ad.{0}{1}}}'.format(found[1], found[2]),
-                        value: '{{ad.{0}{1}}}'.format(ds.providerId, found[2])
+                        find: '{{ad.{0}{1}}}'.format(found[1], found[3]),
+                        value: '{{ad.{0}{1}}}'.format(ds.providerId, found[3])
                     });
                 }
 

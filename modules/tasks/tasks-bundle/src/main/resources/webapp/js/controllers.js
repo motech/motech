@@ -410,16 +410,100 @@
         };
 
         $scope.selectParam = function (filter, type, select, field) {
+            var text, splitted, empty;
+
+            filter.negationOperator = filter.operator = filter.expression = empty;
+
+            if (filter.displayName) {
+                text = filter.displayName;
+                splitted = text.split('.');
+                text = "";
+            }
+
+            if (!select) {
+                if (splitted) {
+                    type = splitted[0];
+                } else {
+                    type = empty;
+                }
+
+                if (type === $scope.util.TRIGGER_PREFIX && splitted.length >= 2 && splitted[1] !== '' && splitted[splitted.length - 1] !== '') {
+                    if (splitted.length > 2) {
+                        splitted.shift();
+
+                        text = splitted[0];
+                        splitted.shift();
+
+                        angular.forEach(splitted, function(key) {
+                            text = text + '.' + key;
+                        });
+                    } else {
+                        text = splitted[1];
+                    }
+
+                    select = {
+                        'eventKey' : text
+                    };
+                } else if (type === $scope.util.DATA_SOURCE_PREFIX && splitted.length === 5 && splitted[4] !== '') {
+                    text = splitted[3].split('#');
+                    select = $scope.util.find({
+                        msg: $scope.msg,
+                        where: $scope.task.taskConfig.steps,
+                        by: [{
+                            what: '@type',
+                            equalTo: 'DataSource'
+                        }, {
+                            what: 'providerName',
+                            equalTo: splitted[1] + '.' + splitted[2]
+                        }, {
+                            what: 'type',
+                            equalTo: text[0]
+                        }]
+                    });
+
+                    if (select) {
+                        text = $scope.findObject(select.providerId, text[0]);
+                        text = $scope.util.find({
+                            msg: $scope.msg,
+                            where: text.fields,
+                            by: [{
+                                what: 'fieldKey',
+                                equalTo : splitted[4]
+                            }]
+                        });
+
+                        if (!text) {
+                            select = empty;
+                        }
+                    }
+
+                    field = {
+                        'fieldKey' : splitted[4],
+                        'fieldType' : type
+                    };
+                }
+
+                if (!select) {
+                    type = empty;
+                }
+            }
+
             switch(type) {
             case $scope.util.TRIGGER_PREFIX:
                 filter.key = "{0}.{1}".format($scope.util.TRIGGER_PREFIX, select.eventKey);
-                filter.displayName = "{0} ({1})".format($scope.msg(select.displayName), $scope.msg('task.header.trigger'));
+                filter.displayName = filter.key;
+                filter.type = select.type;
                 break;
             case $scope.util.DATA_SOURCE_PREFIX:
                 filter.key = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerId, select.type, select.objectId, field.fieldKey);
-                filter.displayName = "{0} ({1}#{2} ({3}))".format($scope.msg(field.displayName), $scope.msg(select.displayName), select.objectId, $scope.msg(select.providerName));
+                filter.displayName = "{0}.{1}.{2}#{3}.{4}".format($scope.util.DATA_SOURCE_PREFIX, select.providerName, select.type, select.objectId, field.fieldKey);
+                filter.type = field.type;
                 break;
+            default:
+                filter.key = empty;
             }
+
+
         };
 
         $scope.addDataSource = function () {
@@ -434,6 +518,10 @@
                 objectId: (last && last.objectId + 1) || 0,
                 order: (lastStep && lastStep.order + 1) || 0
             });
+
+            if (!$scope.$$phase) {
+                $scope.$apply($scope.task);
+            }
         };
 
         $scope.removeData = function (dataSource) {
@@ -544,6 +632,7 @@
 
                 switch (prefix) {
                 case $scope.util.TRIGGER_PREFIX:
+                    key = span.text().replace(/[\[\]']+/g,''); // for non-typed events (span.text() returns then something like "[myField]")
                     for (i = 0; i < $scope.selectedTrigger.eventParameters.length; i += 1) {
                         if ($scope.msg($scope.selectedTrigger.eventParameters[i].displayName) === $(this).text()) {
                             key = $scope.selectedTrigger.eventParameters[i].eventKey;
@@ -789,7 +878,7 @@
                     delete $scope.task.enabled;
 
                     unblockUI();
-                    jAlert($scope.util.createErrorMessage($scope, data), 'task.header.error');
+                    jAlert($scope.util.createErrorMessage($scope, data), $scope.msg('task.header.error'));
                 };
 
             $scope.task.enabled = enabled;
