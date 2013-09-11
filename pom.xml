@@ -1036,7 +1036,6 @@
         <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/server-config</module>
-        <module>platform/server-startup</module>
         <module>platform/web-security/web-security-bundle</module>
         <module>platform/email</module>
         <module>modules/admin/admin</module>
