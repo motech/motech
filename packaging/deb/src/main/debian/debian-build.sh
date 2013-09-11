@@ -60,7 +60,7 @@ echo "====================="
 
 if [ ! -f $MOTECH_WAR ]; then
     echo $MOTECH_WAR does not exist
-    exit 1
+    exit 2
 fi
 
 # Create a temp dir for package building
@@ -117,6 +117,7 @@ chmod 755 ./motech-base/DEBIAN/prerm
 chmod 755 ./motech-base/DEBIAN/postrm
 chmod 755 ./motech-base/DEBIAN/control
 chmod 755 ./motech-base/etc/init.d/motech
+chmod 755 ./motech-base/usr/share/motech/motech-manage-tenants
 
 # Build package
 echo "Building package"

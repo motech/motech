@@ -42,7 +42,7 @@ BASE_PACKAGE=`ls $BUILD_DIR | grep motech-base`
 
 if [ ! -f $BUILD_DIR/$BASE_PACKAGE ]; then
     echo "Base package does not exist: $BASE_PACKAGE" > $ERROR_LOG
-    exit 1
+    exit 2
 fi
 
 MAKEROOT=""
@@ -75,7 +75,7 @@ for dir in $MOTECH_OWNED; do
     if [ `$CHROOT stat -c %U /var/lib/motech/motech-default` != "motech-default" ]; then
         echo "$dir is not owned by motech-default" > $ERROR_LOG
         purge_motech
-        exit 1
+        exit 3
     fi
 done
 

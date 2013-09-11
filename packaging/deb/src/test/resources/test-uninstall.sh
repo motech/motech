@@ -62,7 +62,7 @@ for dir in $MOTECH_OWNED" "$NON_MOTECH_OWNED; do
     if [ $RET -eq 0 ]; then
         echo "$dir still exists after uninstall" > $ERROR_LOG
         purge_motech
-        exit 1
+        exit 2
     fi
 done
 

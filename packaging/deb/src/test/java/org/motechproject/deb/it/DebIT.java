@@ -37,7 +37,7 @@ public class DebIT extends BasePkgTest {
         if (retVal != 0) {
             LOG.error("Error log: " + readErrors());
         }
-        assertEquals("Non-zero exit code returned", 0, retVal);
+        assertEquals("Install: Non-zero exit code returned", 0, retVal);
     }
 
     private void testLoginAndMainPage() throws InterruptedException, IOException {
@@ -64,7 +64,7 @@ public class DebIT extends BasePkgTest {
         if (retVal != 0) {
             LOG.error("Error log: " + readErrors());
         }
-        assertEquals("Non-zero exit code returned", 0, retVal);
+        assertEquals("Uninstall: Non-zero exit code returned", 0, retVal);
     }
 
     private void login() throws InterruptedException, IOException {
