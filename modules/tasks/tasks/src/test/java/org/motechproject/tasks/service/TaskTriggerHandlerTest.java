@@ -16,17 +16,7 @@ import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.tasks.domain.ActionEvent;
-import org.motechproject.tasks.domain.ActionParameter;
-import org.motechproject.tasks.domain.DataSource;
-import org.motechproject.tasks.domain.EventParameter;
-import org.motechproject.tasks.domain.Filter;
-import org.motechproject.tasks.domain.FilterSet;
-import org.motechproject.tasks.domain.Task;
-import org.motechproject.tasks.domain.TaskActionInformation;
-import org.motechproject.tasks.domain.TaskActivity;
-import org.motechproject.tasks.domain.TaskEventInformation;
-import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.*;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskHandlerException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -34,56 +24,24 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.tasks.domain.OperatorType.CONTAINS;
-import static org.motechproject.tasks.domain.OperatorType.ENDSWITH;
-import static org.motechproject.tasks.domain.OperatorType.EQUALS;
-import static org.motechproject.tasks.domain.OperatorType.EXIST;
-import static org.motechproject.tasks.domain.OperatorType.GT;
-import static org.motechproject.tasks.domain.OperatorType.LT;
-import static org.motechproject.tasks.domain.OperatorType.STARTSWITH;
-import static org.motechproject.tasks.domain.ParameterType.BOOLEAN;
-import static org.motechproject.tasks.domain.ParameterType.DATE;
-import static org.motechproject.tasks.domain.ParameterType.DOUBLE;
-import static org.motechproject.tasks.domain.ParameterType.INTEGER;
-import static org.motechproject.tasks.domain.ParameterType.LIST;
-import static org.motechproject.tasks.domain.ParameterType.LONG;
-import static org.motechproject.tasks.domain.ParameterType.MAP;
-import static org.motechproject.tasks.domain.ParameterType.TEXTAREA;
-import static org.motechproject.tasks.domain.ParameterType.TIME;
+import static org.motechproject.tasks.domain.OperatorType.*;
+import static org.motechproject.tasks.domain.ParameterType.*;
 import static org.motechproject.tasks.domain.TaskActivityType.ERROR;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerFailureSubject;
 import static org.motechproject.tasks.events.constants.EventSubjects.createHandlerSuccessSubject;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.DATA_SOURCE;
-import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
+import static org.motechproject.tasks.events.constants.TaskFailureCause.*;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -480,7 +438,7 @@ public class TaskTriggerHandlerTest {
         task.getActions().get(0).getValues().put("date1", "2012-12-21 21:21 +0100");
         actionEvent.addParameter(new ActionParameter("Date1", "date1", DATE), true);
         task.getActions().get(0).getValues().put("date2", "{{trigger.startDate?datetime(yyyyy.MMMMM.dd GGG hh:mm aaa)}}");
-        actionEvent.addParameter(new ActionParameter("Date2", "date2", DATE), true);
+        actionEvent.addParameter(new ActionParameter("Date2", "date2", UNICODE), true);
 
         handler.handle(createEvent());
 
@@ -554,6 +512,196 @@ public class TaskTriggerHandlerTest {
 
         assertFalse(task.isEnabled());
         assertEquals("task.error.templateNull", captor.getValue().getMessage());
+    }
+
+    @Test
+    public void shouldDisableTaskWhenActionDoesNotFindDataSource_WithFailIfDataNotFoundSelected() throws Exception {
+        Map<String, DataProvider> providers = new HashMap<>();
+        DataProvider provider = mock(DataProvider.class);
+        Map<String, String> lookup = new HashMap<>();
+        lookup.put("patientId", "123");
+        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        providers.put("providerId", provider);
+        handler.setDataProviders(providers);
+
+        TriggerEvent trigger = new TriggerEvent();
+        trigger.setSubject("trigger");
+        List<EventParameter> triggerEventParameters = new ArrayList<>();
+        triggerEventParameters.add(new EventParameter("patientId", "123"));
+        trigger.setEventParameters(triggerEventParameters);
+
+        ActionEvent action = new ActionEvent();
+        action.setSubject("action");
+        SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
+        actionEventParameters.add(new ActionParameter("Patient ID", "patientId", UNICODE, 0));
+        action.setActionParameters(actionEventParameters);
+
+        Task task = new Task();
+        task.setName("task");
+        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        Map<String, String> actionValues = new HashMap<>();
+        actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
+        task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
+        task.setId("taskId");
+
+        TaskConfig taskConfig = new TaskConfig();
+        task.setTaskConfig(taskConfig);
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+
+        List<Task> tasks = asList(task);
+
+        when(taskService.findTrigger("trigger")).thenReturn(trigger);
+        when(taskService.findTasksForTrigger(trigger)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(action);
+
+        setTaskActivities();
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+
+        Map<String, Object> param = new HashMap<>(4);
+        param.put("patientId", "123");
+        handler.handle(new MotechEvent("trigger", param));
+
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        verify(taskService).save(taskArgumentCaptor.capture());
+        Task actualTask = taskArgumentCaptor.getValue();
+        assertFalse(actualTask.isEnabled());
+    }
+
+    @Test
+    public void shouldNotDisableTaskWhenActionDoesNotFindDataSource_WithFailIfDataNotFoundNotSelected() throws Exception {
+        Map<String, DataProvider> providers = new HashMap<>();
+        DataProvider provider = mock(DataProvider.class);
+        Map<String, String> lookup = new HashMap<>();
+        lookup.put("patientId", "123");
+        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        providers.put("providerId", provider);
+        handler.setDataProviders(providers);
+
+        TriggerEvent trigger = new TriggerEvent();
+        trigger.setSubject("trigger");
+        List<EventParameter> triggerEventParameters = new ArrayList<>();
+        triggerEventParameters.add(new EventParameter("patientId", "123"));
+        trigger.setEventParameters(triggerEventParameters);
+
+        ActionEvent action = new ActionEvent();
+        action.setSubject("action");
+        SortedSet<ActionParameter> actionEventParameters = new TreeSet<>();
+        actionEventParameters.add(new ActionParameter("Patient ID", "patientId", UNICODE, 0));
+        action.setActionParameters(actionEventParameters);
+
+        Task task = new Task();
+        task.setName("task");
+        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        Map<String, String> actionValues = new HashMap<>();
+        actionValues.put("patientId", "{{ad.providerId.Patient#1.patientId}}");
+        task.addAction(new TaskActionInformation("Action", "channel", "module", "0.1", "action", actionValues));
+        task.setId("taskId");
+
+        TaskConfig taskConfig = new TaskConfig();
+        task.setTaskConfig(taskConfig);
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+
+        List<Task> tasks = asList(task);
+
+        when(taskService.findTrigger("trigger")).thenReturn(trigger);
+        when(taskService.findTasksForTrigger(trigger)).thenReturn(tasks);
+        when(taskService.getActionEventFor(task.getActions().get(0))).thenReturn(action);
+
+        setTaskActivities();
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+
+        Map<String, Object> param = new HashMap<>(4);
+        param.put("patientId", "123");
+        handler.handle(new MotechEvent("trigger", param));
+
+        verify(taskActivityService).addSuccess(task);
+    }
+
+    @Test
+    public void shouldDisableTaskWhenFilterDoesNotFindDataSource_WithFailIfDataNotFoundSelected() throws Exception {
+        Map<String, DataProvider> providers = new HashMap<>();
+        DataProvider provider = mock(DataProvider.class);
+        Map<String, String> lookup = new HashMap<>();
+        lookup.put("patientId", "123");
+        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        providers.put("providerId", provider);
+        handler.setDataProviders(providers);
+
+        TriggerEvent trigger = new TriggerEvent();
+        trigger.setSubject("trigger");
+        List<EventParameter> triggerEventParameters = new ArrayList<>();
+        triggerEventParameters.add(new EventParameter("patientId", "123"));
+        trigger.setEventParameters(triggerEventParameters);
+
+        Task task = new Task();
+        task.setName("task");
+        task.setId("taskId");
+        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setActions(Collections.EMPTY_LIST);
+
+        TaskConfig taskConfig = new TaskConfig();
+        task.setTaskConfig(taskConfig);
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), true));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+
+        List<Task> tasks = asList(task);
+
+        when(taskService.findTrigger("trigger")).thenReturn(trigger);
+        when(taskService.findTasksForTrigger(trigger)).thenReturn(tasks);
+
+        setTaskActivities();
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+
+        Map<String, Object> param = new HashMap<>(4);
+        param.put("patientId", "123");
+        handler.handle(new MotechEvent("trigger", param));
+
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        verify(taskService).save(taskArgumentCaptor.capture());
+        Task actualTask = taskArgumentCaptor.getValue();
+        assertFalse(actualTask.isEnabled());
+    }
+
+    @Test
+    public void shouldNotDisableTaskWhenFilterDoesNotFindDataSource_WithFailIfDataNotFoundNotSelected() throws Exception {
+        Map<String, DataProvider> providers = new HashMap<>();
+        DataProvider provider = mock(DataProvider.class);
+        Map<String, String> lookup = new HashMap<>();
+        lookup.put("patientId", "123");
+        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        providers.put("providerId", provider);
+        handler.setDataProviders(providers);
+
+        TriggerEvent trigger = new TriggerEvent();
+        trigger.setSubject("trigger");
+        List<EventParameter> triggerEventParameters = new ArrayList<>();
+        triggerEventParameters.add(new EventParameter("patientId", "123"));
+        trigger.setEventParameters(triggerEventParameters);
+
+        Task task = new Task();
+        task.setName("task");
+        task.setId("taskId");
+        task.setTrigger(new TaskEventInformation("Trigger", "channel", "module", "0.1", "trigger"));
+        task.setActions(Collections.EMPTY_LIST);
+
+        TaskConfig taskConfig = new TaskConfig();
+        task.setTaskConfig(taskConfig);
+        taskConfig.add(new DataSource("providerId", 1L, "Patient", "provider", Arrays.asList(new DataSource.Lookup("patientId", "trigger.patientId")), false));
+        taskConfig.add(new FilterSet(asList(new Filter("Patient ID", "ad.providerId.Patient#1.patientId", INTEGER, false, EXIST.getValue(), ""))));
+
+        List<Task> tasks = asList(task);
+
+        when(taskService.findTrigger("trigger")).thenReturn(trigger);
+        when(taskService.findTasksForTrigger(trigger)).thenReturn(tasks);
+
+        setTaskActivities();
+        when(taskActivityService.errorsFromLastRun(task)).thenReturn(taskActivities);
+
+        Map<String, Object> param = new HashMap<>(4);
+        param.put("patientId", "123");
+        handler.handle(new MotechEvent("trigger", param));
+
+        verify(taskActivityService).addSuccess(task);
     }
 
     @Test

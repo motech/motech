@@ -6,6 +6,9 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Represents an action event configured with a {@link Task}
+ */
 public class TaskActionInformation extends TaskEventInformation {
     private static final long serialVersionUID = -132464255615128442L;
 

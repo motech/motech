@@ -60,7 +60,7 @@ public class TaskTriggerHandler implements TriggerHandler {
     private SettingsFacade settings;
     private Map<String, DataProvider> dataProviders;
 
-    private TaskExecutor executor;
+    private TaskActionExecutor executor;
 
     @Autowired
     public TaskTriggerHandler(TaskService taskService, TaskActivityService activityService,
@@ -72,7 +72,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         this.eventRelay = eventRelay;
         this.settings = settings;
 
-        this.executor = new TaskExecutor(taskService, activityService, eventRelay);
+        this.executor = new TaskActionExecutor(taskService, activityService, eventRelay);
 
         for (Task task : taskService.getAllTasks()) {
             registerHandlerFor(task.getTrigger().getSubject());
@@ -84,7 +84,7 @@ public class TaskTriggerHandler implements TriggerHandler {
         String serviceName = "taskTriggerHandler";
         Method method = ReflectionUtils.findMethod(this.getClass(), "handle", MotechEvent.class);
         Object obj = CollectionUtils.find(
-                registryService.getListeners(subject), withServiceName(serviceName)
+            registryService.getListeners(subject), withServiceName(serviceName)
         );
 
         try {
@@ -96,8 +96,8 @@ public class TaskTriggerHandler implements TriggerHandler {
             }
         } catch (Exception exp) {
             LOG.error(
-                    String.format("%s can not listen on subject %s due to:", serviceName, subject),
-                    exp
+                String.format("%s can not listen on subject %s due to:", serviceName, subject),
+                exp
             );
         }
     }
@@ -109,22 +109,20 @@ public class TaskTriggerHandler implements TriggerHandler {
 
         CollectionUtils.filter(tasks, activeTasks());
         for (Task task : tasks) {
-            TaskInitializer initializer = new TaskInitializer(task, event, activityService);
+            TaskContext taskContext = new TaskContext(task, event, activityService);
+            TaskInitializer initializer = new TaskInitializer(taskContext);
 
             try {
                 if (initializer.evalConfigSteps(dataProviders)) {
                     for (TaskActionInformation action : task.getActions()) {
-                        executor.execute(initializer, action);
+                        executor.execute(task, action, taskContext);
                     }
-
                     handleSuccess(event, task);
                 }
             } catch (TaskHandlerException e) {
                 handleError(event, task, e);
             } catch (Exception e) {
-                handleError(event, task,
-                        new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e)
-                );
+                handleError(event, task, new TaskHandlerException(TRIGGER, "task.error.unrecognizedError", e));
             }
         }
     }
@@ -158,8 +156,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         param.put(HANDLER_ERROR_PARAM, errorParam);
 
         eventRelay.sendEventMessage(new MotechEvent(
-                createHandlerFailureSubject(task.getName(), e.getFailureCause()),
-                param
+            createHandlerFailureSubject(task.getName(), e.getFailureCause()),
+            param
         ));
     }
 
@@ -167,8 +165,8 @@ public class TaskTriggerHandler implements TriggerHandler {
         activityService.addSuccess(task);
 
         eventRelay.sendEventMessage(new MotechEvent(
-                createHandlerSuccessSubject(task.getName()),
-                trigger.getParameters()
+            createHandlerSuccessSubject(task.getName()),
+            trigger.getParameters()
         ));
     }
 
@@ -207,8 +205,8 @@ public class TaskTriggerHandler implements TriggerHandler {
             number = Integer.parseInt(property);
         } catch (NumberFormatException e) {
             LOG.error(String.format(
-                    "The value of key: %s is not a number. Possible errors number is set to zero.",
-                    TASK_POSSIBLE_ERRORS_KEY
+                "The value of key: %s is not a number. Possible errors number is set to zero.",
+                TASK_POSSIBLE_ERRORS_KEY
             ));
             number = 0;
         }

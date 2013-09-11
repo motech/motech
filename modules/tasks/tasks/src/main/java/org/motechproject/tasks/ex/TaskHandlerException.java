@@ -39,5 +39,4 @@ public class TaskHandlerException extends Exception {
     public String[] getArgs() {
         return Arrays.copyOf(args, args.length);
     }
-
 }

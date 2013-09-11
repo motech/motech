@@ -258,11 +258,11 @@ public final class KeyInformation {
         final KeyInformation other = (KeyInformation) obj;
 
         return Objects.equals(this.originalKey, other.originalKey) &&
-                Objects.equals(this.prefix, other.prefix) &&
-                Objects.equals(this.dataProviderId, other.dataProviderId) &&
-                Objects.equals(this.objectType, other.objectType) &&
-                Objects.equals(this.objectId, other.objectId) &&
-                Objects.equals(this.key, other.key) &&
-                Objects.equals(this.manipulations, other.manipulations);
+            Objects.equals(this.prefix, other.prefix) &&
+            Objects.equals(this.dataProviderId, other.dataProviderId) &&
+            Objects.equals(this.objectType, other.objectType) &&
+            Objects.equals(this.objectId, other.objectId) &&
+            Objects.equals(this.key, other.key) &&
+            Objects.equals(this.manipulations, other.manipulations);
     }
 }
