@@ -1,6 +1,7 @@
 [
     {
         "roleName":"Bundle Admin",
-        "permissionNames": ["manageBundles", "stopBundle", "startBundle", "uninstallBundle", "installBundle", "bundleDetails"]
+        "permissionNames": ["manageBundles", "stopBundle", "startBundle", "uninstallBundle", "installBundle", "bundleDetails"],
+        "deletable": false
     }
 ]

@@ -6,6 +6,10 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import java.util.List;
 
+/**
+ * Represent Motech user roles, with persistence in CouchDB.
+ *
+ */
 @TypeDiscriminator("doc.type == 'MotechRole'")
 public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements MotechRole {
 
@@ -17,16 +21,20 @@ public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements Motec
     @JsonProperty
     private List<String> permissionNames;
 
+    @JsonProperty
+    private boolean deletable;
+
     public MotechRoleCouchdbImpl() {
         super();
         this.setType(DOC_TYPE);
     }
 
-    public MotechRoleCouchdbImpl(String roleName, List<String> permissionNames) {
+    public MotechRoleCouchdbImpl(String roleName, List<String> permissionNames, boolean deletable) {
         super();
         this.roleName = roleName;
         this.permissionNames = permissionNames;
         this.setType(DOC_TYPE);
+        this.deletable = deletable;
     }
 
     public String getRoleName() {
@@ -43,5 +51,13 @@ public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements Motec
 
     public void setPermissionNames(List<String> permissionNames) {
         this.permissionNames = permissionNames;
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
 }

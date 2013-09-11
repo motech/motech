@@ -3,6 +3,7 @@ package org.motechproject.security.service;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechRoleCouchdbImpl;
 import org.motechproject.security.domain.MotechUser;
+import org.motechproject.security.ex.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -64,12 +65,19 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     @Override
     public void deleteRole(RoleDto role) {
         MotechRole motechRole = allMotechRoles.findByRoleName(role.getRoleName());
-        allMotechRoles.remove(motechRole);
+        if (motechRole.isDeletable()) {
+            List<MotechUser> users = (List<MotechUser>) allMotechUsers.findByRole(role.getRoleName());
+            if (!users.isEmpty()) {
+                throw new RoleHasUserException("Role cannot be deleted because a user has the role.");
+            }
+            allMotechRoles.remove(motechRole);
+        }
     }
 
     @Override
     public void createRole(RoleDto role) {
-        MotechRole motechRole = new MotechRoleCouchdbImpl(role.getRoleName(), role.getPermissionNames());
+        MotechRole motechRole = new MotechRoleCouchdbImpl(role.getRoleName(), role.getPermissionNames(),
+                role.isDeletable());
         allMotechRoles.add(motechRole);
         motechUserService.refreshAllUsersContextIfActive();
     }
