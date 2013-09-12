@@ -45,7 +45,7 @@ public class DayOfWeekTest {
 
     @Test
     public void shouldReturnDaysOfWeekStartingToday() {
-        List<DayOfWeek> days = DayOfWeek.daysStarting(DayOfWeek.Saturday, 2);
+        List<DayOfWeek> days = DateUtil.daysStarting(DayOfWeek.Saturday, 2);
         assertEquals(3, days.size());
         assertTrue(days.contains(DayOfWeek.Saturday));
         assertTrue(days.contains(DayOfWeek.Sunday));
@@ -54,7 +54,7 @@ public class DayOfWeekTest {
 
     @Test
     public void shouldReturnDaysOfWeek_IfOnlyToday() {
-        List<DayOfWeek> days = DayOfWeek.daysStarting(DayOfWeek.Saturday, 0);
+        List<DayOfWeek> days = DateUtil.daysStarting(DayOfWeek.Saturday, 0);
         assertEquals(1, days.size());
         assertTrue(days.contains(DayOfWeek.Saturday));
     }

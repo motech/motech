@@ -208,4 +208,12 @@ public final class DateUtil {
 
         return list;
     }
+
+    public static List<DayOfWeek> daysStarting(DayOfWeek day, int numberOfDays) {
+        List<DayOfWeek> days = new ArrayList<DayOfWeek>();
+        for (int i = 0; i <= numberOfDays; i++) {
+            days.add(getDayOfWeek(DateUtil.today().withDayOfWeek(day.getValue()).plusDays(i)));
+        }
+        return days;
+    }
 }
