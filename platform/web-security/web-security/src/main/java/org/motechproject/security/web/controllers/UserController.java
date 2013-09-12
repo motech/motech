@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.service.MotechUserProfile;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;

@@ -3,6 +3,7 @@ package org.motechproject.security.service;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.helper.SessionHandler;

@@ -9,7 +9,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.service.MotechUserProfile;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;

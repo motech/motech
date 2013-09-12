@@ -1,5 +1,6 @@
 package org.motechproject.security.service;
 
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.model.UserDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 

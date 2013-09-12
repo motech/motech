@@ -5,7 +5,7 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.service.MotechUserProfile;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

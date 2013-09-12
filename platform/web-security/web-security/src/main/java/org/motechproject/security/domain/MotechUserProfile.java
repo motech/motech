@@ -1,6 +1,4 @@
-package org.motechproject.security.service;
-
-import org.motechproject.security.domain.MotechUser;
+package org.motechproject.security.domain;
 
 import java.io.Serializable;
 import java.util.List;
