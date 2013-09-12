@@ -3,14 +3,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.21-SNAPSHOT</version>
+        <version>0.21</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-admin</artifactId>
-    <version>0.21-SNAPSHOT</version>
+    <version>0.21</version>
 
     <name>MOTECH Admin</name>
     <packaging>bundle</packaging>
