@@ -79,7 +79,9 @@ public abstract class BasePkgTest {
 
     @After
     public void cleanUp() {
-        FileUtils.deleteQuietly(new File(script));
+        if (script != null && (script.isEmpty()) ) {
+            FileUtils.deleteQuietly(new File(script));
+        }
     }
 
     public abstract String getChrootDirProp();

@@ -217,13 +217,13 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>integration-test</id>
+                                <id>integration-test-deb</id>
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>verify</id>
+                                <id>verify-deb</id>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>

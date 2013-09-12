@@ -60,7 +60,7 @@ for dir in $MOTECH_OWNED; do
     if [ -d $CHROOT_DIR/$dir ]; then
         echo "$dir still exists after uninstall" > $ERROR_LOG
         purge_motech
-        exit 1
+        exit 2
     fi
 done
 

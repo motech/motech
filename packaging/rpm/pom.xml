@@ -396,7 +396,7 @@
                         <version>2.3.2</version>
                         <executions>
                             <execution>
-                                <id>default-testCompile</id>
+                                <id>default-testCompile-rpm</id>
                                 <phase>compile</phase>
                                 <goals>
                                     <goal>testCompile</goal>
@@ -409,7 +409,7 @@
                         <version>2.5</version>
                         <executions>
                             <execution>
-                                <id>copy-test-resources</id>
+                                <id>copy-test-resources-rpm</id>
                                 <phase>compile</phase>
                                 <goals>
                                     <goal>testResources</goal>
@@ -429,14 +429,14 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>integration-test</id>
+                                <id>integration-test-rpm</id>
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
                             <execution>
-                                <id>verify</id>
+                                <id>verify-rpm</id>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>
