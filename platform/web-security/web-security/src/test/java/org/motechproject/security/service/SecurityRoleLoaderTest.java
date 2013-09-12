@@ -1,4 +1,4 @@
-package org.motechproject.security.helper;
+package org.motechproject.security.service;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.SecurityRoleLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 

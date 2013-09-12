@@ -2,7 +2,7 @@ package org.motechproject.security.osgi;
 
 import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
 import org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor;
-import org.motechproject.security.helper.SecurityRoleLoader;
+import org.motechproject.security.service.SecurityRoleLoader;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.osgi.framework.BundleContext;
