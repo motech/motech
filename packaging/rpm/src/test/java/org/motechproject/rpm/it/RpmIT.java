@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.testing.utils.BasePkgTest;
 import org.motechproject.testing.utils.PollingHttpClient;
@@ -19,6 +20,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
+@Ignore
 public class RpmIT extends BasePkgTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpmIT.class);
