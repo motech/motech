@@ -162,7 +162,7 @@
                     scope.selectedAction[idx] = cloneObj(action);
 
                     if (!scope.$$phase) {
-                        scope.$eval();
+                        scope.$apply();
                     }
                 }
             },
