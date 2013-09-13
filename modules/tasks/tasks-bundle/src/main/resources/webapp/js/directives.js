@@ -11,11 +11,15 @@
             link: function (scope, element, attrs) {
                 $(element).find('.overflowChange').livequery(function () {
                     $(this).on({
-                        shown: function () {
-                            $(this).css('overflow', 'visible');
+                        shown: function (e) {
+                            if (!e.target.classList.contains("help-inline")) {
+                                $(this).css('overflow', 'visible');
+                            }
                         },
-                        hide: function () {
-                            $(this).css('overflow', 'hidden');
+                        hide: function (e) {
+                            if (!e.target.classList.contains("help-inline")) {
+                                $(this).css('overflow', 'hidden');
+                            }
                         }
                     });
                 });
