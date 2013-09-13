@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.exception;
 
 public class HeaderFileMissingException extends RuntimeException {
     public HeaderFileMissingException(String message, Exception e) {

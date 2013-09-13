@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.exception;
 
 public class ServletRegistrationException extends RuntimeException {
 

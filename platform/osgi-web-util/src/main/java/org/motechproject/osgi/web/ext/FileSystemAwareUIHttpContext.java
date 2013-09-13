@@ -1,7 +1,6 @@
 package org.motechproject.osgi.web.ext;
 
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.osgi.web.UiHttpContext;
 import org.osgi.service.http.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

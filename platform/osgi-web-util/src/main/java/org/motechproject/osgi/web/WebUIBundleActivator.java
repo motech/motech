@@ -1,6 +1,7 @@
 package org.motechproject.osgi.web;
 
 import org.apache.commons.io.IOUtils;
+import org.motechproject.osgi.web.exception.HeaderFileMissingException;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

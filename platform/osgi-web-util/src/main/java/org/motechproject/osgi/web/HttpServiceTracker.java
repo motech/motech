@@ -1,6 +1,7 @@
 package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.osgi.web.util.WebBundleUtil;
