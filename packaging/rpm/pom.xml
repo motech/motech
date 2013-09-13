@@ -109,6 +109,10 @@
                     <artifactId>javax.servlet</artifactId>
                     <groupId>org.apache.felix</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>org.osgi.compendium</artifactId>
+                    <groupId>org.apache.felix</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

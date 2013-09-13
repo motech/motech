@@ -6,7 +6,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.testing.utils.BasePkgTest;
 import org.motechproject.testing.utils.PollingHttpClient;
@@ -20,7 +19,6 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
-@Ignore
 public class RpmIT extends BasePkgTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpmIT.class);
@@ -38,17 +36,21 @@ public class RpmIT extends BasePkgTest {
         if (retVal != 0) {
             LOG.error("Error log: " + readErrors());
         }
-        assertEquals("Non-zero exit code returned", 0, retVal);
+        assertEquals("Install: Non-zero exit code returned", 0, retVal);
     }
 
     private void testLoginAndMainPage() throws InterruptedException, IOException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("queueUrl", "tcp://localhost:61616"));
-        nameValuePairs.add(new BasicNameValuePair("loginMode", "repository"));
+        nameValuePairs.add(new BasicNameValuePair("schedulerUrl", "asd"));
+        nameValuePairs.add(new BasicNameValuePair("loginMode", "server.repository"));
         nameValuePairs.add(new BasicNameValuePair("adminLogin", "motech"));
         nameValuePairs.add(new BasicNameValuePair("adminPassword", "motech"));
         nameValuePairs.add(new BasicNameValuePair("adminConfirmPassword", "motech"));
         nameValuePairs.add(new BasicNameValuePair("adminEmail", "w@da.pl"));
+        nameValuePairs.add(new BasicNameValuePair("providerName", ""));
+        nameValuePairs.add(new BasicNameValuePair("providerUrl", ""));
+        nameValuePairs.add(new BasicNameValuePair("language", "en"));
 
         PollingHttpClient httpClient = new PollingHttpClient();
         HttpPost request = new HttpPost("http://localhost:8099/module/server/startup.do");
@@ -65,7 +67,7 @@ public class RpmIT extends BasePkgTest {
         if (retVal != 0) {
             LOG.error("Error log: " + readErrors());
         }
-        assertEquals("Non-zero exit code returned", 0, retVal);
+        assertEquals("Uninstall: Non-zero exit code returned", 0, retVal);
     }
 
     private void login() throws InterruptedException, IOException {
