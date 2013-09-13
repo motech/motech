@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
-import org.motechproject.server.config.service.AllSettings;
+import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;

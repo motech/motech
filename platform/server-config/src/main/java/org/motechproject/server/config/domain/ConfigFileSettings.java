@@ -1,7 +1,7 @@
-package org.motechproject.server.config.settings;
+package org.motechproject.server.config.domain;
 
-import org.motechproject.server.config.domain.MotechURL;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +22,7 @@ public class ConfigFileSettings implements MotechSettings {
     public ConfigFileSettings() {
     }
 
-    ConfigFileSettings(Properties motechSettings, Properties activemqSettings) {
+    public ConfigFileSettings(Properties motechSettings, Properties activemqSettings) {
         this.motechSettings.putAll(motechSettings);
         this.activemq.putAll(activemqSettings);
     }

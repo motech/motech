@@ -12,7 +12,7 @@ import org.mockito.Spy;
 import org.motechproject.event.listener.ServerEventRelay;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 

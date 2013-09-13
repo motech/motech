@@ -11,7 +11,7 @@ import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;
-import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.startup.MotechPlatformState.NEED_CONFIG;
 
 public class StartupManagerTest {
 

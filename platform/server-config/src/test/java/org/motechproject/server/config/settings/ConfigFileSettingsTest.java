@@ -2,6 +2,7 @@ package org.motechproject.server.config.settings;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 
 import java.util.Properties;
 

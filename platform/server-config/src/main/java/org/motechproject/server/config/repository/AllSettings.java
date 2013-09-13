@@ -1,4 +1,4 @@
-package org.motechproject.server.config.service;
+package org.motechproject.server.config.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;

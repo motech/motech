@@ -1,7 +1,6 @@
 package org.motechproject.admin.bundles;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs.FileMonitor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +14,7 @@ import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.ConfigFileSettings;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
