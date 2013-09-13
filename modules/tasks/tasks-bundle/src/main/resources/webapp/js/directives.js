@@ -71,7 +71,7 @@
                     drop: function (event, ui) {
                         var parent = scope, value, pos, eventKey, dragElement, browser, emText, dataSource,
                             position = function (dropElement, dragElement) {
-                                var sel, range, space = document.createTextNode(' '), el, frag, node, lastNode;
+                                var sel, range, space = document.createTextNode(''), el, frag, node, lastNode;
 
                                 if (window.getSelection) {
                                     sel = window.getSelection();
