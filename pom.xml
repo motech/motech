@@ -1043,6 +1043,7 @@
         <module>modules/event-logging/event-logging</module>
         <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler</module>
+        <module>modules/seuss/seuss-ui</module>
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>

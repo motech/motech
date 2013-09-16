@@ -31,6 +31,13 @@ if (typeof String.prototype.endsWith !== 'function') {
     };
 }
 
+if (typeof String.prototype.capitalize !== 'function') {
+    String.prototype.capitalize = function() {
+        'use strict';
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+}
+
 String.prototype.format = function() {
     'use strict';
     var args = arguments;
