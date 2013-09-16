@@ -1,9 +1,10 @@
-package org.motechproject.admin.messages;
+package org.motechproject.admin.listener;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.admin.events.EventKeys;
 import org.motechproject.admin.events.EventSubjects;
+import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;

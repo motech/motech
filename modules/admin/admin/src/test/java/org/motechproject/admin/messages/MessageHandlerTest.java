@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.admin.events.EventKeys;
 import org.motechproject.admin.events.EventSubjects;
+import org.motechproject.admin.listener.MessageHandler;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.event.MotechEvent;
 

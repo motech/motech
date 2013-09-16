@@ -396,7 +396,8 @@
                         <Export-Package>
                             org.motechproject.admin.service;version=${project.version},
                             org.motechproject.admin.domain;version=${project.version},
-                            org.motechproject.admin.messages;version=${project.version}
+                            org.motechproject.admin.messages;version=${project.version},
+                            org.motechproject.admin.listener;version=${project.version}
                         </Export-Package>
                     </instructions>
                 </configuration>
