@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Implementation of {@Link SettingsService} interface for settings managment
+ */
+
 @Service
 public class SettingsServiceImpl implements SettingsService {
 
@@ -45,10 +49,6 @@ public class SettingsServiceImpl implements SettingsService {
             Properties activemqProperties = motechSettings.getActivemqProperties();
             Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
             settingsList.add(activemqSettings);
-
-            Properties metricsProperties = motechSettings.getMetricsProperties();
-            Settings metricsSettings = new Settings("metrics", ParamParser.parseProperties(metricsProperties));
-            settingsList.add(metricsSettings);
 
             Properties schedulerProperties = motechSettings.getSchedulerProperties();
             Settings schedulerSettings = new Settings("scheduler", ParamParser.parseProperties(schedulerProperties));

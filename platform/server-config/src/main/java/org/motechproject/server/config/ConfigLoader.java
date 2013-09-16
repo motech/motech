@@ -91,7 +91,7 @@ public class ConfigLoader {
                     configFileSettings = loadSettingsFromStream(motechSettings, activemq);
                     configFileSettings.setFileURL(location.getURL());
                     if (eventAdmin != null) {
-                        Map<String,String> properties = new HashMap<>();
+                        Map<String, String> properties = new HashMap<>();
                         Properties activemqProperties = configFileSettings.getActivemqProperties();
                         if (activemqProperties != null && activemqProperties.containsKey(BROKER_URL)) {
                             properties.put(BROKER_URL, activemqProperties.getProperty(BROKER_URL));

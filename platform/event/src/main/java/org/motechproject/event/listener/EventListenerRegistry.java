@@ -1,6 +1,6 @@
 package org.motechproject.event.listener;
 
-import org.motechproject.event.metrics.MetricsAgent;
+import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+
+/**
+ * Implementation of {@Link EventListenerRegistryService} interface.
+ * Acts as a registry for all scheduled event listeners
+ */
 
 @Service
 public class EventListenerRegistry implements EventListenerRegistryService {

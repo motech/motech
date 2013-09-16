@@ -1,4 +1,4 @@
-package org.motechproject.event.metrics;
+package org.motechproject.metrics;
 
 /*
 Interface used by StatsdAgentBackendImpl. Required to let user change values of this class from UI.
@@ -8,6 +8,8 @@ public interface StatsdAgentBackend {
     void setServerHost(String serverHost);
     int getServerPort();
     void setServerPort(int serverPort);
+    String getGraphiteUrl();
+    void setGraphiteUrl(String url);
     boolean isGenerateHostBasedStats();
     void setGenerateHostBasedStats(boolean generateHostBasedStats);
     void saveProperties();

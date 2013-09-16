@@ -1,8 +1,8 @@
-package org.motechproject.event.metrics.impl;
+package org.motechproject.metrics.impl;
 
 import org.apache.commons.io.FileUtils;
-import org.motechproject.event.metrics.MetricsAgentBackend;
-import org.motechproject.event.metrics.StatsdAgentBackend;
+import org.motechproject.metrics.MetricsAgentBackend;
+import org.motechproject.metrics.StatsdAgentBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,13 +33,13 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
     private String serverHost;
     private int serverPort;
     private boolean generateHostBasedStats;
-
+    private String graphiteUrl;
 
     private InetAddress serverAddr;
     private String hostName;
     private DatagramSocket socket;
     private String configFileLocation = System.getProperty("user.home") + "/.motech/config/org." +
-            "motechproject.motech-platform-event/statsdAgent.properties";
+            "motechproject.metrics/statsdAgent.properties";
 
     public StatsdAgentBackendImpl() {
         try {
@@ -143,6 +143,14 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
         this.serverHost = serverHost;
     }
 
+    public String getGraphiteUrl() {
+        return graphiteUrl;
+    }
+
+    public void setGraphiteUrl(String url) {
+        this.graphiteUrl = url;
+    }
+
     public int getServerPort() {
         return serverPort;
     }
@@ -171,9 +179,10 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
                     serverHost = statsdAgentConfig.getProperty("serverHost");
                     serverPort = Integer.parseInt(statsdAgentConfig.getProperty("serverPort"));
                     generateHostBasedStats = "true".equals(statsdAgentConfig.getProperty("generateHostBasedStats"));
+                    graphiteUrl = statsdAgentConfig.getProperty("graphiteUrl");
                 }
                 catch (IOException e) {
-                    log.error("Error while loading activemq configuration from " + configFileLocation, e);
+                    log.error("Error while loading statsdAgent configuration from " + configFileLocation, e);
                 }
             }
     }
@@ -192,6 +201,7 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
             statsdAgentConfig.setProperty("serverHost", serverHost);
             statsdAgentConfig.setProperty("serverPort", Integer.toString(serverPort));
             statsdAgentConfig.setProperty("generateHostBasedStats", String.valueOf(generateHostBasedStats));
+            statsdAgentConfig.setProperty("graphiteUrl", graphiteUrl);
             statsdAgentConfig.store(out, null);
             out.close();
         }

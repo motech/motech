@@ -24,12 +24,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
+/**
+ * Implementation of {@Link PlatformSettingsService} class for main motech settings managment
+ */
 
 @Service("platformSettingsService")
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
@@ -215,7 +218,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             throws IOException {
         File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
         setUpDirsForFile(file);
-        try ( FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             properties.store(fileOutputStream, null);
         }
     }
@@ -378,14 +381,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 dbSettings.setServerUrl(value);
             } else if (MotechSettings.UPLOAD_SIZE.equals(key)) {
                 dbSettings.setUploadSize(value);
-            } else {
-                for (Properties p : Arrays.asList(dbSettings.getMetricsProperties())) {
-                    if (p.containsKey(key)) {
-                        p.put(key, value);
-
-                        break;
-                    }
-                }
             }
 
             allSettings.addOrUpdateSettings(dbSettings);

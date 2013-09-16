@@ -31,11 +31,12 @@
             method="relayEvent"/>
 
 
-    <beans:bean id="metricsAgent" class="org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
-    <beans:bean id="loggingAgent" class="org.motechproject.event.metrics.impl.LoggingAgentBackendImpl"/>
-    <beans:bean id="statsdAgent" class="org.motechproject.event.metrics.impl.StatsdAgentBackendImpl">
+    <beans:bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
+    <beans:bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <beans:bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
         <beans:property name="serverHost" value="localhost"/>
         <beans:property name="serverPort" value="8125"/>
         <beans:property name="generateHostBasedStats" value="true"/>
+        <beans:property name="graphiteUrl" value=""/>
     </beans:bean>
 </beans:beans>

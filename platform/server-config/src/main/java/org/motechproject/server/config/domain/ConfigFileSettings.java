@@ -100,15 +100,6 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     @Override
-    public Properties getMetricsProperties() {
-        Properties metricsProperties = new Properties();
-
-        putPropertyIfNotNull(metricsProperties, GRAPHITE_URL, motechSettings.getProperty(GRAPHITE_URL));
-
-        return metricsProperties;
-    }
-
-    @Override
     public Properties getSchedulerProperties() {
         Properties schedulerProperties = new Properties();
 

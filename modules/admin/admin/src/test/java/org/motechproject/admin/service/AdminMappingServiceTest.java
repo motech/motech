@@ -22,8 +22,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AdminMappingServiceTest {
 
-    private static final String GRAPHITE_URL = "http://graphite.motechproject.org";
-
     @InjectMocks
     AdminMappingService adminMappingService = new AdminMappingServiceImpl();
 
@@ -62,18 +60,6 @@ public class AdminMappingServiceTest {
     }
 
     @Test
-    public void testGetGraphiteUrl() {
-        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
-        when(motechSettings.getMetricsProperties()).thenReturn(metricsProperties());
-
-        String result = adminMappingService.getGraphiteUrl();
-
-        assertEquals(GRAPHITE_URL, result);
-        verify(platformSettingsService).getPlatformSettings();
-        verify(motechSettings).getMetricsProperties();
-    }
-
-    @Test
     public void testUnRegisterMapping() {
         adminMappingService.unregisterMapping(firstMapping.getBundleName());
         verify(allAdminMappings).removeByBundleName(firstMapping.getBundleName());
@@ -87,11 +73,5 @@ public class AdminMappingServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNullUrlNameRegistration() {
         adminMappingService.registerMapping("test", null);
-    }
-
-    private Properties metricsProperties() {
-        Properties props = new Properties();
-        props.put(MotechSettings.GRAPHITE_URL, GRAPHITE_URL);
-        return  props;
     }
 }

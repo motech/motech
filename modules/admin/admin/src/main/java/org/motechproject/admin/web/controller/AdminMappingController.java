@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
+/**
+ * The <code>AdminMappingController</code> class is used by view layer for getting information
+ * about all mappings
+ */
+
 @Controller
 public class AdminMappingController {
 
@@ -18,10 +23,5 @@ public class AdminMappingController {
     @RequestMapping(value = "/mappings", method = RequestMethod.GET)
     @ResponseBody public Map<String, String> getMappings() {
         return adminMappingService.getAllMappings();
-    }
-
-    @RequestMapping(value = "/mappings/graphite", method = RequestMethod.GET)
-    @ResponseBody public String getGraphiteMapping() {
-        return adminMappingService.getGraphiteUrl();
     }
 }

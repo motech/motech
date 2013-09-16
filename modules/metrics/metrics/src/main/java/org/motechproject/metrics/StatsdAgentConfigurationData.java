@@ -1,10 +1,11 @@
-package org.motechproject.event.metrics;
+package org.motechproject.metrics;
 
 //Class used to pass DatagramSocket configuration data from UI to StatsdAgentBackendImpl class
 public class StatsdAgentConfigurationData {
     private String serverHost;
     private int serverPort;
     private boolean generateHostBasedStats;
+    private String graphiteUrl;
 
     public String getServerHost() {
         return serverHost;
@@ -20,6 +21,14 @@ public class StatsdAgentConfigurationData {
 
     public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
+    }
+
+    public String getGraphiteUrl() {
+        return graphiteUrl;
+    }
+
+    public void setGraphiteUrl(String graphiteUrl) {
+        this.graphiteUrl = graphiteUrl;
     }
 
     public boolean isGenerateHostBasedStats() {

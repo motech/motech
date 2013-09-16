@@ -14,7 +14,6 @@
               when('/bundle/:bundleId', {templateUrl: '../admin/partials/bundle.html', controller: 'ModuleCtrl'}).
               when('/bundleSettings/:bundleId', {templateUrl: '../admin/partials/bundleSettings.html', controller: 'BundleSettingsCtrl'}).
               when('/modulePanels', {templateUrl: '../admin/partials/modulePanels.html'}).
-              when('/operations', {templateUrl: '../admin/partials/operations.html', controller: 'OperationsCtrl'}).
               when('/log', {templateUrl: '../admin/partials/log.html', controller: 'ServerLogCtrl'}).
               when('/queues', {templateUrl: '../admin/partials/queue_stats.html', controller: 'QueueStatisticsCtrl'}).
               when('/queues/browse', {templateUrl: '../admin/partials/queue_message_stats.html', controller: 'MessageStatisticsCtrl'}).

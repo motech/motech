@@ -8,8 +8,8 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.event.domain.BuggyListener;
-import org.motechproject.event.metrics.MetricsAgent;
-import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 
 import java.util.Date;
 import java.util.HashMap;
