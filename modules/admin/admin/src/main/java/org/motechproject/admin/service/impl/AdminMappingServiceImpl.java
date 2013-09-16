@@ -5,7 +5,6 @@ import org.motechproject.admin.ex.NoDbException;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.AdminMappingService;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -16,7 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+
+/**
+ * Implementation of {@Link AdminMappingService} interface
+ */
 
 @Service("adminMappingService")
 public class AdminMappingServiceImpl implements AdminMappingService {
@@ -81,12 +83,6 @@ public class AdminMappingServiceImpl implements AdminMappingService {
             LOG.error("Can't retrieve mappings because of no DB connection");
         }
         return result;
-    }
-
-    @Override
-    public String getGraphiteUrl() {
-        Properties metricsProperties = platformSettingsService.getPlatformSettings().getMetricsProperties();
-        return metricsProperties.getProperty(MotechSettings.GRAPHITE_URL);
     }
 
     private AllAdminMappings getAllAdminMappings() {

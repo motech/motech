@@ -1,6 +1,6 @@
-package org.motechproject.event.metrics.impl;
+package org.motechproject.metrics.impl;
 
-import org.motechproject.event.metrics.MetricsAgentBackend;
+import org.motechproject.metrics.MetricsAgentBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

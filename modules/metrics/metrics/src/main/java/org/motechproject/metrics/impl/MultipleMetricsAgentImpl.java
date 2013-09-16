@@ -1,13 +1,17 @@
-package org.motechproject.event.metrics.impl;
+package org.motechproject.metrics.impl;
 
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.event.metrics.MetricsAgent;
-import org.motechproject.event.metrics.MetricsAgentBackend;
+import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.metrics.MetricsAgentBackend;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * Implementation of {@Link MetricsAgent} interface
+ */
 
 public class MultipleMetricsAgentImpl implements MetricsAgent {
     @Autowired

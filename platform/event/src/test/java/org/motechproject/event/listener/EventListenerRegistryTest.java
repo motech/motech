@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 
 import java.util.ArrayList;
 import java.util.List;

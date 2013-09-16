@@ -1047,6 +1047,7 @@
         <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
+        <module>modules/metrics/metrics</module>
 
         <!-- Archetypes modules -->
         <module>utils/archetypes/maven-archetype-motech-module</module>

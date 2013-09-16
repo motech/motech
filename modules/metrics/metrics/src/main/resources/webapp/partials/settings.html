@@ -1,0 +1,32 @@
+<div class="box-content inside">
+    <h4 class="frame-title">{{ msg('metrics.settings.title')}}</h4>
+    <form name="metricsForm" id="metricsForm" class="form-horizontal inside" novalidate>
+        <div class="control-group">
+            <label class="control-label">{{msg('metrics.serverPort')}}</label>
+            <div class="controls">
+                <input name="serverPort" id="serverPort" type="number" ng-model="statsdAgentConfig.serverPort" min="1" max="65535" required/>
+                <span ng-show="!metricsForm.serverPort.$valid" class="form-hint">{{msg('metrics.wrongServerPort')}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">{{msg('metrics.serverHost')}}</label>
+            <div class="controls">
+                <input id="serverHost" name="serverHost" type="text" ng-model="statsdAgentConfig.serverHost" required/>
+                <span ng-show="metricsForm.serverHost.$error.required" class="form-hint">{{msg('metrics.serverHostRequired')}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">{{msg('metrics.graphiteUrl')}}</label>
+            <div class="controls">
+                <input id="graphiteUrl" name="graphiteUrl" type="text" ng-model="statsdAgentConfig.graphiteUrl"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">{{msg('metrics.generateHostBasedStats')}}</label>
+            <div class="controls">
+                <input id="generateStats" name="generateStats" type="checkbox" ng-model="statsdAgentConfig.generateHostBasedStats">
+            </div>
+        </div>
+        <button class="btn btn-primary ng-binding" ng-click="saveStatsdAgentConfig()" ng-disabled="!metricsForm.$valid">{{msg('metrics.save')}}</button>
+    </form>
+</div>

@@ -1,7 +1,10 @@
-package org.motechproject.event.metrics;
+package org.motechproject.metrics;
 
 import java.util.Map;
 
+/**
+ * A simple interface for metrics allowing event logging
+ */
 
 public interface MetricsAgentBackend {
     /**

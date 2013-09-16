@@ -3,7 +3,7 @@ package org.motechproject.event.listener;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
-import org.motechproject.event.metrics.MetricsAgent;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.event.utils.MotechProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

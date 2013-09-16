@@ -1,9 +1,8 @@
-package org.motechproject.admin.web.controller;
+package org.motechproject.metrics.web;
 
 
-
-import org.motechproject.event.metrics.StatsdAgentConfigurationData;
-import org.motechproject.event.metrics.StatsdAgentBackend;
+import org.motechproject.metrics.StatsdAgentBackend;
+import org.motechproject.metrics.StatsdAgentConfigurationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -21,29 +20,37 @@ public class MetricsController {
     @Autowired
     private StatsdAgentBackend statsdAgentBackend;
 
-    @RequestMapping(value = "/metrics", method = RequestMethod.GET)
+    @RequestMapping(value = "/settings/getAll", method = RequestMethod.GET)
     @ResponseBody
     public StatsdAgentConfigurationData getMetricsData() {
         StatsdAgentConfigurationData statsdAgentConfigurationData = new StatsdAgentConfigurationData();
         statsdAgentConfigurationData.setGenerateHostBasedStats(statsdAgentBackend.isGenerateHostBasedStats());
         statsdAgentConfigurationData.setServerHost(statsdAgentBackend.getServerHost());
         statsdAgentConfigurationData.setServerPort(statsdAgentBackend.getServerPort());
+        statsdAgentConfigurationData.setGraphiteUrl(statsdAgentBackend.getGraphiteUrl());
         return statsdAgentConfigurationData;
     }
 
+    @RequestMapping(value = "/settings/getGraphiteUrl", method = RequestMethod.GET)
+    @ResponseBody
+    public String getGraphiteUrl() {
+        return statsdAgentBackend.getGraphiteUrl();
+    }
+
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/metrics/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/settings/save", method = RequestMethod.POST)
     public void saveStatsdAgentConfig(@RequestBody StatsdAgentConfigurationData
                                               statsdAgentConfigurationData) {
         int serverPort = statsdAgentConfigurationData.getServerPort();
         String serverHost = statsdAgentConfigurationData.getServerHost();
         boolean generateHostBasedStats = statsdAgentConfigurationData.isGenerateHostBasedStats();
+        String graphiteUrl = statsdAgentConfigurationData.getGraphiteUrl();
 
         //Setting new values before save to file
         statsdAgentBackend.setServerPort(serverPort);
         statsdAgentBackend.setServerHost(serverHost);
         statsdAgentBackend.setGenerateHostBasedStats(generateHostBasedStats);
+        statsdAgentBackend.setGraphiteUrl(graphiteUrl);
         statsdAgentBackend.saveProperties();
-
     }
 }

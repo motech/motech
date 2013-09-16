@@ -2,6 +2,10 @@ package org.motechproject.server.config.settings;
 
 import java.util.Properties;
 
+/**
+ * Interface for main motech settings managment
+ */
+
 public interface MotechSettings {
 
     String AMQ_QUEUE_EVENTS = "queue.for.events";
@@ -11,8 +15,6 @@ public interface MotechSettings {
     String AMQ_REDELIVERY_DELAY_IN_MILLIS = "redeliveryDelayInMillis";
     String AMQ_CONCURRENT_CONSUMERS = "concurrentConsumers";
     String AMQ_MAX_CONCURRENT_CONSUMERS = "maxConcurrentConsumers";
-
-    String GRAPHITE_URL = "graphite.url";
 
     String SCHEDULER_URL = "scheduler.url";
 
@@ -42,8 +44,6 @@ public interface MotechSettings {
     String getUploadSize();
 
     Properties getActivemqProperties();
-
-    Properties getMetricsProperties();
 
     Properties getSchedulerProperties();
 }

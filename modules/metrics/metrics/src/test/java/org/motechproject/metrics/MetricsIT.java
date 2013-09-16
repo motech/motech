@@ -1,12 +1,12 @@
-package org.motechproject.event.metrics;
+package org.motechproject.metrics;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.event.metrics.impl.LoggingAgentBackendImpl;
-import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
-import org.motechproject.event.metrics.impl.StatsdAgentBackendImpl;
+import org.motechproject.metrics.impl.LoggingAgentBackendImpl;
+import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.metrics.impl.StatsdAgentBackendImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

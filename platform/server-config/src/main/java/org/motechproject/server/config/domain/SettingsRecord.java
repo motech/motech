@@ -11,6 +11,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Class for storing settings values
+ */
+
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"couchDbProperties"})
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
@@ -28,7 +32,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private byte[] configFileChecksum = new byte[0];
 
     private Properties activemqProperties = new Properties();
-    private Properties metricsProperties;
     private Properties schedulerProperties;
 
     @Override
@@ -44,11 +47,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public Properties getActivemqProperties() {
         return activemqProperties;
-    }
-
-    @Override
-    public Properties getMetricsProperties() {
-        return metricsProperties;
     }
 
     public String getLoginMode() {
@@ -85,10 +83,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     public void setActivemqProperties(final Properties activemqProperties) {
         this.activemqProperties = activemqProperties;
-    }
-
-    public void setMetricsProperties(final Properties metricsProperties) {
-        this.metricsProperties = metricsProperties;
     }
 
     public void setSchedulerProperties(final Properties schedulerProperties) {
@@ -151,7 +145,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setLanguage(settings.getLanguage());
         setStatusMsgTimeout(settings.getStatusMsgTimeout());
         setActivemqProperties(settings.getActivemqProperties());
-        setMetricsProperties(settings.getMetricsProperties());
         setSchedulerProperties(settings.getSchedulerProperties());
         setLoginMode(settings.getLoginMode());
         setProviderName(settings.getProviderName());
@@ -161,10 +154,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public void updateFromProperties(final Properties props) {
-        if (metricsProperties == null || metricsProperties.isEmpty()) {
-            metricsProperties = emptyMetricsProperties();
-        }
-
         if (schedulerProperties == null || schedulerProperties.isEmpty()) {
             schedulerProperties = emptySchedulerProperties();
         }
@@ -207,18 +196,12 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     private void handleMiscProperty(String key, String value) {
-        for (Properties p : Arrays.asList(getMetricsProperties(), getSchedulerProperties())) {
+        for (Properties p : Arrays.asList(getSchedulerProperties())) {
             if (p.containsKey(key)) {
                 p.put(key, value);
                 break;
             }
         }
-    }
-
-    private Properties emptyMetricsProperties() {
-        Properties props = new Properties();
-        props.put(GRAPHITE_URL, "");
-        return props;
     }
 
     private Properties emptySchedulerProperties() {

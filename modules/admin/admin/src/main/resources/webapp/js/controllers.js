@@ -134,7 +134,8 @@
             'org.motechproject:motech-scheduler:[0,)':'Scheduler',
             'org.motechproject:motech-sms-api-bundle:[0,)':'SMS',
             'org.motechproject:motech-sms-http-bundle:[0,)':'SMS Http',
-            'org.motechproject:motech-sms-smpp-bundle:[0,)':'SMS Smpp'
+            'org.motechproject:motech-sms-smpp-bundle:[0,)':'SMS Smpp',
+            'org.motechproject:motech-metrics:[0,)':'Metrics'
         };
 
         $scope.module = "";
@@ -462,42 +463,6 @@
                 motechAlert('admin.settings.saved', 'admin.success');
             }, alertHandler('admin.bundles.error.restart', 'admin.error'));
         };
-    });
-
-    adminModule.controller('OperationsCtrl', function($scope, $http) {
-        $http({method:'GET', url:'../admin/api/mappings/graphite'}).
-            success(function (data) {
-                $scope.graphiteUrl = data;
-                // prefix with http://
-                if ($scope.graphiteUrl && $scope.graphiteUrl.lastIndexOf("http://") !== 0) {
-                    $scope.graphiteUrl = "http://" + $scope.graphiteUrl;
-                }
-            });
-
-        $scope.statsdAgentConfig = {
-            serverPort : "",
-            serverHost : "",
-            generateHostBasedStats : false
-        };
-
-        $http({method:'GET', url:'../admin/api/metrics'}).
-                success(
-                function(data) {
-                    $scope.statsdAgentConfig = data;
-                });
-
-        $scope.saveStatsdAgentConfig = function() {
-            $http.post('../admin/api/metrics/save', $scope.statsdAgentConfig).
-                success(alertHandler('admin.settings.saved', 'admin.success')).
-                error(function(response) {
-                var msg = 'admin.error',
-                responseData = (typeof(response) === 'string') ? response : response.data;
-                if (typeof(responseData) === 'string') {
-                            msg = responseData;
-                }
-                motechAlert(msg, 'admin.error');
-                });
-            };
     });
 
     adminModule.controller('ServerLogCtrl', function($scope, $http) {
