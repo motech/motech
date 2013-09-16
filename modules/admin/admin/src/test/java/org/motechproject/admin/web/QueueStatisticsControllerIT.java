@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.commons.api.Tenant;
 import org.motechproject.admin.jmx.MBeanService;
-import org.motechproject.admin.web.controller.QueueMessage;
+import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.admin.web.controller.QueueStatisticsController;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;

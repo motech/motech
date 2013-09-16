@@ -2,7 +2,7 @@ package org.motechproject.admin.jmx;
 
 import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.motechproject.admin.domain.QueueMBean;
-import org.motechproject.admin.web.controller.QueueMessage;
+import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.commons.api.MotechException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

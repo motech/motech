@@ -1,4 +1,4 @@
-package org.motechproject.admin.web.controller;
+package org.motechproject.admin.domain;
 
 import java.util.Date;
 
