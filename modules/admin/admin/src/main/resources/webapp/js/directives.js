@@ -35,7 +35,6 @@
                     dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true,
-                    maxDate: +0,
                     timeFormat: "HH:mm:ss",
                     onSelect: function (selectedDateTime){
                         endDateTextBox.datetimepicker('option', 'minDate', elem.datetimepicker('getDate') );
