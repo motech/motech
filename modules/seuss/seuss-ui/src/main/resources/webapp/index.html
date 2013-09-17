@@ -1,0 +1,15 @@
+<div> <!-- Only required for left/right tabs -->
+    <ul id="content-tabs" class="nav nav-tabs tasks">
+        <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
+            <a data-target="main-content" href="#/{{tab}}" data-toggle="tab">
+                {{msg('seuss.tab.' + tab)}}
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content tasks" id="tab-content">
+        <div id="main-content" class="tab-pane active">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>
