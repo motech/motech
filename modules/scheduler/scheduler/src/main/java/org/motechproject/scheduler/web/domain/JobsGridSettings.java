@@ -1,10 +1,10 @@
-package org.motechproject.admin.web.controller;
+package org.motechproject.scheduler.web.domain;
 
 /**
  * JobsGridSettings is the class used for passing data from View layer to Controller Layer,
  * it tells how the JobsController should filter jobs information.
  *
- * @see JobsController
+ * @see org.motechproject.scheduler.web.controller.JobsController
  */
 
 public class JobsGridSettings {

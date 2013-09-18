@@ -1,21 +1,18 @@
-package org.motechproject.admin.web;
+package org.motechproject.scheduler.web.controller;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.admin.domain.JobsRecords;
-import org.motechproject.admin.web.controller.JobsGridSettings;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.admin.web.controller.JobsController;
 import org.motechproject.scheduler.domain.JobBasicInfo;
+import org.motechproject.scheduler.web.domain.JobsRecords;
+import org.motechproject.scheduler.web.domain.JobsGridSettings;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;

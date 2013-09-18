@@ -1,4 +1,4 @@
-package org.motechproject.admin.domain;
+package org.motechproject.scheduler.web.domain;
 
 import java.util.ArrayList;
 import java.util.List;

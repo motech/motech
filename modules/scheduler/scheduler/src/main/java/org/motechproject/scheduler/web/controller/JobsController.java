@@ -1,12 +1,13 @@
-package org.motechproject.admin.web.controller;
+package org.motechproject.scheduler.web.controller;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.admin.domain.JobsRecords;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.JobBasicInfo;
 import org.motechproject.scheduler.domain.JobDetailedInfo;
 import org.motechproject.scheduler.domain.JobBasicInfoComparator;
+import org.motechproject.scheduler.web.domain.JobsRecords;
+import org.motechproject.scheduler.web.domain.JobsGridSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;

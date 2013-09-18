@@ -230,68 +230,11 @@ h4.settings-section {
     margin-bottom: 0;
 }
 
-.log-line {
-     border-bottom: 1px solid #D4E1F9;
-}
-
-.log-line .log-change {
-    margin-top: 5px;
-    margin-bottom: 0;
-}
-
-.log-line .log-download {
-     border-left: 1px solid #D4E1F9;
-     padding-left: 10px;
-     text-align: right;
-}
-
-.log-content {
-    background-color: white;
-    padding: 10px;
-    font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
-    font-size: 12px;
-    word-wrap: break-word;
-}
 
 div.sidebar-container {
     height: 90px !important;
 }
 
-#changeLogLevels .control-group {
-    margin: 0;
-    margin-bottom: 0;
-    background-color: #E4F1F9;
-    padding: 5px 5px 5px 45px;
-}
-
-#changeLogLevels .control-group.log {
-    padding: 10px 5px 2px 15px;
-}
-
-#changeLogLevels .form-actions {
-    background: #E4F1F9;
-    margin: 0;
-    padding: 19px 20px 20px 45px;
-}
-
-#changeLogLevels .label-logAll {
-    width: 155px;
-    float: left;
-    margin-top: 6px;
-    text-align: right;
-}
-
-#changeForAll {
-    margin: 1px 1px 1px 9px;
-}
-
-#changeLogLevels .btn-log {
-    width: 60px;
-}
-
-#changeLogLevels .btn-hidden {
-    visibility: hidden;
-}
 
 .form-actions {
     background: #E4F1F9;
@@ -300,46 +243,131 @@ div.sidebar-container {
     margin-bottom: 0;
 }
 
-.log-options {
-    background: #DBEDF7;
-    background-image: none;
-}
-
-.messages.control-group, #notificationRulesForm > div,
-#changeLogLevels > div {
-    background-color: #EBF7FF;
-    border-top: 1px solid #D2EBFC;
-    border-top: 1px solid #D4E1F9;
-    margin: 0 -10px 0px;
-    padding: 5px 5px 5px 10px;
-}
-
-#notificationRulesForm > div:first-child {
-    border: none;
-    padding-top: 0;
-}
-
-#notificationRulesForm > div .control-group {
-    margin: 0 10px;
-}
-
-.box-content .messages.control-group:nth-child(2n+1),
-#notificationRulesForm > div:nth-child(2n+1),
-#changeLogLevels > div:nth-child(2n+1) {
-    background: #F3FBFE;
-}
 
 .box-content .messages.control-group:last-child {
     margin: 0 -10px -10px;
 }
 
-#notificationRulesForm > div:last-child {
-    padding: 20px 5px 20px 10px;
-    margin: 0 -10px -10px;
+/*---------- scheduler ----------*/
+
+.scheduler .count-characters {
+    border-top: 1px solid #eeeeee;
+    padding: 5px 20px 5px 0;
+    font-size:0.9em;
 }
 
-p#settingsMsg:empty {
-    padding: 0;
-    margin: 0;
+.scheduler .s-ico {
+    float: right;
+    margin-right: 2px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    padding: 8px 2px;
 }
 
+.scheduler fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.scheduler legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.scheduler legend + .control-group {
+    margin-top: 2px;
+}
+
+.scheduler .pointer {
+    cursor: pointer;
+}
+
+.scheduler #operations-resource {
+    margin: 10px;
+}
+
+.scheduler .btn-group > .btn.active {
+   z-index: 1;
+}
+
+#t_schedulerTable {
+    min-height: 25px;
+    height: auto;
+    padding: 5px 0;
+}
+
+#t_schedulerTable .control-group {
+    margin-bottom: 2px;
+}
+
+.ui-jqgrid input.ui-pg-input {
+    width: auto;
+    height: 14px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.ui-jqgrid select.ui-pg-selbox {
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 1px 3px;
+}
+
+.ui-th-column-header {
+    text-align: center;
+}
+
+.ui-jqgrid tr.jqgrow td.finished {
+    color: #fff;
+    background: #0D800B;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.stopped {
+    color: #fff;
+    background: #dc1c0d;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.active {
+    color: #fff;
+    background: #549edb;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow td.notstarted {
+    color: #fff;
+    background: #aea884;
+    font-weight: bold;
+}
+
+.ui-jqgrid tr.jqgrow .parameters {
+    border-bottom: 1px solid #D4DDEE;
+    margin: 0 -6px;
+    padding: 4px 6px;
+}
+
+.ui-jqgrid tr.jqgrow .parameters:first-child {
+    margin: -4px -6px 0;
+}
+
+.ui-jqgrid tr.jqgrow .parameters:last-child {
+    margin: 0 -6px -4px;
+}
+
+.overrideJqgridTable .table-lightblue .ui-widget-content {
+    border: 0 solid #D4E1F9;
+}
+
+.ui-datepicker.ui-widget {
+    font-size: 0.9em;
+}

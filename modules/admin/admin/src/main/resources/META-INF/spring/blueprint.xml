@@ -7,7 +7,7 @@
        http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <import resource="classpath*:META-INF/motech/applicationAdmin.xml" />
+    <import resource="classpath*:META-INF/motech/applicationAdmin.xml"/>
 
     <context:annotation-config/>
 
@@ -34,16 +34,15 @@
                 <entry key="admin.settings" value="#/platform-settings"/>
                 <entry key="admin.log" value="#/log"/>
                 <entry key="admin.queues" value="#/queues"/>
-                <entry key="scheduler" value="#/scheduler"/>
             </map>
         </property>
     </bean>
 
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces"
-                  ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService" />
+                  ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService"/>
 
     <osgi:service id="adminMappingServiceOsgi" auto-export="interfaces"
-                  ref="adminMappingService" interface="org.motechproject.admin.service.AdminMappingService" />
+                  ref="adminMappingService" interface="org.motechproject.admin.service.AdminMappingService"/>
 
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
@@ -63,5 +62,4 @@
 
     <osgi:reference id="mailSender" interface="org.motechproject.email.service.EmailSenderService"/>
 
-    <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
 </beans>

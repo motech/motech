@@ -165,8 +165,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-Path>scheduler</Context-Path>
-                        <Resource-Path>scheduler/resources</Resource-Path>
+                        <Context-Path>scheduler/api</Context-Path>
+                        <Resource-Path>scheduler</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.scheduler.*;version=${project.version}
