@@ -1,7 +1,9 @@
 (function () {
     'use strict';
 
-    var seuss = angular.module('seuss', ['motech-dashboard', 'ngCookies', 'bootstrap']);
+    var seuss = angular.module('seuss', [
+        'motech-dashboard', 'objectService', 'ngCookies', 'bootstrap', 'ui.directives'
+    ]);
 
     seuss.constant('AVAILABLE_TABS', ['schemaEditor', 'dataBrowser', 'settings']);
 

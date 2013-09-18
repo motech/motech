@@ -22,6 +22,20 @@
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test-mvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -35,6 +49,22 @@
                         <Context-Path>seuss</Context-Path>
                         <Resource-Path>seuss/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Import-Package>
+                            org.eclipse.gemini.blueprint.config,
+                            org.springframework.beans.factory.config,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
+                            org.springframework.context.support,
+                            org.springframework.web.context,
+                            org.springframework.web.context.support,
+                            org.springframework.web.multipart.commons,
+                            org.springframework.web.servlet,
+                            org.springframework.web.servlet.config,
+                            org.springframework.web.servlet.mvc,
+                            org.springframework.web.servlet.support,
+                            org.springframework.web.servlet.view,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -166,7 +196,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                angular
+                                $, angular, isBlank, handleResponse
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

@@ -1,0 +1,30 @@
+<div id="newObjectModal" class="modal hide fade" tabindex="-1" role="dialog"
+     aria-labelledby="newObjectModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="newObjectModalLabel">{{msg('seuss.form.newObject')}}</h3>
+    </div>
+    <div class="modal-body">
+        <form name="newObjectModalForm" id="newObjectModalForm" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputObjectName">
+                    {{msg('seuss.form.objectName')}}
+                </label>
+                <div class="controls">
+                    <input type="text" name="inputObjectName" id="inputObjectName"
+                           placeholder="{{seuss.placeholder.enterObjectName}}">
+                    <span class="help-block hide">
+                        {{msg('seuss.error.objectNameIsRequired')}}
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="createObject()">
+            {{msg('seuss.btn.save')}}
+        </button>
+        <button class="btn" ng-click="clearModal('newObjectModal')">
+            {{msg('seuss.btn.cancel')}}
+        </button>
+    </div>
+</div>
