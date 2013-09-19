@@ -1,4 +1,4 @@
-package org.motechproject.event.aggregation.model;
+package org.motechproject.event.aggregation.model.rule;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;

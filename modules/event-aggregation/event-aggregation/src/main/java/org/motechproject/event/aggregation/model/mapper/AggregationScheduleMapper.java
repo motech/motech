@@ -4,10 +4,10 @@ import org.motechproject.event.aggregation.model.schedule.AggregationScheduleRec
 import org.motechproject.event.aggregation.model.schedule.CronBasedAggregationRecord;
 import org.motechproject.event.aggregation.model.schedule.CustomAggregationRecord;
 import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRecord;
-import org.motechproject.event.aggregation.service.AggregationScheduleRequest;
-import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
-import org.motechproject.event.aggregation.service.CustomAggregationRequest;
-import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.model.schedule.AggregationScheduleRequest;
+import org.motechproject.event.aggregation.model.schedule.CronBasedAggregationRequest;
+import org.motechproject.event.aggregation.model.schedule.CustomAggregationRequest;
+import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRequest;
 
 public class AggregationScheduleMapper {
 

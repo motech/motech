@@ -5,12 +5,7 @@ import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.event.aggregation.model.mapper.AggregationScheduleMapper;
-import org.motechproject.event.aggregation.model.schedule.CronBasedAggregationRecord;
-import org.motechproject.event.aggregation.model.schedule.CustomAggregationRecord;
-import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRecord;
-import org.motechproject.event.aggregation.service.CronBasedAggregationRequest;
-import org.motechproject.event.aggregation.service.CustomAggregationRequest;
-import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.model.schedule.*;
 
 import static junit.framework.Assert.assertEquals;
 import static org.motechproject.commons.date.util.DateUtil.newDateTime;

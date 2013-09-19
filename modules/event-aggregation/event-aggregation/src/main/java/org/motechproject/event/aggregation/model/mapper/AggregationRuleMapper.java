@@ -1,10 +1,10 @@
 package org.motechproject.event.aggregation.model.mapper;
 
-import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
 
 public class AggregationRuleMapper {
-    
+
     public AggregationRuleRecord toRecord(AggregationRuleRequest request) {
         AggregationRuleRecord record = new AggregationRuleRecord();
         record.setName(request.getName());

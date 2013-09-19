@@ -1,9 +1,9 @@
-package org.motechproject.event.aggregation.model.event;
+package org.motechproject.event.aggregation.model;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.aggregation.model.Aggregation;
-import org.motechproject.event.aggregation.service.AggregatedEventResult;
-import org.motechproject.event.aggregation.service.AggregationRule;
+import org.motechproject.event.aggregation.model.event.AggregatedEventResult;
+import org.motechproject.event.aggregation.model.event.EventStrings;
+import org.motechproject.event.aggregation.model.rule.AggregationRule;
 
 import java.util.HashMap;
 import java.util.List;

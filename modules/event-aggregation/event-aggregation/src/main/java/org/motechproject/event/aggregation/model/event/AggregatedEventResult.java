@@ -1,4 +1,4 @@
-package org.motechproject.event.aggregation.service;
+package org.motechproject.event.aggregation.model.event;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;

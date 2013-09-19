@@ -1,7 +1,7 @@
 package org.motechproject.event.aggregation.rule;
 
 import org.joda.time.DateTime;
-import org.motechproject.event.aggregation.service.AggregatedEvent;
+import org.motechproject.event.aggregation.model.event.AggregatedEvent;
 import org.mvel.MVEL;
 
 import java.util.List;

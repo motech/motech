@@ -1,11 +1,11 @@
 package org.motechproject.event.aggregation.osgi;
 
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.aggregation.model.AggregationState;
-import org.motechproject.event.aggregation.service.AggregatedEvent;
-import org.motechproject.event.aggregation.service.AggregationRuleRequest;
+import org.motechproject.event.aggregation.model.rule.AggregationState;
+import org.motechproject.event.aggregation.model.event.AggregatedEvent;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
 import org.motechproject.event.aggregation.service.EventAggregationService;
-import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRequest;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;

@@ -1,8 +1,8 @@
 package org.motechproject.event.aggregation.model.validate;
 
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
 import org.motechproject.event.aggregation.rule.RuleAgent;
-import org.motechproject.event.aggregation.service.AggregatedEvent;
+import org.motechproject.event.aggregation.model.event.AggregatedEvent;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

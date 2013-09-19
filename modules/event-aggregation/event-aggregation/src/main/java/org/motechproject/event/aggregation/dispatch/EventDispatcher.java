@@ -2,8 +2,8 @@ package org.motechproject.event.aggregation.dispatch;
 
 import org.apache.log4j.Logger;
 import org.motechproject.event.aggregation.model.Aggregation;
-import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.model.event.AggregationEvent;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRecord;
+import org.motechproject.event.aggregation.model.AggregationEvent;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.listener.EventRelay;
