@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-metrics</artifactId>
+            <artifactId>motech-platform-metrics</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

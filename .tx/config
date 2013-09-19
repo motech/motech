@@ -25,6 +25,12 @@ source_file = modules/seuss/seuss-ui/src/main/resources/webapp/messages/messages
 source_lang = en_US
 type = PROPERTIES
 
+[MOTECH.metrics]
+file_filter = modules/metrics/metrics/src/main/resources/webapp/messages/messages_<lang>.properties
+source_file = modules/metrics/metrics/src/main/resources/webapp/messages/messages.properties
+source_lang = en_US
+type = PROPERTIES
+
 [MOTECH.tasks-bundle]
 file_filter = modules/tasks/tasks-bundle/src/main/resources/webapp/messages/messages_<lang>.properties
 source_file = modules/tasks/tasks-bundle/src/main/resources/webapp/messages/messages.properties

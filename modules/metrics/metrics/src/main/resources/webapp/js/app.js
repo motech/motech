@@ -3,7 +3,7 @@
 
     /* App Module */
 
-    angular.module('motech-metrics', ['motech-dashboard', 'ngCookies', 'bootstrap'])
+    angular.module('motech-platform-metrics', ['motech-dashboard', 'ngCookies', 'bootstrap'])
         .config(['$routeProvider',
         function ($routeProvider) {
            $routeProvider.

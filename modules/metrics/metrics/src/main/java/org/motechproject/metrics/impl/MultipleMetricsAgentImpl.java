@@ -4,6 +4,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
  * Implementation of {@Link MetricsAgent} interface
  */
 
+@Service("metricsAgentService")
 public class MultipleMetricsAgentImpl implements MetricsAgent {
     @Autowired
     private List<MetricsAgentBackend> metricsAgents;
@@ -63,7 +65,7 @@ public class MultipleMetricsAgentImpl implements MetricsAgent {
      * @param startTime
      */
     @Override
-    public void stopTimer(String metric, long startTime) {
+    public void stopTimer(String metric, Long startTime) {
         long endTime = DateUtil.now().getMillis();
         long executionTime = endTime - startTime;
 
