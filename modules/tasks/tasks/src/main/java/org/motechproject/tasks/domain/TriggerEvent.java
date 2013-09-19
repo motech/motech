@@ -1,7 +1,7 @@
 package org.motechproject.tasks.domain;
 
-import org.motechproject.tasks.service.EventParameterRequest;
-import org.motechproject.tasks.service.TriggerEventRequest;
+import org.motechproject.tasks.contract.EventParameterRequest;
+import org.motechproject.tasks.contract.TriggerEventRequest;
 
 import java.util.ArrayList;
 import java.util.List;

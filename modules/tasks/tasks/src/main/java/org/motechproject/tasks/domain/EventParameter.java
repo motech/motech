@@ -1,6 +1,6 @@
 package org.motechproject.tasks.domain;
 
-import org.motechproject.tasks.service.EventParameterRequest;
+import org.motechproject.tasks.contract.EventParameterRequest;
 
 import java.util.Objects;
 

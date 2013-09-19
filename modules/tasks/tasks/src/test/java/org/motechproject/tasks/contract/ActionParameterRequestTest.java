@@ -1,6 +1,8 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.contract;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 import org.motechproject.tasks.domain.ParameterType;
 
 import static org.hamcrest.core.Is.is;
@@ -11,7 +13,7 @@ public class ActionParameterRequestTest {
 
     @Test
     public void shouldSetDefaultParameterType() {
-        assertThat(new ActionParameterRequest("key", "displayName", 1).getType(), is(ParameterType.UNICODE.getValue()));
+        assertThat(new ActionParameterRequest("key", "displayName", 1).getType(), Is.is(ParameterType.UNICODE.getValue()));
     }
 
     @Test

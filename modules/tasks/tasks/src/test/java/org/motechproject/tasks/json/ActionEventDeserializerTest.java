@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.tasks.domain.ParameterType;
-import org.motechproject.tasks.service.ActionEventRequest;
-import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

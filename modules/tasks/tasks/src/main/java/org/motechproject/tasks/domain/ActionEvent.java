@@ -1,8 +1,8 @@
 package org.motechproject.tasks.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.motechproject.tasks.service.ActionEventRequest;
-import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.Objects;
 import java.util.SortedSet;

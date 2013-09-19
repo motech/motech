@@ -1,9 +1,12 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.contract;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.motechproject.commons.api.json.MotechJsonReader;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ChannelRequest;
+import org.motechproject.tasks.contract.TriggerEventRequest;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 
 import java.io.ByteArrayInputStream;
