@@ -424,7 +424,7 @@
                                 return $(this)[0].outerHTML;
                             });
 
-                            if (manipulation !== undefined && manipulation.indexOf('date') === -1) {
+                            if (manipulation !== undefined) {
 
                                 scope.cleanArray = function() {
                                     var indexArray = scope.sortableArrayTemp.indexOf("");
@@ -434,16 +434,36 @@
                                 };
 
                                 scope.setSortable = function(elemen, index) {
-                                    if(elemen.indexOf('join') !== -1) {
+                                    if (elemen.indexOf('join') !== -1) {
                                         elemen = elemen.replace(elemen, 'join');
+                                    } else if (elemen.indexOf('split') !== -1) {
+                                        elemen = elemen.replace(elemen, 'split');
+                                    } else if (elemen.indexOf('substring') !== -1) {
+                                        elemen = elemen.replace(elemen, 'substring');
+                                    } else if (elemen.indexOf('dateTime') !== -1) {
+                                        elemen = elemen.replace(elemen, 'dateTime');
+                                    } else if (elemen.indexOf('plusDays') !== -1) {
+                                        elemen = elemen.replace(elemen, 'plusDays');
                                     }
                                     elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
                                         if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
                                             $(this).append('<span class="icon-ok" style="float: right;"></span>');
                                             $(this).parent().addClass('active');
-                                            if (manipulation.indexOf("join") !== -1) {
+                                            if (manipulation.indexOf("join") !== -1 && elemen.indexOf('join') !== -1) {
                                                 $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")")));
+                                                elem.find('input[join-update]').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")", manipulation.indexOf("join"))));
+                                            } else if (manipulation.indexOf("split") !== -1 && elemen.indexOf('split') !== -1){
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input[split-update]').val(manipulation.slice(manipulation.indexOf("split") + 6, manipulation.indexOf(")", manipulation.indexOf("split"))));
+                                            } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("substring") + 10, manipulation.indexOf(")", manipulation.indexOf("substring"))));
+                                            } else if (manipulation.indexOf("dateTime") !== -1 && elemen.indexOf('dateTime') !== -1) {
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input[date-update]').val(manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")", manipulation.indexOf("dateTime"))));
+                                            } else if (manipulation.indexOf("plusDays") !== -1 && elemen.indexOf('plusDays') !== -1) {
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input[days-update]').val(manipulation.slice(manipulation.indexOf("plusDays") + 9, manipulation.indexOf(")", manipulation.indexOf("plusDays"))));
                                             } else {
                                                 elem.find('input').val("");
                                             }
@@ -457,20 +477,6 @@
                             scope.sortableArrayTemp = manipulation.split(" ");
                             scope.sortableArrayTemp.forEach(scope.cleanArray);
                             scope.sortableArrayTemp.forEach(scope.setSortable);
-                            }
-
-                            if ($(elem).children().is("input[id='dateFormat']")) {
-                                element = $("[ismanipulate=true]");
-                                manipulation = element.attr('manipulate');
-
-                                if (manipulation !== undefined) {
-                                    elem.first().append('<span class="icon-remove" style="float: right;"></span>');
-                                    elem.first().append('<span class="icon-ok" style="float: right;"></span>');
-
-                                    elem[4].children[0].value = manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")"));
-                                } else {
-                                    elem.find('input').val("");
-                                }
                             }
 
                             return $compile(elem)(msgScope);
@@ -503,12 +509,6 @@
 
                         $('.dragpopover').mousedown(function (event) {
                             event.stopPropagation();
-                        });
-
-                        $('span.icon-remove').click(function () {
-                            $(this.parentElement).children().remove();
-                            $("[ismanipulate=true]").removeAttr("manipulate");
-                            $("#dateFormat").val('');
                         });
 
                         $('.box-content').click(function () {
@@ -645,35 +645,45 @@
                 el.bind("click", function () {
                     var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", reg, manipulation, manipulateAttributes, manipulationAttributesIndex;
 
-                    if (manipulateElement.data('type') !== "DATE") {
-                        manipulation = this.getAttribute("setManipulation");
-                        manipulateAttributes = manipulateElement.attr("manipulate") || "";
+                    manipulation = this.getAttribute("setManipulation");
+                    manipulateAttributes = manipulateElement.attr("manipulate") || "";
 
-                        if (manipulateAttributes.indexOf(manipulation) !== -1) {
-                            manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
+                    if (manipulateAttributes.indexOf(manipulation) !== -1) {
+                        manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
 
-                            if (manipulation !== "join") {
-                                reg = new RegExp(manipulation, "g");
-                                manipulateAttributes = manipulateAttributes.replace(reg, '');
-                            } else {
-                                joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)";
-                                reg = new RegExp(joinSeparator, "g");
-                                manipulateAttributes = manipulateAttributes.replace(reg, '');
-                            }
+                        if (manipulation !== "join" && manipulation !== "split" && manipulation !== "substring" && manipulation !== "dateTime" && manipulation !== "plusDays") {
+                            reg = new RegExp(manipulation, "g");
+                            manipulateAttributes = manipulateAttributes.replace(reg, '');
                         } else {
-                            manipulateAttributes = manipulateAttributes.replace(/ +(?= )/g, '');
-
-                            if (manipulation !== "join") {
-                                manipulateAttributes = manipulateAttributes + manipulation + " ";
-                            } else {
-                                $("#joinSeparator").val("");
-                                manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
-                            }
+                            joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)";
+                            reg = new RegExp(joinSeparator, "g");
+                            manipulateAttributes = manipulateAttributes.replace(reg, '');
                         }
+                    } else {
+                        manipulateAttributes = manipulateAttributes.replace(/ +(?= )/g, '');
 
-                        manipulateElement.attr('manipulate', manipulateAttributes);
-                        scope.setSortableArray();
+                        if (manipulation === "join") {
+                            $("#joinSeparator").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "split") {
+                            $("#splitSeparator").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "substring") {
+                            $("#substringSeparator").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "dateTime") {
+                            $("#dateFormat").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "plusDays") {
+                            $("#plusDays").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else {
+                            manipulateAttributes = manipulateAttributes + manipulation + " ";
+                        }
                     }
+
+                    manipulateElement.attr('manipulate', manipulateAttributes);
+                    scope.setSortableArray();
 
                     if (this.children.length === 0) {
                         $(this).append('<span class="icon-ok" style="float: right;"></span>');
@@ -685,33 +695,6 @@
                         $(this.nextElementSibling).css({ 'display' : 'none' });
                         $(this).parent().removeClass("active");
                         $('#sortable-no').append($(this.parentElement).clone().end());
-                    }
-                });
-
-                el.bind("focusout focusin keyup", function (event) {
-                    event.stopPropagation();
-                    var dateFormat = this.value, manipulateElement = $("[ismanipulate=true]"), deleteButton, manipulation;
-
-                    if (manipulateElement.data("type") === 'DATE') {
-                        deleteButton = $('<span class="icon-remove" style="float: right;"></span>');
-                        manipulation = this.getAttribute("setManipulation") + "(" + dateFormat + ")";
-                        manipulateElement.removeAttr("manipulate");
-
-                        if (dateFormat.length !== 0) {
-                            manipulateElement.attr("manipulate", manipulation);
-
-                            if (this.parentElement.parentElement.firstChild.children.length === 0) {
-                                $(this.parentElement.parentElement.firstChild).append(deleteButton);
-                                $(this.parentElement.parentElement.firstChild).append('<span class="icon-ok" style="float: right;"></span>');
-                            }
-                        } else if (dateFormat.length === 0) {
-                            $(this.parentElement.parentElement.firstChild).children().remove();
-                        }
-                        $('span.icon-remove').click(function () {
-                            $(this.parentElement).children().remove();
-                            $("[ismanipulate=true]").removeAttr("manipulate");
-                            $("#dateFormat").val('');
-                        });
                     }
                 });
             }
@@ -729,6 +712,82 @@
                         manipulation = "join(" + $("#joinSeparator").val() + ")",
                         elementManipulation = manipulateElement.attr("manipulate"),
                         regex = new RegExp("join\\(.*?\\)", "g");
+
+                    elementManipulation = elementManipulation.replace(regex, manipulation);
+                    manipulateElement.attr("manipulate", elementManipulation);
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('splitUpdate', function () {
+        return {
+            restrict : 'A',
+            require: '?ngModel',
+            link : function (scope, el, attrs) {
+                el.bind("focusout focusin keyup", function (event) {
+                    event.stopPropagation();
+                    var manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = "split(" + $("#splitSeparator").val() + ")",
+                        elementManipulation = manipulateElement.attr("manipulate"),
+                        regex = new RegExp("split\\(.*?\\)", "g");
+
+                    elementManipulation = elementManipulation.replace(regex, manipulation);
+                    manipulateElement.attr("manipulate", elementManipulation);
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('substringUpdate', function () {
+        return {
+            restrict : 'A',
+            require: '?ngModel',
+            link : function (scope, el, attrs) {
+                el.bind("focusout focusin keyup", function (event) {
+                    event.stopPropagation();
+                    var manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = "substring(" + $("#substringSeparator").val() + ")",
+                        elementManipulation = manipulateElement.attr("manipulate"),
+                        regex = new RegExp("substring\\(.*?\\)", "g");
+
+                    elementManipulation = elementManipulation.replace(regex, manipulation);
+                    manipulateElement.attr("manipulate", elementManipulation);
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('dateUpdate', function () {
+        return {
+            restrict : 'A',
+            require: '?ngModel',
+            link : function (scope, el, attrs) {
+                el.bind("focusout focusin keyup", function (event) {
+                    event.stopPropagation();
+                    var manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = "dateTime(" + $("#dateFormat").val() + ")",
+                        elementManipulation = manipulateElement.attr("manipulate"),
+                        regex = new RegExp("dateTime\\(.*?\\)", "g");
+
+                    elementManipulation = elementManipulation.replace(regex, manipulation);
+                    manipulateElement.attr("manipulate", elementManipulation);
+                });
+            }
+        };
+    });
+
+    widgetModule.directive('daysUpdate', function () {
+        return {
+            restrict : 'A',
+            require: '?ngModel',
+            link : function (scope, el, attrs) {
+                el.bind("focusout focusin keyup", function (event) {
+                    event.stopPropagation();
+                    var manipulateElement = $("[ismanipulate=true]"),
+                        manipulation = "plusDays(" + $("#plusDays").val() + ")",
+                        elementManipulation = manipulateElement.attr("manipulate"),
+                        regex = new RegExp("plusDays\\(.*?\\)", "g");
 
                     elementManipulation = elementManipulation.replace(regex, manipulation);
                     manipulateElement.attr("manipulate", elementManipulation);
