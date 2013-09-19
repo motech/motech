@@ -8,6 +8,8 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.event.domain.BuggyListener;
+import org.motechproject.event.listener.impl.EventListenerRegistry;
+import org.motechproject.event.listener.impl.ServerEventRelay;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 

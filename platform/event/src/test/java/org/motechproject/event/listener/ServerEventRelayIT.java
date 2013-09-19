@@ -10,6 +10,8 @@ import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.domain.TrackingListener;
 import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.event.listener.impl.EventListenerRegistry;
+import org.motechproject.event.listener.impl.ServerEventRelay;
 import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.event.listener.ServerEventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
@@ -30,7 +30,7 @@ public class ConfigFileMonitorTest {
     private static final String SETTINGS_FILE_NAME = "settings.properties";
 
     @Mock
-    ServerEventRelay serverEventRelay;
+    EventRelay serverEventRelay;
 
     @Mock
     ConfigLoader configLoader;

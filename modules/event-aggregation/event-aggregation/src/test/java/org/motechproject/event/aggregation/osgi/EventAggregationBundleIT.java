@@ -7,7 +7,6 @@ import org.motechproject.event.aggregation.service.AggregationRuleRequest;
 import org.motechproject.event.aggregation.service.EventAggregationService;
 import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
 import org.motechproject.event.listener.EventListener;
-import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -30,7 +29,7 @@ public class EventAggregationBundleIT extends BaseOsgiIT {
         final int totalEvents = 3;
 
         ServiceReference eventListenerRegistryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        EventListenerRegistry eventListenerRegistry = (EventListenerRegistry) bundleContext.getService(eventListenerRegistryReference);
+        EventListenerRegistryService eventListenerRegistry = (EventListenerRegistryService) bundleContext.getService(eventListenerRegistryReference);
         String aggregationEvent = id("agg");
         eventListenerRegistry.registerListener(new EventListener() {
             @Override

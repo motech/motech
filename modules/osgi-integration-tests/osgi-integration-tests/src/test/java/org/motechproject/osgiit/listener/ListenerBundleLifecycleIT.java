@@ -1,8 +1,6 @@
 package org.motechproject.osgiit.listener;
 
-import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.osgiit.listener.SampleEventListener;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
@@ -56,24 +54,24 @@ public class ListenerBundleLifecycleIT extends BaseOsgiIT {
     }
 
     private void verifyListenersRegistered() {
-        EventListenerRegistry registry = getEventRegistry();
+        EventListenerRegistryService registry = getEventRegistry();
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A));
         assertEquals(1, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_B));
         assertEquals(2, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_TWO_LISTENERS));
     }
 
     private void verifyListenersCleared() {
-        EventListenerRegistry registry = getEventRegistry();
+        EventListenerRegistryService registry = getEventRegistry();
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_A));
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_ONE_LISTENER_B));
         assertEquals(0, registry.getListenerCount(SampleEventListener.SUBJECT_FOR_TWO_LISTENERS));
     }
 
-    private EventListenerRegistry getEventRegistry() {
+    private EventListenerRegistryService getEventRegistry() {
         ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class
                 .getName());
         assertNotNull(registryReference);
-        EventListenerRegistry registry = (EventListenerRegistry) bundleContext.getService(registryReference);
+        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
         assertNotNull(registry);
         return registry;
     }

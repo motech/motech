@@ -1,8 +1,10 @@
-package org.motechproject.event.listener;
+package org.motechproject.event.listener.impl;
 
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.event.utils.MotechProxyUtils;
 import org.slf4j.Logger;

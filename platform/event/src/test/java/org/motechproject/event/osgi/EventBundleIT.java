@@ -4,7 +4,6 @@ package org.motechproject.event.osgi;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.domain.TestEventPayload;
 import org.motechproject.event.listener.EventListener;
-import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.testing.osgi.BaseOsgiIT;
@@ -27,7 +26,7 @@ public class EventBundleIT extends BaseOsgiIT {
 
         ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
         assertNotNull(registryReference);
-        EventListenerRegistry registry = (EventListenerRegistry) bundleContext.getService(registryReference);
+        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
         assertNotNull(registry);
         registry.registerListener(new EventListener() {
             @Override
@@ -77,7 +76,7 @@ public class EventBundleIT extends BaseOsgiIT {
         final ArrayList<MotechEvent> receivedEvents = new ArrayList<>();
 
         ServiceReference registryReference = bundleContext.getServiceReference(EventListenerRegistryService.class.getName());
-        EventListenerRegistry registry = (EventListenerRegistry) bundleContext.getService(registryReference);
+        EventListenerRegistryService registry = (EventListenerRegistryService) bundleContext.getService(registryReference);
         registry.registerListener(new EventListener() {
 
             @Override
