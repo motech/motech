@@ -19,6 +19,7 @@
 <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-notify.css"/>
 <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-switch.css"/>
 <link rel="stylesheet" type="text/css" href="resources/css/alert-blackgloss.css"/>
+<link rel="stylesheet" type="text/css" href="resources/css/select2.css"/>
 
 <script type="text/javascript" src="resources/lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="resources/lib/jquery/jquery.form.js"></script>
@@ -30,6 +31,7 @@
 <script type="text/javascript" src="resources/lib/jquery/jquery.caret.js"></script>
 <script type="text/javascript" src="resources/lib/jquery/jquery.sidebar.js"></script>
 <script type="text/javascript" src="resources/lib/jquery/jquery.livequery.min.js"></script>
+<script type="text/javascript" src="resources/lib/jquery/jquery.select2.js"></script>
 
 <script type="text/javascript" src="resources/lib/angular/angular.min.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-resource.min.js"></script>
