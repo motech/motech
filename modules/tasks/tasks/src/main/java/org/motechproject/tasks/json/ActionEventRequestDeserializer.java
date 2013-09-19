@@ -6,8 +6,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import org.motechproject.tasks.service.ActionEventRequest;
-import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.lang.reflect.Type;
 

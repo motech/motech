@@ -2,9 +2,9 @@ package org.motechproject.tasks.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
-import org.motechproject.tasks.service.ActionEventRequest;
-import org.motechproject.tasks.service.ChannelRequest;
-import org.motechproject.tasks.service.TriggerEventRequest;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ChannelRequest;
+import org.motechproject.tasks.contract.TriggerEventRequest;
 
 import java.util.ArrayList;
 import java.util.List;

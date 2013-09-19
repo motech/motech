@@ -2,6 +2,7 @@ package org.motechproject.tasks.service;
 
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.contract.ChannelRequest;
 
 import java.io.IOException;
 import java.io.InputStream;

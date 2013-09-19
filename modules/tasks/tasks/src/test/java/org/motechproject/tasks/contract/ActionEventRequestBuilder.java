@@ -1,7 +1,4 @@
-package org.motechproject.tasks.domain;
-
-import org.motechproject.tasks.service.ActionEventRequest;
-import org.motechproject.tasks.service.ActionParameterRequest;
+package org.motechproject.tasks.contract;
 
 import java.util.SortedSet;
 import java.util.TreeSet;

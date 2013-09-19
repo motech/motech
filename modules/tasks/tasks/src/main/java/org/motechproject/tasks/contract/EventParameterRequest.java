@@ -1,4 +1,4 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.contract;
 
 import java.util.Objects;
 

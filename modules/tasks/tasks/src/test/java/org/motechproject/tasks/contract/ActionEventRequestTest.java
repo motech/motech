@@ -1,7 +1,6 @@
-package org.motechproject.tasks.service;
+package org.motechproject.tasks.contract;
 
 import org.junit.Test;
-import org.motechproject.tasks.domain.ActionEventRequestBuilder;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

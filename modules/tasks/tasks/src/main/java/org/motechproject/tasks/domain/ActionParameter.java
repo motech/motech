@@ -1,6 +1,6 @@
 package org.motechproject.tasks.domain;
 
-import org.motechproject.tasks.service.ActionParameterRequest;
+import org.motechproject.tasks.contract.ActionParameterRequest;
 
 import java.util.Objects;
 
