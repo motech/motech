@@ -34,12 +34,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-startup</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -205,9 +199,6 @@
                             org.springframework.web.servlet.view,
                             *
                         </Import-Package>
-                        <Embed-Dependency>
-                            motech-platform-server-startup;inline=true
-                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
