@@ -651,14 +651,12 @@
                 }
 
                 if (manipulations !== "") {
-                    if ($scope.util.isText(type)) {
+                    if ($scope.util.isText(type) || $scope.util.isDate(type)) {
                         array = manipulations.split(" ");
 
                         for (i = 0; i < array.length; i += 1) {
                             key = key.concat("?" + array[i]);
                         }
-                    } else if ($scope.util.isDate(type)) {
-                        key = key.concat("?" + manipulations);
                     }
                 }
 
