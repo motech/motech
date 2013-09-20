@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import static org.motechproject.tasks.domain.ParameterType.LIST;
+import static org.motechproject.tasks.domain.ParameterType.MAP;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.ACTION;
 import static org.motechproject.tasks.events.constants.TaskFailureCause.TRIGGER;
 
@@ -114,6 +115,10 @@ class TaskActionExecutor {
                         TRIGGER, "task.error.taskActionNotContainsField",
                         action.getDisplayName(), key
                     );
+                } else if(actionParameter.getType() == MAP) {
+                    parameters.put(key, new HashMap<>());
+                } else if(actionParameter.getType() == LIST) {
+                    parameters.put(key, new ArrayList<>());
                 } else {
                     parameters.put(key, null);
                 }

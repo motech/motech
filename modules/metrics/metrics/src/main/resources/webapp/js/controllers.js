@@ -4,13 +4,16 @@
 
     /* Controllers */
 
-    var metricsModule = angular.module('motech-metrics');
+    var metricsModule = angular.module('motech-platform-metrics');
 
     metricsModule.controller('OperationsCtrl', function($scope, $http) {
 
         $http({method:'GET', url:'../metrics/settings/getGraphiteUrl'}).
             success(function (data) {
-                $scope.graphiteUrl = data;
+                if(data) {
+                    $scope.graphiteUrl = data.concat("/composer");
+                }
+
                 // prefix with http://
                 if ($scope.graphiteUrl && $scope.graphiteUrl.lastIndexOf("http://") !== 0) {
                     $scope.graphiteUrl = "http://" + $scope.graphiteUrl;

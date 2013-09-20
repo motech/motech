@@ -1,0 +1,46 @@
+{
+  "displayName": "metrics",
+  "moduleName": "${project.artifactId}",
+  "moduleVersion": "${parsedVersion.osgiVersion}",
+  "actionTaskEvents": [
+    {
+      "displayName": "metrics.logEvent",
+      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceMethod": "logEvent",
+      "actionParameters": [
+        {
+          "key": "metric",
+          "displayName": "metrics.metric"
+        },
+        {
+          "key": "parameters",
+          "displayName": "metrics.event.parameters",
+          "type": "MAP",
+          "required": false
+        }
+      ]
+    },
+    {
+      "displayName": "metrics.startTimer",
+      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceMethod": "startTimer"
+
+    },
+    {
+      "displayName": "metrics.stopTimer",
+      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceMethod": "stopTimer",
+      "actionParameters": [
+      {
+        "key": "metric",
+        "displayName": "metrics.metric"
+      },
+      {
+        "key": "timerValue",
+        "displayName": "metrics.timerValue",
+        "type": "LONG"
+      }
+    ]
+    }
+  ]
+}

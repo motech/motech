@@ -135,7 +135,7 @@
             'org.motechproject:motech-sms-api-bundle:[0,)':'SMS',
             'org.motechproject:motech-sms-http-bundle:[0,)':'SMS Http',
             'org.motechproject:motech-sms-smpp-bundle:[0,)':'SMS Smpp',
-            'org.motechproject:motech-metrics:[0,)':'Metrics'
+            'org.motechproject:motech-platform-metrics:[0,)':'Metrics'
         };
 
         $scope.module = "";

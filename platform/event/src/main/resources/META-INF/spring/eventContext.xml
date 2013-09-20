@@ -18,4 +18,6 @@
     </osgi:service>
 
     <bean id="reloadBrokerConfigHandler" class="org.motechproject.event.config.ReloadBrokerConfigHandler"/>
+
+    <osgi:reference id="metricsAgent" interface="org.motechproject.metrics.MetricsAgent"/>
 </beans>

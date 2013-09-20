@@ -34,5 +34,5 @@ public interface MetricsAgent {
      * @param metric     The metric being timed
      * @param timerValue
      */
-    void stopTimer(String metric, long timerValue);
+    void stopTimer(String metric, Long timerValue);
 }
