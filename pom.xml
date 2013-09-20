@@ -1025,6 +1025,7 @@
         <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
         <module>utils/pmd-rules</module>
+        <module>utils/enforcer-rules</module>
 
         <!-- OSGI modules -->
         <module>platform/commons-api</module>
@@ -1255,6 +1256,31 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.motechproject</groupId>
+                        <artifactId>enforcer-rules</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>enforce-no-package-cycles</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>verify</phase>
+                        <configuration>
+                            <rules>
+                                <NoPackageCyclesRule
+                                        implementation="PackageCycles" />
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
