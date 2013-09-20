@@ -4,7 +4,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.event.aggregation.service.PeriodicAggregation;
 
 public class PeriodicAggregationRecord extends AggregationScheduleRecord implements PeriodicAggregation {
     private static final long serialVersionUID = 3403337605865847986L;

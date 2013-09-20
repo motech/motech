@@ -2,9 +2,9 @@ package org.motechproject.event.aggregation.aggregate;
 
 import org.apache.log4j.Logger;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
-import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationState;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
 import org.motechproject.event.aggregation.repository.AllAggregationRules;
 import org.motechproject.event.listener.EventListener;

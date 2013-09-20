@@ -5,7 +5,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
 import org.motechproject.event.aggregation.model.Aggregation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

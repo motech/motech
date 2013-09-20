@@ -1,7 +1,7 @@
 package org.motechproject.event.aggregation.rule;
 
 import org.junit.Test;
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
 
 import java.util.HashMap;
 

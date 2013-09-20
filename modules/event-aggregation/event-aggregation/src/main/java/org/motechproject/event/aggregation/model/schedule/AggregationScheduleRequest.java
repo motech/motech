@@ -1,4 +1,4 @@
-package org.motechproject.event.aggregation.service;
+package org.motechproject.event.aggregation.model.schedule;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;

@@ -2,9 +2,9 @@ package org.motechproject.event.aggregation.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
-import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationState;
 import org.motechproject.event.aggregation.model.schedule.CustomAggregationRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

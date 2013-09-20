@@ -5,7 +5,7 @@ import org.motechproject.event.aggregation.model.event.EventStrings;
 import org.motechproject.event.aggregation.model.event.SporadicDispatchEvent;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
 import org.motechproject.event.aggregation.rule.RuleAgent;
-import org.motechproject.event.aggregation.service.AggregatedEvent;
+import org.motechproject.event.aggregation.model.event.AggregatedEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 

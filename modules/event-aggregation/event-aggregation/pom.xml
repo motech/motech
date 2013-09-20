@@ -132,6 +132,8 @@
                         <Resource-Path>event-aggregation/resources</Resource-Path>
                         <Export-Package>
                             org.motechproject.event.aggregation.model.schedule;version=${project.version},
+                            org.motechproject.event.aggregation.model.event;version=${project.version},
+                            org.motechproject.event.aggregation.model.rule;version=${project.version},
                             org.motechproject.event.aggregation.model;version=${project.version},
                             org.motechproject.event.aggregation.service;version=${project.version}
                         </Export-Package>

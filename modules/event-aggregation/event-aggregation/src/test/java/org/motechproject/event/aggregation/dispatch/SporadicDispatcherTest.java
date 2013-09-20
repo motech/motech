@@ -3,13 +3,13 @@ package org.motechproject.event.aggregation.dispatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.event.aggregation.model.AggregationRuleRecord;
-import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRecord;
+import org.motechproject.event.aggregation.model.rule.AggregationState;
 import org.motechproject.event.aggregation.model.event.SporadicDispatchEvent;
 import org.motechproject.event.aggregation.model.mapper.AggregationRuleMapper;
 import org.motechproject.event.aggregation.repository.AllAggregatedEvents;
-import org.motechproject.event.aggregation.service.AggregationRuleRequest;
-import org.motechproject.event.aggregation.service.PeriodicAggregationRequest;
+import org.motechproject.event.aggregation.model.rule.AggregationRuleRequest;
+import org.motechproject.event.aggregation.model.schedule.PeriodicAggregationRequest;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.never;

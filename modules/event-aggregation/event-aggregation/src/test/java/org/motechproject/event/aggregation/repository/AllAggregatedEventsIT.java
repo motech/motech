@@ -3,7 +3,7 @@ package org.motechproject.event.aggregation.repository;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.event.aggregation.model.AggregatedEventRecord;
+import org.motechproject.event.aggregation.model.event.AggregatedEventRecord;
 import org.motechproject.event.aggregation.model.Aggregation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

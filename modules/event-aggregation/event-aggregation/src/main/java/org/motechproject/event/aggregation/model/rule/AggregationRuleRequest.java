@@ -1,8 +1,8 @@
-package org.motechproject.event.aggregation.service;
+package org.motechproject.event.aggregation.model.rule;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.schedule.AggregationScheduleRequest;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

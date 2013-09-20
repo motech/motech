@@ -1,11 +1,10 @@
-package org.motechproject.event.aggregation.model;
+package org.motechproject.event.aggregation.model.rule;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.event.aggregation.model.schedule.AggregationScheduleRecord;
-import org.motechproject.event.aggregation.service.AggregationRule;
 
 import java.util.List;
 

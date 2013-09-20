@@ -1,6 +1,6 @@
-package org.motechproject.event.aggregation.service;
+package org.motechproject.event.aggregation.model.rule;
 
-import org.motechproject.event.aggregation.model.AggregationState;
+import org.motechproject.event.aggregation.model.schedule.AggregationSchedule;
 
 import java.util.List;
 
