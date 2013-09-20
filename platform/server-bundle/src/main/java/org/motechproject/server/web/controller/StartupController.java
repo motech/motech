@@ -5,7 +5,7 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.validator.StartupFormValidator;
@@ -48,7 +48,7 @@ public class StartupController {
     private PlatformSettingsService platformSettingsService;
 
     @Autowired
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
 
     @Autowired
     private MotechUserService userService;
@@ -65,14 +65,14 @@ public class StartupController {
         if (startupManager.canLaunchBundles()) {
             view.setViewName("redirect:home");
         } else {
-            Locale userLocale = localeSettings.getUserLocale(request);
+            Locale userLocale = localeService.getUserLocale(request);
 
             StartupForm startupSettings = new StartupForm();
             startupSettings.setLanguage(userLocale.getLanguage());
 
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);
-            view.addObject("languages", localeSettings.getAvailableLanguages());
+            view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("pageLang", userLocale);
         }
 
@@ -86,7 +86,7 @@ public class StartupController {
 
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());
-            view.addObject("languages", localeSettings.getAvailableLanguages());
+            view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("loginMode", form.getLoginMode());
             view.addObject("errors", getErrors(result));
 

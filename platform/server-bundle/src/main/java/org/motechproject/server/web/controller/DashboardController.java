@@ -9,7 +9,7 @@ import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,7 +37,7 @@ public class DashboardController {
     @Autowired
     private UIFrameworkService uiFrameworkService;
     @Autowired
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
     @Autowired
     private MotechUserService userService;
     @Autowired
@@ -114,7 +114,7 @@ public class DashboardController {
     @RequestMapping(value = "/gettime", method = RequestMethod.POST)
     @ResponseBody
     public String getTime(HttpServletRequest request) {
-        Locale locale = localeSettings.getUserLocale(request);
+        Locale locale = localeService.getUserLocale(request);
         DateTimeFormatter format = forPattern("EEE MMM dd, h:mm a, z yyyy").withLocale(locale);
         return now().toString(format);
     }
@@ -128,7 +128,7 @@ public class DashboardController {
     @RequestMapping(value = "/getUser", method = RequestMethod.POST)
     @ResponseBody
     public UserInfo getUser(HttpServletRequest request) {
-        String lang = localeSettings.getUserLocale(request).getLanguage();
+        String lang = localeService.getUserLocale(request).getLanguage();
         boolean securityLaunch = request.getUserPrincipal() != null;
         String userName = securityLaunch ? request.getUserPrincipal().getName() : "Admin Mode";
 
