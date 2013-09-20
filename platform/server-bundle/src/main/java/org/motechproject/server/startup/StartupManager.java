@@ -3,7 +3,7 @@ package org.motechproject.server.startup;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
-import org.motechproject.server.config.ConfigLoader;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.domain.ConfigFileSettings;

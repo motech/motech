@@ -1,6 +1,5 @@
 package org.motechproject.server.config.domain;
 
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.File;
@@ -123,7 +122,7 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     public void storeMotechSettings() throws IOException {
-        File file = new File(getPath() + File.separator + PlatformSettingsService.SETTINGS_FILE_NAME);
+        File file = new File(getPath() + File.separator + MotechSettings.SETTINGS_FILE_NAME);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             motechSettings.store(fileOutputStream, null);
         }
@@ -146,7 +145,7 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     public void storeActiveMqSettings() throws IOException {
-        File file = new File(getPath() + File.separator + PlatformSettingsService.ACTIVEMQ_FILE_NAME);
+        File file = new File(getPath() + File.separator + MotechSettings.ACTIVEMQ_FILE_NAME);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             activemq.store(fileOutputStream, null);
         }

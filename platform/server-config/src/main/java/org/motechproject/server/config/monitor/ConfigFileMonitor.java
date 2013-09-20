@@ -9,9 +9,10 @@ import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.ConfigLoader;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.settings.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class ConfigFileMonitor implements FileListener {
     public static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
     public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "deleted";
     public static final String FILE_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "changed";
+    public static final String FILE_CREATED_EVENT_SUBJECT = BASE_SUBJECT + "created";
     public static final String FILE_URL_PARAM = "fileURL";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
@@ -110,14 +112,20 @@ public class ConfigFileMonitor implements FileListener {
 
     @Override
     public void fileCreated(FileChangeEvent fileChangeEvent) {
+        String fileName = fileChangeEvent.getFile().getName().getBaseName();
+
+        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+            LOGGER.info("Config file was created: " + fileName);
+            sendEventMessage(FILE_CREATED_EVENT_SUBJECT, fileChangeEvent);
+        }
     }
 
     public void evictProperCache(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (fileName.equals(PlatformSettingsService.SETTINGS_FILE_NAME)) {
+        if (fileName.equals(MotechSettings.SETTINGS_FILE_NAME)) {
             platformSettingsService.evictMotechSettingsCache();
-        } else if (fileName.equals(PlatformSettingsService.ACTIVEMQ_FILE_NAME)) {
+        } else if (fileName.equals(MotechSettings.ACTIVEMQ_FILE_NAME)) {
             platformSettingsService.evictActiveMqSettingsCache();
         } else {
             platformSettingsService.evictBundleSettingsCache();
@@ -126,26 +134,30 @@ public class ConfigFileMonitor implements FileListener {
 
     @Override
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
-        LOGGER.error("Config file was deleted...");
+        String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (currentSettings != null) {
-            remove();
+        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+            LOGGER.warn("Config file was deleted: " + fileName);
+
+            evictProperCache(fileChangeEvent);
+
+            sendEventMessage(FILE_DELETED_EVENT_SUBJECT, fileChangeEvent);
         }
-
-        evictProperCache(fileChangeEvent);
-
-        sendEventMessage(FILE_DELETED_EVENT_SUBJECT, fileChangeEvent);
     }
 
     @Override
     public void fileChanged(FileChangeEvent fileChangeEvent) {
-        LOGGER.warn("Config file was changed...");
+        String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        currentSettings = configLoader.loadConfig();
+        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+            LOGGER.info("Config file was changed: " + fileName);
 
-        evictProperCache(fileChangeEvent);
+            currentSettings = configLoader.loadConfig();
 
-        sendEventMessage(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
+            evictProperCache(fileChangeEvent);
+
+            sendEventMessage(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
+        }
     }
 
     public void afterPropertiesSet() throws FileSystemException {

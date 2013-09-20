@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.ConfigLoader;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.springframework.core.io.ClassPathResource;
@@ -108,17 +108,6 @@ public class ConfigFileMonitorTest {
     }
 
     @Test
-    public void testBundleSettingsFileDeleted() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(settingsResource);
-
-        configFileMonitor.fileDeleted(fileChangeEvent);
-
-        verify(platformSettingsService).evictBundleSettingsCache();
-
-        assertNull(configFileMonitor.getCurrentSettings());
-    }
-
-    @Test
     public void testMotechFileChanged() throws Exception {
         when(fileChangeEvent.getFile()).thenReturn(motechSettingsResource);
         when(configLoader.loadConfig()).thenReturn(motechSettings);
@@ -141,18 +130,6 @@ public class ConfigFileMonitorTest {
         verify(configLoader).loadConfig();
         verify(platformSettingsService).evictActiveMqSettingsCache();
 
-        assertCurrentSettings();
-    }
-
-    @Test
-    public void testBundleFileChanged() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(settingsResource);
-        when(configLoader.loadConfig()).thenReturn(motechSettings);
-
-        configFileMonitor.fileChanged(fileChangeEvent);
-
-        verify(configLoader).loadConfig();
-        verify(platformSettingsService).evictBundleSettingsCache();
         assertCurrentSettings();
     }
 

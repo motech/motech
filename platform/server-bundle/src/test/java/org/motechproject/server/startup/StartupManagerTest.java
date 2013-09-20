@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
-import org.motechproject.server.config.ConfigLoader;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;

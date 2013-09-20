@@ -11,8 +11,6 @@ import java.util.Properties;
 
 public interface PlatformSettingsService {
     String SETTINGS_CACHE_NAME = "MotechSettings";
-    String SETTINGS_FILE_NAME = "motech-settings.conf";
-    String ACTIVEMQ_FILE_NAME = "activemq.properties";
     String ACTIVEMQ_CACHE_NAME = "ActiveMqSettings";
     String BUNDLE_CACHE_NAME = "BundleSettings";
 

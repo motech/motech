@@ -66,7 +66,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void savePlatformSettings(Properties settings) {
         createConfigDir();
 
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME), SETTINGS_FILE_NAME));
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME),
+                MotechSettings.SETTINGS_FILE_NAME));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
@@ -95,7 +96,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void saveActiveMqSettings(Properties settings) {
         createConfigDir();
 
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME), ACTIVEMQ_FILE_NAME));
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME),
+                MotechSettings.ACTIVEMQ_FILE_NAME));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
@@ -124,7 +126,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             configFileSettings = configFileMonitor.getCurrentSettings();
         }
 
-        File configFile = new File(configFileSettings.getPath() + File.separator + SETTINGS_FILE_NAME);
+        File configFile = new File(configFileSettings.getPath() + File.separator + MotechSettings.SETTINGS_FILE_NAME);
 
         try {
             // save property to config file
@@ -148,7 +150,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             return;
         }
 
-        File configFile = new File(configFileSettings.getPath() + File.separator + ACTIVEMQ_FILE_NAME);
+        File configFile = new File(configFileSettings.getPath() + File.separator + MotechSettings.ACTIVEMQ_FILE_NAME);
         try {
             if (configFile.canWrite()) {
                 configFileSettings.saveActiveMqSetting(key, value);

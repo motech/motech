@@ -7,6 +7,8 @@ import java.util.Properties;
  */
 
 public interface MotechSettings {
+    String SETTINGS_FILE_NAME = "motech-settings.conf";
+    String ACTIVEMQ_FILE_NAME = "activemq.properties";
 
     String AMQ_QUEUE_EVENTS = "queue.for.events";
     String AMQ_QUEUE_SCHEDULER = "queue.for.scheduler";

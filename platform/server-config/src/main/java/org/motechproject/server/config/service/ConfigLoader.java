@@ -1,9 +1,9 @@
-package org.motechproject.server.config;
+package org.motechproject.server.config.service;
 
 import org.apache.commons.io.FileUtils;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -75,13 +75,13 @@ public class ConfigLoader {
         if (configLocations != null) {
             for (Resource location : configLocations) {
                 try {
-                    Resource motechSettings = location.createRelative(PlatformSettingsService.SETTINGS_FILE_NAME);
+                    Resource motechSettings = location.createRelative(MotechSettings.SETTINGS_FILE_NAME);
                     if (!motechSettings.isReadable()) {
                         LOGGER.warn("Could not read motech-settings.conf from: " + location.toString());
                         continue;
                     }
 
-                    Resource activemq = location.createRelative(PlatformSettingsService.ACTIVEMQ_FILE_NAME);
+                    Resource activemq = location.createRelative(MotechSettings.ACTIVEMQ_FILE_NAME);
                     if (!activemq.isReadable()) {
                         LOGGER.warn("No activemq.properties file found at: " + location.toString());
                         LOGGER.warn("Using default activemq.properties file");
