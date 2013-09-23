@@ -135,6 +135,7 @@ public class Activator implements BundleActivator {
         regData.addSubMenu("#/users", "security.manageUsers");
         regData.addSubMenu("#/roles", "security.manageRoles");
         regData.addI18N("messages", "../websecurity/messages/");
+        regData.setBundle(bundleContext.getBundle());
 
         InputStream is = null;
         StringWriter writer = new StringWriter();

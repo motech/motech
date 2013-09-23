@@ -39,17 +39,18 @@
             var locale = toLocale(lang);
             $http({ method: "POST", url: "lang", params: locale })
                 .success(function () {
+                    $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
+                        $scope.i18n = data;
+                        $scope.loadI18n($scope.i18n);
+                    });
 
-                    $scope.loadI18n(lang);
                     $scope.userLang = $scope.getLanguage(locale);
                     moment.lang(lang);
-
                     motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
                             window.location.reload();
                         }
                     });
-
                 })
                 .error(function (response) {
                     handleResponse('server.header.error', 'server.error.setLangError', response);
@@ -72,25 +73,9 @@
             $cookieStore.put("showDashboardLogo", $scope.showDashboardLogo.showDashboard);
         };
 
-        $scope.loadI18n = function (lang) {
-            var key, handler, i;
-
-            if (!$scope.i18n || $scope.i18n.length <= 0) {
-                handle();
-            }
-
-            for (key in $scope.i18n) {
-                for (i = 0; i < $scope.i18n[key].length; i += 1) {
-                    handler = undefined;
-
-                    // last one
-                    if (i === $scope.i18n[key].length - 1) {
-                        handler = handle;
-                    }
-
-                    i18nService.init(lang, key, $scope.i18n[key][i], handler);
-                }
-            }
+        $scope.loadI18n = function (data) {
+            i18nService.init(data);
+            handle();
         };
 
         $scope.doAJAXHttpRequest = function (method, url, callback) {
@@ -211,7 +196,7 @@
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
             moment.lang($scope.user.lang);
-            $scope.loadI18n($scope.user.lang);
+            $scope.loadI18n($scope.i18n);
         });
 
         $scope.$on('lang.refresh', function () {
@@ -226,7 +211,7 @@
             ]).then(function () {
                 $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
                 moment.lang($scope.user.lang);
-                $scope.loadI18n($scope.user.lang);
+                $scope.loadI18n($scope.i18n);
             });
         });
     });
@@ -260,7 +245,6 @@
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
             moment.lang($scope.user.lang);
-            $scope.loadI18n($scope.user.lang);
         });
 
         $scope.$on('module.list.refresh', function () {

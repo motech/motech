@@ -3,7 +3,7 @@ package org.motechproject.server.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     @Autowired
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
     @Autowired
     private PlatformSettingsService settingsService;
     @Autowired
@@ -43,7 +43,7 @@ public class LoginController {
         view.addObject("openIdProviderUrl", settingsService.getPlatformSettings().getProviderUrl());
         view.addObject("error", request.getParameter("error"));
         view.addObject("loginForm", new LoginForm());
-        view.addObject("pageLang", localeSettings.getUserLocale(request));
+        view.addObject("pageLang", localeService.getUserLocale(request));
 
         return view;
     }

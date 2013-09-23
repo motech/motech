@@ -26,11 +26,6 @@
         <property name="bundleDir" value="${user.home}/.motech/bundles"/>
     </bean>
 
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
-        <property name="cookieName" value="userLang"/>
-        <property name="cookieMaxAge" value="100000"/>
-    </bean>
-
     <bean id="adminDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-admin"/>
     </bean>

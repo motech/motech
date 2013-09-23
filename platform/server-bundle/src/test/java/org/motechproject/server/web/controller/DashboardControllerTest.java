@@ -13,7 +13,7 @@ import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.UserInfo;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -52,7 +52,7 @@ public class DashboardControllerTest {
     private UIFrameworkService uiFrameworkService;
 
     @Mock
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
 
     @Mock
     private MotechUserService userService;
@@ -82,7 +82,7 @@ public class DashboardControllerTest {
     public void setUp() {
         initMocks(this);
         Locale en = new Locale("en");
-        when(localeSettings.getUserLocale(request)).thenReturn(en);
+        when(localeService.getUserLocale(request)).thenReturn(en);
         when(request.getUserPrincipal()).thenReturn(principal);
         when(principal.getName()).thenReturn("server.admin");
         when(request.getSession()).thenReturn(session);

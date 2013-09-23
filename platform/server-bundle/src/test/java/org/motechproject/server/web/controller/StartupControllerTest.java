@@ -12,7 +12,7 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.validator.StartupFormValidator;
@@ -75,7 +75,7 @@ public class StartupControllerTest {
     private PlatformSettingsService platformSettingsService;
 
     @Mock
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
 
     @Mock
     private BindingResult bindingResult;
@@ -119,14 +119,14 @@ public class StartupControllerTest {
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
         when(motechSettings.getSchedulerProperties()).thenReturn(properties);
 
-        when(localeSettings.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
-        when(localeSettings.getAvailableLanguages()).thenReturn(map);
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
+        when(localeService.getAvailableLanguages()).thenReturn(map);
 
         ModelAndView result = startupController.startup(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
-        verify(localeSettings).getAvailableLanguages();
-        verify(localeSettings).getUserLocale(httpServletRequest);
+        verify(localeService).getAvailableLanguages();
+        verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
         assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY);
