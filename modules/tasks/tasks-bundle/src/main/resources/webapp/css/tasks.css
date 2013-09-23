@@ -774,9 +774,43 @@ li.padding-botton6 {
     height: 20px;
 }
 
+.formatButtonGroup {
+    width: 200px;
+    margin: 40px auto 0 auto;
+}
+
+.format-edit-img {
+    width: 20px;
+    cursor: pointer;
+    float: right;
+    padding: 2px 5px 2px 2px;
+}
+
+.formatInput {
+    width: 600px;
+    float: left;
+    padding-bottom: 10px;
+}
+
+.formatInputDelete {
+    float: right;
+}
+
+.formatInputValueClear {
+    height: 40px;
+}
+
 input.input-popover {
     width: 50px;
     margin: 0px 8px;
+}
+
+#formatManipulation.modal {
+    width: 860px;
+}
+
+#formatManipulation.modal .body {
+    padding: 20px;
 }
 
 #helpModal.modal {

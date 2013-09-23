@@ -49,6 +49,7 @@
         $scope.filteredItems = [];
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
+        $scope.formatInput = [];
 
         $scope.getTasks = function () {
             $scope.allTasks = [];
@@ -742,16 +743,81 @@
             return unknown;
         };
 
-        $scope.createDraggableElement = function (value) {
-            var regex = new RegExp("\\{\\{.*?\\}\\}", "g"), element;
+        $scope.createDraggableElement = function (value, forFormat) {
+            var regex, element, manipulateAttributes, joinSeparator, ds, values, splittedValue, newValue;
+
+            if (value.length !== 0 && forFormat === 'convert') {
+                regex = new RegExp('format(.*)', "g");
+                manipulateAttributes = value.match(regex);
+                if (manipulateAttributes) {
+                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
+                    regex = new RegExp(' {{', "g");
+                    joinSeparator = manipulateAttributes.replace(regex, '{');
+                    regex = new RegExp('{{', "g");
+                    joinSeparator = joinSeparator.replace(regex, '{');
+                    regex = new RegExp('}}', "g");
+                    joinSeparator = joinSeparator.replace(regex, '}');
+
+                    regex = new RegExp("\\{ad([^)]+)\\}", "g");
+                    values = joinSeparator.match(regex);
+
+                    if (values) {
+                        regex = new RegExp('{', "g");
+                        values = values[0].replace(regex, '');
+                        regex = new RegExp('}', "g");
+                        values = values.replace(regex, '');
+                        values = values.split('ad');
+
+                        angular.forEach(values, function (element) {
+                            if (element.length > 0) {
+                                newValue = ($scope.createDraggableElement(element, forFormat));
+                                splittedValue = element.split('.');
+
+                                ds = $scope.util.find({
+                                    msg: $scope.msg,
+                                    where: $scope.task.taskConfig.steps,
+                                    by: [{
+                                        what: '@type',
+                                        equalTo: 'DataSource'
+                                    }, {
+                                        what: 'providerName',
+                                        equalTo: splittedValue[1]
+                                    }]
+                                });
+
+                                if (ds) {
+                                    newValue = element.replace(splittedValue[1], ds.providerId);
+                                    joinSeparator = joinSeparator.replace(element, newValue);
+                                }
+                            }
+                        });
+                    }
+
+                    value = value.replace(manipulateAttributes, joinSeparator);
+                }
+            }
+
+            if (forFormat === 'true') {
+                regex = new RegExp("\\{.*?\\}", "g");
+            } else {
+                regex = new RegExp("\\{\\{.*?\\}\\}", "g");
+            }
 
             element = value.replace(regex, function (data) {
                 var indexOf = data.indexOf('.'),
-                    prefix = data.slice(2, indexOf),
-                    dataArray = data.slice(indexOf + 1, -2).split("?"),
-                    key = dataArray[0],
-                    manipulations = dataArray.slice(1),
+                    prefix, dataArray, key, manipulations,
                     span, cuts, param, type, field, dataSource, providerId, object, id;
+
+                    if (forFormat === 'true') {
+                        prefix = data.slice(1, indexOf);
+                        dataArray = data.slice(indexOf + 1, -1).split("?");
+                    } else {
+                        prefix = data.slice(2, indexOf);
+                        dataArray = data.slice(indexOf + 1, -2).split("?");
+                    }
+
+                    key = dataArray[0];
+                    manipulations = dataArray.slice(1);
 
                 switch (prefix) {
                 case $scope.util.TRIGGER_PREFIX:
@@ -774,7 +840,8 @@
                         msg: $scope.msg,
                         param: param,
                         prefix: prefix,
-                        manipulations: manipulations
+                        manipulations: manipulations,
+                        popover: forFormat
                     });
                     break;
                 case $scope.util.DATA_SOURCE_PREFIX:
@@ -887,7 +954,11 @@
                 }
 
                 angular.forEach(action.actionParameters, function (param) {
-                    $scope.task.actions[idx].values[param.key] = $scope.util.convertToServer($scope, param.value);
+                    if ($scope.util.isChrome($scope) || $scope.util.isIE($scope)) {
+                        $scope.task.actions[idx].values[param.key] = $scope.addDoubleBrackets($scope.util.convertToServer($scope, param.value));
+                    } else {
+                        $scope.task.actions[idx].values[param.key] = $scope.util.convertToServer($scope, param.value);
+                    }
 
                     if (!param.required && isBlank($scope.task.actions[idx].values[param.key])) {
                         delete $scope.task.actions[idx].values[param.key];
@@ -972,6 +1043,176 @@
 
         $scope.showHelp = function () {
             $('#helpModalDate').modal();
+        };
+
+        $scope.changeFormatInput = function (newData) {
+            $scope.formatInput = [];
+            $scope.$apply();
+            $scope.formatInput = newData;
+            $scope.$apply();
+        };
+
+        $scope.showFormatManipulation = function () {
+            $('#formatManipulation').modal();
+            $scope.changeFormatInput($scope.getValues('true'));
+        };
+
+        $scope.getValues = function(forFormat) {
+            var manipulateElement = $("[ismanipulate=true]"), joinSeparator = "", manipulation, manipulateAttributes, manipulationAttributesIndex, convertedValues = [], reg;
+            manipulation = "format";
+            manipulateAttributes = manipulateElement.attr("manipulate") || "";
+
+            if ((manipulateAttributes.indexOf(manipulation) !== -1) && (manipulation === "format")) {
+                manipulateAttributes = manipulateAttributes.match('format(.*)');
+                reg = manipulateAttributes[1];
+                if ((reg.indexOf("(") + 1) !== reg.indexOf(")")) {
+                    joinSeparator = reg.substr(reg.indexOf("(") + 1, reg.indexOf(")") - 1);
+                    reg = joinSeparator.split(",");
+                } else {
+                    reg = convertedValues;
+                }
+            }
+
+            angular.forEach(reg, function (value) {
+                convertedValues.push($scope.createDraggableElement(value, forFormat));
+            });
+
+            return convertedValues;
+        };
+
+        $scope.addFormatInput = function () {
+            $scope.formatInput.push("");
+
+            $scope.$apply();
+        };
+
+        $scope.deleteFormatInput = function (index) {
+            var tempArray = [], counter = 0;
+
+            $scope.tempSaveInput();
+
+            angular.forEach($scope.formatInput, function (value) {
+                if  (counter !== index) {
+                    tempArray.push(value);
+                }
+
+                counter = counter + 1;
+            });
+
+            $scope.changeFormatInput(tempArray);
+        };
+
+        $scope.tempSaveInput = function () {
+            var inputFields = $("[data-type=format]"), tempArray = [];
+
+            angular.forEach(inputFields, function (value) {
+                tempArray.push(value.innerHTML);
+            });
+
+            $scope.formatInput = tempArray;
+        };
+
+        $scope.saveInput = function () {
+            var inputFields = $("[data-type=format]"), tempArray = [];
+
+            angular.forEach(inputFields, function (value) {
+                tempArray.push($scope.removeDoubleBrackets($scope.util.convertToServer($scope, value.innerHTML)));
+            });
+
+            $scope.formatInput = tempArray;
+            $scope.changeFormatManipulation();
+        };
+
+        $scope.changeFormatManipulation = function () {
+            var manipulation = "format(",
+                manipulateElement = $("[ismanipulate=true]"),
+                elementManipulation = manipulateElement.attr("manipulate"),
+                regex = new RegExp("format\\(.*?\\)", "g");
+
+            jQuery.each($scope.formatInput, function(value) {
+
+                manipulation = manipulation + this;
+                if (value !== $scope.formatInput.length - 1) {
+                    manipulation = manipulation + ",";
+                }
+            });
+
+            manipulation = manipulation + ")";
+            manipulation = manipulation.replace(/\s+/g,"");
+
+            elementManipulation = elementManipulation.replace(regex, manipulation);
+            manipulateElement.attr("manipulate", elementManipulation);
+            manipulateElement[0].parentElement.focus();
+        };
+
+        $scope.removeDoubleBrackets = function (value) {
+            var tempValue = "", reg;
+
+            if (value.length !== 0) {
+                reg = new RegExp('{{', "g");
+                tempValue = value.replace(reg, '{');
+                reg = new RegExp('}}', "g");
+                tempValue = tempValue.replace(reg, '}');
+                value = value.replace(value, tempValue);
+            }
+
+            return value;
+        };
+
+        $scope.addDoubleBrackets = function (value) {
+            var manipulateAttributes, reg = "", joinSeparator, splittedValue, newValue, values, ds;
+
+            if (value.length !== 0) {
+                reg = new RegExp("format\\(.*?\\)", "g");
+                manipulateAttributes = value.match(reg);
+                if (manipulateAttributes) {
+                    manipulateAttributes = manipulateAttributes[0].substr(0, manipulateAttributes[0].indexOf(")") + 1);
+                    reg = new RegExp('{', "g");
+                    joinSeparator = manipulateAttributes.replace(reg, '{{');
+                    reg = new RegExp('{{3,}', "g");
+                    joinSeparator = joinSeparator.replace(reg, '{{');
+                    reg = new RegExp('}', "g");
+                    joinSeparator = joinSeparator.replace(reg, '}}');
+                    reg = new RegExp('}{3,}', "g");
+                    joinSeparator = joinSeparator.replace(reg, '}}');
+                    reg = new RegExp("\\{ad([^)]+)\\}", "g");
+                    values = joinSeparator.match(reg);
+
+                    if (values) {
+                        reg = new RegExp('{', "g");
+                        values = values[0].replace(reg, '');
+                        reg = new RegExp('}', "g");
+                        values = values.replace(reg, '');
+                        values = values.split('ad');
+
+                        angular.forEach(values, function (element) {
+                            if (element.length > 0) {
+                                splittedValue = element.split('.');
+
+                                ds = $scope.util.find({
+                                    msg: $scope.msg,
+                                    where: $scope.task.taskConfig.steps,
+                                    by: [{
+                                        what: '@type',
+                                        equalTo: 'DataSource'
+                                    }, {
+                                        what: 'providerId',
+                                        equalTo: splittedValue[1]
+                                    }]
+                                });
+
+                                if (ds) {
+                                    joinSeparator = joinSeparator.replace(splittedValue[1], $scope.msg(ds.providerName));
+                                }
+                            }
+                        });
+                    }
+
+                    value = value.replace(manipulateAttributes, joinSeparator);
+                }
+            }
+
+            return value;
         };
     });
 

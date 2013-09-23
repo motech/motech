@@ -174,7 +174,7 @@
                                         dataSource.lookup.value = value.insert(pos, eventKey);
                                     }
                                 }
-                            } else {
+                            } else if (!(dragElement.data('popover') === 'no' && element.data('type') !== 'format')){
                                 if (emText !== undefined) {
                                     element.empty();
                                     element.append('<em style="color: gray;">' + parent.msg(emText) + '</em>');
@@ -188,7 +188,7 @@
                                 dragElement.css("top", "0px");
                                 dragElement.attr("unselectable", "on");
 
-                                if (dragElement.data('type') !== 'INTEGER' || dragElement.data('type') !== 'DOUBLE') {
+                                if ((dragElement.data('type') !== 'INTEGER' || dragElement.data('type') !== 'DOUBLE') && dragElement.data('popover') !== 'no') {
                                     dragElement.attr("manipulationpopover", "");
                                 }
 
@@ -318,6 +318,10 @@
                             range.select();
                         }
                     }, 1);
+
+                    if (ngModel.$viewValue !== $.trim(element.html())) {
+                        return scope.$eval(read);
+                    }
                 });
 
                 element.bind('keypress', function (event) {
@@ -420,6 +424,12 @@
                             element = $("[ismanipulate=true]");
                             manipulation = element.attr('manipulate');
 
+                            if (elem.length === 0) {
+                                elem = $(manipulationOptions);
+                                $compile(elem)(msgScope);
+                                msgScope.$apply(elem);
+                            }
+
                             elem.find("span").replaceWith(function () {
                                 return $(this)[0].outerHTML;
                             });
@@ -445,6 +455,9 @@
                                     } else if (elemen.indexOf('plusDays') !== -1) {
                                         elemen = elemen.replace(elemen, 'plusDays');
                                     }
+                                    if(elemen.indexOf('format') !== -1) {
+                                        elemen = elemen.replace(elemen, 'format');
+                                    }
                                     elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
                                         if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
                                             $(this).append('<span class="icon-ok" style="float: right;"></span>');
@@ -458,6 +471,9 @@
                                             } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
                                                 $(this.nextElementSibling).css({ 'display' : '' });
                                                 elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("substring") + 10, manipulation.indexOf(")", manipulation.indexOf("substring"))));
+                                            } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
+                                                $(this.nextElementSibling).css({ 'display' : '' });
+                                                elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("format") + 7, manipulation.indexOf(")", manipulation.indexOf("format"))));
                                             } else if (manipulation.indexOf("dateTime") !== -1 && elemen.indexOf('dateTime') !== -1) {
                                                 $(this.nextElementSibling).css({ 'display' : '' });
                                                 elem.find('input[date-update]').val(manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")", manipulation.indexOf("dateTime"))));
@@ -670,6 +686,8 @@
                             manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
                         } else if (manipulation === "substring") {
                             $("#substringSeparator").val("");
+                            manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
+                        } else if (manipulation === "format") {
                             manipulateAttributes = manipulateAttributes + manipulation + "()" + " ";
                         } else if (manipulation === "dateTime") {
                             $("#dateFormat").val("");
