@@ -31,4 +31,12 @@
 
     <osgi:service ref="metricsAgentService" interface="org.motechproject.metrics.MetricsAgent"/>
 
+    <osgi:service ref="loggingAgent" interface="org.motechproject.metrics.MetricsAgentBackend"/>
+
+    <osgi:service ref="statsdAgent" interface="org.motechproject.metrics.MetricsAgentBackend"/>
+
+    <osgi:list id="metricsAgentBackendList" interface="org.motechproject.metrics.MetricsAgentBackend" availability="optional">
+        <osgi:reference-listener ref="metricsAgentBackendImplManager"/>
+    </osgi:list>
+
 </beans>

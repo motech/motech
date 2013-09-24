@@ -43,6 +43,7 @@
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap-fileupload.min.js"></script>
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap-notify.js"></script>
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap-switch.js"></script>
+<script type="text/javascript" src="resources/lib/bootstrap/bootstrap-multiselect.js"></script>
 
 <script type="text/javascript" src="resources/lib/tagsinput/jquery.tagsinput.js"></script>
 

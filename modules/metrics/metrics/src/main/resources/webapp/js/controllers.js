@@ -22,6 +22,8 @@
     });
 
     metricsModule.controller('SettingsCtrl', function($scope, $http) {
+        $scope.metricsImplementations = [];
+        $scope.selectedImplementations = [];
 
         $scope.statsdAgentConfig = {
             serverPort : "",
@@ -46,6 +48,26 @@
                             msg = responseData;
                 }
                 motechAlert(msg, 'metrics.error');
+                });
+        };
+
+        $http({method:'GET', url:'../metrics/backend/available'}).
+            success(
+            function(data) {
+                $scope.metricsImplementations = data;
+        });
+
+        $http({method:'GET', url:'../metrics/backend/used'}).
+            success(
+            function(data) {
+                $scope.selectedImplementations = data;
+        });
+
+        $scope.setUsedImplementations = function() {
+            $http.post('../metrics/backend/used', $scope.selectedImplementations).
+                success(alertHandler('metrics.settings.saved', 'metrics.success')).
+                error(function(response) {
+                    motechAlert(response, 'metrics.error');
                 });
         };
     });

@@ -18,6 +18,8 @@ public class LoggingAgentBackendImpl implements MetricsAgentBackend {
     // Preset the prefix to limit the 'appends' I do later
     private String prefix;
 
+    private final String implementationName = "Logging";
+
     public LoggingAgentBackendImpl() {
         try {
             InetAddress addr = InetAddress.getLocalHost();
@@ -73,5 +75,10 @@ public class LoggingAgentBackendImpl implements MetricsAgentBackend {
     @Override
     public void logTimedEvent(String metric, long time) {
         metrics.info(String.format("%smetric=%s time=%d", prefix, metric, time));
+    }
+
+    @Override
+    public String getImplementationName() {
+        return implementationName;
     }
 }

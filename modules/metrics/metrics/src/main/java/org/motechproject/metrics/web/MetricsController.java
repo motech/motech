@@ -3,6 +3,7 @@ package org.motechproject.metrics.web;
 
 import org.motechproject.metrics.StatsdAgentBackend;
 import org.motechproject.metrics.StatsdAgentConfigurationData;
+import org.motechproject.metrics.util.MetricsAgentBackendManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.List;
+import java.util.Set;
+
 /*Class used to pass statsd metrics agent config values from agent to UI, it also controls
 saving this values to agent
  */
@@ -19,6 +23,9 @@ saving this values to agent
 public class MetricsController {
     @Autowired
     private StatsdAgentBackend statsdAgentBackend;
+
+    @Autowired
+    private MetricsAgentBackendManager metricsAgentBackendManager;
 
     @RequestMapping(value = "/settings/getAll", method = RequestMethod.GET)
     @ResponseBody
@@ -52,5 +59,23 @@ public class MetricsController {
         statsdAgentBackend.setGenerateHostBasedStats(generateHostBasedStats);
         statsdAgentBackend.setGraphiteUrl(graphiteUrl);
         statsdAgentBackend.saveProperties();
+    }
+
+    @RequestMapping(value = "/backend/available", method = RequestMethod.GET)
+    @ResponseBody
+    public Set<String> getAllAvailableImplementations() {
+        return metricsAgentBackendManager.getAvailableMetricsAgentImplementations().keySet();
+    }
+
+    @RequestMapping(value = "/backend/used", method = RequestMethod.GET)
+    @ResponseBody
+    public List<String> getUsedImplementations() {
+        return metricsAgentBackendManager.getUsedMetricsAgents();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/backend/used", method = RequestMethod.POST)
+    public void setUsedImplementations(@RequestBody List<String> selected) {
+        metricsAgentBackendManager.setMetricsAgents(selected);
     }
 }
