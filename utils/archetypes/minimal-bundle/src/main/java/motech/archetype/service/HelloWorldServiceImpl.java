@@ -2,7 +2,7 @@ package motech.archetype.service;
 
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("helloWorldService")
 public class HelloWorldServiceImpl implements HelloWorldService {
 
     @Override

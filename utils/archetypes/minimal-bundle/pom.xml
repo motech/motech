@@ -9,20 +9,29 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>motech-archetypes</groupId>
+    <groupId>org.motechproject</groupId>
     <artifactId>minimal-bundle</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Motech Minimal Bundle Archetype</name>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <motech.version>0.22-SNAPSHOT</motech.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
-        <external.dependency.release.tag>r021</external.dependency.release.tag>
-        <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
-        <modules.root.dir>${basedir}/../../../</modules.root.dir>
+        <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>org.motechproject.osgi.it</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
@@ -47,9 +56,15 @@
                         <Export-Package>
                             motech.archetype.service;version=${project.version},
                         </Export-Package>
+                        <Import-Package>
+                            org.apache.log4j,
+                            *
+                        </Import-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
