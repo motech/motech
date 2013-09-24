@@ -4,15 +4,16 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.commons.api.Range;
+import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.domain.EmailRecord;
 import org.motechproject.email.domain.EmailRecordComparator;
 import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailAuditService;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
-import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.service.MotechUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,15 +43,10 @@ public class EmailController {
     @Autowired
     private EmailAuditService auditService;
 
-    @Autowired
-    private MotechUserService motechUserService;
-
-    @Autowired
-    private MotechRoleService motechRoleService;
-
     private EmailRecords previousEmailRecords;
 
     @RequestMapping(value = "/emails", method= RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords getEmails(GridSettings filter) {
         List<EmailRecord> filtered = auditService.findEmailRecords(prepareCriteria(filter));
@@ -73,6 +69,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/months/", method = RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public List<String> getAvailableMonths() {
         List<String> availableMonths = new ArrayList<>();
@@ -91,6 +88,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/export", method = RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     public void exportEmailLog(@RequestParam("range") String range,
                                @RequestParam(value = "month", required = false) String month,
                                HttpServletResponse response) throws IOException {
@@ -144,13 +142,14 @@ public class EmailController {
 
 
     @RequestMapping(value = "/emails/available/", method = RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public List<String> getAvailableMails(@RequestParam("autoComplete") String autoComplete,
                                           @RequestParam("term") String partialAddress) {
 
         List<String> availableAddress = new ArrayList<>();
 
-        if (autoComplete.equals("subject") && emailCredentials("viewDetailedEmailLogs")) {
+        if (autoComplete.equals("subject") && emailCredentials(EmailRolesConstants.DETAILED_EMAIL_LOGS)) {
             availableAddress = getAllFromAddressContaining(partialAddress);
             List<String> availableAddress2 = getAllToAddressContaining(partialAddress);
 
@@ -165,6 +164,7 @@ public class EmailController {
     }
 
     @RequestMapping(value = "/emails/{mailid}", method= RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords getEmail(@PathVariable int mailid) {
         EmailRecords record = null;
@@ -237,13 +237,8 @@ public class EmailController {
 
     private boolean emailCredentials(String permissionType) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<String> roles = motechUserService.getRoles(auth == null ? "" : auth.getName());
-
-        for (String role : roles) {
-            List<String> permissions = motechRoleService.getRole(role).getPermissionNames();
-            if (permissions.contains(permissionType)) {
-                return true;
-            }
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(permissionType))) {
+            return true;
         }
 
         return false;
@@ -252,14 +247,14 @@ public class EmailController {
     private EmailRecords hideColumns(List<EmailRecord> records, GridSettings filter) {
         EmailRecords mailRecords;
 
-        if (emailCredentials("viewDetailedEmailLogs")) {
+        if (emailCredentials(EmailRolesConstants.DETAILED_EMAIL_LOGS)) {
             List<EmailRecordDto> recordsDto = new ArrayList<>();
             for (EmailRecord record : records) {
                 recordsDto.add(new EmailRecordDto(record));
             }
             mailRecords = new EmailRecords<>(filter.getPage()==null ? 1 : filter.getPage(),
                     filter.getRows(), recordsDto);
-        } else if (emailCredentials("viewBasicEmailLogs") && (filter.getSubject()==null ? true : filter.getSubject().isEmpty()) ) {
+        } else if (emailCredentials(EmailRolesConstants.BASIC_EMAIL_LOGS) && (filter.getSubject()==null ? true : filter.getSubject().isEmpty()) ) {
             List<BasicEmailRecordDto> basicList = new ArrayList<>();
             for (EmailRecord rec : records) {
                 basicList.add(new BasicEmailRecordDto(rec));

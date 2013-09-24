@@ -1,12 +1,14 @@
 package org.motechproject.email.web;
 
 import org.motechproject.email.InitializeSettings;
+import org.motechproject.email.constants.EmailRolesConstants;
 import org.motechproject.email.model.SettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,13 +52,19 @@ public class SettingsController {
         this.initializeSettings = initializeSettings;
     }
 
+    public SettingsController() {
+        this(null, null, null);
+    }
+
     @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public SettingsDto getSettings() {
         return new SettingsDto(settingsFacade);
     }
 
     @RequestMapping(value = "/settings", method = RequestMethod.POST)
+    @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseStatus(HttpStatus.OK)
     public void setSettings(@RequestBody SettingsDto settings) {
         String host = settings.getHost();

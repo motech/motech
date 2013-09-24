@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.email.domain.DeliveryStatus;
 import org.motechproject.email.domain.EmailRecord;
@@ -12,9 +11,12 @@ import org.motechproject.email.domain.EmailRecords;
 import org.motechproject.email.service.EmailRecordSearchCriteria;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.email.service.impl.EmailAuditServiceImpl;
-import org.motechproject.security.model.RoleDto;
-import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.service.MotechUserService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -34,25 +36,19 @@ public class EmailControllerTest {
     @Mock
     private EmailAuditServiceImpl auditService;
 
-    @Mock
-    private MotechUserService motechUserService;
-
-    @Mock
-    private MotechRoleService motechRoleService;
-
     @InjectMocks
     private EmailController emailController = new EmailController();
 
+    private String userName = "emailtestuser";
+    private String password = "testpass";
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
         when(auditService.findAllEmailRecords()).thenReturn(getTestEmailRecords());
-        when(auditService.findEmailRecords(Matchers.any(EmailRecordSearchCriteria.class))).thenReturn(getTestEmailRecords());
-                when(motechUserService.getRoles(anyString())).thenReturn(asList("Email Admin"));
-        when(motechRoleService.getRole("Email Admin")).thenReturn(new RoleDto("Email Admin",
-                asList("viewBasicEmailLogs", "viewDetailedEmailLogs")));
+        when(auditService.findEmailRecords(any(EmailRecordSearchCriteria.class))).thenReturn(getTestEmailRecords());
+        setUpSecurityContextWithEmailAdminPermission();
     }
 
     @Test
@@ -174,6 +170,13 @@ public class EmailControllerTest {
         assertThat(available3.get(0), is("abc@gmail.com"));
     }
 
+    private void setUpSecurityContextWithEmailAdminPermission() {
+        SecurityContext securityContext = new SecurityContextImpl();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userName, password, asList(new SimpleGrantedAuthority("viewDetailedEmailLogs")));
+        securityContext.setAuthentication(authentication);
+        authentication.setAuthenticated(false);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
     private List<EmailRecord> getTestEmailRecords() {
         List<EmailRecord> records = new ArrayList<>();
@@ -189,4 +192,5 @@ public class EmailControllerTest {
                new DateTime(4000), DeliveryStatus.SENT));
         return records;
     }
+
 }
