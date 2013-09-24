@@ -34,6 +34,7 @@
         <check.code.skip>${maven.test.skip}</check.code.skip>
         <pmd.skip>${check.code.skip}</pmd.skip>
         <checkstyle.skip>${check.code.skip}</checkstyle.skip>
+        <enforcer.skip>${check.code.skip}</enforcer.skip>
         <jslint.enable>true</jslint.enable>
         <unitTests.skip>${skipTests}</unitTests.skip>
 
@@ -1280,6 +1281,7 @@
                                 <NoPackageCyclesRule
                                         implementation="PackageCycles" />
                             </rules>
+                            <skip>${enforcer.skip}</skip>
                         </configuration>
                     </execution>
                 </executions>
