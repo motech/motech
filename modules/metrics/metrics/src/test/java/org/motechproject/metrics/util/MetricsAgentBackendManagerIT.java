@@ -14,7 +14,7 @@ import static org.apache.commons.collections.MapUtils.isEmpty;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
-public class MetricsAgentBackendManagerTest {
+public class MetricsAgentBackendManagerIT {
 
     @Autowired
     private MetricsAgentBackendManager metricsManager;
