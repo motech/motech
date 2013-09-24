@@ -24,7 +24,6 @@
       "displayName": "metrics.startTimer",
       "serviceInterface": "org.motechproject.metrics.MetricsAgent",
       "serviceMethod": "startTimer"
-
     },
     {
       "displayName": "metrics.stopTimer",

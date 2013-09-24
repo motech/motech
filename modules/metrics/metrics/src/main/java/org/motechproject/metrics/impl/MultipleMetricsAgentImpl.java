@@ -3,7 +3,6 @@ package org.motechproject.metrics.impl;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,9 +15,8 @@ import java.util.Map;
 
 @Service("metricsAgentService")
 public class MultipleMetricsAgentImpl implements MetricsAgent {
-    @Autowired
-    private List<MetricsAgentBackend> metricsAgents;
 
+    private List<MetricsAgentBackend> metricsAgents;
 
     public MultipleMetricsAgentImpl() {
     }

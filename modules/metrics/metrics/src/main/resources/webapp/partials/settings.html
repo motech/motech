@@ -30,3 +30,17 @@
         <button class="btn btn-primary ng-binding" ng-click="saveStatsdAgentConfig()" ng-disabled="!metricsForm.$valid">{{msg('metrics.save')}}</button>
     </form>
 </div>
+<div class="box-content inside">
+    <h4 class="frame-title">{{ msg('metrics.settings.backends.title')}}</h4>
+    <form name="metricsAgentImplForm" class="form-horizontal inside">
+        <div class="control-group">
+            <label class="control-label">{{msg('metrics.settings.backend.select')}}</label>
+            <div class="controls">
+                <select class="multiselect" ng-model="selectedImplementations" ng-options="item as item for item in metricsImplementations"
+                        multiple="multiple" multiselect-dropdown >
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-primary ng-binding" ng-click="setUsedImplementations()">{{msg('metrics.save')}}</button>
+    </form>
+</div>

@@ -30,4 +30,6 @@ public interface MetricsAgentBackend {
      * @param time   The execution time of this event in milliseconds
      */
     void logTimedEvent(String metric, long time);
+
+    String getImplementationName();
 }

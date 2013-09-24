@@ -41,6 +41,8 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
     private String configFileLocation = System.getProperty("user.home") + "/.motech/config/org." +
             "motechproject.metrics/statsdAgent.properties";
 
+    private final String implementationName = "StatsD";
+
     public StatsdAgentBackendImpl() {
         try {
             socket = new DatagramSocket();
@@ -208,5 +210,10 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
         catch (IOException e) {
             log.error("Error while saving statsdAgent config", e);
         }
+    }
+
+    @Override
+    public String getImplementationName() {
+        return implementationName;
     }
 }
