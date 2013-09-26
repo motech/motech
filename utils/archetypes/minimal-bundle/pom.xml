@@ -1,37 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <parent>
-        <artifactId>motech</artifactId>
-        <groupId>org.motechproject</groupId>
-        <version>0.22-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>minimal-bundle</artifactId>
+    <version>0.22-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Motech Minimal Bundle Archetype</name>
+    <name>Motech Minimal Bundle</name>
 
     <properties>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>org.motechproject.osgi.it</artifactId>
-            <scope>test</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context</artifactId>
+            <version>${spring.version}</version>
         </dependency>
 
+        <!-- OSGi IT -->
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-event</artifactId>
-            <version>${project.version}</version>
+            <artifactId>org.motechproject.osgi.it</artifactId>
+            <version>1.0.2.RELEASE-r014</version>
+            <scope>test</scope>
         </dependency>
-
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>motech-repo</id>
+            <name>MOTECH Maven Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/public</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -44,6 +47,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -56,10 +60,6 @@
                         <Export-Package>
                             motech.archetype.service;version=${project.version},
                         </Export-Package>
-                        <Import-Package>
-                            *
-                        </Import-Package>
-
                     </instructions>
                 </configuration>
             </plugin>
@@ -87,26 +87,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                    <excludes>
-                        <exclude>NONE</exclude>
-                    </excludes>
-                    <fork>true</fork>
-                    <compilerArgument>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar
-                    </compilerArgument>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -139,27 +119,20 @@
                             </execution>
                         </executions>
                     </plugin>
+
                     <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.5</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.8</version>
                         <executions>
                             <execution>
-                                <id>copy-activemq-settings</id>
-                                <phase>pre-integration-test</phase>
+                                <id>list-dependencies</id>
+                                <phase>generate-sources</phase>
                                 <goals>
-                                    <goal>copy-resources</goal>
+                                    <goal>resolve</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/test/resources</directory>
-                                            <includes>
-                                                <include>activemq.properties</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
+                                    <outputFile>target/dependencies.list</outputFile>
                                 </configuration>
                             </execution>
                         </executions>

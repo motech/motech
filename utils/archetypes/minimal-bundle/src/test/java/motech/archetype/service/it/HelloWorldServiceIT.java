@@ -19,7 +19,7 @@ public class HelloWorldServiceIT extends BaseOsgiIT {
         assertNotNull(registryReference);
         HelloWorldService helloService = (HelloWorldService) bundleContext.getService(registryReference);
         assertNotNull(helloService);
-        
+
         assertNotNull(helloService.sayHello());
     }
 
