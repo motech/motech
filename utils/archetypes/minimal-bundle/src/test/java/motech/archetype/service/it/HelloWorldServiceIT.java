@@ -1,15 +1,11 @@
 package motech.archetype.service.it;
 
-import java.util.Arrays;
-import java.util.List;
-
 import motech.archetype.service.HelloWorldService;
-
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 /**
- * Verify that the HelloWorld service template is present.
+ * Verify that HelloWorldService present, functional.
  */
 public class HelloWorldServiceIT extends BaseOsgiIT {
 

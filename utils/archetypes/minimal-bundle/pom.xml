@@ -55,8 +55,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Resource-Path>minimal-bundle/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Resource-Path>minimal-bundle/resources</Resource-Path>
                         <Export-Package>
                             motech.archetype.service;version=${project.version},
                         </Export-Package>

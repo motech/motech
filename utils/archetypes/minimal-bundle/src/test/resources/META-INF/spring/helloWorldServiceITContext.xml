@@ -5,5 +5,5 @@
 
     <osgi:reference id="helloWorldService"
         interface="motech.archetype.service.HelloWorldService" />
-        
+
 </beans>
