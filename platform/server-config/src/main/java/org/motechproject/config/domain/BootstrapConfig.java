@@ -4,23 +4,28 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.MotechConfigurationException;
 
 /**
- * <p>Represents the bootstrap configuration object composed of:
- *     <ol>
- *         <li>DBConfig - represents the database related bootstrap object.</li>
- *         <li>Tenant ID - represents the identifier of the tenant.</li>
- *         <li>Configuration source - represents the source of configuration (FILE / UI).</li>
- *     </ol>
+ * <p>Represents the bootstrap configuration object. It is composed of:
+ * <ol>
+ * <li>DBConfig - represents the database related bootstrap object.</li>
+ * <li>Tenant ID - represents the identifier of the tenant.</li>
+ * <li>Configuration source - represents the source of configuration (FILE / UI).</li>
+ * </ol>
  * </p>
  */
 public class BootstrapConfig {
+    public static final String DB_URL = "db.url";
+    public static final String DB_USERNAME = "db.username";
+    public static final String DB_PASSWORD = "db.password";
+    public static final String TENANT_ID = "tenant.id";
+    public static final String CONFIG_SOURCE = "config.source";
 
     public static final String DEFAULT_TENANT_ID = "DEFAULT";
     private DBConfig dbConfig;
     private String tenantId;
+
     private ConfigSource configSource;
 
     /**
-     *
      * @param dbConfig
      * @param tenantId
      * @param configSource
@@ -76,6 +81,10 @@ public class BootstrapConfig {
         sb.append(", configSource=").append(configSource);
         sb.append('}');
         return sb.toString();
+    }
+
+    public DBConfig getDbConfig() {
+        return dbConfig;
     }
 
     public String getTenantId() {

@@ -40,9 +40,8 @@ public interface PlatformSettingsService {
      * Add new location for config file.
      *
      * @param location file location
-     * @param save     true if you always want to load the config file from given location, otherwise false
      */
-    void addConfigLocation(final String location, final boolean save) throws IOException;
+    void addConfigLocation(final String location) throws IOException;
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 

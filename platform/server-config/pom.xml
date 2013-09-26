@@ -41,9 +41,37 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>config.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>config.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -59,7 +87,9 @@
                             org.motechproject.server.config.monitor;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
                             org.motechproject.server.config.service.impl;version=${project.version},
-                            org.motechproject.server.config.settings;version=${project.version}
+                            org.motechproject.server.config.settings;version=${project.version},
+                            org.motechproject.config.domain;version=${project.version},
+                            org.motechproject.config.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
@@ -131,10 +161,10 @@
                             <outputDirectory>${user.home}/.motech</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/config</directory>
+                                    <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>config-locations.conf</include>
+                                        <include>config-locations.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -144,5 +174,62 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.6</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${user.home}/.motech/config</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/test/resources</directory>
+                                            <include>bootstrap.properties</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--<plugin>-->
+                        <!--<artifactId>maven-clean-plugin</artifactId>-->
+                        <!--<version>2.5</version>-->
+                        <!--<inherited>false</inherited>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>clean-config</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>clean</goal>-->
+                                <!--</goals>-->
+                                <!--<phase>post-integration-test</phase>-->
+                                <!--<configuration>-->
+                                    <!--<excludeDefaultDirectories>true</excludeDefaultDirectories>-->
+                                    <!--<filesets>-->
+                                        <!--<fileset>-->
+                                            <!--<directory>${user.home}/.motech/config</directory>-->
+                                            <!--<includes>-->
+                                                <!--<include>bootstrap.properties</include>-->
+                                            <!--</includes>-->
+                                            <!--<followSymlinks>false</followSymlinks>-->
+                                        <!--</fileset>-->
+                                    <!--</filesets>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -7,6 +7,7 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.ConfigLoader;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +34,7 @@ public class ConfigFileMonitor implements FileListener {
 
     private EventRelay eventRelay;
     private ConfigLoader configLoader;
+    private ConfigLocationFileStore configLocationFileStore;
     private PlatformSettingsService platformSettingsService;
     private FileSystemManager systemManager;
 
@@ -84,22 +85,10 @@ public class ConfigFileMonitor implements FileListener {
         return currentSettings;
     }
 
-    public void changeConfigFileLocation(final String location, final boolean save) throws FileSystemException {
-        if (location.startsWith("/")) {
-            configLoader.addConfigLocation(String.format("file:%s", location));
-        } else {
-            configLoader.addConfigLocation(location);
-        }
+    public void changeConfigFileLocation(final String location) throws FileSystemException {
+        configLocationFileStore.add(location);
 
-        if (save) {
-            try {
-                configLoader.save();
-            } catch (IOException e) {
-                LOGGER.error("Couldn't save the new config file location.", e);
-            }
-        }
-
-        LOGGER.warn("Changed config file location");
+        LOGGER.info("Changed config file location");
 
         monitor();
     }
@@ -175,6 +164,11 @@ public class ConfigFileMonitor implements FileListener {
     @Autowired
     public void setConfigLoader(final ConfigLoader configLoader) {
         this.configLoader = configLoader;
+    }
+
+    @Autowired
+    public void setConfigLocationFileStore(ConfigLocationFileStore configLocationFileStore) {
+        this.configLocationFileStore = configLocationFileStore;
     }
 
     @Autowired

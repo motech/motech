@@ -152,7 +152,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void addSettingsPath(String path) throws IOException {
-        platformSettingsService.addConfigLocation(path, true);
+        platformSettingsService.addConfigLocation(path);
     }
 
     @Override

@@ -25,6 +25,10 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(final HttpServletRequest request) {
+        if (startupManager.isBootstrapConfigRequired()) {
+            return new ModelAndView("redirect:bootstrap.do");
+        }
+
         if (startupManager.isConfigRequired()) {
             return new ModelAndView("redirect:startup.do");
         }

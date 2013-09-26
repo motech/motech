@@ -45,7 +45,7 @@ public interface ConfigurationService {
      *         </li>
      *         <li>
      *             If <code>MOTECH_DB_URL</code> environment is not set, load the configuration from
-     *             <code>bootstrap.properties</code> from the default Motech config directory specified by the
+     *             <code>bootstrap.properties</code> from the default MOTECH config directory specified by the
      *             property <code>default.bootstrap.config.dir</code> in the file <code>config.properties</code>.
      *             <code>config.properties</code> should be present in the root of classpath. A <code>config.properties</code>
      *             is provided in the bundle jar with <code>default.bootstrap.config.dir</code> set to
@@ -58,4 +58,20 @@ public interface ConfigurationService {
      * @throws org.motechproject.config.MotechConfigurationException if bootstrap configuration cannot be loaded.
      */
     BootstrapConfig loadBootstrapConfig();
+
+    /**
+     * <p>
+     *     Saves the given <code>BootstrapConfig</code> in the <code>bootstrap.properties</code> file located in
+     *     default MOTECH config directory. The default motech config directory is specified by the property
+     *     <code>default.bootstrap.config.dir</code> in the file <code>config.properties</code>.
+     * </p>
+     * <p>
+     *     If there is no default directory specified in the <code>config.properties</code> file, the bootstrap
+     *     configuration will be saved in <code>"${user.home}/.motech/config"</code>.
+     * </p>
+     *
+     * @param bootstrapConfig Bootstrap configuration.
+     * @throws org.motechproject.config.MotechConfigurationException if bootstrap configuration cannot be saved.
+     */
+    void save(BootstrapConfig bootstrapConfig);
 }

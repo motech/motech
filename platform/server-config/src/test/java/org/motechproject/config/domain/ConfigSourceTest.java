@@ -4,7 +4,9 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.motechproject.config.MotechConfigurationException;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ConfigSourceTest {
     @Test
@@ -35,5 +37,14 @@ public class ConfigSourceTest {
     @Test(expected = MotechConfigurationException.class)
     public void shouldThrowExceptionForInvalidConfigSource() throws Exception {
         ConfigSource.valueOf("junk");
+    }
+
+    @Test
+    public void shouldValidateGivenConfigSourceName(){
+        assertTrue(ConfigSource.isValid("UI"));
+
+        assertTrue(ConfigSource.isValid("  file  "));
+
+        assertFalse(ConfigSource.isValid("invalid"));
     }
 }

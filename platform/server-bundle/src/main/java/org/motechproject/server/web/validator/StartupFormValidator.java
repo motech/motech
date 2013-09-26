@@ -18,6 +18,7 @@ import java.util.Arrays;
 import static org.apache.activemq.util.URISupport.CompositeData;
 import static org.apache.activemq.util.URISupport.isCompositeURI;
 import static org.apache.activemq.util.URISupport.parseComposite;
+import static org.motechproject.server.web.validator.ValidationUtils.validateEmptyOrWhitespace;
 
 /*StartupFormValidator validate user information during register process*/
 public class StartupFormValidator implements Validator {
@@ -43,13 +44,12 @@ public class StartupFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        for (String field : Arrays.asList("language", "queueUrl")) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
-        }
+        String queueUrl = "queueUrl";
+        validateEmptyOrWhitespace(errors, ERROR_REQUIRED, "language", queueUrl);
 
-        for (String field : Arrays.asList("queueUrl")) {
-            String value = errors.getFieldValue(field).toString().replace("localhost", "127.0.0.1");
-            validateQueueUrl(errors, value, field);
+        if (!errors.hasFieldErrors(queueUrl)) {
+            String value = errors.getFieldValue(queueUrl).toString().replace("localhost", "127.0.0.1");
+            validateQueueUrl(errors, value, queueUrl);
         }
 
         if (AuthenticationMode.REPOSITORY.equals(errors.getFieldValue("loginMode").toString())) {
@@ -106,7 +106,7 @@ public class StartupFormValidator implements Validator {
             if (isCompositeURI(brokerURL)) {
                 CompositeData data = parseComposite(brokerURL);
                 String scheme = data.getScheme();
-                if (scheme!=null && (scheme.equals("failover") || scheme.equals("fanout") || scheme.equals("vm"))) {
+                if (scheme != null && (scheme.equals("failover") || scheme.equals("fanout") || scheme.equals("vm"))) {
                     for (URI uri : data.getComponents()) {
                         validateUriContainSpecificScheme(errors, field, uri);
                     }
@@ -139,7 +139,7 @@ public class StartupFormValidator implements Validator {
 
     private void validateUriContainSpecificScheme(Errors errors, String field, URI uri) {
         String scheme = uri.getScheme();
-        if (scheme!=null && (scheme.equals("static") || scheme.equals("broker"))) {
+        if (scheme != null && (scheme.equals("static") || scheme.equals("broker"))) {
             if (isCompositeURI(uri)) {
                 try {
                     CompositeData data = parseComposite(uri);

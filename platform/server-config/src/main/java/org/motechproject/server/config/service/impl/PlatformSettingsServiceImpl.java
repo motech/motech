@@ -43,7 +43,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Caching(cacheable = { @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")})
     public MotechSettings getPlatformSettings() {
         MotechSettings settings = configFileMonitor.getCurrentSettings();
 
@@ -204,9 +204,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
-    public void addConfigLocation(final String location, final boolean save) throws IOException {
-        configFileMonitor.changeConfigFileLocation(location, save);
+    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME}, allEntries = true)
+    public void addConfigLocation(final String location) throws IOException {
+        configFileMonitor.changeConfigFileLocation(location);
     }
 
     @Override
@@ -215,7 +215,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             throws IOException {
         File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
         setUpDirsForFile(file);
-        try ( FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             properties.store(fileOutputStream, null);
         }
     }
@@ -278,7 +278,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws  IOException {
+    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws IOException {
         File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
         setUpDirsForFile(file);
 

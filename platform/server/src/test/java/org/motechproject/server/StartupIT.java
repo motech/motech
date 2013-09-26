@@ -25,7 +25,7 @@ import static org.junit.Assert.fail;
 public class StartupIT {
 
     private String HOST = "localhost";
-    private int PORT = TestContext.getTomcatPort();
+    private int PORT = TestContext.getTomcatPort();;
 
     @Test
     public void shouldStartServerAndMakeAllBundlesActive() throws IOException, JSONException, InterruptedException{

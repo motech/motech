@@ -20,7 +20,7 @@
 
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r020</external.dependency.release.tag>
+        <external.dependency.release.tag>r022</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -533,7 +533,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-                <version>1.4.0</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -575,6 +575,11 @@
                         <artifactId>com.springsource.org.apache.commons.codec</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
+                <version>1.8-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>

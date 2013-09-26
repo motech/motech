@@ -42,6 +42,18 @@ public class DBConfig {
         }
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -85,4 +97,5 @@ public class DBConfig {
         sb.append('}');
         return sb.toString();
     }
+
 }

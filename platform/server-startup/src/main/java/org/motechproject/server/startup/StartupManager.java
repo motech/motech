@@ -3,6 +3,7 @@ package org.motechproject.server.startup;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
@@ -20,7 +21,9 @@ import javax.jms.JMSException;
 import java.util.Arrays;
 import java.util.Map;
 
-
+/**
+ * This class manages and maintains the state of the server
+ */
 public final class StartupManager {
     private static final String SETTINGS_DB = "motech-platform-startup";
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
@@ -30,6 +33,8 @@ public final class StartupManager {
     private ConfigFileSettings configFileSettings;
     @Autowired
     private ConfigLoader configLoader;
+    @Autowired
+    private ConfigurationService configurationService;
     @Autowired
     private CouchDbManager couchDbManager;
     @Autowired
@@ -48,15 +53,21 @@ public final class StartupManager {
     }
 
     public boolean isConfigRequired() {
-        return platformState == MotechPlatformState.NEED_CONFIG;
+        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG || platformState == MotechPlatformState.NEED_CONFIG;
+    }
+
+    public boolean isBootstrapConfigRequired() {
+        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
     }
 
     @PostConstruct
     public void startup() {
-        if (configFileSettings != null) {
-            configFileSettings = null;
+        if (configurationService.loadBootstrapConfig() == null) {
+            platformState = MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
+            return;
         }
 
+        configFileSettings = null;
         configFileSettings = configLoader.loadConfig();
 
         // check if settings were loaded from config locations
@@ -68,7 +79,7 @@ public final class StartupManager {
             platformState = MotechPlatformState.STARTUP;
         }
 
-        if (platformState != MotechPlatformState.NEED_CONFIG) {
+        if (!isConfigRequired()) {
             syncSettingsWithDb();
         }
 
@@ -140,5 +151,4 @@ public final class StartupManager {
             platformState = MotechPlatformState.DB_ERROR;
         }
     }
-
 }

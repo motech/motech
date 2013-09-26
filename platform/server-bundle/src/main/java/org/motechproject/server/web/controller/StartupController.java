@@ -41,6 +41,7 @@ public class StartupController {
 
     public static final String BUNDLE_ADMIN_ROLE = "Bundle Admin";
     public static final String USER_ADMIN_ROLE = "User Admin";
+    public static final String REDIRECT_HOME = "redirect:home";
 
     private StartupManager startupManager = StartupManager.getInstance();
 
@@ -63,7 +64,7 @@ public class StartupController {
         ModelAndView view = new ModelAndView("startup");
 
         if (startupManager.canLaunchBundles()) {
-            view.setViewName("redirect:home");
+            view.setViewName(REDIRECT_HOME);
         } else {
             Locale userLocale = localeSettings.getUserLocale(request);
 
@@ -82,7 +83,7 @@ public class StartupController {
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
     public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
-        ModelAndView view = new ModelAndView("redirect:home");
+        ModelAndView view = new ModelAndView(REDIRECT_HOME);
 
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());
