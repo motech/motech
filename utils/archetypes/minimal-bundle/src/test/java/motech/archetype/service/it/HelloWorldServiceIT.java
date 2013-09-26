@@ -19,18 +19,12 @@ public class HelloWorldServiceIT extends BaseOsgiIT {
         assertNotNull(registryReference);
         HelloWorldService helloService = (HelloWorldService) bundleContext.getService(registryReference);
         assertNotNull(helloService);
-
-        assertTrue(true);
+        
+        assertNotNull(helloService.sayHello());
     }
 
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "META-INF/spring/helloWorldServiceITContext.xml" };
     }
-
-    @Override
-    protected List<String> getImports() {
-        return Arrays.asList("motech.archetype.service");
-    }
-
 }

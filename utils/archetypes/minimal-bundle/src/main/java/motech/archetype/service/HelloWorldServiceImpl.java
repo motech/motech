@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 public class HelloWorldServiceImpl implements HelloWorldService {
 
     @Override
-    public String getMessage() {
+    public String sayHello() {
         return "Hello World";
     }
 
