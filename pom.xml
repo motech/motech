@@ -1026,8 +1026,6 @@
         <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
-        <module>utils/pmd-rules</module>
-        <module>utils/enforcer-rules</module>
 
         <!-- OSGI modules -->
         <module>platform/commons-api</module>
@@ -1204,7 +1202,7 @@
                     <dependency>
                         <groupId>org.motechproject</groupId>
                         <artifactId>pmd-rules</artifactId>
-                        <version>0.22-SNAPSHOT</version>
+                        <version>0.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -1269,7 +1267,7 @@
                     <dependency>
                         <groupId>org.motechproject</groupId>
                         <artifactId>enforcer-rules</artifactId>
-                        <version>0.22-SNAPSHOT</version>
+                        <version>0.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
