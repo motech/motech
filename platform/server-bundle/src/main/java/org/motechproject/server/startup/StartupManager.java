@@ -3,10 +3,14 @@ package org.motechproject.server.startup;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
+import org.motechproject.config.domain.BootstrapConfig;
+import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -17,10 +21,14 @@ import javax.annotation.PostConstruct;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 
-
+/**
+ * StartupManager controlling and managing the application loading
+ */
 public final class StartupManager {
     private static final String SETTINGS_DB = "motech-platform-startup";
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
@@ -28,12 +36,20 @@ public final class StartupManager {
     private static StartupManager instance;
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
     private ConfigFileSettings configFileSettings;
+    private AllSettings allSettings;
+    private SettingsRecord dbSettings;
+
     @Autowired
     private ConfigLoader configLoader;
+
     @Autowired
     private CouchDbManager couchDbManager;
+
     @Autowired
     private EventAdmin eventAdmin;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     private StartupManager() {
 
@@ -53,22 +69,30 @@ public final class StartupManager {
 
     @PostConstruct
     public void startup() {
-        if (configFileSettings != null) {
-            configFileSettings = null;
-        }
+        configFileSettings = null;
+        allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
+        dbSettings = allSettings.getSettings();
 
-        configFileSettings = configLoader.loadConfig();
+        if(!dbSettings.isPlatformInitialized()) {
+            BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+            if(ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
+                configFileSettings = configLoader.loadConfig();
+            }
 
-        // check if settings were loaded from config locations
-        if (configFileSettings == null) {
-            platformState = MotechPlatformState.NEED_CONFIG;
-            configFileSettings = configLoader.loadDefaultConfig();
+            // check if settings were loaded from config locations
+            if (configFileSettings == null) {
+                platformState = MotechPlatformState.NEED_CONFIG;
+                configFileSettings = configLoader.loadDefaultConfig();
+            } else {
+                LOGGER.info("Loaded config from " + configFileSettings.getFileURL());
+                platformState = MotechPlatformState.STARTUP;
+            }
+
+            if (platformState != MotechPlatformState.NEED_CONFIG) {
+                syncSettingsWithDb();
+            }
         } else {
-            LOGGER.info("Loaded config from " + configFileSettings.getFileURL());
-            platformState = MotechPlatformState.STARTUP;
-        }
-
-        if (platformState != MotechPlatformState.NEED_CONFIG) {
+            configFileSettings = convertSettingsRecordToConfigFileSettings();
             syncSettingsWithDb();
         }
 
@@ -78,11 +102,39 @@ public final class StartupManager {
         }
     }
 
+    private ConfigFileSettings convertSettingsRecordToConfigFileSettings() {
+        ConfigFileSettings settings = new ConfigFileSettings();
+        for (String key : dbSettings.getActivemqProperties().stringPropertyNames()) {
+            settings.saveActiveMqSetting(key, dbSettings.getActivemqProperties().getProperty(key));
+        }
+        settings.saveMotechSetting(MotechSettings.LANGUAGE, dbSettings.getLanguage());
+        settings.saveMotechSetting(MotechSettings.LOGINMODE, dbSettings.getLoginMode());
+        settings.saveMotechSetting(MotechSettings.PROVIDER_NAME, dbSettings.getProviderName());
+        settings.saveMotechSetting(MotechSettings.PROVIDER_URL, dbSettings.getProviderUrl());
+        settings.saveMotechSetting(MotechSettings.SERVER_URL, dbSettings.getServerUrl());
+        settings.saveMotechSetting(MotechSettings.STATUS_MSG_TIMEOUT, dbSettings.getStatusMsgTimeout());
+        settings.saveMotechSetting(MotechSettings.UPLOAD_SIZE, dbSettings.getUploadSize());
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+
+            settings.setMd5checksum(digest.digest(settings.toString().getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("MD5 algorithm not available");
+        }
+
+        return settings;
+    }
+
     public boolean canLaunchBundles() {
         return platformState == MotechPlatformState.FIRST_RUN || platformState == MotechPlatformState.NORMAL_RUN;
     }
 
-    public ConfigFileSettings getLoadedConfig() {
+    /**
+     * This function is only called when the default configuration is loaded
+     * and is no config in the database or external files
+     */
+    public ConfigFileSettings getDefaultSettings() {
         return configFileSettings;
     }
 
@@ -116,9 +168,6 @@ public final class StartupManager {
 
     private void syncSettingsWithDb() {
         try {
-            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
-            SettingsRecord dbSettings = allSettings.getSettings();
-
             if (dbSettings.getLastRun() == null) {
                 platformState = MotechPlatformState.FIRST_RUN;
             } else {
@@ -133,6 +182,7 @@ public final class StartupManager {
 
             dbSettings.setLastRun(DateTime.now());
             dbSettings.setConfigFileChecksum(configFileSettings.getMd5checkSum());
+            dbSettings.setPlatformInitialized(true);
 
             allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {

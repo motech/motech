@@ -3,6 +3,7 @@ package org.motechproject.config.service.impl;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.bootstrap.BootstrapConfigLoader;
 import org.motechproject.config.domain.BootstrapConfig;
@@ -18,6 +19,9 @@ public class ConfigurationServiceTest {
     @Mock
     private BootstrapConfigLoader bootstrapConfigLoader;
 
+    @InjectMocks
+    private ConfigurationService platformConfigService = new ConfigurationServiceImpl();
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -25,7 +29,6 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldLoadBootstrapDBConfiguration() {
-        ConfigurationService platformConfigService = new ConfigurationServiceImpl(bootstrapConfigLoader);
         BootstrapConfig expectedConfig = new BootstrapConfig(new DBConfig("http://localhost", null, null), null, null);
         when(bootstrapConfigLoader.loadBootstrapConfig()).thenReturn(expectedConfig);
 

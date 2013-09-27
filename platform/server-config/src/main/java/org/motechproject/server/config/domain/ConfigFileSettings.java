@@ -11,6 +11,9 @@ import java.security.DigestInputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
+/**
+ * Holder class for config settings
+ */
 public class ConfigFileSettings implements MotechSettings {
 
     private byte[] md5checkSum;
@@ -118,7 +121,9 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     public void saveMotechSetting(String key, String value) {
-        motechSettings.put(key, value);
+        if(value != null) {
+            motechSettings.put(key, value);
+        }
     }
 
     public void storeMotechSettings() throws IOException {

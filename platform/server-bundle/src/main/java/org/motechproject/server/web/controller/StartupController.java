@@ -93,7 +93,7 @@ public class StartupController {
 
             view.setViewName("startup");
         } else {
-            ConfigFileSettings settings = startupManager.getLoadedConfig();
+            ConfigFileSettings settings = startupManager.getDefaultSettings();
             settings.saveMotechSetting(LANGUAGE, form.getLanguage());
             settings.saveMotechSetting(SCHEDULER_URL, form.getSchedulerUrl());
             settings.saveMotechSetting(LOGINMODE, form.getLoginMode());
@@ -126,7 +126,7 @@ public class StartupController {
     }
 
     private StartupSuggestionsForm createSuggestions() {
-        MotechSettings settings = startupManager.getLoadedConfig();
+        MotechSettings settings = startupManager.getDefaultSettings();
         StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
 
         String queueUrl = settings.getActivemqProperties().getProperty(AMQ_BROKER_URL);

@@ -114,7 +114,7 @@ public class StartupControllerTest {
         when(startupManager.canLaunchBundles()).thenReturn(false);
         when(startupManager.findActiveMQInstance(anyString())).thenReturn(false);
         when(startupManager.findSchedulerInstance(anyString())).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
 
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
         when(motechSettings.getSchedulerProperties()).thenReturn(properties);
@@ -156,7 +156,7 @@ public class StartupControllerTest {
         StartupForm startupForm = startupForm();
         startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
@@ -173,7 +173,7 @@ public class StartupControllerTest {
         StartupForm startupForm = startupForm();
         startupForm.setLoginMode(AuthenticationMode.OPEN_ID);
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);

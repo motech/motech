@@ -60,7 +60,9 @@
                             org.motechproject.server.config.repository;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
                             org.motechproject.server.config.service.impl;version=${project.version},
-                            org.motechproject.server.config.settings;version=${project.version}
+                            org.motechproject.server.config.settings;version=${project.version},
+                            org.motechproject.config.domain;version=${project.version},
+                            org.motechproject.config.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
@@ -117,6 +119,8 @@
                                     <includes>
                                         <include>activemq.properties</include>
                                         <include>motech-settings.conf</include>
+                                        <!--Temporarily added to be able to review the changes-->
+                                        <include>bootstrap.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
