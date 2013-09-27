@@ -45,7 +45,10 @@ public class MetricsAgentBackendManager implements OsgiServiceLifecycleListener 
 
     @Override
     public void unbind(Object service, Map serviceProperties) {
-        availableMetricsAgentImplementations.remove(((MetricsAgentBackend) service).getImplementationName());
+        MetricsAgentBackend impl = (MetricsAgentBackend) service;
+
+        availableMetricsAgentImplementations.remove(impl.getImplementationName());
+        metricsAgent.removeMetricAgent(impl);
     }
 
     public Map<String, MetricsAgentBackend> getAvailableMetricsAgentImplementations() {

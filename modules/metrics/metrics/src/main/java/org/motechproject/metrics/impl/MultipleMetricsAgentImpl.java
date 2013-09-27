@@ -80,6 +80,12 @@ public class MultipleMetricsAgentImpl implements MetricsAgent {
         metricsAgents.add(agent);
     }
 
+    public void removeMetricAgent(MetricsAgentBackend agent) {
+        if (metricsAgents != null) {
+            metricsAgents.remove(agent);
+        }
+    }
+
     public List<MetricsAgentBackend> getMetricsAgents() {
         if (metricsAgents == null) {
             return new ArrayList<MetricsAgentBackend>();
