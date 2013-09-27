@@ -2,18 +2,24 @@ package org.motechproject.metrics.web;
 
 
 import org.motechproject.metrics.StatsdAgentBackend;
-import org.motechproject.metrics.StatsdAgentConfigurationData;
+import org.motechproject.metrics.domain.ConfigProperty;
+import org.motechproject.metrics.domain.PropertyType;
+import org.motechproject.metrics.exception.ValidationException;
 import org.motechproject.metrics.util.MetricsAgentBackendManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /*Class used to pass statsd metrics agent config values from agent to UI, it also controls
@@ -27,38 +33,10 @@ public class MetricsController {
     @Autowired
     private MetricsAgentBackendManager metricsAgentBackendManager;
 
-    @RequestMapping(value = "/settings/getAll", method = RequestMethod.GET)
-    @ResponseBody
-    public StatsdAgentConfigurationData getMetricsData() {
-        StatsdAgentConfigurationData statsdAgentConfigurationData = new StatsdAgentConfigurationData();
-        statsdAgentConfigurationData.setGenerateHostBasedStats(statsdAgentBackend.isGenerateHostBasedStats());
-        statsdAgentConfigurationData.setServerHost(statsdAgentBackend.getServerHost());
-        statsdAgentConfigurationData.setServerPort(statsdAgentBackend.getServerPort());
-        statsdAgentConfigurationData.setGraphiteUrl(statsdAgentBackend.getGraphiteUrl());
-        return statsdAgentConfigurationData;
-    }
-
     @RequestMapping(value = "/settings/getGraphiteUrl", method = RequestMethod.GET)
     @ResponseBody
     public String getGraphiteUrl() {
         return statsdAgentBackend.getGraphiteUrl();
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/settings/save", method = RequestMethod.POST)
-    public void saveStatsdAgentConfig(@RequestBody StatsdAgentConfigurationData
-                                              statsdAgentConfigurationData) {
-        int serverPort = statsdAgentConfigurationData.getServerPort();
-        String serverHost = statsdAgentConfigurationData.getServerHost();
-        boolean generateHostBasedStats = statsdAgentConfigurationData.isGenerateHostBasedStats();
-        String graphiteUrl = statsdAgentConfigurationData.getGraphiteUrl();
-
-        //Setting new values before save to file
-        statsdAgentBackend.setServerPort(serverPort);
-        statsdAgentBackend.setServerHost(serverHost);
-        statsdAgentBackend.setGenerateHostBasedStats(generateHostBasedStats);
-        statsdAgentBackend.setGraphiteUrl(graphiteUrl);
-        statsdAgentBackend.saveProperties();
     }
 
     @RequestMapping(value = "/backend/available", method = RequestMethod.GET)
@@ -77,5 +55,40 @@ public class MetricsController {
     @RequestMapping(value = "/backend/used", method = RequestMethod.POST)
     public void setUsedImplementations(@RequestBody List<String> selected) {
         metricsAgentBackendManager.setMetricsAgents(selected);
+    }
+
+    @RequestMapping(value = "/backend/{implName}/settings", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, ConfigProperty> getBackendSettings(@PathVariable final String implName) {
+        return metricsAgentBackendManager.getSettings(implName);
+    }
+
+    @RequestMapping(value = "/backend/{implName}/settings", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void setBackendSettings(@PathVariable final String implName, @RequestBody Map<String, Map<String, String>> config) {
+        Map<String, ConfigProperty> configProperties = convertToConfigProperties(config);
+
+        metricsAgentBackendManager.saveSettings(implName, configProperties);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public String handleException(ValidationException e) {
+        return e.getMessage();
+    }
+
+    private Map<String, ConfigProperty> convertToConfigProperties(Map<String, Map<String, String>> config) {
+        Map<String, ConfigProperty> ret = new HashMap<>();
+        for (Map.Entry<String, Map<String, String>> entry : config.entrySet()) {
+            Map<String, String> configProperty = entry.getValue();
+            String displayName = configProperty.get("displayName");
+            PropertyType type = PropertyType.valueOf(configProperty.get("type"));
+            String value = configProperty.get("value");
+
+            ret.put(entry.getKey(), new ConfigProperty(displayName, type, value));
+        }
+
+        return ret;
     }
 }

@@ -2,6 +2,7 @@ package org.motechproject.metrics.util;
 
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.motechproject.metrics.MetricsAgentBackend;
+import org.motechproject.metrics.domain.ConfigProperty;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,5 +70,19 @@ public class MetricsAgentBackendManager implements OsgiServiceLifecycleListener 
         }
 
         metricsAgent.setMetricsAgents(metricsAgents);
+    }
+
+    public Map<String, ConfigProperty> getSettings(String implName) {
+        if (availableMetricsAgentImplementations.containsKey(implName)) {
+            return availableMetricsAgentImplementations.get(implName).getSettings();
+        } else {
+            return new HashMap<>();
+        }
+    }
+
+    public void saveSettings(String implName, Map<String, ConfigProperty> config) {
+        if (availableMetricsAgentImplementations.containsKey(implName)) {
+            availableMetricsAgentImplementations.get(implName).saveSettings(config);
+        }
     }
 }

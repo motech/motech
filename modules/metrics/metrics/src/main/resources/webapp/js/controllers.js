@@ -32,29 +32,11 @@
             generateHostBasedStats : false
         };
 
-        $http({method:'GET', url:'../metrics/settings/getAll'}).
-            success(
-            function(data) {
-                $scope.statsdAgentConfig = data;
-        });
-
-        $scope.saveStatsdAgentConfig = function() {
-            $http.post('../metrics/settings/save', $scope.statsdAgentConfig).
-                success(alertHandler('metrics.settings.saved', 'metrics.success')).
-                error(function(response) {
-                var msg = 'metrics.error',
-                responseData = (typeof(response) === 'string') ? response : response.data;
-                if (typeof(responseData) === 'string') {
-                            msg = responseData;
-                }
-                motechAlert(msg, 'metrics.error');
-                });
-        };
-
         $http({method:'GET', url:'../metrics/backend/available'}).
             success(
             function(data) {
                 $scope.metricsImplementations = data;
+                $scope.getAllSettings();
         });
 
         $http({method:'GET', url:'../metrics/backend/used'}).
@@ -70,6 +52,29 @@
                     motechAlert(response, 'metrics.error');
                 });
         };
+
+        $scope.getAllSettings = function() {
+            $scope.metricsSettings = {};
+            angular.forEach($scope.metricsImplementations, function (impl) {
+                $http({method:'GET', url:'../metrics/backend/' + impl + '/settings'}).
+                    success(
+                        function(data) {
+                            if(!jQuery.isEmptyObject(data)) {
+                                $scope.metricsSettings[impl] = data;
+                            }
+                         }
+                    );
+            });
+        };
+
+        $scope.saveSettings = function(impl, settings) {
+            $http.post('../metrics/backend/' + impl + '/settings/', settings).
+                success(alertHandler('metrics.settings.saved', 'metrics.success')).
+                error(function(response) {
+                    jAlert(response, $scope.msg('metrics.error'));
+                });
+        };
+
     });
 }());
 
