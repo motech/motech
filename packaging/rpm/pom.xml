@@ -442,14 +442,12 @@
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
-                                <phase>package</phase>
                             </execution>
                             <execution>
                                 <id>verify-rpm</id>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>
-                                <phase>package</phase>
                             </execution>
                         </executions>
                     </plugin>

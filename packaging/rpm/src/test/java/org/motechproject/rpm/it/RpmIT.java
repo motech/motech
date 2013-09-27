@@ -24,7 +24,7 @@ public class RpmIT extends BasePkgTest {
     private static final Logger LOG = LoggerFactory.getLogger(RpmIT.class);
 
     @Test
-    public void testMotechDebInstallation() throws IOException, InterruptedException {
+    public void testMotechRpmInstallation() throws IOException, InterruptedException {
         testInstall();
         testLoginAndMainPage();
         cleanUp();
