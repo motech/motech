@@ -21,7 +21,7 @@ import java.io.IOException;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/configContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class ConfigurationServiceIT {
 
     private File configdir = new File("/tmp");

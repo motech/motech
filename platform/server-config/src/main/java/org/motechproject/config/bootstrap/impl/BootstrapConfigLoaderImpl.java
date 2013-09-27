@@ -1,5 +1,6 @@
 package org.motechproject.config.bootstrap.impl;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 import org.motechproject.config.MotechConfigurationException;
 import org.motechproject.config.bootstrap.BootstrapConfigLoader;
@@ -41,7 +42,7 @@ public class BootstrapConfigLoaderImpl implements BootstrapConfigLoader {
     public BootstrapConfigLoaderImpl(ConfigFileReader configFileReader, Environment environment, Properties configProperties) {
         this.environment = environment;
         this.configFileReader = configFileReader;
-        final String defaultConfigDir = configProperties.getProperty(DEFAULT_BOOTSTRAP_CONFIG_DIR_PROP);
+        final String defaultConfigDir = StrSubstitutor.replace(configProperties.getProperty(DEFAULT_BOOTSTRAP_CONFIG_DIR_PROP), System.getProperties());
         this.defaultBootstrapConfigDir = defaultConfigDir != null ? defaultConfigDir : DEFAULT_BOOTSTRAP_CONFIG_DIR;
     }
 
@@ -77,6 +78,7 @@ public class BootstrapConfigLoaderImpl implements BootstrapConfigLoader {
         String password = environment.getDBPassword();
         String tenantId = environment.getTenantId();
         String configSource = environment.getConfigSource();
+
         return new BootstrapConfig(new DBConfig(dbUrl, username, password), tenantId, ConfigSource.valueOf(configSource));
     }
 
@@ -91,9 +93,9 @@ public class BootstrapConfigLoaderImpl implements BootstrapConfigLoader {
             String username = properties.getProperty(DB_USERNAME);
             String password = properties.getProperty(DB_PASSWORD);
             String tenantId = properties.getProperty(TENANT_ID);
-            ConfigSource configSource = ConfigSource.valueOf(properties.getProperty(CONFIG_SOURCE));
+            String configSource = properties.getProperty(CONFIG_SOURCE);
 
-            return new BootstrapConfig(new DBConfig(dbUrl, username, password), tenantId, configSource);
+            return new BootstrapConfig(new DBConfig(dbUrl, username, password), tenantId, ConfigSource.valueOf(configSource));
 
         } catch (IOException e) {
             final String message = "Error loading bootstrap properties from config file " + configFile + " " + errorMessage;

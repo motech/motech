@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
@@ -28,7 +29,7 @@ public class
     AllSettings allSettings;
 
     @Mock
-    ConfigFileSettings motechSettings;
+    SettingsRecord settingsRecord;
 
     @Mock
     CouchDbManagerImpl couchDbManager;
@@ -49,19 +50,20 @@ public class
     public void testGetLanguage() {
         // no settings
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
+        when(allSettings.getSettings()).thenReturn(settingsRecord);
 
         assertNull(platformSettingsService.getPlatformLanguage());
         assertEquals(platformSettingsService.getPlatformLanguage("en"), "en");
 
         // no language in settings
-        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
-        when(motechSettings.getLanguage()).thenReturn(null);
+        when(platformSettingsService.getPlatformSettings()).thenReturn(settingsRecord);
+        when(settingsRecord.getLanguage()).thenReturn(null);
 
         assertNull(platformSettingsService.getPlatformLanguage());
         assertEquals(platformSettingsService.getPlatformLanguage("en"), "en");
 
         // language set
-        when(motechSettings.getLanguage()).thenReturn("pl");
+        when(settingsRecord.getLanguage()).thenReturn("pl");
 
         assertEquals(platformSettingsService.getPlatformLanguage(), "pl");
         assertEquals(platformSettingsService.getPlatformLanguage("en"), "pl");
@@ -71,17 +73,18 @@ public class
     public void testGetLocale() {
         // no settings
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
+        when(allSettings.getSettings()).thenReturn(null);
 
         assertEquals(platformSettingsService.getPlatformLocale(), Locale.getDefault());
 
         // no language in settings
-        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
-        when(motechSettings.getLanguage()).thenReturn(null);
+        when(platformSettingsService.getPlatformSettings()).thenReturn(settingsRecord);
+        when(settingsRecord.getLanguage()).thenReturn(null);
 
         assertEquals(platformSettingsService.getPlatformLocale(), Locale.getDefault());
 
         // language set
-        when(motechSettings.getLanguage()).thenReturn("pl");
+        when(settingsRecord.getLanguage()).thenReturn("pl");
 
         assertEquals(platformSettingsService.getPlatformLocale(), new Locale("pl"));
     }

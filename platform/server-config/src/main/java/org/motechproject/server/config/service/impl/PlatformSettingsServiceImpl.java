@@ -48,17 +48,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     @Caching(cacheable = { @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
-        MotechSettings settings = configFileMonitor.getCurrentSettings();
-
-        if (settings != null) {
-            SettingsRecord record = allSettings.getSettings();
-
-            if (record != null) {
-                settings = record;
-            }
-        }
-
-        return settings;
+        return allSettings.getSettings();
     }
 
     @Override
@@ -84,8 +74,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
                 allSettings.addOrUpdateSettings(dbSettings);
             }
-
-            configFileMonitor.monitor();
         } catch (Exception e) {
             throw new MotechException("Error while saving motech settings", e);
         }
@@ -101,7 +89,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
-            configFileMonitor.monitor();
 
             SettingsRecord dbSettings = allSettings.getSettings();
             if (dbSettings == null) {

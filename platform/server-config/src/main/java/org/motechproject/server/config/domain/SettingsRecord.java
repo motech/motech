@@ -28,6 +28,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private String uploadSize;
 
     private boolean cluster;
+    private boolean platformInitialized;
     private DateTime lastRun;
     private byte[] configFileChecksum = new byte[0];
 
@@ -71,6 +72,15 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public String getServerHost() {
         return new MotechURL(this.serverUrl).getHost();
+    }
+
+
+    public boolean isPlatformInitialized() {
+        return platformInitialized;
+    }
+
+    public void setPlatformInitialized(boolean platformInitialized) {
+        this.platformInitialized = platformInitialized;
     }
 
     public String getUploadSize() {
