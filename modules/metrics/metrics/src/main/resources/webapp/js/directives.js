@@ -44,4 +44,32 @@
         };
     });
 
+    metricsModule.directive('double', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                element.keypress(function (evt) {
+                    var charCode = evt.which || evt.keyCode,
+                        allow = [8, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]; // char code: <Backspace> . 0 1 2 3 4 5 6 7 8 9
+
+                    return allow.indexOf(charCode) >= 0;
+                });
+            }
+        };
+    });
+
+   metricsModule.directive('integer', function () {
+       return {
+           restrict: 'A',
+           link: function (scope, element, attrs) {
+               element.keypress(function (evt) {
+                   var charCode = evt.which || evt.keyCode,
+                       allow = [8, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]; // char code: <Backspace> 0 1 2 3 4 5 6 7 8 9
+
+                   return allow.indexOf(charCode) >= 0;
+               });
+           }
+       };
+   });
+
 }());

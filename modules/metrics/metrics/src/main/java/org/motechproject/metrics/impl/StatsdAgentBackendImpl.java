@@ -3,6 +3,9 @@ package org.motechproject.metrics.impl;
 import org.apache.commons.io.FileUtils;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.motechproject.metrics.StatsdAgentBackend;
+import org.motechproject.metrics.domain.ConfigProperty;
+import org.motechproject.metrics.domain.PropertyType;
+import org.motechproject.metrics.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +38,11 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
     private int serverPort;
     private boolean generateHostBasedStats;
     private String graphiteUrl;
+
+    private final String serverHostKey = "serverHost";
+    private final String serverPortKey = "serverPort";
+    private final String generateHostBasedStatsKey = "generateHostBasedStats";
+    private final String graphiteUrlKey = "graphiteUrl";
 
     private InetAddress serverAddr;
     private String hostName;
@@ -178,16 +187,17 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
                     Properties statsdAgentConfig = new Properties();
                     statsdAgentConfig.load(in);
                     in.close();
-                    serverHost = statsdAgentConfig.getProperty("serverHost");
-                    serverPort = Integer.parseInt(statsdAgentConfig.getProperty("serverPort"));
-                    generateHostBasedStats = "true".equals(statsdAgentConfig.getProperty("generateHostBasedStats"));
-                    graphiteUrl = statsdAgentConfig.getProperty("graphiteUrl");
+                    serverHost = statsdAgentConfig.getProperty(serverHostKey);
+                    serverPort = Integer.parseInt(statsdAgentConfig.getProperty(serverPortKey));
+                    generateHostBasedStats = "true".equals(statsdAgentConfig.getProperty(generateHostBasedStatsKey));
+                    graphiteUrl = statsdAgentConfig.getProperty(graphiteUrlKey);
                 }
                 catch (IOException e) {
                     log.error("Error while loading statsdAgent configuration from " + configFileLocation, e);
                 }
             }
     }
+
      //Saves config data to properties file
     public void saveProperties() {
         File file = new File(configFileLocation);
@@ -215,5 +225,50 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend, StatsdAgentB
     @Override
     public String getImplementationName() {
         return implementationName;
+    }
+
+    @Override
+    public Map<String, ConfigProperty> getSettings() {
+        Map<String, ConfigProperty> configuration = new HashMap<>();
+
+        configuration.put(serverHostKey, new ConfigProperty("Server Host", PropertyType.UNICODE, serverHost));
+        configuration.put(serverPortKey, new ConfigProperty("Server Port", PropertyType.INTEGER, Integer.toString(serverPort)));
+        configuration.put(generateHostBasedStatsKey, new ConfigProperty("Generate Host Based Stats", PropertyType.BOOLEAN, String.valueOf(generateHostBasedStats)));
+        configuration.put(graphiteUrlKey, new ConfigProperty("Graphite Url", PropertyType.UNICODE, graphiteUrl));
+
+       return configuration;
+    }
+
+    @Override
+    public void saveSettings(Map<String, ConfigProperty> config) {
+        Map<String, String> errors = validate(config);
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(implementationName, errors);
+        } else {
+            serverHost = config.get(serverHostKey).getValue();
+            serverPort = Integer.parseInt(config.get(serverPortKey).getValue());
+            generateHostBasedStats = "true".equals(config.get(generateHostBasedStatsKey).getValue());
+            graphiteUrl = config.get(graphiteUrlKey).getValue();
+
+            //save to file
+            saveProperties();
+        }
+    }
+
+    private Map<String, String> validate(Map<String, ConfigProperty> config) {
+        Map<String, String> errors = new HashMap<>();
+
+        if ((config.get(serverHostKey)).getValue().isEmpty()) {
+            errors.put(config.get(serverHostKey).getDisplayName(), "Server host cannot be empty");
+        }
+
+        try {
+            Integer.parseInt((config.get(serverPortKey)).getValue());
+        } catch (Exception e) {
+            errors.put(config.get(serverPortKey).getDisplayName(), "Error while parsing port value");
+        }
+
+        return errors;
     }
 }

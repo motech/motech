@@ -1,5 +1,7 @@
 package org.motechproject.metrics;
 
+import org.motechproject.metrics.domain.ConfigProperty;
+
 import java.util.Map;
 
 /**
@@ -32,4 +34,15 @@ public interface MetricsAgentBackend {
     void logTimedEvent(String metric, long time);
 
     String getImplementationName();
+
+    /**
+     * Should return config properties of current implementation.
+     * If there are no settings, then method should return empty map
+     */
+    Map<String, ConfigProperty> getSettings();
+
+    /**
+     * Should save new config
+     */
+    void saveSettings(Map<String, ConfigProperty> config);
 }
