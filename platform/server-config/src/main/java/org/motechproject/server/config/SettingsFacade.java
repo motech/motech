@@ -128,6 +128,10 @@ public class SettingsFacade {
         return (result == null ? new Properties() : result);
     }
 
+    public Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException {
+        return platformSettingsService.getAllProperties(bundleSymbolicName);
+    }
+
     public void setProperty(String filename, String key, String value) {
         if (!config.containsKey(filename)) {
             config.put(filename, new Properties());
