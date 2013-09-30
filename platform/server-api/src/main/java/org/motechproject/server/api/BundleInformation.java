@@ -5,7 +5,14 @@ import org.osgi.framework.Version;
 
 import java.util.Objects;
 
+/**
+ * Class acting as a DTO for a {@link Bundle} in the system.
+ */
 public class BundleInformation {
+
+    /**
+     * Represents the bundle state.
+     */
     public enum State {
         UNINSTALLED(1),
         INSTALLED(2),

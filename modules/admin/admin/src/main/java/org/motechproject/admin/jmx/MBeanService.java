@@ -5,7 +5,7 @@ import org.motechproject.admin.domain.QueueMBean;
 import org.motechproject.admin.domain.QueueMessage;
 import org.motechproject.commons.api.MotechException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
@@ -15,7 +15,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Component
+/**
+ * This service is responsible for retrieving JMS information through JMX. Uses an mbean server to retrieve
+ * the information.
+ *
+ * @see MotechMBeanServer
+ */
+@Service
 public class MBeanService {
 
     public static final String JMS_MESSAGE_ID = "JMSMessageID";
@@ -27,6 +33,13 @@ public class MBeanService {
     private MotechMBeanServer mBeanServer;
 
 
+    /**
+     * Returns queue statistics for the given tenant's JMS queues. To be counted as a tenant's queue,
+     * its name must start with the tenants id.
+     *
+     * @param tenantId the Id of the tenant. Statistics will be retrieved for the queues belonging to this tenant.
+     * @return {@link List} of {@link QueueMBean}. One for each queue belonging to the given tenant.
+     */
     public List<QueueMBean> getQueueStatistics(String tenantId) {
         try {
             ArrayList<QueueMBean> queueDataList = new ArrayList<>();
@@ -54,6 +67,12 @@ public class MBeanService {
         }
     }
 
+    /**
+     * Retrieves a list of messages for the given JMS queue.
+     *
+     * @param queueName The name of the queue for which messages should be retrieved.
+     * @return {@link List} of messages for the given queue.
+     */
     public List<QueueMessage> getMessages(String queueName) {
         try {
             ArrayList<QueueMessage> queueMessages = new ArrayList<>();

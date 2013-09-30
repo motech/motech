@@ -4,6 +4,10 @@ import org.osgi.service.packageadmin.ExportedPackage;
 
 import java.util.Objects;
 
+/**
+ * A class representing a bundle import within the OSGi framework. Contains information about the exporter,
+ * the importer and the package name itself.
+ */
 public class PackageInfo {
 
     private String name;

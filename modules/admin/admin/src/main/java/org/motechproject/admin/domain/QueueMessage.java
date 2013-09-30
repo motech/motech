@@ -2,6 +2,9 @@ package org.motechproject.admin.domain;
 
 import java.util.Date;
 
+/**
+ * Represents a message from the JMS queue.
+ */
 public class QueueMessage {
     private String messageId;
     private final Boolean redelivered;

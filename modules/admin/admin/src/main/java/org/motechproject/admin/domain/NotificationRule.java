@@ -4,6 +4,11 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.admin.messages.ActionType;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+/**
+ * A notification rule persisted in the database. Represents a rule for sending out a single notification.
+ * Contains information about this notification's recipient and the {@link ActionType} representing a method
+ * used for notifying the recipient.
+ */
 @TypeDiscriminator("doc.type === 'NotificationRule'")
 public class NotificationRule extends MotechBaseDataObject {
 

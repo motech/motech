@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class responsible for resolving {@link Bundle} imports and exports. It fills up {@link ExtendedBundleInformation}
+ * objects with additional information regarding {@link Bundle}'s imports and exports. This information gives
+ * better insight into the current state of the OSGi framework.
+ */
 @Component
 public class ImportExportResolver {
 
@@ -20,6 +25,16 @@ public class ImportExportResolver {
     @Autowired
     private BundleContext bundleContext;
 
+    /**
+     * Resolves the bundle wiring for the bundle represented by {@link ExtendedBundleInformation} by creating
+     * {@link PackageInfo} objects. These objects represent an OSGi import containing information about both of the
+     * involved parties - the importer and the exporter.
+     *
+     * @param bundleInfo the object representing the bundle, it will be filled with the import information. The
+     *                   bundle is resolved based on the bundle ID returned by
+     *                   {@link org.motechproject.admin.bundles.ExtendedBundleInformation#getBundleId()}
+     * @see PackageInfo
+     */
     public void resolveBundleWiring(ExtendedBundleInformation bundleInfo) {
         List<PackageInfo> imports = new ArrayList<>();
         List<PackageInfo> exports = new ArrayList<>();

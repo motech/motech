@@ -6,11 +6,16 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * The default implementation of the {@link MotechBundleFilter}. It gives a pass only for non-platform
+ * {@link Bundle}s that import or export the {@code org.motechproject} package.
+ * To be counted as non-platform, the symbolic name of the {@link Bundle} mustn't start with
+ * {@code "org.motechproject.motech-platform"}.
+ * Because the system bundle({@code org.apache.felix.framework}) also imports/exports the {@code org.motechproject}
+ * package, it is treated as an exception that will not pass the filter.
+ */
 @Component
-public class DefaultBundleFilter implements MotechBundleFilter {
+public class DefaultBundleFilter extends MotechBundleFilter {
 
     private static final String MOTECH_PACKAGE = "org.motechproject";
     private static final String PLATFORM_PREFIX = MOTECH_PACKAGE + ".motech-platform";
@@ -18,21 +23,6 @@ public class DefaultBundleFilter implements MotechBundleFilter {
 
     @Autowired
     private BundleContext bundleContext;
-
-    @Override
-    public List<Bundle> filter(Bundle[] bundles) {
-        List<Bundle> result = new ArrayList<>();
-
-        if (bundles != null) {
-            for (Bundle bundle : bundles) {
-                if (passesCriteria(bundle)) {
-                    result.add(bundle);
-                }
-            }
-        }
-
-        return result;
-    }
 
     @Override
     public boolean passesCriteria(Bundle bundle) {
