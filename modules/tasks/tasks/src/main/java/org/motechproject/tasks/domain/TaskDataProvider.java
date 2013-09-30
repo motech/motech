@@ -9,6 +9,11 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+/**
+ * The <code>TaskDataProvider</code> class cointains all informations about data providers used in tasks
+ */
+
+
 @TypeDiscriminator("doc.type == 'TaskDataProvider'")
 public class TaskDataProvider extends MotechBaseDataObject {
     private static final long serialVersionUID = -5427486904165895928L;
@@ -107,5 +112,19 @@ public class TaskDataProvider extends MotechBaseDataObject {
     @Override
     public String toString() {
         return String.format("TaskDataProvider{name='%s', objects=%s}", name, objects);
+    }
+
+    public String getKeyType(String key) {
+        String type = "UNKNOWN";
+
+        for (TaskDataProviderObject object : getObjects()) {
+            for (FieldParameter fieldParameter : object.getFields()) {
+                if (equalsIgnoreCase(fieldParameter.getFieldKey(), key)) {
+                    type = fieldParameter.getType().toString();
+                }
+            }
+        }
+
+        return type;
     }
 }
