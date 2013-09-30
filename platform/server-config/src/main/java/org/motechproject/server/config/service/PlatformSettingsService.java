@@ -64,4 +64,5 @@ public interface PlatformSettingsService {
 
     void evictBundleSettingsCache();
 
+    void clearSettingsInDb();
 }

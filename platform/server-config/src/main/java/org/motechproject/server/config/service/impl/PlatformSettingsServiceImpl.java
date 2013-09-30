@@ -130,30 +130,10 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
     public void setActiveMqSetting(String key, String value) {
-        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
+        SettingsRecord dbSettings = allSettings.getSettings();
 
-        if (configFileSettings == null) {
-            LOGGER.error("Cannot save active mq settings because motech settings file does not exist");
-            return;
-        }
-
-        File configFile = new File(configFileSettings.getPath() + File.separator + MotechSettings.ACTIVEMQ_FILE_NAME);
-        try {
-            if (configFile.canWrite()) {
-                configFileSettings.saveActiveMqSetting(key, value);
-                configFileSettings.storeActiveMqSettings();
-            }
-
-            // save property to db
-            SettingsRecord dbSettings = allSettings.getSettings();
-
-            if (dbSettings != null) {
-                dbSettings.getActivemqProperties().setProperty(key, value);
-                allSettings.addOrUpdateSettings(dbSettings);
-            }
-        } catch (Exception e) {
-            LOGGER.error("There was a problem updating an activemq setting");
-        }
+        dbSettings.getActivemqProperties().setProperty(key, value);
+        allSettings.addOrUpdateSettings(dbSettings);
     }
 
     @Override
@@ -335,6 +315,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void evictBundleSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached bundle settings
+    }
+
+    @Override
+    public void clearSettingsInDb() {
+        allSettings.removeAll();
     }
 
     @Override

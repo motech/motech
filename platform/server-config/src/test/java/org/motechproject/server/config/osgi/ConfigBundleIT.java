@@ -22,6 +22,7 @@ public class ConfigBundleIT extends BaseOsgiIT {
         final MotechSettings platformSettings = settings.getPlatformSettings();
         final String delay = platformSettings.getActivemqProperties().getProperty("call.delay");
         assertEquals("5000", delay);
+        settings.clearSettingsInDb();
     }
 
     @Override
