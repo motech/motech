@@ -33,9 +33,13 @@ import java.util.Properties;
 /**
  * Implementation of {@Link PlatformSettingsService} class for main motech settings managment
  */
-
 @Service("platformSettingsService")
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
+/*
+ *     Important Note: This class should not be developed further. Please start making
+ *     future changes in org.motechproject.config.service.ConfigurationService. When Config management
+ *     work completes, this class will be removed.
+ */
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
     private static final String USER_HOME = "user.home";
 
@@ -46,7 +50,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Caching(cacheable = { @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")})
     public MotechSettings getPlatformSettings() {
         return allSettings.getSettings();
     }
@@ -176,9 +180,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
-    public void addConfigLocation(final String location, final boolean save) throws IOException {
-        configFileMonitor.changeConfigFileLocation(location, save);
+    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME}, allEntries = true)
+    public void addConfigLocation(final String location) throws IOException {
+        configFileMonitor.changeConfigFileLocation(location);
     }
 
     @Override
@@ -250,7 +254,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws  IOException {
+    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws IOException {
         File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
         setUpDirsForFile(file);
 

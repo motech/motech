@@ -41,6 +41,10 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -119,8 +123,6 @@
                                     <includes>
                                         <include>activemq.properties</include>
                                         <include>motech-settings.conf</include>
-                                        <!--Temporarily added to be able to review the changes-->
-                                        <include>bootstrap.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -136,10 +138,10 @@
                             <outputDirectory>${user.home}/.motech</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/config</directory>
+                                    <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>config-locations.conf</include>
+                                        <include>config-locations.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -149,5 +151,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

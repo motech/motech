@@ -3,11 +3,11 @@ package org.motechproject.config.bootstrap;
 import org.motechproject.config.domain.BootstrapConfig;
 
 /**
- * Loads the bootstrap configuration required to start the Motech instance.
+ * Loads and saves the bootstrap configuration required to start the Motech instance.
  *
  * @see org.motechproject.config.service.ConfigurationService
  */
-public interface BootstrapConfigLoader {
+public interface BootstrapConfigManager {
 
     /**
      * Loads the bootstrap configuration.
@@ -15,4 +15,11 @@ public interface BootstrapConfigLoader {
      * @return bootstrap configuration.
      */
     BootstrapConfig loadBootstrapConfig();
+
+    /**
+     * Saves the bootstrap configuration
+     *
+     * @param bootstrapConfig
+     */
+    void saveBootstrapConfig(BootstrapConfig bootstrapConfig);
 }

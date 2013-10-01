@@ -28,6 +28,6 @@ public class ConfigBundleIT extends BaseOsgiIT {
     @Override
     protected List<String> getImports() {
         return Arrays.asList("org.motechproject.server.config", "org.motechproject.commons.couchdb.service",
-                "org.motechproject.server.config.settings", "org.motechproject.config.service");
+                "org.motechproject.server.config.settings", "org.motechproject.config.service", "org.motechproject.server.config.service");
     }
 }

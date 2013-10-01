@@ -253,10 +253,6 @@
                                         <include>*.conf</include>
                                         <include>org.*/**/*</include>
                                     </includes>
-                                    <!--Temporarily added to be able to review the changes-->
-                                    <excludes>
-                                        <exclude>bootstrap.properties</exclude>
-                                    </excludes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
                             </filesets>

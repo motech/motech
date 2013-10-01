@@ -5,11 +5,11 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.config.domain.BootstrapConfig;
 import org.motechproject.config.domain.ConfigSource;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.repository.AllSettings;
-import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -64,17 +64,26 @@ public final class StartupManager {
     }
 
     public boolean isConfigRequired() {
-        return platformState == MotechPlatformState.NEED_CONFIG;
+        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG || platformState == MotechPlatformState.NEED_CONFIG;
+    }
+
+    public boolean isBootstrapConfigRequired() {
+        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
     }
 
     @PostConstruct
     public void startup() {
+        BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+        if (bootstrapConfig == null) {
+            platformState = MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
+            return;
+        }
+
         configFileSettings = null;
         allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
         dbSettings = allSettings.getSettings();
 
         if(!dbSettings.isPlatformInitialized()) {
-            BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
             if(ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 configFileSettings = configLoader.loadConfig();
             }
@@ -190,5 +199,4 @@ public final class StartupManager {
             platformState = MotechPlatformState.DB_ERROR;
         }
     }
-
 }

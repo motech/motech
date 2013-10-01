@@ -34,8 +34,11 @@ import static org.motechproject.server.config.settings.MotechSettings.LOGINMODE;
 import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_NAME;
 import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_URL;
 import static org.motechproject.server.config.settings.MotechSettings.SCHEDULER_URL;
+import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
-/*StartupController manage register process */
+/**
+ * StartupController that manages the platform system start up and captures the platform core settings and user information.
+ */
 @Controller
 public class StartupController {
 
@@ -64,7 +67,7 @@ public class StartupController {
         ModelAndView view = new ModelAndView("startup");
 
         if (startupManager.canLaunchBundles()) {
-            view.setViewName("redirect:home");
+            view.setViewName(REDIRECT_HOME);
         } else {
             Locale userLocale = localeService.getUserLocale(request);
 
@@ -83,7 +86,7 @@ public class StartupController {
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
     public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
-        ModelAndView view = new ModelAndView("redirect:home");
+        ModelAndView view = new ModelAndView(REDIRECT_HOME);
 
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());

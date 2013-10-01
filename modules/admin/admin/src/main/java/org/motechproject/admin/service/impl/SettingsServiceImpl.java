@@ -28,7 +28,6 @@ import java.util.Properties;
 /**
  * Implementation of {@Link SettingsService} interface for settings managment
  */
-
 @Service
 public class SettingsServiceImpl implements SettingsService {
 
@@ -152,7 +151,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void addSettingsPath(String path) throws IOException {
-        platformSettingsService.addConfigLocation(path, true);
+        platformSettingsService.addConfigLocation(path);
     }
 
     @Override

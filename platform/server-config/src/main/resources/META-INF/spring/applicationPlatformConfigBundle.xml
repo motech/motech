@@ -17,5 +17,4 @@
     <osgi:service ref="configLoader" interface="org.motechproject.server.config.service.ConfigLoader"/>
     <osgi:service ref="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>
     <osgi:service ref="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
-
 </beans>

@@ -6,6 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Settings service used to manage platform setting changes from Admin interface.
+ */
 public interface SettingsService {
 
     List<Settings> getSettings();

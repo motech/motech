@@ -9,17 +9,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -34,6 +33,9 @@ public class ConfigFileMonitorTest {
 
     @Mock
     ConfigLoader configLoader;
+
+    @Mock
+    ConfigLocationFileStore configLocationFileStore;
 
     @Mock
     PlatformSettingsService platformSettingsService;
@@ -76,12 +78,9 @@ public class ConfigFileMonitorTest {
 
     @Test
     public void testChangeConfigFileLocation() throws Exception {
-        when(resourceLoader.getResource(SETTINGS_FILE_NAME)).thenReturn(new ClassPathResource(SETTINGS_FILE_NAME));
+        configFileMonitor.changeConfigFileLocation(SETTINGS_FILE_NAME);
 
-        configFileMonitor.changeConfigFileLocation(SETTINGS_FILE_NAME, false);
-
-        verify(configLoader).addConfigLocation(SETTINGS_FILE_NAME);
-        verify(configLoader, never()).save();
+        verify(configLocationFileStore).add(SETTINGS_FILE_NAME);
         verify(configFileMonitor).monitor();
     }
 
@@ -139,5 +138,4 @@ public class ConfigFileMonitorTest {
         assertNotNull(currentSettings);
         assertEquals(motechSettings, currentSettings);
     }
-
 }
