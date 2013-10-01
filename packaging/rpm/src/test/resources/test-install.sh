@@ -126,6 +126,7 @@ if [ $RET -ne 0 ]; then
     echo "Failed getting motech-tenant page" > $ERROR_LOG
     cat $CHROOT_DIR/var/log/motech/motech-test/catalina.out >> $ERROR_LOG
     $CHROOT sh /usr/share/motech/motech-manage-tenants remove test
+    purge_motech
     exit $RET
 fi
 
