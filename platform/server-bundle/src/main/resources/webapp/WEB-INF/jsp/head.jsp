@@ -58,6 +58,8 @@
 
 <script type="text/javascript" src="resources/lib/parseuri/parseuri.js"></script>
 
+<script type="text/javascript" src="resources/lib/underscore/underscore.js"></script>
+
 <script type="text/javascript" src="resources/js/app.js"></script>
 <script type="text/javascript" src="resources/js/util.js"></script>
 <script type="text/javascript" src="resources/js/common.js"></script>
