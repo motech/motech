@@ -419,13 +419,13 @@
                     <plugin>
                         <groupId>com.googlecode.t7mp</groupId>
                         <artifactId>maven-t7-plugin</artifactId>
-                        <version>0.9.10.M5</version>
+                        <version>0.9.10.M8</version>
                         <configuration>
                             <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
                             <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
                             <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
                             <tomcatSetAwait>false</tomcatSetAwait>
-                            <tomcatVersion>7.0.27</tomcatVersion>
+                            <tomcatVersion>7.0.29</tomcatVersion>
                             <lookInside>false</lookInside>
                         </configuration>
                         <executions>
@@ -461,6 +461,8 @@
                                         <resource>
                                             <directory>src/test/resources</directory>
                                             <include>motech-settings.conf</include>
+                                            <include>activemq.properties</include>
+                                            <include>bootstrap.properties</include>
                                         </resource>
                                     </resources>
                                 </configuration>
