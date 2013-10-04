@@ -1,6 +1,5 @@
 package org.motechproject.server.startup;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.config.domain.BootstrapConfig;
@@ -16,11 +15,9 @@ import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -29,11 +26,12 @@ import java.util.Map;
 /**
  * StartupManager controlling and managing the application loading
  */
-public final class StartupManager {
+@Component
+public class StartupManager {
     private static final String SETTINGS_DB = "motech-platform-startup";
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
-    private static StartupManager instance;
+
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
     private ConfigFileSettings configFileSettings;
     private AllSettings allSettings;
@@ -51,18 +49,6 @@ public final class StartupManager {
     @Autowired
     private ConfigurationService configurationService;
 
-    private StartupManager() {
-
-    }
-
-    public static StartupManager getInstance() {
-        if (instance == null) {
-            instance = new StartupManager();
-        }
-
-        return instance;
-    }
-
     public boolean isConfigRequired() {
         return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG || platformState == MotechPlatformState.NEED_CONFIG;
     }
@@ -75,34 +61,34 @@ public final class StartupManager {
     public void startup() {
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
         if (bootstrapConfig == null) {
+            LOGGER.info("Bootstrap config required from the user.");
             platformState = MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
             return;
         }
 
-        configFileSettings = null;
         allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
         dbSettings = allSettings.getSettings();
 
         if(!dbSettings.isPlatformInitialized()) {
             if(ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
+                LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
+                platformState = MotechPlatformState.NEED_CONFIG;
                 configFileSettings = configLoader.loadConfig();
-            }
-
-            // check if settings were loaded from config locations
-            if (configFileSettings == null) {
+            } else {
+                LOGGER.info("Config source is UI, and no settings in DB. Entering startup.");
                 platformState = MotechPlatformState.NEED_CONFIG;
                 configFileSettings = configLoader.loadDefaultConfig();
-            } else {
-                LOGGER.info("Loaded config from " + configFileSettings.getFileURL());
-                platformState = MotechPlatformState.STARTUP;
             }
 
             if (platformState != MotechPlatformState.NEED_CONFIG) {
                 syncSettingsWithDb();
             }
         } else {
+            LOGGER.info("Found settings in db, normal run");
+
             configFileSettings = convertSettingsRecordToConfigFileSettings();
             syncSettingsWithDb();
+            platformState = MotechPlatformState.NORMAL_RUN;
         }
 
         if (canLaunchBundles()) {
@@ -144,35 +130,7 @@ public final class StartupManager {
      * and is no config in the database or external files
      */
     public ConfigFileSettings getDefaultSettings() {
-        return configFileSettings;
-    }
-
-    public boolean findActiveMQInstance(final String url) {
-        Connection connection = null;
-        boolean found = false;
-
-        try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory(url);
-            connection = factory.createConnection();
-            connection.start();
-        } catch (JMSException e) {
-            found = false;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                    found = true;
-                } catch (JMSException e) {
-                    found = false;
-                }
-            }
-        }
-
-        return found;
-    }
-
-    public boolean findSchedulerInstance(final String url) {
-        return false;
+        return configLoader.loadDefaultConfig();
     }
 
     private void syncSettingsWithDb() {

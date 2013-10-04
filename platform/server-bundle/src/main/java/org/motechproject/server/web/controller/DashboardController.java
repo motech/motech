@@ -31,7 +31,9 @@ import static org.motechproject.commons.date.util.DateUtil.now;
  */
 @Controller
 public class DashboardController {
-    private StartupManager startupManager = StartupManager.getInstance();
+
+    @Autowired
+    private StartupManager startupManager;
 
     @Autowired
     private UIFrameworkService uiFrameworkService;

@@ -1,13 +1,14 @@
 package org.motechproject.server.web.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,7 +47,8 @@ public class StartupController {
     public static final String USER_ADMIN_ROLE = "User Admin";
     public static final String EMAIL_ADMIN_ROLE = "Email Admin";
 
-    private StartupManager startupManager = StartupManager.getInstance();
+    @Autowired
+    private StartupManager startupManager;
 
     @Autowired
     private PlatformSettingsService platformSettingsService;
@@ -56,6 +58,9 @@ public class StartupController {
 
     @Autowired
     private MotechUserService userService;
+
+    @Autowired
+    private SuggestionHelper suggestionHelper;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -129,18 +134,12 @@ public class StartupController {
     }
 
     private StartupSuggestionsForm createSuggestions() {
-        MotechSettings settings = startupManager.getDefaultSettings();
         StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
 
-        String queueUrl = settings.getActivemqProperties().getProperty(AMQ_BROKER_URL);
-        String schedulerUrl = settings.getSchedulerProperties().getProperty(SCHEDULER_URL);
+        String queueUrl = suggestionHelper.suggestActivemqUrl();
 
-        if (startupManager.findActiveMQInstance(queueUrl)) {
+        if (StringUtils.isNotBlank(queueUrl)) {
             suggestions.addQueueSuggestion(queueUrl);
-        }
-
-        if (startupManager.findSchedulerInstance(schedulerUrl)) {
-            suggestions.addSchedulerSuggestion(schedulerUrl);
         }
 
         return suggestions;

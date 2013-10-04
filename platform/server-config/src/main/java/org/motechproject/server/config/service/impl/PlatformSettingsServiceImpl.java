@@ -67,17 +67,16 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             settings.store(fos, null);
 
             SettingsRecord dbSettings = allSettings.getSettings();
-            if (dbSettings == null) {
-                dbSettings = new SettingsRecord();
-            }
+
+            dbSettings.setPlatformInitialized(true);
+            dbSettings.setLastRun(DateTime.now());
 
             if (configFileMonitor.getCurrentSettings() != null) {
                 dbSettings.updateFromProperties(settings);
                 dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
-                dbSettings.setLastRun(DateTime.now());
-
-                allSettings.addOrUpdateSettings(dbSettings);
             }
+
+            allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {
             throw new MotechException("Error while saving motech settings", e);
         }
@@ -95,10 +94,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             settings.store(fos, null);
 
             SettingsRecord dbSettings = allSettings.getSettings();
-            if (dbSettings == null) {
-                LOGGER.warn("activemq properties cannot be saved to database");
-                return;
-            }
+
             dbSettings.setActivemqProperties(settings);
             allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {

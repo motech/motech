@@ -56,7 +56,7 @@ public class StartupManagerTest {
     PlatformSettingsService platformSettingsService = new PlatformSettingsServiceImpl();
 
     @InjectMocks
-    StartupManager startupManager = StartupManager.getInstance();
+    StartupManager startupManager = new StartupManager();
 
     @Before
     public void setUp() {

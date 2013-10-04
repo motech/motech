@@ -1,12 +1,10 @@
 package org.motechproject.server.web.controller;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.config.MotechConfigurationException;
 import org.motechproject.config.domain.BootstrapConfig;
@@ -60,8 +58,6 @@ public class BootstrapControllerTest {
         PowerMockito.mockStatic(StartupManager.class);
 
         initMocks(this);
-
-        when(StartupManager.getInstance()).thenReturn(startupManager);
 
         StandaloneMockMvcBuilder mockMvcBuilder = MockMvcBuilders.standaloneSetup(bootstrapController);
         mockMvc = mockMvcBuilder.build();

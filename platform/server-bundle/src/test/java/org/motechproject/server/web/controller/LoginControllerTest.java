@@ -34,8 +34,6 @@ public class LoginControllerTest {
         PowerMockito.mockStatic(StartupManager.class);
 
         initMocks(this);
-
-        when(StartupManager.getInstance()).thenReturn(startupManager);
     }
 
     @Test

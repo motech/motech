@@ -8,13 +8,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -54,7 +55,6 @@ public class StartupControllerTest {
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
     private static final String LANGUAGES_KEY = "languages";
     private static final String PAGE_LANG_KEY = "pageLang";
-    private Errors errors;
     private static  final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
                                                                         "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
                                                                         "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100","failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
@@ -89,6 +89,9 @@ public class StartupControllerTest {
     @Mock
     private MotechUserService userService;
 
+    @Mock
+    private SuggestionHelper suggestionHelper;
+
     @InjectMocks
     private StartupController startupController = new StartupController();
 
@@ -97,8 +100,6 @@ public class StartupControllerTest {
         PowerMockito.mockStatic(StartupManager.class);
 
         initMocks(this);
-
-        when(StartupManager.getInstance()).thenReturn(startupManager);
     }
 
     @Test
@@ -112,8 +113,6 @@ public class StartupControllerTest {
         NavigableMap<String, String> map = new TreeMap<>();
 
         when(startupManager.canLaunchBundles()).thenReturn(false);
-        when(startupManager.findActiveMQInstance(anyString())).thenReturn(false);
-        when(startupManager.findSchedulerInstance(anyString())).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
 
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
@@ -190,6 +189,7 @@ public class StartupControllerTest {
         StartupForm startupForm = startupForm();
         StartupFormValidator validator =  new StartupFormValidator(userService);
 
+        Errors errors;
         for(String uri : uriAssertFalseList) {
             errors = new BeanPropertyBindingResult(startupForm,"validQueue");
             validator.validateQueueUrl(errors, uri, "queueUrl");
