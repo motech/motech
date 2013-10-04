@@ -162,8 +162,11 @@
 
         $scope.getCurrentModuleName = function () {
             var queryKey = parseUri(window.location.href).queryKey;
-
             return (queryKey && queryKey.moduleName) || '';
+        };
+
+        $scope.getCurrentAnchor = function () {
+            return parseUri(window.location.href).anchor;
         };
 
         $scope.active = function(url) {
@@ -216,22 +219,25 @@
         });
     });
 
-    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q) {
+    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu) {
         $scope.securityMode = false;
-        $scope.modulesWithSubMenu = [];
-        $scope.modulesWithoutSubMenu = [];
+
+        $scope.moduleMenu = {};
+
+        $scope.isActiveLink = function(link) {
+            return link.moduleName === $scope.getCurrentModuleName() &&
+                (!link.url || link.url === '#' + $scope.getCurrentAnchor());
+        };
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {
             $scope.showDashboardLogo.showDashboard = $cookieStore.get("showDashboardLogo");
         }
 
         $q.all([
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithoutSubMenu', function (data) {
-                $scope.modulesWithoutSubMenu = data;
-            }),
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithSubMenu', function (data) {
-                $scope.modulesWithSubMenu = data;
-            }),
+            $scope.moduleMenu = Menu.get(function(data) {
+                $scope.moduleMenu = data;
+            }, angularHandler('error', 'server.error.cantLoadMenu')),
+
             $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
@@ -248,13 +254,9 @@
         });
 
         $scope.$on('module.list.refresh', function () {
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithoutSubMenu', function (data) {
-                $scope.modulesWithoutSubMenu = data;
-            });
-
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithSubMenu', function (data) {
-                $scope.modulesWithSubMenu = data;
-            });
+            Menu.get(function(data) {
+                $scope.moduleMenu = data;
+            }, angularHandler('error', 'server.error.cantLoadMenu'));
         });
 
     });

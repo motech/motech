@@ -5,12 +5,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
-import org.motechproject.security.model.RoleDto;
-import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
+import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.form.UserInfo;
+import org.motechproject.server.web.helper.MenuBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,27 +20,27 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
 import static org.joda.time.format.DateTimeFormat.forPattern;
 import static org.motechproject.commons.date.util.DateUtil.now;
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITHOUT_SUBMENU;
-import static org.motechproject.osgi.web.UIFrameworkService.MODULES_WITH_SUBMENU;
 
+/**
+ * Main application controller. Responsible for retrieving information shared across the UI of different modules.
+ * The view returned by this controller will embed the UI of the currently requested module.
+ */
 @Controller
 public class DashboardController {
     private StartupManager startupManager = StartupManager.getInstance();
+
     @Autowired
     private UIFrameworkService uiFrameworkService;
+
     @Autowired
     private LocaleService localeService;
+
     @Autowired
-    private MotechUserService userService;
-    @Autowired
-    private MotechRoleService roleService;
+    private MenuBuilder menuBuilder;
 
     @RequestMapping({"/index", "/", "/home"} )
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
@@ -73,42 +72,11 @@ public class DashboardController {
         return mav;
     }
 
-    @RequestMapping(value = "/getModulesWithSubMenu", method = RequestMethod.POST)
+    @RequestMapping(value = "/modulemenu", method = RequestMethod.GET)
     @ResponseBody
-    public List<ModuleRegistrationData> getModulesWithSubMenu(HttpServletRequest request) {
-        return filterPermittedModules(
-                getUser(request).getUserName(),
-                uiFrameworkService.getRegisteredModules().get(MODULES_WITH_SUBMENU)
-        );
-    }
-
-    @RequestMapping(value = "/getModulesWithoutSubMenu", method = RequestMethod.POST)
-    @ResponseBody
-    public List<ModuleRegistrationData> getModulesWithoutSubMenu(HttpServletRequest request) {
-        return filterPermittedModules(
-                getUser(request).getUserName(),
-                uiFrameworkService.getRegisteredModules().get(MODULES_WITHOUT_SUBMENU)
-        );
-    }
-
-    private List<ModuleRegistrationData> filterPermittedModules(String userName, Collection<ModuleRegistrationData> modules) {
-        List<ModuleRegistrationData> allowedModules = new ArrayList<>();
-
-        if (modules != null) {
-            for (ModuleRegistrationData module : modules) {
-                String requiredPermissionForAccess = module.getRoleForAccess();
-
-                if (requiredPermissionForAccess != null) {
-                    if (checkUserPermission(userService.getRoles(userName), requiredPermissionForAccess)) {
-                        allowedModules.add(module);
-                    }
-                } else {
-                    allowedModules.add(module);
-                }
-            }
-        }
-
-        return allowedModules;
+    public ModuleMenu getModuleMenu(HttpServletRequest request) {
+        String username = getUser(request).getUserName();
+        return menuBuilder.buildMenu(username);
     }
 
     @RequestMapping(value = "/gettime", method = RequestMethod.POST)
@@ -135,14 +103,4 @@ public class DashboardController {
         return new UserInfo(userName, securityLaunch, lang);
     }
 
-    private boolean checkUserPermission(List<String> roles, String requiredPermission) {
-        for (String userRole : roles) {
-            RoleDto role = roleService.getRole(userRole);
-            if (role != null && role.getPermissionNames() != null && role.getPermissionNames().contains(requiredPermission)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

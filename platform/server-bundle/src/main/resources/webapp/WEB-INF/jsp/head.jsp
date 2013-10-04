@@ -61,6 +61,7 @@
 <script type="text/javascript" src="resources/lib/underscore/underscore.js"></script>
 
 <script type="text/javascript" src="resources/js/app.js"></script>
+<script type="text/javascript" src="resources/js/services.js"></script>
 <script type="text/javascript" src="resources/js/util.js"></script>
 <script type="text/javascript" src="resources/js/common.js"></script>
 <script type="text/javascript" src="resources/js/localization.js"></script>
