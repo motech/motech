@@ -93,7 +93,7 @@
                          <label class="control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls">
                              <input type="radio" value="server.repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('server.repository')}}</span>
-                             <input type="radio" value="server.openid" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('server.openId')}}</span>
+                             <input type="radio" value="server.openId" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('server.openId')}}</span>
                          </div>
                      </div>
                     <div ng-show="securityMode=='repository'" class="control-group">

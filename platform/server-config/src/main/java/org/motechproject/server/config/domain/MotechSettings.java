@@ -1,4 +1,4 @@
-package org.motechproject.server.config.settings;
+package org.motechproject.server.config.domain;
 
 import java.util.Properties;
 
@@ -33,7 +33,7 @@ public interface MotechSettings {
 
     String getStatusMsgTimeout();
 
-    String getLoginMode();
+    LoginMode getLoginMode();
 
     String getProviderName();
 

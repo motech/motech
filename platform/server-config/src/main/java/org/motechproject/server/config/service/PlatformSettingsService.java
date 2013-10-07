@@ -1,6 +1,6 @@
 package org.motechproject.server.config.service;
 
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import java.io.IOException;
 import java.io.InputStream;

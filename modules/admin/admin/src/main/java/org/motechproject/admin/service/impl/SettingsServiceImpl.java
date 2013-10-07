@@ -7,7 +7,7 @@ import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;

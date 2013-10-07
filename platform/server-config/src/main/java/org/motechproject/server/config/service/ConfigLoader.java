@@ -4,7 +4,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.domain.ConfigLocation;
 import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;

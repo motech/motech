@@ -10,7 +10,7 @@ import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import java.io.IOException;
 import java.util.Locale;

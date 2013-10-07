@@ -1,11 +1,12 @@
 package org.motechproject.server.config.domain;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.server.config.settings.MotechSettings;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Properties;
  */
 
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"couchDbProperties"})
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "couchDbProperties" })
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
 
     private String language;
@@ -50,7 +51,13 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         return activemqProperties;
     }
 
-    public String getLoginMode() {
+    @JsonIgnore
+    @Override
+    public LoginMode getLoginMode() {
+        return LoginMode.valueOf(loginMode);
+    }
+
+    public String getLoginModeValue() {
         return loginMode;
     }
 
@@ -103,9 +110,15 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         this.language = language;
     }
 
-    public void setLoginMode(String loginMode) {
+    @JsonIgnore
+    private void setLoginMode(LoginMode loginMode) {
+        this.loginMode = loginMode == null ? StringUtils.EMPTY : loginMode.getName();
+    }
+
+    public void setLoginModeValue(String loginMode) {
         this.loginMode = loginMode;
     }
+
 
     public void setProviderName(String providerName) {
         this.providerName = providerName;
@@ -184,7 +197,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     setStatusMsgTimeout(value);
                     break;
                 case MotechSettings.LOGINMODE:
-                    setLoginMode(value);
+                    setLoginModeValue(value);
                     break;
                 case MotechSettings.PROVIDER_NAME:
                     setProviderName(value);

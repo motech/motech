@@ -66,6 +66,7 @@ public class StartupIT {
         for (int i = 0; i < bundles.length(); i++) {
             final String status = bundles.getJSONObject(i).getString("state");
             if ("STARTING".equals(status)) {
+                System.out.println("Bundle " + bundles.getJSONObject(i).getString("symbolicName") + " is in " + status + " status.");
                 return true;
             }
         }

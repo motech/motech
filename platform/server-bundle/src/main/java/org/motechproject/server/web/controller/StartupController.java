@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
@@ -28,14 +29,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.security.helper.AuthenticationMode.REPOSITORY;
-import static org.motechproject.server.config.settings.MotechSettings.AMQ_BROKER_URL;
-import static org.motechproject.server.config.settings.MotechSettings.LANGUAGE;
-import static org.motechproject.server.config.settings.MotechSettings.LOGINMODE;
-import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_NAME;
-import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_URL;
-import static org.motechproject.server.config.settings.MotechSettings.SCHEDULER_URL;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
+import static org.motechproject.server.config.domain.MotechSettings.AMQ_BROKER_URL;
+import static org.motechproject.server.config.domain.MotechSettings.LANGUAGE;
+import static org.motechproject.server.config.domain.MotechSettings.LOGINMODE;
+import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_NAME;
+import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_URL;
+import static org.motechproject.server.config.domain.MotechSettings.SCHEDULER_URL;
 
 /**
  * StartupController that manages the platform system start up and captures the platform core settings and user information.
@@ -112,7 +112,7 @@ public class StartupController {
             platformSettingsService.savePlatformSettings(settings.getMotechSettings());
             platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());
 
-            if (REPOSITORY.equals(form.getLoginMode())) {
+            if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(form.getLoginMode()))) {
                 registerAdminUser(form);
             }
 

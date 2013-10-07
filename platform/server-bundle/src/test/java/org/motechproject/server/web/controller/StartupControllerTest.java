@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
@@ -153,7 +153,7 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormStart() {
         StartupForm startupForm = startupForm();
-        startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
+        startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
@@ -170,7 +170,7 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormOpenId() {
         StartupForm startupForm = startupForm();
-        startupForm.setLoginMode(AuthenticationMode.OPEN_ID);
+        startupForm.setLoginMode(LoginMode.OPEN_ID.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);

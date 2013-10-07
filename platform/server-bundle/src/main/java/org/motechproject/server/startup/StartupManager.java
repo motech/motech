@@ -6,10 +6,10 @@ import org.motechproject.config.domain.BootstrapConfig;
 import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.ConfigLoader;
-import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -69,7 +69,8 @@ public class StartupManager {
         allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB));
         dbSettings = allSettings.getSettings();
 
-        if(!dbSettings.isPlatformInitialized()) {
+
+        if (!dbSettings.isPlatformInitialized()) {
             if(ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
                 platformState = MotechPlatformState.NEED_CONFIG;
@@ -103,7 +104,7 @@ public class StartupManager {
             settings.saveActiveMqSetting(key, dbSettings.getActivemqProperties().getProperty(key));
         }
         settings.saveMotechSetting(MotechSettings.LANGUAGE, dbSettings.getLanguage());
-        settings.saveMotechSetting(MotechSettings.LOGINMODE, dbSettings.getLoginMode());
+        settings.saveMotechSetting(MotechSettings.LOGINMODE, dbSettings.getLoginModeValue());
         settings.saveMotechSetting(MotechSettings.PROVIDER_NAME, dbSettings.getProviderName());
         settings.saveMotechSetting(MotechSettings.PROVIDER_URL, dbSettings.getProviderUrl());
         settings.saveMotechSetting(MotechSettings.SERVER_URL, dbSettings.getServerUrl());

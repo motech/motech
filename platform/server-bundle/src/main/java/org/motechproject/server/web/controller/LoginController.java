@@ -36,7 +36,7 @@ public class LoginController {
             return new ModelAndView("redirect:startup.do");
         }
 
-        ModelAndView view = new ModelAndView("login");
+        ModelAndView view = new ModelAndView("loginPage");
 
         String contextPath = request.getSession().getServletContext().getContextPath();
 
@@ -46,6 +46,7 @@ public class LoginController {
             view.addObject("contextPath", "");
         }
 
+        view.addObject("loginMode", settingsService.getPlatformSettings().getLoginMode());
         view.addObject("openIdProviderName", settingsService.getPlatformSettings().getProviderName());
         view.addObject("openIdProviderUrl", settingsService.getPlatformSettings().getProviderUrl());
         view.addObject("error", request.getParameter("error"));

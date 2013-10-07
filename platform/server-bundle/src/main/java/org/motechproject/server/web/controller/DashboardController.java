@@ -44,7 +44,7 @@ public class DashboardController {
     @Autowired
     private MenuBuilder menuBuilder;
 
-    @RequestMapping({"/index", "/", "/home"} )
+    @RequestMapping({"/index", "/", "/home" })
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
         ModelAndView mav;
 

@@ -1,8 +1,7 @@
-package org.motechproject.server.config.settings;
+package org.motechproject.server.config.domain;
 
 import org.hamcrest.core.Is;
 import org.junit.Test;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 
 import java.util.Properties;
 
@@ -20,6 +19,13 @@ public class ConfigFileSettingsTest {
         assertThat(settings.getServerUrl(), Is.is("http://some.url"));
     }
 
+    @Test
+    public void shouldReturnLoginMode() {
+        Properties motechSettings = new Properties();
+        motechSettings.put(MotechSettings.LOGINMODE, LoginMode.OPEN_ID.getName());
+        ConfigFileSettings settings = new ConfigFileSettings(motechSettings, new Properties());
+        assertThat(settings.getLoginMode(), Is.is(LoginMode.OPEN_ID));
+    }
 
     @Test
     public void blankUrlShouldBeReturnedAsBlank() {

@@ -1,7 +1,5 @@
 package org.motechproject.server.config.domain;
 
-import org.motechproject.server.config.settings.MotechSettings;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,8 +38,8 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     @Override
-    public String getLoginMode() {
-        return motechSettings.getProperty(LOGINMODE);
+    public LoginMode getLoginMode() {
+        return LoginMode.valueOf(motechSettings.getProperty(LOGINMODE));
     }
 
     @Override
@@ -121,7 +119,7 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     public void saveMotechSetting(String key, String value) {
-        if(value != null) {
+        if (value != null) {
             motechSettings.put(key, value);
         }
     }

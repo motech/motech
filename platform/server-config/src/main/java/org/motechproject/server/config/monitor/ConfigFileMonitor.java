@@ -13,7 +13,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileCreated(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was created: " + fileName);
             sendEventMessage(FILE_CREATED_EVENT_SUBJECT, fileChangeEvent);
         }
@@ -123,7 +123,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.warn("Config file was deleted: " + fileName);
 
             evictProperCache(fileChangeEvent);
@@ -136,7 +136,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileChanged(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was changed: " + fileName);
 
             currentSettings = configLoader.loadConfig();

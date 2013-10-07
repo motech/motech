@@ -9,7 +9,7 @@ import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.admin.web.controller.SettingsController;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

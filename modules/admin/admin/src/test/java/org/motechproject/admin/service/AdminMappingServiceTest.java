@@ -8,12 +8,11 @@ import org.motechproject.admin.domain.AdminMapping;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.impl.AdminMappingServiceImpl;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;

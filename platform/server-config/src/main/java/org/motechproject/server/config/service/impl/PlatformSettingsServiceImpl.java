@@ -8,7 +8,7 @@ import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")})
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         return allSettings.getSettings();
     }
@@ -70,9 +70,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
             dbSettings.setPlatformInitialized(true);
             dbSettings.setLastRun(DateTime.now());
+            dbSettings.updateFromProperties(settings);
 
             if (configFileMonitor.getCurrentSettings() != null) {
-                dbSettings.updateFromProperties(settings);
                 dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
             }
 
@@ -176,7 +176,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME}, allEntries = true)
+    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
     public void addConfigLocation(final String location) throws IOException {
         configFileMonitor.changeConfigFileLocation(location);
     }

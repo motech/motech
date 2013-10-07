@@ -1,14 +1,12 @@
 package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
-import org.motechproject.security.ex.EmailExistsException;
-import org.motechproject.security.helper.AuthenticationMode;
-import org.motechproject.security.model.UserDto;
 import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.ex.EmailExistsException;
+import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailSendException;
@@ -48,16 +46,9 @@ public class UserController {
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
     public List<MotechUserProfile> getUsers() {
-        List<MotechUserProfile> users;
-        String loginMode = settingsService.getPlatformSettings().getLoginMode();
-
-        if (StringUtils.equalsIgnoreCase(loginMode, AuthenticationMode.OPEN_ID)) {
-            users = motechUserService.getOpenIdUsers();
-        } else {
-            users = motechUserService.getUsers();
-        }
-
-        return users;
+        return settingsService.getPlatformSettings().getLoginMode().isOpenId() ?
+                motechUserService.getOpenIdUsers() :
+                motechUserService.getUsers();
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -82,7 +73,7 @@ public class UserController {
     @ResponseBody
     public String loginMode() {
         MotechSettings settings = settingsService.getPlatformSettings();
-        return settings.getLoginMode().toLowerCase();
+        return settings.getLoginMode().getName().toLowerCase();
     }
 
     @ResponseStatus(HttpStatus.OK)
