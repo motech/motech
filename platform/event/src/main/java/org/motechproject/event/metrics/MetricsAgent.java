@@ -1,4 +1,4 @@
-package org.motechproject.metrics;
+package org.motechproject.event.metrics;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package org.motechproject.metrics.impl;
 
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.event.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.springframework.stereotype.Service;
 

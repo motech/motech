@@ -31,11 +31,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-metrics</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-jms</artifactId>
         </dependency>
@@ -124,7 +119,8 @@
                         <Export-Package>
                             org.motechproject.event;version=${project.version},
                             org.motechproject.event.listener;version=${project.version},
-                            org.motechproject.event.listener.annotations;version=${project.version}
+                            org.motechproject.event.listener.annotations;version=${project.version},
+                            org.motechproject.event.metrics;version=${project.version}
                         </Export-Package>
                         <DynamicImport-Package>
                             *

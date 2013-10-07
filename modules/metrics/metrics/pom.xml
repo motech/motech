@@ -36,6 +36,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -68,7 +73,6 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -133,6 +137,7 @@
                             org.apache.commons.io,
                             org.joda.time,
                             org.motechproject.commons.date.util,
+                            org.motechproject.event.metrics,
                             org.slf4j,
                             org.springframework.beans.factory.annotation,
                             *
