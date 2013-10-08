@@ -57,6 +57,7 @@
             <bean class="org.motechproject.osgi.web.Header"/>
         </constructor-arg>
         <property name="roleForAccess" value="viewBasicEmailLogs" />
+        <property name="settingsURL" value="/settings" />
     </bean>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
