@@ -8,6 +8,7 @@ import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.ext.UiHttpContext;
 import org.motechproject.security.filter.MotechDelegatingFilterProxy;
+import org.motechproject.security.service.MotechProxyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -21,6 +22,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+/**
+ * The Spring security activator is used to register
+ * the spring security filter, dispatcher servlet, and
+ * MotechProxyManager, which is necessary for supporting dynamic
+ * security. When initializing the security chain, the DB
+ * will be consulted for security configuration, if it's not
+ * there then the default security filter from the securityContext
+ * file is used.
+ *
+ */
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
     private static final String CONTEXT_CONFIG_LOCATION = "classpath:META-INF/osgi/applicationWebSecurityBundle.xml";
@@ -93,6 +104,10 @@ public class Activator implements BundleActivator {
 
     }
 
+    /**
+     * Initializes the security chain by fetching the proxy manager,
+     * registers the security filter and spring dispatcher servlet.
+     */
     private void serviceAdded(ExtHttpService service) {
         try {
             DispatcherServlet dispatcherServlet = new DispatcherServlet();
@@ -109,6 +124,8 @@ public class Activator implements BundleActivator {
                 logger.debug("Servlet registered");
 
                 filter = new MotechDelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
+                MotechProxyManager proxyManager = dispatcherServlet.getWebApplicationContext().getBean(MotechProxyManager.class);
+                proxyManager.initializeProxyChain();
                 service.registerFilter(filter, "/.*", null, 0, httpContext);
                 logger.debug("Filter registered");
             } finally {

@@ -1,0 +1,7 @@
+[
+    {
+        "roleName":"Security Admin",
+        "permissionNames": ["viewSecurity", "updateSecurity"],
+        "deletable": false
+    }
+]
