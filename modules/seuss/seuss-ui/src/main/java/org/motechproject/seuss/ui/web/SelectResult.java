@@ -1,6 +1,6 @@
 package org.motechproject.seuss.ui.web;
 
-import org.motechproject.seuss.ui.domain.ObjectDto;
+import org.motechproject.seuss.ui.domain.EntityDto;
 
 import java.util.List;
 
@@ -11,20 +11,20 @@ import java.util.List;
  * <ul>
  * <li><strong>results</strong> - this is a list consisting of up to
  * {@link org.motechproject.seuss.ui.web.SelectData#getPageLimit()} records, which are of the
- * {@link ObjectDto} type,</li>
+ * {@link org.motechproject.seuss.ui.domain.EntityDto} type,</li>
  * <li><strong>more</strong> - it equals to <i>true</i> if select2.js should load more data if user
  * reaches the end of the list; otherwise it equals to <i>false</i>.</li>
  * </ul>
  *
- * @see ObjectController
+ * @see EntityController
  * @see SelectData
  * @see <a href="http://ivaynberg.github.io/select2/">select2.js library</a>
  */
 public class SelectResult {
-    private List<ObjectDto> results;
+    private List<EntityDto> results;
     private boolean more;
 
-    public SelectResult(SelectData data, List<ObjectDto> list) {
+    public SelectResult(SelectData data, List<EntityDto> list) {
         Integer page = data.getPage();
         Integer records = list.size();
         Integer pages = records <= data.getPageLimit() ? 1 : (records / data.getPageLimit()) + 1;
@@ -36,7 +36,7 @@ public class SelectResult {
         this.more = (page * data.getPageLimit()) < records;
     }
 
-    public List<ObjectDto> getResults() {
+    public List<EntityDto> getResults() {
         return results;
     }
 

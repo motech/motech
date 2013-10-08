@@ -3,28 +3,28 @@ package org.motechproject.seuss.ui.domain;
 import java.util.Objects;
 
 /**
- * The <code>ObjectDto</code> class contains only basic information about an object like id, name,
+ * The <code>EntityDto</code> class contains only basic information about an entity like id, name,
  * module and namespace.
  */
-public class ObjectDto {
+public class EntityDto {
     private String id;
     private String name;
     private String module;
     private String namespace;
 
-    public ObjectDto() {
+    public EntityDto() {
         this(null, null);
     }
 
-    public ObjectDto(String id, String name) {
+    public EntityDto(String id, String name) {
         this(id, name, null);
     }
 
-    public ObjectDto(String id, String name, String module) {
+    public EntityDto(String id, String name, String module) {
         this(id, name, module, null);
     }
 
-    public ObjectDto(String id, String name, String module, String namespace) {
+    public EntityDto(String id, String name, String module, String namespace) {
         this.id = id;
         this.name = name;
         this.module = module;
@@ -84,7 +84,7 @@ public class ObjectDto {
             return false;
         }
 
-        final ObjectDto other = (ObjectDto) obj;
+        final EntityDto other = (EntityDto) obj;
 
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.name, other.name)
@@ -98,7 +98,7 @@ public class ObjectDto {
     @Override
     public String toString() {
         return String.format(
-                "ObjectDto{id='%s', name='%s', module='%s', namespace='%s'}",
+                "EntityDto{id='%s', name='%s', module='%s', namespace='%s'}",
                 id, name, module, namespace
         );
     }

@@ -2,8 +2,8 @@
 
     'use strict';
 
-    angular.module('objectService', ['ngResource']).factory('Objects', function ($resource) {
-        return $resource('../seuss/objects/:id', {id: '@id'});
+    angular.module('entityService', ['ngResource']).factory('Entities', function ($resource) {
+        return $resource('../seuss/entities/:id', {id: '@id'});
     });
 
 }());

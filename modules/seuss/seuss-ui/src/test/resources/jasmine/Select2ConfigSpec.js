@@ -14,7 +14,7 @@
             };
 
             $controller('SchemaEditorCtrl', { $scope: scope });
-            config = scope.SELECT_OBJECT_CONFIG;
+            config = scope.SELECT_ENTITY_CONFIG;
 
             expect(config).not.toEqual(undefined);
         }));
@@ -28,10 +28,10 @@
         });
 
         it('Should set correct placeholder', function () {
-            expect(config.placeholder).toEqual('seuss.info.selectObject');
+            expect(config.placeholder).toEqual('seuss.info.selectEntity');
         });
 
-        it('Should correct format the selected object', function () {
+        it('Should correct format the selected entity', function () {
             expect(config.formatSelection(obj))
                 .toEqual('test-name (seuss.module: test-module  seuss.namespace: test-namespace)');
 
@@ -49,14 +49,14 @@
             expect(config.formatSelection(obj)).toEqual('test-name');
         });
 
-        it('Should return error message if label for a selected object cannot be created',
+        it('Should return error message if label for a selected entity cannot be created',
             function () {
             expect(config.formatSelection({})).toEqual('seuss.error');
             expect(config.formatSelection(null)).toEqual('seuss.error');
             expect(config.formatSelection(undefined)).toEqual('seuss.error');
         });
 
-        it('Should correct format a object on list', function () {
+        it('Should correct format a entity on list', function () {
             var strong = angular.element('<strong>').text(obj.name),
                 name = angular.element('<div>').append(strong),
                 module = angular.element('<span>')
@@ -93,7 +93,7 @@
                 .toEqual(parent.wrapAll('<div></div>').parent().html());
         });
 
-        it('Should return error message if label for a object on list cannot be created',
+        it('Should return error message if label for a entity on list cannot be created',
             function () {
             expect(config.formatResult({})).toEqual('seuss.error');
             expect(config.formatResult(null)).toEqual('seuss.error');
