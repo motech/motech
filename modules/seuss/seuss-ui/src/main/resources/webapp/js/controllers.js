@@ -4,11 +4,11 @@
 
     var seuss = angular.module('seuss');
 
-    seuss.controller('SchemaEditorCtrl', function ($scope, Objects) {
-        $scope.SELECT_OBJECT_CONFIG = {
-            placeholder: $scope.msg('seuss.info.selectObject'),
+    seuss.controller('SchemaEditorCtrl', function ($scope, Entities) {
+        $scope.SELECT_ENTITY_CONFIG = {
+            placeholder: $scope.msg('seuss.info.selectEntity'),
             ajax: {
-                url: '../seuss/objects',
+                url: '../seuss/entities',
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) {
@@ -26,7 +26,7 @@
                 var id = $(element).val();
 
                 if (!isBlank(id)) {
-                    $.ajax("../seuss/objects/" + id).done(function (data) {
+                    $.ajax("../seuss/entities/" + id).done(function (data) {
                         callback(data);
                     });
                 }
@@ -72,11 +72,11 @@
             }
         };
 
-        $scope.selectedObject = null;
+        $scope.selectedEntity = null;
 
-        $scope.createObject = function () {
-            var form = angular.element("#newObjectModalForm"),
-                input = form.find('#inputObjectName'),
+        $scope.createEntity = function () {
+            var form = angular.element("#newEntityModalForm"),
+                input = form.find('#inputEntityName'),
                 help = input.next('span'),
                 value = input.val(),
                 obj = {};
@@ -86,13 +86,13 @@
             } else {
                 obj.name = value;
 
-                Objects.save({}, obj, function (response) {
-                    $scope.selectedObject = response;
-                    angular.element('#selectObject').select2('val', response.id);
+                Entities.save({}, obj, function (response) {
+                    $scope.selectedEntity = response;
+                    angular.element('#selectEntity').select2('val', response.id);
 
-                    $scope.clearModal('newObjectModal');
+                    $scope.clearModal('newEntityModal');
                 }, function (response) {
-                    handleResponse('seuss.error', 'seuss.error.cantSaveObject', response);
+                    handleResponse('seuss.error', 'seuss.error.cantSaveEntity', response);
                 });
             }
         };

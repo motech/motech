@@ -16,7 +16,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * <li><strong>page</strong> - number of the page which should be returned.</li>
  * </ul>
  *
- * @see ObjectController
+ * @see EntityController
  * @see SelectResult
  * @see <a href="http://ivaynberg.github.io/select2/">select2.js library</a>
  */

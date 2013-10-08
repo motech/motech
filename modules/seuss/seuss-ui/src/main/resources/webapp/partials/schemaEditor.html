@@ -1,23 +1,23 @@
 <div class="row-fluid">
     <div>
-        {{msg('seuss.objects')}}:
-        <input type="hidden" ui-select2="SELECT_OBJECT_CONFIG" ng-model="selectedObject"
-               id="selectObject" class="select-object"/>
-        <a href="#newObjectModal" type="button" class="btn btn-success"
+        {{msg('seuss.entities')}}:
+        <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity"
+               id="selectEntity" class="select-entity"/>
+        <a href="#newEntityModal" type="button" class="btn btn-success"
            data-toggle="modal" data-backdrop="static">
-            <i class="icon-plus icon-white"></i> {{msg('seuss.btn.newObject')}}
+            <i class="icon-plus icon-white"></i> {{msg('seuss.btn.newEntity')}}
         </a>
-        <a href="" class="btn btn-warning" ng-show="selectedObject">
+        <a href="" class="btn btn-warning" ng-show="selectedEntity">
             <i class="icon-cogs icon-white"></i> {{msg('seuss.btn.advanced')}}
         </a>
-        <a href="" class="btn btn-danger" ng-show="selectedObject">
+        <a href="" class="btn btn-danger" ng-show="selectedEntity">
             <i class="icon-trash icon-white"></i> {{msg('seuss.btn.delete')}}
         </a>
 
         <div class="row-fluid">
-            <pre style="margin-top: 10px">{{ (selectedObject || {}) | json }}</pre>
+            <pre style="margin-top: 10px">{{ (selectedEntity || {}) | json }}</pre>
         </div>
     </div>
 
-    <div ng-include="'../seuss/resources/partials/modals/new-object.html'"></div>
+    <div ng-include="'../seuss/resources/partials/modals/new-entity.html'"></div>
 </div>
