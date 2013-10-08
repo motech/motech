@@ -10,6 +10,8 @@ public final class TestContext {
     private static final int DEFAULT_VERBOICE_PORT = 7080;
     private static final int DEFAULT_KOOKOO_PORT = 7080;
     private static final int DEFAULT_VOXEO_PORT = 9998;
+    private static final int DEFAULT_PKG_PORT = 7010;
+    private static final int DEFAULT_PKG_TENANT_PORT = 7012;
 
     public static int getJettyPort() {
         return getPort("org.osgi.service.http.port", DEFAULT_JETTY_PORT);
@@ -33,6 +35,14 @@ public final class TestContext {
 
     public static int getVoxeoPort() {
         return getPort("voxeo.port", DEFAULT_VOXEO_PORT);
+    }
+
+    public static int getPkgTestPort() {
+        return getPort("pkg.test.port", DEFAULT_PKG_PORT);
+    }
+
+    public static int getPkgTenantTestPort() {
+        return getPort("pkg.test.tenant.port", DEFAULT_PKG_TENANT_PORT);
     }
 
     private static int getPort(String systemProperty, int defaultValue) {
