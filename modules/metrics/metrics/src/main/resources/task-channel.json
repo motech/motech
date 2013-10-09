@@ -5,7 +5,7 @@
   "actionTaskEvents": [
     {
       "displayName": "metrics.logEvent",
-      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceInterface": "org.motechproject.event.metrics.MetricsAgent",
       "serviceMethod": "logEvent",
       "actionParameters": [
         {
@@ -22,12 +22,12 @@
     },
     {
       "displayName": "metrics.startTimer",
-      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceInterface": "org.motechproject.event.metrics.MetricsAgent",
       "serviceMethod": "startTimer"
     },
     {
       "displayName": "metrics.stopTimer",
-      "serviceInterface": "org.motechproject.metrics.MetricsAgent",
+      "serviceInterface": "org.motechproject.event.metrics.MetricsAgent",
       "serviceMethod": "stopTimer",
       "actionParameters": [
       {
