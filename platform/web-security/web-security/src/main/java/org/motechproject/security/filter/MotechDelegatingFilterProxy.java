@@ -2,6 +2,7 @@ package org.motechproject.security.filter;
 
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.service.MotechPermissionService;
+import org.motechproject.security.service.MotechProxyManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
@@ -24,6 +25,15 @@ import java.util.Properties;
 
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
+/**
+ * A custom delegating filter that determines whether the platform
+ * is in admin mode or not. When filtering, if the MotechProxyManager
+ * has been set, it will delegate to that instead of the delegate
+ * from its superclass. The original delegate is the original
+ * security chain created from the securityContext. By instead
+ * delegating to the MotechProxyManager, the filter chain can be
+ * dynamically updated and all requests re-directed to that chain.
+ */
 public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
     private static final String ADMIN_MODE_FILE = "admin-mode.conf";
 
@@ -41,10 +51,19 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         anonymousFilter = new MotechAnonymousAuthenticationFilter(wac.getBean(MotechPermissionService.class));
     }
 
+    /**
+     * If the proxy manager is available, filtering should be instead
+     * delegated to its FilterChainProxy.
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        WebApplicationContext context = super.findWebApplicationContext();
+        MotechProxyManager proxyManager = context.getBean(MotechProxyManager.class);
+
         if (isAdminMode) {
             anonymousFilter.doFilter(request, response, filterChain);
+        } else if (proxyManager != null) {
+            proxyManager.getFilterChainProxy().doFilter(request, response, filterChain);
         } else {
             super.doFilter(request, response, filterChain);
         }

@@ -5,6 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.util.Assert;
 
+/**
+ * An entry point for BASIC authentications, sets the correct
+ * server realm key.
+ *
+ */
 public class MotechBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 
 

@@ -105,6 +105,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>org.motechproject.org.hibernate.validator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -172,7 +178,9 @@
                             org.motechproject.security.model;version=${project.version},
                             org.motechproject.security.repository;version=${project.version},
                             org.motechproject.security.service;version=${project.version},
-                            org.motechproject.security.web.controllers;version=${project.version}
+                            org.motechproject.security.web.controllers;version=${project.version},
+                            org.motechproject.security.helper;version=${project.version},
+                            org.motechproject.security.repository;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
@@ -191,6 +199,7 @@
                             org.springframework.security.config,
                             org.springframework.security.web,
                             org.springframework.security.web.context,
+                            org.springframework.security.web.access.channel,
                             org.springframework.security.web.authentication,
                             org.springframework.security.web.authentication.preauth,
                             org.springframework.web.servlet.config,
@@ -200,6 +209,9 @@
                             org.springframework.security.openid,
                             org.springframework.security.web.authentication.www,
                             org.openid4java.consumer,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
+                            net.sf.cglib.core,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-platform-web-security;inline=true</Embed-Dependency>
