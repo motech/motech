@@ -1,5 +1,6 @@
 package org.motechproject.security.osgi;
 
+import static java.util.Arrays.asList;
 import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Bundle.UNINSTALLED;
 import static org.osgi.framework.Bundle.RESOLVED;
@@ -36,6 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -269,5 +271,12 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     @Override
     public void onTearDown() throws InterruptedException {
         deleteSecurityConfig();
+    }
+
+    @Override
+    protected List<String> getImports() {
+        return asList(
+                "org.motechproject.security.domain", "org.motechproject.security.service", "org.motechproject.security.repository"
+        );
     }
 }

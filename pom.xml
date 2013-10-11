@@ -1024,7 +1024,6 @@
     <modules>
         <!-- Non-OSGI modules -->
         <module>platform/server</module>
-        <module>platform/web-security/web-security</module>
         <module>modules/rules/api</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
@@ -1042,7 +1041,7 @@
         <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/server-config</module>
-        <module>platform/web-security/web-security-bundle</module>
+        <module>platform/web-security</module>
         <module>platform/email</module>
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>

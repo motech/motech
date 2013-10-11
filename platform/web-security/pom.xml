@@ -1,48 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>motech</artifactId>
-        <groupId>org.motechproject</groupId>
-        <version>0.22-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-platform-web-security-bundle</artifactId>
-    <name>MOTECH Web Security Bundle</name>
-    <description>MOTECH Web Security</description>
-    <version>0.22-SNAPSHOT</version>
+    <artifactId>motech-platform-web-security</artifactId>
     <packaging>bundle</packaging>
+    <name>MOTECH Web Security</name>
+    <version>0.22-SNAPSHOT</version>
 
     <properties>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
+
+    <parent>
+        <groupId>org.motechproject</groupId>
+        <artifactId>motech</artifactId>
+        <version>0.22-SNAPSHOT</version>
+        <relativePath>../../</relativePath>
+    </parent>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.config</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>com.springsource.org.hamcrest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.openid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>com.springsource.org.apache.velocity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>com.springsource.javax.mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>com.springsource.javax.validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -111,35 +128,32 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>clean-config</id>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <phase>clean</phase>
-                        <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                            <filesets>
-                                <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-web-security-bundle</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jslint-maven-plugin</artifactId>
@@ -185,11 +199,6 @@
                         <Import-Package>
                             org.aopalliance.aop,
                             org.motechproject.commons.couchdb.service,
-                            org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
-                            org.motechproject.server.config,
-                            org.motechproject.server.config.service,
-                            org.motechproject.osgi.web,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,
@@ -214,7 +223,6 @@
                             net.sf.cglib.core,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-platform-web-security;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -248,5 +256,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
