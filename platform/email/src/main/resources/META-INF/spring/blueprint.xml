@@ -70,8 +70,8 @@
                   interface="org.motechproject.email.service.EmailAuditService"
                   auto-export="interfaces"/>
 
-    <osgi:reference id="platformSettingsServiceOsgi"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService"/>
+    <osgi:reference id="configurationServiceOsgi"
+                    interface="org.motechproject.config.service.ConfigurationService" />
 
     <osgi:reference id="motechSchedulerService" interface="org.motechproject.scheduler.MotechSchedulerService" />
 

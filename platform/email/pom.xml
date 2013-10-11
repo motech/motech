@@ -175,7 +175,7 @@
                             org.aopalliance.aop,
                             org.motechproject.commons.couchdb.service,
                             org.apache.velocity.exception,
-                            org.motechproject.server.config.service,
+                            org.motechproject.config.service,
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.security.annotations,
@@ -189,7 +189,7 @@
                             org.springframework.web.multipart.commons,
                             org.springframework.security.config,
                             *
-                        </Import-Package>                                                          `
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

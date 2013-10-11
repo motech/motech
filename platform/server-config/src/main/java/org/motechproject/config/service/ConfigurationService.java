@@ -4,9 +4,13 @@ import org.motechproject.config.domain.BootstrapConfig;
 import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.core.io.Resource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -100,5 +104,116 @@ public interface ConfigurationService {
      */
     FileInputStream createZipWithConfigFiles(String propertyFile, String fileName) throws IOException;
 
+    /**
+     * <p>
+     *     This method allows to check whether MOTECH is currently running in the FILE or UI mode
+     * </p>
+     * @return Current Config Source
+     */
     ConfigSource getConfigSource();
+
+    /**
+     * <p>
+     *     Retrieves merged properties, given default set. Depending on the ConfigSource, it will either
+     *     merge default properties with the properties from DB or get properties from file.
+     * </p>
+     *
+     * @param module The module we wish to retrieve properties for
+     * @param filename Resource filename
+     * @param defaultProperties Default properties of the module
+     * @return Merged properties of the certain module
+     * @throws IOException if module properties cannot be read from file
+     */
+    Properties getModuleProperties(String module, String filename, Properties defaultProperties) throws IOException;
+
+    /**
+     * <p>
+     *     Depending on the config source, it will either store properties in the DB or file.
+     *     Only properties that are different from the default ones are stored. If the properties
+     *     database record or file doesn't exist yet for the given module, it will be created.
+     * </p>
+     *
+     * @param module The module we wish to update properties for
+     * @param filename Resource filename
+     * @param defaultProperties Default properties of the module
+     * @param newProperties New properties to store
+     * @throws IOException if module properties cannot be retrieved from file
+     */
+    void updateProperties(String module, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
+
+    /**
+     * <p>
+     *     Retrieves all the module properties and returns them as Map, where key is the
+     *     filename.
+     * </p>
+     * @param module The module we wish to retrieve properties for
+     * @param defaultProperties Default properties of the module
+     * @return Properties mapped by filename
+     * @throws IOException if any of the module properties file cannot be read
+     */
+    Map<String, Properties> getAllModuleProperties(String module, Map<String,Properties> defaultProperties) throws IOException;
+
+    /**
+     * <p>
+     *     Allows persisting of raw json properties either in the database or file, depending on the selected
+     *     ConfigSource mode.
+     * </p>
+     * @param module Module we wish to save properties for
+     * @param filename Resource filename
+     * @param rawData Raw JSON data to persist
+     * @throws IOException
+     */
+    void saveRawConfig(final String module, final String filename, final InputStream rawData) throws IOException;
+
+    /**
+     * <p>
+     *     Allows to retrieve raw JSON data either from the database or file, depending on the specified
+     *     ConfigSource mode.
+     * </p>
+     * @param module Module we wish to retrieve raw data for
+     * @param filename Resource filename
+     * @param resource Resource file containing default rawConfig, in case no other has been found
+     * @return Raw JSON data as InputStream
+     * @throws IOException
+     */
+    InputStream getRawConfig(String module, String filename, Resource resource) throws IOException;
+
+    /**
+     * <p>
+     *     Allows to check if raw data has been registered for specified module
+     * </p>
+     * @param module Module symbolic name
+     * @param filename Resource filename
+     * @return True if raw data exists for given parameters, false otherwise
+     */
+    boolean rawConfigExists(String module, String filename);
+
+    /**
+     * <p>
+     *     Depending on the selected ConfigSource mode, this method looks for registered bundle properties
+     *     and returns a list of files it has found
+     * </p>
+     * @return List of files with registered properties
+     */
+    List<String> retrieveRegisteredBundleNames();
+
+    /**
+     * <p>
+     *     Depending on the selected ConfigSource mode, this method looks for all registered raw data
+     *     properties within the specified module.
+     * </p>
+     * @param module Module we wish to perform look for
+     * @return List of filenames that register raw config for specified module
+     */
+    List<String> listRawConfigNames(String module);
+
+    /**
+     * <p>
+     *     Checks if given module registers certain property file
+     * </p>
+     * @param module Module we wish to perform check for
+     * @param filename Resource filename
+     * @return True if properties exist, false otherwise
+     */
+    boolean registersProperties(String module, String filename);
 }

@@ -1,9 +1,11 @@
 package org.motechproject.server.config.domain;
 
+import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
+import org.motechproject.commons.api.MotechMapUtils;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
 
@@ -201,14 +203,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public void mergeWithDefaults(Properties defaultConfig) {
-        for (Map.Entry<Object, Object> entry : defaultConfig.entrySet()) {
-            String key = (String) entry.getKey();
-            Object value = entry.getValue();
-
-            if (platformSettings.getProperty(key) == null) {
-                platformSettings.put(key, value);
-            }
-        }
+        platformSettings = MapUtils.toProperties(MotechMapUtils.mergeMaps(platformSettings, defaultConfig));
     }
 
     public void removeDefaults(Properties defaultConfig) {
