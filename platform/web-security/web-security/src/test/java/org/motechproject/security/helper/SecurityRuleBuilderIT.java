@@ -1,7 +1,5 @@
 package org.motechproject.security.helper;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
-public class SecurityRuleBuilderTest {
+public class SecurityRuleBuilderIT {
 
     @Autowired
     private SecurityRuleBuilder securityBuilder;
