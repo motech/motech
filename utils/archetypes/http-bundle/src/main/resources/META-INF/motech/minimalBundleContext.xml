@@ -7,4 +7,10 @@
     <context:annotation-config />
     <context:component-scan base-package="mini.http.bundle" />
 
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="moduleName" value="hello-world-http" />
+        <constructor-arg name="url"
+            value="../http-bundle/resources/index.html" />
+    </bean>
+
 </beans>

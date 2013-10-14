@@ -10,6 +10,7 @@
     <name>${bundleName}</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
 

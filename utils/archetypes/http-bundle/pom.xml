@@ -10,7 +10,9 @@
     <name>Motech Minimal Bundle</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
+        <motech.version>0.22-SNAPSHOT</motech.version>
     </properties>
 
     <dependencies>
@@ -27,12 +29,17 @@
             <version>1.0.2.RELEASE-r014</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- HTTP -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${motech.version}</version>
         </dependency>
     </dependencies>
 
@@ -65,7 +72,13 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>http-bundle/resources</Resource-Path>
+                        <Context-Path>hello-world-http</Context-Path>
                         <Export-Package>mini.http.bundle.service;version=${project.version},</Export-Package>
+                        <Import-Package>
+                            org.motechproject.osgi.web;version=${motech.version},
+                            *
+                        </Import-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
