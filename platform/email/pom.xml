@@ -82,13 +82,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>org.springframework.security.core</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-web-security</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>org.springframework.security.core</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -169,10 +169,25 @@
                             org.motechproject.email.model;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.core,
+                            net.sf.cglib.reflect,
+                            org.aopalliance.aop,
                             org.motechproject.commons.couchdb.service,
                             org.apache.velocity.exception,
                             org.motechproject.server.config.service,
                             org.motechproject.security.model,
+                            org.motechproject.security.service,
+                            org.motechproject.security.annotations,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.springframework.beans.factory.config,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
+                            org.springframework.context.support,
+                            org.springframework.web.context.support,
+                            org.springframework.web.multipart.commons,
+                            org.springframework.security.config,
                             *
                         </Import-Package>                                                          `
                     </instructions>

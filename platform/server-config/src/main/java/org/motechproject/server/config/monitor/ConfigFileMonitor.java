@@ -7,20 +7,19 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +40,7 @@ public class ConfigFileMonitor implements FileListener {
 
     private EventRelay eventRelay;
     private ConfigLoader configLoader;
+    private ConfigLocationFileStore configLocationFileStore;
     private PlatformSettingsService platformSettingsService;
     private FileSystemManager systemManager;
 
@@ -56,7 +56,6 @@ public class ConfigFileMonitor implements FileListener {
         LOGGER.info("Stopped monitoring system.");
     }
 
-    @PostConstruct
     public void monitor() throws FileSystemException {
         afterPropertiesSet();
         LOGGER.debug("Reading config file.");
@@ -90,22 +89,10 @@ public class ConfigFileMonitor implements FileListener {
         return currentSettings;
     }
 
-    public void changeConfigFileLocation(final String location, final boolean save) throws FileSystemException {
-        if (location.startsWith("/")) {
-            configLoader.addConfigLocation(String.format("file:%s", location));
-        } else {
-            configLoader.addConfigLocation(location);
-        }
+    public void changeConfigFileLocation(final String location) throws FileSystemException {
+        configLocationFileStore.add(location);
 
-        if (save) {
-            try {
-                configLoader.save();
-            } catch (IOException e) {
-                LOGGER.error("Couldn't save the new config file location.", e);
-            }
-        }
-
-        LOGGER.warn("Changed config file location");
+        LOGGER.info("Changed config file location");
 
         monitor();
     }
@@ -114,7 +101,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileCreated(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was created: " + fileName);
             sendEventMessage(FILE_CREATED_EVENT_SUBJECT, fileChangeEvent);
         }
@@ -136,7 +123,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.warn("Config file was deleted: " + fileName);
 
             evictProperCache(fileChangeEvent);
@@ -149,7 +136,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileChanged(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if(MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was changed: " + fileName);
 
             currentSettings = configLoader.loadConfig();
@@ -191,6 +178,11 @@ public class ConfigFileMonitor implements FileListener {
     @Autowired
     public void setConfigLoader(final ConfigLoader configLoader) {
         this.configLoader = configLoader;
+    }
+
+    @Autowired
+    public void setConfigLocationFileStore(ConfigLocationFileStore configLocationFileStore) {
+        this.configLocationFileStore = configLocationFileStore;
     }
 
     @Autowired

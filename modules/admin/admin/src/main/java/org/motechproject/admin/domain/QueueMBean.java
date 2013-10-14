@@ -1,5 +1,8 @@
 package org.motechproject.admin.domain;
 
+/**
+ * Represents a JMS queue. Holds information about the queue statistics.
+ */
 public class QueueMBean {
 
     private String destination;

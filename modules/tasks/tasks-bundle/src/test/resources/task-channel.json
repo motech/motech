@@ -1,7 +1,5 @@
 {
   "displayName" : "test",
-  "moduleName" : "test",
-  "moduleVersion" : "0.15",
   "triggerTaskEvents" : [
     {
       "displayName" : "Trigger 1",

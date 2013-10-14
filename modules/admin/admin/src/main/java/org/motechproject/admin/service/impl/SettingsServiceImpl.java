@@ -7,7 +7,7 @@ import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -28,7 +28,6 @@ import java.util.Properties;
 /**
  * Implementation of {@Link SettingsService} interface for settings managment
  */
-
 @Service
 public class SettingsServiceImpl implements SettingsService {
 
@@ -152,7 +151,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void addSettingsPath(String path) throws IOException {
-        platformSettingsService.addConfigLocation(path, true);
+        platformSettingsService.addConfigLocation(path);
     }
 
     @Override

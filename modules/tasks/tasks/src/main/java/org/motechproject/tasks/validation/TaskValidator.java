@@ -2,7 +2,6 @@ package org.motechproject.tasks.validation;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
@@ -15,6 +14,10 @@ import org.motechproject.tasks.domain.TaskConfig;
 import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
+import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.domain.ManipulationType;
+import org.motechproject.tasks.domain.ManipulationTarget;
+import org.motechproject.tasks.domain.ParameterType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +30,10 @@ import java.util.regex.Pattern;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
+
+/**
+ * The <code>TaskValidator</code> class is responsible for task validation
+ */
 
 public final class TaskValidator extends GeneralValidator {
     public static final String TASK = "task";
@@ -59,7 +66,13 @@ public final class TaskValidator extends GeneralValidator {
         TaskEventInformation triggerInformation = task.getTrigger();
         boolean exists = channel.containsTrigger(triggerInformation);
 
-        if (!exists) {
+        if (exists) {
+            TriggerEvent triggerEvent = channel.getTrigger(triggerInformation);
+
+            for (TaskActionInformation action : task.getActions()) {
+                errors.addAll(validateActionValues(action.getValues(), triggerEvent));
+            }
+        } else {
             errors.add(new TaskError(
                     "task.validation.error.triggerNotExist",
                     triggerInformation.getDisplayName(),
@@ -75,11 +88,8 @@ public final class TaskValidator extends GeneralValidator {
         Set<TaskError> errors = new HashSet<>();
         boolean exists = channel.containsAction(actionInformation);
 
-        if (exists) {
-            ActionEvent actionEvent = channel.getAction(actionInformation);
 
-            errors.addAll(validateActionValues(actionInformation.getValues(), actionEvent));
-        } else {
+        if (!exists) {
             errors.add(new TaskError(
                     "task.validation.error.actionNotExist",
                     actionInformation.getDisplayName(),
@@ -101,19 +111,47 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
+
     private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
-                                                       ActionEvent actionEvent) {
+                                                       TriggerEvent triggerEvent) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (Map.Entry<String, String> input : actionValues.entrySet()) {
-            KeyInformation.parseAll(input.getValue());
-            if (!actionEvent.containsParameter(input.getKey())) {
-                errors.add(new TaskError(
-                        "task.validation.error.actionInputFieldNotExist",
-                        input.getKey(),
-                        actionEvent.getDisplayName()
-                ));
+        for (String input : actionValues.values()) {
+            for (KeyInformation key : KeyInformation.parseAll(input)) {
+                if (key.fromTrigger() && key.hasManipulations()) {
+                    for (String manipulation : key.getManipulations()) {
+                        errors.addAll(validateManipulations(ParameterType.fromString(triggerEvent.getKeyType(key.getKey())), key, manipulation));
+                    }
+                }
             }
+        }
+
+        return errors;
+    }
+
+    private static Set<TaskError> validateManipulations(ParameterType type, KeyInformation key, String manipulation) {
+        Set<TaskError> errors = new HashSet<>();
+        TaskError error;
+        String at = key.getKey() + "?" + manipulation;
+
+        if (type == ParameterType.UNICODE || type == ParameterType.TEXTAREA || type == ParameterType.UNKNOWN) {
+            error = validateStringManipulation(manipulation, at);
+
+            if (error != null) {
+                errors.add(error);
+            }
+        } else if (type == ParameterType.DATE) {
+            error = validateDateManipulation(manipulation, at);
+
+            if (error != null) {
+                errors.add(error);
+            }
+        } else {
+            errors.add(new TaskError(
+                    "task.validation.error.wrongAnotherManipulation",
+                    manipulation,
+                    at
+            ));
         }
 
         return errors;
@@ -295,9 +333,61 @@ public final class TaskValidator extends GeneralValidator {
                         provider.getName()
                 ));
             }
+
+            if (provider.containsProviderObject(key.getObjectType()) && key.hasManipulations()) {
+                for (String manipulation : key.getManipulations()) {
+                    errors.addAll(validateManipulations(ParameterType.fromString(provider.getKeyType(key.getKey())), key, manipulation));
+                }
+            }
         }
 
         return errors;
+    };
+
+    private static TaskError validateStringManipulation(String manipulation, String foundAt) {
+        TaskError error = null;
+        ManipulationType type = ManipulationType.fromString(manipulation.replaceAll("\\((.*?)\\)", ""));
+
+        if (type.getTarget() != ManipulationTarget.STRING) {
+            if (type.getTarget() == ManipulationTarget.ALL) {
+                error = new TaskError(
+                        "task.validation.error.wrongAnotherManipulation",
+                        manipulation,
+                        foundAt
+                );
+            } else {
+                error = new TaskError(
+                        "task.validation.error.wrongStringManipulation",
+                        manipulation,
+                        foundAt
+                );
+            }
+        }
+
+        return error;
+    }
+
+    private static TaskError validateDateManipulation(String manipulation, String foundAt) {
+        TaskError error = null;
+        ManipulationType type = ManipulationType.fromString(manipulation.replaceAll("\\((.*?)\\)", ""));
+
+        if (type.getTarget() != ManipulationTarget.DATE) {
+            if (type.getTarget() == ManipulationTarget.ALL) {
+                error = new TaskError(
+                        "task.validation.error.wrongAnotherManipulation",
+                        manipulation,
+                        foundAt
+                );
+            } else {
+                error = new TaskError(
+                        "task.validation.error.wrongDateManipulation",
+                        manipulation,
+                        foundAt
+                );
+            }
+        }
+
+        return error;
     }
 
     private static Set<TaskError> validateDataSource(DataSource dataSource) {

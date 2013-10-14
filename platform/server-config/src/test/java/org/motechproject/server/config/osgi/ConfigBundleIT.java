@@ -1,7 +1,8 @@
 package org.motechproject.server.config.osgi;
 
+import org.junit.Test;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class ConfigBundleIT extends BaseOsgiIT {
 
+    @Test
     public void testConfigBundle() throws Exception {
         ServiceReference settingsReference = bundleContext.getServiceReference(PlatformSettingsService.class.getName());
         assertNotNull(settingsReference);
@@ -22,11 +24,12 @@ public class ConfigBundleIT extends BaseOsgiIT {
         final MotechSettings platformSettings = settings.getPlatformSettings();
         final String delay = platformSettings.getActivemqProperties().getProperty("call.delay");
         assertEquals("5000", delay);
+        settings.clearSettingsInDb();
     }
 
     @Override
     protected List<String> getImports() {
         return Arrays.asList("org.motechproject.server.config", "org.motechproject.commons.couchdb.service",
-                "org.motechproject.server.config.settings");
+                "org.motechproject.server.config.domain", "org.motechproject.config.service", "org.motechproject.server.config.service");
     }
 }

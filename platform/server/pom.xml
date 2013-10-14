@@ -125,7 +125,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -323,6 +323,24 @@
                                 </goals>
                             </execution>
                             <execution>
+                                <id>Pre IT - Drop Platform Startup DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
                                 <id>Pre IT - Create Web Security DB</id>
                                 <phase>pre-integration-test</phase>
                                 <configuration>
@@ -331,6 +349,22 @@
                                             <arg value="-X" />
                                             <arg value="PUT" />
                                             <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Pre IT - Create Startup DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="PUT" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
                                         </exec>
                                     </target>
                                 </configuration>
@@ -359,6 +393,26 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
+                            <execution>
+                                <id>Pre IT - Create Settings</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="POST" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
+                                            <arg value="-d" />
+                                            <arg value="@src/test/resources/settings.json" />
+                                            <arg value="-H" />
+                                            <arg value="Content-Type: application/json" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
                             <!-- Post Integration -->
                             <execution>
                                 <id>Post IT - Drop Web Security DB</id>
@@ -371,6 +425,24 @@
                                             <arg value="-X" />
                                             <arg value="DELETE" />
                                             <arg value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Post IT - Drop Platform Startup</id>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
                                         </exec>
                                     </target>
                                 </configuration>
@@ -401,27 +473,27 @@
                     <plugin>
                         <groupId>com.googlecode.t7mp</groupId>
                         <artifactId>maven-t7-plugin</artifactId>
-                        <version>0.9.10.M5</version>
+                        <version>0.9.10.M8</version>
                         <configuration>
                             <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
                             <tomcatShutdownPort>${tomcat.shutdown.port}</tomcatShutdownPort>
                             <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
                             <tomcatSetAwait>false</tomcatSetAwait>
-                            <tomcatVersion>7.0.27</tomcatVersion>
+                            <tomcatVersion>7.0.29</tomcatVersion>
                             <lookInside>false</lookInside>
                         </configuration>
                         <executions>
                             <execution>
                                 <id>tomcat-start</id>
                                 <goals>
-                                    <goal>run-forked</goal>
+                                    <goal>run</goal>
                                 </goals>
                                 <phase>pre-integration-test</phase>
                             </execution>
                             <execution>
                                 <id>tomcat-stop</id>
                                 <goals>
-                                    <goal>stop-forked</goal>
+                                    <goal>stop</goal>
                                 </goals>
                                 <phase>post-integration-test</phase>
                             </execution>
@@ -443,6 +515,8 @@
                                         <resource>
                                             <directory>src/test/resources</directory>
                                             <include>motech-settings.conf</include>
+                                            <include>activemq.properties</include>
+                                            <include>bootstrap.properties</include>
                                         </resource>
                                     </resources>
                                 </configuration>

@@ -2,18 +2,19 @@ package org.motechproject.tasks.service.impl;
 
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.api.BundleIcon;
+import org.motechproject.tasks.contract.ActionEventRequest;
+import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.ChannelDeregisterEvent;
+import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.json.ActionEventRequestDeserializer;
 import org.motechproject.tasks.repository.AllChannels;
-import org.motechproject.tasks.contract.ActionEventRequest;
-import org.motechproject.tasks.contract.ChannelRequest;
 import org.motechproject.tasks.service.ChannelService;
 import org.motechproject.tasks.validation.ChannelValidator;
 import org.osgi.framework.Bundle;
@@ -29,17 +30,20 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 
+/**
+ * A {@link ChannelService}, used to manage CRUD operations for a {@link Channel} over a couchdb database.
+ */
 @Service("channelService")
 public class ChannelServiceImpl implements ChannelService {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelServiceImpl.class);
@@ -53,27 +57,30 @@ public class ChannelServiceImpl implements ChannelService {
     private ResourceLoader resourceLoader;
     private EventRelay eventRelay;
 
-    private BundleContext bundleContext;
-
     static {
         typeAdapters.put(ActionEventRequest.class, new ActionEventRequestDeserializer());
     }
 
+    private BundleContext bundleContext;
+    private IconLoader iconLoader;
+
     @Autowired
-    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay) {
+    public ChannelServiceImpl(AllChannels allChannels, ResourceLoader resourceLoader, EventRelay eventRelay, IconLoader iconLoader) {
         this.allChannels = allChannels;
         this.eventRelay = eventRelay;
         this.resourceLoader = resourceLoader;
+        this.iconLoader = iconLoader;
         this.motechJsonReader = new MotechJsonReader();
     }
 
     @Override
     public void registerChannel(ChannelRequest channelRequest) {
         addOrUpdate(new Channel(channelRequest));
+        eventRelay.sendEventMessage(new ChannelRegisterEvent(channelRequest.getModuleName()).toMotechEvent());
     }
 
     @Override
-    public void registerChannel(final InputStream stream) {
+    public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         Type type = new TypeToken<ChannelRequest>() {
         }.getType();
         StringWriter writer = new StringWriter();
@@ -81,10 +88,20 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             IOUtils.copy(stream, writer);
             ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            channelRequest.setModuleName(moduleName);
+            channelRequest.setModuleVersion(moduleVersion);
 
-            addOrUpdate(new Channel(channelRequest));
+            registerChannel(channelRequest);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deregisterChannel(String moduleName) {
+        Channel channel = getChannel(moduleName);
+        if (channel != null) {
+            deregisterChannel(channel);
         }
     }
 
@@ -118,6 +135,18 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    public void deregisterAllChannels() {
+        for (Channel channel : getAllChannels()) {
+            deregisterChannel(channel);
+        }
+    }
+
+    private void deregisterChannel(Channel channel) {
+        allChannels.remove(channel);
+        eventRelay.sendEventMessage(new ChannelDeregisterEvent(channel.getModuleName()).toMotechEvent());
+    }
+
+    @Override
     public BundleIcon getChannelIcon(String moduleName) throws IOException {
         Bundle bundle = getModule(moduleName);
         BundleIcon bundleIcon = null;
@@ -128,7 +157,7 @@ public class ChannelServiceImpl implements ChannelService {
                 iconURL = bundle.getResource(iconLocation);
 
                 if (iconURL != null) {
-                    bundleIcon = loadBundleIcon(iconURL);
+                    bundleIcon = iconLoader.load(iconURL);
                     break;
                 }
             }
@@ -136,7 +165,7 @@ public class ChannelServiceImpl implements ChannelService {
 
         if (bundleIcon == null) {
             iconURL = resourceLoader.getResource(DEFAULT_ICON).getURL();
-            bundleIcon = loadBundleIcon(iconURL);
+            bundleIcon = iconLoader.load(iconURL);
         }
 
         return bundleIcon;
@@ -147,43 +176,20 @@ public class ChannelServiceImpl implements ChannelService {
         this.bundleContext = bundleContext;
     }
 
-    private Bundle getModule(String moduleName) {
+    private Bundle getModule(String moduleSymbolicName) {
         if (bundleContext == null) {
             throw new IllegalArgumentException("Bundle context not set");
         }
 
-        Bundle bundle = null;
 
-        for (Bundle b : bundleContext.getBundles()) {
-            if (b.getSymbolicName().equalsIgnoreCase(String.format("org.motechproject.%s", moduleName))) {
-                bundle = b;
-                break;
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (nullSafeSymbolicName(bundle).equalsIgnoreCase(moduleSymbolicName)) {
+                return bundle;
             }
         }
 
-        if (bundle == null) {
-            LOG.warn(String.format("Module with moduleName: %s not found", moduleName));
-        }
-
-        return bundle;
-    }
-
-    private BundleIcon loadBundleIcon(URL iconURL) {
-        InputStream is = null;
-
-        try {
-            URLConnection urlConn = iconURL.openConnection();
-            is = urlConn.getInputStream();
-
-            String mime = urlConn.getContentType();
-            byte[] image = IOUtils.toByteArray(is);
-
-            return new BundleIcon(image, mime);
-        } catch (IOException e) {
-            throw new MotechException("Error loading icon", e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
+        LOG.warn(String.format("Module with moduleName: %s not found", moduleSymbolicName));
+        return null;
     }
 
 }

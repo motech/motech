@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * Manages CRUD operations for a {@link Channel}.
+ */
 public interface ChannelService {
 
     void registerChannel(ChannelRequest channelRequest);
 
-    void registerChannel(InputStream stream);
+    void registerChannel(InputStream stream, String moduleName, String moduleVersion);
 
     void addOrUpdate(Channel channel);
 
@@ -22,4 +25,7 @@ public interface ChannelService {
 
     BundleIcon getChannelIcon(String moduleName) throws IOException;
 
+    void deregisterChannel(String moduleName);
+
+    void deregisterAllChannels();
 }

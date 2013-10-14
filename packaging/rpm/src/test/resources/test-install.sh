@@ -10,24 +10,33 @@ function purge_motech() {
     $CHROOT rm -f /etc/init.d/motech-default
 }
 
-while getopts "d:b:e:" opt; do
-	case $opt in
-	d)
+while getopts "d:b:e:p:t:" opt; do
+    case $opt in
+    d)
         CHROOT_DIR=$OPTARG
-	;;
-	b)
-	    BUILD_DIR=$OPTARG
-	;;
+    ;;
+    b)
+        BUILD_DIR=$OPTARG
+    ;;
     e)
-	    ERROR_LOG=$OPTARG
-	;;
+        ERROR_LOG=$OPTARG
+    ;;
     p)
         PORT=$OPTARG
+    ;;
+    t)
+        TENANT_PORT=$OPTARG
     ;;
     esac
 done
 
 PORT=${PORT-8099}
+TENANT_PORT=${TENANT_PORT-9099}
+
+SHUTDOWN_PORT=$(($PORT + 1))
+TENANT_SHUTDOWN_PORT=$(($TENANT_PORT + 1))
+
+echo "Using ports: $PORT/$SHUTDOWN_PORT, tenant: $TENANT_PORT/$TENANT_SHUTDOWN_PORT"
 
 if [ -z $ERROR_LOG ]; then
     ERROR_LOG=$BUILD_DIR/err.log
@@ -64,7 +73,7 @@ $CHROOT yum install /tmp/$BASE_PACKAGE -y
 
 # Change the ports
 $CHROOT sed -i "s/8080/$PORT/i" /usr/share/motech/motech-default/conf/server.xml
-$CHROOT sed -i "s/8005/8095/i" /usr/share/motech/motech-default/conf/server.xml
+$CHROOT sed -i "s/8005/$SHUTDOWN_PORT/i" /usr/share/motech/motech-default/conf/server.xml
 
 $CHROOT service motech start
 
@@ -108,11 +117,11 @@ fi
 $CHROOT sh /usr/share/motech/motech-manage-tenants remove test
 
 # Install new tenant
-$CHROOT sh /usr/share/motech/motech-manage-tenants add test 9999 9890
+$CHROOT sh /usr/share/motech/motech-manage-tenants add test $TENANT_PORT $TENANT_SHUTDOWN_PORT
 
 # Change the ports
-$CHROOT perl -p -i -e "s/8099/9999/g" /usr/share/motech/motech-test/conf/server.xml
-$CHROOT	perl -p -i -e "s/8095/9890/g" /usr/share/motech/motech-test/conf/server.xml
+$CHROOT sed -i "s/$PORT/$TENANT_PORT/i" /usr/share/motech/motech-test/conf/server.xml
+$CHROOT sed -i "s/$SHUTDOWN_PORT/$TENANT_SHUTDOWN_PORT/i" /usr/share/motech/motech-test/conf/server.xml
 
 $CHROOT service motech-test start
 
@@ -120,12 +129,13 @@ $CHROOT service motech-test start
 sleep 5
 
 # Check the homepage
-curl -L "localhost:9999" --retry 5 --connect-timeout 30 | grep -i motech
+curl -L "localhost:$TENANT_PORT" --retry 5 --connect-timeout 30 | grep -i motech
 RET=$? # Success?
 if [ $RET -ne 0 ]; then
     echo "Failed getting motech-tenant page" > $ERROR_LOG
     cat $CHROOT_DIR/var/log/motech/motech-test/catalina.out >> $ERROR_LOG
     $CHROOT sh /usr/share/motech/motech-manage-tenants remove test
+    purge_motech
     exit $RET
 fi
 

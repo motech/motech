@@ -62,6 +62,7 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         setProperty("description", stringType);
         setProperty("name", stringType);
         setProperty("enabled", stringType);
+        setProperty("hasRegisteredChannel", stringType);
         setProperty("taskConfig", typeFactory.constructType(TaskConfig.class));
         setProperty("trigger", typeFactory.constructType(TaskEventInformation.class));
 

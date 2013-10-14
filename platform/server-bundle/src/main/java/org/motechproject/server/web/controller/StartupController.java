@@ -1,13 +1,15 @@
 package org.motechproject.server.web.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,31 +29,38 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.security.helper.AuthenticationMode.REPOSITORY;
-import static org.motechproject.server.config.settings.MotechSettings.AMQ_BROKER_URL;
-import static org.motechproject.server.config.settings.MotechSettings.LANGUAGE;
-import static org.motechproject.server.config.settings.MotechSettings.LOGINMODE;
-import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_NAME;
-import static org.motechproject.server.config.settings.MotechSettings.PROVIDER_URL;
-import static org.motechproject.server.config.settings.MotechSettings.SCHEDULER_URL;
+import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
+import static org.motechproject.server.config.domain.MotechSettings.AMQ_BROKER_URL;
+import static org.motechproject.server.config.domain.MotechSettings.LANGUAGE;
+import static org.motechproject.server.config.domain.MotechSettings.LOGINMODE;
+import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_NAME;
+import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_URL;
+import static org.motechproject.server.config.domain.MotechSettings.SCHEDULER_URL;
 
-/*StartupController manage register process */
+/**
+ * StartupController that manages the platform system start up and captures the platform core settings and user information.
+ */
 @Controller
 public class StartupController {
 
     public static final String BUNDLE_ADMIN_ROLE = "Bundle Admin";
     public static final String USER_ADMIN_ROLE = "User Admin";
+    public static final String EMAIL_ADMIN_ROLE = "Email Admin";
 
-    private StartupManager startupManager = StartupManager.getInstance();
+    @Autowired
+    private StartupManager startupManager;
 
     @Autowired
     private PlatformSettingsService platformSettingsService;
 
     @Autowired
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
 
     @Autowired
     private MotechUserService userService;
+
+    @Autowired
+    private SuggestionHelper suggestionHelper;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -63,16 +72,16 @@ public class StartupController {
         ModelAndView view = new ModelAndView("startup");
 
         if (startupManager.canLaunchBundles()) {
-            view.setViewName("redirect:home");
+            view.setViewName(REDIRECT_HOME);
         } else {
-            Locale userLocale = localeSettings.getUserLocale(request);
+            Locale userLocale = localeService.getUserLocale(request);
 
             StartupForm startupSettings = new StartupForm();
             startupSettings.setLanguage(userLocale.getLanguage());
 
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);
-            view.addObject("languages", localeSettings.getAvailableLanguages());
+            view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("pageLang", userLocale);
         }
 
@@ -82,17 +91,17 @@ public class StartupController {
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
     public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
-        ModelAndView view = new ModelAndView("redirect:home");
+        ModelAndView view = new ModelAndView(REDIRECT_HOME);
 
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());
-            view.addObject("languages", localeSettings.getAvailableLanguages());
+            view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("loginMode", form.getLoginMode());
             view.addObject("errors", getErrors(result));
 
             view.setViewName("startup");
         } else {
-            ConfigFileSettings settings = startupManager.getLoadedConfig();
+            ConfigFileSettings settings = startupManager.getDefaultSettings();
             settings.saveMotechSetting(LANGUAGE, form.getLanguage());
             settings.saveMotechSetting(SCHEDULER_URL, form.getSchedulerUrl());
             settings.saveMotechSetting(LOGINMODE, form.getLoginMode());
@@ -103,7 +112,7 @@ public class StartupController {
             platformSettingsService.savePlatformSettings(settings.getMotechSettings());
             platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());
 
-            if (REPOSITORY.equals(form.getLoginMode())) {
+            if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(form.getLoginMode()))) {
                 registerAdminUser(form);
             }
 
@@ -125,18 +134,12 @@ public class StartupController {
     }
 
     private StartupSuggestionsForm createSuggestions() {
-        MotechSettings settings = startupManager.getLoadedConfig();
         StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
 
-        String queueUrl = settings.getActivemqProperties().getProperty(AMQ_BROKER_URL);
-        String schedulerUrl = settings.getSchedulerProperties().getProperty(SCHEDULER_URL);
+        String queueUrl = suggestionHelper.suggestActivemqUrl();
 
-        if (startupManager.findActiveMQInstance(queueUrl)) {
+        if (StringUtils.isNotBlank(queueUrl)) {
             suggestions.addQueueSuggestion(queueUrl);
-        }
-
-        if (startupManager.findSchedulerInstance(schedulerUrl)) {
-            suggestions.addSchedulerSuggestion(schedulerUrl);
         }
 
         return suggestions;
@@ -148,7 +151,7 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE);
+        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE);
 
         userService.register(login, password, email, null, roles, locale);
     }

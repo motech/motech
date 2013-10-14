@@ -2,6 +2,8 @@ package org.motechproject.config.bootstrap;
 
 /**
  * <p>Represents the system environment.</p>
+ *
+ * This defines the required System Environmental Variables.
  */
 public interface Environment {
 

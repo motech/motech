@@ -114,6 +114,13 @@ public enum ParameterType {
         public Object parse(String value) {
             throw new UnsupportedOperationException("Map convert not supported.");
         }
+    },
+
+    UNKNOWN("UNKNOWN") {
+        @Override
+        public Object parse(String value) {
+            return value;
+        }
     };
 
     private final String value;

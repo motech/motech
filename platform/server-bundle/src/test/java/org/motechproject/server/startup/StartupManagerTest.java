@@ -7,18 +7,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
-import org.motechproject.server.config.service.ConfigLoader;
+import org.motechproject.config.domain.BootstrapConfig;
+import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.domain.DBConfig;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.repository.AllSettings;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
-import java.util.Properties;
-
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
@@ -39,23 +40,23 @@ public class StartupManagerTest {
     ConfigLoader configLoader;
 
     @Mock
-    ConfigFileSettings configFileSettings;
-
-    @Mock
-    Properties couchDbProperties;
-
-    @Mock
     ConfigFileMonitor configFileMonitor;
 
     @Mock
+    ConfigurationService configurationService;
+
+    @Mock
     private EventAdmin eventAdmin;
+
+    @Mock
+    AllSettings allSettings;
 
     @InjectMocks
     @Spy
     PlatformSettingsService platformSettingsService = new PlatformSettingsServiceImpl();
 
     @InjectMocks
-    StartupManager startupManager = StartupManager.getInstance();
+    StartupManager startupManager = new StartupManager();
 
     @Before
     public void setUp() {
@@ -64,18 +65,32 @@ public class StartupManagerTest {
 
     @Test
     public void testNoSettings() {
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://localhost:5984", null, null), null, ConfigSource.FILE);
+        when(allSettings.getSettings()).thenReturn(null);
         when(configLoader.loadConfig()).thenReturn(null);
         when(configFileMonitor.getCurrentSettings()).thenReturn(null);
+        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+        when(couchDbManager.getConnector(any(String.class))).thenReturn(couchDbConnector);
 
         startupManager.startup();
 
         assertTrue(startupManager.isConfigRequired());
+
         assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
         verify(configLoader).loadConfig();
-        verify(configFileMonitor).getCurrentSettings();
+        verify(allSettings).getSettings();
 
         verify(eventAdmin, never()).postEvent(any(Event.class));
         verify(eventAdmin, never()).sendEvent(any(Event.class));
+    }
+
+    @Test
+    public void shouldSetPlatformStateToNeedBootstrapIfNoBootstrapConfigFound(){
+        when(configurationService.loadBootstrapConfig()).thenReturn(null);
+
+        startupManager.startup();
+
+        assertTrue(startupManager.isBootstrapConfigRequired());
     }
 }

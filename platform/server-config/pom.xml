@@ -41,6 +41,10 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,7 +64,9 @@
                             org.motechproject.server.config.repository;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
                             org.motechproject.server.config.service.impl;version=${project.version},
-                            org.motechproject.server.config.settings;version=${project.version}
+                            org.motechproject.server.config.settings;version=${project.version},
+                            org.motechproject.config.domain;version=${project.version},
+                            org.motechproject.config.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,
@@ -132,10 +138,10 @@
                             <outputDirectory>${user.home}/.motech</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/config</directory>
+                                    <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>config-locations.conf</include>
+                                        <include>config-locations.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -145,5 +151,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

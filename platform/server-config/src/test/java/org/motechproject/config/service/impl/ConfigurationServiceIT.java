@@ -1,6 +1,7 @@
 package org.motechproject.config.service.impl;
 
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.After;
@@ -16,46 +17,35 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/motech/configContext.xml"})
+@ContextConfiguration(locations = {"classpath*:testApplicationPlatformConfig.xml"})
 public class ConfigurationServiceIT {
 
-    private File configdir = new File("/tmp");
-    private String url = "http://1.2.3.4:5984";
-    private String username = "user";
-    private String password = "pass";
-    private String tenantId = "tama";
+    private String url = "http://www.testurl.com";
+    private String username = "test_usr";
+    private String password = "test_pwd";
+    private String tenantId = "test_tenentid";
     private ConfigSource configSource = ConfigSource.FILE;
 
     @Autowired
     private ConfigurationService configurationService;
 
-    @Before
-    public void setUp() throws IOException {
-        FileUtils.writeStringToFile(new File(configdir, "bootstrap.properties"), getProperties());
+    @Autowired
+    private PropertiesConfiguration propertiesConfiguration;
+
+    @After
+    public void tearDown() {
+        FileUtils.deleteQuietly(new File(propertiesConfiguration.getString("config.location")));
     }
 
     @Test
-    public void shouldReadBootstrapConfigFromBootstarpProvpertiesSpecifiedInDefaultLocation() {
-        BootstrapConfig expectedConfig = new BootstrapConfig(new DBConfig(url, username, password), tenantId, configSource);
-        assertThat(configurationService.loadBootstrapConfig(), IsEqual.equalTo(expectedConfig));
-    }
+    public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(url, username, password), tenantId, configSource);
+        configurationService.save(bootstrapConfig);
 
-    @After
-    public void tearDown(){
-        new File(configdir, "bootstrap.properties").delete();
-    }
-
-    private String getProperties() {
-        return new StringBuilder(100)
-                .append("db.url=").append(url).append("\n")
-                .append("db.username=").append(username).append("\n")
-                .append("db.password=").append(password).append("\n")
-                .append("tenant.id=").append(tenantId).append("\n")
-                .append("config.source=").append(configSource.getName()).toString();
+        assertThat(configurationService.loadBootstrapConfig(), IsEqual.equalTo(bootstrapConfig));
     }
 }

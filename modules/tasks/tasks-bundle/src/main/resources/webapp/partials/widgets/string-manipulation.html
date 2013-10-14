@@ -21,4 +21,8 @@
         <span unselectable="on" class="pointer" setmanipulation="substring">{{msg('task.substring')}}</span>
         <input id="substringSeparator" substring-update class="input-popover" style="display:none" type="text"/>
     </li>
+    <li unselectable="on" class="padding-botton6">
+        <span unselectable="on" class="pointer" setmanipulation="format">{{msg('task.format')}}</span>
+        <img class="format-edit-img" style="display:none" src="../tasks/img/task-settings-paused.png" ng-click="showFormatManipulation()">
+    </li>
 </ul>

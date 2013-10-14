@@ -1,23 +1,60 @@
 <!------------------------  Tasks  ------------------------------------->
 <div class="row-fluid tab-frame">
-    <div class="span8">
+<div class="span8">
 
-        <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
-        <div class="clearfix">
-            <div class="inside btn-group">
-                <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
-                <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
+    <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
+    <div class="clearfix">
+        <div class="inside btn-group">
+            <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
+            <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
+        </div>
+        <div class="inside form-inline">
+            <label >{{msg('task.header.searchTasks')}}</label>
+            <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
+            <div data-toggle="buttons-checkbox" class="btn-group">
+                <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
+                <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
             </div>
-            <div class="inside form-inline">
-                <label >{{msg('task.header.searchTasks')}}</label>
-                <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
-                <div data-toggle="buttons-checkbox" class="btn-group">
-                    <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
-                    <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
+        </div>
+        <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
+            <div ng-repeat="item in pagedItems[currentPage]">
+
+                <div class="task-list-group" ng-hide="item.task.hasRegisteredChannel" style="overflow: auto">
+                    <div class="task-bar channel-deregistered">
+                        <ul class="task-nav">
+                            <li class="task-element">
+                                <div trigger-popover>
+                                    <img ng-src="../tasks/api/channel/icon?moduleName={{item.task.trigger.moduleName}}" class="task-list-img" />
+                                </div>
+                            </li>
+                            <li class="task-element"><img src="../tasks/img/arrow.png" class="task-list-img-arrow"/></li>
+                            <li class="task-element">
+                                <div actions-popover>
+                                    <img ui-if="item.task.actions.length == 1" ng-src="../tasks/api/channel/icon?moduleName={{item.task.actions[0].moduleName}}" class="task-list-img"/>
+                                    <i ui-if="item.task.actions.length > 1" class="icon-reorder icon-fixed-width icon-2x task-list-img" style="vertical-align: middle;"></i>
+                                </div>
+                            </li>
+                            <li class="divider-vertical"></li>
+                            <li class="task-element task-status">
+                                <i class="icon-caret-right icon-fixed-width icon-large i-name" style="visibility: hidden"></i>
+                                &nbsp;{{item.task.name}}
+                            </li>
+                        </ul>
+                        <ul class="task-nav pull-right">
+                            <li class="task-element task-paused">
+                                <div class="task-list-button-activity">
+                                    <div class="task-list-text-activity">{{msg('task.channel.deregistered')}}</div>
+                                    <div class="task-list-div-activity"><img class="task-list-img-activity" src="../tasks/img/task-paused.png" /></div>
+                                </div>
+                            </li>
+                            <li class="divider-vertical"></li>
+                            <li class="task-element"><img src="../tasks/img/task-settings-paused.png" class="task-list-img" /></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
-                <div class="task-list-group" ng-repeat="item in pagedItems[currentPage]">
+
+                <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
                     <div class="accordion-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
@@ -85,7 +122,7 @@
                                     <a href="#/task/{{item.task._id}}/log"><div class="button-task-in"><i class="icon-time icon-white"></i> {{msg('task.button.history')}}</div></a>
                                 </li>
                                 <li class="task-element task-buttons">
-                                    <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-upload-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
+                                    <a href="../tasks/api/task/{{item.task._id}}/export"><div class="button-task-in"><i class="icon-download-alt icon-white"></i> {{msg('task.button.export')}}</div></a>
                                 </li>
                                 <li class="task-element task-offset"></li>
                                 <li class="divider-vertical"></li>
@@ -102,75 +139,77 @@
                         <div class="clearfix"></div>
 
                     </div>
+
                 </div>
             </div>
-            <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
-                <ul>
-                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
-                    <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
-                    <li ng-repeat="number in range(pagedItems.length)"
-                        ng-hide="hidePages(number)"
-                        ng-class="{active: number == currentPage}"
-                        ng-click="setPage()">
-                        <a href ng-bind="number + 1">1</a>
-                    </li>
-                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
-                    <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
-                </ul>
-            </div>
+        </div>
+        <div class="pagination pagination-centered pagination-condensed lightblue" ng-show="pagedItems.length &gt; 1">
+            <ul>
+                <li ng-class="{disabled: currentPage == 0}"><a href ng-click="firstPage()">{{msg('server.pagination.first')}}</a></li>
+                <li ng-class="{disabled: currentPage == 0}"><a href ng-click="prevPage()">{{msg('server.pagination.prev')}}</a></li>
+                <li ng-repeat="number in range(pagedItems.length)"
+                    ng-hide="hidePages(number)"
+                    ng-class="{active: number == currentPage}"
+                    ng-click="setPage()">
+                    <a href ng-bind="number + 1">1</a>
+                </li>
+                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="nextPage()">{{msg('server.pagination.next')}}</a></li>
+                <li ng-class="{disabled: currentPage == pagedItems.length - 1}"><a href ng-click="lastPage(pagedItems.length - 1)">{{msg('server.pagination.last')}}</a></li>
+            </ul>
+        </div>
 
-            <div class="tasks-list alert" ng-show="allTasks.length == 0">
-                <strong>{{msg('task.warning')}}:</strong>
-                {{msg('task.info.notFoundTasks')}}
-            </div>
+        <div class="tasks-list alert" ng-show="allTasks.length == 0">
+            <strong>{{msg('task.warning')}}:</strong>
+            {{msg('task.info.notFoundTasks')}}
+        </div>
 
+    </div>
+</div>
+<div class="span4">
+    <!------------------------  Recent task activity  ------------------------>
+    <div class="margin-after2">
+        <div class="inbox-header">{{msg('task.header.recentTaskActivity')}}</div>
+        <div class="box-content clearfix">
+            <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
+                <tbody ng-show="activities.length == 0">
+                <tr>
+                    <td>{{msg('task.info.notFoundActivities')}}</td>
+                </tr>
+                </tbody>
+                <tbody ng-hide="activities.length == 0">
+                <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
+                    <td>
+                        <div>
+                            <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <img src="../tasks/img/arrow.png" class="recent-activity-arrow"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
+                        </div>
+                    </td>
+                    <td><span class="recent-name-first">{{ activity.name }}<br></span>
+                        <span>{{ activity.date | fromNow }}</span>
+                    </td>
+                    <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('task.tooltip.clickToSeeDetails')}}">
+                        <div>
+                            <a href="#/task/{{activity.task}}/log">
+                                <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
+                                <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
+                                <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="span4">
-        <!------------------------  Recent task activity  ------------------------>
-        <div class="margin-after2">
-            <div class="inbox-header">{{msg('task.header.recentTaskActivity')}}</div>
-            <div class="box-content clearfix">
-                <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
-                    <tbody ng-show="activities.length == 0">
-                    <tr>
-                        <td>{{msg('task.info.notFoundActivities')}}</td>
-                    </tr>
-                    </tbody>
-                    <tbody ng-hide="activities.length == 0">
-                    <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
-                        <td>
-                            <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div>
-                                <img src="../tasks/img/arrow.png" class="recent-activity-arrow"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div>
-                                <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
-                            </div>
-                        </td>
-                        <td><span class="recent-name-first">{{ activity.name }}<br></span>
-                            <span>{{ activity.date | fromNow }}</span>
-                        </td>
-                        <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('task.tooltip.clickToSeeDetails')}}">
-                            <div>
-                                <a href="#/task/{{activity.task}}/log">
-                                    <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
-                                    <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
-                                    <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
+</div>
+<div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
 </div>

@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
+/**
+ * Extended version of the {@link BundleInformation} class, which adds more fields from the bundle's manifest.
+ * This class can be used to generate detailed views describing the given @{link Bundle}.
+ */
 public class ExtendedBundleInformation extends BundleInformation {
 
     public static final String BUILT_BY = "Built-By";

@@ -11,12 +11,9 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.SortedSet;
 
 public class AbstractTaskBundleIT extends BaseOsgiIT {
@@ -24,23 +21,16 @@ public class AbstractTaskBundleIT extends BaseOsgiIT {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskBundleIT.class);
 
     protected Channel findChannel(String channelName) throws IOException {
-        Properties props = new Properties();
-        ClassPathResource resource = new ClassPathResource("test.properties");
-        try (InputStream is = resource.getInputStream()) {
-            props.load(is);
-        }
-
         ServiceReference serviceReference = bundleContext.getServiceReference(ChannelService.class.getName());
         assertNotNull(serviceReference);
         ChannelService channelService = (ChannelService) bundleContext.getService(serviceReference);
         assertNotNull(channelService);
 
-        LOG.info(String.format("Looking for %s, %s, %s", channelName, props.getProperty("module.name"),
-                props.getProperty("module.version")));
+        LOG.info(String.format("Looking for %s", channelName));
 
         LOG.info(String.format("There are %d channels in total", channelService.getAllChannels().size()));
 
-        return channelService.getChannel(props.getProperty("module.name"));
+        return channelService.getChannel(channelName);
     }
 
     protected TaskEvent findTaskEventBySubject(List<? extends TaskEvent> taskEvents, String subject) {

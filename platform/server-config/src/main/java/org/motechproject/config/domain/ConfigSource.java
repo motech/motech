@@ -4,7 +4,7 @@ package org.motechproject.config.domain;
 import org.motechproject.config.MotechConfigurationException;
 
 /**
- * Represents the source from which configuration is read.
+ * Represents the source from which MOTECH configuration should be read.
  */
 public final class ConfigSource {
     public static final ConfigSource FILE = new ConfigSource("FILE");
@@ -16,13 +16,22 @@ public final class ConfigSource {
     }
 
     public static ConfigSource valueOf(String name) {
-        if (name == null || name.equalsIgnoreCase(UI.name)) {
+        if (name == null || name.trim().equalsIgnoreCase(UI.name)) {
             return UI;
         }
-        if (FILE.name.equalsIgnoreCase(name)) {
+        if (FILE.name.equalsIgnoreCase(name.trim())) {
             return FILE;
         }
-        throw new MotechConfigurationException("Config source [" + name +"] not supported.");
+        throw new MotechConfigurationException("Config source [" + name + "] not supported.");
+    }
+
+    public static boolean isValid(String name) {
+        try {
+            valueOf(name);
+            return true;
+        } catch (MotechConfigurationException e) {
+            return false;
+        }
     }
 
     @Override

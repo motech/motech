@@ -2,9 +2,9 @@ package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
-import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.springframework.validation.Errors;
@@ -18,8 +18,11 @@ import java.util.Arrays;
 import static org.apache.activemq.util.URISupport.CompositeData;
 import static org.apache.activemq.util.URISupport.isCompositeURI;
 import static org.apache.activemq.util.URISupport.parseComposite;
+import static org.motechproject.server.web.validator.ValidationUtils.validateEmptyOrWhitespace;
 
-/*StartupFormValidator validate user information during register process*/
+/**
+ * StartupFormValidator validate user information during registration process
+ */
 public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
 
@@ -43,18 +46,19 @@ public class StartupFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        for (String field : Arrays.asList("language", "queueUrl")) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, String.format(ERROR_REQUIRED, field));
+        String queueUrl = "queueUrl";
+        validateEmptyOrWhitespace(errors, ERROR_REQUIRED, "language", queueUrl);
+
+        if (!errors.hasFieldErrors(queueUrl)) {
+            String value = errors.getFieldValue(queueUrl).toString().replace("localhost", "127.0.0.1");
+            validateQueueUrl(errors, value, queueUrl);
         }
 
-        for (String field : Arrays.asList("queueUrl")) {
-            String value = errors.getFieldValue(field).toString().replace("localhost", "127.0.0.1");
-            validateQueueUrl(errors, value, field);
-        }
 
-        if (AuthenticationMode.REPOSITORY.equals(errors.getFieldValue("loginMode").toString())) {
+        LoginMode loginMode = LoginMode.valueOf(errors.getFieldValue("loginMode").toString());
+        if (LoginMode.REPOSITORY.equals(loginMode)) {
             validateRepository(errors);
-        } else if (AuthenticationMode.OPEN_ID.equals(errors.getFieldValue("loginMode").toString())) {
+        } else if (LoginMode.OPEN_ID.equals(loginMode)) {
             validateOpenId(errors);
         } else {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, LOGIN_MODE, String.format(ERROR_REQUIRED, LOGIN_MODE));
@@ -106,7 +110,7 @@ public class StartupFormValidator implements Validator {
             if (isCompositeURI(brokerURL)) {
                 CompositeData data = parseComposite(brokerURL);
                 String scheme = data.getScheme();
-                if (scheme!=null && (scheme.equals("failover") || scheme.equals("fanout") || scheme.equals("vm"))) {
+                if (scheme != null && ("failover".equals(scheme) || "fanout".equals(scheme) || "vm".equals(scheme))) {
                     for (URI uri : data.getComponents()) {
                         validateUriContainSpecificScheme(errors, field, uri);
                     }
@@ -139,7 +143,7 @@ public class StartupFormValidator implements Validator {
 
     private void validateUriContainSpecificScheme(Errors errors, String field, URI uri) {
         String scheme = uri.getScheme();
-        if (scheme!=null && (scheme.equals("static") || scheme.equals("broker"))) {
+        if (scheme != null && ("static".equals(scheme) || "broker".equals(scheme))) {
             if (isCompositeURI(uri)) {
                 try {
                     CompositeData data = parseComposite(uri);

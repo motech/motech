@@ -16,7 +16,7 @@ import org.motechproject.admin.messages.Level;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import java.util.Map;
 

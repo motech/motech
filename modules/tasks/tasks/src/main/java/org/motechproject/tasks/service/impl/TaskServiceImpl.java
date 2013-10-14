@@ -1,5 +1,6 @@
 package org.motechproject.tasks.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.motechproject.event.MotechEvent;
@@ -7,6 +8,8 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.tasks.domain.ActionEvent;
 import org.motechproject.tasks.domain.Channel;
+import org.motechproject.tasks.domain.ChannelDeregisterEvent;
+import org.motechproject.tasks.domain.ChannelRegisterEvent;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
 import org.motechproject.tasks.domain.FilterSet;
@@ -17,6 +20,7 @@ import org.motechproject.tasks.domain.TaskDataProvider;
 import org.motechproject.tasks.domain.TaskError;
 import org.motechproject.tasks.domain.TaskEventInformation;
 import org.motechproject.tasks.domain.TriggerEvent;
+import org.motechproject.tasks.events.constants.EventSubjects;
 import org.motechproject.tasks.ex.ActionNotFoundException;
 import org.motechproject.tasks.ex.TaskNotFoundException;
 import org.motechproject.tasks.ex.TriggerNotFoundException;
@@ -47,10 +51,15 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.DataSource.Lookup;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
 import static org.motechproject.tasks.events.constants.EventDataKeys.DATA_PROVIDER_NAME;
+import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_DEREGISTER_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.CHANNEL_UPDATE_SUBJECT;
 import static org.motechproject.tasks.events.constants.EventSubjects.DATA_PROVIDER_UPDATE_SUBJECT;
 import static org.motechproject.tasks.validation.TaskValidator.TASK;
 
+/**
+ * A {@link TaskService} that manages CRUD operations for a {@link Task} over a couchdb database.
+ * Expects channel registered,updated and deregistered events to be raised so that the associated tasks can be revalidated.
+ */
 @Service("taskService")
 public class TaskServiceImpl implements TaskService {
     private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
@@ -59,6 +68,13 @@ public class TaskServiceImpl implements TaskService {
     private ChannelService channelService;
     private TaskDataProviderService providerService;
     private EventRelay eventRelay;
+
+    private static final String[] TASK_TRIGGER_VALIDATION_ERRORS = new String[]{"task.validation.error.triggerNotExist",
+            "task.validation.error.triggerFieldNotExist"};
+    private static final String TASK_ACTION_VALIDATION_ERRORS = "task.validation.error.actionNotExist";
+    private static final String[] TASK_DATA_PROVIDER_VALIDATION_ERRORS = new String[]{"task.validation.error.providerObjectFieldNotExist",
+            "task.validation.error.providerObjectNotExist",
+            "task.validation.error.providerObjectLookupNotExist"};
 
     @Autowired
     public TaskServiceImpl(AllTasks allTasks, ChannelService channelService,
@@ -221,21 +237,12 @@ public class TaskServiceImpl implements TaskService {
 
             if (task.getTrigger() != null) {
                 errors = validateTriggerTask(task, channel);
-
-                if (errors != null) {
-                    setTaskValidationErrors(task, errors,
-                            "task.validation.error.triggerNotExist",
-                            "task.validation.error.triggerFieldNotExist"
-                    );
-                }
+                handleValidationErrors(task, errors, TASK_TRIGGER_VALIDATION_ERRORS);
             }
 
             for (TaskActionInformation action : task.getActions()) {
                 errors = validateActionTask(action, channel);
-
-                if (errors != null) {
-                    setTaskValidationErrors(task, errors, "task.validation.error.actionNotExist");
-                }
+                handleValidationErrors(task, errors, TASK_ACTION_VALIDATION_ERRORS);
             }
         }
     }
@@ -252,14 +259,29 @@ public class TaskServiceImpl implements TaskService {
                     Set<TaskError> errors = TaskValidator.validateProvider(
                             action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
                     );
-
-                    setTaskValidationErrors(task, errors,
-                            "task.validation.error.providerObjectFieldNotExist",
-                            "task.validation.error.providerObjectNotExist",
-                            "task.validation.error.providerObjectLookupNotExist"
-                    );
+                    handleValidationErrors(task, errors, TASK_DATA_PROVIDER_VALIDATION_ERRORS);
                 }
             }
+        }
+    }
+
+    @MotechListener(subjects = EventSubjects.CHANNEL_REGISTER_SUBJECT)
+    public void activateTasksAfterChannelRegister(MotechEvent motechEvent) {
+        ChannelRegisterEvent event = new ChannelRegisterEvent(motechEvent);
+        List<Task> tasks = allTasks.dependentOnModule(event.getChannelModuleName());
+        for (Task task : tasks) {
+            task.setHasRegisteredChannel(true);
+            allTasks.addOrUpdate(task);
+        }
+    }
+
+    @MotechListener(subjects = CHANNEL_DEREGISTER_SUBJECT)
+    public void deactivateTasksAfterChannelDeregister(MotechEvent motechEvent) {
+        ChannelDeregisterEvent event = new ChannelDeregisterEvent(motechEvent);
+        List<Task> tasks = allTasks.dependentOnModule(event.getChannelModuleName());
+        for (Task task : tasks) {
+            task.setHasRegisteredChannel(false);
+            allTasks.addOrUpdate(task);
         }
     }
 
@@ -343,11 +365,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Set<TaskError> validateTriggerTask(Task task, Channel channel) {
-        Set<TaskError> errors = null;
+        Set<TaskError> errors = new HashSet<>();
+
+        if (channel == null) {
+            errors.add(new TaskError("task.validation.error.triggerChannelNotRegistered"));
+            return errors;
+        }
+
         TaskEventInformation trigger = task.getTrigger();
 
         if (channel.getModuleName().equalsIgnoreCase(trigger.getModuleName())) {
-            errors = new HashSet<>(TaskValidator.validateTrigger(task, channel));
+            errors.addAll(TaskValidator.validateTrigger(task, channel));
         }
 
         return errors;
@@ -355,29 +383,42 @@ public class TaskServiceImpl implements TaskService {
 
     private Set<TaskError> validateActionTask(TaskActionInformation actionInformation,
                                               Channel channel) {
-        Set<TaskError> errors = null;
+        Set<TaskError> errors = new HashSet<>();
+
+        if (channel == null) {
+            errors.add(new TaskError("task.validation.error.actionChannelNotRegistered"));
+            return errors;
+        }
 
         if (channel.getModuleName().equalsIgnoreCase(actionInformation.getModuleName())) {
-            errors = new HashSet<>(TaskValidator.validateAction(actionInformation, channel));
+            errors.addAll(TaskValidator.validateAction(actionInformation, channel));
         }
 
         return errors;
     }
 
-    private void setTaskValidationErrors(Task task, Set<TaskError> errors, String... messages) {
-        if (!isEmpty(errors)) {
-            publishTaskDisabledMessage(task.getName(), task.isEnabled() ? "CRITICAL" : "INFO");
-
-            task.setEnabled(false);
-            task.addValidationErrors(errors);
-            allTasks.addOrUpdate(task);
+    private void handleValidationErrors(Task task, Set<TaskError> errors, String... messages) {
+        if (CollectionUtils.isNotEmpty(errors)) {
+            setTaskValidationErrors(task, errors);
         } else {
-            for (String message : messages) {
-                task.removeValidationError(message);
-            }
-
-            allTasks.addOrUpdate(task);
+            removeTaskValidationErrors(task, messages);
         }
+    }
+
+    private void setTaskValidationErrors(Task task, Set<TaskError> errors) {
+        publishTaskDisabledMessage(task.getName(), task.isEnabled() ? "CRITICAL" : "INFO");
+
+        task.setEnabled(false);
+        task.addValidationErrors(errors);
+        allTasks.addOrUpdate(task);
+    }
+
+    private void removeTaskValidationErrors(Task task, String... messages) {
+        for (String message : messages) {
+            task.removeValidationError(message);
+        }
+
+        allTasks.addOrUpdate(task);
     }
 
     private void publishTaskDisabledMessage(String taskName, String level) {

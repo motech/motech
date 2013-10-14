@@ -8,7 +8,7 @@ import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,13 @@ import java.util.Properties;
 /**
  * Implementation of {@Link PlatformSettingsService} class for main motech settings managment
  */
-
 @Service("platformSettingsService")
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
+/*
+ *     Important Note: This class should not be developed further. Please start making
+ *     future changes in org.motechproject.config.service.ConfigurationService. When Config management
+ *     work completes, this class will be removed.
+ */
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
     private static final String USER_HOME = "user.home";
 
@@ -46,19 +50,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Caching(cacheable = { @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
-        MotechSettings settings = configFileMonitor.getCurrentSettings();
-
-        if (settings != null) {
-            SettingsRecord record = allSettings.getSettings();
-
-            if (record != null) {
-                settings = record;
-            }
-        }
-
-        return settings;
+        return allSettings.getSettings();
     }
 
     @Override
@@ -73,19 +67,16 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             settings.store(fos, null);
 
             SettingsRecord dbSettings = allSettings.getSettings();
-            if (dbSettings == null) {
-                dbSettings = new SettingsRecord();
-            }
+
+            dbSettings.setPlatformInitialized(true);
+            dbSettings.setLastRun(DateTime.now());
+            dbSettings.updateFromProperties(settings);
 
             if (configFileMonitor.getCurrentSettings() != null) {
-                dbSettings.updateFromProperties(settings);
                 dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
-                dbSettings.setLastRun(DateTime.now());
-
-                allSettings.addOrUpdateSettings(dbSettings);
             }
 
-            configFileMonitor.monitor();
+            allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {
             throw new MotechException("Error while saving motech settings", e);
         }
@@ -101,13 +92,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
-            configFileMonitor.monitor();
 
             SettingsRecord dbSettings = allSettings.getSettings();
-            if (dbSettings == null) {
-                LOGGER.warn("activemq properties cannot be saved to database");
-                return;
-            }
+
             dbSettings.setActivemqProperties(settings);
             allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {
@@ -143,30 +130,10 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
     public void setActiveMqSetting(String key, String value) {
-        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
+        SettingsRecord dbSettings = allSettings.getSettings();
 
-        if (configFileSettings == null) {
-            LOGGER.error("Cannot save active mq settings because motech settings file does not exist");
-            return;
-        }
-
-        File configFile = new File(configFileSettings.getPath() + File.separator + MotechSettings.ACTIVEMQ_FILE_NAME);
-        try {
-            if (configFile.canWrite()) {
-                configFileSettings.saveActiveMqSetting(key, value);
-                configFileSettings.storeActiveMqSettings();
-            }
-
-            // save property to db
-            SettingsRecord dbSettings = allSettings.getSettings();
-
-            if (dbSettings != null) {
-                dbSettings.getActivemqProperties().setProperty(key, value);
-                allSettings.addOrUpdateSettings(dbSettings);
-            }
-        } catch (Exception e) {
-            LOGGER.error("There was a problem updating an activemq setting");
-        }
+        dbSettings.getActivemqProperties().setProperty(key, value);
+        allSettings.addOrUpdateSettings(dbSettings);
     }
 
     @Override
@@ -209,9 +176,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = { SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
-    public void addConfigLocation(final String location, final boolean save) throws IOException {
-        configFileMonitor.changeConfigFileLocation(location, save);
+    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
+    public void addConfigLocation(final String location) throws IOException {
+        configFileMonitor.changeConfigFileLocation(location);
     }
 
     @Override
@@ -283,7 +250,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws  IOException {
+    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws IOException {
         File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
         setUpDirsForFile(file);
 
@@ -348,6 +315,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void evictBundleSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached bundle settings
+    }
+
+    @Override
+    public void clearSettingsInDb() {
+        allSettings.removeAll();
     }
 
     @Override

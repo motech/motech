@@ -13,44 +13,59 @@
     <thead>
     <tr>
         <th class="pattern">{{msg('task.manipulation')}}</th>
+        <th class="pattern">{{msg('task.manipulationFor')}}</th>
         <th class="formatt">{{msg('task.result')}}</th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td>toUpper</td>
+        <td>{{msg('task.string')}}</td>
         <td>eXaMpLe -> EXAMPLE</td>
     </tr>
     <tr>
         <td>toLower</td>
+        <td>{{msg('task.string')}}</td>
         <td>ExAmPlE -> example</td>
     </tr>
     <tr>
         <td>capitalize</td>
+        <td>{{msg('task.string')}}</td>
         <td>example string -> Example String</td>
     </tr>
     <tr>
         <td>join(.)</td>
+        <td>{{msg('task.string')}}</td>
         <td>example string -> example.string</td>
     </tr>
     <tr>
         <td>split(-,1)</td>
+        <td>{{msg('task.string')}}</td>
         <td>example-string -> string</td>
     </tr>
     <tr>
         <td>substring(4,8)</td>
+        <td>{{msg('task.string')}}</td>
         <td>example-string -> le-s</td>
     </tr>
     <tr>
+        <td>format(exampleId, exampleName)</td>
+        <td>{{msg('task.string')}}</td>
+        <td>exampleId [...] exampleName</td>
+    </tr>
+    <tr>
         <td>dateTime(h:mm a)</td>
+        <td>{{msg('task.date')}}</td>
         <td>12:08 PM</td>
     </tr>
     <tr>
         <td>plusDays(3)</td>
+        <td>{{msg('task.date')}}</td>
         <td>Wed, July 10, '96' -> Wed, July 13, '96'</td>
     </tr>
     </tbody>
 </table>
+
 <p class="header">{{msg('task.helpJoinManipulationTitle')}}</p>
 
 <span>{{msg('task.helpJoinManipulationContent')}}</span>
@@ -66,6 +81,12 @@
 <p class="header">{{msg('task.helpSubstringManipulationTitle')}}</p>
 
 <span>{{msg('task.helpSubstringManipulationContent')}}</span>
+<br>
+<br>
+
+<p class="header">{{msg('task.helpFormatManipulationTitle')}}</p>
+
+<span>{{msg('task.helpFormatManipulationContent')}}</span>
 <br>
 <br>
 

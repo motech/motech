@@ -13,7 +13,6 @@
 
     <mvc:annotation-driven />
 
-    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
     <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
     <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
         <property name="serverHost" value="localhost"/>

@@ -109,6 +109,10 @@
                     <artifactId>javax.servlet</artifactId>
                     <groupId>org.apache.felix</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>org.osgi.compendium</artifactId>
+                    <groupId>org.apache.felix</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -143,7 +147,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -298,6 +302,11 @@
                                     <directory>/var/lib/motech/motech-default/data/config</directory>
                                     <username>motech-default</username>
                                     <groupname>motech-default</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>content/motech-base/var/lib/motech/config</location>
+                                        </source>
+                                    </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/var/cache/motech/motech-default/temp</directory>
@@ -438,14 +447,12 @@
                                 <goals>
                                     <goal>integration-test</goal>
                                 </goals>
-                                <phase>package</phase>
                             </execution>
                             <execution>
                                 <id>verify-rpm</id>
                                 <goals>
                                     <goal>verify</goal>
                                 </goals>
-                                <phase>package</phase>
                             </execution>
                         </executions>
                     </plugin>

@@ -9,6 +9,10 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
+/**
+ * The <code>TriggerEvent</code> class is responsible for storing data about event
+ */
+
 public class TriggerEvent extends TaskEvent {
     private static final long serialVersionUID = 4235157487991610105L;
 
@@ -89,5 +93,18 @@ public class TriggerEvent extends TaskEvent {
     @Override
     public String toString() {
         return String.format("TriggerEvent{eventParameters=%s}", eventParameters);
+    }
+
+    public String getKeyType(String key) {
+        String type = "UNKNOWN";
+
+        for (EventParameter param : getEventParameters()) {
+            if (equalsIgnoreCase(param.getEventKey(), key)) {
+                type = param.getType().toString();
+                break;
+            }
+        }
+
+        return type;
     }
 }

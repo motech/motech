@@ -10,8 +10,7 @@ import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.event.domain.BuggyListener;
 import org.motechproject.event.listener.impl.EventListenerRegistry;
 import org.motechproject.event.listener.impl.ServerEventRelay;
-import org.motechproject.metrics.MetricsAgent;
-import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.event.osgi.MetricsServiceManager;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -50,9 +49,9 @@ public class ServerEventRelayTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        MetricsAgent metricsAgent = new MultipleMetricsAgentImpl();
-        registry = new EventListenerRegistry(metricsAgent);
-        eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsAgent, motechEventConfig);
+        MetricsServiceManager metricsManager = new MetricsServiceManager();
+        registry = new EventListenerRegistry(metricsManager);
+        eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsManager, motechEventConfig);
 
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();

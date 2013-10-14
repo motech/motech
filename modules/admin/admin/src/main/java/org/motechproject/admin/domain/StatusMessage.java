@@ -7,8 +7,15 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 import static org.motechproject.commons.date.util.DateUtil.setTimeZoneUTC;
 
+/**
+ * Represents a message displayed in the 'messages' section of the Admin UI. Persisted in CouchDB.
+ * Apart from the message and its {@link Level}, contains also information about the module that
+ * sent the message. The timeout field represents the {@link DateTime} of the message expiration.
+ */
 @TypeDiscriminator("doc.type === 'StatusMessage'")
 public class StatusMessage extends MotechBaseDataObject {
+
+    private static final long serialVersionUID = 2159913276267748034L;
 
     private static final int DEFAULT_TIMEOUT_MINS = 60;
 

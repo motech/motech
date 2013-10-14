@@ -102,6 +102,8 @@ public class AllChannelsIT extends SpringIntegrationTest {
 
         for (StringWriter writer : writers) {
             ChannelRequest channelRequest = (ChannelRequest) motechJsonReader.readFromString(writer.toString(), type, typeAdapters);
+            channelRequest.setModuleName(channelRequest.getDisplayName());
+            channelRequest.setModuleVersion("1.0");
             channelRequests.add(new Channel(channelRequest));
         }
 

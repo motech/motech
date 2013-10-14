@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.config.domain.LoginMode;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.Errors;
 import org.motechproject.server.web.form.StartupForm;
@@ -51,7 +51,7 @@ public class StartupFormValidatorTest {
     public void testUserExistence() {
         StartupForm startupForm = new StartupForm();
 
-        when(errors.getFieldValue(LOGIN_MODE)).thenReturn(AuthenticationMode.REPOSITORY);
+        when(errors.getFieldValue(LOGIN_MODE)).thenReturn(LoginMode.REPOSITORY.getName());
         when(userService.hasUser(LOGIN)).thenReturn(true);
         when(errors.getFieldValue(ADMIN_LOGIN)).thenReturn(LOGIN);
         when(errors.getFieldValue(ADMIN_PASSWORD)).thenReturn(PASSWORD);
@@ -71,7 +71,7 @@ public class StartupFormValidatorTest {
         UserDto user = new UserDto();
         user.setUserName(LOGIN2);
 
-        when(errors.getFieldValue(LOGIN_MODE)).thenReturn(AuthenticationMode.REPOSITORY);
+        when(errors.getFieldValue(LOGIN_MODE)).thenReturn(LoginMode.REPOSITORY.getName());
         when(userService.hasUser(LOGIN)).thenReturn(false);
         when(errors.getFieldValue(ADMIN_LOGIN)).thenReturn(LOGIN);
         when(errors.getFieldValue(ADMIN_PASSWORD)).thenReturn(PASSWORD);

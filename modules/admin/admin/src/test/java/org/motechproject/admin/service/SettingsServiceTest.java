@@ -8,7 +8,7 @@ import org.motechproject.admin.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -24,8 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.config.settings.MotechSettings.AMQ_REDELIVERY_DELAY_IN_MILLIS;
-import static org.motechproject.server.config.settings.MotechSettings.LANGUAGE;
+import static org.motechproject.server.config.domain.MotechSettings.AMQ_REDELIVERY_DELAY_IN_MILLIS;
+import static org.motechproject.server.config.domain.MotechSettings.LANGUAGE;
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;

@@ -12,16 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Implementation of the {@link UIFrameworkService} interface. Stores the registered {@link ModuleRegistrationData}
+ * in memory.
+ */
 @Service("uiFrameworkService")
 public class UIFrameworkServiceImpl implements UIFrameworkService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UIFrameworkServiceImpl.class);
 
-    private Map<String, ModuleRegistrationData> individuals = new HashMap<>();
-    private Map<String, ModuleRegistrationData> links = new HashMap<>();
-    private Map<String, ModuleRegistrationData> withoutUI = new HashMap<>();
+    private Map<String, ModuleRegistrationData> individuals = new LinkedHashMap<>();
+    private Map<String, ModuleRegistrationData> links = new LinkedHashMap<>();
+    private Map<String, ModuleRegistrationData> withoutUI = new LinkedHashMap<>();
 
     @Override
     public void registerModule(ModuleRegistrationData module) {

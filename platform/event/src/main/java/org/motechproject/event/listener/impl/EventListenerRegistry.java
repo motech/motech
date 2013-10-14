@@ -3,7 +3,7 @@ package org.motechproject.event.listener.impl;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventListenerTree;
-import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.event.osgi.MetricsServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class EventListenerRegistry implements EventListenerRegistryService {
     private EventListenerTree listenerTree = new EventListenerTree();
 
     @Autowired
-    private MetricsAgent metricsAgent;
+    private MetricsServiceManager metricsManager;
 
     public EventListenerRegistry() {
     }
 
-    public EventListenerRegistry(MetricsAgent metricsAgent) {
-        this.metricsAgent = metricsAgent;
+    public EventListenerRegistry(MetricsServiceManager metricsManager) {
+        this.metricsManager = metricsManager;
     }
 
     public void registerListener(EventListener listener, List<String> subjects) {
@@ -70,33 +70,53 @@ public class EventListenerRegistry implements EventListenerRegistryService {
             log.debug("registering handler for " + subject + " to " + this.toString());
         }
 
-        final long startTime = metricsAgent.startTimer();
-        listenerTree.addListener(listener, subject);
-        metricsAgent.stopTimer("motech.listener-registry.addListener", startTime);
+        if (metricsManager.isServiceAvailable()) {
+            final long startTime = metricsManager.getService().startTimer();
+            listenerTree.addListener(listener, subject);
+            metricsManager.getService().stopTimer("motech.listener-registry.addListener", startTime);
+        } else {
+            listenerTree.addListener(listener, subject);
+        }
     }
 
     public Set<EventListener> getListeners(String subject) {
-        final long startTime = metricsAgent.startTimer();
-        Set<EventListener> ret = listenerTree.getListeners(subject);
-        metricsAgent.stopTimer("motech.listener-registry.getListeners", startTime);
+        Set<EventListener> ret;
+
+        if (metricsManager.isServiceAvailable()) {
+            final long startTime = metricsManager.getService().startTimer();
+            ret = listenerTree.getListeners(subject);
+            metricsManager.getService().stopTimer("motech.listener-registry.getListeners", startTime);
+        } else {
+           ret = listenerTree.getListeners(subject);
+        }
 
         return ret;
     }
 
     public boolean hasListener(String subject) {
+        boolean ret;
 
-        final long startTime = metricsAgent.startTimer();
-        boolean ret = listenerTree.hasListener(subject);
-        metricsAgent.stopTimer("motech.listener-registry.hasListener", startTime);
+        if (metricsManager.isServiceAvailable()) {
+            final long startTime = metricsManager.getService().startTimer();
+            ret = listenerTree.hasListener(subject);
+            metricsManager.getService().stopTimer("motech.listener-registry.hasListener", startTime);
+        } else {
+            ret = listenerTree.hasListener(subject);
+        }
 
         return ret;
     }
 
     public int getListenerCount(String subject) {
+        int ret;
 
-        final long startTime = metricsAgent.startTimer();
-        int ret = listenerTree.getListenerCount(subject);
-        metricsAgent.stopTimer("motech.listener-registry.hasListener", startTime);
+        if (metricsManager.isServiceAvailable()) {
+            final long startTime = metricsManager.getService().startTimer();
+            ret = listenerTree.getListenerCount(subject);
+            metricsManager.getService().stopTimer("motech.listener-registry.hasListener", startTime);
+        } else {
+            ret = listenerTree.getListenerCount(subject);
+        }
 
         return ret;
     }

@@ -1,0 +1,19 @@
+{
+   "type": "SettingsRecord",
+   "cluster": false,
+   "platformInitialized": true,
+   "lastRun": "2013-10-03T15:31:31.973Z",
+   "activemqProperties": {
+       "maxConcurrentConsumers": "10",
+       "maximumRedeliveries": "0",
+       "concurrentConsumers": "1",
+       "jms.session.cache.size": "10",
+       "broker.url": "tcp://localhost:61616",
+       "jms.cache.producers": "false",
+       "queue.for.events": "QueueForEvents",
+       "queue.for.scheduler": "QueueForScheduler",
+       "redeliveryDelayInMillis": "2000"
+   },
+   "schedulerProperties": {
+   }
+}

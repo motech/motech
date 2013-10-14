@@ -6,15 +6,16 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.security.helper.AuthenticationMode;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
-import org.motechproject.server.ui.LocaleSettings;
+import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
+import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -36,7 +37,7 @@ import java.util.TreeMap;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
@@ -54,7 +55,6 @@ public class StartupControllerTest {
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
     private static final String LANGUAGES_KEY = "languages";
     private static final String PAGE_LANG_KEY = "pageLang";
-    private Errors errors;
     private static  final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
                                                                         "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
                                                                         "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100","failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
@@ -75,7 +75,7 @@ public class StartupControllerTest {
     private PlatformSettingsService platformSettingsService;
 
     @Mock
-    private LocaleSettings localeSettings;
+    private LocaleService localeService;
 
     @Mock
     private BindingResult bindingResult;
@@ -89,6 +89,9 @@ public class StartupControllerTest {
     @Mock
     private MotechUserService userService;
 
+    @Mock
+    private SuggestionHelper suggestionHelper;
+
     @InjectMocks
     private StartupController startupController = new StartupController();
 
@@ -97,8 +100,6 @@ public class StartupControllerTest {
         PowerMockito.mockStatic(StartupManager.class);
 
         initMocks(this);
-
-        when(StartupManager.getInstance()).thenReturn(startupManager);
     }
 
     @Test
@@ -112,21 +113,19 @@ public class StartupControllerTest {
         NavigableMap<String, String> map = new TreeMap<>();
 
         when(startupManager.canLaunchBundles()).thenReturn(false);
-        when(startupManager.findActiveMQInstance(anyString())).thenReturn(false);
-        when(startupManager.findSchedulerInstance(anyString())).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
 
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
         when(motechSettings.getSchedulerProperties()).thenReturn(properties);
 
-        when(localeSettings.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
-        when(localeSettings.getAvailableLanguages()).thenReturn(map);
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
+        when(localeService.getAvailableLanguages()).thenReturn(map);
 
         ModelAndView result = startupController.startup(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
-        verify(localeSettings).getAvailableLanguages();
-        verify(localeSettings).getUserLocale(httpServletRequest);
+        verify(localeService).getAvailableLanguages();
+        verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
         assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY);
@@ -154,9 +153,9 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormStart() {
         StartupForm startupForm = startupForm();
-        startupForm.setLoginMode(AuthenticationMode.REPOSITORY);
+        startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
@@ -171,9 +170,9 @@ public class StartupControllerTest {
     @Test
     public void testSubmitFormOpenId() {
         StartupForm startupForm = startupForm();
-        startupForm.setLoginMode(AuthenticationMode.OPEN_ID);
+        startupForm.setLoginMode(LoginMode.OPEN_ID.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(startupManager.getLoadedConfig()).thenReturn(motechSettings);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
@@ -190,6 +189,7 @@ public class StartupControllerTest {
         StartupForm startupForm = startupForm();
         StartupFormValidator validator =  new StartupFormValidator(userService);
 
+        Errors errors;
         for(String uri : uriAssertFalseList) {
             errors = new BeanPropertyBindingResult(startupForm,"validQueue");
             validator.validateQueueUrl(errors, uri, "queueUrl");
@@ -233,7 +233,7 @@ public class StartupControllerTest {
                     @Override
                     public boolean matches(Object argument) {
                         List<String> val = (List<String>) argument;
-                        return val.equals(Arrays.asList(StartupController.USER_ADMIN_ROLE, StartupController.BUNDLE_ADMIN_ROLE));
+                        return val.equals(Arrays.asList(StartupController.USER_ADMIN_ROLE, StartupController.BUNDLE_ADMIN_ROLE, StartupController.EMAIL_ADMIN_ROLE));
                     }
                 }), eq(Locale.ENGLISH));
     }

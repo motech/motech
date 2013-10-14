@@ -1,0 +1,33 @@
+{
+   "securityRules": [
+       {
+           "pattern": "/**/securityStatus/**",
+           "supportedSchemes": [
+               "BASIC"
+           ],
+           "protocol": "HTTP",
+           "permissionAccess": [
+               "test-permission"
+           ],
+           "rest": true,
+           "origin": "test",
+           "version": "1",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**",
+           "supportedSchemes": [
+               "BASIC"
+           ],
+           "protocol": "HTTP",
+           "rest": true,
+           "origin": "test",
+           "version": "1",
+           "methodsRequired": [
+               "ANY"
+           ]
+       }
+   ]
+}

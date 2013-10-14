@@ -1,6 +1,6 @@
 package org.motechproject.server.config.service;
 
-import org.motechproject.server.config.settings.MotechSettings;
+import org.motechproject.server.config.domain.MotechSettings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Platform Settings service used to handle platform settings.
+ */
 public interface PlatformSettingsService {
     String SETTINGS_CACHE_NAME = "MotechSettings";
     String ACTIVEMQ_CACHE_NAME = "ActiveMqSettings";
@@ -38,9 +41,8 @@ public interface PlatformSettingsService {
      * Add new location for config file.
      *
      * @param location file location
-     * @param save     true if you always want to load the config file from given location, otherwise false
      */
-    void addConfigLocation(final String location, final boolean save) throws IOException;
+    void addConfigLocation(final String location) throws IOException;
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 
@@ -64,4 +66,5 @@ public interface PlatformSettingsService {
 
     void evictBundleSettingsCache();
 
+    void clearSettingsInDb();
 }

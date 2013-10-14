@@ -1,7 +1,5 @@
 package org.motechproject.server.config.domain;
 
-import org.motechproject.server.config.settings.MotechSettings;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +9,9 @@ import java.security.DigestInputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
+/**
+ * Holder class for config settings
+ */
 public class ConfigFileSettings implements MotechSettings {
 
     private byte[] md5checkSum;
@@ -37,8 +38,8 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     @Override
-    public String getLoginMode() {
-        return motechSettings.getProperty(LOGINMODE);
+    public LoginMode getLoginMode() {
+        return LoginMode.valueOf(motechSettings.getProperty(LOGINMODE));
     }
 
     @Override
@@ -118,7 +119,9 @@ public class ConfigFileSettings implements MotechSettings {
     }
 
     public void saveMotechSetting(String key, String value) {
-        motechSettings.put(key, value);
+        if (value != null) {
+            motechSettings.put(key, value);
+        }
     }
 
     public void storeMotechSettings() throws IOException {

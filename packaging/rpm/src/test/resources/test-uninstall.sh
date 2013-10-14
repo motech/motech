@@ -21,13 +21,8 @@ while getopts "d:b:e:" opt; do
     e)
         ERROR_LOG=$OPTARG
     ;;
-    p)
-        PORT=$OPTARG
-    ;;
     esac
 done
-
-PORT=${PORT-8099}
 
 if [ -z $ERROR_LOG ]; then
     ERROR_LOG=$BUILD_DIR/err.log

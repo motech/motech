@@ -39,17 +39,18 @@
             var locale = toLocale(lang);
             $http({ method: "POST", url: "lang", params: locale })
                 .success(function () {
+                    $scope.doAJAXHttpRequest('GET', 'lang/locate', function (data) {
+                        $scope.i18n = data;
+                        $scope.loadI18n($scope.i18n);
+                    });
 
-                    $scope.loadI18n(lang);
                     $scope.userLang = $scope.getLanguage(locale);
                     moment.lang(lang);
-
                     motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
                             window.location.reload();
                         }
                     });
-
                 })
                 .error(function (response) {
                     handleResponse('server.header.error', 'server.error.setLangError', response);
@@ -72,25 +73,9 @@
             $cookieStore.put("showDashboardLogo", $scope.showDashboardLogo.showDashboard);
         };
 
-        $scope.loadI18n = function (lang) {
-            var key, handler, i;
-
-            if (!$scope.i18n || $scope.i18n.length <= 0) {
-                handle();
-            }
-
-            for (key in $scope.i18n) {
-                for (i = 0; i < $scope.i18n[key].length; i += 1) {
-                    handler = undefined;
-
-                    // last one
-                    if (i === $scope.i18n[key].length - 1) {
-                        handler = handle;
-                    }
-
-                    i18nService.init(lang, key, $scope.i18n[key][i], handler);
-                }
-            }
+        $scope.loadI18n = function (data) {
+            i18nService.init(data);
+            handle();
         };
 
         $scope.doAJAXHttpRequest = function (method, url, callback) {
@@ -177,8 +162,11 @@
 
         $scope.getCurrentModuleName = function () {
             var queryKey = parseUri(window.location.href).queryKey;
-
             return (queryKey && queryKey.moduleName) || '';
+        };
+
+        $scope.getCurrentAnchor = function () {
+            return parseUri(window.location.href).anchor;
         };
 
         $scope.active = function(url) {
@@ -211,7 +199,7 @@
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
             moment.lang($scope.user.lang);
-            $scope.loadI18n($scope.user.lang);
+            $scope.loadI18n($scope.i18n);
         });
 
         $scope.$on('lang.refresh', function () {
@@ -226,27 +214,30 @@
             ]).then(function () {
                 $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
                 moment.lang($scope.user.lang);
-                $scope.loadI18n($scope.user.lang);
+                $scope.loadI18n($scope.i18n);
             });
         });
     });
 
-    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q) {
+    serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu) {
         $scope.securityMode = false;
-        $scope.modulesWithSubMenu = [];
-        $scope.modulesWithoutSubMenu = [];
+
+        $scope.moduleMenu = {};
+
+        $scope.isActiveLink = function(link) {
+            return link.moduleName === $scope.getCurrentModuleName() &&
+                (!link.url || link.url === '#' + $scope.getCurrentAnchor());
+        };
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {
             $scope.showDashboardLogo.showDashboard = $cookieStore.get("showDashboardLogo");
         }
 
         $q.all([
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithoutSubMenu', function (data) {
-                $scope.modulesWithoutSubMenu = data;
-            }),
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithSubMenu', function (data) {
-                $scope.modulesWithSubMenu = data;
-            }),
+            $scope.moduleMenu = Menu.get(function(data) {
+                $scope.moduleMenu = data;
+            }, angularHandler('error', 'server.error.cantLoadMenu')),
+
             $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
@@ -260,17 +251,12 @@
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
             moment.lang($scope.user.lang);
-            $scope.loadI18n($scope.user.lang);
         });
 
         $scope.$on('module.list.refresh', function () {
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithoutSubMenu', function (data) {
-                $scope.modulesWithoutSubMenu = data;
-            });
-
-            $scope.doAJAXHttpRequest('POST', 'getModulesWithSubMenu', function (data) {
-                $scope.modulesWithSubMenu = data;
-            });
+            Menu.get(function(data) {
+                $scope.moduleMenu = data;
+            }, angularHandler('error', 'server.error.cantLoadMenu'));
         });
 
     });

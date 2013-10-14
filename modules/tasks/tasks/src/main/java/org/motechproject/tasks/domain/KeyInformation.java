@@ -144,8 +144,8 @@ public final class KeyInformation {
      * it is converted to an instance of {@link KeyInformation} by using the {@link #parse(String)}
      * method.
      * <p/>
-     * Fields are found by the following regular expression: <b>\{\{((.*?)(\(.*?\))?)\}\}</b>.
-     * The expression searches for strings that start with <i>{{</i> and end with <i>}}</i>.
+     * Fields are found by the following regular expression: <b>\{\{((.*?))(\}\})(?![^(]*\))</b>.
+     * The expression searches for strings that start with <i>{{</i> and end with <i>}}</i> and are not within <i>(</i> and <i>)</i>.
      * Because of manipulations which contain additional data in <i>(...)</i> needed to
      * execute manipulation on the field (e.g.: join needs to have the join character) and the text
      * in <i>(...)</i> can be another string representation of the dragged field, the expression
@@ -165,7 +165,7 @@ public final class KeyInformation {
      */
     public static List<KeyInformation> parseAll(String input) {
         List<KeyInformation> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\{\\{((.*?)(\\(.*?\\))?)\\}\\}");
+        Pattern pattern = Pattern.compile("\\{\\{((.*?))(\\}\\})(?![^(]*\\))");
         Matcher matcher = pattern.matcher(isEmpty(input) ? "" : input);
 
         while (matcher.find()) {

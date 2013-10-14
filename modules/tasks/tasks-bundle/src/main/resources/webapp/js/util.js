@@ -274,9 +274,17 @@
                     span.attr('data-field', data.object.field);
                 }
 
+                if (data.popover === 'true') {
+                    span.attr('data-popover', 'no');
+                }
+
                 switch (data.prefix) {
                 case this.TRIGGER_PREFIX:
-                    span.text(data.msg(data.param.displayName));
+                    if(data.msg) {
+                        span.text(data.msg(data.param.displayName));
+                    } else {
+                        span.text(data.param.displayName);
+                    }
                     break;
                 case this.DATA_SOURCE_PREFIX:
                     span.text("{0}.{1}#{2}.{3}".format(
@@ -318,7 +326,7 @@
                         val = this.createBooleanSpan(scope, val);
                     }
 
-                    val = scope.createDraggableElement(val);
+                    val = scope.createDraggableElement(val, 'convert');
                 } else {
                     while ((found = regex.exec(val)) !== null) {
                         ds = this.find({

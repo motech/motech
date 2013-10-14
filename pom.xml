@@ -20,7 +20,7 @@
 
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r021</external.dependency.release.tag>
+        <external.dependency.release.tag>r022</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -34,6 +34,7 @@
         <check.code.skip>${maven.test.skip}</check.code.skip>
         <pmd.skip>${check.code.skip}</pmd.skip>
         <checkstyle.skip>${check.code.skip}</checkstyle.skip>
+        <enforcer.skip>${check.code.skip}</enforcer.skip>
         <jslint.enable>true</jslint.enable>
         <unitTests.skip>${skipTests}</unitTests.skip>
 
@@ -533,7 +534,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>com.springsource.org.apache.commons.codec</artifactId>
-                <version>1.4.0</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -575,6 +576,11 @@
                         <artifactId>com.springsource.org.apache.commons.codec</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
+                <version>1.8-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -1018,14 +1024,12 @@
     <modules>
         <!-- Non-OSGI modules -->
         <module>platform/server</module>
-        <module>platform/web-security/web-security</module>
         <module>modules/rules/api</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
+        <module>modules/tasks/tasks-test-bundle</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>utils/http-agent/http-agent</module>
-        <module>utils/pmd-rules</module>
-        <module>utils/enforcer-rules</module>
 
         <!-- OSGI modules -->
         <module>platform/commons-api</module>
@@ -1037,7 +1041,7 @@
         <module>platform/server-api</module>
         <module>platform/server-bundle</module>
         <module>platform/server-config</module>
-        <module>platform/web-security/web-security-bundle</module>
+        <module>platform/web-security</module>
         <module>platform/email</module>
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
@@ -1202,7 +1206,7 @@
                     <dependency>
                         <groupId>org.motechproject</groupId>
                         <artifactId>pmd-rules</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>0.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -1260,12 +1264,14 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.3.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.motechproject</groupId>
                         <artifactId>enforcer-rules</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>0.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -1280,6 +1286,7 @@
                                 <NoPackageCyclesRule
                                         implementation="PackageCycles" />
                             </rules>
+                            <skip>${enforcer.skip}</skip>
                         </configuration>
                     </execution>
                 </executions>

@@ -36,6 +36,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -44,6 +49,10 @@
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini</groupId>
+            <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
         </dependency>
     </dependencies>
 
@@ -64,7 +73,6 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -94,7 +102,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                $, angular, alertHandler, motechAlert
+                                $, jQuery, jAlert, angular, alertHandler, motechAlert
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
@@ -129,6 +137,7 @@
                             org.apache.commons.io,
                             org.joda.time,
                             org.motechproject.commons.date.util,
+                            org.motechproject.event.metrics,
                             org.slf4j,
                             org.springframework.beans.factory.annotation,
                             *

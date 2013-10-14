@@ -49,15 +49,9 @@ source_file = platform/email/src/main/resources/webapp/messages/messages.propert
 source_lang = en_US
 type = PROPERTIES
 
-[MOTECH.web-security-bundle]
-file_filter = platform/web-security/web-security-bundle/src/main/resources/webapp/messages/messages_<lang>.properties
-source_file = platform/web-security/web-security-bundle/src/main/resources/webapp/messages/messages.properties
-source_lang = en_US
-type = PROPERTIES
-
 [MOTECH.web-security]
-file_filter = platform/web-security/web-security/src/main/resources/mail/bundles/messages_<lang>.properties
-source_file = platform/web-security/web-security/src/main/resources/mail/bundles/messages.properties
+file_filter = platform/web-security/src/main/resources/mail/bundles/messages_<lang>.properties
+source_file = platform/web-security/src/main/resources/mail/bundles/messages.properties
 source_lang = en_US
 type = PROPERTIES
 

@@ -5,9 +5,18 @@ import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Object used to registered a module withing the Motech UI system. Represents a module and is used
+ * for building the common user interface. All modules that wish to register within the UI system must
+ * either expose this class as a spring bean in their application context or manually register it through the
+ * {@link UIFrameworkService} OSGi service.
+ *
+ * @see UIFrameworkService
+ */
 public class ModuleRegistrationData {
 
     private String moduleName;
@@ -20,7 +29,7 @@ public class ModuleRegistrationData {
     private Bundle bundle;
 
     private List<String> angularModules = new ArrayList<>();
-    private Map<String, SubmenuInfo> subMenu = new HashMap<>();
+    private Map<String, SubmenuInfo> subMenu = new LinkedHashMap<>();
     private Map<String, String> i18n = new HashMap<>();
 
     public ModuleRegistrationData() {

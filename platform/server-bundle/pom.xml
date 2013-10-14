@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -44,12 +45,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -60,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -96,10 +91,6 @@
             <artifactId>org.springframework.security.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.eventadmin</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
@@ -109,6 +100,16 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test-mvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -145,7 +146,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, angular, jQuery, jAlert, motechAlert, jConfirm, window, jAlertStackTrace,
-                                toLocale, moment, parseUri, handleResponse
+                                toLocale, moment, parseUri, handleResponse, angularHandler
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
@@ -253,10 +254,13 @@
                             <outputDirectory>${project.build.directory}/jasmine/js/core</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib</directory>
+                                    <directory>
+                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib
+                                    </directory>
                                 </resource>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/js</directory>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/js
+                                    </directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -271,13 +275,16 @@
                             <outputDirectory>${project.build.directory}/jasmine/spec/lib</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib/angular</directory>
+                                    <directory>
+                                        ${modules.root.dir}/platform/server-bundle/src/main/resources/webapp/lib/angular
+                                    </directory>
                                     <includes>
                                         <inlude>angular.min.js</inlude>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${modules.root.dir}/platform/server-bundle/src/test/resources/lib</directory>
+                                    <directory>${modules.root.dir}/platform/server-bundle/src/test/resources/lib
+                                    </directory>
                                     <includes>
                                         <include>angular-mocks.js</include>
                                     </includes>
