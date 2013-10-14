@@ -147,7 +147,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
+            <artifactId>motech-platform-web-security</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
