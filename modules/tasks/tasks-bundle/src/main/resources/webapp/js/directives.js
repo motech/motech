@@ -189,7 +189,15 @@
                                 dragElement.attr("unselectable", "on");
 
                                 if ((dragElement.data('type') !== 'INTEGER' || dragElement.data('type') !== 'DOUBLE') && dragElement.data('popover') !== 'no') {
-                                    dragElement.attr("manipulationpopover", "");
+                                    if (dragElement.data('type') === 'UNICODE' || dragElement.data('type') === 'TEXTAREA') {
+                                        dragElement.attr("manipulationpopover", "STRING");
+                                    } else if (dragElement.data('type') === 'DATE') {
+                                        if (element.data('type') === 'DATE') {
+                                            dragElement.attr("manipulationpopover", "DATE2DATE");
+                                        } else {
+                                            dragElement.attr("manipulationpopover", "DATE");
+                                        }
+                                    }
                                 }
 
                                 dragElement.addClass('pointer');
@@ -381,24 +389,30 @@
         return {
             restrict: 'A',
             link: function (scope, el, attrs) {
-                var manipulationOptions = '', title = '', loader, elType = el.data('type'), msgScope = scope;
+                var manipulationOptions = '', title = '',  loader, manType = el.attr('manipulationpopover'), elType = el.data('type'), msgScope = scope;
 
                 while (msgScope.msg === undefined) {
                     msgScope = msgScope.$parent;
                 }
 
-                if (elType === 'UNICODE' || elType === 'TEXTAREA') {
+                if (manType === 'STRING') {
                     title = msgScope.msg('task.stringManipulation', '');
                     loader = $http.get('../tasks/partials/widgets/string-manipulation.html', {cache: $templateCache})
                         .success(function (html) {
                             manipulationOptions = html;
                         });
-                } else if (elType === 'DATE') {
+                } else if (manType === 'DATE') {
                     title = msgScope.msg('task.dateManipulation', '');
                     loader = $http.get('../tasks/partials/widgets/date-manipulation.html', {cache: $templateCache})
                         .success(function (html) {
                             manipulationOptions = html;
                         });
+                } else if (manType === 'DATE2DATE') {
+                  title = msgScope.msg('task.dateManipulation', '');
+                   loader = $http.get('../tasks/partials/widgets/date2date-manipulation.html', {cache: $templateCache})
+                       .success(function (html) {
+                           manipulationOptions = html;
+                       });
                 }
 
                 el.bind('click', function () {
@@ -444,6 +458,7 @@
                                 };
 
                                 scope.setSortable = function(elemen, index) {
+                                var isValid = true, reg;
                                     if (elemen.indexOf('join') !== -1) {
                                         elemen = elemen.replace(elemen, 'join');
                                     } else if (elemen.indexOf('split') !== -1) {
@@ -454,40 +469,52 @@
                                         elemen = elemen.replace(elemen, 'dateTime');
                                     } else if (elemen.indexOf('plusDays') !== -1) {
                                         elemen = elemen.replace(elemen, 'plusDays');
-                                    }
-                                    if(elemen.indexOf('format') !== -1) {
+                                    } else if(elemen.indexOf('format') !== -1) {
                                         elemen = elemen.replace(elemen, 'format');
+                                    } else if(elemen.indexOf('capitalize') !== -1) {
+                                        elemen = elemen.replace(elemen, 'capitalize');
+                                    } else if(elemen.indexOf('toUpper') !== -1) {
+                                        elemen = elemen.replace(elemen, 'toUpper');
+                                    } else if(elemen.indexOf('toLower') !== -1) {
+                                        elemen = elemen.replace(elemen, 'toLower');
+                                    } else {
+                                        isValid = false;
                                     }
-                                    elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
-                                        if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
-                                            $(this).append('<span class="icon-ok" style="float: right;"></span>');
-                                            $(this).parent().addClass('active');
-                                            if (manipulation.indexOf("join") !== -1 && elemen.indexOf('join') !== -1) {
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[join-update]').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")", manipulation.indexOf("join"))));
-                                            } else if (manipulation.indexOf("split") !== -1 && elemen.indexOf('split') !== -1){
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[split-update]').val(manipulation.slice(manipulation.indexOf("split") + 6, manipulation.indexOf(")", manipulation.indexOf("split"))));
-                                            } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("substring") + 10, manipulation.indexOf(")", manipulation.indexOf("substring"))));
-                                            } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("format") + 7, manipulation.indexOf(")", manipulation.indexOf("format"))));
-                                            } else if (manipulation.indexOf("dateTime") !== -1 && elemen.indexOf('dateTime') !== -1) {
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[date-update]').val(manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")", manipulation.indexOf("dateTime"))));
-                                            } else if (manipulation.indexOf("plusDays") !== -1 && elemen.indexOf('plusDays') !== -1) {
-                                                $(this.nextElementSibling).css({ 'display' : '' });
-                                                elem.find('input[days-update]').val(manipulation.slice(manipulation.indexOf("plusDays") + 9, manipulation.indexOf(")", manipulation.indexOf("plusDays"))));
-                                            } else {
-                                                elem.find('input').val("");
+                                    if (isValid) {
+                                        elem.find("span[setmanipulation="+elemen+"]").replaceWith(function () {
+                                            if (elemen !== undefined && elemen.indexOf(this.attributes.getNamedItem('setmanipulation').value) !== -1) {
+                                                $(this).append('<span class="icon-ok" style="float: right;"></span>');
+                                                $(this).parent().addClass('active');
+                                                if (manipulation.indexOf("join") !== -1 && elemen.indexOf('join') !== -1) {
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[join-update]').val(manipulation.slice(manipulation.indexOf("join") + 5, manipulation.indexOf(")", manipulation.indexOf("join"))));
+                                                } else if (manipulation.indexOf("split") !== -1 && elemen.indexOf('split') !== -1){
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[split-update]').val(manipulation.slice(manipulation.indexOf("split") + 6, manipulation.indexOf(")", manipulation.indexOf("split"))));
+                                                } else if (manipulation.indexOf("substring") !== -1 && elemen.indexOf('substring') !== -1){
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[substring-update]').val(manipulation.slice(manipulation.indexOf("substring") + 10, manipulation.indexOf(")", manipulation.indexOf("substring"))));
+                                                } else if (manipulation.indexOf("format") !== -1 && elemen.indexOf('format') !== -1){
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                } else if (manipulation.indexOf("dateTime") !== -1 && elemen.indexOf('dateTime') !== -1) {
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[date-update]').val(manipulation.slice(manipulation.indexOf("dateTime") + 9, manipulation.indexOf(")", manipulation.indexOf("dateTime"))));
+                                                } else if (manipulation.indexOf("plusDays") !== -1 && elemen.indexOf('plusDays') !== -1) {
+                                                    $(this.nextElementSibling).css({ 'display' : '' });
+                                                    elem.find('input[days-update]').val(manipulation.slice(manipulation.indexOf("plusDays") + 9, manipulation.indexOf(")", manipulation.indexOf("plusDays"))));
+                                                } else {
+                                                    elem.find('input').val("");
+                                                }
+                                                $(elem[0]).append($(this).parent().clone().end());
                                             }
-                                            $(elem[0]).append($(this).parent().clone().end());
-                                        }
-                                        return $(this)[0].outerHTML;
-                                    });
-
+                                            return $(this)[0].outerHTML;
+                                        });
+                                    } else {
+                                        // invalid manipulation
+                                        reg = new RegExp("\\(.*?\\)", "g");
+                                        elemen = elemen.replace(reg,"");
+                                        elem.filter("ul#sortable").append('<li unselectable="on" class="padding-botton6 invalid"><span unselectable="on" class="pointer ng-binding" setmanipulation="'+elemen+'">'+elemen+'<span class="icon-remove" style="float: right;"></span></span></li>');
+                                    }
                                 };
 
                             scope.sortableArrayTemp = manipulation.split(" ");
@@ -646,7 +673,7 @@
                         scope.sortableArray.splice(end, 0,
                         scope.sortableArray.splice(start, 1)[0]);
                         if(scope.sortableArray.length) {
-                            scope.manipulations = scope.sortableArray.join(" ");
+                            scope.manipulations = scope.sortableArray.join("");
                         }
                         manipulateElement.attr('manipulate', scope.manipulations);
                         scope.$apply();
@@ -664,14 +691,24 @@
                     manipulation = this.getAttribute("setManipulation");
                     manipulateAttributes = manipulateElement.attr("manipulate") || "";
 
+                    if ($(this).parent(".invalid").remove().length) {
+                        if (manipulateAttributes.indexOf(manipulation) !== -1) {
+                            reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
+                            manipulateAttributes = manipulateAttributes.replace(reg, '');
+                            manipulateElement.attr('manipulate', manipulateAttributes);
+                            scope.setSortableArray();
+                        }
+                        return;
+                    }
+
                     if (manipulateAttributes.indexOf(manipulation) !== -1) {
                         manipulationAttributesIndex = manipulateElement.attr("manipulate").indexOf(manipulation);
 
                         if (manipulation !== "join" && manipulation !== "split" && manipulation !== "substring" && manipulation !== "dateTime" && manipulation !== "plusDays") {
-                            reg = new RegExp(manipulation, "g");
+                            reg = new RegExp(manipulation + "(\\(.*\\))?( |$)", "g");
                             manipulateAttributes = manipulateAttributes.replace(reg, '');
                         } else {
-                            joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)";
+                            joinSeparator = manipulation + "\\(" + this.nextElementSibling.value + "\\)( |$)";
                             reg = new RegExp(joinSeparator, "g");
                             manipulateAttributes = manipulateAttributes.replace(reg, '');
                         }

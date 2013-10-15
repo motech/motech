@@ -56,6 +56,19 @@ public class TaskDataProvider extends MotechBaseDataObject {
         return false;
     }
 
+    public boolean containsProviderObjectField(String type, String fieldKey) {
+        TaskDataProviderObject providerObject = getProviderObject(type);
+
+        if (providerObject != null) {
+            for (FieldParameter fieldParameter : providerObject.getFields()) {
+                if (fieldParameter.getFieldKey().equals(fieldKey)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public TaskDataProviderObject getProviderObject(String type) {
         TaskDataProviderObject found = null;
 
@@ -121,6 +134,7 @@ public class TaskDataProvider extends MotechBaseDataObject {
             for (FieldParameter fieldParameter : object.getFields()) {
                 if (equalsIgnoreCase(fieldParameter.getFieldKey(), key)) {
                     type = fieldParameter.getType().toString();
+                    break;
                 }
             }
         }

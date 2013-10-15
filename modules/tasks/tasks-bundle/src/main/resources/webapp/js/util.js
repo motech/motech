@@ -252,8 +252,14 @@
                     }
                 }
 
-                if (this.isText(data.param.type) || this.isDate(data.param.type)) {
-                    span.attr('manipulationpopover', '');
+                if (this.isText(data.param.type)) {
+                    span.attr('manipulationpopover', 'STRING');
+                } else if (this.isDate(data.param.type)) {
+                    if (this.isDate(data.fieldType)) {
+                        span.attr('manipulationpopover', 'DATE2DATE');
+                    } else {
+                        span.attr('manipulationpopover', 'DATE');
+                    }
                 }
 
                 if (data.manipulations && data.manipulations.length > 0) {
@@ -326,7 +332,7 @@
                         val = this.createBooleanSpan(scope, val);
                     }
 
-                    val = scope.createDraggableElement(val, 'convert');
+                    val = scope.createDraggableElement(val, type, 'convert');
                 } else {
                     while ((found = regex.exec(val)) !== null) {
                         ds = this.find({
