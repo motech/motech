@@ -60,6 +60,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 
 
+/**
+ * Implementation of the {@link ModuleAdminService} interface for bundle management.
+ */
 @Service
 public class ModuleAdminServiceImpl implements ModuleAdminService {
 

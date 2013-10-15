@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Implementation of {@Link SettingsService} interface for settings managment
+ * Implementation of {@link SettingsService} interface for settings management.
  */
 @Service
 public class SettingsServiceImpl implements SettingsService {
