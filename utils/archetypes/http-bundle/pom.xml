@@ -7,7 +7,7 @@
     <artifactId>http-bundle</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Motech Minimal Bundle</name>
+    <name>Minimal HTTP Bundle</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,7 +72,8 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>http-bundle/resources</Resource-Path>
-                        <Context-Path>hello-world-http</Context-Path>
+                        <Context-Path>http-bundle</Context-Path>
+                        <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
                         <Export-Package>mini.http.bundle.service;version=${project.version},</Export-Package>
                         <Import-Package>
                             org.motechproject.osgi.web;version=${motech.version},

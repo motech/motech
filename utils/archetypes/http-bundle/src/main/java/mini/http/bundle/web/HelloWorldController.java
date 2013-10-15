@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import mini.http.bundle.service.HelloWorldService;
 
-@Controller
+@Controller()
 public class HelloWorldController {
 
     @Autowired
