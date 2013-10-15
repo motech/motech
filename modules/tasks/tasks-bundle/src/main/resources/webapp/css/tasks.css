@@ -62,6 +62,21 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebf1f6', endColorstr='#d5ebfb',GradientType=0 );
 }
 
+#sortable li.invalid {
+    cursor: move;
+    border: 1px solid #e3ae92;
+    border-radius: 6px;
+    color: #772b22;
+    background: #f6f0eb;
+    background: -moz-linear-gradient(top, #f2dbcb 0%, #f2dbcb 50%, #ebb189 51%, #d5ebfb 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f6f0eb), color-stop(50%,#f2dbcb), color-stop(51%,#ebb189), color-stop(100%,#fbe5d5));
+    background: -webkit-linear-gradient(top, #f2dbcb 0%,#f2dbcb 50%,#ebb189 51%,#fbe5d5 100%);
+    background: -o-linear-gradient(top, #f2dbcb 0%,#f2dbcb 50%,#ebb189 51%,#fbe5d5 100%);
+    background: -ms-linear-gradient(top, #f2dbcb 0%,#f2dbcb 50%,#ebb189 51%,#fbe5d5 100%);
+    background: linear-gradient(to bottom, #f2dbcb 0%,#f2dbcb 50%,#ebb189 51%,#fbe5d5 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2dbcb', endColorstr='#fbe5d5',GradientType=0 );
+}
+
 #sortable input {
     line-height: 14px;
     padding: 0 6px;
@@ -788,10 +803,9 @@ li.padding-botton6 {
 }
 
 .format-edit-img {
-    width: 20px;
-    cursor: pointer;
+    margin: 6px 5px 0px 0px;
     float: right;
-    padding: 2px 5px 2px 2px;
+    cursor: pointer;
 }
 
 .formatInput {

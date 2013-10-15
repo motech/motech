@@ -1,5 +1,6 @@
 package org.motechproject.tasks.domain;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonValue;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -16,12 +17,13 @@ public enum ManipulationType {
     FORMAT("format", ManipulationTarget.STRING),
     SUBSTRING("substring", ManipulationTarget.STRING),
     SPLIT("split", ManipulationTarget.STRING),
-    DATETIME("dateTime", ManipulationTarget.DATE),
+    DATETIME("dateTime", ManipulationTarget.DATE, ManipulationTarget.DATE),
     PLUSDAYS("plusDays", ManipulationTarget.DATE),
     UNKNOWN("unknown", ManipulationTarget.ALL);
 
     private final String value;
     private final ManipulationTarget target;
+    private ManipulationTarget[] forbiddenResultTypes;
 
     public Object parse(String value) {
         return value;
@@ -37,9 +39,16 @@ public enum ManipulationType {
         return target;
     }
 
+    private ManipulationType(String value, ManipulationTarget target, ManipulationTarget ... forbiddenResultTypes) {
+        this.value = value;
+        this.target = target;
+        this.forbiddenResultTypes = forbiddenResultTypes;
+    }
+
     private ManipulationType(String value, ManipulationTarget target) {
         this.value = value;
         this.target = target;
+        this.forbiddenResultTypes = new ManipulationTarget[0];
     }
 
     public static ManipulationType fromString(String string) {
@@ -59,5 +68,15 @@ public enum ManipulationType {
         }
 
         return result;
+    }
+
+    public boolean allowResultType(ManipulationTarget resultType) {
+        if (ArrayUtils.contains(forbiddenResultTypes, ManipulationTarget.ALL)) {
+            return false;
+        } else if (ArrayUtils.contains(forbiddenResultTypes, resultType)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

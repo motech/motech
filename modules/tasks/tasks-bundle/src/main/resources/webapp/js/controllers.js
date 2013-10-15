@@ -743,7 +743,7 @@
             return unknown;
         };
 
-        $scope.createDraggableElement = function (value, forFormat) {
+        $scope.createDraggableElement = function (value, fieldType, forFormat) {
             var regex, element, manipulateAttributes, joinSeparator, ds, values, splittedValue, newValue;
 
             if (value.length !== 0 && forFormat === 'convert') {
@@ -841,6 +841,7 @@
                         param: param,
                         prefix: prefix,
                         manipulations: manipulations,
+                        fieldType: fieldType,
                         popover: forFormat
                     });
                     break;
@@ -896,6 +897,7 @@
                         param: param,
                         prefix: prefix,
                         manipulations: manipulations,
+                        fieldType: fieldType,
                         providerName: dataSource.providerName,
                         object: {
                             id: id,

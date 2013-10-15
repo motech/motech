@@ -2,6 +2,8 @@ package org.motechproject.tasks.validation;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.motechproject.tasks.domain.ActionEvent;
+import org.motechproject.tasks.domain.ActionParameter;
 import org.motechproject.tasks.domain.Channel;
 import org.motechproject.tasks.domain.DataSource;
 import org.motechproject.tasks.domain.Filter;
@@ -19,16 +21,15 @@ import org.motechproject.tasks.domain.ManipulationType;
 import org.motechproject.tasks.domain.ManipulationTarget;
 import org.motechproject.tasks.domain.ParameterType;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.tasks.domain.KeyInformation.parse;
 
 /**
@@ -66,13 +67,7 @@ public final class TaskValidator extends GeneralValidator {
         TaskEventInformation triggerInformation = task.getTrigger();
         boolean exists = channel.containsTrigger(triggerInformation);
 
-        if (exists) {
-            TriggerEvent triggerEvent = channel.getTrigger(triggerInformation);
-
-            for (TaskActionInformation action : task.getActions()) {
-                errors.addAll(validateActionValues(action.getValues(), triggerEvent));
-            }
-        } else {
+        if (!exists) {
             errors.add(new TaskError(
                     "task.validation.error.triggerNotExist",
                     triggerInformation.getDisplayName(),
@@ -100,70 +95,56 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    public static Set<TaskError> validateProvider(Map<String, String> actionValues,
-                                                  DataSource dataSource,
-                                                  TaskDataProvider provider,
-                                                  SortedSet<FilterSet> filterSets) {
+    public static Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, TriggerEvent trigger, Map<String, TaskDataProvider> availableProviders) {
         Set<TaskError> errors = new HashSet<>();
-        errors.addAll(validateDataSource(dataSource, provider));
-        errors.addAll(validateActionValues(actionValues, provider));
+        Map<String, String> fields = new HashMap<>();
+        Map<String, ParameterType> fieldsTypes = new HashMap<>();
 
-        return errors;
-    }
-
-
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
-                                                       TriggerEvent triggerEvent) {
-        Set<TaskError> errors = new HashSet<>();
-
-        for (String input : actionValues.values()) {
-            for (KeyInformation key : KeyInformation.parseAll(input)) {
-                if (key.fromTrigger() && key.hasManipulations()) {
-                    for (String manipulation : key.getManipulations()) {
-                        errors.addAll(validateManipulations(ParameterType.fromString(triggerEvent.getKeyType(key.getKey())), key, manipulation));
-                    }
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    private static Set<TaskError> validateManipulations(ParameterType type, KeyInformation key, String manipulation) {
-        Set<TaskError> errors = new HashSet<>();
-        TaskError error;
-        String at = key.getKey() + "?" + manipulation;
-
-        if (type == ParameterType.UNICODE || type == ParameterType.TEXTAREA || type == ParameterType.UNKNOWN) {
-            error = validateStringManipulation(manipulation, at);
-
-            if (error != null) {
-                errors.add(error);
-            }
-        } else if (type == ParameterType.DATE) {
-            error = validateDateManipulation(manipulation, at);
-
-            if (error != null) {
-                errors.add(error);
-            }
-        } else {
+        if (!provider.containsProviderObject(dataSource.getType())) {
             errors.add(new TaskError(
-                    "task.validation.error.wrongAnotherManipulation",
-                    manipulation,
-                    at
+                    "task.validation.error.providerObjectNotExist",
+                    dataSource.getType(),
+                    provider.getName()
             ));
+        } else {
+            for (DataSource.Lookup lookup : dataSource.getLookup()) {
+                if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getName())) {
+                    errors.add(new TaskError(
+                            "task.validation.error.providerObjectLookupNotExist",
+                            lookup.getField(),
+                            dataSource.getType(),
+                            provider.getName()
+                    ));
+                }
+                fields.put(lookup.getField(), lookup.getValue());
+                fieldsTypes.put(lookup.getField(), ParameterType.UNKNOWN);
+            }
+
+            errors.addAll(validateFieldsParameter(fields, fieldsTypes, trigger, availableProviders));
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateActionValues(Map<String, String> actionValues,
-                                                       TaskDataProvider provider) {
+    public static Set<TaskError> validateActionFields(TaskActionInformation action, ActionEvent actionEvent, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
+        Map<String, String> fields = action.getValues();
+        Map<String, ParameterType> fieldsTypes = new HashMap<>();
+
+        for (ActionParameter param : actionEvent.getActionParameters()) {
+            fieldsTypes.put(param.getKey(), param.getType());
+        }
+
+        return validateFieldsParameter(fields, fieldsTypes, trigger, providers);
+    }
+
+    private static Set<TaskError> validateFieldsParameter(Map<String, String> fields, Map<String, ParameterType> fieldsTypes, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
-        for (String input : actionValues.values()) {
-            for (KeyInformation key : KeyInformation.parseAll(input)) {
-                errors.addAll(validateKeyInformation(provider, key));
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            if (entry.getValue() != null) {
+                for (KeyInformation key : KeyInformation.parseAll(entry.getValue())) {
+                    errors.addAll(validateKeyInformation(key, fieldsTypes.get(entry.getKey()), trigger, providers));
+                }
             }
         }
 
@@ -288,61 +269,57 @@ public final class TaskValidator extends GeneralValidator {
         return errors;
     }
 
-    private static Set<TaskError> validateDataSource(DataSource dataSource,
-                                                     TaskDataProvider provider) {
+    private static Set<TaskError> validateKeyInformation(KeyInformation key, ParameterType fieldType, TriggerEvent trigger, Map<String, TaskDataProvider> providers) {
         Set<TaskError> errors = new HashSet<>();
 
-        boolean contains = provider.containsProviderObject(dataSource.getType());
-        for (DataSource.Lookup lookup : dataSource.getLookup()) {
-            if (!contains) {
-                errors.add(new TaskError(
-                        "task.validation.error.providerObjectNotExist",
-                        dataSource.getType(),
-                        provider.getName()
-                ));
-            } else if (!provider.containsProviderObjectLookup(dataSource.getType(), dataSource.getName())) {
-                errors.add(new TaskError(
-                        "task.validation.error.providerObjectLookupNotExist",
-                        lookup.getField(),
-                        dataSource.getType(),
-                        provider.getName()
+        if (key.fromTrigger() && trigger.containsParameter(key.getKey()) && key.hasManipulations()) {
+            for (String manipulation : key.getManipulations()) {
+                errors.addAll(validateManipulations(manipulation,
+                        key,
+                        ParameterType.fromString(trigger.getKeyType(key.getKey())),
+                        fieldType
                 ));
             }
-
-            String lookupValue = lookup.getValue();
-
-            if (lookupValue != null) {
-                for (KeyInformation key : KeyInformation.parseAll(lookupValue)) {
-                    errors.addAll(validateKeyInformation(provider, key));
-                }
+        } else if (key.fromAdditionalData() && providers.containsKey(key.getDataProviderId()) && providers.get(key.getDataProviderId()).containsProviderObjectField(key.getObjectType(), key.getKey()) && key.hasManipulations()) {
+            for (String manipulations : key.getManipulations()) {
+                errors.addAll(validateManipulations(manipulations,
+                        key,
+                        ParameterType.fromString(providers.get(key.getDataProviderId()).getKeyType(key.getKey())),
+                        fieldType
+                ));
             }
         }
 
         return errors;
     }
 
-    private static Set<TaskError> validateKeyInformation(TaskDataProvider provider,
-                                                         KeyInformation key) {
+    private static Set<TaskError> validateManipulations(String manipulation, KeyInformation key, ParameterType parameterType, ParameterType fieldType) {
         Set<TaskError> errors = new HashSet<>();
+        TaskError error;
+        String at = key.getKey() + "?" + manipulation;
 
-        if (equalsIgnoreCase(key.getDataProviderId(), provider.getId())) {
-            if (!provider.containsProviderObject(key.getObjectType())) {
-                errors.add(new TaskError(
-                        "task.validation.error.providerObjectNotExist",
-                        key.getObjectType(),
-                        provider.getName()
-                ));
-            }
+        if (parameterType == ParameterType.UNICODE || parameterType == ParameterType.TEXTAREA || parameterType == ParameterType.UNKNOWN) {
+            error = validateStringManipulation(manipulation, at);
 
-            if (provider.containsProviderObject(key.getObjectType()) && key.hasManipulations()) {
-                for (String manipulation : key.getManipulations()) {
-                    errors.addAll(validateManipulations(ParameterType.fromString(provider.getKeyType(key.getKey())), key, manipulation));
-                }
+            if (error != null) {
+                errors.add(error);
             }
+        } else if (parameterType == ParameterType.DATE) {
+            error = validateDateManipulation(manipulation, fieldType, at);
+
+            if (error != null) {
+                errors.add(error);
+            }
+        } else {
+            errors.add(new TaskError(
+                    "task.validation.error.wrongAnotherManipulation",
+                    manipulation,
+                    at
+            ));
         }
 
         return errors;
-    };
+    }
 
     private static TaskError validateStringManipulation(String manipulation, String foundAt) {
         TaskError error = null;
@@ -367,7 +344,7 @@ public final class TaskValidator extends GeneralValidator {
         return error;
     }
 
-    private static TaskError validateDateManipulation(String manipulation, String foundAt) {
+    private static TaskError validateDateManipulation(String manipulation, ParameterType fieldType, String foundAt) {
         TaskError error = null;
         ManipulationType type = ManipulationType.fromString(manipulation.replaceAll("\\((.*?)\\)", ""));
 
@@ -385,6 +362,12 @@ public final class TaskValidator extends GeneralValidator {
                         foundAt
                 );
             }
+        } else if ( fieldType.equals(ParameterType.DATE) && !type.allowResultType(ManipulationTarget.DATE)) {
+            error = new TaskError(
+                    "task.validation.error.wrongDateManipulationTarget",
+                    manipulation,
+                    foundAt
+            );
         }
 
         return error;

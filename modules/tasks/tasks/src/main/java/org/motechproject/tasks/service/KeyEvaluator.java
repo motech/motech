@@ -133,6 +133,7 @@ public class KeyEvaluator {
         } else if (lowerCase.contains("plusdays")) {
             result = plusDaysManipulation(value, manipulation);
         } else {
+            lowerCase = lowerCase.replace("()", "");
             switch (lowerCase) {
                 case "toupper":
                     result = result.toUpperCase();

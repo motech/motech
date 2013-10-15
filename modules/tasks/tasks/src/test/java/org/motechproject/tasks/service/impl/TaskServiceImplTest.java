@@ -517,9 +517,14 @@ public class TaskServiceImplTest {
         lookupFields.add(new LookupFieldsParameter("property", asList("property")));
         TaskDataProvider provider = new TaskDataProvider("TestProvider", asList(new TaskDataProviderObject("test", "Test", lookupFields, null)));
         provider.setId("1234");
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
 
         when(allTasks.getAll()).thenReturn(asList(task));
         when(providerService.getProvider(provider.getName())).thenReturn(provider);
+
+        when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
+        when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
         taskService.validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
@@ -573,9 +578,13 @@ public class TaskServiceImplTest {
         list.add("id");
         hashMap.put("fields", list);
         provider.getObjects().get(0).setLookupFields(asList((Object) hashMap));
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("receive", "RECEIVE", "", null)));
 
         when(allTasks.getAll()).thenReturn(asList(task));
         when(providerService.getProvider(provider.getName())).thenReturn(provider);
+        when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
+        when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
 
         taskService.validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent(provider.getName()));
 
