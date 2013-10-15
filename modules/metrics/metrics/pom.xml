@@ -54,6 +54,12 @@
             <groupId>org.eclipse.gemini</groupId>
             <artifactId>org.eclipse.gemini.blueprint.core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
