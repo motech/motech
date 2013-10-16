@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * CouchDb repository for {@link StatusMessage}s.
+ */
 @Repository
 public class AllStatusMessages extends MotechBaseRepository<StatusMessage> {
 
@@ -18,6 +21,10 @@ public class AllStatusMessages extends MotechBaseRepository<StatusMessage> {
         super(StatusMessage.class, connector);
     }
 
+    /**
+     * Retrieves all active messages, meaning all messages with a timeout not in the past.
+     * @return all active messages.
+     */
     @View(name = "active", map = "function(doc) { if (doc.type === 'StatusMessage') { " +
             "var now = new Date();" +
             "if (doc.timeout && now < Date.parse(doc.timeout)) {" +
