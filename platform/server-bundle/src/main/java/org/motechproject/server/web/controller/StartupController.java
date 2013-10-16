@@ -46,6 +46,7 @@ public class StartupController {
     public static final String BUNDLE_ADMIN_ROLE = "Bundle Admin";
     public static final String USER_ADMIN_ROLE = "User Admin";
     public static final String EMAIL_ADMIN_ROLE = "Email Admin";
+    public static final String SECURITY_ADMIN_ROLE = "Security Admin";
 
     @Autowired
     private StartupManager startupManager;
@@ -151,7 +152,7 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE);
+        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE, SECURITY_ADMIN_ROLE);
 
         userService.register(login, password, email, null, roles, locale);
     }
