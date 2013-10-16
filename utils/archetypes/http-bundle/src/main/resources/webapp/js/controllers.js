@@ -4,20 +4,17 @@
     /* Controllers */
     var helloWorldModule = angular.module('hello-world');
 
-    helloWorldModule.controller('HelloWorldController', function($scope, $http) {
+    helloWorldModule.controller('HelloWorldController', function($scope, $http,
+            HelloWorld) {
 
-        $scope.sayHelloResult = 'nothing said yet';
-
-        $scope.sayHello = function() {
-            $scope.sayHelloResult = '';
-            $http.get('../http-bundle/sayHello').success(
-                    function(data, status, headers, config) {
-                        $scope.sayHelloResult = data;
-                    }).error(
-                    function(data, status, headers, config) {
-                        $scope.sayHelloResult = 'error saying hello';
-                    });
-        };
+        /* try putting the get() invokation inside another function definition */
+        $scope.sayHello = HelloWorld.get({}, function(response) {
+            $scope.sayHelloResult = response.message;
+            $scope.sayHelloCount++;
+        })
         
+        $scope.sayHelloResult = 'nothing said yet';
+        $scope.sayHelloCount = 0;
+
     });
 }());

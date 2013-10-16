@@ -24,6 +24,6 @@ public class HelloWorldController {
     @RequestMapping("/sayHello")
     @ResponseBody
     public String sayHello() {
-        return helloWorldService.sayHello();
+        return String.format("{\"message\":\"%s\"}", helloWorldService.sayHello());
     }
 }
