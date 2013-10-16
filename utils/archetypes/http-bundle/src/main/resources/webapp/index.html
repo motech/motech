@@ -1,0 +1,10 @@
+<div>
+    <ul id="content-tabs" class="nav nav-tabs">
+        <li ng-class="active('#/hello-world')"><a data-target="main-content" href="#/hello-world" data-toggle="tab">{{msg('httpBundle.btn.sayHello')}}</a></li>
+    </ul>
+    <div class="tab-content"  id="tab-content">
+        <div id="main-content" class="tab-pane active">
+            <div ng-view></div>
+        </div>
+    </div>
+</div>

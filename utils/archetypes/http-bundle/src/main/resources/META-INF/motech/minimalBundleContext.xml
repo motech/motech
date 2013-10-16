@@ -8,9 +8,22 @@
     <context:component-scan base-package="mini.http.bundle" />
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
-        <constructor-arg name="moduleName" value="http-bundle" />
+        <constructor-arg name="moduleName" value="httpBundle" />
         <constructor-arg name="url"
             value="../http-bundle/resources/index.html" />
+        <constructor-arg name="angularModules">
+            <list>
+                <value>hello-world</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../http-bundle/resources/messages/" />
+            </map>
+        </constructor-arg>
+        <constructor-arg name="header">
+            <bean class="org.motechproject.osgi.web.Header" />
+        </constructor-arg>
     </bean>
 
 </beans>

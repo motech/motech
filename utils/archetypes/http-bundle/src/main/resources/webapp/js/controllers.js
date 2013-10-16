@@ -1,14 +1,23 @@
 (function() {
-
     'use strict';
 
-    var helloWorld = angular.module('hello-world');
+    /* Controllers */
+    var smsModule = angular.module('hello-world');
 
-    phonecatControllers.controller('HelloWorldCtrl', function($scope, HelloWorld) {
-        $scope.helloResonse = "";
+    smsModule.controller('HelloWorldController', function($scope, $http) {
+
+        $scope.sayHelloResult = 'nothing said yet';
 
         $scope.sayHello = function() {
-            $scope.helloResonse = HelloWorld.query();
-        }
+            $scope.sayHelloResult = {};
+            $http.get('../http-bundle/sayHello').success(
+                    function(data, status, headers, config) {
+                        $scope.sayHelloResult = data;
+                    }).error(
+                    function(data, status, headers, config) {
+                        $scope.sayHelloResult = 'error saying hello';
+                    });
+        };
+        
     });
 }());
