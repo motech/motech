@@ -37,17 +37,36 @@
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-extender-fragment</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.motechproject.org.ektorp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -59,14 +78,26 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Resource-Path>osgi-web-util</Resource-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.osgi.web;version=${project.version},
                             org.motechproject.osgi.web.exception;version=${project.version},
-                            org.motechproject.osgi.web.ext;version=${project.version}
+                            org.motechproject.osgi.web.ext;version=${project.version},
+                            org.motechproject.osgi.web.domain;version=${project.version},
+                            org.motechproject.osgi.web.service;version=${project.version},
+                            org.motechproject.osgi.web.settings;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",
                             org.osgi.framework;version="0.0.0",
+                            org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.ektorp,
+                            org.ektorp.support,
+                            org.motechproject.commons.couchdb.model,
+                            org.motechproject.commons.couchdb.service,
+                            org.motechproject.server.api,
                             *
                         </Import-Package>
                         <Bundle-Activator>

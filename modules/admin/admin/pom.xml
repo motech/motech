@@ -58,6 +58,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -371,6 +376,9 @@
                             org.motechproject.security.service,
                             org.motechproject.email.service,
                             org.motechproject.email.model,
+                            org.motechproject.osgi.web,
+                            org.motechproject.osgi.web.service,
+                            org.motechproject.osgi.web.settings,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,

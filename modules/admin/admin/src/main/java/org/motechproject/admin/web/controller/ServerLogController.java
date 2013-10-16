@@ -2,9 +2,9 @@ package org.motechproject.admin.web.controller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.admin.domain.LogMapping;
-import org.motechproject.admin.service.ServerLogService;
-import org.motechproject.admin.settings.Loggers;
+import org.motechproject.osgi.web.domain.LogMapping;
+import org.motechproject.osgi.web.service.ServerLogService;
+import org.motechproject.osgi.web.settings.Loggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;

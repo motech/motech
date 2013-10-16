@@ -1,20 +1,29 @@
-package org.motechproject.server.impl;
+package org.motechproject.osgi.web.repository;
 
 import org.apache.log4j.LogManager;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.osgi.web.Log4JBundleLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class Log4JBundleLoaderTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath*:testWebUtilApplication.xml"})
+public class Log4JBundleLoaderIT {
+    @Autowired
+    Log4JBundleLoader loader;
 
     @Test
     public void loadBundleTest() throws Exception {
         String testConf = "/log4JBundleLoader.xml";
-        Log4JBundleLoader loader = new Log4JBundleLoader();
         loader.setLog4jConf(testConf);
 
         Bundle bundle = mock(Bundle.class);

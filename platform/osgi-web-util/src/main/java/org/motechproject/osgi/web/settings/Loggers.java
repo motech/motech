@@ -1,9 +1,13 @@
-package org.motechproject.admin.settings;
+package org.motechproject.osgi.web.settings;
 
-import org.motechproject.admin.domain.LogMapping;
+import org.motechproject.osgi.web.domain.LogMapping;
 
 import java.util.List;
 import java.util.Objects;
+
+/**
+ * Loggers class that holds information about all loggers in our system.
+ */
 
 public class Loggers {
     private LogMapping root;

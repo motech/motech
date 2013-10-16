@@ -1,10 +1,10 @@
-package org.motechproject.admin.repository;
+package org.motechproject.osgi.web.repository;
 
 import org.apache.log4j.Level;
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.admin.domain.LogMapping;
+import org.motechproject.osgi.web.domain.LogMapping;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:testApplicationAdmin.xml"})
+@ContextConfiguration(locations = {"classpath*:testWebUtilApplication.xml"})
 public class AllLogMappingsIT extends SpringIntegrationTest {
     private static final String ADMIN_LOG_NAME = "org.motechproject.admin";
     private static final String REPOSITORY_LOG_NAME = ADMIN_LOG_NAME + ".server.repository";
@@ -29,7 +29,7 @@ public class AllLogMappingsIT extends SpringIntegrationTest {
     private AllLogMappings allLogMappings;
 
     @Autowired
-    @Qualifier("adminDbConnector")
+    @Qualifier("loggerDbConnector")
     private CouchDbConnector couchDbConnector;
 
     @Test

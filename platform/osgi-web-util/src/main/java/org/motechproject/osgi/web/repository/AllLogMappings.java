@@ -1,20 +1,23 @@
-package org.motechproject.admin.repository;
+package org.motechproject.osgi.web.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
-import org.motechproject.admin.domain.LogMapping;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
+import org.motechproject.osgi.web.domain.LogMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+
+/**
+ * The <code>AllLogMappings</code> class is used for getting information about loggers from database.
+ */
 
 @Repository
 public class AllLogMappings extends MotechBaseRepository<LogMapping> {
 
     @Autowired
-    public AllLogMappings(@Qualifier("adminDbConnector") CouchDbConnector connector) {
+    public AllLogMappings(@Qualifier("loggerDbConnector") CouchDbConnector connector) {
         super(LogMapping.class, connector);
     }
 

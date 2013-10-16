@@ -1,9 +1,12 @@
-package org.motechproject.admin.service;
+package org.motechproject.osgi.web.service;
 
-import org.motechproject.admin.domain.LogMapping;
+import org.motechproject.osgi.web.domain.LogMapping;
 
 import java.util.List;
 
+/**
+ * Interface for accessing Logger's configuration from the database
+ */
 public interface ServerLogService {
     String ROOT_LOGGER_NAME = "root";
     String CURRENT_LOGGERS_NAME = "current";
@@ -18,4 +21,7 @@ public interface ServerLogService {
 
     void removeLogger(String name);
 
+    void reconfigure();
+
 }
+

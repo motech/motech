@@ -1,14 +1,12 @@
-package org.motechproject.admin.service.impl;
+package org.motechproject.osgi.web.service.impl;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.motechproject.admin.domain.LogMapping;
-import org.motechproject.admin.repository.AllLogMappings;
-import org.motechproject.admin.service.ServerLogService;
 import org.motechproject.commons.api.CastUtils;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.annotations.MotechListener;
+import org.motechproject.osgi.web.domain.LogMapping;
+import org.motechproject.osgi.web.repository.AllLogMappings;
+import org.motechproject.osgi.web.service.ServerLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,27 +16,22 @@ import static org.apache.log4j.Level.toLevel;
 import static org.apache.log4j.LogManager.getLogger;
 import static org.apache.log4j.LogManager.getRootLogger;
 
-@Service
+/**
+ * Implementation of the ServerLogService Interface.
+ */
+
+@Service("serverLogService")
 public final class ServerLogServiceImpl implements ServerLogService {
-    private static final String LOG_RECONFIGURATION_EVENT_KEY = "org.motechproject.admin.log.reconfiguration";
 
     private AllLogMappings allLogMappings;
 
     @Autowired
     public ServerLogServiceImpl(AllLogMappings allLogMappings) {
-        this(allLogMappings, true);
-    }
-
-    public ServerLogServiceImpl(AllLogMappings allLogMappings, boolean reconfigure) {
         this.allLogMappings = allLogMappings;
-
-        if (reconfigure) {
-            reconfigure(null);
-        }
     }
 
-    @MotechListener(subjects = LOG_RECONFIGURATION_EVENT_KEY)
-    public void reconfigure(MotechEvent event) {
+    @Override
+    public void reconfigure() {
         LogMapping mapping = getRootLogLevel();
 
         if (mapping == null) {

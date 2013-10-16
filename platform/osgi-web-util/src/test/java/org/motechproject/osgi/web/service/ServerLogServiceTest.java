@@ -1,4 +1,4 @@
-package org.motechproject.admin.service;
+package org.motechproject.osgi.web.service;
 
 import junit.framework.Assert;
 import org.apache.log4j.Level;
@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.admin.domain.LogMapping;
-import org.motechproject.admin.repository.AllLogMappings;
-import org.motechproject.admin.service.impl.ServerLogServiceImpl;
+import org.motechproject.osgi.web.domain.LogMapping;
+import org.motechproject.osgi.web.repository.AllLogMappings;
+import org.motechproject.osgi.web.service.impl.ServerLogServiceImpl;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -23,11 +23,11 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.admin.service.ServerLogService.ROOT_LOGGER_NAME;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LogManager.class)
 public class ServerLogServiceTest {
+    private final static String ROOT_LOGGER_NAME = "root";
 
     @Mock
     private AllLogMappings allLogMappings;
@@ -38,7 +38,7 @@ public class ServerLogServiceTest {
     public void setUp() throws Exception {
         initMocks(this);
 
-        logService = new ServerLogServiceImpl(allLogMappings, false);
+        logService = new ServerLogServiceImpl(allLogMappings);
     }
 
     @Test

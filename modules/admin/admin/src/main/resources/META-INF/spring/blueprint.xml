@@ -58,4 +58,5 @@
 
     <osgi:reference id="mailSender" interface="org.motechproject.email.service.EmailSenderService"/>
 
+    <osgi:reference id="serverLogServiceOsgi" interface="org.motechproject.osgi.web.service.ServerLogService"/>
 </beans>
