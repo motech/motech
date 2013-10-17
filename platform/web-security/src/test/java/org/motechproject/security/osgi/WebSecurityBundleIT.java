@@ -65,6 +65,8 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String GET = "GET";
     private static final String POST = "POST";
 
+    private FilterChainProxy originalSecurityProxy;
+
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
     public void testDynamicPermissionAccessSecurity() throws InterruptedException, IOException, BundleException {
@@ -126,7 +128,6 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException {
-
         MotechSecurityConfiguration config = SecurityTestConfigBuilder.buildConfig("noSecurity", null, null);
         updateSecurity(config);
 
@@ -153,7 +154,6 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
 
         HttpResponse response = httpClient.execute(request);
         assertEquals(200, response.getStatusLine().getStatusCode());
-        Thread.sleep(5000); //wait for security to update
     }
 
     private String getSecurityString(String fileName) throws IOException {
@@ -234,10 +234,11 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         allSecurityRules.add(config);
     }
 
-    private void deleteSecurityConfig() throws InterruptedException {
+    private void resetSecurityConfig() throws InterruptedException {
         WebApplicationContext theContext = getService(WebApplicationContext.class);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
+        getProxyManager().setFilterChainProxy(originalSecurityProxy);
     }
 
     private MotechProxyManager getProxyManager() throws InterruptedException {
@@ -266,11 +267,12 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         permissions.addPermission(permission);
         roles.createRole(role);
         users.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID, Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
+        originalSecurityProxy = getProxyManager().getFilterChainProxy();
     }
 
     @Override
     public void onTearDown() throws InterruptedException {
-        deleteSecurityConfig();
+        resetSecurityConfig();
     }
 
     @Override
