@@ -1,0 +1,31 @@
+<div class="row-fluid tab-frame">
+    <div class="inside">
+        <div class="clearfix margin-before">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit"
+                        value="{{msg('httpBundle.btn.sayHello')}}"
+                        ng-click="sayHello()" />
+                    {{msg('httpBundle.info.instructions')}}
+                </div>
+            </div>
+
+            <div class="clearfix">
+                <table
+                    class="table table-bordered table-condensed table-lightblue">
+                    <thead>
+                        <th>{{msg('httpBundle.info.serviceResponse')}}</th>
+                        <th>{{msg('httpBundle.info.serviceCount')}}</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span>{{sayHelloResult}}</span></td>
+                            <td><span>{{sayHelloCount}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

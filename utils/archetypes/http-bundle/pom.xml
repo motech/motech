@@ -13,6 +13,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
         <motech.version>0.22-SNAPSHOT</motech.version>
+
+        <!-- HTTP IT -->
+        <db.server>localhost</db.server>
+        <db.port>5984</db.port>
+        <db.prefix>${user.name}_</db.prefix>
     </properties>
 
     <dependencies>
@@ -40,6 +45,30 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
+        </dependency>
+
+        <!-- HTTP IT -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+            <version>1.6.0</version>
         </dependency>
     </dependencies>
 
@@ -71,7 +100,7 @@
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Resource-Path>http-bundle/resources</Resource-Path>
+                        <Resource-Path>http-bundle/resource</Resource-Path>
                         <Context-Path>http-bundle</Context-Path>
                         <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
                         <Export-Package>mini.http.bundle.service;version=${project.version},</Export-Package>
@@ -154,6 +183,95 @@
                                 <configuration>
                                     <outputFile>target/dependencies.list</outputFile>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- HTTP IT -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <!-- Pre Integration -->
+                            <execution>
+                                <id>Pre IT - Drop Web Security DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg
+                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Pre IT - Create Web Security DB</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="PUT" />
+                                            <arg
+                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>Pre IT - Create Admin User</id>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Login/Password: motech/motech -->
+                                        <exec executable="curl">
+                                            <arg value="-X" />
+                                            <arg value="POST" />
+                                            <arg
+                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                            <arg value="-d" />
+                                            <arg
+                                                value="@${modules.root.dir}/testdata/adminuser.json" />
+                                            <arg value="-H" />
+                                            <arg
+                                                value="Content-Type: application/json" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <!-- Post Integration -->
+                            <execution>
+                                <id>Post IT - Drop Web Security DB</id>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="curl">
+                                            <arg value="-s" />
+                                            <arg value="-S" />
+                                            <arg value="-X" />
+                                            <arg value="DELETE" />
+                                            <arg
+                                                value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

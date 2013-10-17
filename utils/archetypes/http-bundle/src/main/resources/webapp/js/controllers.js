@@ -4,16 +4,18 @@
     /* Controllers */
     var helloWorldModule = angular.module('hello-world');
 
-    helloWorldModule.controller('HelloWorldController', function($scope, $http,
-            HelloWorld) {
+    helloWorldModule.controller('HelloWorldController', function($scope, $http, HelloWorld) {
 
-        /* try putting the get() invokation inside another function definition */
-        $scope.sayHello = HelloWorld.get({}, function(response) {
-            $scope.sayHelloResult = response.message;
-            $scope.sayHelloCount++;
-        })
-        
-        $scope.sayHelloResult = 'nothing said yet';
+        $scope.sayHello = function() {
+            $scope.sayHelloResult = $scope.msg('httpBundle.info.noResponse');
+            HelloWorld.get({}, function(response) {
+                $scope.sayHelloResult = response.message;
+                motechAlert(response.message, 'httpBundle.info.serviceResponse');
+                $scope.sayHelloCount++;
+            });
+        };
+
+        $scope.sayHelloResult = $scope.msg('httpBundle.info.noResponse');
         $scope.sayHelloCount = 0;
 
     });
