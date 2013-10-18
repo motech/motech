@@ -4,14 +4,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.felix.http.api.ExtHttpService;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
-import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.UIFrameworkService;
-import org.motechproject.osgi.web.ext.UiHttpContext;
+import org.motechproject.osgi.web.exception.ServletRegistrationException;
+import org.motechproject.osgi.web.ext.ApplicationEnvironment;
+import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.security.filter.MotechDelegatingFilterProxy;
 import org.motechproject.security.service.MotechProxyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +119,9 @@ public class Activator implements BundleActivator {
 
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                UiHttpContext httpContext = new UiHttpContext(service.createDefaultHttpContext());
+
+                HttpContext httpContext = HttpContextFactory.getHttpContext(service.createDefaultHttpContext(),
+                        bundleContext.getBundle(), new ApplicationEnvironment());
 
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
                 service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
@@ -147,10 +151,11 @@ public class Activator implements BundleActivator {
     private void serviceAdded(UIFrameworkService service) {
         ModuleRegistrationData regData = new ModuleRegistrationData();
         regData.setModuleName(MODULE_NAME);
-        regData.setUrl("../websecurity/");
+        regData.setUrl("../websecurity/index.html");
         regData.addAngularModule("motech-web-security");
         regData.addSubMenu("#/users", "security.manageUsers");
         regData.addSubMenu("#/roles", "security.manageRoles");
+        regData.addSubMenu("#/permissions", "security.managePermissions");
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
 

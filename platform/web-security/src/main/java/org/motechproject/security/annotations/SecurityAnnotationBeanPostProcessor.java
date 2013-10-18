@@ -2,6 +2,7 @@ package org.motechproject.security.annotations;
 
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.service.MotechPermissionService;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -24,17 +25,28 @@ import static org.springframework.util.ReflectionUtils.MethodCallback;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+/**
+ * A {@link BeanPostProcessor} used by Motech to load permissions from modules. Given a module context, it looks for
+ * {@link PreAuthorize} and {@link PostAuthorize} annotations. These annotations are then parsed using an
+ * {@link ExpressionParser}. The permission names are deduced from {@code hasRole} and {@code hasAnyRole} in the
+ * annotation value. The names of permissions are then saved using the {@link MotechPermissionService}. The bundle
+ * name used to construct the permission is retrieved from the application context.
+ */
 public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     private MotechPermissionService permissionService;
 
     private ExpressionParser annotationParser = new DefaultMethodSecurityExpressionHandler().getExpressionParser();
 
+    private String currentBundleName = "";
+
     public SecurityAnnotationBeanPostProcessor(MotechPermissionService permissionService) {
         this.permissionService = permissionService;
     }
 
     public void processAnnotations(ApplicationContext applicationContext) {
+        currentBundleName = getBundleName(applicationContext);
+
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
             Object bean = applicationContext.getBean(beanName);
             postProcessAfterInitialization(bean, beanName);
@@ -100,8 +112,13 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
     private void addRoleAndPermissions(List<String> permissions) {
         if (!permissions.isEmpty() && permissionService != null) {
             for (String permission : permissions) {
-                permissionService.addPermission(new PermissionDto(permission));
+                permissionService.addPermission(new PermissionDto(permission, currentBundleName));
             }
         }
+    }
+
+    private String getBundleName(ApplicationContext applicationContext) {
+        BundleContext bundleContext = applicationContext.getBean(BundleContext.class);
+        return (bundleContext == null) ? "" : bundleContext.getBundle().getSymbolicName();
     }
 }

@@ -57,6 +57,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String USER_EMAIL = "test@email.com";
     private static final String USER_EXTERNAL_ID = "test-externalId";
     private static final Locale USER_LOCALE = Locale.ENGLISH;
+    private static final String BUNDLE_NAME = "bundle";
     private static final String BAD_USER_NAME = "doesNotExist";
     private static final String BAD_PASSWORD = "badpassword";
     private static final String SECURITY_BUNDLE_NAME = "motech-platform-web-security";
@@ -104,7 +105,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         MotechRoleService roles = getService(MotechRoleService.class);
         MotechUserService users = getService(MotechUserService.class);
 
-        PermissionDto permission = new PermissionDto(PERMISSION_NAME);
+        PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when
@@ -260,7 +261,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         MotechRoleService roles = getService(MotechRoleService.class);
         MotechUserService users = getService(MotechUserService.class);
 
-        PermissionDto permission = new PermissionDto(PERMISSION_NAME);
+        PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when

@@ -1,0 +1,75 @@
+<div class="box-header">{{msg('security.managePermissions')}}</div>
+
+<div class="box-content clearfix">
+    <div class="well3">
+        <div class="margin-before">
+            <div class="margin-before">
+                <!-- Search & filter -->
+                <div class="margin-before">
+                    <form ng-hide="addingPermission" id="searchFilterPermForm" novalidate class="form-inline">
+                        <label class="control-label">{{msg('security.search')}}</label>
+                        <input type="text" class="input-medium search-query" ng-model="roleNameFilter">
+                        <label class="control-label">{{msg('security.module')}}</label>
+                        <select ng-model="selectedItemRole">
+                            <option value="">-- {{msg('security.chooseModule')}} --</option>
+                            <option ng-repeat=" permissions in uniquePermissionList(permissionList)"
+                                    value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
+                        </select>
+                        <button ng-click="startAddingPermission()" type="button" class="btn btn-primary">
+                            <i class="icon-plus icon-white"></i> {{msg('security.addNewPermission')}}</button>
+                    </form>
+                </div>
+                <!-- Adding permission -->
+                <form ng-show="addingPermission" id="addPermissionForm" name="addPermissionForm">
+                    <div class="margin-before control-group form-inline">
+                        <label class="control-label">{{msg('security.enterPermissionName')}}</label>
+                        <input id="permissionName" type="text" ng-model="permission.permissionName" class="input-medium"
+                               perm-name-validate required>
+                        <span ng-hide="pwdNameValidate" class="form-hint">{{msg('security.permissionExist')}}</span>
+                        <span ng-hide="permissionHasValue('permissionName')" class="form-hint">
+                            {{msg('security.permissionNameRequired')}}
+                        </span>
+                    </div>
+                    <div class="margin-before control-group form-inline">
+                        <input ng-disabled="addPermissionForm.$invalid" class="btn btn-primary" type="submit"
+                               value="{{msg('security.save')}}" ng-click="savePermission()"/>
+                        <input class="btn" type="button" value="{{msg('security.cancel')}}"
+                               ng-click="cancelAddingPermission()"/>
+                    </div>
+                </form>
+
+                <!-- Alert -->
+                <div id="permissionSaveSuccessMsg" class="alert-success margin-before" style="visibility: hidden;">
+                    {{msg('security.create.permission.saved')}}
+                </div>
+
+                <!-- Permission list -->
+                <div class="margin-before">
+                    <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
+                        <thead class="table-header">
+                            <tr>
+                                <th>{{msg('security.id')}} </th>
+                                <th>{{msg('security.actions')}} </th>
+                                <th>{{msg('security.moduleName')}}</th>
+                                <th>{{msg('security.delete')}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
+                                <td>{{$index + 1}}</td>
+                                <td>{{permission.permissionName}}</td>
+                                <td>{{permission.bundleName}}</td>
+                                <td>
+                                    <a href="" ng-click="deletePermission(permission)" ui-if="!permission.bundleName">
+                                        <i class="icon-trash"></i>{{msg('security.delete')}}
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

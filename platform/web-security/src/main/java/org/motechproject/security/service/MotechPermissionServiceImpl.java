@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link MotechPermissionService} interface. Uses {@link AllMotechPermissions} in order
+ * to retrieve and persist permissions.
+ */
 @Service("motechPermissionService")
 public class MotechPermissionServiceImpl implements MotechPermissionService {
 
@@ -27,8 +31,15 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
 
     @Override
     public void addPermission(PermissionDto permission) {
-        if (allMotechPermissions.findByPermissionName(permission.getPermissionName()) == null) {
-            allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(), null));
+        allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(),
+                permission.getBundleName()));
+    }
+
+    @Override
+    public void deletePermission(String permissionName) {
+        MotechPermission permission = allMotechPermissions.findByPermissionName(permissionName);
+        if (permission != null) {
+            allMotechPermissions.delete(permission);
         }
     }
 

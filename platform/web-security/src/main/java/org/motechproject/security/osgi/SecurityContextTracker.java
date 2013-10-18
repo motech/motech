@@ -15,6 +15,15 @@ import org.springframework.context.ApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@link ServiceTracker} that tracks {@link ApplicationContext} objects published as OSGi services.
+ * When a new context becomes available it processed by this class using {@link SecurityAnnotationBeanPostProcessor}
+ * for processing permissions declared by the module in its annotations. It also uses a {@link SecurityRoleLoader} for
+ * loading {@code role.json} files contained in the module.
+ *
+ * @see SecurityAnnotationBeanPostProcessor
+ * @see SecurityRoleLoader
+ */
 public class SecurityContextTracker extends ServiceTracker {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityContextTracker.class);
