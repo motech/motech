@@ -256,7 +256,7 @@
                                                 value="http://${db.server}:${db.port}/${db.prefix}motech-web-security" />
                                             <arg value="-d" />
                                             <arg
-                                                value="@${basedir}/adminuser.json" />
+                                                value="@${basedir}/src/test/resources/adminuser.json" />
                                             <arg value="-H" />
                                             <arg
                                                 value="Content-Type: application/json" />
