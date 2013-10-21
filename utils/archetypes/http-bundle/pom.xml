@@ -114,7 +114,7 @@
                 <configuration>
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
-                        <Resource-Path>http-bundle/resource</Resource-Path>
+                        <Resource-Path>http-bundle/resources</Resource-Path>
                         <Context-Path>http-bundle</Context-Path>
                         <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
                         <Export-Package>mini.http.bundle.service;version=${project.version},</Export-Package>
