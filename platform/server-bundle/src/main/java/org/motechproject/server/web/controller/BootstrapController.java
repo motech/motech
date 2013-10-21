@@ -31,6 +31,8 @@ import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 @Controller
 public class BootstrapController {
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
+    private static final String DB_URL_SUGGESTION = "http://localhost:5984/";
+    private static final String TENANT_ID_DEFAULT = "DEFAULT";
 
     @Autowired
     private StartupManager startupManager;
@@ -51,6 +53,9 @@ public class BootstrapController {
 
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.addObject("bootstrapConfig", new BootstrapConfigForm());
+        bootstrapView.addObject("username", System.getProperty("user.name"));
+        bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+        bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         return bootstrapView;
     }
 
@@ -59,6 +64,9 @@ public class BootstrapController {
         if (result.hasErrors()) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
+            bootstrapView.addObject("username", System.getProperty("user.name"));
+            bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+            bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             return bootstrapView;
         }
 
@@ -68,6 +76,9 @@ public class BootstrapController {
         } catch (Exception e) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList("server.error.bootstrap.save"));
+            bootstrapView.addObject("username", System.getProperty("user.name"));
+            bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+            bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             return bootstrapView;
         }
 

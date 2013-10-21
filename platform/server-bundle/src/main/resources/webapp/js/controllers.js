@@ -217,6 +217,10 @@
                 $scope.loadI18n($scope.i18n);
             });
         });
+
+        $scope.setSuggestedValue = function(target, value) {
+            $("input[name='" + target + "']").val(value);
+        };
     });
 
     serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu) {

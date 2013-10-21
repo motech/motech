@@ -35,6 +35,12 @@
                         <label class="control-label">{{msg('server.bootstrap.dbUrl')}}</label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="dbUrl" value="${bootstrapConfig.dbUrl}"/>
+                            <div id="suggestion" class="suggestion">
+                                <div id="dbUrlSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}: </i> ${dbUrlSuggestion}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue('dbUrl', '${dbUrlSuggestion}')">{{msg('server.use')}}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="control-group">
@@ -55,6 +61,16 @@
                         <label class="control-label">{{msg('server.bootstrap.tenantId')}}</label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="tenantId" value="${bootstrapConfig.tenantId}"/>
+                            <div id="suggestion" class="suggestion">
+                                <div id="tenantIdUsernameSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}#1: </i> ${tenantIdDefault}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue('tenantId', '${tenantIdDefault}')">{{msg('server.use')}}</button>
+                                </div>
+                                <div id="tenantIdDefaultSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}#2: </i> ${username}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue('tenantId', '${username}')">{{msg('server.use')}}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

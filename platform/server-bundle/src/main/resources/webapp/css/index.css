@@ -333,6 +333,19 @@ select {
     background:#ffffff;
 }
 
+.suggestion {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin: 2px 5px 0 0;
+}
+
+.suggestion span {
+    font-size: 12px;
+    margin: 1px 5px 0 0;
+    vertical-align: bottom;
+}
+
 .box-header {
     border-radius: 4px;
     font-weight: bold;
