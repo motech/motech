@@ -64,27 +64,19 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
             <version>3.1.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.codec</artifactId>
             <version>1.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${motech.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-web-security-bundle</artifactId>
-            <version>${motech.version}</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-config</artifactId>
             <version>${motech.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -92,13 +84,6 @@
             <version>2.0.4</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>com.springsource.org.mortbay.jetty.server</artifactId>
-            <version>6.1.9</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <repositories>
@@ -134,21 +119,6 @@
                         <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
                         <Export-Package>mini.http.bundle.service;version=${project.version},</Export-Package>
                         <Import-Package>
-                            org.ektorp.impl,
-                            org.ektorp.spring,
-                            org.motechproject.server.config,
-                            org.motechproject.server.config.service,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.context.support,
-                            org.springframework.ui.velocity,
-                            org.springframework.web.context.support,
-                            org.springframework.web.servlet.config,
-                            org.springframework.security.config,
-                            org.springframework.web.servlet.mvc,
-                            org.springframework.web.servlet.support,
-                            org.springframework.web.servlet.view.velocity,
-                            org.eclipse.gemini.blueprint.config,
                             org.motechproject.osgi.web;version=${motech.version},
                             *
                         </Import-Package>
