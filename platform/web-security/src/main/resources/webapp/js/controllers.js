@@ -182,13 +182,15 @@
           };
     });
 
-    webSecurityModule.controller('RoleCtrl', function ($scope, Roles, Permissions, $http) {
+    webSecurityModule.controller('RolePermissionCtrl', function ($scope, Roles, Permissions, $http) {
            $scope.role = {
                 roleName : '',
                 originalRoleName:'',
                 permissionNames : [],
                 deletable : false
            };
+           $scope.permission = {};
+           $scope.addingPermission=false;
            $scope.addRoleView=true;
            $scope.pwdNameValidate=true;
            $scope.successfulMessage='';
@@ -196,7 +198,12 @@
            $scope.pageSize=15;
            $scope.addOrEdit="";
            $scope.roleList = Roles.query();
-           $scope.permissionList = Permissions.query();
+           $scope.permissionList = [];
+
+           Permissions.query(function(data) {
+               $scope.permissionList = data;
+           });
+
            $scope.numberOfPages=function(){
                return Math.ceil($scope.roleList.length/$scope.pageSize);
            };
@@ -284,6 +291,41 @@
                 };
                 $scope.addOrEdit = "add";
                 $scope.addRoleView=!$scope.addRoleView;
+            };
+
+            $scope.startAddingPermission = function() {
+                $scope.permission = {};
+                $scope.addingPermission = true;
+            };
+
+            $scope.cancelAddingPermission = function() {
+                $scope.addingPermission = false;
+            };
+
+            $scope.permissionHasValue = function(prop) {
+                return $scope.permission.hasOwnProperty(prop) && $scope.permission[prop] !== '' && $scope.permission[prop] !== undefined;
+            };
+
+            $scope.savePermission = function() {
+                $scope.addingPermission = false;
+                Permissions.save($scope.permission, function() {
+                   $("#permissionSaveSuccessMsg").css('visibility', 'visible').animate({opacity:0}, 5000);
+                   Permissions.query(function(data) {
+                        $scope.permissionList = data;
+                   });
+                }, angularHandler('server.error', 'security.create.permission.error'));
+            };
+
+            $scope.deletePermission = function(permission) {
+                motechConfirm('security.confirm.permissionDelete', "security.confirm", function (val) {
+                    if (val) {
+                        permission.$delete(function() {
+                           Permissions.query(function(data) {
+                                $scope.permissionList = data;
+                           });
+                        }, angularHandler('server.error', 'security.delete.permission.error'));
+                    }
+                });
             };
 
             $scope.cancelRole=function() {

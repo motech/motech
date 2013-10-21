@@ -4,8 +4,13 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+/**
+ * CouchDb implementation of {@link MotechPermission}.
+ */
 @TypeDiscriminator("doc.type == 'MotechPermission'")
 public class MotechPermissionCouchdbImpl extends MotechBaseDataObject implements MotechPermission {
+
+    private static final long serialVersionUID = 7012900466673353433L;
 
     public static final String DOC_TYPE = "MotechPermission";
 

@@ -7,7 +7,8 @@
         function ($routeProvider) {
             $routeProvider.
                 when('/users', {templateUrl: '../websecurity/partials/user.html', controller: 'UserCtrl'}).
-                when('/roles', {templateUrl: '../websecurity/partials/role.html', controller: 'RoleCtrl'}).
+                when('/roles', {templateUrl: '../websecurity/partials/role.html', controller: 'RolePermissionCtrl'}).
+                when('/permissions', {templateUrl: '../websecurity/partials/permission.html', controller: 'RolePermissionCtrl'}).
                 when('/profile/:username', {templateUrl: '../websecurity/partials/profile.html', controller: 'ProfileCtrl'}).
                 otherwise({redirectTo: '/welcome'});
     }]).filter('filterPagination', function() {
@@ -40,6 +41,27 @@
                });
             }
         };
+    }).directive('permNameValidate', function(){
+         return {
+             require: 'ngModel',
+             link: function(scope, elm, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                     var names = [], i;
+                     for (i=0; i<scope.permissionList.length; i+=1) {
+                         names.push(scope.permissionList[i].permissionName);
+                     }
+                     if(names.indexOf(viewValue)===-1) {
+                         scope.pwdNameValidate=true;
+                         ctrl.$setValidity('pwd', true);
+                         return viewValue;
+                     } else {
+                         scope.pwdNameValidate=false;
+                         ctrl.$setValidity('pwd', false);
+                         return viewValue;
+                     }
+                });
+             }
+         };
     }).directive('userNameValidate', function(){
            return {
                require: 'ngModel',

@@ -1,11 +1,11 @@
 package org.motechproject.security;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.domain.MotechPermissionCouchdbImpl;
+import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechRoleCouchdbImpl;
+import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.repository.AllMotechPermissions;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
@@ -22,8 +22,9 @@ import java.util.List;
  */
 
 public class Initialize {
-    private static final String WEB_SECURITY = "websecurity";
-    private static final String EMAIL = "email";
+
+    private static final String WEB_SECURITY = "org.motechproject.motech-platform-web-security";
+    private static final String EMAIL = "org.motechproject.motech-email-bundle";
     private static final String USER_ADMIN = "User Admin";
     private static final String ADMIN_USER = "Admin User";
 
@@ -35,7 +36,6 @@ public class Initialize {
 
     @Autowired
     private AllMotechUsers allMotechUsers;
-
 
     @Autowired
     public void initialize(@Qualifier("webSecurityDbConnector") CouchDbConnector db) throws IOException {

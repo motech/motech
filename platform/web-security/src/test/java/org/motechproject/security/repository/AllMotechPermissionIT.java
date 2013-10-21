@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,6 +43,18 @@ public class AllMotechPermissionIT {
         final int numberOfPermissionWithSameName = Lambda.select(allPermission, HasPropertyWithValue.hasProperty("permissionName", equalTo(permissionName))).size();
         assertEquals(1, numberOfPermissionWithSameName);
         assertEquals("test1", motechPermission.getBundleName());
+    }
+
+    @Test
+    public void shouldDeletePermissions() {
+        allMotechPermissions.add(new MotechPermissionCouchdbImpl("testPermission", "testBundle"));
+
+        MotechPermission permission = allMotechPermissions.findByPermissionName("testPermission");
+        assertNotNull(permission);
+
+        allMotechPermissions.delete(permission);
+
+        assertTrue(allMotechPermissions.getPermissions().isEmpty());
     }
 
     @Before

@@ -13,6 +13,8 @@ import java.util.List;
 @TypeDiscriminator("doc.type == 'MotechRole'")
 public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements MotechRole {
 
+    private static final long serialVersionUID = 7042718621913820992L;
+
     public static final String DOC_TYPE = "MotechRole";
 
     @JsonProperty
