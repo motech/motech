@@ -60,3 +60,9 @@ file_filter = utils/archetypes/maven-archetype-motech-module/src/main/resources/
 source_file = utils/archetypes/maven-archetype-motech-module/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
+
+[MOTECH.minimal-bundle-archetype]
+file_filter = utils/archetypes/http-bundle-archetype/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages_<lang>.properties
+source_file = utils/archetypes/http-bundle-archetype/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages.properties
+source_lang = en_US
+type = PROPERTIES

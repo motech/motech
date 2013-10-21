@@ -6,6 +6,9 @@
 
     helloWorldModule.controller('HelloWorldController', function($scope, $http, HelloWorld) {
 
+        $scope.sayHelloResult = '';
+        $scope.sayHelloCount = 0;
+        
         $scope.sayHello = function() {
             $scope.sayHelloResult = $scope.msg('httpBundle.info.noResponse');
             HelloWorld.get({}, function(response) {
@@ -14,9 +17,6 @@
                 $scope.sayHelloCount++;
             });
         };
-
-        $scope.sayHelloResult = $scope.msg('httpBundle.info.noResponse');
-        $scope.sayHelloCount = 0;
-
+        
     });
 }());
