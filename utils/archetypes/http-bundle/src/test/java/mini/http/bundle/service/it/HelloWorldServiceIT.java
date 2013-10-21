@@ -31,7 +31,7 @@ public class HelloWorldServiceIT extends BaseOsgiIT {
         assertNotNull(helloService.sayHello());
     }
 
-/*    public void testHelloWorldHttpPresent() throws IOException, InterruptedException {
+    public void testHelloWorldHttpPresent() throws IOException, InterruptedException {
 
         HttpGet httpGet = new HttpGet(String.format("http://localhost:%d/http-bundle/web-api/status",
                 TestContext.getJettyPort()));
@@ -39,10 +39,10 @@ public class HelloWorldServiceIT extends BaseOsgiIT {
         addAuthHeader(httpGet, "motech", "motech");
 
         HttpResponse response = httpClient.execute(httpGet);
-
+        
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-    }*/
+    }
 
     private void addAuthHeader(HttpGet httpGet, String userName, String password) {
         httpGet.addHeader("Authorization",
