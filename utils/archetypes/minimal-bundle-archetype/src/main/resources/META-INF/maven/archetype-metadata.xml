@@ -9,6 +9,9 @@
         <requiredProperty key="bundleName">
             <defaultValue>Motech Minimal Bundle</defaultValue>
         </requiredProperty>
+        <requiredProperty key="http">
+            <defaultValue>false</defaultValue>
+        </requiredProperty>
     </requiredProperties>
 
     <fileSets>
@@ -34,19 +37,6 @@
             <directory>src/test/resources</directory>
             <includes>
                 <include>**/*.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet encoding="UTF-8">
-            <directory>.settings</directory>
-            <includes>
-                <include>**/*.prefs</include>
-            </includes>
-        </fileSet>
-        <fileSet filtered="true" encoding="UTF-8">
-            <directory></directory>
-            <includes>
-                <include>.project</include>
-                <include>.classpath</include>
             </includes>
         </fileSet>
     </fileSets>
