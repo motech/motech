@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.motechproject</groupId>
@@ -126,6 +127,11 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.jetty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>com.springsource.javax.persistence</artifactId>
+            <version>1.99.0</version>
         </dependency>
     </dependencies>
 
@@ -436,7 +442,7 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>4.2.0</version>
+                <version>4.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -897,7 +903,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>3.2.0</version>
+                <version>4.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -1042,6 +1048,7 @@
         <module>platform/server-bundle</module>
         <module>platform/server-config</module>
         <module>platform/web-security</module>
+        <module>platform/hibernate-client</module>
         <module>platform/email</module>
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
@@ -1284,7 +1291,7 @@
                         <configuration>
                             <rules>
                                 <NoPackageCyclesRule
-                                        implementation="PackageCycles" />
+                                        implementation="PackageCycles"/>
                             </rules>
                             <skip>${enforcer.skip}</skip>
                         </configuration>
