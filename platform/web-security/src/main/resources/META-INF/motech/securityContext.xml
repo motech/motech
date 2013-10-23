@@ -25,6 +25,7 @@
     <security:http pattern="/**/list*" security="none"/>
     <security:http pattern="/**/locate*" security="none"/>
     <security:http pattern="/**/startup*" security="none"/>
+    <security:http pattern="/**/bootstrap/verify*" security="none"/>
     <security:http pattern="/**/bootstrap*" security="none"/>
 
     <bean id="channelDecisionManager" class="org.springframework.security.web.access.channel.ChannelDecisionManagerImpl">

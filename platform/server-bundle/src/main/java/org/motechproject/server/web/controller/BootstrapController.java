@@ -1,5 +1,10 @@
 package org.motechproject.server.web.controller;
 
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DbAccessException;
+import org.ektorp.http.HttpClient;
+import org.ektorp.http.StdHttpClient;
+import org.ektorp.impl.StdCouchDbInstance;
 import org.motechproject.config.domain.BootstrapConfig;
 import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.config.domain.DBConfig;
@@ -16,12 +21,15 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.validation.Valid;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
@@ -33,6 +41,10 @@ public class BootstrapController {
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
     private static final String DB_URL_SUGGESTION = "http://localhost:5984/";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
+    private static final String ERRORS = "errors";
+    private static final String WARNINGS = "warnings";
+    private static final String SUCCESS = "success";
+    private static final int CONNECTION_TIMEOUT = 4000; //ms
 
     @Autowired
     private StartupManager startupManager;
@@ -85,6 +97,42 @@ public class BootstrapController {
         startupManager.startup();
 
         return new ModelAndView(REDIRECT_HOME);
+    }
+
+    @RequestMapping(value = "/bootstrap/verify", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, ? extends Object> verifyConnection(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, BindingResult result) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()) {
+            response.put(WARNINGS, Arrays.asList("server.bootstrap.verify.error"));
+            response.put(ERRORS, getErrors(result));
+        } else {
+            try {
+                HttpClient httpClient = new StdHttpClient.Builder()
+                        .url(form.getDbUrl())
+                        .username(form.getDbUsername())
+                        .password(form.getDbPassword())
+                        .caching(false)
+                        .connectionTimeout(CONNECTION_TIMEOUT)
+                        .build();
+
+                CouchDbInstance couchDbInstance = new StdCouchDbInstance(httpClient);
+                couchDbInstance.getAllDatabases();
+
+                response.put(SUCCESS, true);
+
+            } catch (MalformedURLException e) {
+                response.put(ERRORS, Arrays.asList("server.error.invalid.dbUrl"));
+                response.put(ERRORS, Arrays.asList("server.bootstrap.verify.error"));
+                response.put(SUCCESS, false);
+            } catch (DbAccessException e) {
+                response.put(WARNINGS, Arrays.asList("server.bootstrap.verify.warning"));
+                response.put(SUCCESS, false);
+            }
+        }
+
+        return response;
     }
 
     private List<String> getErrors(final BindingResult result) {
