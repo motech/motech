@@ -52,10 +52,51 @@
             <artifactId>com.springsource.org.apache.tools.ant</artifactId>
             <version>1.8.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.transaction</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>com.springsource.org.hsqldb</artifactId>
+            <version>1.8.0.10</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Context-Path>hibernate/api</Context-Path>
+                        <Blueprint-Enabled>true</Blueprint-Enabled>
+                        <Import-Package>
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.aopalliance.aop,
+                            org.dom4j,
+                            javax.persistence,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -87,19 +128,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            *
-                        </Import-Package>
-                    </instructions>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
