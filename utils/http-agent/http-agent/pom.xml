@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

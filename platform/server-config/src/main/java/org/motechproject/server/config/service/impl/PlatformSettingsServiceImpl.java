@@ -1,20 +1,14 @@
 package org.motechproject.server.config.service.impl;
 
 import org.apache.commons.io.IOUtils;
-import org.joda.time.DateTime;
-import org.motechproject.commons.api.MotechException;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -26,7 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,7 +33,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
  *     future changes in org.motechproject.config.service.ConfigurationService. When Config management
  *     work completes, this class will be removed.
  */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
     private static final String USER_HOME = "user.home";
 
     @Autowired
@@ -50,122 +42,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private ConfigFileMonitor configFileMonitor;
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName"), @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName") })
-    public MotechSettings getPlatformSettings() {
-        return allSettings.getSettings();
-    }
-
-    @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
-    public void savePlatformSettings(Properties settings) {
-        createConfigDir();
-
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME),
-                MotechSettings.SETTINGS_FILE_NAME));
-
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            settings.store(fos, null);
-
-            SettingsRecord dbSettings = allSettings.getSettings();
-
-            dbSettings.setPlatformInitialized(true);
-            dbSettings.setLastRun(DateTime.now());
-            dbSettings.updateFromProperties(settings);
-
-            if (configFileMonitor.getCurrentSettings() != null) {
-                dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
-            }
-
-            allSettings.addOrUpdateSettings(dbSettings);
-        } catch (Exception e) {
-            throw new MotechException("Error while saving motech settings", e);
-        }
-    }
-
-    @Override
-    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
-    public void saveActiveMqSettings(Properties settings) {
-        createConfigDir();
-
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty(USER_HOME),
-                MotechSettings.ACTIVEMQ_FILE_NAME));
-
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            settings.store(fos, null);
-
-            SettingsRecord dbSettings = allSettings.getSettings();
-
-            dbSettings.setActivemqProperties(settings);
-            allSettings.addOrUpdateSettings(dbSettings);
-        } catch (Exception e) {
-            throw new MotechException("Error while saving activemq settings", e);
-        }
-    }
-
-    @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
-    public void setPlatformSetting(final String key, final String value) {
-        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
-
-        if (configFileSettings == null) {
-            // init settings
-            savePlatformSettings(new Properties());
-            configFileSettings = configFileMonitor.getCurrentSettings();
-        }
-
-        File configFile = new File(configFileSettings.getPath() + File.separator + MotechSettings.SETTINGS_FILE_NAME);
-
-        try {
-            // save property to config file
-            if (configFile.canWrite()) {
-                configFileSettings.saveMotechSetting(key, value);
-                configFileSettings.storeMotechSettings();
-            }
-            saveSettingToDb(key, value);
-        } catch (Exception e) {
-            LOGGER.error("Error: ", e);
-        }
-    }
-
-    @Override
-    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
-    public void setActiveMqSetting(String key, String value) {
-        SettingsRecord dbSettings = allSettings.getSettings();
-
-        dbSettings.getActivemqProperties().setProperty(key, value);
-        allSettings.addOrUpdateSettings(dbSettings);
-    }
-
-    @Override
-    public String getPlatformLanguage() {
-        MotechSettings motechSettings = getPlatformSettings();
-
-        return (motechSettings == null ? null : motechSettings.getLanguage());
-    }
-
-    @Override
-    public String getPlatformLanguage(final String defaultValue) {
-        String language = getPlatformLanguage();
-
-        return (language == null ? defaultValue : language);
-    }
-
-    @Override
-    public Locale getPlatformLocale() {
-        String language = getPlatformLanguage();
-
-        return (language == null ? Locale.getDefault() : new Locale(language));
-    }
-
-    @Override
     public Properties exportPlatformSettings() {
-        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
+        MotechSettings currentSettings = configFileMonitor.getCurrentSettings();
         SettingsRecord dbSettings = allSettings.getSettings();
 
         Properties export = new Properties();
 
-        if (configFileSettings != null) {
-            export.putAll(configFileSettings.getAll());
+        if (currentSettings != null) {
+            export.putAll(currentSettings.getPlatformSettings());
         }
 
         if (dbSettings != null) {
@@ -176,7 +60,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return export;
     }
 
-    @CacheEvict(value = {SETTINGS_CACHE_NAME, ACTIVEMQ_CACHE_NAME, BUNDLE_CACHE_NAME }, allEntries = true)
+
+    @CacheEvict(value = {BUNDLE_CACHE_NAME }, allEntries = true)
     public void addConfigLocation(final String location) throws IOException {
         configFileMonitor.changeConfigFileLocation(location);
     }
@@ -298,66 +183,19 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return result;
     }
 
-    @Override
-    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
-    public void evictMotechSettingsCache() {
-        // Left blank.
-        // Annotation will automatically remove all cached motech settings
-    }
-
-    @CacheEvict(value = ACTIVEMQ_CACHE_NAME, allEntries = true)
-    public void evictActiveMqSettingsCache() {
-        // Left blank.
-        // Annotation will automatically remove all cached activemq settings
-    }
-
     @CacheEvict(value = BUNDLE_CACHE_NAME, allEntries = true)
     public void evictBundleSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached bundle settings
     }
 
-    @Override
-    public void clearSettingsInDb() {
-        allSettings.removeAll();
-    }
-
-    @Override
-    @Cacheable(value = ACTIVEMQ_CACHE_NAME, key = "#root.methodName")
-    public Properties getActiveMqProperties() {
-        return getPlatformSettings().getActivemqProperties();
-    }
 
     private String getConfigDir(String bundleSymbolicName) {
         return String.format("%s/.motech/config/%s/", System.getProperty(USER_HOME), bundleSymbolicName);
-    }
-
-    private void createConfigDir() {
-        File dir = new File(String.format("%s/.motech/config", System.getProperty(USER_HOME)));
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
     }
 
     private static void setUpDirsForFile(File file) {
         file.getParentFile().mkdirs();
     }
 
-    private void saveSettingToDb(String key, String value) {
-        SettingsRecord dbSettings = allSettings.getSettings();
-
-        if (dbSettings != null) {
-            if (MotechSettings.LANGUAGE.equals(key)) {
-                dbSettings.setLanguage(value);
-            } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
-                dbSettings.setStatusMsgTimeout(value);
-            } else if (MotechSettings.SERVER_URL.equals(key)) {
-                dbSettings.setServerUrl(value);
-            } else if (MotechSettings.UPLOAD_SIZE.equals(key)) {
-                dbSettings.setUploadSize(value);
-            }
-
-            allSettings.addOrUpdateSettings(dbSettings);
-        }
-    }
 }

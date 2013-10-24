@@ -8,13 +8,13 @@ import org.mockito.Mock;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.impl.ModuleAdminServiceImpl;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
-import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -80,10 +80,10 @@ public class BundleAdminServiceTest {
     CommonsMultipartResolver commonsMultipartResolver;
 
     @Mock
-    ConfigFileSettings motechSettings;
+    MotechSettings motechSettings;
 
     @Mock
-    PlatformSettingsService platformSettingsService;
+    ConfigurationService configurationService;
 
     @Mock
     UIFrameworkService uiFrameworkService;
@@ -232,7 +232,7 @@ public class BundleAdminServiceTest {
 
     @Test
     public void testSetUploadSize() {
-        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
         when(motechSettings.getUploadSize()).thenReturn("1000000");
 
         MotechEvent motechEvent = new MotechEvent(ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT);

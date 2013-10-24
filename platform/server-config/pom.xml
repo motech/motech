@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -73,7 +73,6 @@
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.motechproject.commons.couchdb.service,
-                            org.motechproject.event.listener,
                             org.springframework.cache.config,
                             org.springframework.cache.concurrent,
                             org.springframework.cache.support,
@@ -119,9 +118,8 @@
                             <outputDirectory>${user.home}/.motech/config</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/config</directory>
+                                    <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>activemq.properties</include>
                                         <include>motech-settings.conf</include>
                                     </includes>
                                 </resource>
@@ -129,7 +127,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-config-locations-file</id>
+                        <id>copy-config</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -142,10 +140,35 @@
                                     <filtering>true</filtering>
                                     <includes>
                                         <include>config-locations.properties</include>
+                                        <include>motech-settings.conf</include>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>drop DB =&gt; motech-platform-startup</id>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg value="http://${db.server}:${db.port}/${db.prefix}motech-platform-startup" />
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

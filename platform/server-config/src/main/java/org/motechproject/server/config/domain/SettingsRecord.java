@@ -1,6 +1,5 @@
 package org.motechproject.server.config.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
@@ -8,8 +7,11 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
 
+import java.io.IOException;
+import java.security.DigestInputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -20,216 +22,205 @@ import java.util.Properties;
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "couchDbProperties" })
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
 
-    private String language;
-    private String statusMsgTimeout;
-    private String loginMode;
-    private String providerName;
-    private String providerUrl;
-    private String serverUrl;
-    private String uploadSize;
+    private static final long serialVersionUID = -3397067324750312884L;
 
-    private boolean cluster;
+    private Properties platformSettings = new Properties();
+
     private boolean platformInitialized;
     private DateTime lastRun;
     private byte[] configFileChecksum = new byte[0];
+    private String filePath;
 
-    private Properties activemqProperties = new Properties();
-    private Properties schedulerProperties;
-
+    @JsonIgnore
     @Override
     public String getLanguage() {
-        return language;
+        return platformSettings.getProperty(LANGUAGE);
     }
 
+    @JsonIgnore
     @Override
     public String getStatusMsgTimeout() {
-        return statusMsgTimeout;
+        return platformSettings.getProperty(STATUS_MSG_TIMEOUT);
     }
 
+    @JsonIgnore
     @Override
     public Properties getActivemqProperties() {
+        Properties activemqProperties = new Properties();
+        for (String key : platformSettings.stringPropertyNames()) {
+            if (key.startsWith("jms.")) {
+                activemqProperties.put(key, platformSettings.getProperty(key));
+            }
+        }
         return activemqProperties;
     }
 
     @JsonIgnore
     @Override
     public LoginMode getLoginMode() {
-        return LoginMode.valueOf(loginMode);
+        return LoginMode.valueOf(platformSettings.getProperty(LOGINMODE));
     }
 
+    @JsonIgnore
     public String getLoginModeValue() {
-        return loginMode;
+        return platformSettings.getProperty(LOGINMODE);
     }
 
+    @JsonIgnore
     @Override
     public String getProviderName() {
-        return providerName;
+        return platformSettings.getProperty(PROVIDER_NAME);
     }
 
+    @JsonIgnore
     @Override
     public String getProviderUrl() {
-        return providerUrl;
+        return platformSettings.getProperty(PROVIDER_URL);
     }
 
+    @JsonIgnore
     @Override
     public String getServerUrl() {
-        return new MotechURL(this.serverUrl).toString();
+        return new MotechURL(platformSettings.getProperty(SERVER_URL)).toString();
+    }
+
+    @JsonIgnore
+    @Override
+    public String getServerHost() {
+        return new MotechURL(platformSettings.getProperty(SERVER_URL)).getHost();
     }
 
     @Override
-    public String getServerHost() {
-        return new MotechURL(this.serverUrl).getHost();
-    }
-
-
     public boolean isPlatformInitialized() {
         return platformInitialized;
     }
 
+    @Override
     public void setPlatformInitialized(boolean platformInitialized) {
         this.platformInitialized = platformInitialized;
     }
 
-    public String getUploadSize() {
-        return uploadSize;
-    }
-
-    public Properties getSchedulerProperties() {
-        return schedulerProperties;
-    }
-
-    public void setActivemqProperties(final Properties activemqProperties) {
-        this.activemqProperties = activemqProperties;
-    }
-
-    public void setSchedulerProperties(final Properties schedulerProperties) {
-        this.schedulerProperties = schedulerProperties;
-    }
-
-    public void setLanguage(final String language) {
-        this.language = language;
-    }
-
     @JsonIgnore
-    private void setLoginMode(LoginMode loginMode) {
-        this.loginMode = loginMode == null ? StringUtils.EMPTY : loginMode.getName();
+    @Override
+    public String getUploadSize() {
+        return platformSettings.getProperty(UPLOAD_SIZE);
     }
 
+    @Override
+    public void setLanguage(final String language) {
+        platformSettings.setProperty(LANGUAGE, language);
+    }
+
+    @Override
     public void setLoginModeValue(String loginMode) {
-        this.loginMode = loginMode;
+        platformSettings.setProperty(LOGINMODE, loginMode);
     }
 
-
+    @Override
     public void setProviderName(String providerName) {
-        this.providerName = providerName;
+        platformSettings.setProperty(PROVIDER_NAME, providerName);
     }
 
+    @Override
     public void setProviderUrl(String providerUrl) {
-        this.providerUrl = providerUrl;
+        platformSettings.setProperty(PROVIDER_URL, providerUrl);
     }
 
+    @Override
     public void setStatusMsgTimeout(final String statusMsgTimeout) {
-        this.statusMsgTimeout = statusMsgTimeout;
+        platformSettings.setProperty(STATUS_MSG_TIMEOUT, statusMsgTimeout);
     }
 
-    public boolean isCluster() {
-        return cluster;
-    }
-
-    public void setCluster(final boolean cluster) {
-        this.cluster = cluster;
-    }
-
+    @Override
     public DateTime getLastRun() {
         return DateUtil.setTimeZoneUTC(lastRun);
     }
 
+    @Override
     public void setLastRun(final DateTime lastRun) {
         this.lastRun = lastRun;
     }
 
+    @Override
     public void setServerUrl(String serverUrl) {
-        this.serverUrl = serverUrl;
+        platformSettings.setProperty(SERVER_URL, serverUrl);
     }
 
+    @Override
     public void setUploadSize(String uploadSize) {
-        this.uploadSize = uploadSize;
+        platformSettings.setProperty(UPLOAD_SIZE, uploadSize);
     }
 
+    @Override
     public byte[] getConfigFileChecksum() {
         return Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
 
+    @Override
     public void setConfigFileChecksum(final byte[] configFileChecksum) {
         this.configFileChecksum = Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
 
-    public void updateSettings(final MotechSettings settings) {
-        setLanguage(settings.getLanguage());
-        setStatusMsgTimeout(settings.getStatusMsgTimeout());
-        setActivemqProperties(settings.getActivemqProperties());
-        setSchedulerProperties(settings.getSchedulerProperties());
-        setLoginMode(settings.getLoginMode());
-        setProviderName(settings.getProviderName());
-        setProviderUrl(settings.getProviderUrl());
-        setServerUrl(settings.getServerUrl());
-        setUploadSize(settings.getUploadSize());
-    }
-
+    @Override
     public void updateFromProperties(final Properties props) {
-        if (schedulerProperties == null || schedulerProperties.isEmpty()) {
-            schedulerProperties = emptySchedulerProperties();
-        }
-
-        handleMiscProperties(props);
+        platformSettings.putAll(props);
     }
 
-    private void handleMiscProperties(Properties props) {
-        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+    @Override
+    public void savePlatformSetting(String key, String value) {
+        platformSettings.put(key, value);
+    }
+
+    @Override
+    public synchronized void load(DigestInputStream dis) throws IOException {
+        platformSettings.load(dis);
+    }
+
+    @Override
+    public Properties getPlatformSettings() {
+        return platformSettings;
+    }
+
+    @Override
+    public void updateSettings(SettingsRecord settingsRecord) {
+        if (settingsRecord != null) {
+            this.configFileChecksum = settingsRecord.getConfigFileChecksum();
+            this.filePath = settingsRecord.getFilePath();
+            updateFromProperties(settingsRecord.getPlatformSettings());
+        }
+    }
+
+    @Override
+    public String getFilePath() {
+        return filePath;
+    }
+
+    @Override
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void mergeWithDefaults(Properties defaultConfig) {
+        for (Map.Entry<Object, Object> entry : defaultConfig.entrySet()) {
             String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
+            Object value = entry.getValue();
 
-            switch (key) {
-                case MotechSettings.LANGUAGE:
-                    setLanguage(value);
-                    break;
-                case MotechSettings.STATUS_MSG_TIMEOUT:
-                    setStatusMsgTimeout(value);
-                    break;
-                case MotechSettings.LOGINMODE:
-                    setLoginModeValue(value);
-                    break;
-                case MotechSettings.PROVIDER_NAME:
-                    setProviderName(value);
-                    break;
-                case MotechSettings.PROVIDER_URL:
-                    setProviderUrl(value);
-                    break;
-                case MotechSettings.SERVER_URL:
-                    setServerUrl(value);
-                    break;
-                case MotechSettings.UPLOAD_SIZE:
-                    setUploadSize(value);
-                    break;
-                default:
-                    handleMiscProperty(key, value);
-                    break;
+            if (platformSettings.getProperty(key) == null) {
+                platformSettings.put(key, value);
             }
         }
     }
 
-    private void handleMiscProperty(String key, String value) {
-        for (Properties p : Arrays.asList(getSchedulerProperties())) {
-            if (p.containsKey(key)) {
-                p.put(key, value);
-                break;
+    public void removeDefaults(Properties defaultConfig) {
+        for (Map.Entry<Object, Object> entry : defaultConfig.entrySet()) {
+            String key = (String) entry.getKey();
+            Object defaultValue = entry.getValue();
+
+            Object currentVal = platformSettings.getProperty(key);
+
+            if (currentVal != null && Objects.equals(currentVal, defaultValue)) {
+                platformSettings.remove(key);
             }
         }
-    }
-
-    private Properties emptySchedulerProperties() {
-        Properties props = new Properties();
-        props.put(SCHEDULER_URL, "");
-        return props;
     }
 }

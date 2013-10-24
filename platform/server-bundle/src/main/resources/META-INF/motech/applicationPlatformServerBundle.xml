@@ -14,7 +14,6 @@
     <context:component-scan base-package="org.motechproject.server.startup"/>
     <context:component-scan base-package="org.motechproject.server.web"/>
     <context:component-scan base-package="org.motechproject.server.ui"/>
-    <context:property-placeholder location="classpath:activemq.properties"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.motechproject.osgi.web.BundledJspView"/>

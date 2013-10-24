@@ -13,6 +13,8 @@
 
     <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 
+    <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
+
     <bean id="testHandler" class="org.motechproject.event.osgi.TestHandler"/>
 
 </beans>

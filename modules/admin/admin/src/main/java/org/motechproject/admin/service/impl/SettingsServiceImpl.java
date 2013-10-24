@@ -6,6 +6,7 @@ import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
@@ -34,6 +35,9 @@ public class SettingsServiceImpl implements SettingsService {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceImpl.class);
 
     @Autowired
+    private ConfigurationService configurationService;
+
+    @Autowired
     private PlatformSettingsService platformSettingsService;
 
     @Autowired
@@ -41,17 +45,13 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public List<Settings> getSettings() {
-        MotechSettings motechSettings = platformSettingsService.getPlatformSettings();
+        MotechSettings motechSettings = configurationService.getPlatformSettings();
         List<Settings> settingsList = new ArrayList<>();
 
         if (motechSettings != null) {
             Properties activemqProperties = motechSettings.getActivemqProperties();
             Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
             settingsList.add(activemqSettings);
-
-            Properties schedulerProperties = motechSettings.getSchedulerProperties();
-            Settings schedulerSettings = new Settings("scheduler", ParamParser.parseProperties(schedulerProperties));
-            settingsList.add(schedulerSettings);
 
             List<SettingsOption> miscOptions = new ArrayList<>();
 
@@ -97,14 +97,8 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void savePlatformSettings(Settings settings) {
-        if ("activemq".equals(settings.getSection())) {
-            for (SettingsOption option : settings.getSettings()) {
-                platformSettingsService.setActiveMqSetting(option.getKey(), String.valueOf(option.getValue()));
-            }
-        } else {
-            for (SettingsOption option : settings.getSettings()) {
-                platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
-            }
+        for (SettingsOption option : settings.getSettings()) {
+            configurationService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
         }
     }
 
@@ -118,7 +112,7 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void saveSettingsFile(MultipartFile configFile) {
         Properties settings = loadMultipartFileIntoProperties(configFile);
-        platformSettingsService.savePlatformSettings(settings);
+        configurationService.savePlatformSettings(settings);
     }
 
     private Properties loadMultipartFileIntoProperties(MultipartFile configFile) {
@@ -141,12 +135,6 @@ public class SettingsServiceImpl implements SettingsService {
         }
 
         return settings;
-    }
-
-    @Override
-    public void saveActiveMqFile(MultipartFile activemqFile) {
-        Properties activemqSettings = loadMultipartFileIntoProperties(activemqFile);
-        platformSettingsService.saveActiveMqSettings(activemqSettings);
     }
 
     @Override

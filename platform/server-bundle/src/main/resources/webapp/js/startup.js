@@ -22,9 +22,5 @@
         $("div[id='queue.urls'] div").each(function () {
             setUrl('queue.urls', this, 'queueUrl');
         });
-
-        $("div[id='scheduler.urls'] div").each(function () {
-            setUrl('scheduler.urls', this, 'schedulerUrl');
-        });
     });
 }());

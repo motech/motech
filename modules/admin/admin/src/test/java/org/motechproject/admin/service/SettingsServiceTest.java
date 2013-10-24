@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
@@ -39,6 +40,9 @@ public class SettingsServiceTest {
     private static final String OPTION_VALUE = "test";
 
     @Mock
+    ConfigurationService configurationService;
+
+    @Mock
     PlatformSettingsService platformSettingsService;
 
     @Mock
@@ -68,19 +72,17 @@ public class SettingsServiceTest {
     public void testGetSettings() {
         List<Settings> platformSettingsList = settingsService.getSettings();
 
-        assertEquals(3, platformSettingsList.size());
+        assertEquals(2, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
         assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, option.getKey());
         assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, option.getValue());
 
-        assertEquals(0, platformSettingsList.get(1).getSettings().size());
-
-        option = platformSettingsList.get(2).getSettings().get(0);
+        option = platformSettingsList.get(1).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());
         assertEquals(LANGUAGE_VALUE, option.getValue());
 
-        verify(platformSettingsService).getPlatformSettings();
+        verify(configurationService).getPlatformSettings();
     }
 
     @Test
@@ -114,7 +116,7 @@ public class SettingsServiceTest {
         Map<String, Properties> propertiesMap = new HashMap<>(1);
         propertiesMap.put(BUNDLE_FILENAME, bundleProperty);
 
-        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
         when(platformSettingsService.getAllProperties(BUNDLE_SYMBOLIC_NAME)).thenReturn(propertiesMap);
     }
 
@@ -126,11 +128,8 @@ public class SettingsServiceTest {
     private void initMotechSettings() {
         Properties activemq = new Properties();
         activemq.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE);
-        Properties quartz = new Properties();
-        Properties scheduler = new Properties();
 
         when(motechSettings.getActivemqProperties()).thenReturn(activemq);
-        when(motechSettings.getSchedulerProperties()).thenReturn(scheduler);
         when(motechSettings.getLanguage()).thenReturn(LANGUAGE_VALUE);
     }
 }
