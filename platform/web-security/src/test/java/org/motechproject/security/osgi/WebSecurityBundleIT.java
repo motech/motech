@@ -135,7 +135,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         MotechProxyManager manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 1);
+        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 3); //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
 
         MotechSecurityConfiguration updatedConfig = SecurityTestConfigBuilder.buildConfig("addPermissionAccess", "anyPermission", null);
         updateSecurity(updatedConfig);
@@ -143,7 +143,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 2);
+        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 4);
     }
 
     private void updateSecurity(String fileName) throws UnsupportedEncodingException, IOException, InterruptedException {
@@ -232,7 +232,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException {
         WebApplicationContext theContext = getService(WebApplicationContext.class);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
-        allSecurityRules.add(config);
+        allSecurityRules.addOrUpdate(config);
     }
 
     private void resetSecurityConfig() throws InterruptedException {

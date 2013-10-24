@@ -11,18 +11,6 @@ import org.motechproject.security.domain.MotechURLSecurityRule;
 public interface AllMotechSecurityRules {
 
     /**
-     * Add the security configuration to be saved
-     * @param config The security configuration to add
-     */
-    void add(MotechSecurityConfiguration config);
-
-    /**
-     * Update the existing security configuration
-     * @param config The security configuration to update
-     */
-    void update(MotechSecurityConfiguration config);
-
-    /**
      * Remove the existing security configuration
      * @param config The security configuration to remove
      */
@@ -35,4 +23,18 @@ public interface AllMotechSecurityRules {
      * @return A list of all URL pattern security rules from the database
      */
     List<MotechURLSecurityRule> getRules();
+
+    /**
+     * Returns the full security configuration
+     * @return The full MOTECH security configuration
+     */
+    MotechSecurityConfiguration getMotechSecurityConfiguration();
+
+    /**
+     * Add or update the MOTECH security configuration rules
+     * @param securityConfig The security config for MOTECH
+     */
+    void addOrUpdate(MotechSecurityConfiguration securityConfig);
+
+    List<MotechURLSecurityRule> getRulesByOrigin(String origin);
 }

@@ -2,8 +2,13 @@ package org.motechproject.security.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
+import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.builder.SecurityRuleBuilder;
+import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.repository.AllMotechSecurityRules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MotechProxyManager {
 
+    private static final String DEFAULT_SECURITY_CONFIG_FILE = "defaultSecurityConfig.json";
+
     @Autowired
     private FilterChainProxy proxy;
 
@@ -34,6 +41,8 @@ public class MotechProxyManager {
 
     @Autowired
     private AllMotechSecurityRules securityRulesDAO;
+
+    private MotechJsonReader motechJsonReader = new MotechJsonReader();
 
     /**
      * Method to invoke to dynamically re-define the Spring security.
@@ -53,9 +62,12 @@ public class MotechProxyManager {
     public void initializeProxyChain() {
         List<MotechURLSecurityRule> securityRules = securityRulesDAO.getRules();
 
-        //Security rules have not been configured in the DB, use the default spring security chain from the security context
-        if (securityRules.size() == 0) {
-            return;
+        MotechSecurityConfiguration securityConfig = securityRulesDAO.getMotechSecurityConfiguration();
+        //Security rules have not been configured in the DB, load from default security config
+        if (securityConfig == null) {
+            securityConfig = loadSecurityConfigFile();
+            securityRulesDAO.addOrUpdate(securityConfig);
+            securityRules = securityConfig.getSecurityRules();
         }
 
         updateSecurityChain(securityRules);
@@ -79,5 +91,13 @@ public class MotechProxyManager {
         }
 
         proxy = new FilterChainProxy(newFilterChains);
+    }
+
+    private MotechSecurityConfiguration loadSecurityConfigFile() {
+        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_SECURITY_CONFIG_FILE)) {
+            return (MotechSecurityConfiguration) motechJsonReader.readFromStream(in, MotechSecurityConfiguration.class);
+        } catch (IOException e) {
+            throw new MotechException("Error while loading json file", e);
+        }
     }
 }

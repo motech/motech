@@ -1,8 +1,12 @@
 package org.motechproject.security.repository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
@@ -32,7 +36,7 @@ public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<Mote
     }
 
     @Override
-    public void add(MotechSecurityConfiguration config) {
+    public void addOrUpdate(MotechSecurityConfiguration config) {
         List<MotechSecurityConfiguration> oldConfigList = this.getAll();
         if (oldConfigList.size() == 0) {
             super.add(config);
@@ -49,5 +53,36 @@ public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<Mote
         List<MotechSecurityConfiguration> config = this.getAll();
 
         return config.size() == 0 ? Collections.<MotechURLSecurityRule>emptyList() : config.get(0).getSecurityRules();
+    }
+
+    @Override
+    public MotechSecurityConfiguration getMotechSecurityConfiguration() {
+        return singleResult(this.getAll());
+    }
+
+    @Override
+    @View(name = "by_origin", map = "function(doc) { if(doc.type == 'MotechSecurityConfiguration') {for each (rule in doc.securityRules) { emit(rule.origin, rule.pattern)}}}")
+    public List<MotechURLSecurityRule> getRulesByOrigin(String origin) {
+        if (origin == null) {
+            return null;
+        }
+
+        ViewQuery viewQuery = createQuery("by_origin").key(origin).includeDocs(true);
+
+        MotechSecurityConfiguration config = singleResult(db.queryView(viewQuery, MotechSecurityConfiguration.class));
+
+        if (config == null) {
+            return Collections.<MotechURLSecurityRule>emptyList();
+        }
+
+        List<MotechURLSecurityRule> rules = new ArrayList<>();
+
+        for (MotechURLSecurityRule rule : config.getSecurityRules()) {
+            if (StringUtils.equals(rule.getOrigin(), origin)) {
+                rules.add(rule);
+            }
+        }
+
+        return rules;
     }
 }

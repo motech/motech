@@ -23,7 +23,7 @@ public class MotechURLSecurityServiceImpl implements MotechURLSecurityService {
 
     @Override
     public void updateSecurityConfiguration(MotechSecurityConfiguration configuration) {
-        allSecurityRules.add(configuration);
+        allSecurityRules.addOrUpdate(configuration);
         proxyManager.rebuildProxyChain();
     }
 }
