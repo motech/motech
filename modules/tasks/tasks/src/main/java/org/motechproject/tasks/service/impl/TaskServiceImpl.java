@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.tasks.domain.DataSource.Lookup;
 import static org.motechproject.tasks.events.constants.EventDataKeys.CHANNEL_MODULE_NAME;
@@ -93,33 +94,9 @@ public class TaskServiceImpl implements TaskService {
             throw new ValidationException(TASK, errors);
         }
 
-        TaskEventInformation trigger = task.getTrigger();
-
-        if (trigger != null) {
-            errors.addAll(validateTriggerTask(
-                    task, channelService.getChannel(trigger.getModuleName())
-            ));
-        }
-
-        for (TaskActionInformation action : task.getActions()) {
-            errors.addAll(validateActionTask(
-                    action, channelService.getChannel(action.getModuleName())
-            ));
-        }
-
-        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
-            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
-
-            if (null != provider) {
-                for (TaskActionInformation action : task.getActions()) {
-                    errors.addAll(TaskValidator.validateProvider(
-                            action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
-                    ));
-                }
-            } else {
-                errors.add(new TaskError("task.validation.error.providerNotExist", dataSource.getProviderName()));
-            }
-        }
+        errors.addAll(validateTrigger(task));
+        errors.addAll(validateDataSources(task));
+        errors.addAll(validateActions(task));
 
         if (!isEmpty(errors)) {
             if (task.isEnabled()) {
@@ -236,14 +213,12 @@ public class TaskServiceImpl implements TaskService {
             Set<TaskError> errors;
 
             if (task.getTrigger() != null) {
-                errors = validateTriggerTask(task, channel);
+                errors = validateTrigger(task, channel);
                 handleValidationErrors(task, errors, TASK_TRIGGER_VALIDATION_ERRORS);
             }
 
-            for (TaskActionInformation action : task.getActions()) {
-                errors = validateActionTask(action, channel);
-                handleValidationErrors(task, errors, TASK_ACTION_VALIDATION_ERRORS);
-            }
+            errors = validateActions(task, channel);
+            handleValidationErrors(task, errors, TASK_ACTION_VALIDATION_ERRORS);
         }
     }
 
@@ -254,14 +229,21 @@ public class TaskServiceImpl implements TaskService {
         TaskDataProvider provider = providerService.getProvider(providerName);
 
         for (Task task : getAllTasks()) {
-            for (DataSource dataSource : task.getTaskConfig().getDataSources(provider.getId())) {
-                for (TaskActionInformation action : task.getActions()) {
-                    Set<TaskError> errors = TaskValidator.validateProvider(
-                            action.getValues(), dataSource, provider, task.getTaskConfig().getFilters()
-                    );
-                    handleValidationErrors(task, errors, TASK_DATA_PROVIDER_VALIDATION_ERRORS);
+            SortedSet<DataSource> dataSources = task.getTaskConfig().getDataSources(provider.getId());
+            if (isNotEmpty(dataSources)) {
+                Set<TaskError> errors = new HashSet<>();
+                for (DataSource dataSource : dataSources) {
+                    errors.addAll(validateProvider(
+                            provider,
+                            dataSource,
+                            task,
+                            new HashMap<String, TaskDataProvider>()
+                    ));
                 }
+                errors.addAll(validateActions(task));
+                handleValidationErrors(task, errors, TASK_DATA_PROVIDER_VALIDATION_ERRORS);
             }
+
         }
     }
 
@@ -364,25 +346,89 @@ public class TaskServiceImpl implements TaskService {
         return provider;
     }
 
-    private Set<TaskError> validateTriggerTask(Task task, Channel channel) {
-        Set<TaskError> errors = new HashSet<>();
+    private Set<TaskError> validateTrigger(Task task) {
+        TaskEventInformation trigger = task.getTrigger();
+        Channel channel = channelService.getChannel(trigger.getModuleName());
 
-        if (channel == null) {
-            errors.add(new TaskError("task.validation.error.triggerChannelNotRegistered"));
-            return errors;
-        }
+        return validateTrigger(task, channel);
+    }
+
+    private Set<TaskError> validateTrigger(Task task, Channel channel) {
+        Set<TaskError> errors = new HashSet<>();
 
         TaskEventInformation trigger = task.getTrigger();
 
-        if (channel.getModuleName().equalsIgnoreCase(trigger.getModuleName())) {
-            errors.addAll(TaskValidator.validateTrigger(task, channel));
+        if (trigger != null) {
+            if (channel == null) {
+                errors.add(new TaskError("task.validation.error.triggerChannelNotRegistered"));
+                return errors;
+            }
+            if (channel.getModuleName().equalsIgnoreCase(trigger.getModuleName())) {
+                errors.addAll(TaskValidator.validateTrigger(task, channel));
+            }
+        } else {
+            errors.add(new TaskError("task.validation.error.triggerNotSpecified"));
         }
 
         return errors;
     }
 
-    private Set<TaskError> validateActionTask(TaskActionInformation actionInformation,
-                                              Channel channel) {
+    private Set<TaskError> validateDataSources(Task task) {
+        Set<TaskError> errors = new HashSet<>();
+        Map<String, TaskDataProvider> availableDataProviders = new HashMap<>();
+
+        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
+            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
+
+            errors.addAll(validateProvider(provider, dataSource, task, availableDataProviders));
+            if (provider != null) {
+                availableDataProviders.put(provider.getId(), provider);
+            }
+        }
+
+        return errors;
+    }
+
+    private Set<TaskError> validateProvider(TaskDataProvider provider, DataSource dataSource, Task task, Map<String, TaskDataProvider> availableDataProviders) {
+        Set<TaskError> errors = new HashSet<>();
+
+        TaskEventInformation trigger = task.getTrigger();
+
+        if (provider != null) {
+            errors.addAll(TaskValidator.validateProvider(provider,
+                    dataSource,
+                    channelService.getChannel(trigger.getModuleName()).getTrigger(trigger),
+                    availableDataProviders
+            ));
+        } else {
+            errors.add(new TaskError("task.validation.error.providerNotExist", dataSource.getProviderName()));
+        }
+
+        return errors;
+    }
+
+    private Set<TaskError> validateActions(Task task) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (TaskActionInformation action : task.getActions()) {
+            Channel channel = channelService.getChannel(action.getModuleName());
+            errors.addAll(validateAction(task, channel,  action));
+        }
+
+        return errors;
+    }
+
+    private Set<TaskError> validateActions(Task task, Channel channel) {
+        Set<TaskError> errors = new HashSet<>();
+
+        for (TaskActionInformation action : task.getActions()) {
+            errors.addAll(validateAction(task, channel,  action));
+        }
+
+        return errors;
+    }
+
+    private Set<TaskError> validateAction(Task task, Channel channel, TaskActionInformation action) {
         Set<TaskError> errors = new HashSet<>();
 
         if (channel == null) {
@@ -390,11 +436,31 @@ public class TaskServiceImpl implements TaskService {
             return errors;
         }
 
-        if (channel.getModuleName().equalsIgnoreCase(actionInformation.getModuleName())) {
-            errors.addAll(TaskValidator.validateAction(actionInformation, channel));
+        if (channel.getModuleName().equalsIgnoreCase(action.getModuleName())) {
+            errors.addAll(TaskValidator.validateAction(action, channel));
+            TriggerEvent trigger = channelService.getChannel(task.getTrigger().getModuleName()).getTrigger(task.getTrigger());
+            Map<String, TaskDataProvider> providers = getProviders(task);
+            ActionEvent actionEvent = channel.getAction(action);
+            if (actionEvent != null) {
+                errors.addAll(TaskValidator.validateActionFields(action, actionEvent, trigger, providers));
+            }
         }
 
         return errors;
+    }
+
+    private Map<String, TaskDataProvider> getProviders(Task task) {
+        Map<String, TaskDataProvider> dataProviders = new HashMap<>();
+
+        for (DataSource dataSource : task.getTaskConfig().getDataSources()) {
+            TaskDataProvider provider = providerService.getProviderById(dataSource.getProviderId());
+
+            if (provider != null) {
+                dataProviders.put(provider.getId(), provider);
+            }
+        }
+
+        return dataProviders;
     }
 
     private void handleValidationErrors(Task task, Set<TaskError> errors, String... messages) {

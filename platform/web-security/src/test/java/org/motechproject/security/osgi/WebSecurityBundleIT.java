@@ -57,6 +57,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String USER_EMAIL = "test@email.com";
     private static final String USER_EXTERNAL_ID = "test-externalId";
     private static final Locale USER_LOCALE = Locale.ENGLISH;
+    private static final String BUNDLE_NAME = "bundle";
     private static final String BAD_USER_NAME = "doesNotExist";
     private static final String BAD_PASSWORD = "badpassword";
     private static final String SECURITY_BUNDLE_NAME = "motech-platform-web-security";
@@ -64,6 +65,8 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String UPDATE_URL = "http://localhost:%d/websecurity/api/web-api/updateSecurityRules";
     private static final String GET = "GET";
     private static final String POST = "POST";
+
+    private FilterChainProxy originalSecurityProxy;
 
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
@@ -102,7 +105,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         MotechRoleService roles = getService(MotechRoleService.class);
         MotechUserService users = getService(MotechUserService.class);
 
-        PermissionDto permission = new PermissionDto(PERMISSION_NAME);
+        PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when
@@ -126,14 +129,13 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException {
-
         MotechSecurityConfiguration config = SecurityTestConfigBuilder.buildConfig("noSecurity", null, null);
         updateSecurity(config);
 
         restartSecurityBundle();
 
         MotechProxyManager manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 1);
+        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 3); //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
 
         MotechSecurityConfiguration updatedConfig = SecurityTestConfigBuilder.buildConfig("addPermissionAccess", "anyPermission", null);
         updateSecurity(updatedConfig);
@@ -141,7 +143,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 2);
+        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 4);
     }
 
     private void updateSecurity(String fileName) throws UnsupportedEncodingException, IOException, InterruptedException {
@@ -153,7 +155,6 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
 
         HttpResponse response = httpClient.execute(request);
         assertEquals(200, response.getStatusLine().getStatusCode());
-        Thread.sleep(5000); //wait for security to update
     }
 
     private String getSecurityString(String fileName) throws IOException {
@@ -231,13 +232,14 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException {
         WebApplicationContext theContext = getService(WebApplicationContext.class);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
-        allSecurityRules.add(config);
+        allSecurityRules.addOrUpdate(config);
     }
 
-    private void deleteSecurityConfig() throws InterruptedException {
+    private void resetSecurityConfig() throws InterruptedException {
         WebApplicationContext theContext = getService(WebApplicationContext.class);
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
+        getProxyManager().setFilterChainProxy(originalSecurityProxy);
     }
 
     private MotechProxyManager getProxyManager() throws InterruptedException {
@@ -259,18 +261,19 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         MotechRoleService roles = getService(MotechRoleService.class);
         MotechUserService users = getService(MotechUserService.class);
 
-        PermissionDto permission = new PermissionDto(PERMISSION_NAME);
+        PermissionDto permission = new PermissionDto(PERMISSION_NAME, BUNDLE_NAME);
         RoleDto role = new RoleDto(ROLE_NAME, Arrays.asList(PERMISSION_NAME));
 
         // when
         permissions.addPermission(permission);
         roles.createRole(role);
         users.register(USER_NAME, USER_PASSWORD, USER_EMAIL, USER_EXTERNAL_ID, Arrays.asList(ROLE_NAME, SECURITY_ADMIN), USER_LOCALE);
+        originalSecurityProxy = getProxyManager().getFilterChainProxy();
     }
 
     @Override
     public void onTearDown() throws InterruptedException {
-        deleteSecurityConfig();
+        resetSecurityConfig();
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.eclipse.gemini.blueprint.OsgiException;
 import org.motechproject.server.api.BundleLoader;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.ex.CriticalBundleException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -50,12 +51,15 @@ import java.util.jar.Manifest;
 import static org.apache.commons.lang.StringUtils.startsWith;
 
 /**
- * @author Ricky Wang
+ * Class for initializing and starting the OSGi framework.
+ * Also registers a startup listener and HttpService listener
+ * and store bundle classloaders.
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
     private static final String PLATFORM_BUNDLES = "platform";
     private static final String MODULE_BUNDLES = "module";
     private static final String THIRD_PARTY_BUNDLES = "3party";
+    private static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject.motech-platform-web-security";
 
     private static final String STARTUP_TOPIC = "org/motechproject/osgi/event/STARTUP";
 
@@ -113,7 +117,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             startBundles(PLATFORM_BUNDLES);
 
+            verifyBundleState(Bundle.RESOLVED, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
+
             osgiFramework.start();
+
+            verifyBundleState(Bundle.ACTIVE, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
 
             logger.info("OSGi framework started");
         } catch (BundleException | BundleLoadingException | IOException | ClassNotFoundException |
@@ -121,6 +129,18 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             logger.error("Failed to start OSGi framework", e);
             throw new OsgiException(e);
         }
+    }
+
+    private void verifyBundleState(int targetBundleValue, String bundleGroup, String bundleSymbolicName) {
+        List<Bundle> bundleList = bundles.get(bundleGroup);
+        for (Bundle bundle : bundleList) {
+            if (StringUtils.equals(bundle.getSymbolicName(), bundleSymbolicName)) {
+                if (bundle.getState() == targetBundleValue) {
+                    return;
+                }
+            }
+        }
+        throw new CriticalBundleException("Bundle: " + bundleSymbolicName + " did not start properly");
     }
 
     private void startupModules() {
@@ -397,9 +417,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         String result = null;
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             StringBuilder sb = new StringBuilder(externalBundleFolder);
-                if (!externalBundleFolder.endsWith(File.separator)) {
-                    sb.append(File.separatorChar);
-                }
+            if (!externalBundleFolder.endsWith(File.separator)) {
+                sb.append(File.separatorChar);
+            }
             sb.append(fragmentSubFolder);
             result = sb.toString();
         }

@@ -12,6 +12,6 @@
     });
 
     angular.module('permissionService', ['ngResource']).factory('Permissions', function($resource) {
-        return $resource('../websecurity/api/permissions');
+        return $resource('../websecurity/api/permissions/:permissionName', {permissionName:'@permissionName'});
     });
 }());

@@ -1,0 +1,272 @@
+{
+   "securityRules": [
+       {
+           "pattern": "/**/*.css*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.gif",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.jpg",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.png",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.js",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.html",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/*.properties",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/login*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/forgot*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/reset*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/onetimetoken*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/lang*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/list*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/locate*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/startup*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/bootstrap/verify*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/bootstrap*",
+           "supportedSchemes": [
+               "NO_SECURITY"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**/web-api/**",
+           "supportedSchemes": [
+               "BASIC",
+               "USERNAME_PASSWORD"
+           ],
+           "protocol": "HTTP",
+           "priority": 1,
+           "rest": true,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       },
+       {
+           "pattern": "/**",
+           "supportedSchemes": [
+               "USERNAME_PASSWORD",
+               "OPEN_ID"
+           ],
+           "protocol": "HTTP",
+           "priority": 0,
+           "rest": false,
+           "origin": "SYSTEM_PLATFORM",
+           "version": "0.22",
+           "methodsRequired": [
+               "ANY"
+           ]
+       }
+   ]
+}

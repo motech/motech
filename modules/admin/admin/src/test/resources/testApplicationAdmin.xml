@@ -7,8 +7,6 @@
     
     <context:annotation-config/>
 
-    <bean id="allLogMappings" class="org.motechproject.admin.repository.AllLogMappings"/>
-
     <bean id="allNotificationRules" class="org.motechproject.admin.repository.AllNotificationRules"/>
 
     <bean id="couchDbManager" class="org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl"/>

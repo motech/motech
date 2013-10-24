@@ -41,10 +41,6 @@
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces"
                   ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService"/>
 
-    <osgi:service id="adminMappingServiceOsgi" auto-export="interfaces"
-                  ref="adminMappingService" interface="org.motechproject.admin.service.AdminMappingService"/>
-
-
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
     <osgi:reference id="platformSettingsServiceOsgi"
@@ -62,4 +58,5 @@
 
     <osgi:reference id="mailSender" interface="org.motechproject.email.service.EmailSenderService"/>
 
+    <osgi:reference id="serverLogServiceOsgi" interface="org.motechproject.osgi.web.service.ServerLogService"/>
 </beans>

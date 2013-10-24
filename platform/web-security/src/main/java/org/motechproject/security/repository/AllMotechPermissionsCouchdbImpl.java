@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CouchDb implementation of the {@link AllMotechPermissions} interface.
+ */
 @Component
 @View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
 public class AllMotechPermissionsCouchdbImpl extends MotechBaseRepository<MotechPermissionCouchdbImpl> implements AllMotechPermissions {
@@ -25,14 +28,18 @@ public class AllMotechPermissionsCouchdbImpl extends MotechBaseRepository<Motech
 
     @Override
     public void add(MotechPermission permission) {
-        if (findByPermissionName(permission.getPermissionName()) != null) { return; }
+        if (findByPermissionName(permission.getPermissionName()) != null) {
+            return;
+        }
         super.add((MotechPermissionCouchdbImpl) permission);
     }
 
     @Override
     @View(name = "by_permissionName", map = "function(doc) { if (doc.type ==='MotechPermission') { emit(doc.permissionName, doc._id); }}")
     public MotechPermission findByPermissionName(String permissionName) {
-        if (permissionName == null) { return null; }
+        if (permissionName == null) {
+            return null;
+        }
         ViewQuery viewQuery = createQuery("by_permissionName").key(permissionName).includeDocs(true);
         return singleResult(db.queryView(viewQuery, MotechPermissionCouchdbImpl.class));
     }
@@ -40,5 +47,10 @@ public class AllMotechPermissionsCouchdbImpl extends MotechBaseRepository<Motech
     @Override
     public List<MotechPermission> getPermissions() {
         return new ArrayList<MotechPermission>(getAll());
+    }
+
+    @Override
+    public void delete(MotechPermission permission) {
+        remove((MotechPermissionCouchdbImpl) permission);
     }
 }

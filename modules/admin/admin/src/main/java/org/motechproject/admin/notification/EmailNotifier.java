@@ -16,6 +16,12 @@ import java.util.Map;
 
 import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 
+/**
+ * A component responsible for sending emails from the admin module. The sent emails are Velocity templates
+ * loaded from {@code /mail} on the classpath. Uses the {@link EmailSenderService}.
+ *
+ * @see EmailSenderService
+ */
 @Component
 public class EmailNotifier {
 
@@ -30,10 +36,15 @@ public class EmailNotifier {
 
     private static final String CRITICAL_NOTIFICATION_TEMPLATE = "/mail/criticalNotification.vm";
 
-    public void send(StatusMessage statusMessage, String recipients) {
+    /**
+     * Sends a critical notification for a given {@link StatusMessage}.
+     * @param statusMessage The {@link StatusMessage} for which the notification should be generated.
+     * @param recipient The recipient of the notification.
+     */
+    public void send(StatusMessage statusMessage, String recipient) {
         Map<String, Object> model = templateParams(statusMessage);
         String text = mergeTemplateIntoString(model);
-        emailSender.send(new Mail(senderAddress(), recipients, "Critical notification raised in Motech", text));
+        emailSender.send(new Mail(senderAddress(), recipient, "Critical notification raised in Motech", text));
     }
 
     String mergeTemplateIntoString(Map<String, Object> model) {

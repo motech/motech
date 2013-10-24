@@ -1,15 +1,15 @@
 package org.motechproject.admin.web;
 
 import org.apache.commons.io.FileUtils;
+import org.motechproject.osgi.web.domain.LogMapping;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.motechproject.admin.domain.LogMapping;
-import org.motechproject.admin.service.ServerLogService;
-import org.motechproject.admin.settings.Loggers;
+import org.motechproject.osgi.web.service.ServerLogService;
+import org.motechproject.osgi.web.settings.Loggers;
 import org.motechproject.admin.web.controller.ServerLogController;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.admin.service.ServerLogService.ROOT_LOGGER_NAME;
+import static org.motechproject.osgi.web.service.ServerLogService.ROOT_LOGGER_NAME;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;

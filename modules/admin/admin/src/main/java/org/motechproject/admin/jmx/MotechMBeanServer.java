@@ -19,6 +19,9 @@ import java.io.IOException;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * The MBean server providing access to ActiveMQ MBeans. Uses a JMX connection.
+ */
 @Component
 public class MotechMBeanServer {
     public static final String DESTINATION = "Destination";
@@ -36,7 +39,10 @@ public class MotechMBeanServer {
         this.settingsFacade = settingsFacade;
     }
 
-
+    /**
+     * Retrieves the mbean view from the activemq broker.
+     * @return a view into the broker MBeans.
+     */
     public BrokerViewMBean getBrokerViewMBean() {
         try {
             ObjectName activeMQ = new ObjectName(M_BEAN_NAME);
@@ -46,11 +52,21 @@ public class MotechMBeanServer {
         }
     }
 
+    /**
+     * Retrieves the queue names from the ActiveMQ broker.
+     * @return an array of the queue names.
+     */
     public ObjectName[] getQueues() {
         BrokerViewMBean brokerViewMBean = getBrokerViewMBean();
         return brokerViewMBean.getQueues();
     }
 
+    /**
+     * Retrieves the MBean view for the given ActiveMQ queue.
+     * @param queueName the name of the queue for which the MBean view should be retrieved.
+     * @return the {@link QueueViewMBean} allowing access to queue information.
+     * @throws IOException IOException when we were unable to connect using JMX.
+     */
     public QueueViewMBean getQueueViewMBean(String queueName) throws IOException {
         for (ObjectName objectName : getQueues()) {
             String destination = objectName.getKeyProperty(DESTINATION);
@@ -61,6 +77,12 @@ public class MotechMBeanServer {
         return null;
     }
 
+    /**
+     * Retrieves the mbean view for the given ActiveMQ queue.
+     * @param name the {@link ObjectName} representing the name of the queue for which the MBean view should be retrieved.
+     * @return the {@link QueueViewMBean} allowing access to queue information.
+     * @throws IOException when we were unable to connect using JMX.
+     */
     public QueueViewMBean getQueueViewMBean(ObjectName name) throws IOException {
         return MBeanServerInvocationHandler.newProxyInstance(openConnection(), name, QueueViewMBean.class, true);
     }

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class LoggingAgentBackendImpl implements MetricsAgentBackend {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final Logger metrics = LoggerFactory.getLogger("server.metrics");
+    private final Logger metrics = LoggerFactory.getLogger("metrics");
 
     // Preset the prefix to limit the 'appends' I do later
     private String prefix;

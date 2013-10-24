@@ -8,8 +8,13 @@ import org.motechproject.commons.date.util.DateUtil;
 
 import java.util.Locale;
 
+/**
+ * CouchDb implementation of {@link PasswordRecovery}.
+ */
 @TypeDiscriminator("doc.type == 'PasswordRecovery'")
 public class PasswordRecoveryCouchDbImpl extends MotechBaseDataObject implements PasswordRecovery {
+
+    private static final long serialVersionUID = -6849774668390898927L;
 
     public static final String DOCTYPE = "PasswordRecovery";
 

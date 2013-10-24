@@ -10,23 +10,6 @@
 
     <security:global-method-security pre-post-annotations="enabled"/>
 
-    <security:http pattern="/**/*.css*" security="none"/>
-    <security:http pattern="/**/*.gif" security="none"/>
-    <security:http pattern="/**/*.jpg" security="none"/>
-    <security:http pattern="/**/*.png" security="none"/>
-    <security:http pattern="/**/*.js" security="none"/>
-    <security:http pattern="/**/*.html" security="none"/>
-    <security:http pattern="/**/*.properties" security="none"/>
-    <security:http pattern="/**/login*" security="none"/>
-    <security:http pattern="/**/forgot*" security="none"/>
-    <security:http pattern="/**/reset*" security="none"/>
-    <security:http pattern="/**/onetimetoken*" security="none"/>
-    <security:http pattern="/**/lang*" security="none"/>
-    <security:http pattern="/**/list*" security="none"/>
-    <security:http pattern="/**/locate*" security="none"/>
-    <security:http pattern="/**/startup*" security="none"/>
-    <security:http pattern="/**/bootstrap*" security="none"/>
-
     <bean id="channelDecisionManager" class="org.springframework.security.web.access.channel.ChannelDecisionManagerImpl">
         <property name="channelProcessors">
             <list>
@@ -38,16 +21,6 @@
 
     <bean id="secureChannelProcessor" class="org.springframework.security.web.access.channel.SecureChannelProcessor" />
     <bean id="insecureChannelProcessor" class="org.springframework.security.web.access.channel.InsecureChannelProcessor" />
-
-    <!-- This should be removed once modules can register urls with the web security system for protection
-under different authorization schemes.  i.e. no security, api key, etc. -->
-    <security:http pattern="/**/commcare/**" security="none"/>
-
-    <!-- ICAPPR project uses callbacks from Verboice that don't support security, should be removed once new web security is in -->
-    <security:http pattern="/**/icappr/**" security="none"/>
-
-    <!-- kookoo doesn't support urls with basic auth, disabling security for now -->
-    <security:http pattern="/**/kookoo/web-api/**" security="none"/>
 
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
 

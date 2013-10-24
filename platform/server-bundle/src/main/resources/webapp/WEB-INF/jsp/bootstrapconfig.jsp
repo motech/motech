@@ -30,31 +30,50 @@
         <div class="clearfix"></div>
         <div class="startup-form">
             <div class="diver">
-                <form action="bootstrap.do" method="POST" class="form-horizontal">
+                <form action="bootstrap.do" method="POST" class="form-horizontal bootstrap-config-form" name="bcform">
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.dbUrl')}}</label>
                         <div class="controls">
-                            <input type="text" class="input-xlarge" name="dbUrl" value="${bootstrapConfig.dbUrl}"/>
+                            <div>
+                                <input type="text" class="input-xlarge" required name="dbUrl" ng-init="config.dbUrl = '${bootstrapConfig.dbUrl}'" ng-model="config.dbUrl"/>
+                                <span ng-hide="config.dbUrl" class="form-hint ng-binding">{{msg('server.bootstrap.form.required')}}</span>
+                            </div>
+                            <div id="suggestion" class="suggestion">
+                                <div id="dbUrlSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}: </i> ${dbUrlSuggestion}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue(config, 'dbUrl', '${dbUrlSuggestion}')">{{msg('server.use')}}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.dbUsername')}}</label>
                         <div class="controls">
-                            <input type="text" class="input-xlarge" name="dbUsername" value="${bootstrapConfig.dbUsername}"/>
+                            <input type="text" class="input-xlarge" name="dbUsername" ng-init="config.dbUserName = '${bootstrapConfig.dbUsername}'" ng-model="config.dbUserName"/>
                         </div>
                     </div>
 
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.dbPassword')}}</label>
                         <div class="controls">
-                            <input type="text" class="input-xlarge" name="dbPassword" value="${bootstrapConfig.dbPassword}"/>
+                            <input type="password" class="input-xlarge" name="dbPassword" ng-init="config.dbPassword = '${bootstrapConfig.dbPassword}'" ng-model="config.dbPassword"/>
                         </div>
                     </div>
 
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.tenantId')}}</label>
                         <div class="controls">
-                            <input type="text" class="input-xlarge" name="tenantId" value="${bootstrapConfig.tenantId}"/>
+                            <input type="text" class="input-xlarge" name="tenantId" ng-init="config.tenantId = '${bootstrapConfig.tenantId}'" ng-model="config.tenantId"/>
+                            <div id="suggestion" class="suggestion">
+                                <div id="tenantIdUsernameSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}#1: </i> ${tenantIdDefault}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue(config, 'tenantId', '${tenantIdDefault}')">{{msg('server.use')}}</button>
+                                </div>
+                                <div id="tenantIdDefaultSuggestion">
+                                    <span><i>{{msg('server.suggestion')}}#2: </i> ${username}</span>
+                                    <button type="button" class="btn btn-mini" ng-click="setSuggestedValue(config, 'tenantId', '${username}')">{{msg('server.use')}}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -69,16 +88,19 @@
                     </div>
                     <div class="control-group">
                         <div class="controls">
-                            <input class="btn btn-primary" type="submit" name="BOOTSTRAP" value="{{msg('server.bootstrap.submit')}}"/>
+                            <input class="btn btn-primary" type="submit" name="BOOTSTRAP" ng-disabled="!config.dbUrl" value="{{msg('server.bootstrap.submit')}}"/>
+                            <input class="btn btn-primary" type="button" name="VERIFY" ng-disabled="!config.dbUrl" value="{{msg('server.bootstrap.verify')}}" ng-click="verifyDbConnection()"/>
                         </div>
                     </div>
-                    <c:if test="${not empty errors}">
-                        <div class="alert alert-error">
-                            <c:forEach var="error" items="${errors}">
-                                {{msg('${error}')}}   <br/>
-                            </c:forEach>
-                        </div>
-                    </c:if>
+                    <div class="alerts-container">
+                        <c:if test="${not empty errors}">
+                            <div class="alert alert-error">
+                                <c:forEach var="error" items="${errors}">
+                                    {{msg('${error}')}}   <br/>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+                    </div>
                 </form>
             </div>
         </div>

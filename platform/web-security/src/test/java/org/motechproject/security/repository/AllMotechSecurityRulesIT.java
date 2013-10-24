@@ -29,7 +29,7 @@ public class AllMotechSecurityRulesIT {
         addRules(securityRules);
 
         MotechSecurityConfiguration config = new MotechSecurityConfiguration(securityRules);
-        allSecurityRules.add(config);
+        allSecurityRules.addOrUpdate(config);
 
         assertEquals(3, allSecurityRules.getRules().size());
     }

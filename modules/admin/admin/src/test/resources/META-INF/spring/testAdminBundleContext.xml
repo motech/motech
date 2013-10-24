@@ -10,6 +10,4 @@
     <osgi:service ref="mockUIFrameworkService" interface="org.motechproject.osgi.web.UIFrameworkService"/>
 
     <osgi:reference id="statusMessageServiceOsgi" interface="org.motechproject.admin.service.StatusMessageService"/>
-
-    <osgi:reference id="adminMappingServiceOsgi" interface="org.motechproject.admin.service.AdminMappingService"/>
 </beans>

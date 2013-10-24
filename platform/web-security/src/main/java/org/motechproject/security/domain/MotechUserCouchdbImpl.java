@@ -7,10 +7,16 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * CouchDb implementation of the {@link MotechUser}.
+ */
 @TypeDiscriminator("doc.type == 'MotechUser'")
 public class MotechUserCouchdbImpl extends MotechBaseDataObject implements MotechUser {
 
+    private static final long serialVersionUID = -5558028600313328842L;
+
     public static final String DOC_TYPE = "MotechUser";
+
     @JsonProperty
     private String externalId;
 

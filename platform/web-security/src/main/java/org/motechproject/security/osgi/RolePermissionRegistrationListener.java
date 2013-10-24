@@ -3,11 +3,17 @@ package org.motechproject.security.osgi;
 import org.eclipse.gemini.blueprint.service.exporter.OsgiServiceRegistrationListener;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.SecurityRuleLoader;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+/**
+ * This class is responsible for creating
+ * the SecurityContextTracker once the
+ * security bundle has been started and processed
+ */
 public class RolePermissionRegistrationListener implements OsgiServiceRegistrationListener {
 
     private final Object lock = new Object();
@@ -15,6 +21,8 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     @Autowired
     private BundleContext bundleContext;
 
+    @Autowired
+    private SecurityRuleLoader securityRuleLoader;
     private MotechRoleService roleService;
     private MotechPermissionService permissionService;
 
@@ -41,7 +49,7 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     private void openTracker() {
         synchronized (lock) {
             if (roleService != null && permissionService != null && securityContextTracker == null) {
-                securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService);
+                securityContextTracker = new SecurityContextTracker(bundleContext, roleService, permissionService, securityRuleLoader);
             } else {
                 return;
             }
