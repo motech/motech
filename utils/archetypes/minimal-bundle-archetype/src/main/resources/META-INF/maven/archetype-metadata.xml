@@ -9,6 +9,9 @@
         <requiredProperty key="bundleName">
             <defaultValue>Motech Minimal Bundle</defaultValue>
         </requiredProperty>
+        <requiredProperty key="motechVersion">
+            <defaultValue>0.22-SNAPSHOT</defaultValue>
+        </requiredProperty>
         <requiredProperty key="http">
             <defaultValue>false</defaultValue>
         </requiredProperty>
