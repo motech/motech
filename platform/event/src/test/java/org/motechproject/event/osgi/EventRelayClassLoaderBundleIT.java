@@ -41,7 +41,8 @@ public class EventRelayClassLoaderBundleIT extends BaseOsgiIT {
     protected List<String> getImports() {
         return Arrays.asList("org.motechproject.event",
                 "org.motechproject.event.listener",
-                "org.motechproject.event.listener.annotations");
+                "org.motechproject.event.listener.annotations",
+                "org.motechproject.config.service");
     }
 
     @Override

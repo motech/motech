@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-commons-date</artifactId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -216,7 +216,7 @@
                         <version>2.5</version>
                         <executions>
                             <execution>
-                                <id>copy-activemq-settings</id>
+                                <id>copy-platform-settings</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
@@ -228,7 +228,7 @@
                                         <resource>
                                             <directory>src/main/resources</directory>
                                             <includes>
-                                                <include>activemq.properties</include>
+                                                <include>motech-settings.conf</include>
                                             </includes>
                                         </resource>
                                     </resources>

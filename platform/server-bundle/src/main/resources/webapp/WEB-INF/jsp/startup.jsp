@@ -74,22 +74,6 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label"><fmt:message key="server.enter.schedulerUrl" bundle="${bundle}"/></label>
-                        <div class="controls">
-                            <input type="text" class="input-xlarge" name="schedulerUrl" value="${startupSettings.schedulerUrl}"/>
-                            <c:if test="${ not empty suggestions.schedulerUrls }">
-                                <div id="scheduler.urls">
-                                <c:forEach var="url" items="${suggestions.schedulerUrls}" varStatus="status">
-                                    <div id="scheduler.url.${status.count}">
-                                        <span><i><fmt:message key="server.suggestion" bundle="${bundle}"/> #${status.count}: </i>${url}</span>
-                                        <button type="button" class="btn btn-mini"><fmt:message key="server.use" bundle="${bundle}"/></button>
-                                    </div>
-                                </c:forEach>
-                                </div>
-                            </c:if>
-                        </div>
-                    </div>
-                    <div class="control-group">
                          <label class="control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls">
                              <input type="radio" value="server.repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('server.repository')}}</span>

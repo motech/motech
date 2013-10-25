@@ -8,20 +8,16 @@ import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.filestore.ConfigLocationFileStore;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.ConfigLoader;
-import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The <code>ConfigFileMonitor</code> is used to monitor changes in config files and send
@@ -38,14 +34,14 @@ public class ConfigFileMonitor implements FileListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
     private static final Long DELAY = 2500L;
 
-    private EventRelay eventRelay;
     private ConfigLoader configLoader;
     private ConfigLocationFileStore configLocationFileStore;
     private PlatformSettingsService platformSettingsService;
+    private ConfigurationService configurationService;
     private FileSystemManager systemManager;
 
     private DefaultFileMonitor fileMonitor;
-    private ConfigFileSettings currentSettings;
+    private MotechSettings currentSettings;
 
     private boolean monitorStart;
 
@@ -59,15 +55,15 @@ public class ConfigFileMonitor implements FileListener {
     public void monitor() throws FileSystemException {
         afterPropertiesSet();
         LOGGER.debug("Reading config file.");
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        MotechSettings motechSettings = configLoader.loadConfig();
 
-        if (configFileSettings != null) {
+        if (motechSettings != null) {
             try {
                 if (currentSettings != null) {
                     remove();
                 }
 
-                String path = configFileSettings.getPath();
+                String path = motechSettings.getFilePath();
                 fileMonitor.addFile(systemManager.resolveFile(path));
 
                 if (!monitorStart) {
@@ -78,14 +74,14 @@ public class ConfigFileMonitor implements FileListener {
 
                 LOGGER.info(String.format("Started monitoring: %s", path));
 
-                currentSettings = configFileSettings;
+                currentSettings = motechSettings;
             } catch (FileSystemException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
     }
 
-    public ConfigFileSettings getCurrentSettings() {
+    public MotechSettings getCurrentSettings() {
         return currentSettings;
     }
 
@@ -101,9 +97,8 @@ public class ConfigFileMonitor implements FileListener {
     public void fileCreated(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was created: " + fileName);
-            sendEventMessage(FILE_CREATED_EVENT_SUBJECT, fileChangeEvent);
         }
     }
 
@@ -111,9 +106,7 @@ public class ConfigFileMonitor implements FileListener {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
         if (fileName.equals(MotechSettings.SETTINGS_FILE_NAME)) {
-            platformSettingsService.evictMotechSettingsCache();
-        } else if (fileName.equals(MotechSettings.ACTIVEMQ_FILE_NAME)) {
-            platformSettingsService.evictActiveMqSettingsCache();
+            configurationService.evictMotechSettingsCache();
         } else {
             platformSettingsService.evictBundleSettingsCache();
         }
@@ -123,12 +116,10 @@ public class ConfigFileMonitor implements FileListener {
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.warn("Config file was deleted: " + fileName);
 
             evictProperCache(fileChangeEvent);
-
-            sendEventMessage(FILE_DELETED_EVENT_SUBJECT, fileChangeEvent);
         }
     }
 
@@ -136,28 +127,22 @@ public class ConfigFileMonitor implements FileListener {
     public void fileChanged(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName) || MotechSettings.ACTIVEMQ_FILE_NAME.equals(fileName)) {
+        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was changed: " + fileName);
 
             currentSettings = configLoader.loadConfig();
 
             evictProperCache(fileChangeEvent);
-
-            sendEventMessage(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
         }
     }
 
     public void afterPropertiesSet() throws FileSystemException {
-        if (eventRelay == null) {
-            throw new MotechException("eventRelay property is required.");
-        }
-
         if (configLoader == null) {
             throw new MotechException("configLoader property is required.");
         }
 
-        if (platformSettingsService == null) {
-            throw new MotechException("platformSettingsService property is required.");
+        if (configurationService == null) {
+            throw new MotechException("configurationService property is required.");
         }
 
         if (systemManager == null) {
@@ -168,11 +153,6 @@ public class ConfigFileMonitor implements FileListener {
         this.fileMonitor.setDelay(DELAY);
 
         this.currentSettings = null;
-    }
-
-    @Autowired
-    public void setEventRelay(final EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
     }
 
     @Autowired
@@ -190,27 +170,18 @@ public class ConfigFileMonitor implements FileListener {
         this.platformSettingsService = platformSettingsService;
     }
 
+    @Autowired
+    public void setConfigurationService(final ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
+
     public void setSystemManager(final FileSystemManager systemManager) {
         this.systemManager = systemManager;
     }
 
-    private void sendEventMessage(final String subject, final FileChangeEvent fileChangeEvent) {
-        try {
-            eventRelay.sendEventMessage(createMotechEvent(subject, fileChangeEvent));
-        } catch (FileSystemException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    private MotechEvent createMotechEvent(final String subject, final FileChangeEvent fileChangeEvent) throws FileSystemException {
-        Map<String, Object> param = new HashMap<>();
-        param.put(FILE_URL_PARAM, fileChangeEvent.getFile().getURL().getPath());
-
-        return new MotechEvent(subject, param);
-    }
 
     private void remove() throws FileSystemException {
-        String path = currentSettings.getPath();
+        String path = currentSettings.getFilePath();
         fileMonitor.removeFile(systemManager.resolveFile(path));
         currentSettings = null;
 

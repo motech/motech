@@ -7,10 +7,10 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
@@ -72,7 +72,7 @@ public class StartupControllerTest {
     private StartupManager startupManager;
 
     @Mock
-    private PlatformSettingsService platformSettingsService;
+    private ConfigurationService configurationService;
 
     @Mock
     private LocaleService localeService;
@@ -84,7 +84,7 @@ public class StartupControllerTest {
     private HttpServletRequest httpServletRequest;
 
     @Mock
-    private ConfigFileSettings motechSettings;
+    private SettingsRecord motechSettings;
 
     @Mock
     private MotechUserService userService;
@@ -108,7 +108,6 @@ public class StartupControllerTest {
         properties.put("host", "localhost");
         properties.put("port", "12345");
         properties.put(MotechSettings.AMQ_BROKER_URL, "test_url");
-        properties.put(MotechSettings.SCHEDULER_URL, "test_url");
 
         NavigableMap<String, String> map = new TreeMap<>();
 
@@ -116,7 +115,6 @@ public class StartupControllerTest {
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
 
         when(motechSettings.getActivemqProperties()).thenReturn(properties);
-        when(motechSettings.getSchedulerProperties()).thenReturn(properties);
 
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
         when(localeService.getAvailableLanguages()).thenReturn(map);
@@ -160,7 +158,7 @@ public class StartupControllerTest {
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
-        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
+        verify(configurationService).savePlatformSettings(any(MotechSettings.class));
         verify(startupManager).startup();
         verifyUserRegistration();
 
@@ -177,7 +175,7 @@ public class StartupControllerTest {
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
-        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
+        verify(configurationService).savePlatformSettings(any(MotechSettings.class));
         verify(startupManager).startup();
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
 

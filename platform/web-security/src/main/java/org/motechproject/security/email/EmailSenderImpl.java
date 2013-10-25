@@ -1,9 +1,9 @@
 package org.motechproject.security.email;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,6 +17,9 @@ import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implementation of the {@link EmailSender} interface. Class provides API for sending e-mails
+ */
 @Service
 public class EmailSenderImpl implements EmailSender {
 
@@ -34,7 +37,7 @@ public class EmailSenderImpl implements EmailSender {
     private VelocityEngine velocityEngine;
 
     @Autowired
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
 
     @Autowired
     private ResourceBundleMessageSource messageSource;

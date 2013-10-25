@@ -25,7 +25,7 @@
         return $resource('../admin/api/messages/rules/dto');
     });
 
-    angular.module('platformSettingsServices', ['ngResource']).factory('PlatformSettings', function($resource) {
+    angular.module('configurationServices', ['ngResource']).factory('PlatformSettings', function($resource) {
         return $resource('../admin/api/settings/platform');
     });
 

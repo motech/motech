@@ -505,7 +505,7 @@
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
-                                <phase>pre-integration-test</phase>
+                                <phase>initialize</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -515,8 +515,26 @@
                                         <resource>
                                             <directory>src/test/resources</directory>
                                             <include>motech-settings.conf</include>
-                                            <include>activemq.properties</include>
                                             <include>bootstrap.properties</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-config-locations-file</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${user.home}/.motech</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/test/resources</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>config-locations.properties</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -541,6 +559,14 @@
                                             <directory>${user.home}/.motech/config</directory>
                                             <includes>
                                                 <include>motech-settings.conf</include>
+                                                <include>bootstrap.properties</include>
+                                            </includes>
+                                            <followSymlinks>false</followSymlinks>
+                                        </fileset>
+                                        <fileset>
+                                            <directory>${user.home}/.motech</directory>
+                                            <includes>
+                                                <include>config-locations.properties</include>
                                             </includes>
                                             <followSymlinks>false</followSymlinks>
                                         </fileset>

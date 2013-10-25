@@ -4,9 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.motechproject.config.MotechConfigurationException;
 import org.motechproject.config.domain.ConfigLocation;
 import org.motechproject.config.filestore.ConfigLocationFileStore;
-import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,21 +38,19 @@ public class ConfigLoaderTest {
         configLocations.add(new ConfigLocation("config/"));
         when(configLocationFileStore.getAll()).thenReturn(configLocations);
 
-        ConfigFileSettings settings = configLoader.loadConfig();
+        SettingsRecord settings = configLoader.loadConfig();
 
         assertNotNull(settings);
         assertEquals(settings.getLanguage(), "en");
     }
 
-    @Test
+    @Test (expected = MotechConfigurationException.class)
     public void testNoFolderExists() {
         List<ConfigLocation> configLocations = new ArrayList<>();
         configLocations.add(new ConfigLocation("config1/"));
         when(configLocationFileStore.getAll()).thenReturn(configLocations);
 
-        ConfigFileSettings settings = configLoader.loadConfig();
-
-        assertNull(settings);
+        configLoader.loadConfig();
     }
 
     @Test
@@ -61,10 +59,10 @@ public class ConfigLoaderTest {
         configLocations.add(new ConfigLocation("config2/"));
         when(configLocationFileStore.getAll()).thenReturn(configLocations);
 
-        ConfigFileSettings settings = configLoader.loadConfig();
+        SettingsRecord settings = configLoader.loadConfig();
 
         assertNotNull(settings);
-        assertNotNull(settings.getActivemqProperties().get("notRealActiveMqProperty"));
+        assertNotNull(settings.getActivemqProperties().get("jms.notRealActiveMqProperty"));
     }
 
     @Test
@@ -72,10 +70,10 @@ public class ConfigLoaderTest {
         List<ConfigLocation> configLocations = new ArrayList<>();
         when(configLocationFileStore.getAll()).thenReturn(configLocations);
 
-        ConfigFileSettings settings = configLoader.loadDefaultConfig();
+        SettingsRecord settings = configLoader.loadDefaultConfig();
 
         assertNotNull(settings);
         assertEquals(settings.getLanguage(), "en");
-        assertNotNull(settings.getActivemqProperties().get("maxConcurrentConsumers"));
+        assertNotNull(settings.getActivemqProperties().get("jms.maxConcurrentConsumers"));
     }
 }

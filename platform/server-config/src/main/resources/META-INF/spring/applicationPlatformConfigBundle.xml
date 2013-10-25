@@ -10,7 +10,6 @@
 
     <import resource="classpath*:/META-INF/motech/*.xml"/>
 
-    <osgi:reference id="serverEventRelay" interface="org.motechproject.event.listener.EventRelay"/>
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
     <osgi:service ref="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>

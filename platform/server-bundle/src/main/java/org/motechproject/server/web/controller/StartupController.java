@@ -1,10 +1,10 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
@@ -31,11 +31,6 @@ import java.util.Locale;
 
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 import static org.motechproject.server.config.domain.MotechSettings.AMQ_BROKER_URL;
-import static org.motechproject.server.config.domain.MotechSettings.LANGUAGE;
-import static org.motechproject.server.config.domain.MotechSettings.LOGINMODE;
-import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_NAME;
-import static org.motechproject.server.config.domain.MotechSettings.PROVIDER_URL;
-import static org.motechproject.server.config.domain.MotechSettings.SCHEDULER_URL;
 
 /**
  * StartupController that manages the platform system start up and captures the platform core settings and user information.
@@ -52,7 +47,7 @@ public class StartupController {
     private StartupManager startupManager;
 
     @Autowired
-    private PlatformSettingsService platformSettingsService;
+    private ConfigurationService configurationService;
 
     @Autowired
     private LocaleService localeService;
@@ -102,16 +97,14 @@ public class StartupController {
 
             view.setViewName("startup");
         } else {
-            ConfigFileSettings settings = startupManager.getDefaultSettings();
-            settings.saveMotechSetting(LANGUAGE, form.getLanguage());
-            settings.saveMotechSetting(SCHEDULER_URL, form.getSchedulerUrl());
-            settings.saveMotechSetting(LOGINMODE, form.getLoginMode());
-            settings.saveActiveMqSetting(AMQ_BROKER_URL, form.getQueueUrl());
-            settings.saveMotechSetting(PROVIDER_NAME, form.getProviderName());
-            settings.saveMotechSetting(PROVIDER_URL, form.getProviderUrl());
+            MotechSettings settings = startupManager.getDefaultSettings();
+            settings.setLanguage(form.getLanguage());
+            settings.setLoginModeValue(form.getLoginMode());
+            settings.savePlatformSetting(AMQ_BROKER_URL, form.getQueueUrl());
+            settings.setProviderName(form.getProviderName());
+            settings.setProviderUrl(form.getProviderUrl());
 
-            platformSettingsService.savePlatformSettings(settings.getMotechSettings());
-            platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());
+            configurationService.savePlatformSettings(settings);
 
             if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(form.getLoginMode()))) {
                 registerAdminUser(form);

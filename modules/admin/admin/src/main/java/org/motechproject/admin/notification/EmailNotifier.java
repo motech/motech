@@ -4,9 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.admin.domain.StatusMessage;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -26,7 +26,7 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 public class EmailNotifier {
 
     @Autowired
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
 
     @Autowired
     private VelocityEngine velocityEngine;

@@ -10,10 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.config.filestore.ConfigLocationFileStore;
-import org.motechproject.event.listener.EventRelay;
+import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.config.domain.ConfigFileSettings;
 import org.springframework.core.io.ResourceLoader;
 
 import static org.junit.Assert.assertEquals;
@@ -25,11 +26,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigFileMonitorTest {
     private static final String MOTECH_SETTINGS_FILE_NAME = "motech-settings.conf";
-    private static final String ACTIVEMQ_FILE_NAME = "activemq.properties";
     private static final String SETTINGS_FILE_NAME = "settings.properties";
-
-    @Mock
-    EventRelay serverEventRelay;
 
     @Mock
     ConfigLoader configLoader;
@@ -41,13 +38,16 @@ public class ConfigFileMonitorTest {
     PlatformSettingsService platformSettingsService;
 
     @Mock
+    ConfigurationService configurationService;
+
+    @Mock
     ResourceLoader resourceLoader;
 
     @Mock
     FileChangeEvent fileChangeEvent;
 
     @Mock
-    ConfigFileSettings motechSettings;
+    SettingsRecord motechSettings;
 
     @Mock
     StandardFileSystemManager systemManager;
@@ -57,22 +57,20 @@ public class ConfigFileMonitorTest {
     ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
 
     private FileObject motechSettingsResource;
-    private FileObject activemqResource;
     private FileObject settingsResource;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        configFileMonitor.setEventRelay(serverEventRelay);
         configFileMonitor.setConfigLoader(configLoader);
         configFileMonitor.setPlatformSettingsService(platformSettingsService);
+        configFileMonitor.setConfigurationService(configurationService);
         configFileMonitor.setSystemManager(systemManager);
 
         configFileMonitor.afterPropertiesSet();
 
         motechSettingsResource = VFS.getManager().resolveFile(String.format("res:%s", MOTECH_SETTINGS_FILE_NAME));
-        activemqResource = VFS.getManager().resolveFile(String.format("res:%s", ACTIVEMQ_FILE_NAME));
         settingsResource = VFS.getManager().resolveFile(String.format("res:%s", SETTINGS_FILE_NAME));
     }
 
@@ -90,18 +88,7 @@ public class ConfigFileMonitorTest {
 
         configFileMonitor.fileDeleted(fileChangeEvent);
 
-        verify(platformSettingsService).evictMotechSettingsCache();
-
-        assertNull(configFileMonitor.getCurrentSettings());
-    }
-
-    @Test
-    public void testActiveMqSettingsFileDeleted() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(activemqResource);
-
-        configFileMonitor.fileDeleted(fileChangeEvent);
-
-        verify(platformSettingsService).evictActiveMqSettingsCache();
+        verify(configurationService).evictMotechSettingsCache();
 
         assertNull(configFileMonitor.getCurrentSettings());
     }
@@ -114,26 +101,13 @@ public class ConfigFileMonitorTest {
         configFileMonitor.fileChanged(fileChangeEvent);
 
         verify(configLoader).loadConfig();
-        verify(platformSettingsService).evictMotechSettingsCache();
-
-        assertCurrentSettings();
-    }
-
-    @Test
-    public void testActiveMqFileChanged() throws Exception {
-        when(fileChangeEvent.getFile()).thenReturn(activemqResource);
-        when(configLoader.loadConfig()).thenReturn(motechSettings);
-
-        configFileMonitor.fileChanged(fileChangeEvent);
-
-        verify(configLoader).loadConfig();
-        verify(platformSettingsService).evictActiveMqSettingsCache();
+        verify(configurationService).evictMotechSettingsCache();
 
         assertCurrentSettings();
     }
 
     private void assertCurrentSettings() {
-        ConfigFileSettings currentSettings = configFileMonitor.getCurrentSettings();
+        MotechSettings currentSettings = configFileMonitor.getCurrentSettings();
 
         assertNotNull(currentSettings);
         assertEquals(motechSettings, currentSettings);
