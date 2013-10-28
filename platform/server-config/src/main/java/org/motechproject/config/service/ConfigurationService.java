@@ -83,5 +83,6 @@ public interface ConfigurationService {
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void evictMotechSettingsCache();
 
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     void savePlatformSettings(MotechSettings settings);
 }

@@ -297,11 +297,6 @@
                                     <directory>/var/lib/motech/motech-default/data/config</directory>
                                     <username>motech-default</username>
                                     <groupname>motech-default</groupname>
-                                    <sources>
-                                        <source>
-                                            <location>content/motech-base/var/lib/motech/config</location>
-                                        </source>
-                                    </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/var/cache/motech/motech-default/temp</directory>

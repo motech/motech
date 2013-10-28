@@ -35,7 +35,6 @@ if [ "$#" -eq 4 -a "$1" = add -a $3 -eq $3 2>/dev/null -a $4 -eq $4 2>/dev/null 
     cp -r /usr/share/motech/motech-default/conf /usr/share/motech/motech-$2/conf
     cp -r /var/lib/motech/motech-default/webapps/ROOT.war /var/lib/motech/motech-$2/webapps
     cp -r /var/lib/motech/motech-default/data/bundles /var/lib/motech/motech-$2/data
-    cp -r /var/lib/motech/motech-default/data/config /var/lib/motech/motech-$2/data
 
     cp -r /etc/init.d/motech /etc/init.d/motech-$2
     cp -r /etc/motech/motech-default/motech.conf /etc/motech/motech-$2/motech.conf
@@ -85,7 +84,7 @@ elif [ "$#" -eq 2 -a "$1" = remove ]; then
         echo "You can't remove base package by this script!"
         exit
     elif [ `grep -c motech-$2: /etc/passwd` -eq 0 ]; then
-        echo "motech-$2 is not exist. Break!"
+        echo "motech-$2 doesn't exist. Break!"
         exit
     fi
 
@@ -129,7 +128,7 @@ elif [ "$#" -eq 2 -a "$1" = update ]; then
         echo "You can't u update base package by this script!"
         exit
     elif [ `grep -c motech-$2: /etc/passwd` -eq 0 ]; then
-        echo "motech-$2 is not exist. Break!"
+        echo "motech-$2 doesn't exist. Break!"
         exit
     fi
 
