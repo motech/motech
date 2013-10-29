@@ -3,7 +3,7 @@
 
     /* App Module */
 
-    angular.module('motech-web-security', ['motech-dashboard', 'roleService', 'userService', 'permissionService', 'ngCookies', 'bootstrap']).config(['$routeProvider',
+    angular.module('motech-web-security', ['motech-dashboard', 'roleService', 'userService', 'permissionService', 'ngCookies', 'ngRoute', 'bootstrap']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
                 when('/users', {templateUrl: '../websecurity/partials/user.html', controller: 'UserCtrl'}).

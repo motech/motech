@@ -97,7 +97,7 @@
         };
 
         $scope.purgeTimeControlsDisabled = function () {
-            if ($scope.settings.logPurgeEnable.localeCompare("true") === 0) {
+            if ($scope.settings.logPurgeEnable === "true") {
                 return false;
             } else {
                 return true;

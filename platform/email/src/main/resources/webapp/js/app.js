@@ -3,7 +3,7 @@
 
     /* App Module */
 
-    angular.module('motech-email', ['motech-dashboard', 'ngCookies', 'bootstrap', 'sendEmailService', 'settingsService', 'emailAuditService']).config(['$routeProvider',
+    angular.module('motech-email', ['motech-dashboard', 'ngCookies', 'ngRoute', 'bootstrap', 'sendEmailService', 'settingsService', 'emailAuditService']).config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
                 when('/send', {templateUrl: '../email/resources/partials/sendEmail.html', controller: 'SendEmailController'}).

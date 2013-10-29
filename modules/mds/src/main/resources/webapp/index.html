@@ -1,7 +1,7 @@
-<div> <!-- Only required for left/right tabs -->
+<div class="tabbable"> <!-- Only required for left/right tabs -->
     <ul id="content-tabs" class="nav nav-tabs">
         <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
-            <a data-target="main-content" href="#/{{tab}}" data-toggle="tab">
+            <a href="#/{{tab}}">
                 {{msg('mds.tab.' + tab)}}
             </a>
         </li>
