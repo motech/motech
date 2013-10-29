@@ -17,9 +17,8 @@ public interface PlatformSettingsService {
     /**
      * Add new location for config file.
      *
-     * @param location file location
      */
-    void addConfigLocation(final String location) throws IOException;
+    void monitor() throws IOException;
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 

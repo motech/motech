@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.testing.utils.TestContext;
 
@@ -27,7 +28,7 @@ public class StartupIT {
     private String HOST = "localhost";
     private int PORT = TestContext.getTomcatPort();
 
-    @Test
+    @Test @Ignore
     public void shouldStartServerAndMakeAllBundlesActive() throws IOException, JSONException, InterruptedException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
         httpClient.setCookieStore(new BasicCookieStore());

@@ -62,8 +62,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
 
     @CacheEvict(value = {BUNDLE_CACHE_NAME }, allEntries = true)
-    public void addConfigLocation(final String location) throws IOException {
-        configFileMonitor.changeConfigFileLocation(location);
+    public void monitor() throws IOException {
+        configFileMonitor.monitor();
     }
 
     @Override

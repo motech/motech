@@ -6,10 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.config.bootstrap.BootstrapConfigManager;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
-import org.motechproject.config.domain.DBConfig;
+import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 
@@ -25,7 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigurationServiceTest {
     @Mock
-    private BootstrapConfigManager bootstrapConfigManager;
+    private CoreConfigurationService coreConfigurationService;
 
     @Mock
     private ConfigFileMonitor configFileMonitor;
@@ -42,7 +42,7 @@ public class ConfigurationServiceTest {
     @Test
     public void shouldLoadBootstrapDBConfiguration() {
         BootstrapConfig expectedConfig = new BootstrapConfig(new DBConfig("http://localhost", null, null), null, null);
-        when(bootstrapConfigManager.loadBootstrapConfig()).thenReturn(expectedConfig);
+        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(expectedConfig);
 
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
         assertNotNull(bootstrapConfig);
@@ -56,12 +56,12 @@ public class ConfigurationServiceTest {
 
         configurationService.save(bootstrapConfig);
 
-        verify(bootstrapConfigManager).saveBootstrapConfig(bootstrapConfig);
+        verify(coreConfigurationService).saveBootstrapConfig(bootstrapConfig);
     }
 
     @Test
     public void shouldNotMonitorConfigFilesIfBootstrapConfigIsNotFound() throws FileSystemException {
-        when(bootstrapConfigManager.loadBootstrapConfig()).thenReturn(null);
+        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(null);
 
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
 

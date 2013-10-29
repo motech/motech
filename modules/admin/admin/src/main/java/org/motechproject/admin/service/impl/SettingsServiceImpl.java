@@ -6,6 +6,7 @@ import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
@@ -33,6 +34,9 @@ import java.util.Properties;
 public class SettingsServiceImpl implements SettingsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceImpl.class);
+
+    @Autowired
+    private CoreConfigurationService coreConfigurationService;
 
     @Autowired
     private ConfigurationService configurationService;
@@ -139,7 +143,8 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void addSettingsPath(String path) throws IOException {
-        platformSettingsService.addConfigLocation(path);
+        coreConfigurationService.addConfigLocation(path);
+        platformSettingsService.monitor();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.motechproject.config.service;
 
-import org.motechproject.config.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.cache.annotation.CacheEvict;
 
@@ -56,7 +56,7 @@ public interface ConfigurationService {
      *     </ol>
      * </p>
      * @return Bootstrap configuration
-     * @throws org.motechproject.config.MotechConfigurationException if bootstrap configuration cannot be loaded.
+     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be loaded.
      */
     BootstrapConfig loadBootstrapConfig();
 
@@ -68,7 +68,7 @@ public interface ConfigurationService {
      * </p>
      *
      * @param bootstrapConfig Bootstrap configuration.
-     * @throws org.motechproject.config.MotechConfigurationException if bootstrap configuration cannot be saved.
+     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be saved.
      */
     void save(BootstrapConfig bootstrapConfig);
 

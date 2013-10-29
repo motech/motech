@@ -4,9 +4,9 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.bootstrap.BootstrapConfigManager;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
@@ -34,7 +34,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigFileMonitor configFileMonitor;
 
     @Autowired
-    private BootstrapConfigManager bootstrapConfigManager;
+    private CoreConfigurationService coreConfigurationService;
 
     @Autowired
     private AllSettings allSettings;
@@ -48,7 +48,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             logger.debug("Loading bootstrap configuration.");
         }
 
-        final BootstrapConfig bootstrapConfig = bootstrapConfigManager.loadBootstrapConfig();
+        final BootstrapConfig bootstrapConfig = coreConfigurationService.loadBootstrapConfig();
 
         if (bootstrapConfig == null) {
             return null;
@@ -75,7 +75,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             logger.debug("Saving bootstrap configuration.");
         }
 
-        bootstrapConfigManager.saveBootstrapConfig(bootstrapConfig);
+        coreConfigurationService.saveBootstrapConfig(bootstrapConfig);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Saved bootstrap configuration:" + bootstrapConfig);
