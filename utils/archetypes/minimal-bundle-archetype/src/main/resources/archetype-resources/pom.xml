@@ -39,8 +39,8 @@
             <version>1.0.2.RELEASE-r014</version>
             <scope>test</scope>
         </dependency>
-
 #if ($http == 'true')
+
         <!-- HTTP -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -91,6 +91,29 @@
             <scope>test</scope>
         </dependency>
 #end
+#if ($repository == 'true')
+
+        <!-- Repository -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+
+        <!-- Repository IT -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+#end
     </dependencies>
 
     <repositories>
@@ -123,18 +146,24 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>${artifactId}/resources</Resource-Path>
                         <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
-                        <Export-Package>
-                            ${package}.service;version=${project.version}
-                        </Export-Package>
 #if ($http == 'true')
-
-                        <!-- HTTP -->
                         <Context-Path>${artifactId}</Context-Path>
+#end
+                        <Export-Package>
+                            ${package}.service;version=${project.version},
+#if ($repository == 'true')
+                            ${package}.domain;version=${project.version}
+#end
+                        </Export-Package>
                         <Import-Package>
+#if ($http == 'true')
                             org.motechproject.osgi.web;version=${motech.version},
+#end
+#if ($repository == 'true')
+	                        org.motechproject.commons.couchdb.service;version=${motech.version},
+#end
                             *
                         </Import-Package>
-#end
                     </instructions>
                 </configuration>
             </plugin>

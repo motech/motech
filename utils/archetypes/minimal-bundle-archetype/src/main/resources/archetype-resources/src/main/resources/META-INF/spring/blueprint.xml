@@ -12,4 +12,11 @@ $symbol_escape = '\' )
     <osgi:service ref="helloWorldService"
         interface="${package}.service.HelloWorldService" />
 
+#if ($repository == 'true')
+
+    <osgi:service ref="helloWorldRecordService"
+        interface="${package}.service.HelloWorldRecordService" />
+
+    <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+#end
 </beans>

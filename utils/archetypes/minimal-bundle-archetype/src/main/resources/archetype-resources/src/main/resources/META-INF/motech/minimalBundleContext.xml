@@ -9,8 +9,8 @@
 
     <context:annotation-config />
     <context:component-scan base-package="${package}" />
-    
 #if ($http == 'true')
+
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="${artifactId}" />
         <constructor-arg name="url"
@@ -30,5 +30,11 @@
         </constructor-arg>
     </bean>
 #end
+#if ($repository == 'true')
 
+    <bean id="helloWorldDbConnector" factory-bean="couchDbManager"
+        factory-method="getConnector">
+        <constructor-arg value="motech-hello-world" />
+    </bean>
+#end
 </beans>

@@ -15,6 +15,9 @@
         <requiredProperty key="http">
             <defaultValue>false</defaultValue>
         </requiredProperty>
+        <requiredProperty key="repository">
+            <defaultValue>false</defaultValue>
+        </requiredProperty>
     </requiredProperties>
 
     <fileSets>

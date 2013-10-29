@@ -16,14 +16,11 @@
     </properties>
 
     <dependencies>
-        <!-- <dependency> <groupId>org.springframework</groupId> <artifactId>org.springframework.context</artifactId> 
-            <version>${spring.version}</version> </dependency> -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.context</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
-
 
         <!-- OSGi IT -->
         <dependency>
@@ -39,21 +36,19 @@
             <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${motech.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
-            <version>${motech.version}</version>
-            <scope>test</scope>
-        </dependency>
+
+        <!-- Repository IT -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -88,7 +83,8 @@
                         <Resource-Path>repository-bundle/resources</Resource-Path>
                         <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
                         <Export-Package>
-                            repository.bundle.service;version=${project.version}
+                            repository.bundle.service;version=${project.version},
+                            repository.bundle.domain;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.commons.couchdb.service;version=${motech.version},
