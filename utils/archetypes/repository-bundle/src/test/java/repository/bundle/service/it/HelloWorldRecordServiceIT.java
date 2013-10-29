@@ -4,6 +4,11 @@ import repository.bundle.service.HelloWorldRecordService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+
 /**
  * Verify that HelloWorldRecordService present, functional.
  */

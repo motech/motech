@@ -16,11 +16,14 @@
     </properties>
 
     <dependencies>
+        <!-- <dependency> <groupId>org.springframework</groupId> <artifactId>org.springframework.context</artifactId> 
+            <version>${spring.version}</version> </dependency> -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.context</artifactId>
-            <version>${spring.version}</version>
+            <version>3.0.5.RELEASE</version>
         </dependency>
+
 
         <!-- OSGi IT -->
         <dependency>
@@ -34,6 +37,22 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-extender-fragment</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${motech.version}</version>
         </dependency>
     </dependencies>
@@ -71,10 +90,10 @@
                         <Export-Package>
                             repository.bundle.service;version=${project.version}
                         </Export-Package>
-<!--                         <Import-Package>
-                            org.motechproject.commons.couchdb.service,
+                        <Import-Package>
+                            org.motechproject.commons.couchdb.service;version=${motech.version},
                             *
-                        </Import-Package> -->
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

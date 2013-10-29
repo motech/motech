@@ -22,7 +22,7 @@ public class AllHelloWorldRecordsCouchdbImpl extends MotechBaseRepository<HelloW
         AllHelloWorldRecords {
 
     @Autowired
-    protected AllHelloWorldRecordsCouchdbImpl(@Qualifier("webSecurityDbConnector") CouchDbConnector db) {
+    protected AllHelloWorldRecordsCouchdbImpl(@Qualifier("helloWorldDbConnector") CouchDbConnector db) {
         super(HelloWorldRecordCouchdbImpl.class, db);
         initStandardDesignDocument();
     }
