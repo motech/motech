@@ -11,7 +11,6 @@ $symbol_escape = '\' )
 
     <osgi:service ref="helloWorldService"
         interface="${package}.service.HelloWorldService" />
-
 #if ($repository == 'true')
 
     <osgi:service ref="helloWorldRecordService"
@@ -24,4 +23,5 @@ $symbol_escape = '\' )
         interface="${package}.service.HelloWorldSettingsService" />
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 #end
+
 </beans>

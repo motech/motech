@@ -39,6 +39,20 @@
             <version>1.0.2.RELEASE-r014</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+#if ( ($repository == 'true' || $settings == 'true') && !($http == 'true') )
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+#end
 #if ($http == 'true')
 
         <!-- HTTP -->
@@ -46,11 +60,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${motech.version}</version>
         </dependency>
 
         <!-- HTTP IT -->
@@ -99,20 +108,6 @@
             <artifactId>motech-platform-commons-couchdb</artifactId>
             <version>${motech.version}</version>
         </dependency>
-
-        <!-- Repository IT -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${motech.version}</version>
-            <scope>test</scope>
-        </dependency>
 #end
 #if ($settings == 'true')
 
@@ -121,20 +116,6 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-config</artifactId>
             <version>${motech.version}</version>
-        </dependency>
-
-        <!-- Settings IT -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-osgi-web-util</artifactId>
-            <version>${motech.version}</version>
-            <scope>test</scope>
         </dependency>
 #end
     </dependencies>
@@ -175,7 +156,7 @@
                         <Export-Package>
                             ${package}.service;version=${project.version},
 #if ($repository == 'true')
-                            ${package}.domain;version=${project.version}
+                            ${package}.domain;version=${project.version},
 #end
                         </Export-Package>
                         <Import-Package>
