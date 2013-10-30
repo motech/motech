@@ -47,7 +47,6 @@ mkdir -p $BUILD_DIR
 
 ARTIFACT_DIR=$BUILD_DIR/artifacts
 DEPENDENCY_DIR=$BUILD_DIR/dependencies
-CONFIG_DIR=$MOTECH_BASE/platform/server-config/src/main/config
 
 MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
 MOTECH_BASE_PACKAGENAME="motech-base_$MOTECH_VERSION.deb"
@@ -75,8 +74,9 @@ mkdir -p motech-base/var/cache/motech/motech-default/felix-cache
 mkdir -p motech-base/var/lib/motech/motech-default/webapps
 mkdir -p motech-base/var/lib/motech/motech-default/data/bundles
 mkdir -p motech-base/var/lib/motech/motech-default/data/rules
+mkdir -p motech-base/var/lib/motech/motech-default/data/config
 mkdir -p motech-base/var/log/motech/motech-default
-mkdir -p motech-base/usr/share/motech/motech-default/
+mkdir -p motech-base/usr/share/motech/motech-default
 
 # copy manage-tenant script
 cp $MOTECH_BASE/packaging/motech-manage-tenants motech-base/usr/share/motech/
@@ -94,11 +94,6 @@ gzip --best ./motech-base/usr/share/doc/motech-base/changelog.Debian
 
 # Update version
 perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
-
-#Copy config
-cp -R $CONFIG_DIR ./motech-base/var/lib/motech/motech-default/data
-rm -f ./motech-base/var/lib/motech/motech-default/data/config/motech-settings.conf
-
 
 # Platofrm bundles
 cp -R $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-default/data/bundles

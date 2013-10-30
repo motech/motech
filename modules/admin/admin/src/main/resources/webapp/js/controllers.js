@@ -391,15 +391,6 @@
             });
         };
 
-        $scope.uploadActiveMqFile = function () {
-            $("#activemqFileForm").ajaxSubmit({
-                success:alertHandlerWithCallback('admin.settings.saved', function () {
-                    $scope.platformSettings = PlatformSettings.query();
-                }),
-                error:jFormErrorHandler
-            });
-        };
-
         $scope.uploadFileLocation = function () {
             $http({method:'POST', url:'../admin/api/settings/platform/location', params:{location:this.location}}).
                 success(alertHandler('admin.settings.saved', 'admin.success')).

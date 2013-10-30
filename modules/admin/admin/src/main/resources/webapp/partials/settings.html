@@ -19,22 +19,6 @@
                     </div>
                 </fieldset>
             </form>
-            <h4 class="settings-section">{{msg('admin.activemq')}}</h4>
-            <form class="form-inline inside" id="activemqFileForm" action="api/settings/platform/activemq/upload" method="post" enctype="multipart/form-data">
-                <fieldset>
-                    <div class="control-group fileupload fileupload-new" data-provides="fileupload">
-                        <label class="control-label">{{msg('admin.settings.fileChosen')}}</label>
-                        <div class="uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
-                        <span class="btn btn-file">
-                            <span class="fileupload-new">{{msg('admin.button.selectFile')}}</span>
-                            <span class="fileupload-exists">{{msg('admin.button.changeFile')}}</span>
-                            <input type="file" id="activemqFile" name="activemqFile" class="input-file"/>
-                        </span>
-                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('admin.button.remove')}}</a>
-                        <span class="btn" ng-click="uploadActiveMqFile()">{{msg('admin.submit')}}</span>
-                    </div>
-                </fieldset>
-            </form>
             <p id="settingsMsg" class="inside"></p>
         </div>
     </div>

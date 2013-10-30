@@ -87,13 +87,6 @@ public class SettingsController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/settings/platform/activemq/upload", method = RequestMethod.POST)
-    public void uploadActiveMqFIle(@RequestParam(required = true) MultipartFile activemqFile) {
-        settingsService.saveActiveMqFile(activemqFile);
-        statusMessageService.info(PLATFORM_SETTINGS_SAVED, ADMIN_MODULE_NAME);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
     public void uploadSettingsLocation(@RequestParam(required = true) String location) throws IOException {
         settingsService.addSettingsPath(location);

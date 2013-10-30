@@ -24,54 +24,30 @@ public class EventConfigManagerIT {
     @Autowired
     private EventConfigManager eventConfigManager;
 
-    private File configFile;
-
     private String currentUserPrefix;
 
     @Before
     public void setUp() throws IOException {
         currentUserPrefix = Tenant.current().getSuffixedId();
-
-        configFile = File.createTempFile("activemq", "config");
-        FileUtils.writeStringToFile(configFile,
-                "queue.for.events=QueueForEvents\n" + "queue.for.scheduler=QueueForScheduler");
-    }
-
-    @After
-    public void tearDown() {
-        FileUtils.deleteQuietly(configFile);
-    }
-
-    @Test
-    public void shouldLoadActivemqPropertiesFromFs() {
-        eventConfigManager.setActivemqConfigLocation(configFile.getAbsolutePath());
-
-        Properties activeMqConfig = eventConfigManager.getActivemqConfig();
-
-        assertEquals(2, activeMqConfig.size());
-        assertEquals(currentUserPrefix + "QueueForEvents", activeMqConfig.getProperty("queue.for.events"));
-        assertEquals(currentUserPrefix + "QueueForScheduler", activeMqConfig.getProperty("queue.for.scheduler"));
     }
 
     @Test
     public void shouldFallbackToClasspathResource() throws IOException {
-        eventConfigManager.setActivemqConfigLocation(configFile.getAbsolutePath());
-
-        FileUtils.deleteQuietly(configFile);
 
         Properties activeMqConfig = eventConfigManager.getActivemqConfig();
 
         Properties activemqConfigFromClasspath = new Properties();
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream("activemq.properties")) {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("motech-settings.conf")) {
             activemqConfigFromClasspath.load(in);
         }
 
         // take prefixing with username into consideration
-        activemqConfigFromClasspath.setProperty("queue.for.events", currentUserPrefix +
-                activemqConfigFromClasspath.getProperty("queue.for.events"));
-        activemqConfigFromClasspath.setProperty("queue.for.scheduler", currentUserPrefix +
-                activemqConfigFromClasspath.getProperty("queue.for.scheduler"));
+        activemqConfigFromClasspath.setProperty("jms.queue.for.events", currentUserPrefix +
+                activemqConfigFromClasspath.getProperty("jms.queue.for.events"));
+        activemqConfigFromClasspath.setProperty("jms.queue.for.scheduler", currentUserPrefix +
+                activemqConfigFromClasspath.getProperty("jms.queue.for.scheduler"));
 
         assertEquals(activemqConfigFromClasspath, activeMqConfig);
     }
+
 }

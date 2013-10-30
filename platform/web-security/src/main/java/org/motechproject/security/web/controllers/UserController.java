@@ -1,11 +1,11 @@
 package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+/**
+ * The <code>UserController</code> class is responsible for handling web requests, connected with users.
+ */
 @Controller
 public class UserController {
 
@@ -33,7 +36,7 @@ public class UserController {
     private MotechUserService motechUserService;
 
     @Autowired
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)

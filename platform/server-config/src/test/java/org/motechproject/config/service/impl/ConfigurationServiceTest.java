@@ -4,6 +4,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.bootstrap.BootstrapConfigManager;
 import org.motechproject.config.domain.BootstrapConfig;
@@ -29,12 +30,13 @@ public class ConfigurationServiceTest {
     @Mock
     private ConfigFileMonitor configFileMonitor;
 
-    private ConfigurationService configurationService;
+    @InjectMocks
+    private ConfigurationService configurationService = new ConfigurationServiceImpl();
 
     @Before
     public void setUp() {
         initMocks(this);
-        configurationService = new ConfigurationServiceImpl(bootstrapConfigManager, configFileMonitor);
+        configurationService.evictMotechSettingsCache();
     }
 
     @Test

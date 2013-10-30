@@ -1,10 +1,7 @@
 package org.motechproject.server.config.service;
 
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.annotations.MotechListener;
-import org.motechproject.server.config.domain.ConfigFileSettings;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,16 +21,14 @@ public class SettingsFileChangeEventHandler {
     private AllSettings allSettings;
 
     @Autowired
-    private PlatformSettingsService platformSettingsService;
+    private ConfigurationService configurationService;
 
-    @MotechListener(subjects = { ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT, ConfigFileMonitor.FILE_CREATED_EVENT_SUBJECT })
-    public void reloadSettings(MotechEvent event) {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+    public void reloadSettings() {
+        SettingsRecord settingsRecord = configLoader.loadConfig();
         SettingsRecord dbSettings = allSettings.getSettings();
-        dbSettings.updateSettings(configFileSettings);
+        dbSettings.updateSettings(settingsRecord);
         allSettings.addOrUpdateSettings(dbSettings);
 
-        platformSettingsService.evictMotechSettingsCache();
-        platformSettingsService.evictActiveMqSettingsCache();
+        configurationService.evictMotechSettingsCache();
     }
 }

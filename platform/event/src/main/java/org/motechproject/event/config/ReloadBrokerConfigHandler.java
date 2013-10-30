@@ -25,7 +25,7 @@ public class ReloadBrokerConfigHandler implements EventHandler {
     @Override
     public void handleEvent(Event event) {
         try {
-            Object brokerURL = event.getProperty("broker.url");
+            Object brokerURL = event.getProperty("jms.broker.url");
 
             if (brokerURL != null) {
                 connectionFactory.setBrokerUrl(brokerURL.toString());

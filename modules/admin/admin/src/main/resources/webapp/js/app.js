@@ -3,7 +3,7 @@
 
     /* App Module */
 
-    angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'platformSettingsServices',
+    angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'configurationServices',
         'moduleSettingsServices', 'logService', 'ngCookies', 'bootstrap', "notificationRuleServices", "notificationRuleDtoServices"])
         .config(['$routeProvider', function($routeProvider) {
           $routeProvider.

@@ -13,9 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
 
 import java.util.Map;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 public class EmailNotifierTest {
     @Mock
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
 
     @Mock
     private VelocityEngine velocityEngine;

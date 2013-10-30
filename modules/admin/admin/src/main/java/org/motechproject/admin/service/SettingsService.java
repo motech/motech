@@ -23,8 +23,6 @@ public interface SettingsService {
 
     void saveSettingsFile(MultipartFile configFile);
 
-    void saveActiveMqFile(MultipartFile activemqFile);
-
     void addSettingsPath(String path) throws IOException;
 
     List<String> retrieveRegisteredBundleNames();

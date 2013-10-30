@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.powermock.api.mockito.PowerMockito;
@@ -37,7 +37,7 @@ public class LoginControllerTest {
     @Mock
     private LocaleService localeService;
     @Mock
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
 
     @Mock
     private StartupManager startupManager;

@@ -1,11 +1,16 @@
 package org.motechproject.config.service;
 
 import org.motechproject.config.domain.BootstrapConfig;
+import org.motechproject.server.config.domain.MotechSettings;
+import org.springframework.cache.annotation.CacheEvict;
+
+import java.util.Properties;
 
 /**
  * <p>Central configuration service that monitors and manages configurations.</p>
  */
 public interface ConfigurationService {
+    String SETTINGS_CACHE_NAME = "MotechSettings";
 
     /**
      * <p>Loads bootstrap config that is used to start up the Motech server.</p>
@@ -66,4 +71,18 @@ public interface ConfigurationService {
      * @throws org.motechproject.config.MotechConfigurationException if bootstrap configuration cannot be saved.
      */
     void save(BootstrapConfig bootstrapConfig);
+
+    MotechSettings getPlatformSettings();
+
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    void savePlatformSettings(Properties settings);
+
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    void setPlatformSetting(String key, String value);
+
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    void evictMotechSettingsCache();
+
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    void savePlatformSettings(MotechSettings settings);
 }

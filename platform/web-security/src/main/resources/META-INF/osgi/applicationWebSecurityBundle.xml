@@ -9,7 +9,7 @@
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
 
-    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
 
     <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
 

@@ -35,8 +35,6 @@
 
     <osgi:reference id="configLoader" interface="org.motechproject.server.config.service.ConfigLoader"/>
 
-    <osgi:reference id="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
-
     <osgi:reference id="userService" interface="org.motechproject.security.service.MotechUserService"/>
 
     <osgi:reference id="roleService" interface="org.motechproject.security.service.MotechRoleService"/>

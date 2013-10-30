@@ -60,6 +60,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         }
 
         allMotechRoles.update(motechRole);
+        motechUserService.refreshAllUsersContextIfActive();
     }
 
     @Override
@@ -71,6 +72,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
                 throw new RoleHasUserException("Role cannot be deleted because a user has the role.");
             }
             allMotechRoles.remove(motechRole);
+            motechUserService.refreshAllUsersContextIfActive();
         }
     }
 

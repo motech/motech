@@ -1,7 +1,7 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.LoginForm;
@@ -22,7 +22,7 @@ public class LoginController {
     @Autowired
     private LocaleService localeService;
     @Autowired
-    private PlatformSettingsService settingsService;
+    private ConfigurationService settingsService;
     @Autowired
     private StartupManager startupManager;
 
