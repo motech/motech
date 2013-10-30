@@ -11,12 +11,14 @@
 
         $scope.sayHelloResult = '';
         $scope.sayHelloCount = 0;
-        
+
         $scope.sayHello = function() {
-            $scope.sayHelloResult = $scope.msg('${artifactId}.info.noResponse');
+            var messageKey = '${artifactId}.info.noResponse';
+            $scope.sayHelloResult = $scope.msg(messageKey);
             HelloWorld.get({}, function(response) {
                 $scope.sayHelloResult = response.message;
-                motechAlert(response.message, '${artifactId}.info.serviceResponse');
+                messageKey = '${artifactId}.info.serviceResponse';
+                motechAlert(response.message, messageKey);
                 $scope.sayHelloCount++;
             });
         };
