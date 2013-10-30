@@ -18,6 +18,9 @@
         <requiredProperty key="repository">
             <defaultValue>false</defaultValue>
         </requiredProperty>
+        <requiredProperty key="settings">
+            <defaultValue>false</defaultValue>
+        </requiredProperty>
     </requiredProperties>
 
     <fileSets>

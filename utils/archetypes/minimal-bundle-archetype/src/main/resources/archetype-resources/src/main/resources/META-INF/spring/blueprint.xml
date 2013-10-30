@@ -16,7 +16,12 @@ $symbol_escape = '\' )
 
     <osgi:service ref="helloWorldRecordService"
         interface="${package}.service.HelloWorldRecordService" />
-
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
+#end
+#if ($settings == 'true')
+
+    <osgi:service ref="helloWorldSettingsService"
+        interface="${package}.service.HelloWorldSettingsService" />
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 #end
 </beans>

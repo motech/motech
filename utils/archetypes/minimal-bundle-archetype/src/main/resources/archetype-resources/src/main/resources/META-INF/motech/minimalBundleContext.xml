@@ -37,4 +37,16 @@
         <constructor-arg value="motech-hello-world" />
     </bean>
 #end
+#if ($settings == 'true')
+
+    <bean id="bundleSettings" class="org.motechproject.server.config.SettingsFacade"
+        autowire="byType">
+        <property name="moduleName" value="${artifactId}" />
+        <property name="configFiles">
+            <list>
+                <value>classpath:${artifactId}.properties</value>
+            </list>
+        </property>
+    </bean>
+#end
 </beans>

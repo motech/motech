@@ -114,6 +114,29 @@
             <scope>test</scope>
         </dependency>
 #end
+#if ($settings == 'true')
+
+        <!-- Settings -->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${motech.version}</version>
+        </dependency>
+
+        <!-- Settings IT -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-osgi-web-util</artifactId>
+            <version>${motech.version}</version>
+            <scope>test</scope>
+        </dependency>
+#end
     </dependencies>
 
     <repositories>
@@ -161,6 +184,10 @@
 #end
 #if ($repository == 'true')
 	                        org.motechproject.commons.couchdb.service;version=${motech.version},
+#end
+#if ($settings == 'true')
+                            org.motechproject.server.config,
+                            org.motechproject.server.config.service,
 #end
                             *
                         </Import-Package>
