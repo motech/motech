@@ -2,6 +2,9 @@ package org.motechproject.security.domain;
 
 import java.util.List;
 
+/**
+ * Interface that represents Motech user roles.
+ */
 public interface MotechRole {
 
     String getRoleName();
@@ -15,4 +18,8 @@ public interface MotechRole {
     void setPermissionNames(List<String> perrmissionNames);
 
     void setDeletable(boolean deletable);
+
+    void removePermission(String permissionName);
+
+    boolean hasPermission(String permissionName);
 }

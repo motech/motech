@@ -1,11 +1,11 @@
-package org.motechproject.security.authentication;
+package org.motechproject.security.service.authentication;
 
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
-import org.motechproject.security.helper.SecurityHelper;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.service.AuthoritiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Implementation class for @AuthenticationUserDetailsService.
+ * Retrieves user details given OpenId authentication
+ */
 public class MotechOpenIdUserDetailsService implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
 
     @Autowired
@@ -25,6 +29,9 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
 
     @Autowired
     private AllMotechUsers allMotechUsers;
+
+    @Autowired
+    private AuthoritiesService authoritiesService;
 
     @Override
     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) throws UsernameNotFoundException {
@@ -40,7 +47,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
             allMotechUsers.addOpenIdUser(user);
         }
 
-        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
+        return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, authoritiesService.authoritiesFor(user));
     }
 
     private String getAttribute(List<OpenIDAttribute> attributes, String attributeName) {

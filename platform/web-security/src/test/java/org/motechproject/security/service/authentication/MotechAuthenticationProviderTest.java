@@ -1,15 +1,17 @@
-package org.motechproject.security.authentication;
+package org.motechproject.security.service.authentication;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.domain.MotechRoleCouchdbImpl;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
+import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
-import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.service.AuthoritiesService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,12 +33,15 @@ public class MotechAuthenticationProviderTest {
     @Mock
     private AllMotechRoles allMotechRoles;
 
+    @Mock
+    private AuthoritiesService authoritiesService;
+
     private MotechAuthenticationProvider authenticationProvider;
 
     @Before
     public void setup() {
         initMocks(this);
-        authenticationProvider = new MotechAuthenticationProvider(allMotechUsers, passwordEncoder, allMotechRoles);
+        authenticationProvider = new MotechAuthenticationProvider(allMotechUsers, passwordEncoder, authoritiesService);
     }
 
     @Test
