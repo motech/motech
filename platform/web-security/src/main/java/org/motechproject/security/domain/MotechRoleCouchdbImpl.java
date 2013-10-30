@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Represent Motech user roles, with persistence in CouchDB.
- *
  */
 @TypeDiscriminator("doc.type == 'MotechRole'")
 public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements MotechRole {
@@ -62,4 +61,21 @@ public class MotechRoleCouchdbImpl extends MotechBaseDataObject implements Motec
     public void setDeletable(boolean deletable) {
         this.deletable = deletable;
     }
+
+    @Override
+    public void removePermission(String permissionName) {
+        if (permissionNames != null) {
+            permissionNames.remove(permissionName);
+        }
+    }
+
+    @Override
+    public boolean hasPermission(String permissionName) {
+        if (permissionNames != null) {
+            return permissionNames.contains(permissionName);
+        }
+        return false;
+    }
+
+
 }

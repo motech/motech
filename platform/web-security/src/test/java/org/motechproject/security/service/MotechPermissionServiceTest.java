@@ -10,6 +10,7 @@ import org.motechproject.security.domain.MotechPermission;
 import org.motechproject.security.domain.MotechPermissionCouchdbImpl;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.repository.AllMotechPermissions;
+import org.motechproject.security.repository.AllMotechRoles;
 
 import java.util.List;
 
@@ -29,6 +30,12 @@ public class MotechPermissionServiceTest {
 
     @Mock
     private AllMotechPermissions allMotechPermissions;
+
+    @Mock
+    private AllMotechRoles allMotechRoles;
+
+    @Mock
+    private UserContextService userContextsService;
 
     @Before
     public void setUp() {
@@ -69,5 +76,15 @@ public class MotechPermissionServiceTest {
         assertNotNull(result);
         assertEquals(asList("perm1", "perm2"), extract(result, on(PermissionDto.class).getPermissionName()));
         assertEquals(asList("bundle1", "bundle2"), extract(result, on(PermissionDto.class).getBundleName()));
+    }
+
+    @Test
+    public void shouldRefreshUserContextWhenPermissionIsDeleted() {
+        MotechPermission permission = mock(MotechPermission.class);
+        when(allMotechPermissions.findByPermissionName("permName")).thenReturn(permission);
+
+        permissionService.deletePermission("permName");
+
+        verify(userContextsService).refreshAllUsersContextIfActive();
     }
 }

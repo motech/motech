@@ -5,23 +5,12 @@ import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.email.EmailSender;
-import org.motechproject.security.helper.SecurityHelper;
-import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.model.UserDto;
-import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,10 +34,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     private EmailSender emailSender;
 
     @Autowired
-    private SessionHandler sessionHandler;
-
-    @Autowired
-    private AllMotechRoles allMotechRoles;
+    private UserContextService userContextsService;
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale) {
@@ -119,10 +105,7 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public UserDto getUserByEmail(String email) {
         MotechUser user = allMotechUsers.findUserByEmail(email);
-        if (user == null ) {
-            return null;
-        }
-        return new UserDto(user);
+        return user == null ? null : new UserDto(user);
     }
 
     @Override
@@ -148,7 +131,8 @@ public class MotechUserServiceImpl implements MotechUserService {
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
-        refreshUserContextIfActive(motechUser.getUserName());
+        userContextsService.refreshUserContextIfActive(motechUser.getUserName());
+
     }
 
     @Override
@@ -162,7 +146,8 @@ public class MotechUserServiceImpl implements MotechUserService {
         motechUser.setRoles(user.getRoles());
         motechUser.setLocale(user.getLocale());
         allMotechUsers.update(motechUser);
-        refreshUserContextIfActive(motechUser.getUserName());
+        userContextsService.refreshUserContextIfActive(motechUser.getUserName());
+
     }
 
     @Override
@@ -189,53 +174,5 @@ public class MotechUserServiceImpl implements MotechUserService {
         return allMotechUsers.findByUserName(userName).getRoles();
     }
 
-    private void refreshUserContextIfActive(String userName) {
-        MotechUser user = allMotechUsers.findByUserName(userName);
-        Collection<HttpSession> sessions = sessionHandler.getAllSessions();
-
-        for (HttpSession session : sessions) {
-            SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-            Authentication authentication = context.getAuthentication();
-            AbstractAuthenticationToken token;
-            User userInSession = (User) authentication.getPrincipal();
-            if (userInSession.getUsername().equals(userName)) {
-                token = getToken(authentication, user);
-                context.setAuthentication(token);
-            }
-        }
-
-    }
-
-    @Override
-    public void refreshAllUsersContextIfActive() {
-        Collection<HttpSession> sessions = sessionHandler.getAllSessions();
-        MotechUser user;
-
-        for (HttpSession session : sessions) {
-            SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-            Authentication authentication = context.getAuthentication();
-            AbstractAuthenticationToken token;
-            User userInSession = (User) authentication.getPrincipal();
-            user = allMotechUsers.findByUserName(userInSession.getUsername());
-            token =  getToken(authentication, user);
-            context.setAuthentication(token);
-        }
-
-    }
-
-    private AbstractAuthenticationToken getToken(Authentication authentication, MotechUser user) {
-        AbstractAuthenticationToken token = null;
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken oldToken = (UsernamePasswordAuthenticationToken) authentication;
-            token = new UsernamePasswordAuthenticationToken(oldToken.getPrincipal(),
-                    oldToken.getCredentials(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
-
-        } else if (authentication instanceof OpenIDAuthenticationToken) {
-            OpenIDAuthenticationToken oldToken = (OpenIDAuthenticationToken) authentication;
-            token = new OpenIDAuthenticationToken(oldToken.getPrincipal(), SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles),
-                    user.getOpenId(), oldToken.getAttributes());
-        }
-        return token;
-    }
 }
 
