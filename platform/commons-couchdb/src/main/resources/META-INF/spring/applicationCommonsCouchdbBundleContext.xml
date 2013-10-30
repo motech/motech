@@ -10,4 +10,6 @@
     <import resource="classpath:/META-INF/motech/applicationCommonsCouchdbContext.xml"/>
 
     <osgi:service ref="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
+
+    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
 </beans>

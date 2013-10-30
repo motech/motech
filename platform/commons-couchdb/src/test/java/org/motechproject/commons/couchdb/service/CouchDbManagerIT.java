@@ -4,7 +4,6 @@ import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.commons.api.Tenant;
-import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,12 +15,17 @@ import static junit.framework.Assert.assertEquals;
 public class CouchDbManagerIT {
 
     @Autowired
-    CouchDbManagerImpl couchDbManager;
+    CouchDbManager couchDbManager;
 
     @Test
     public void testConnectorRetrieval() throws DbConnectionException {
         CouchDbConnector dbConnector = couchDbManager.getConnector("foo");
         String suffixedTenantId = Tenant.current().getSuffixedId();
         assertEquals(suffixedTenantId + "foo", dbConnector.getDatabaseName());
+    }
+
+    @Test
+    public void should() {
+        couchDbManager.getConnector("foo");
     }
 }

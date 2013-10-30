@@ -7,62 +7,84 @@ import org.ektorp.spring.HttpClientFactoryBean;
 import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.commons.couchdb.service.DbConnectionException;
-import org.springframework.core.io.FileSystemResource;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.service.CoreConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.motechproject.config.core.domain.BootstrapConfig.DB_PASSWORD;
+import static org.motechproject.config.core.domain.BootstrapConfig.DB_URL;
+import static org.motechproject.config.core.domain.BootstrapConfig.DB_USERNAME;
+
 public class CouchDbManagerImpl implements CouchDbManager {
+
+    private final Logger logger = LoggerFactory.getLogger(CouchDbManagerImpl.class);
 
     private Map<String, CouchDbConnector> couchDbConnectors = new HashMap<>();
     private HttpClientFactoryBean httpClientFactoryBean;
+
     private CouchDbInstance couchDbInstance;
+    private Properties couchdbProperties;
+    private CoreConfigurationService coreConfigurationService;
+    private boolean couchDBInitialized = false;
 
-    public CouchDbManagerImpl() throws IOException, DbConnectionException {
-
-        httpClientFactoryBean = new HttpClientFactoryBean();
-
-        Properties couchDbProperties = new Properties();
-        try {
-            FileSystemResource resource;
-            final String configFile = String.format("%s/.motech/config/couchdb.properties", System.getProperty("user.home"));
-            if (new File(configFile).exists()) {
-                resource = new FileSystemResource(configFile);
-            } else {
-                resource = new FileSystemResource("/etc/motech/couchdb.properties");
-            }
-            couchDbProperties.load(resource.getInputStream());
-        } catch (FileNotFoundException e) {
-            URL resource = getClass().getClassLoader().getResource("couchdb.properties");
-            couchDbProperties.load(resource.openStream());
-        }
-        configureDb(couchDbProperties);
+    public CouchDbManagerImpl() {
     }
 
-    private void configureDb(Properties couchDbProperties) throws DbConnectionException {
-        httpClientFactoryBean.setProperties(couchDbProperties);
+    public CouchDbManagerImpl(CoreConfigurationService coreConfigurationService, Properties couchdbProperties) {
+        this.coreConfigurationService = coreConfigurationService;
+        this.couchdbProperties = couchdbProperties;
+        httpClientFactoryBean = new HttpClientFactoryBean();
+    }
+
+    @Override
+    public CouchDbConnector getConnector(String dbName) {
+        return getTargetConnector(dbName);
+    }
+
+    public synchronized CouchDbConnector getTargetConnector(String dbName) {
+        if (!couchDBInitialized) {
+            configureDb();
+        }
+        String prefixedDbName = getDbPrefix() + dbName;
+        if (!couchDbConnectors.containsKey(prefixedDbName)) {
+            couchDbConnectors.put(prefixedDbName, couchDbInstance.createConnector(prefixedDbName, true));
+        }
+        return couchDbConnectors.get(prefixedDbName);
+    }
+
+    private void configureDb() {
+        final Properties mergedCouchdbProps = getCouchdbProperties();
+        httpClientFactoryBean.setProperties(mergedCouchdbProps);
         httpClientFactoryBean.setTestConnectionAtStartup(true);
         httpClientFactoryBean.setCaching(false);
         try {
             httpClientFactoryBean.afterPropertiesSet();
             couchDbConnectors.clear();
             couchDbInstance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
+            couchDBInitialized = true;
         } catch (Exception e) {
-            throw new DbConnectionException("Failed to connect to DB", e);
+            final String message = String.format("Failed to connect to couch DB. DB Url: %s using the username: %s.",
+                    mergedCouchdbProps.get(BootstrapConfig.DB_URL),
+                    mergedCouchdbProps.get(BootstrapConfig.DB_USERNAME));
+            logger.error(message, e);
+            throw new DbConnectionException(message, e);
         }
     }
 
-    public CouchDbConnector getConnector(String dbName) {
-        String prefixedDbName = getDbPrefix() + dbName;
-        if (!couchDbConnectors.containsKey(prefixedDbName)) {
-            couchDbConnectors.put(prefixedDbName, couchDbInstance.createConnector(prefixedDbName, true));
-        }
-        return couchDbConnectors.get(prefixedDbName);
+    private Properties getCouchdbProperties() {
+        DBConfig dbConfig = coreConfigurationService.loadBootstrapConfig().getDbConfig();
+        Properties mergedProps = new Properties();
+        mergedProps.putAll(couchdbProperties);
+        mergedProps.setProperty(DB_URL, dbConfig.getUrl());
+        mergedProps.setProperty(DB_USERNAME, dbConfig.getUsername());
+        mergedProps.setProperty(DB_PASSWORD, dbConfig.getPassword());
+        return mergedProps;
     }
 
     private String getDbPrefix() {
