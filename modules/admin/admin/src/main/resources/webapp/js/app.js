@@ -4,7 +4,7 @@
     /* App Module */
 
     angular.module('motech-admin', ['motech-dashboard', 'bundleServices', 'messageServices', 'configurationServices',
-        'moduleSettingsServices', 'logService', 'ngCookies', 'bootstrap', "notificationRuleServices", "notificationRuleDtoServices"])
+        'moduleSettingsServices', 'logService', 'ngCookies', 'ngRoute', 'bootstrap', "notificationRuleServices", "notificationRuleDtoServices"])
         .config(['$routeProvider', function($routeProvider) {
           $routeProvider.
               when('/bundles', {templateUrl: '../admin/partials/bundles.html', controller: 'BundleListCtrl'}).

@@ -190,6 +190,11 @@
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
+        $scope.task = {
+           taskConfig: {
+                steps: []
+                }
+            };
 
         $q.all([$scope.util.doQuery($q, Channels), $scope.util.doQuery($q, DataSources)]).then(function(data) {
             blockUI();

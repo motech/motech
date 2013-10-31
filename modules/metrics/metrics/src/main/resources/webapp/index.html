@@ -1,7 +1,7 @@
-<div> <!-- Only required for left/right tabs -->
+<div  class="tabbable"> <!-- Only required for left/right tabs -->
     <ul id="content-tabs" class="nav nav-tabs metrics">
-        <li ng-class="active('#/')"><a data-target="main-content" href="#/" data-toggle="tab">{{msg('metrics.tab.graphite')}}</a></li>
-        <li ng-class="active('#/settings')"><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('metrics.tab.settings')}}</a></li>
+        <li ng-class="active('#/graphite')"><a href="#/graphite" >{{msg('metrics.tab.graphite')}}</a></li>
+        <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('metrics.tab.settings')}}</a></li>
     </ul>
 
     <div class="tab-content metrics" id="tab-content">

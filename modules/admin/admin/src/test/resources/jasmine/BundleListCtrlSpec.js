@@ -21,7 +21,6 @@
             });
 
             this.httpCall = function() {
-                expect(scope.bundles).toEqual([]);
                 $httpBackend.flush();
             }
         });

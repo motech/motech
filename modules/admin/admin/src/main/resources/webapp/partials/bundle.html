@@ -96,7 +96,7 @@
         <div class="bundle-prop">
             <div class="bundle-dtLabel">{{msg('admin.bundles.servicesInUse')}}</div>
             <div class="bundle-dtValue">
-                <div ng-repeat="service in module.servicesInUse">{{service}}</div>
+                <div ng-repeat="service in module.servicesInUse track by $index">{{service}}</div>
             </div>
         </div>
     </div>

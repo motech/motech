@@ -35,8 +35,11 @@
 
 <script type="text/javascript" src="resources/lib/angular/angular.min.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-resource.min.js"></script>
-<script type="text/javascript" src="resources/lib/angular/angular-cookies.min.js"></script>
+<script type="text/javascript" src="resources/lib/angular/marked.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-bootstrap.js"></script>
+<script type="text/javascript" src="resources/lib/angular/angular-cookies.min.js"></script>
+<script type="text/javascript" src="resources/lib/angular/angular-route.min.js"></script>
+<script type="text/javascript" src="resources/lib/angular/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-ui.min.js"></script>
 
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap.min.js"></script>

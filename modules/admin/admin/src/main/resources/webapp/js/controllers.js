@@ -260,6 +260,9 @@
         };
 
         Bundle.prototype.printVersion = function () {
+            if (typeof this.version === "undefined") {
+               this.version = 0;
+            }
             var separator = '.',
             ver = this.version.major + separator + this.version.minor + separator + this.version.micro;
             if (this.version.qualifier) {

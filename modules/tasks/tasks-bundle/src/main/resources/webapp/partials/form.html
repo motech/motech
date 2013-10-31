@@ -392,12 +392,24 @@
 
                                             <!------------------------ Chrome & IE ------------------------>
                                             <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
-                                                <editable-content ui-if="i.type == 'UNICODE'" data="i" index="{{$index}}" type="UNICODE"></editable-content>
-                                                <editable-content ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" data="i" index="{{$index}}" type="TEXTAREA"></editable-content>
-                                                <editable-content ui-if="i.type == 'INTEGER' || i.type == 'LONG'" data="i" index="{{$index}}" type="INTEGER"></editable-content>
-                                                <editable-content ui-if="i.type == 'DOUBLE'" data="i" index="{{$index}}" type="DOUBLE"></editable-content>
-                                                <editable-content ui-if="i.type == 'TIME'" data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="TIME"></editable-content>
-                                                <editable-content ui-if="i.type == 'DATE'" data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="DATE"></editable-content>
+                                                <div ui-if="i.type == 'UNICODE'" data="i">
+                                                    <editable-content  index="{{$index}}" data="i" type="UNICODE"></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" data="i" >
+                                                    <editable-content  data="i" index="{{$index}}" type="TEXTAREA"></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'INTEGER' || i.type == 'LONG'" data="i">
+                                                    <editable-content data="i" index="{{$index}}" type="INTEGER"></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'DOUBLE'" data="i">
+                                                    <editable-content  data="i" index="{{$index}}" type="DOUBLE"></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'TIME'" data="i">
+                                                    <editable-content  data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="TIME"></editable-content>
+                                                </div>
+                                                <div ui-if="i.type == 'DATE'" data="i">
+                                                    <editable-content  index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="DATE"></editable-content>
+                                                </div>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio-inline no-margin-top">
                                                         <input type="radio" class="input-block-level" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'true')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, true)"/> {{msg('yes')}}
