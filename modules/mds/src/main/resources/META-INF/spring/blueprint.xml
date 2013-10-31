@@ -8,7 +8,7 @@
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="url" value="../mds/resources/index.html"/>
-        <constructor-arg name="moduleName" value="mds"/>
+        <constructor-arg name="moduleName" value="data-services"/>
         <constructor-arg name="angularModules">
             <list>
                 <value>mds</value>
