@@ -38,6 +38,19 @@
             </form>
         </div>
     </div>
+    <div class="span5 well2">
+        <div class="box-header"> {{msg('admin.settings.importexport.header')}}</div>
+        <div class="box-content inside">
+            <form class="form-inline">
+                <fieldset>
+                    <label class="control-label">{{msg('admin.settings.importexport.export')}}</label>
+                        <span>
+                            <input type="button" ng-click="exportConfig()" value="{{msg('admin.settings.importexport.exportButton')}}" class="btn" />
+                        </span>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>
 <div class="clearfix"></div>
 <div class="well2">

@@ -406,6 +406,14 @@
                 success(alertHandler('admin.settings.saved', 'admin.success')).
                 error(alertHandler('admin.settings.error.location'));
         };
+
+        $scope.exportConfig = function () {
+            $http.get('../admin/api/settings/platform/export').
+            success(function () {
+                window.location.replace("../admin/api/settings/platform/export");
+            }).
+            error(alertHandler('admin.settings.error.export', 'admin.error'));
+        };
     });
 
     adminModule.controller('ModuleCtrl', function($scope, ModuleSettings, Bundle, i18nService, $routeParams) {

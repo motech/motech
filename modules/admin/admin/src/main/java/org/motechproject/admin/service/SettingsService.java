@@ -4,6 +4,7 @@ import org.motechproject.admin.settings.Settings;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public interface SettingsService {
     List<Settings> getBundleSettings(long bundleId) throws IOException;
 
     void saveBundleSettings(Settings settings, long bundleId);
+
+    InputStream exportConfig(String fileName) throws IOException;
 
     void savePlatformSettings(Settings settings);
 

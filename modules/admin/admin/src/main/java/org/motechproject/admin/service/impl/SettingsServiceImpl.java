@@ -96,6 +96,11 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public InputStream exportConfig(String fileName) throws IOException {
+        return configurationService.createZipWithConfigFiles(MotechSettings.SETTINGS_FILE_NAME, fileName);
+    }
+
+    @Override
     public void savePlatformSettings(Settings settings) {
         for (SettingsOption option : settings.getSettings()) {
             configurationService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
