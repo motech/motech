@@ -145,7 +145,7 @@ public abstract class BasePkgTest {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("queueUrl", "tcp://localhost:61616"));
         nameValuePairs.add(new BasicNameValuePair("schedulerUrl", "asd"));
-        nameValuePairs.add(new BasicNameValuePair("loginMode", "server.repository"));
+        nameValuePairs.add(new BasicNameValuePair("loginMode", "repository"));
         nameValuePairs.add(new BasicNameValuePair("adminLogin", MOTECH));
         nameValuePairs.add(new BasicNameValuePair("adminPassword", MOTECH));
         nameValuePairs.add(new BasicNameValuePair("adminConfirmPassword", MOTECH));

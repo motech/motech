@@ -19,22 +19,22 @@ public class LoginModeTest {
 
     @Test
     public void testLoginModeNameForRepository() {
-        assertEquals("server.repository", LoginMode.REPOSITORY.getName());
+        assertEquals("repository", LoginMode.REPOSITORY.getName());
     }
 
     @Test
     public void testLoginModeNameForOpenId() {
-        assertEquals("server.openId", LoginMode.OPEN_ID.getName());
+        assertEquals("openId", LoginMode.OPEN_ID.getName());
     }
 
     @Test
     public void testValueOfForRepositoryLoginMode() {
-        assertEquals(LoginMode.REPOSITORY, LoginMode.valueOf("server.repository"));
+        assertEquals(LoginMode.REPOSITORY, LoginMode.valueOf("repository"));
     }
 
     @Test
     public void testValueOfForOpenIdLoginMode() {
-        assertEquals(LoginMode.OPEN_ID, LoginMode.valueOf("server.openId"));
+        assertEquals(LoginMode.OPEN_ID, LoginMode.valueOf("openId"));
     }
 
     @Test
