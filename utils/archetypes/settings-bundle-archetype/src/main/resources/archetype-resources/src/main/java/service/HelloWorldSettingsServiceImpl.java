@@ -27,8 +27,8 @@ public class HelloWorldSettingsServiceImpl implements HelloWorldSettingsService 
 
     @Override
     public void logInfoWithModuleSettings(String info) {
-        String bundleName = getSettingsValue("${package}.sample.setting");
-        String sampleSetting = getSettingsValue("${package}.bundle.name");
+        String bundleName = getSettingsValue("${package}.bundle.name");
+        String sampleSetting = getSettingsValue("${package}.sample.setting");
         logger.info("{} (module name: {}, with sample setting: {})", new String[] { info, bundleName, sampleSetting });
     }
 }
