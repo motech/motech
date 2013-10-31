@@ -8,7 +8,7 @@ import ${package}.domain.HelloWorldRecord;
 import java.util.List;
 
 /**
- * Interface for the Hello World record repository, used for persisting records.
+ * Interface for repository that persists simple records and allows CRUD.
  */
 public interface AllHelloWorldRecords {
 

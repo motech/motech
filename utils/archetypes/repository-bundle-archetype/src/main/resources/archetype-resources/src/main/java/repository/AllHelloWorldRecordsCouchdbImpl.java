@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CouchDb implementation of the {@link AllHelloWorldRecords} interface.
+ * Implementation of {@link AllHelloWorldRecords} uses CouchDB.
  */
 @Component
 @View(name = "all", map = "function(doc) { emit(doc._id, doc); }")

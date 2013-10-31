@@ -18,7 +18,7 @@ import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 
 /**
- * Verify that HelloWorldService web service is present and functional.
+ * Verify that HelloWorldService HTTP service is present and functional.
  */
 public class HelloWorldWebIT extends BaseOsgiIT {
     private static final String ADMIN_USERNAME = "motech";

@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the {@link HelloWorldSettingsService} uses {@link SettingsFacade}.
+ */
 @Service("helloWorldSettingsService")
 public class HelloWorldSettingsServiceImpl implements HelloWorldSettingsService {
 

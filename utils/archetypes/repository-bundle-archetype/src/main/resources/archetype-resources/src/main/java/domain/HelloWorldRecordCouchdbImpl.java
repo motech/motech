@@ -8,7 +8,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
 /**
- * CouchDb implementation of {@link HelloWorldRecord}.
+ * Implementation of {@link HelloWorldRecord} uses CouchDB.
  */
 @TypeDiscriminator("doc.type == 'HelloWorldRecord'")
 public class HelloWorldRecordCouchdbImpl extends MotechBaseDataObject implements HelloWorldRecord {

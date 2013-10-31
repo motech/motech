@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * The <code>HelloWorldRecordDto</code> models data for Hello World Records.
+ * Models data for simple records in a portable manner.
  */
 public class HelloWorldRecordDto implements Serializable {
 

@@ -161,10 +161,10 @@
                         </Export-Package>
                         <Import-Package>
 #if ($http == 'true')
-                            org.motechproject.osgi.web;version=${motech.version},
+                            org.motechproject.osgi.web,
 #end
 #if ($repository == 'true')
-	                        org.motechproject.commons.couchdb.service;version=${motech.version},
+	                        org.motechproject.commons.couchdb.service,
 #end
 #if ($settings == 'true')
                             org.motechproject.server.config,

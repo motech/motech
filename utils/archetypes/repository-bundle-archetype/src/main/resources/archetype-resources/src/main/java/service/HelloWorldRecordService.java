@@ -7,6 +7,9 @@ import java.util.List;
 
 import ${package}.domain.HelloWorldRecordDto;
 
+/**
+ * Service interface for CRUD on simple repository records.
+ */
 public interface HelloWorldRecordService {
 
     void add(HelloWorldRecordDto record);

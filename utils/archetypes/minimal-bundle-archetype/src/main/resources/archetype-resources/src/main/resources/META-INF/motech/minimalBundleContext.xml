@@ -13,8 +13,7 @@
 
     <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
         <constructor-arg name="moduleName" value="${artifactId}" />
-        <constructor-arg name="url"
-            value="../${artifactId}/resources/index.html" />
+        <constructor-arg name="url" value="../${artifactId}/resources/index.html" />
         <constructor-arg name="angularModules">
             <list>
                 <value>hello-world</value>

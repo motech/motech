@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import ${package}.service.HelloWorldService;
 
+/**
+ * Controller for HelloWorld message and bundle status.
+ */
 @Controller
 public class HelloWorldController {
 

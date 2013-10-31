@@ -8,7 +8,7 @@ import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
 
 /**
- * Verify that HelloWorldSettingsService present, functional.
+ * Verify that HelloWorldSettingsService is present, functional.
  */
 public class HelloWorldSettingsServiceIT extends BaseOsgiIT {
 
