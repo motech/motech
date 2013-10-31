@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
 import org.openmrs.*;
 import org.openmrs.api.ObsService;
@@ -45,8 +46,8 @@ public class OpenMRSObservationAdapter {
             openMRSObservation.setValueNumeric(Boolean.TRUE.equals(value) ? 1.0 : 0.0);
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
-        } else if (value instanceof Concept) {
-            openMRSObservation.setValueCoded((Concept) value);
+        } else if (value instanceof MRSConcept) {
+            openMRSObservation.setValueCoded(conceptAdapter.getConceptByName(((MRSConcept) value).getName()));
         } else if (value != null) {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
