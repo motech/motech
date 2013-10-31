@@ -1,8 +1,12 @@
     /* Common functions */
 
-function motechAlert(msg, title, callback) {
+function motechAlert(messageKeys, title, callback) {
     'use strict';
-    jAlert(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
+    var displayMessage = '';
+    messageKeys.forEach(function(messageKey) {
+        displayMessage += jQuery.i18n.prop(messageKey) + "\n";
+    })
+    jAlert(displayMessage, jQuery.i18n.prop(title), callback);
 }
 
 function motechConfirm(msg, title, callback) {
@@ -34,17 +38,17 @@ var jFormErrorHandler = function(response) {
 
     handleResponse = function(title, defaultMsg, response) {
         'use strict';
-        var msg = "server.error",
+        var messageKeys = "server.error",
             responseData = (typeof(response) === 'string') ? response : response.data;
 
         unblockUI();
 
         if ((typeof(responseData) === 'string') && responseData.startsWith('key:') && !responseData.endsWith('key')) {
-            msg = responseData.split(':')[1];
+            messageKeys = responseData.replace(/key:/g,'').split(',');
         } else if (defaultMsg) {
-            msg = defaultMsg;
+            messageKeys = defaultMsg;
         }
-        motechAlert(msg, title);
+        motechAlert(messageKeys, title);
     },
 
     angularHandler = function(title, defaultMsg) {

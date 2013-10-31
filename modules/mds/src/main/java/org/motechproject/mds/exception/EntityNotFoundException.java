@@ -1,4 +1,4 @@
-package org.motechproject.mds.ex;
+package org.motechproject.mds.exception;
 
 /**
  * The <code>EntityNotFoundException</code> exception signals a situation in which an entity with

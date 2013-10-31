@@ -28,6 +28,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.collections</artifactId>
         </dependency>
@@ -47,6 +52,65 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.transaction</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>com.springsource.javax.validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>org.motechproject.org.hibernate.validator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>com.springsource.javax.validation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>com.springsource.antlr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.javassist</groupId>
+            <artifactId>com.springsource.javassist</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>com.springsource.com.fasterxml.classmate</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>com.springsource.org.jboss.jandex</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>com.springsource.org.apache.tools.ant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>com.springsource.javax.persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>org.motechproject.org.postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.orm</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -61,6 +125,7 @@
                         <Resource-Path>mds/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Import-Package>
+                            org.motechproject.server.config,
                             org.eclipse.gemini.blueprint.config,
                             org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
@@ -74,8 +139,17 @@
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
                             org.springframework.web.servlet.view,
+                            org.apache.commons.dbcp,
+                            org.springframework.orm.hibernate4,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.hibernate.proxy,
+                            javax.persistence.spi;version=2.0.0,
+                            javassist.util.proxy,
+                            org.aopalliance.aop,
                             *
                         </Import-Package>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
@@ -246,6 +320,24 @@
                         <include>spec/*.js</include>
                     </specIncludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.flyway</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>clean-and-migrate-db</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>migrate</goal>
+                        </goals>
+                        <configuration>
+                            <initOnMigrate>true</initOnMigrate>
+                            <initVersion>0</initVersion>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

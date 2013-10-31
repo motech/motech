@@ -11,6 +11,28 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.mds"/>
 
+    <bean id="mdsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="mds"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:postgres.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="postgresProperties" factory-bean="mdsSettings" factory-method="getProperties">
+        <constructor-arg value="postgres.properties"/>
+    </bean>
+
+    <context:property-placeholder properties-ref="postgresProperties"/>
+
     <mvc:annotation-driven/>
+
+    <bean id="mdsDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
 
 </beans>

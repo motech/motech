@@ -1,6 +1,6 @@
 package org.motechproject.mds.web;
 
-import org.motechproject.mds.domain.EntityDto;
+import org.motechproject.mds.dto.EntityDto;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * <ul>
  * <li><strong>results</strong> - this is a list consisting of up to
  * {@link org.motechproject.mds.web.SelectData#getPageLimit()} records, which are of the
- * {@link org.motechproject.mds.domain.EntityDto} type,</li>
+ * {@link org.motechproject.mds.dto.EntityDto} type,</li>
  * <li><strong>more</strong> - it equals to <i>true</i> if select2.js should load more data if user
  * reaches the end of the list; otherwise it equals to <i>false</i>.</li>
  * </ul>

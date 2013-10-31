@@ -261,7 +261,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         try (JarInputStream jarStream = new JarInputStream(url.openStream())) {
             mf = jarStream.getManifest();
         }
-        return null != mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+        String value;
+        try {
+            value = mf.getMainAttributes().getValue(JarInformation.BUNDLE_SYMBOLIC_NAME);
+        } catch (NullPointerException ne) {
+            logger.error("Error when trying to process " + url.getPath());
+            throw ne;
+        }
+        return null != value;
     }
 
     private void startBundles(String key) {

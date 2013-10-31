@@ -1,15 +1,20 @@
 package org.motechproject.mds.web;
 
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.mds.domain.EntityDto;
-import org.motechproject.mds.ex.EntityAlreadyExistException;
-import org.motechproject.mds.ex.EntityNotFoundException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.exception.EntityAlreadyExistException;
+import org.motechproject.mds.exception.EntityNotFoundException;
+import org.motechproject.mds.exception.MDSValidationException;
+import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.utils.JsonUtils;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.server.MockMvc;
+import org.springframework.test.web.server.MvcResult;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
@@ -18,17 +23,26 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EntityControllerTest {
-    private EntityController controller = new EntityController();
-    private MockMvc mvc = MockMvcBuilders.standaloneSetup(controller).build();
+    @Mock
+    private EntityService entityService;
+
+    private EntityController controller;
+
+    private MockMvc mockMvc;
 
     @Before
     public void setUp() throws Exception {
+        controller = new EntityController(entityService);
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         controller.init();
     }
 
@@ -128,20 +142,23 @@ public class EntityControllerTest {
 
     @Test
     public void shouldCreateNewEntity() throws Exception {
-        assertEquals(
-                new EntityDto("9", "Test"),
-                controller.saveEntity(new EntityDto("11", "Test"))
-        );
-    }
+        EntityDto entityToCreate = new EntityDto(null, "Patient", "mrs");
+        String requestBody = JsonUtils.toJson(entityToCreate);
 
-    @Test(expected = EntityAlreadyExistException.class)
-    public void shouldThrowOExceptionIfEntityWithGivenNameExists() throws Exception {
-        controller.saveEntity(new EntityDto("", "Voucher"));
+        MvcResult mvcResult = mockMvc
+                .perform(post("/entities")
+                        .body(requestBody.getBytes()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(entityService).create(entityToCreate);
+        EntityDto createdEntity = JsonUtils.fromJson(mvcResult.getResponse().getContentAsString(), EntityDto.class);
+        assertEquals(entityToCreate, createdEntity);
     }
 
     @Test
     public void shouldHandleEntityNotFoundException() throws Exception {
-        mvc.perform(
+        mockMvc.perform(
                 get("/entities/11")
         ).andExpect(
                 status().is(HttpStatus.SC_CONFLICT)
@@ -152,18 +169,27 @@ public class EntityControllerTest {
 
     @Test
     public void shouldHandleEntityAlreadyExistException() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode json = mapper.createObjectNode();
-        json.put("name", "Voucher");
+        EntityDto entityToCreate = new EntityDto(null, "Patient", "mrs");
+        String requestBody = JsonUtils.toJson(entityToCreate);
+        doThrow(new EntityAlreadyExistException("key:mds.validation.error.entityAlreadyExist")).when(entityService).create(entityToCreate);
 
-        mvc.perform(
-                post("/entities").body(json.toString().getBytes())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(
-                status().is(HttpStatus.SC_CONFLICT)
-        ).andExpect(
-                content().string("key:mds.error.entityAlreadyExist")
-        );
+        mockMvc.perform(post("/entities")
+                        .body(requestBody.getBytes()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.SC_CONFLICT))
+                .andExpect(content().string("key:mds.validation.error.entityAlreadyExist"))
+                .andReturn();
     }
 
+    @Test
+    public void shouldHandleMDSValidationException() throws Exception {
+        EntityDto entityToCreate = new EntityDto(null, "Patient", "mrs");
+        String requestBody = JsonUtils.toJson(entityToCreate);
+        doThrow(new MDSValidationException("key:mds.validation.error.entityNameLength")).when(entityService).create(entityToCreate);
+
+        mockMvc.perform(post("/entities")
+                        .body(requestBody.getBytes()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+                .andExpect(content().string("key:mds.validation.error.entityNameLength"))
+                .andReturn();
+    }
 }

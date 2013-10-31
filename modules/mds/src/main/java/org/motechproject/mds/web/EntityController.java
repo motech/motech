@@ -2,9 +2,12 @@ package org.motechproject.mds.web;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.motechproject.mds.domain.EntityDto;
-import org.motechproject.mds.ex.EntityAlreadyExistException;
-import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.exception.EntityAlreadyExistException;
+import org.motechproject.mds.exception.EntityNotFoundException;
+import org.motechproject.mds.exception.MDSValidationException;
+import org.motechproject.mds.service.EntityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +40,15 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 @Controller
 public class EntityController {
+
     private static final int MAX_NUMBER_OF_TERMS = 3;
     private List<EntityDto> allEntities = new ArrayList<>();
+    private EntityService entityService;
+
+    @Autowired
+    public EntityController(EntityService entityService) {
+        this.entityService = entityService;
+    }
 
     @PostConstruct
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -94,23 +104,21 @@ public class EntityController {
 
     @RequestMapping(value = "/entities", method = RequestMethod.POST)
     @ResponseBody
-    public EntityDto saveEntity(@RequestBody final EntityDto entity) {
-        Object found = CollectionUtils.find(allEntities, new Predicate() {
-            @Override
-            public boolean evaluate(Object obj) {
-                return obj instanceof EntityDto
-                        && equalsIgnoreCase(((EntityDto) obj).getName(), entity.getName());
-            }
-        });
+    public EntityDto saveEntity(@RequestBody EntityDto entityDto) {
+        entityService.create(entityDto);
+        return entityDto;
+    }
 
-        if (null != found) {
-            throw new EntityAlreadyExistException();
-        } else {
-            entity.setId(String.valueOf(allEntities.size() + 1));
-            allEntities.add(entity);
+    @ExceptionHandler(MDSValidationException.class)
+    public void handleMDSValidationException(HttpServletResponse response, MDSValidationException e) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write(e.getMessage());
+    }
 
-            return entity;
-        }
+    @ExceptionHandler(EntityAlreadyExistException.class)
+    public void handleEntityAlreadyExistException(HttpServletResponse response, EntityAlreadyExistException e) throws IOException {
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
+        response.getWriter().write(e.getMessage());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -120,16 +128,6 @@ public class EntityController {
 
         try (Writer writer = response.getWriter()) {
             writer.write("key:mds.error.entityNotFound");
-        }
-    }
-
-    @ExceptionHandler(EntityAlreadyExistException.class)
-    public void handleEntityAlreadyExistException(final HttpServletResponse response)
-            throws IOException {
-        response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-        try (Writer writer = response.getWriter()) {
-            writer.write("key:mds.error.entityAlreadyExist");
         }
     }
 
