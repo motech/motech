@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
@@ -92,11 +93,12 @@ public class SettingsControllerTest {
         SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(MotechSettings.LANGUAGE, "en"));
         List<Settings> pSettingsList = new ArrayList<>();
         pSettingsList.add(platformSettings);
+        AdminSettings adminSettings = new AdminSettings(pSettingsList, false);
 
-        when(settingsService.getSettings()).thenReturn(pSettingsList);
+        when(settingsService.getSettings()).thenReturn(adminSettings);
         when(platformSettings.getSettings()).thenReturn(Arrays.asList(option));
 
-        List<Settings> result = controller.getPlatformSettings();
+        List<Settings> result = controller.getPlatformSettings().getSettingsList();
 
         assertEquals(option.getKey(), result.get(0).getSettings().get(0).getKey());
         assertEquals(option.getValue(), result.get(0).getSettings().get(0).getValue());

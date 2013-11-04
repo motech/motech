@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,8 +72,13 @@ public class SettingsServiceTest {
 
     @Test
     public void testGetSettings() {
-        List<Settings> platformSettingsList = settingsService.getSettings();
+        AdminSettings adminSettings = settingsService.getSettings();
 
+        assertNotNull(adminSettings);
+
+        List<Settings> platformSettingsList = adminSettings.getSettingsList();
+
+        assertEquals(false, adminSettings.isReadOnly());
         assertEquals(2, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);

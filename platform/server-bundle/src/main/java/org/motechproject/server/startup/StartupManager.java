@@ -62,17 +62,21 @@ public class StartupManager {
         dbSettings = configurationService.getPlatformSettings();
 
         if (!dbSettings.isPlatformInitialized()) {
-            platformState = MotechPlatformState.NEED_CONFIG;
             if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
                 settingsRecord = configLoader.loadConfig();
+
+                syncSettingsWithDb();
+
+                if (settingsRecord.getLoginMode().isRepository()) {
+                    platformState = MotechPlatformState.NEED_CONFIG;
+                }
             } else {
                 LOGGER.info("Config source is UI, and no settings in DB. Entering startup.");
+                platformState = MotechPlatformState.NEED_CONFIG;
             }
         } else {
             LOGGER.info("Found settings in db, normal run");
-
-            syncSettingsWithDb();
             platformState = MotechPlatformState.NORMAL_RUN;
         }
 

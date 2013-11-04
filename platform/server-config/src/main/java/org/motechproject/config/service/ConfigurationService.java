@@ -1,6 +1,7 @@
 package org.motechproject.config.service;
 
 import org.motechproject.config.domain.BootstrapConfig;
+import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.cache.annotation.CacheEvict;
 
@@ -98,4 +99,6 @@ public interface ConfigurationService {
      * @throws IOException
      */
     FileInputStream createZipWithConfigFiles(String propertyFile, String fileName) throws IOException;
+
+    ConfigSource getConfigSource();
 }

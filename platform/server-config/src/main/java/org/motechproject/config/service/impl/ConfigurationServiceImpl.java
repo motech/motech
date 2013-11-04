@@ -55,6 +55,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Resource(name = "defaultAnnotations")
     private Properties configAnnotation;
 
+    private ConfigSource configSource;
+
     @Override
     public BootstrapConfig loadBootstrapConfig() {
         if (logger.isDebugEnabled()) {
@@ -67,7 +69,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return null;
         }
 
-        if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
+        configSource = bootstrapConfig.getConfigSource();
+
+        if (ConfigSource.FILE.equals(configSource)) {
             try {
                 configFileMonitor.monitor();
             } catch (FileSystemException e) {
@@ -80,6 +84,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         return bootstrapConfig;
+    }
+
+    @Override
+    public ConfigSource getConfigSource() {
+        return configSource;
     }
 
     @Override

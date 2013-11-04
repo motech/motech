@@ -1,6 +1,10 @@
 <div class="row-fluid">
 
-    <div class="span7 well2">
+    <div ng-show="platformSettings.readOnly" class="not-editable-warning">
+        {{msg('admin.settings.noteditble')}}
+    </div>
+
+    <div ui-if="!platformSettings.readOnly" class="span7 well2">
         <div class="box-header"> {{msg('admin.settings.upload')}}</div>
         <div class="box-content">
             <h4 class="settings-section">{{msg('admin.platform.settings')}}</h4>
@@ -22,7 +26,7 @@
             <p id="settingsMsg" class="inside"></p>
         </div>
     </div>
-    <div class="span5 well2">
+    <div ui-if="!platformSettings.readOnly" class="span5 well2">
         <div class="box-header"> {{msg('admin.settings.location')}}</div>
         <div class="box-content inside">
             <form class="form-inline" id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
@@ -54,10 +58,10 @@
 </div>
 <div class="clearfix"></div>
 <div class="well2">
-    <div ng-show="platformSettings.length > 0">
+    <div ng-show="platformSettings.settingsList.length > 0">
         <div class="box-header"> {{msg('admin.settings.platform')}}</div>
         <div class="box-content">
-            <div class="settings-form lightblue-settings span6" ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
+            <div class="settings-form lightblue-settings span6" ng-repeat="pSettings in platformSettings.settingsList" ng-show="pSettings.settings.length > 0">
                 <h4 class="settings-section">{{msg('admin.'+ pSettings.section)}}</h4>
                 <br />
 
@@ -65,10 +69,10 @@
                     <fieldset>
                         <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="control-group">
                             <label class="control-label" for="{{option.key}}">{{option.key}}</label>
-                            <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
+                            <input ng-disabled="platformSettings.readOnly" type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
                         </div>
                         <div>
-                            <input type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn"/>
+                            <input ui-if="!platformSettings.readOnly" type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn"/>
                         </div>
                     </fieldset>
                 </form>
@@ -76,13 +80,13 @@
             <div class="clearfix"></div>
             <form class="form-vertical inside settings-form form-save">
                 <div class="pagination-centered">
-                    <input type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="btn"/>
+                    <input ui-if="!platformSettings.readOnly" type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="btn"/>
                 </div>
             </form>
         </div>
 
 
-    <div ng-show="platformSettings.length <= 0">
+    <div ng-show="platformSettings.settingsList.length <= 0">
         <div class="box-header">{{msg('admin.settings.noSettings')}}</div>
         <div class="box-content inside">
             <p>{{msg('admin.settings.noSettingsMsg')}}</p>

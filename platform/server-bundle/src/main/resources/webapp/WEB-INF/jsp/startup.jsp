@@ -37,7 +37,7 @@
         <div class="startup-form">
             <div class="diver">
                 <form action="startup.do" method="POST" class="form-horizontal">
-                    <div class="control-group">
+                    <div ng-show="!${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.select.language" bundle="${bundle}"/></label>
                         <div class="controls">
                             <div class="btn-group">
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div ng-show="!${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.enter.queueUrl" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="queueUrl" value="${startupSettings.queueUrl}"/>
@@ -73,32 +73,32 @@
                             </c:if>
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div ng-show="!${isFileMode}" class="control-group">
                          <label class="control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls">
                              <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('server.repository')}}</span>
                              <input type="radio" value="openId" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('server.openId')}}</span>
                          </div>
                      </div>
-                    <div ng-show="securityMode=='repository'" class="control-group">
+                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.enter.adminLogin" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="text" class="input-xlarge" name="adminLogin" value="${startupSettings.adminLogin}"/>
                         </div>
                     </div>
-                    <div ng-show="securityMode=='repository'" class="control-group">
+                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.enter.adminPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-xlarge" name="adminPassword" value="${startupSettings.adminPassword}"/>
                         </div>
                     </div>
-                    <div ng-show="securityMode=='repository'" class="control-group">
+                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.enter.adminComfirmPassword" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="password" class="input-xlarge" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
                         </div>
                     </div>
-                     <div ng-show="securityMode=='repository'" class="control-group">
+                     <div ng-show="securityMode=='repository' || ${isFileMode}" class="control-group">
                         <label class="control-label"><fmt:message key="server.enter.adminEmail" bundle="${bundle}"/></label>
                         <div class="controls">
                             <input type="email" class="input-xlarge" name="adminEmail" value="${startupSettings.adminEmail}"/>

@@ -1,6 +1,7 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.config.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
@@ -60,7 +61,7 @@ public class StartupController {
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new StartupFormValidator(userService));
+        binder.setValidator(new StartupFormValidator(userService, configurationService));
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.GET)
@@ -72,6 +73,9 @@ public class StartupController {
         } else {
             Locale userLocale = localeService.getUserLocale(request);
 
+            ConfigSource configSource = (configurationService.loadBootstrapConfig() != null) ?
+                    configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
+
             StartupForm startupSettings = new StartupForm();
             startupSettings.setLanguage(userLocale.getLanguage());
 
@@ -79,6 +83,7 @@ public class StartupController {
             view.addObject("startupSettings", startupSettings);
             view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("pageLang", userLocale);
+            view.addObject("isFileMode", ConfigSource.FILE.equals(configSource));
         }
 
         return view;
@@ -88,25 +93,34 @@ public class StartupController {
     public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
         ModelAndView view = new ModelAndView(REDIRECT_HOME);
+        ConfigSource configSource = (configurationService.loadBootstrapConfig() != null) ?
+                configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
 
         if (result.hasErrors()) {
+
             view.addObject("suggestions", createSuggestions());
             view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("loginMode", form.getLoginMode());
             view.addObject("errors", getErrors(result));
+            view.addObject("isFileMode", ConfigSource.FILE.equals(configSource));
 
             view.setViewName("startup");
         } else {
-            MotechSettings settings = startupManager.getDefaultSettings();
-            settings.setLanguage(form.getLanguage());
-            settings.setLoginModeValue(form.getLoginMode());
-            settings.savePlatformSetting(AMQ_BROKER_URL, form.getQueueUrl());
-            settings.setProviderName(form.getProviderName());
-            settings.setProviderUrl(form.getProviderUrl());
+            if (ConfigSource.UI.equals(configSource)) {
+                MotechSettings settings = startupManager.getDefaultSettings();
 
-            configurationService.savePlatformSettings(settings);
+                settings.setLanguage(form.getLanguage());
+                settings.setLoginModeValue(form.getLoginMode());
+                settings.savePlatformSetting(AMQ_BROKER_URL, form.getQueueUrl());
+                settings.setProviderName(form.getProviderName());
+                settings.setProviderUrl(form.getProviderUrl());
 
-            if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(form.getLoginMode()))) {
+                configurationService.savePlatformSettings(settings);
+
+                if (LoginMode.REPOSITORY.equals(LoginMode.valueOf(form.getLoginMode()))) {
+                    registerAdminUser(form);
+                }
+            } else {
                 registerAdminUser(form);
             }
 

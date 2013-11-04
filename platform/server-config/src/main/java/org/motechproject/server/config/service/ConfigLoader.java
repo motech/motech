@@ -4,6 +4,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.MotechConfigurationException;
 import org.motechproject.config.domain.ConfigLocation;
 import org.motechproject.config.filestore.ConfigLocationFileStore;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.service.event.Event;
@@ -71,11 +72,20 @@ public class ConfigLoader {
             }
         }
 
-        if (settingsRecord == null) {
-            throw new MotechConfigurationException("Could not read settings from file");
-        }
+        checkSettingsRecord(settingsRecord);
 
         return settingsRecord;
+    }
+
+    private void checkSettingsRecord(SettingsRecord settingsRecord) {
+        if (settingsRecord == null) {
+            throw new MotechConfigurationException("Could not read settings from file");
+        } else {
+            LoginMode loginMode = settingsRecord.getLoginMode();
+            if (loginMode == null || (!loginMode.isRepository() && !loginMode.isOpenId())) {
+                throw new MotechConfigurationException("Login mode has an incorrect value. Acceptable values: \"repository\", \"openId\".");
+            }
+        }
     }
 
     public SettingsRecord loadDefaultConfig() {

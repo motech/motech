@@ -1,5 +1,6 @@
 package org.motechproject.admin.service;
 
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.settings.Settings;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface SettingsService {
 
-    List<Settings> getSettings();
+    AdminSettings getSettings();
 
     List<Settings> getBundleSettings(long bundleId) throws IOException;
 

@@ -5,9 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.Errors;
 import org.motechproject.server.web.form.StartupForm;
@@ -39,8 +41,11 @@ public class StartupFormValidatorTest {
     @Mock
     private MotechUserService userService;
 
+    @Mock
+    private ConfigurationService configurationService;
+
     @InjectMocks
-    private StartupFormValidator startupFormValidator = new StartupFormValidator(userService);
+    private StartupFormValidator startupFormValidator = new StartupFormValidator(userService, configurationService);
 
     @Before
     public void setUp() {
@@ -51,6 +56,7 @@ public class StartupFormValidatorTest {
     public void testUserExistence() {
         StartupForm startupForm = new StartupForm();
 
+        when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
         when(errors.getFieldValue(LOGIN_MODE)).thenReturn(LoginMode.REPOSITORY.getName());
         when(userService.hasUser(LOGIN)).thenReturn(true);
         when(errors.getFieldValue(ADMIN_LOGIN)).thenReturn(LOGIN);
@@ -71,6 +77,7 @@ public class StartupFormValidatorTest {
         UserDto user = new UserDto();
         user.setUserName(LOGIN2);
 
+        when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
         when(errors.getFieldValue(LOGIN_MODE)).thenReturn(LoginMode.REPOSITORY.getName());
         when(userService.hasUser(LOGIN)).thenReturn(false);
         when(errors.getFieldValue(ADMIN_LOGIN)).thenReturn(LOGIN);

@@ -2,6 +2,7 @@ package org.motechproject.admin.web.controller;
 
 import com.google.common.net.HttpHeaders;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
@@ -35,7 +36,6 @@ import java.util.Map;
 /**
  * Class responsible for communication between frontend and backend
  */
-
 @Controller
 public class SettingsController {
 
@@ -85,7 +85,7 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
-    @ResponseBody public List<Settings> getPlatformSettings() {
+    @ResponseBody public AdminSettings getPlatformSettings() {
         return settingsService.getSettings();
     }
 
