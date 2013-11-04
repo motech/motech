@@ -1,0 +1,20 @@
+<form class="form-horizontal">
+    <div ng-repeat="setting in field.settings" class="control-group" ng-class="{error: !checkOptions(setting)}">
+        <label class="control-label">
+            {{msg(setting.name)}}<span class="text-error" ui-if="hasOption(setting, 'REQUIRE')">*</span>
+        </label>
+        <div class="controls">
+            <textarea ui-if="hasType(setting, 'LIST')" ng-model="setting.value" ng-disabled="selectedEntity.readOnly" mds-split-array></textarea>
+            <input ui-if="hasType(setting, 'BOOLEAN')" type="checkbox" ng-model="setting.value" ng-disabled="selectedEntity.readOnly">
+            <input ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" ng-disabled="selectedEntity.readOnly">
+            <input ui-if="hasType(setting, 'DOUBLE')" type="number" step="any" ng-model="setting.value" ng-disabled="selectedEntity.readOnly">
+
+            <span class="help-inline" ng-class="{hide: !hasOption(setting, 'REQUIRE') || hasValue(setting)}">
+                {{msg('mds.error.fieldIsRequired')}}
+            </span>
+            <span class="help-inline" ng-class="{hide: !hasOption(setting, 'POSITIVE') || hasPositiveValue(setting)}">
+                {{msg('mds.error.fieldShouldHavePositiveValue')}}
+            </span>
+        </div>
+    </div>
+</form>

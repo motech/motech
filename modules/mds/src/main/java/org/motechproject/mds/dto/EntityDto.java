@@ -1,6 +1,11 @@
-package org.motechproject.mds.domain;
+package org.motechproject.mds.dto;
 
-import java.util.Objects;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * The <code>EntityDto</code> class contains only basic information about an entity like id, name,
@@ -11,6 +16,7 @@ public class EntityDto {
     private String name;
     private String module;
     private String namespace;
+    private boolean readOnly;
 
     public EntityDto() {
         this(null, null);
@@ -29,6 +35,7 @@ public class EntityDto {
         this.name = name;
         this.module = module;
         this.namespace = namespace;
+        this.readOnly = isNotBlank(module) || isNotBlank(namespace);
     }
 
     public String getId() {
@@ -63,44 +70,29 @@ public class EntityDto {
         this.namespace = namespace;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, module, namespace);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        final EntityDto other = (EntityDto) obj;
-
-        return Objects.equals(this.id, other.id)
-                && Objects.equals(this.name, other.name)
-                && Objects.equals(this.module, other.module)
-                && Objects.equals(this.namespace, other.namespace);
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return String.format(
-                "EntityDto{id='%s', name='%s', module='%s', namespace='%s'}",
-                id, name, module, namespace
-        );
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-
 }

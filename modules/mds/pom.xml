@@ -74,6 +74,7 @@
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
                             org.springframework.web.servlet.view,
+                            org.motechproject.osgi.web,
                             *
                         </Import-Package>
                     </instructions>
@@ -207,7 +208,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, isBlank, handleResponse, toCamelCase, blockUI,
+                                _, $, angular, isBlank, handleResponse, camelCase, blockUI,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, find,
                                 arraysEqual, validateDecimal
                             </predefinedVars>

@@ -146,7 +146,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, angular, jQuery, jAlert, motechAlert, jConfirm, window, jAlertStackTrace,
-                                toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI
+                                toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI, _
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

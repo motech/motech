@@ -1,0 +1,51 @@
+<form class="form-horizontal">
+    <div class="control-group" ng-class="{error: !field.basic.displayName}">
+        <label class="control-label">
+            {{msg('mds.form.label.displayName')}}<span class="text-error">*</span>
+        </label>
+        <div class="controls">
+            <input id="field-display-name-{{$index}}" type="text" ng-model="field.basic.displayName" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+            <span class="help-inline" ng-class="{hide: field.basic.displayName}">
+                {{msg('mds.error.fieldIsRequired')}}
+            </span>
+        </div>
+    </div>
+    <div class="control-group" ng-class="{error: !field.basic.name || !uniqueField(field.basic.name)}">
+        <label class="control-label">
+            {{msg('mds.form.label.name')}}<span class="text-error">*</span>
+        </label>
+        <div class="controls">
+            <input id="field-name-{{$index}}" type="text" ng-model="field.basic.name" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+            <span class="help-inline" ng-class="{hide: field.basic.name}">
+                {{msg('mds.error.fieldIsRequired')}}
+            </span>
+            <span class="help-inline" ng-class="{hide: uniqueField(field.basic.name)}">
+                {{msg('mds.error.duplicateNames')}}
+            </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">
+            {{msg('mds.form.label.required')}}
+        </label>
+        <div class="controls">
+            <input id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" ng-disabled="selectedEntity.readOnly">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">
+            {{msg('mds.form.label.tooltip')}}
+        </label>
+        <div class="controls">
+            <input id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" ng-disabled="selectedEntity.readOnly">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">
+            {{msg('mds.form.label.defaultValue')}}
+        </label>
+        <div class="controls">
+            <div ng-include="loadDefaultValueForm(field.type)"></div>
+        </div>
+    </div>
+</form>
