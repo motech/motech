@@ -104,6 +104,15 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             // This is mandatory for Felix http servlet bridge
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
+        } catch (BundleException e) {
+            logger.error("Failed to start OSGi framework", e);
+            throw new OsgiException(e);
+        }
+    }
+
+    public void startDobara() throws InvalidSyntaxException, ClassNotFoundException, BundleException, IOException, BundleLoadingException {
+            ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
+            BundleContext bundleContext = osgiFramework.getBundleContext();
 
             installAllBundles(servletContext, bundleContext);
 
@@ -124,13 +133,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             verifyBundleState(Bundle.ACTIVE, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
 
             logger.info("OSGi framework started");
-        } catch (BundleException | BundleLoadingException | IOException | ClassNotFoundException |
-                InvalidSyntaxException e) {
-            logger.error("Failed to start OSGi framework", e);
-            throw new OsgiException(e);
-        }
     }
-
     private void verifyBundleState(int targetBundleValue, String bundleGroup, String bundleSymbolicName) {
         List<Bundle> bundleList = bundles.get(bundleGroup);
         for (Bundle bundle : bundleList) {

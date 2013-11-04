@@ -1,1 +1,1 @@
-<% response.sendRedirect("module/server/"); %>
+<% response.sendRedirect("bootstrap/"); %>

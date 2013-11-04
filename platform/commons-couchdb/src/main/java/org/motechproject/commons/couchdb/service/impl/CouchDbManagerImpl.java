@@ -17,12 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.motechproject.config.core.domain.BootstrapConfig.DB_PASSWORD;
-import static org.motechproject.config.core.domain.BootstrapConfig.DB_URL;
-import static org.motechproject.config.core.domain.BootstrapConfig.DB_USERNAME;
-
 public class CouchDbManagerImpl implements CouchDbManager {
 
+    private static final String DB_URL = "url";
+    private static final String DB_USERNAME = "username";
+    private static final String DB_PASSWORD = "password";
     private final Logger logger = LoggerFactory.getLogger(CouchDbManagerImpl.class);
 
     private Map<String, CouchDbConnector> couchDbConnectors = new HashMap<>();

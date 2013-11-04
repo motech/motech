@@ -8,11 +8,16 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
-import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.startup.StartupManager;
+import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.server.api.BundleLoadingException;
+import org.motechproject.server.impl.OsgiFrameworkService;
+//import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.BootstrapConfigForm;
 import org.motechproject.server.web.validator.BootstrapConfigFormValidator;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -22,8 +27,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,12 +55,10 @@ public class BootstrapController {
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
     private static final int CONNECTION_TIMEOUT = 4000; //ms
-
+//    @Autowired
+//    private StartupManager startupManager;
     @Autowired
-    private StartupManager startupManager;
-
-    @Autowired
-    private ConfigurationService configurationService;
+    private CoreConfigurationService coreConfigurationService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -58,21 +66,27 @@ public class BootstrapController {
     }
 
     @RequestMapping(value = "/bootstrap", method = RequestMethod.GET)
-    public ModelAndView bootstrapForm() {
-        if (!startupManager.isBootstrapConfigRequired()) {
+    public ModelAndView bootstrapForm(HttpServletRequest request) throws InvalidSyntaxException, BundleException, ClassNotFoundException, IOException, BundleLoadingException {
+        if (coreConfigurationService.loadBootstrapConfig() != null) {
+            startOsgiService(request.getSession().getServletContext());
             return new ModelAndView(REDIRECT_HOME);
         }
-
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.addObject("bootstrapConfig", new BootstrapConfigForm());
         bootstrapView.addObject("username", System.getProperty("user.name"));
         bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+
         return bootstrapView;
     }
 
+    private void startOsgiService(ServletContext servletContext) throws ClassNotFoundException, BundleException, InvalidSyntaxException, IOException, BundleLoadingException {
+        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        applicationContext.getBean(OsgiFrameworkService.class).startDobara();
+    }
+
     @RequestMapping(value = "/bootstrap", method = RequestMethod.POST)
-    public ModelAndView submitForm(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, BindingResult result) {
+    public ModelAndView submitForm(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, HttpServletRequest request, BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
@@ -84,7 +98,8 @@ public class BootstrapController {
 
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getDbUrl(), form.getDbUsername(), form.getDbPassword()), form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
         try {
-            configurationService.save(bootstrapConfig);
+            coreConfigurationService.saveBootstrapConfig(bootstrapConfig);
+            startOsgiService(request.getSession().getServletContext());
         } catch (Exception e) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList("server.error.bootstrap.save"));
@@ -94,7 +109,8 @@ public class BootstrapController {
             return bootstrapView;
         }
 
-        startupManager.startup();
+
+//     Verify should not be needed here anymore...   startupManager.startup();
 
         return new ModelAndView(REDIRECT_HOME);
     }

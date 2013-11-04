@@ -30,7 +30,7 @@
         <div class="clearfix"></div>
         <div class="startup-form">
             <div class="diver">
-                <form action="bootstrap.do" method="POST" class="form-horizontal bootstrap-config-form" name="bcform">
+                <form action="." method="POST" class="form-horizontal bootstrap-config-form" name="bcform">
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.dbUrl')}}</label>
                         <div class="controls">
