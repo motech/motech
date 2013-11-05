@@ -58,8 +58,8 @@
                 });
         };
 
-        $scope.msg = function (key, value) {
-            return i18nService.getMessage(key, value);
+        $scope.msg = function () {
+            return i18nService.getMessage(arguments);
         };
 
         $scope.getLanguage = function (locale) {
@@ -175,6 +175,18 @@
 
             if (window.location.href.indexOf(address) !== -1) {
                 return "active";
+            }
+        };
+
+        $scope.safeApply = function (fun) {
+            var phase = this.$root.$$phase;
+
+            if (phase === '$apply' || phase === '$digest') {
+                if(fun && (typeof(fun) === 'function')) {
+                    fun();
+                }
+            } else {
+                this.$apply(fun);
             }
         };
 

@@ -5,3 +5,29 @@
 .select-entity {
     width: 400px;
 }
+
+.select-field-type {
+    width: 250px;
+}
+
+.table, .table tbody, .table td {
+    border: none !important;
+}
+
+.table tfoot {
+    border-top: thin solid gray
+}
+
+.ui-timepicker-div select {
+    width: auto;
+    height: 24px;
+    line-height: 18px;
+    padding: 1px 3px;
+    margin: 0 0 0 5px;
+}
+
+.welcome p {
+    font-size:15px;
+    font-weight:200;
+    line-height:20px;
+}

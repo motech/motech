@@ -1,10 +1,8 @@
 <div class="row-fluid">
     <div>
         {{msg('mds.entities')}}:
-        <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity"
-               id="selectEntity" class="select-entity"/>
-        <a href="#newEntityModal" type="button" class="btn btn-success"
-           data-toggle="modal" data-backdrop="static">
+        <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity" id="selectEntity" class="select-entity"/>
+        <a href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
             <i class="icon-plus icon-white"></i> {{msg('mds.btn.newEntity')}}
         </a>
         <a href="" class="btn btn-warning" ng-show="selectedEntity">
@@ -14,8 +12,22 @@
             <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
         </a>
 
-        <div class="row-fluid">
-            <pre style="margin-top: 10px">{{ (selectedEntity || {}) | json }}</pre>
+        <div class="row-fluid" ui-if="selectedEntity">
+            <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
+            <div ui-if="!selectedEntity.readOnly">
+                <button class="btn btn-danger" ng-disabled="!changed()" ng-click="abandonChanges()">
+                    <i class="icon-trash icon-white"></i> {{msg('mds.btn.abandonChanges')}}
+                </button>
+                <button class="btn btn-primary" ng-disabled="!changed() || !canSaveChanges()" ng-click="saveChanges()">
+                    <i class="icon-save icon-white"></i> {{msg('mds.btn.saveChanges')}}
+                </button>
+            </div>
+        </div>
+
+        <div class="welcome" ui-if="!selectedEntity">
+            <h3>{{msg('mds.tab.schemaEditor')}}</h3>
+            <p></p>
+            <p>{{msg('mds.info.selectEntity')}}</p>
         </div>
     </div>
 
