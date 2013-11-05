@@ -138,7 +138,7 @@ public abstract class BasePkgTest {
         request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
         HttpResponse response = httpClient.execute(request);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatusLine().getStatusCode());
     }
 
     protected void submitStartupData() throws IOException, InterruptedException {
