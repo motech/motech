@@ -17,7 +17,7 @@ public class OsgiListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         LOGGER.debug("Starting OSGi framework...");
-        getOsgiService(servletContextEvent).start();
+        getOsgiService(servletContextEvent).init();
     }
 
     @Override

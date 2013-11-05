@@ -3,12 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <import resource="classpath*:META-INF/motech/*.xml"/>
+
     <bean id="allLogMappings" class="org.motechproject.osgi.web.repository.AllLogMappings" autowire="byType"/>
     <bean id="logService" class="org.motechproject.osgi.web.service.impl.ServerLogServiceImpl" autowire="byType"/>
 
     <bean id="logBundleLoader" class="org.motechproject.osgi.web.Log4JBundleLoader" autowire="byType"/>
-
-    <bean id="couchDbManager" class="org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl"/>
 
     <bean id="loggerDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
         <constructor-arg value="motech-loggers"/>

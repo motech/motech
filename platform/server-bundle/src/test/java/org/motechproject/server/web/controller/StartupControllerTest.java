@@ -47,6 +47,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.server.web.controller.Constants.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({StartupManager.class})
@@ -144,7 +145,7 @@ public class StartupControllerTest {
         when(startupManager.canLaunchBundles()).thenReturn(true);
         ModelAndView result = startupController.startup(httpServletRequest);
 
-        assertEquals("redirect:home", result.getViewName());
+        assertEquals(REDIRECT_HOME, result.getViewName());
     }
 
 
@@ -162,7 +163,7 @@ public class StartupControllerTest {
         verify(startupManager).startup();
         verifyUserRegistration();
 
-        assertEquals("redirect:home", result.getViewName());
+        assertEquals(REDIRECT_HOME, result.getViewName());
     }
 
     @Test
@@ -179,7 +180,7 @@ public class StartupControllerTest {
         verify(startupManager).startup();
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
 
-        assertEquals("redirect:home", result.getViewName());
+        assertEquals(REDIRECT_HOME, result.getViewName());
     }
 
     @Test

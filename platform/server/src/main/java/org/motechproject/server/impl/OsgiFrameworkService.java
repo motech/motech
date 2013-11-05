@@ -94,23 +94,22 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     /**
      * Initialize, install and start bundles and the OSGi framework
      */
-    public void start() {
+    public void init() {
         try {
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
-
             osgiFramework.init();
-
-            BundleContext bundleContext = osgiFramework.getBundleContext();
-
             // This is mandatory for Felix http servlet bridge
+            BundleContext bundleContext = osgiFramework.getBundleContext();
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
+
         } catch (BundleException e) {
-            logger.error("Failed to start OSGi framework", e);
+            logger.error("Failed to initialize OSGi framework", e);
             throw new OsgiException(e);
         }
     }
 
-    public void startDobara() throws InvalidSyntaxException, ClassNotFoundException, BundleException, IOException, BundleLoadingException {
+    public void start() throws InvalidSyntaxException, ClassNotFoundException, BundleException, IOException, BundleLoadingException {
+        try {
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
             BundleContext bundleContext = osgiFramework.getBundleContext();
 
@@ -133,7 +132,13 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             verifyBundleState(Bundle.ACTIVE, PLATFORM_BUNDLES, SECURITY_BUNDLE_SYMBOLIC_NAME);
 
             logger.info("OSGi framework started");
+
+        } catch (BundleException e) {
+            logger.error("Failed to start OSGi framework", e);
+            throw new OsgiException(e);
+        }
     }
+
     private void verifyBundleState(int targetBundleValue, String bundleGroup, String bundleSymbolicName) {
         List<Bundle> bundleList = bundles.get(bundleGroup);
         for (Bundle bundle : bundleList) {

@@ -7,7 +7,6 @@ import org.ektorp.spring.HttpClientFactoryBean;
 import org.motechproject.commons.api.Tenant;
 import org.motechproject.commons.couchdb.service.CouchDbManager;
 import org.motechproject.commons.couchdb.service.DbConnectionException;
-import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.slf4j.Logger;
@@ -32,9 +31,6 @@ public class CouchDbManagerImpl implements CouchDbManager {
     private CoreConfigurationService coreConfigurationService;
     private boolean couchDBInitialized = false;
 
-    public CouchDbManagerImpl() {
-    }
-
     public CouchDbManagerImpl(CoreConfigurationService coreConfigurationService, Properties couchdbProperties) {
         this.coreConfigurationService = coreConfigurationService;
         this.couchdbProperties = couchdbProperties;
@@ -42,11 +38,7 @@ public class CouchDbManagerImpl implements CouchDbManager {
     }
 
     @Override
-    public CouchDbConnector getConnector(String dbName) {
-        return getTargetConnector(dbName);
-    }
-
-    public synchronized CouchDbConnector getTargetConnector(String dbName) {
+    public synchronized CouchDbConnector getConnector(String dbName) {
         if (!couchDBInitialized) {
             configureDb();
         }
@@ -69,8 +61,8 @@ public class CouchDbManagerImpl implements CouchDbManager {
             couchDBInitialized = true;
         } catch (Exception e) {
             final String message = String.format("Failed to connect to couch DB. DB Url: %s using the username: %s.",
-                    mergedCouchdbProps.get(BootstrapConfig.DB_URL),
-                    mergedCouchdbProps.get(BootstrapConfig.DB_USERNAME));
+                    mergedCouchdbProps.get(DB_URL),
+                    mergedCouchdbProps.get(DB_USERNAME));
             logger.error(message, e);
             throw new DbConnectionException(message, e);
         }
@@ -81,9 +73,15 @@ public class CouchDbManagerImpl implements CouchDbManager {
         Properties mergedProps = new Properties();
         mergedProps.putAll(couchdbProperties);
         mergedProps.setProperty(DB_URL, dbConfig.getUrl());
-        mergedProps.setProperty(DB_USERNAME, dbConfig.getUsername());
-        mergedProps.setProperty(DB_PASSWORD, dbConfig.getPassword());
+        setKeyIfValueNotNull(mergedProps, DB_USERNAME, dbConfig.getUsername());
+        setKeyIfValueNotNull(mergedProps, DB_PASSWORD, dbConfig.getPassword());
         return mergedProps;
+    }
+
+    private void setKeyIfValueNotNull(Properties properties, String key, String value) {
+        if (value != null) {
+            properties.setProperty(key, value);
+        }
     }
 
     private String getDbPrefix() {

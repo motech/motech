@@ -23,9 +23,4 @@ public class CouchDbManagerIT {
         String suffixedTenantId = Tenant.current().getSuffixedId();
         assertEquals(suffixedTenantId + "foo", dbConnector.getDatabaseName());
     }
-
-    @Test
-    public void should() {
-        couchDbManager.getConnector("foo");
-    }
 }

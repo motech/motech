@@ -11,7 +11,6 @@ import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.api.BundleLoadingException;
 import org.motechproject.server.impl.OsgiFrameworkService;
-//import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.BootstrapConfigForm;
 import org.motechproject.server.web.validator.BootstrapConfigFormValidator;
 import org.osgi.framework.BundleException;
@@ -55,8 +54,7 @@ public class BootstrapController {
     private static final String WARNINGS = "warnings";
     private static final String SUCCESS = "success";
     private static final int CONNECTION_TIMEOUT = 4000; //ms
-//    @Autowired
-//    private StartupManager startupManager;
+
     @Autowired
     private CoreConfigurationService coreConfigurationService;
 
@@ -80,11 +78,6 @@ public class BootstrapController {
         return bootstrapView;
     }
 
-    private void startOsgiService(ServletContext servletContext) throws ClassNotFoundException, BundleException, InvalidSyntaxException, IOException, BundleLoadingException {
-        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        applicationContext.getBean(OsgiFrameworkService.class).startDobara();
-    }
-
     @RequestMapping(value = "/bootstrap", method = RequestMethod.POST)
     public ModelAndView submitForm(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, HttpServletRequest request, BindingResult result) {
         if (result.hasErrors()) {
@@ -93,26 +86,33 @@ public class BootstrapController {
             bootstrapView.addObject("username", System.getProperty("user.name"));
             bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+
             return bootstrapView;
         }
-
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getDbUrl(), form.getDbUsername(), form.getDbPassword()), form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getDbUrl(), form.getDbUsername(),
+                form.getDbPassword()), form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
         try {
             coreConfigurationService.saveBootstrapConfig(bootstrapConfig);
             startOsgiService(request.getSession().getServletContext());
+
         } catch (Exception e) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList("server.error.bootstrap.save"));
             bootstrapView.addObject("username", System.getProperty("user.name"));
             bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
+
             return bootstrapView;
         }
-
-
-//     Verify should not be needed here anymore...   startupManager.startup();
-
         return new ModelAndView(REDIRECT_HOME);
+    }
+
+    private void startOsgiService(ServletContext servletContext) throws ClassNotFoundException, BundleException,
+            InvalidSyntaxException, IOException, BundleLoadingException {
+        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        if (applicationContext != null) {
+            applicationContext.getBean(OsgiFrameworkService.class).start();
+        }
     }
 
     @RequestMapping(value = "/bootstrap/verify", method = RequestMethod.POST)
@@ -160,5 +160,9 @@ public class BootstrapController {
         }
 
         return errors;
+    }
+
+    void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 }
