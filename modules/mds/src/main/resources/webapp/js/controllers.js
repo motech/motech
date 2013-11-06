@@ -651,6 +651,17 @@
     });
 
     /**
+    * The AdvancedObjectSettingsCtrl controller is used on 'Schema Editor/Data Browsing' view.
+    */
+    mds.controller('AdvancedObjectSettingsCtrl', function($scope) {
+        $scope.onAdvancedClose = function() {
+            var modal = angular.element('#advancedObjectSettingsModal');
+
+            modal.modal('hide');
+        };
+    });
+
+    /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
     mds.controller('DataBrowserCtrl', function ($scope) {});
@@ -659,5 +670,7 @@
     * The SettingsCtrl controller is used on the 'Settings' view.
     */
     mds.controller('SettingsCtrl', function ($scope) {});
+
+
 
 }());
