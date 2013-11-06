@@ -5,7 +5,8 @@
         <button href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
             <i class="icon-plus icon-white"></i> {{msg('mds.btn.newEntity')}}
         </button>
-        <button href="" class="btn btn-warning" ng-show="selectedEntity">
+        <button href="#advancedObjectSettingsModal" class="btn btn-warning" ng-show="selectedEntity"
+                data-toggle="modal" data-backdrop="static">
             <i class="icon-cogs icon-white"></i> {{msg('mds.btn.advanced')}}
         </button>
         <button href="#deleteEntityModal" class="btn btn-danger" ng-show="selectedEntity"
@@ -34,4 +35,5 @@
 
     <div ng-include="'../mds/resources/partials/modals/new-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/delete-entity.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/advanced-object-settings.html'"></div>
 </div>
