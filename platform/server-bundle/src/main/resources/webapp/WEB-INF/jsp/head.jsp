@@ -41,6 +41,7 @@
 <script type="text/javascript" src="resources/lib/angular/angular-route.min.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="resources/lib/angular/angular-ui.min.js"></script>
+<script type="text/javascript" src="resources/lib/angular/ui-bootstrap-custom-tpls-0.6.0.min.js"></script>
 
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap.min.js"></script>
 <script type="text/javascript" src="resources/lib/bootstrap/bootstrap-fileupload.min.js"></script>
