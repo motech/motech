@@ -226,7 +226,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>src/main/resources</directory>
+                                            <directory>../server-config/src/main/resources</directory>
                                             <includes>
                                                 <include>motech-settings.conf</include>
                                             </includes>
