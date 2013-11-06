@@ -6,6 +6,7 @@ import org.motechproject.config.domain.DBConfig;
 
 import java.util.Properties;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
 import static org.motechproject.config.domain.BootstrapConfig.CONFIG_SOURCE;
 import static org.motechproject.config.domain.BootstrapConfig.DB_PASSWORD;
 import static org.motechproject.config.domain.BootstrapConfig.DB_URL;
@@ -29,11 +30,11 @@ public final class BootstrapConfigPropertyMapper {
      */
     public static Properties toProperties(BootstrapConfig bootstrapConfig) {
         Properties bootstrapProperties = new Properties();
-        bootstrapProperties.setProperty(DB_URL, bootstrapConfig.getDbConfig().getUrl());
-        bootstrapProperties.setProperty(DB_USERNAME, bootstrapConfig.getDbConfig().getUsername());
-        bootstrapProperties.setProperty(DB_PASSWORD, bootstrapConfig.getDbConfig().getPassword());
-        bootstrapProperties.setProperty(TENANT_ID, bootstrapConfig.getTenantId());
-        bootstrapProperties.setProperty(CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
+        bootstrapProperties.setProperty(DB_URL, defaultString(bootstrapConfig.getDbConfig().getUrl()));
+        bootstrapProperties.setProperty(DB_USERNAME, defaultString(bootstrapConfig.getDbConfig().getUsername()));
+        bootstrapProperties.setProperty(DB_PASSWORD, defaultString(bootstrapConfig.getDbConfig().getPassword()));
+        bootstrapProperties.setProperty(TENANT_ID, defaultString(bootstrapConfig.getTenantId()));
+        bootstrapProperties.setProperty(CONFIG_SOURCE, defaultString(bootstrapConfig.getConfigSource().getName()));
         return bootstrapProperties;
     }
 
