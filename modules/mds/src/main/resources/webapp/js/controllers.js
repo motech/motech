@@ -244,6 +244,21 @@
             modal.modal('hide');
         };
 
+        /**
+        * Deletes the selected entity. If the entity is read only (provided by module), action is
+        * not allowed. If entity does not exist, error message is shown.
+        */
+        $scope.deleteEntity = function() {
+            if ($scope.selectedEntity !== null) {
+                 Entities.remove({id:$scope.selectedEntity.id}, function () {
+                     $scope.selectedEntity = null;
+                     handleResponse('mds.success', 'mds.delete.success', '');
+                 }, function (response) {
+                     handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
+                 });
+            }
+        };
+
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         /**
@@ -633,7 +648,6 @@
                 }
             }
         });
-
     });
 
     /**

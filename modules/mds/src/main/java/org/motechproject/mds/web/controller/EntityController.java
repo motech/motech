@@ -4,6 +4,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
@@ -49,6 +50,20 @@ public class EntityController extends MdsController {
         }
 
         return entity;
+    }
+
+    @RequestMapping(value = "/entities/{entityId}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void deleteEntity(@PathVariable final String entityId) {
+        EntityDto entity = getExampleData().getEntity(entityId);
+
+        if (null == entity) {
+            throw new EntityNotFoundException();
+        } else if(entity.isReadOnly()) {
+            throw new EntityReadOnlyException();
+        } else {
+            getExampleData().removeEntity(entity);
+        }
     }
 
     @RequestMapping(value = "/entities", method = RequestMethod.POST)

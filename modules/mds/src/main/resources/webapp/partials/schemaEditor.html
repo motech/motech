@@ -2,15 +2,16 @@
     <div>
         {{msg('mds.entities')}}:
         <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity" id="selectEntity" class="select-entity"/>
-        <a href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
+        <button href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
             <i class="icon-plus icon-white"></i> {{msg('mds.btn.newEntity')}}
-        </a>
-        <a href="" class="btn btn-warning" ng-show="selectedEntity">
+        </button>
+        <button href="" class="btn btn-warning" ng-show="selectedEntity">
             <i class="icon-cogs icon-white"></i> {{msg('mds.btn.advanced')}}
-        </a>
-        <a href="" class="btn btn-danger" ng-show="selectedEntity">
+        </button>
+        <button href="#deleteEntityModal" class="btn btn-danger" ng-show="selectedEntity"
+           ng-disabled="!selectedEntity || selectedEntity.readOnly" data-toggle="modal" data-backdrop="static">
             <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
-        </a>
+        </button>
 
         <div class="row-fluid" ui-if="selectedEntity">
             <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
@@ -32,4 +33,5 @@
     </div>
 
     <div ng-include="'../mds/resources/partials/modals/new-entity.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/delete-entity.html'"></div>
 </div>

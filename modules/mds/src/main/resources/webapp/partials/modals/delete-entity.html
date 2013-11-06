@@ -1,0 +1,17 @@
+<div id="deleteEntityModal" class="modal hide fade" tabindex="-1" role="dialog"
+     aria-labelledby="deleteEntityModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="deleteEntityModalLabel">{{msg('mds.delete.deleteEntityTitle')}}</h3>
+    </div>
+    <div class="modal-body">
+        {{msg('mds.delete.deleteEntity')}}
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger btn-primary" ng-click="deleteEntity()" data-dismiss="modal">
+            {{msg('mds.btn.delete')}}
+        </button>
+        <button class="btn" data-dismiss="modal">
+            {{msg('mds.btn.cancel')}}
+        </button>
+    </div>
+</div>

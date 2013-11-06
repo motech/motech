@@ -125,6 +125,10 @@ public final class ExampleData {
         entities.add(entity);
     }
 
+    public void removeEntity(EntityDto entity) {
+        entities.remove(entity);
+    }
+
     public boolean hasEntityWithName(String name) {
         EntityDto found = null;
 
