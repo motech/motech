@@ -1,6 +1,7 @@
 //CHECKSTYLE:OFF
 package org.motechproject.mds.web;
 
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -36,6 +37,7 @@ public final class ExampleData {
     private List<EntityDto> entities = new ArrayList<>();
     private List<FieldDto> fields = new ArrayList<>();
     private List<AvailableTypeDto> types = new ArrayList<>();
+    private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
 
     public ExampleData() {
         types.add(new AvailableTypeDto("1", "int", INTEGER));
@@ -200,6 +202,29 @@ public final class ExampleData {
             found.setType(field.getType());
         }
 
+    }
+
+    public AdvancedSettingsDto getAdvanced(String entityId) {
+        AdvancedSettingsDto found = null;
+
+        for (AdvancedSettingsDto item : advancedSettings) {
+            if (item.getObjectId().equalsIgnoreCase(entityId)) {
+                found = item;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    public void saveAdvanced(AdvancedSettingsDto advanced) {
+        AdvancedSettingsDto dto = getAdvanced(advanced.getObjectId());
+
+        if (null == dto) {
+            advancedSettings.add(advanced);
+        } else {
+            dto.setTracking(advanced.getTracking());
+        }
     }
 }
 //CHECKSTYLE:ON

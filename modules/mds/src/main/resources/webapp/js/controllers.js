@@ -8,11 +8,13 @@
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields) {
+        var setFields, setAdvancedSettings;
+
         /**
         * This function is used to set fields array. If fields are properly taken from server,
         * the related $scope fields will be also set.
         */
-        var setFields = function () {
+        setFields = function () {
             $scope.fields = Fields.query({entityId: $scope.selectedEntity.id}, function () {
                 $scope.originalFields = cloneArray($scope.fields);
                 $scope.toRemove = [];
@@ -22,9 +24,35 @@
         };
 
         /**
+        * This function is used to set advanced settings. If settings is properly taken from server,
+        * the related $scope fields will be also set.
+        */
+        setAdvancedSettings = function () {
+            $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
+                function () {
+                    $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
+
+                    unblockUI();
+                }
+            );
+        };
+
+        /**
         * The $scope.selectedEntity contains selected entity. By default no entity is selected.
         */
         $scope.selectedEntity = null;
+
+        /**
+        * The $scope.advancedSettings contains advanced settings of selected entity. By default
+        * there are no advanced settings
+        */
+        $scope.advancedSettings = null;
+
+        /**
+        * The $scope.originalAdvancedSettings constains copy of advanced settings. There is used to
+        * check if a user made some changes in advanced settings.
+        */
+        $scope.originalAdvancedSettings = undefined;
 
         /**
         * The $scope.fields contains entity fields. By default there are no fields.
@@ -327,6 +355,7 @@
         $scope.abandonChanges = function () {
             blockUI();
             setFields();
+            setAdvancedSettings();
         };
 
         /**
@@ -435,6 +464,56 @@
                     handleResponse('mds.error', 'mds.error.cantRemoveField', response);
                 });
             });
+
+            Entities.saveAdvanced({id: $scope.selectedEntity.id}, $scope.advancedSettings,
+                function () {
+                    blockUI();
+
+                    setAdvancedSettings();
+                }
+            );
+        };
+
+        /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
+
+        /**
+        * Add what field should be logged. If the field exists in the array, the field will be
+        * removed from the array.
+        *
+        * @param {object} field The object which represent the entity field.
+        */
+        $scope.addFieldToLog = function (field) {
+            var idx;
+
+            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
+                idx = $scope.advancedSettings.tracking.fields.indexOf(field.id);
+
+                if (idx > -1) {
+                    $scope.advancedSettings.tracking.fields.remove(idx);
+                } else {
+                    $scope.advancedSettings.tracking.fields.push(field.id);
+                }
+            }
+        };
+
+        /**
+        * Add what kind of action should be logged. If the action exists in the array, the action
+        * will be removed from the array.
+        *
+        * @param {string} action The name of the action to log.
+        */
+        $scope.addActionToLog = function (action) {
+            var idx;
+
+            if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
+                idx = $scope.advancedSettings.tracking.actions.indexOf(action);
+
+                if (idx > -1) {
+                    $scope.advancedSettings.tracking.actions.remove(idx);
+                } else {
+                    $scope.advancedSettings.tracking.actions.push(action);
+                }
+            }
         };
 
         /* UTILITY FUNCTIONS */
@@ -461,7 +540,7 @@
         };
 
         /**
-        * Find out if user made changes in field definitions.
+        * Find out if user made changes in field definitions or advanced settings.
         *
         * @return {boolean} true if there are changes; otherwise false.
         */
@@ -471,7 +550,9 @@
                 clone = {
                     fields: fields ? cloneArray($scope.fields) : [],
                     original: original ? cloneArray($scope.originalFields) : []
-                };
+                },
+                changedFields,
+                changedAdvancedSettings;
 
             angular.forEach(clone.fields, function (obj) {
                 delete obj.$$hashKey;
@@ -481,9 +562,15 @@
                 delete obj.$$hashKey;
             });
 
-            return fields && original
+            changedFields = fields && original
                 ? !arraysEqual(clone.fields, clone.original)
                 : (fields && !original) || (!fields && original);
+
+            changedAdvancedSettings = !_.isEqual(
+                $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
+            );
+
+            return changedFields || changedAdvancedSettings;
         };
 
         /**
@@ -622,6 +709,7 @@
 
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
                 setFields();
+                setAdvancedSettings();
             } else {
                 delete $scope.fields;
                 delete $scope.originalFields;

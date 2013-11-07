@@ -8,8 +8,12 @@
     */
     angular.module('entityService', ['ngResource']).factory('Entities', function ($resource) {
         return $resource(
-            '../mds/entities/:id',
-            { id: '@id' }
+            '../mds/entities/:id/:action',
+            { id: '@id' },
+            {
+                getAdvanced: { method: 'GET', params: { action: 'advanced' } },
+                saveAdvanced: { method: 'POST', params: {action: 'advanced' } }
+            }
         );
     });
 

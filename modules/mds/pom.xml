@@ -210,7 +210,7 @@
                             <predefinedVars>
                                 _, $, angular, isBlank, handleResponse, camelCase, blockUI,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, find,
-                                arraysEqual, validateDecimal
+                                arraysEqual, validateDecimal, cloneObj
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
