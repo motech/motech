@@ -1,7 +1,7 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
@@ -30,8 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 import static org.motechproject.server.config.domain.MotechSettings.AMQ_BROKER_URL;
+import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**
  * StartupController that manages the platform system start up and captures the platform core settings and user information.

@@ -14,9 +14,8 @@ public interface PlatformSettingsService {
     /**
      * Add new location for config file.
      *
-     * @param location file location
      */
-    void addConfigLocation(final String location) throws IOException;
+    void monitor() throws IOException;
 
     void evictBundleSettingsCache();
 

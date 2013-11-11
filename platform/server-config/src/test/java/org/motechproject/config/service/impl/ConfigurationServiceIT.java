@@ -7,9 +7,9 @@ import org.hamcrest.core.IsEqual;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
-import org.motechproject.config.domain.DBConfig;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,6 +55,7 @@ public class ConfigurationServiceIT {
     public void shouldPersistAndRetrieveBundlePropertiesFromDatabase() throws IOException, InterruptedException {
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(url, username, password), tenantId, configSourceUI);
         configurationService.save(bootstrapConfig);
+        configurationService.loadBootstrapConfig();
 
         Properties newProperties = new Properties();
         newProperties.put("test_prop3", "test3");

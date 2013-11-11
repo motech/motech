@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.config.filestore.ConfigLocationFileStore;
+import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -57,7 +57,6 @@ public class ConfigFileMonitorTest {
     ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
 
     private FileObject motechSettingsResource;
-    private FileObject settingsResource;
 
     @Before
     public void setUp() throws Exception {
@@ -71,15 +70,6 @@ public class ConfigFileMonitorTest {
         configFileMonitor.afterPropertiesSet();
 
         motechSettingsResource = VFS.getManager().resolveFile(String.format("res:%s", MOTECH_SETTINGS_FILE_NAME));
-        settingsResource = VFS.getManager().resolveFile(String.format("res:%s", SETTINGS_FILE_NAME));
-    }
-
-    @Test
-    public void testChangeConfigFileLocation() throws Exception {
-        configFileMonitor.changeConfigFileLocation(SETTINGS_FILE_NAME);
-
-        verify(configLocationFileStore).add(SETTINGS_FILE_NAME);
-        verify(configFileMonitor).monitor();
     }
 
     @Test

@@ -7,10 +7,9 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,6 @@ public class ConfigFileMonitor implements FileListener {
     private static final Long DELAY = 2500L;
 
     private ConfigLoader configLoader;
-    private ConfigLocationFileStore configLocationFileStore;
     private PlatformSettingsService platformSettingsService;
     private ConfigurationService configurationService;
     private FileSystemManager systemManager;
@@ -83,14 +81,6 @@ public class ConfigFileMonitor implements FileListener {
 
     public MotechSettings getCurrentSettings() {
         return currentSettings;
-    }
-
-    public void changeConfigFileLocation(final String location) throws FileSystemException {
-        configLocationFileStore.add(location);
-
-        LOGGER.info("Changed config file location");
-
-        monitor();
     }
 
     @Override
@@ -158,11 +148,6 @@ public class ConfigFileMonitor implements FileListener {
     @Autowired
     public void setConfigLoader(final ConfigLoader configLoader) {
         this.configLoader = configLoader;
-    }
-
-    @Autowired
-    public void setConfigLocationFileStore(ConfigLocationFileStore configLocationFileStore) {
-        this.configLocationFileStore = configLocationFileStore;
     }
 
     @Autowired
