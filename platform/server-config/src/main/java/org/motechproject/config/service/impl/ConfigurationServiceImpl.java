@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.MotechMapUtils;
-import org.motechproject.config.bootstrap.BootstrapConfigManager;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.repository.AllModuleProperties;
 import org.motechproject.config.service.ConfigurationService;
@@ -26,14 +26,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.io.FileFilter;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +55,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ConfigFileMonitor configFileMonitor;
 
     @Autowired
-    private BootstrapConfigManager bootstrapConfigManager;
+    private CoreConfigurationService coreConfigurationService;
 
     @Autowired
     private AllSettings allSettings;
@@ -77,7 +77,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             logger.debug("Loading bootstrap configuration.");
         }
 
-        final BootstrapConfig bootstrapConfig = bootstrapConfigManager.loadBootstrapConfig();
+        final BootstrapConfig bootstrapConfig = coreConfigurationService.loadBootstrapConfig();
 
         if (bootstrapConfig == null) {
             return null;
@@ -112,7 +112,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             logger.debug("Saving bootstrap configuration.");
         }
 
-        bootstrapConfigManager.saveBootstrapConfig(bootstrapConfig);
+        coreConfigurationService.saveBootstrapConfig(bootstrapConfig);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Saved bootstrap configuration:" + bootstrapConfig);

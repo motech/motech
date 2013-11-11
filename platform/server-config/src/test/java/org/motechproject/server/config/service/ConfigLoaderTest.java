@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.config.MotechConfigurationException;
-import org.motechproject.config.domain.ConfigLocation;
-import org.motechproject.config.filestore.ConfigLocationFileStore;
+import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.domain.ConfigLocation;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.springframework.core.io.DefaultResourceLoader;
 
@@ -20,7 +20,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigLoaderTest {
     @Mock
-    private ConfigLocationFileStore configLocationFileStore;
+    private CoreConfigurationService coreConfigurationService;
     @Spy
     private ConfigLoader configLoader;
 
@@ -28,7 +28,7 @@ public class ConfigLoaderTest {
     public void setUp() {
         configLoader = new ConfigLoader();
         initMocks(this);
-        configLoader.setConfigLocationFileStore(configLocationFileStore);
+        configLoader.setCoreConfigurationService(coreConfigurationService);
         configLoader.setResourceLoader(new DefaultResourceLoader());
     }
 
@@ -36,7 +36,7 @@ public class ConfigLoaderTest {
     public void testMotechSettingsLoading() {
         List<ConfigLocation> configLocations = new ArrayList<>();
         configLocations.add(new ConfigLocation("config/"));
-        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
 
         SettingsRecord settings = configLoader.loadConfig();
 
@@ -48,7 +48,7 @@ public class ConfigLoaderTest {
     public void testNoFolderExists() {
         List<ConfigLocation> configLocations = new ArrayList<>();
         configLocations.add(new ConfigLocation("config1/"));
-        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
 
         configLoader.loadConfig();
     }
@@ -57,7 +57,7 @@ public class ConfigLoaderTest {
     public void testActiveMqPropertiesLoading() {
         List<ConfigLocation> configLocations = new ArrayList<>();
         configLocations.add(new ConfigLocation("config2/"));
-        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
 
         SettingsRecord settings = configLoader.loadConfig();
 
@@ -68,7 +68,7 @@ public class ConfigLoaderTest {
     @Test
     public void shouldLoadDefaultActiveMq() {
         List<ConfigLocation> configLocations = new ArrayList<>();
-        when(configLocationFileStore.getAll()).thenReturn(configLocations);
+        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
 
         SettingsRecord settings = configLoader.loadDefaultConfig();
 

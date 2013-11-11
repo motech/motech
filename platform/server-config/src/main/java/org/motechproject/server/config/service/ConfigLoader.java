@@ -1,12 +1,12 @@
 package org.motechproject.server.config.service;
 
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.MotechConfigurationException;
-import org.motechproject.config.domain.ConfigLocation;
-import org.motechproject.config.filestore.ConfigLocationFileStore;
+import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.domain.ConfigLocation;
+import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
-import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -40,12 +40,12 @@ public class ConfigLoader {
     private EventAdmin eventAdmin;
 
     @Autowired
-    private ConfigLocationFileStore configLocationFileStore;
+    private CoreConfigurationService coreConfigurationService;
 
     public SettingsRecord loadConfig() {
         SettingsRecord settingsRecord = null;
 
-        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
+        Iterable<ConfigLocation> configLocations = coreConfigurationService.getConfigLocations();
         for (ConfigLocation configLocation : configLocations) {
             Resource configLocationResource = configLocation.toResource();
             try {
@@ -68,7 +68,7 @@ public class ConfigLoader {
                 }
                 break;
             } catch (IOException e) {
-                LOGGER.warn("Problem reading motech-settings.conf from location: " + configLocationResource.toString());
+                LOGGER.warn("Problem reading motech-settings.conf from location: " + configLocationResource.toString(), e);
             }
         }
 
@@ -120,7 +120,7 @@ public class ConfigLoader {
         this.resourceLoader = resourceLoader;
     }
 
-    void setConfigLocationFileStore(ConfigLocationFileStore configLocationFileStore) {
-        this.configLocationFileStore = configLocationFileStore;
+    void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 }

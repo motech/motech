@@ -12,6 +12,8 @@
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
+    <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
+
     <osgi:service ref="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
     <osgi:service ref="configLoader" interface="org.motechproject.server.config.service.ConfigLoader"/>
     <osgi:service ref="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>

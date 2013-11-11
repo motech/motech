@@ -43,6 +43,9 @@
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager"/>
 
+    <osgi:reference id="coreConfigurationService"
+                    interface="org.motechproject.config.core.service.CoreConfigurationService"/>
+
     <osgi:reference id="configurationServiceOsgi"
                     interface="org.motechproject.config.service.ConfigurationService"/>
 
