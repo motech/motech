@@ -379,6 +379,7 @@
                             org.motechproject.osgi.web,
                             org.motechproject.osgi.web.service,
                             org.motechproject.osgi.web.settings,
+                            org.motechproject.config.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.config,
