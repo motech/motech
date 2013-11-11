@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
@@ -34,7 +33,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -466,9 +464,9 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldValidateTasksAfterChannelUpdateForInvalidTriggers() {
+    public void shouldValidateTasksOfDependentModulesAfterChannelUpdateForInvalidTriggers() {
         Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
-        when(allTasks.getAll()).thenReturn(asList(task));
+        when(allTasks.dependentOnModule(trigger.getModuleName())).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
@@ -477,9 +475,10 @@ public class TaskServiceImplTest {
 
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
+        verify(allTasks).dependentOnModule(trigger.getModuleName());
+
         ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
         verify(allTasks, times(2)).addOrUpdate(captor.capture());
-
         Task actualTask = captor.getValue();
         assertFalse(actualTask.isEnabled());
         List<Object> errors = new ArrayList<Object>(actualTask.getValidationErrors());
@@ -490,7 +489,7 @@ public class TaskServiceImplTest {
     @Test
     public void shouldValidateTasksAfterChannelUpdateForInvalidActions() {
         Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
-        when(allTasks.getAll()).thenReturn(asList(task));
+        when(allTasks.dependentOnModule(action.getModuleName())).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SENDING", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
@@ -500,7 +499,7 @@ public class TaskServiceImplTest {
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(action));
 
         ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(allTasks, times(2)).addOrUpdate(captor.capture());
+        verify(allTasks).addOrUpdate(captor.capture());
 
         Task actualTask = captor.getValue();
         assertFalse(actualTask.isEnabled());
@@ -510,7 +509,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders(){
+    public void shouldValidateTasksAfterChannelUpdateForInvalidTaskDataProviders() {
         TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         List<LookupFieldsParameter> lookupFields = new ArrayList<>();
@@ -544,7 +543,7 @@ public class TaskServiceImplTest {
         Set<TaskError> existingErrors = new HashSet<>();
         existingErrors.add(new TaskError("task.validation.error.triggerNotExist"));
         task.addValidationErrors(existingErrors);
-        when(allTasks.getAll()).thenReturn(asList(task));
+        when(allTasks.dependentOnModule(trigger.getModuleName())).thenReturn(asList(task));
 
         Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
         Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
@@ -554,16 +553,15 @@ public class TaskServiceImplTest {
         taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
 
         ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(allTasks, times(2)).addOrUpdate(captor.capture());
+        verify(allTasks).addOrUpdate(captor.capture());
 
         Task actualTask = captor.getValue();
         assertTrue(actualTask.isEnabled());
         assertTrue(actualTask.getValidationErrors().isEmpty());
-
     }
 
     @Test
-    public void shouldValidateTasksAfterChannelUpdateForValidTaskDataProviders(){
+    public void shouldValidateTasksAfterChannelUpdateForValidTaskDataProviders() {
         TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
         Set<TaskError> existingErrors = new HashSet<>();
@@ -597,7 +595,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void shouldNotValidateTasksAfterChannelUpdateIfDataSourceDoesNotExistForGivenProvider(){
+    public void shouldNotValidateTasksAfterChannelUpdateIfDataSourceDoesNotExistForGivenProvider() {
         TaskConfig config = new TaskConfig().add(new DataSource("1234", 1L, "Test", "id", asList(new Lookup("id", "trigger.value")), true));
         Task task = new Task("name", trigger, asList(action), config, true, false);
 
@@ -608,6 +606,38 @@ public class TaskServiceImplTest {
         when(providerService.getProvider(dataProvider.getName())).thenReturn(dataProvider);
 
         taskService.validateTasksAfterTaskDataProviderUpdate(getProviderUpdateEvent("abc"));
+
+        verify(allTasks, never()).addOrUpdate(any(Task.class));
+    }
+
+    @Test
+    public void shouldRemoveValidationErrorAndUpdateTaskOnlyIfItHasAnyValidationErrors() {
+        Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
+        Set<TaskError> existingErrors = new HashSet<>();
+        existingErrors.add(new TaskError("task.validation.error.triggerNotExist"));
+        task.addValidationErrors(existingErrors);
+        when(allTasks.dependentOnModule(trigger.getModuleName())).thenReturn(asList(task));
+
+        Channel triggerChannel = new Channel("test", "test-trigger", "0.15", "", asList(new TriggerEvent("send", "SEND", "", asList(new EventParameter("test", "value")))), null);
+        when(channelService.getChannel(trigger.getModuleName())).thenReturn(triggerChannel);
+
+        taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(trigger));
+
+        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+        verify(allTasks).addOrUpdate(captor.capture());
+        Task actualTask = captor.getValue();
+        assertFalse(actualTask.hasValidationErrors());
+    }
+
+    @Test
+    public void shouldNotUpdateTaskIfItDoesNotHaveAnyValidationErrors() {
+        Task task = new Task("name", trigger, asList(action), new TaskConfig(), true, false);
+        when(allTasks.dependentOnModule(trigger.getModuleName())).thenReturn(asList(task));
+
+        Channel actionChannel = new Channel("test", "test-action", "0.14", "", null, asList(new ActionEvent("schedule", "SCHEDULE", "", null)));
+        when(channelService.getChannel(action.getModuleName())).thenReturn(actionChannel);
+
+        taskService.validateTasksAfterChannelUpdate(getChannelUpdateEvent(action));
 
         verify(allTasks, never()).addOrUpdate(any(Task.class));
     }
@@ -684,5 +714,4 @@ public class TaskServiceImplTest {
 
         return new MotechEvent(DATA_PROVIDER_UPDATE_SUBJECT, parameters);
     }
-
 }

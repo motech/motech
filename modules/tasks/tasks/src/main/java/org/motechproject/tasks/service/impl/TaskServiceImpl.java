@@ -209,7 +209,10 @@ public class TaskServiceImpl implements TaskService {
         String moduleName = event.getParameters().get(CHANNEL_MODULE_NAME).toString();
         Channel channel = channelService.getChannel(moduleName);
 
-        for (Task task : getAllTasks()) {
+        LOG.debug(String.format("Handling Channel update %s for module %s", channel.getDisplayName(), moduleName));
+
+        List<Task> tasks = allTasks.dependentOnModule(moduleName);
+        for (Task task : tasks) {
             Set<TaskError> errors;
 
             if (task.getTrigger() != null) {
@@ -252,6 +255,7 @@ public class TaskServiceImpl implements TaskService {
         ChannelRegisterEvent event = new ChannelRegisterEvent(motechEvent);
         List<Task> tasks = allTasks.dependentOnModule(event.getChannelModuleName());
         for (Task task : tasks) {
+            LOG.debug(String.format("Registering channel for task %s", task.getName()));
             task.setHasRegisteredChannel(true);
             allTasks.addOrUpdate(task);
         }
@@ -262,6 +266,7 @@ public class TaskServiceImpl implements TaskService {
         ChannelDeregisterEvent event = new ChannelDeregisterEvent(motechEvent);
         List<Task> tasks = allTasks.dependentOnModule(event.getChannelModuleName());
         for (Task task : tasks) {
+            LOG.debug(String.format("Deregistering channel for task %s", task.getName()));
             task.setHasRegisteredChannel(false);
             allTasks.addOrUpdate(task);
         }
@@ -412,7 +417,7 @@ public class TaskServiceImpl implements TaskService {
 
         for (TaskActionInformation action : task.getActions()) {
             Channel channel = channelService.getChannel(action.getModuleName());
-            errors.addAll(validateAction(task, channel,  action));
+            errors.addAll(validateAction(task, channel, action));
         }
 
         return errors;
@@ -422,7 +427,7 @@ public class TaskServiceImpl implements TaskService {
         Set<TaskError> errors = new HashSet<>();
 
         for (TaskActionInformation action : task.getActions()) {
-            errors.addAll(validateAction(task, channel,  action));
+            errors.addAll(validateAction(task, channel, action));
         }
 
         return errors;
@@ -480,6 +485,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void removeTaskValidationErrors(Task task, String... messages) {
+        if (!task.hasValidationErrors()) {
+            return;
+        }
         for (String message : messages) {
             task.removeValidationError(message);
         }
@@ -489,12 +497,13 @@ public class TaskServiceImpl implements TaskService {
 
     private void publishTaskDisabledMessage(String taskName, String level) {
         Map<String, Object> params = new HashMap<>();
-        params.put("message", format("Task: %s was disabled due to validation errors.", taskName));
+        String message = format("Task: %s was disabled due to validation errors.", taskName);
+        params.put("message", message);
         params.put("level", level);
         params.put("moduleName", "tasks");
 
+        LOG.info(message);
         MotechEvent motechEvent = new MotechEvent("org.motechproject.message", params);
-
         eventRelay.sendEventMessage(motechEvent);
     }
 }

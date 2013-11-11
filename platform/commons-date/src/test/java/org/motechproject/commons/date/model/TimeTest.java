@@ -8,12 +8,18 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 public class TimeTest {
     @Test
     public void parseTime() {
         assertEquals(new Time(10, 12), Time.parseTime("10:12", ":"));
+    }
+
+    @Test
+    public void shouldParseWhenGivenNullTime() {
+        assertNull(Time.parseTime(null, ":"));
     }
 
     @Test

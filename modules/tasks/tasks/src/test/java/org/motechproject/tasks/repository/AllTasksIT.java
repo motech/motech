@@ -1,8 +1,6 @@
 package org.motechproject.tasks.repository;
 
 import org.ektorp.CouchDbConnector;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.tasks.domain.Task;
@@ -112,10 +110,10 @@ public class AllTasksIT extends SpringIntegrationTest {
         TaskActionInformation action3 = new TaskActionInformation("action2", "fest", "jest", "0.12", "actionSubject");
 
         Task[] tasks = new Task[]{
-            new Task("task1", trigger1, asList(action1)),
-            new Task("task2", trigger2, asList(action3)),
-            new Task("task3", trigger1, asList(action2)),
-            new Task("task4", trigger2, asList(action1)),
+                new Task("task1", trigger1, asList(action1)),
+                new Task("task2", trigger2, asList(action3)),
+                new Task("task3", trigger1, asList(action2)),
+                new Task("task4", trigger2, asList(action1)),
         };
         for (Task task : tasks) {
             allTasks.addOrUpdate(task);
