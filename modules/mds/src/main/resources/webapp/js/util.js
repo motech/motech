@@ -50,6 +50,10 @@ function find() {
 
             _.each(fields, function (f) {
                 field = field[f];
+
+                if (_.isUndefined(field)) {
+                    field = {};
+                }
             });
 
             if (label !== undefined) {

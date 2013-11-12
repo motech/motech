@@ -12,18 +12,27 @@ import java.util.List;
  * The <code>AdvancedSettingsDto</code> contains information about advanced settings of an entity.
  */
 public class AdvancedSettingsDto {
-    private String objectId;
+    private String id;
+    private String entityId;
     private TrackingDto tracking = new TrackingDto();
     private List<LookupDto> indexes = new ArrayList<>();
     private RestOptions restOptions = new RestOptions();
     private BrowsingSettingsDto browsing = new BrowsingSettingsDto();
 
-    public String getObjectId() {
-        return objectId;
+    public String getId() {
+        return id;
     }
 
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 
     public TrackingDto getTracking() {
@@ -32,6 +41,16 @@ public class AdvancedSettingsDto {
 
     public void setTracking(TrackingDto tracking) {
         this.tracking = null != tracking ? tracking : new TrackingDto();
+    }
+
+    public void addNewIndex() {
+        this.indexes.add(new LookupDto("New lookup", true));
+    }
+
+    public void removeIndex(Integer idx) {
+        if (null != idx && idx < indexes.size()) {
+            indexes.remove(idx.intValue());
+        }
     }
 
     public List<LookupDto> getIndexes() {

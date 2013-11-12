@@ -30,10 +30,10 @@
         <div class="row margin-before2" ui-if="selectedEntity">
             <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
             <div class="inside" ui-if="!selectedEntity.readOnly">
-                <button class="btn btn-danger" ng-disabled="!changed()" ng-click="abandonChanges()">
+                <button class="btn btn-danger" ng-disabled="!selectedEntity.draft" ng-click="abandonChanges()">
                     <i class="icon-trash icon-white"></i> {{msg('mds.btn.abandonChanges')}}
                 </button>
-                <button class="btn btn-primary" ng-disabled="!changed() || !canSaveChanges()" ng-click="saveChanges()">
+                <button class="btn btn-primary" ng-disabled="!selectedEntity.draft || !canSaveChanges()" ng-click="saveChanges()">
                     <i class="icon-save icon-white"></i> {{msg('mds.btn.saveChanges')}}
                 </button>
             </div>

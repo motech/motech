@@ -1,14 +1,14 @@
 <form class="form-horizontal inside">
     <div class="col-sm-12">
-        <span ng-repeat="metadata in selectedEntityMetadata[$index]">
-            <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(metadata)}">
+        <span ng-repeat="meta in field.metadata">
+            <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(field, meta.key)}">
                 <div class="metadata-control form-inline">
                     <label class="offset-2 control-label metadata-control-label">
                         {{msg('mds.form.label.key')}}
                     </label>
-                    <input class="form-control input-large-fluid" type="text" ng-model="metadata.key" ng-disabled="selectedEntity.readOnly">
+                    <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
                     <div class="metadata-error">
-                        <span class="help-inline" ng-class="{hide: uniqueMetadataKey(metadata)}">
+                        <span class="help-inline" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
                             {{msg('mds.error.duplicateMetadataKeys')}}
                         </span>
                     </div>
@@ -17,15 +17,15 @@
                     <label class="offset-2 control-label metadata-control-label">
                         {{msg('mds.form.label.value')}}
                     </label>
-                    <input class="form-control input-large-fluid" type="text" ng-model="metadata.value" ng-disabled="selectedEntity.readOnly">
-                    <a ui-if="!selectedEntity.readOnly" ng-click="removeMetadata($parent.$parent.$index, $index)">
+                    <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+                    <a ui-if="!selectedEntity.readOnly" ng-click="removeMetadata(field, $index)">
                         <i class="icon-remove icon-large"></i>
                     </a>
                 </div>
             </div>
         </span>
         <div class="metadata-control-save" ui-if="!selectedEntity.readOnly">
-            <button class="btn btn-primary" ng-click="addMetadata($index)">
+            <button class="btn btn-primary" ng-click="addMetadata(field)">
                 {{msg('mds.btn.newMetadata')}}
             </button>
         </div>

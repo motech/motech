@@ -1,5 +1,10 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +24,28 @@ public class RestOptions implements Serializable {
     private boolean update;
     private boolean delete;
 
+    public void addField(String value) {
+        this.fieldIds.add(value);
+    }
+
+    public void removeField(String value) {
+        this.fieldIds.remove(value);
+    }
+
     public List<String> getFieldIds() {
         return fieldIds;
     }
 
     public void setFieldIds(List<String> fieldIds) {
-        this.fieldIds = fieldIds;
+        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<String>();
+    }
+
+    public void addLookup(String value) {
+        this.lookupIds.add(value);
+    }
+
+    public void removeLookup(String value) {
+        this.lookupIds.remove(value);
     }
 
     public List<String> getLookupIds() {
@@ -32,7 +53,7 @@ public class RestOptions implements Serializable {
     }
 
     public void setLookupIds(List<String> lookupIds) {
-        this.lookupIds = lookupIds;
+        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<String>();
     }
 
     public boolean isCreate() {
@@ -65,5 +86,29 @@ public class RestOptions implements Serializable {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

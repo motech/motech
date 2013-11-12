@@ -20,14 +20,14 @@
             <span ui-if="selectedEntity.readOnly">{{field.basic.displayName}}</span>
             <div mds-editable ui-if="!selectedEntity.readOnly">
                 <span>{{field.basic.displayName}}</span>
-                <input style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}">
+                <input style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
             </div>
         </td>
         <td>
             <span ui-if="selectedEntity.readOnly">{{field.basic.name}}</span>
             <div mds-editable ui-if="!selectedEntity.readOnly">
                 <span>{{field.basic.name}}</span>
-                <input style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}">
+                <input style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
             </div>
         </td>
         <td>{{msg(field.type.displayName)}}</td>
@@ -52,12 +52,12 @@
                             {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
                         </a>
                     </li>
-                    <li ui-if="containsValidation(field)">
+                    <li ui-if="field.validation">
                         <a href="#validation-{{$index}}" data-toggle="tab">
                             {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
                         </a>
                     </li>
-                    <li ui-if="field.settings">
+                    <li ui-if="field.settings.length > 0">
                         <a href="#settings-{{$index}}" data-toggle="tab">
                             {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
                         </a>
@@ -71,10 +71,10 @@
                     <div class="tab-pane" id="metadata-{{$index}}">
                         <div ng-include="'../mds/resources/partials/widgets/field-metadata.html'"></div>
                     </div>
-                    <div class="tab-pane" id="validation-{{$index}}" ui-if="containsValidation(field)">
+                    <div class="tab-pane" id="validation-{{$index}}" ui-if="field.validation">
                         <div ng-include="'../mds/resources/partials/widgets/field-validation.html'"></div>
                     </div>
-                    <div class="tab-pane" id="settings-{{$index}}" ui-if="field.settings">
+                    <div class="tab-pane" id="settings-{{$index}}" ui-if="field.settings.length > 0">
                         <div ng-include="'../mds/resources/partials/widgets/field-settings.html'"></div>
                     </div>
                 </div>

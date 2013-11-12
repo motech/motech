@@ -8,35 +8,16 @@
     */
     angular.module('entityService', ['ngResource']).factory('Entities', function ($resource) {
         return $resource(
-            '../mds/entities/:id/:action',
+            '../mds/entities/:id/:action/:param',
             { id: '@id' },
             {
                 getAdvanced: { method: 'GET', params: { action: 'advanced' } },
-                saveAdvanced: { method: 'POST', params: {action: 'advanced' } }
-            }
-        );
-    });
-
-    /**
-    * Creates a field service which will connect with the server and executes appropriate methods
-    * on a field definition.
-    */
-    angular.module('fieldService', ['ngResource']).factory('Fields', function ($resource) {
-        return $resource(
-            '../mds/entities/:entityId/fields/:id',
-            { entityId: '@entityId', id: '@id' }
-        );
-    });
-
-    /**
-    * Creates a fieldValidation service which will contain methods related to field validation in general
-    */
-    angular.module('fieldValidationService', ['ngResource']).factory('FieldsValidation', function ($resource) {
-        return $resource(
-            '../mds/fields/validation/:action/:type',
-            { type: '@type' },
-            {
-                getForType: { method: 'GET', params: { action: 'get' } }
+                getWorkInProggress: { method: 'GET', params: { action: 'wip' }, isArray: true },
+                getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },
+                getField: { method: 'GET', params: {action: 'fields'} },
+                draft: { method: 'POST', params: {action: 'draft' } },
+                abandon: { method: 'POST', params: {action: 'abandon' } },
+                commit: { method: 'POST', params: {action: 'commit' } }
             }
         );
     });

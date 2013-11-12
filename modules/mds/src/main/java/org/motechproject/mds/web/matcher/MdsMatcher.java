@@ -17,12 +17,18 @@ public abstract class MdsMatcher<T> implements Predicate {
     private String term;
     private Class<T> clazz;
 
-    public MdsMatcher(final Class<T> clazz, final String term) {
+    protected MdsMatcher(Class<T> clazz) {
+        this(clazz, "");
+    }
+
+    protected MdsMatcher(final Class<T> clazz, final String term) {
         this.clazz = clazz;
         this.term = term;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean evaluate(Object object) {
         return clazz.isAssignableFrom(object.getClass()) && match(clazz.cast(object));

@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * The <code>AvailableTypeDto</code> class contains information about an available for selection
  * field.
  */
-public class AvailableTypeDto extends SettingsDto {
+public class AvailableTypeDto {
     private String id;
     private String defaultName;
     private TypeDto type;
@@ -18,8 +18,7 @@ public class AvailableTypeDto extends SettingsDto {
         this(null, null, null);
     }
 
-    public AvailableTypeDto(String id, String defaultName, TypeDto type, SettingDto... settings) {
-        super(settings);
+    public AvailableTypeDto(String id, String defaultName, TypeDto type) {
         this.id = id;
         this.defaultName = defaultName;
         this.type = type;
@@ -49,19 +48,25 @@ public class AvailableTypeDto extends SettingsDto {
         this.type = type;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

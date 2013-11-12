@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mds.dto.AvailableTypeDto;
-import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.AvailableTypeDisplayNameComparator;
@@ -12,14 +11,11 @@ import org.springframework.context.MessageSource;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.mds.dto.SettingOptions.POSITIVE;
-import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
 import static org.motechproject.mds.dto.TypeDto.DATETIME;
@@ -51,21 +47,8 @@ public class AvailableControllerTest {
         expected.add(new AvailableTypeDto("4", "date", DATE));
         expected.add(new AvailableTypeDto("5", "time", TIME));
         expected.add(new AvailableTypeDto("6", "datetime", DATETIME));
-        expected.add(
-                new AvailableTypeDto(
-                        "7", "decimal", DOUBLE,
-                        new SettingDto("mds.form.label.precision", 9, INTEGER, REQUIRE, POSITIVE),
-                        new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
-                )
-        );
-        expected.add(
-                new AvailableTypeDto(
-                        "8", "list", LIST,
-                        new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
-                        new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
-                        new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
-                )
-        );
+        expected.add(new AvailableTypeDto("7", "decimal", DOUBLE));
+        expected.add(new AvailableTypeDto("8", "list", LIST));
 
         for (AvailableTypeDto dto : expected) {
             String displayName = dto.getType().getDisplayName();

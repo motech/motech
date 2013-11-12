@@ -3,6 +3,7 @@ package org.motechproject.mds.web.comparator;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import java.util.Locale;
 * {@link HistoryRecord}  by value of their field property.
 */
 public class HistoryRecordComparator implements Comparator<HistoryRecord> {
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d, yyyy hh:mm aaa", Locale.ENGLISH);
 
     private boolean sortAscending;
     private String compareField;
@@ -27,18 +29,16 @@ public class HistoryRecordComparator implements Comparator<HistoryRecord> {
     public int compare(HistoryRecord one, HistoryRecord two) {
         FieldRecord fieldFromOne = findFieldByName(one, compareField);
         FieldRecord fieldFromTwo = findFieldByName(two, compareField);
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy hh:mm aaa", Locale.ENGLISH);
         int ret;
-        Date dateOne = null;
-        Date dateTwo = null;
+
         try {
-            dateOne = formatter.parse(fieldFromOne.getValue().toString());
-            dateTwo = formatter.parse(fieldFromTwo.getValue().toString());
+            Date dateOne = DATE_FORMAT.parse(fieldFromOne.getValue().toString());
+            Date dateTwo = DATE_FORMAT.parse(fieldFromTwo.getValue().toString());
+
+            ret = dateOne.compareTo(dateTwo);
         } catch (ParseException e) {
             ret = 0;
         }
-
-        ret = dateOne.compareTo(dateTwo);
 
         return (sortAscending) ? ret : -ret;
     }

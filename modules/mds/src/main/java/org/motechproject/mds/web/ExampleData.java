@@ -1,36 +1,50 @@
 //CHECKSTYLE:OFF
 package org.motechproject.mds.web;
 
-import org.motechproject.mds.dto.FieldInstanceDto;
-import org.motechproject.mds.web.domain.EntityRecord;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptions;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.mds.dto.SettingOptions.POSITIVE;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
-import static org.motechproject.mds.dto.TypeDto.INTEGER;
-import static org.motechproject.mds.dto.TypeDto.DOUBLE;
-import static org.motechproject.mds.dto.TypeDto.STRING;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
-import static org.motechproject.mds.dto.TypeDto.TIME;
 import static org.motechproject.mds.dto.TypeDto.DATETIME;
+import static org.motechproject.mds.dto.TypeDto.DOUBLE;
+import static org.motechproject.mds.dto.TypeDto.INTEGER;
 import static org.motechproject.mds.dto.TypeDto.LIST;
+import static org.motechproject.mds.dto.TypeDto.STRING;
+import static org.motechproject.mds.dto.TypeDto.TIME;
 
 /**
  * The <code>ExampleData</code> is a temporary class which contains example data for UI.
@@ -41,7 +55,7 @@ import static org.motechproject.mds.dto.TypeDto.LIST;
  * @see AvailableTypeDto
  */
 @SuppressWarnings("PMD")
-public final class ExampleData {
+public class ExampleData {
     private List<EntityDto> entities = new ArrayList<>();
     private List<FieldDto> fields = new ArrayList<>();
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
@@ -50,27 +64,33 @@ public final class ExampleData {
     private List<EntityRecord> entityRecords = new ArrayList<>();
     private List<HistoryRecord> entityHistory = new ArrayList<>();
 
+    private Map<TypeDto, List<SettingDto>> typeSettings = new HashMap<>();
+    private Map<TypeDto, FieldValidationDto> typeValidation = new HashMap<>();
+
+    private Map<String, AdvancedSettingsDto> advancedHistroy = new HashMap<>();
+    private Map<String, Map<String, FieldDto>> fieldsHistory = new HashMap<>();
+
+    private ObjectMapper mapper = new ObjectMapper();
+
     public ExampleData() {
-        types.add(new AvailableTypeDto("1", "int", INTEGER));
-        types.add(new AvailableTypeDto("2", "str", STRING));
-        types.add(new AvailableTypeDto("3", "bool", BOOLEAN));
-        types.add(new AvailableTypeDto("4", "date", DATE));
-        types.add(new AvailableTypeDto("5", "time", TIME));
-        types.add(new AvailableTypeDto("6", "datetime", DATETIME));
-        types.add(
-                new AvailableTypeDto(
-                        "7", "decimal", DOUBLE,
-                        new SettingDto("mds.form.label.precision", 9, INTEGER, REQUIRE, POSITIVE),
-                        new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
-                )
+        addType(new AvailableTypeDto("1", "int", INTEGER), FieldValidationDto.INTEGER, null);
+        addType(new AvailableTypeDto("2", "str", STRING), FieldValidationDto.STRING, null);
+        addType(new AvailableTypeDto("3", "bool", BOOLEAN), null);
+        addType(new AvailableTypeDto("4", "date", DATE), null);
+        addType(new AvailableTypeDto("5", "time", TIME), null);
+        addType(new AvailableTypeDto("6", "datetime", DATETIME), null);
+        addType(
+                new AvailableTypeDto("7", "decimal", DOUBLE),
+                FieldValidationDto.DOUBLE,
+                new SettingDto("mds.form.label.precision", 9, INTEGER, REQUIRE, POSITIVE),
+                new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
         );
-        types.add(
-                new AvailableTypeDto(
-                        "8", "list", LIST,
-                        new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
-                        new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
-                        new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
-                )
+        addType(
+                new AvailableTypeDto("8", "list", LIST),
+                null,
+                new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
+                new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
+                new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
         );
 
         entities.add(new EntityDto("1", "Patient", "OpenMRS", "navio"));
@@ -83,14 +103,15 @@ public final class ExampleData {
 
         entities.add(new EntityDto("5", "Appointments", "Appointments"));
 
-        Map<String, String> exampleMap1 = new HashMap();
-        exampleMap1.put("key1", "value1");
-        exampleMap1.put("key2", "value2");
+        List<MetadataDto> exampleMetadata1 = new LinkedList<>();
+        exampleMetadata1.add(new MetadataDto("key1", "value1"));
+        exampleMetadata1.add(new MetadataDto("key2", "value2"));
+
         fields.add(
                 new FieldDto(
                         "1", "5", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
-                        exampleMap1, null
+                        exampleMetadata1, FieldValidationDto.STRING, null
                 )
         );
 
@@ -102,7 +123,7 @@ public final class ExampleData {
                         "2", "7", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         null,
-                        FieldValidationDto.STRING
+                        FieldValidationDto.STRING, null
                 )
         );
         fields.add(
@@ -110,30 +131,30 @@ public final class ExampleData {
                         "3", "7", STRING,
                         new FieldBasicDto("Drug Regimen", "regimen"),
                         null,
-                        FieldValidationDto.STRING
+                        FieldValidationDto.STRING, null
                 )
         );
 
-        Map<String, String> exampleMap2 = new HashMap();
-        exampleMap2.put("key1", "value1");
-        exampleMap2.put("key2", "value2");
+        List<MetadataDto> exampleMetadata2 = new LinkedList<>();
+        exampleMetadata2.add(new MetadataDto("key1", "value1"));
+        exampleMetadata2.add(new MetadataDto("key2", "value2"));
         fields.add(
                 new FieldDto(
                         "4", "7", INTEGER,
                         new FieldBasicDto("Voucher Number", "voucherNumber"),
-                        exampleMap2,
-                        FieldValidationDto.INTEGER
+                        exampleMetadata2,
+                        FieldValidationDto.INTEGER, null
                 )
         );
 
-        Map<String, String> exampleMap3 = new HashMap();
-        exampleMap3.put("key3", "value3");
+        List<MetadataDto> exampleMetadata3 = new LinkedList<>();
+        exampleMetadata3.add(new MetadataDto("key3", "value3"));
         fields.add(
                 new FieldDto(
                         "5", "7", STRING,
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
-                        exampleMap3,
-                        FieldValidationDto.STRING
+                        exampleMetadata3,
+                        FieldValidationDto.STRING, null
                 )
         );
 
@@ -146,7 +167,8 @@ public final class ExampleData {
         fields.add("5");
         exampleRestOptions.setCreate(true);
         exampleRestOptions.setFieldIds(fields);
-        exampleAdvancedSetting.setObjectId("7");
+        exampleAdvancedSetting.setId(String.valueOf(advancedSettings.size() + 1));
+        exampleAdvancedSetting.setEntityId("7");
         exampleAdvancedSetting.setRestOptions(exampleRestOptions);
         advancedSettings.add(exampleAdvancedSetting);
 
@@ -206,6 +228,38 @@ public final class ExampleData {
             }
         }
 
+        if (fieldsHistory.containsKey(entityId)) {
+            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+                boolean found = false;
+
+                for (int i = list.size() - 1; i >= 0; --i) {
+                    FieldDto field = list.get(i);
+
+                    if (equalsIgnoreCase(field.getId(), entry.getKey())) {
+                        list.remove(i);
+
+                        if (null != entry.getValue()) {
+                            list.add(i, entry.getValue());
+                        }
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found && null != entry.getValue()) {
+                    list.add(entry.getValue());
+                }
+            }
+        }
+
+        Collections.sort(list, new Comparator<FieldDto>() {
+            @Override
+            public int compare(FieldDto one, FieldDto two) {
+                return CASE_INSENSITIVE_ORDER.compare(one.getId(), two.getId());
+            }
+        });
+
         return list;
     }
 
@@ -230,28 +284,47 @@ public final class ExampleData {
             }
         }
 
+        if (null != found && fieldsHistory.containsKey(found.getEntityId())
+                && fieldsHistory.get(found.getEntityId()).containsKey(id)) {
+            found = fieldsHistory.get(found.getEntityId()).get(id);
+        }
+
         return found;
     }
 
-    public boolean removeField(String id) {
-        boolean removed = false;
+    public FieldDto findFieldByName(String entityId, String name) {
+        List<FieldDto> fields = getFields(entityId);
+        FieldDto found = null;
 
-        for (int i = fields.size() - 1; i >= 0; i--) {
-            if (fields.get(i).getId().equalsIgnoreCase(id)) {
-                fields.remove(i);
-                removed = true;
+        for (FieldDto field : fields) {
+            if (equalsIgnoreCase(field.getBasic().getName(), name)) {
+                found = field;
                 break;
             }
         }
 
-        return removed;
+        if (null != found && fieldsHistory.containsKey(found.getEntityId())
+                && fieldsHistory.get(found.getEntityId()).containsKey(found.getId())) {
+            found = fieldsHistory.get(found.getEntityId()).get(found.getId());
+        }
+
+        return found;
+    }
+
+    public void removeField(String id) {
+        for (int i = fields.size() - 1; i >= 0; i--) {
+            if (equalsIgnoreCase(fields.get(i).getId(), id)) {
+                fields.remove(i);
+                break;
+            }
+        }
     }
 
     public List<AvailableTypeDto> getTypes() {
         return new ArrayList<>(types);
     }
 
-    public void addField(FieldDto field) {
+    public void addOrUpdateField(FieldDto field) {
         FieldDto found = getField(field.getId());
 
         if (null == found) {
@@ -269,10 +342,48 @@ public final class ExampleData {
     }
 
     public AdvancedSettingsDto getAdvanced(String entityId) {
+        AdvancedSettingsDto found = clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId));
+
+        if (advancedHistroy.containsKey(entityId)) {
+            AdvancedSettingsDto temporary = advancedHistroy.get(entityId);
+
+            found.setId(temporary.getId());
+            found.setEntityId(temporary.getEntityId());
+            found.setTracking(temporary.getTracking());
+            found.setIndexes(temporary.getIndexes());
+            found.setRestOptions(temporary.getRestOptions());
+            found.setBrowsing(temporary.getBrowsing());
+        }
+
+        return found;
+    }
+
+    private AdvancedSettingsDto getPurgeAdvanced(String entityId) {
         AdvancedSettingsDto found = null;
 
         for (AdvancedSettingsDto item : advancedSettings) {
-            if (item.getObjectId().equalsIgnoreCase(entityId)) {
+            if (equalsIgnoreCase(item.getEntityId(), entityId)) {
+                found = item;
+                break;
+            }
+        }
+
+        if (null == found) {
+            found = new AdvancedSettingsDto();
+            found.setId(String.valueOf(advancedSettings.size() + 1));
+            found.setEntityId(entityId);
+
+            advancedSettings.add(found);
+        }
+
+        return found;
+    }
+
+    public AvailableTypeDto getAvailableType(String typeClass) {
+        AvailableTypeDto found = null;
+
+        for (AvailableTypeDto item : types) {
+            if (equalsIgnoreCase(item.getType().getTypeClass(), typeClass)) {
                 found = item;
                 break;
             }
@@ -281,16 +392,219 @@ public final class ExampleData {
         return found;
     }
 
-    public void saveAdvanced(AdvancedSettingsDto advanced) {
-        AdvancedSettingsDto dto = getAdvanced(advanced.getObjectId());
+    public void draft(String entityId, DraftData data) {
+        if (data.isCreate()) {
+            draftCreate(entityId, data);
+        } else if (data.isEdit()) {
+            draftEdit(entityId, data);
+        } else if (data.isRemove()) {
+            draftRemove(entityId, data);
+        }
+    }
 
-        if (null == dto) {
-            advancedSettings.add(advanced);
+    private void draftCreate(String entityId, DraftData data) {
+        if (!fieldsHistory.containsKey(entityId)) {
+            fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+        }
+
+        Map<String, FieldDto> map = fieldsHistory.get(entityId);
+
+        String typeClass = data.getValue(DraftData.TYPE_CLASS).toString();
+        String displayName = data.getValue(DraftData.DISPLAY_NAME).toString();
+        String name = data.getValue(DraftData.NAME).toString();
+        String fieldId = String.valueOf(getFields().size() + 1);
+
+        FieldBasicDto basic = new FieldBasicDto();
+        basic.setName(name);
+        basic.setDisplayName(displayName);
+
+        AvailableTypeDto availableType = getAvailableType(typeClass);
+        TypeDto fieldType = availableType.getType();
+        List<SettingDto> fieldSettings = typeSettings.get(fieldType);
+        FieldValidationDto fieldValidation = typeValidation.get(fieldType);
+
+        FieldDto field = new FieldDto();
+        field.setId(fieldId);
+        field.setEntityId(entityId);
+        field.setBasic(basic);
+        field.setType(fieldType);
+        field.setValidation(fieldValidation);
+        field.setSettings(fieldSettings);
+
+        map.put(fieldId, field);
+    }
+
+    private void draftEdit(String entityId, DraftData data) {
+        Object advancedValue = data.getValues().get(DraftData.ADVANCED);
+        boolean editAdvanced = null != advancedValue && parseBoolean(advancedValue.toString());
+        String[] path = data.getValue(DraftData.PATH).toString().split("\\.");
+        List value = (List) data.getValue(DraftData.VALUE);
+        Object start;
+
+        if (editAdvanced) {
+            if (!advancedHistroy.containsKey(entityId)) {
+                advancedHistroy.put(
+                        entityId, clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId))
+                );
+            }
+
+            start = advancedHistroy.get(entityId);
         } else {
-            dto.setTracking(advanced.getTracking());
-            dto.setIndexes(advanced.getIndexes());
-            dto.setRestOptions(advanced.getRestOptions());
-            dto.setBrowsing(advanced.getBrowsing());
+            if (!fieldsHistory.containsKey(entityId)) {
+                fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+            }
+
+            Map<String, FieldDto> map = fieldsHistory.get(entityId);
+            String fieldId = data.getValue(DraftData.FIELD_ID).toString();
+
+            if (!map.containsKey(fieldId)) {
+                FieldDto field = getField(fieldId);
+                map.put(fieldId, clone(FieldDto.class, field));
+            }
+
+            start = map.get(fieldId);
+        }
+
+        Object field = findField(path, start);
+        setField(field, path[path.length - 1], value);
+    }
+
+    private void draftRemove(String entityId, DraftData data) {
+        if (!fieldsHistory.containsKey(entityId)) {
+            fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+        }
+
+        Map<String, FieldDto> map = fieldsHistory.get(entityId);
+
+        String fieldId = data.getValue(DraftData.FIELD_ID).toString();
+        map.put(fieldId, null);
+    }
+
+    private Object findField(String[] path, Object start) {
+        Object current = start;
+
+        for (int i = 0; i < path.length - 1; ++i) {
+            String property = path[i];
+
+            if (current == null) {
+                throw new IllegalStateException("Field on path is null");
+            } else if (current instanceof List) {
+                int idx = Integer.parseInt(property);
+                current = ((List) current).get(idx);
+            } else if (current instanceof Map) {
+                current = ((Map) current).get(property);
+            } else {
+                try {
+                    current = PropertyUtils.getProperty(current, property);
+                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        return current;
+    }
+
+    private void setField(Object current, String property, List value) {
+        if (property.startsWith("$")) {
+            String methodName = property.substring(1);
+
+            try {
+                Class<?> clazz = current.getClass();
+
+                if (value == null) {
+                    Method method = clazz.getMethod(methodName);
+                    method.invoke(current);
+                } else {
+                    Class[] clazzes = new Class[value.size()];
+                    for (int i = 0; i < value.size(); ++i) {
+                        Object item = value.get(i);
+                        clazzes[i] = item instanceof List ? List.class : item.getClass();
+                    }
+
+                    Method method = clazz.getMethod(methodName, clazzes);
+                    method.invoke(current, value.toArray(new Object[value.size()]));
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new IllegalStateException(e);
+            }
+        } else {
+            try {
+                PropertyUtils.setProperty(current, property, value.get(0));
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
+    public void commitChanges(String entityId) {
+        if (fieldsHistory.containsKey(entityId)) {
+            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+                FieldDto field = entry.getValue();
+                boolean found = false;
+
+                for (int i = fields.size() - 1; i >= 0; --i) {
+                    if (equalsIgnoreCase(fields.get(i).getId(), entry.getKey())) {
+                        if (null == field) {
+                            fields.remove(i);
+                        } else {
+                            fields.set(i, field);
+                        }
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found && null != field) {
+                    fields.add(field);
+                }
+            }
+        }
+
+        if (advancedHistroy.containsKey(entityId)) {
+            AdvancedSettingsDto current = getPurgeAdvanced(entityId);
+            AdvancedSettingsDto temporary = advancedHistroy.get(entityId);
+
+            current.setId(temporary.getId());
+            current.setEntityId(temporary.getEntityId());
+            current.setTracking(clone(TrackingDto.class, temporary.getTracking()));
+            current.setIndexes(temporary.getIndexes());
+            current.setRestOptions(clone(RestOptions.class, temporary.getRestOptions()));
+            current.setBrowsing(clone(BrowsingSettingsDto.class, temporary.getBrowsing()));
+        }
+
+        abandonChanges(entityId);
+    }
+
+    public void abandonChanges(String entityId) {
+        fieldsHistory.remove(entityId);
+        advancedHistroy.remove(entityId);
+        getEntity(entityId).setDraft(false);
+    }
+
+    private <T> T clone(Class<T> clazz, Object obj) {
+        try {
+            byte[] bytes = mapper.writeValueAsBytes(obj);
+
+            return mapper.readValue(bytes, clazz);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void addType(AvailableTypeDto type, FieldValidationDto validation,
+                         SettingDto... settings) {
+        types.add(type);
+        typeValidation.put(type.getType(), validation);
+
+        if (ArrayUtils.isEmpty(settings)) {
+            typeSettings.put(type.getType(), null);
+        } else {
+            List<SettingDto> list = new LinkedList<>();
+            Collections.addAll(list, settings);
+
+            typeSettings.put(type.getType(), list);
         }
     }
 
@@ -375,6 +689,16 @@ public final class ExampleData {
         }
 
         return instanceHistoryList;
+    }
+
+    private List<FieldDto> getFields() {
+        List<FieldDto> list = new ArrayList<>();
+
+        for (EntityDto entity : entities) {
+            list.addAll(getFields(entity.getId()));
+        }
+
+        return list;
     }
 }
 //CHECKSTYLE:ON

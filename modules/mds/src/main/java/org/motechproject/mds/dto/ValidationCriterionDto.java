@@ -6,7 +6,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * The <code>ValidationCriterionDto</code> contains information about single criterion for field validation.
+ * The <code>ValidationCriterionDto</code> contains information about single criterion for
+ * field validation.
  */
 public class ValidationCriterionDto {
     private String displayName;
@@ -15,7 +16,11 @@ public class ValidationCriterionDto {
     private boolean enabled;
 
     public ValidationCriterionDto() {
-        this(null, null, "", false);
+        this(null, null);
+    }
+
+    public ValidationCriterionDto(String displayName, TypeDto type) {
+        this(displayName, type, null, false);
     }
 
     public ValidationCriterionDto(String displayName, TypeDto type, Object value, boolean enabled) {
@@ -57,19 +62,25 @@ public class ValidationCriterionDto {
         this.enabled = enabled;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

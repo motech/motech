@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class FieldBasicDto {
     private String displayName;
     private String name;
-    private Boolean required;
+    private boolean required;
     private Object defaultValue;
     private String tooltip;
 
@@ -20,10 +20,10 @@ public class FieldBasicDto {
     }
 
     public FieldBasicDto(String displayName, String name) {
-        this(displayName, name, null, null, null);
+        this(displayName, name, false, null, null);
     }
 
-    public FieldBasicDto(String displayName, String name, Boolean required, Object defaultValue,
+    public FieldBasicDto(String displayName, String name, boolean required, Object defaultValue,
                          String tooltip) {
         this.displayName = displayName;
         this.name = name;
@@ -48,11 +48,11 @@ public class FieldBasicDto {
         this.name = name;
     }
 
-    public Boolean isRequired() {
+    public boolean isRequired() {
         return required;
     }
 
-    public void setRequired(Boolean required) {
+    public void setRequired(boolean required) {
         this.required = required;
     }
 
@@ -72,19 +72,25 @@ public class FieldBasicDto {
         this.tooltip = tooltip;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

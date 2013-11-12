@@ -1,9 +1,11 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,10 +29,9 @@ public class SettingDto {
         this.name = name;
         this.value = value;
         this.type = type;
+        this.options = new LinkedList<>();
 
-        if (null != options && options.length > 0) {
-            this.options = new LinkedList<>();
-
+        if (!ArrayUtils.isEmpty(options)) {
             Collections.addAll(this.options, options);
         }
     }
@@ -56,7 +57,9 @@ public class SettingDto {
     }
 
     public void setOptions(List<SettingOptions> options) {
-        this.options = options;
+        this.options = CollectionUtils.isEmpty(options)
+                ? new LinkedList<SettingOptions>()
+                : options;
     }
 
     public TypeDto getType() {
@@ -67,19 +70,25 @@ public class SettingDto {
         this.type = type;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

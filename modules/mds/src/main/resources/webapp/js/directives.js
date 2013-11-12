@@ -173,7 +173,7 @@
             require: 'ngModel',
             link: function (scope, element, attr, ngModel) {
                 ngModel.$parsers.push(function (text) {
-                    return text.split("\n");
+                    return text ? text.split("\n") : [];
                 });
 
                 ngModel.$formatters.push(function (array) {
@@ -542,41 +542,61 @@
     * Add "Move selected to target" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnTo', function () {
+    mds.directive('connectedListBtnTo', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
-                var elem = angular.element(element),
-                    connectWith = elem.attr('connect-with');
-
-                elem.click(function (e) {
-                    var sourceContainer = $('.connected-list-source.' + connectWith),
-                        targetContainer = $('.connected-list-target.' + connectWith),
+            link: function (scope, element, attr) {
+                angular.element(element).click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = sourceContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [];
+                        selectedIndices = [], selectedItems = [],
+                        array = [];
 
-                        if(selectedElements.size() > 0) {
-                            selectedElements.each(function() {
-                                 var index = parseInt($(this).attr('item-index'), 10),
-                                     item = source[index];
-                                 $(this).removeClass('selected');
-                                 selectedIndices.push(index);
-                                 selectedItems.push(item);
-                            });
-                            scope.$apply(function() {
-                                 angular.forEach(selectedIndices.reverse(), function(itemIndex) {
-                                     source.splice(itemIndex, 1);
-                                 });
-                                 angular.forEach(selectedItems, function(item) {
-                                     target.push(item);
-                                 });
-                                 sourceContainer.trigger('contentChange', [source]);
-                                 targetContainer.trigger('contentChange', [target]);
-                            });
-                        }
+                    selectedElements.each(function() {
+                         var that = $(this),
+                             index = parseInt(that.attr('item-index'), 10),
+                             item = source[index];
+
+                         that.removeClass('selected');
+                         selectedIndices.push(index);
+                         selectedItems.push(item);
+                    });
+
+                    scope.safeApply(function () {
+                        angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                             source.splice(itemIndex, 1);
+                        });
+
+                        angular.forEach(selectedItems, function(item) {
+                            target.push(item);
+                        });
+
+                        angular.forEach(target, function (item) {
+                            array.push(item.id);
+                        });
+
+                        Entities.draft({
+                            id: scope.selectedEntity.id
+                        }, {
+                            edit: true,
+                            values: {
+                                path: attr.mdsPath,
+                                advanced: true,
+                                value: [array]
+                            }
+                        }, function () {
+                             scope.selectedEntity.draft = true;
+                        });
+
+                        sourceContainer.trigger('contentChange', [source]);
+                        targetContainer.trigger('contentChange', [target]);
+                    });
                 });
+
+                angular.element(element).disableSelection();
             }
         };
     });
@@ -585,30 +605,45 @@
     * Add "Move all to target" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnToAll', function () {
+    mds.directive('connectedListBtnToAll', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
-                var elem = angular.element(element),
-                    connectWith = elem.attr('connect-with');
-
-                elem.click(function (e) {
-                    var sourceContainer = $('.connected-list-source.' + connectWith),
-                        targetContainer = $('.connected-list-target.' + connectWith),
+            link: function (scope, element, attr) {
+                angular.element(element).click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
-                        selectedItems = sourceContainer.children();
+                        selectedItems = sourceContainer.children(),
+                        array = [];
 
-                        if(selectedItems.size() > 0) {
-                            scope.$apply(function() {
-                                 angular.forEach(source, function(item) {
-                                     target.push(item);
-                                 });
-                                 source.length = 0;
-                                 sourceContainer.trigger('contentChange', [source]);
-                                 targetContainer.trigger('contentChange', [target]);
-                            });
-                        }
+                        angular.forEach(source, function (item) {
+                            array.push(item.id);
+                        });
+
+                        Entities.draft({
+                            id: scope.selectedEntity.id
+                        }, {
+                            edit: true,
+                            values: {
+                                path: attr.mdsPath,
+                                advanced: true,
+                                value: [array]
+                            }
+                        }, function () {
+                             scope.selectedEntity.draft = true;
+
+                             scope.safeApply(function () {
+                                angular.forEach(source, function(item) {
+                                    target.push(item);
+                                });
+
+                                source.length = 0;
+
+                                sourceContainer.trigger('contentChange', [source]);
+                                targetContainer.trigger('contentChange', [target]);
+                             });
+                        });
                 });
             }
         };
@@ -618,40 +653,58 @@
     * Add "Move selected to source" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnFrom', function () {
+    mds.directive('connectedListBtnFrom', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
-                var elem = angular.element(element),
-                    connectWith = elem.attr('connect-with');
-
-                elem.click(function (e) {
-                    var sourceContainer = $('.connected-list-source.' + connectWith),
-                        targetContainer = $('.connected-list-target.' + connectWith),
+            link: function (scope, element, attr) {
+                angular.element(element).click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedElements = targetContainer.children('.selected'),
-                        selectedIndices = [], selectedItems = [];
+                        selectedIndices = [], selectedItems = [],
+                        array = [];
 
-                        if(selectedElements.size() > 0) {
-                            selectedElements.each(function() {
-                                 var index = parseInt($(this).attr('item-index'), 10),
-                                     item = target[index];
-                                 $(this).removeClass('selected');
-                                 selectedIndices.push(index);
-                                 selectedItems.push(item);
-                            });
-                            scope.$apply(function() {
-                                 angular.forEach(selectedIndices.reverse(), function(itemIndex) {
-                                     target.splice(itemIndex, 1);
-                                 });
-                                 angular.forEach(selectedItems, function(item) {
-                                     source.push(item);
-                                 });
-                                 sourceContainer.trigger('contentChange', [source]);
-                                 targetContainer.trigger('contentChange', [target]);
-                            });
-                        }
+                    selectedElements.each(function() {
+                         var that = $(this),
+                             index = parseInt(that.attr('item-index'), 10),
+                             item = target[index];
+
+                         that.removeClass('selected');
+                         selectedIndices.push(index);
+                         selectedItems.push(item);
+                    });
+
+                    scope.safeApply(function () {
+                        angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                            target.splice(itemIndex, 1);
+                        });
+
+                        angular.forEach(selectedItems, function(item) {
+                            source.push(item);
+                        });
+
+                        angular.forEach(target, function (item) {
+                            array.push(item.id);
+                        });
+
+                        Entities.draft({
+                            id: scope.selectedEntity.id
+                        }, {
+                            edit: true,
+                            values: {
+                                path: attr.mdsPath,
+                                advanced: true,
+                                value: [array]
+                            }
+                        }, function () {
+                             scope.selectedEntity.draft = true;
+                        });
+
+                        sourceContainer.trigger('contentChange', [source]);
+                        targetContainer.trigger('contentChange', [target]);
+                    });
                 });
             }
         };
@@ -661,30 +714,40 @@
     * Add "Move all to source" functionality of "Connected Lists" control to the element (button).
     * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
     */
-    mds.directive('connectedListBtnFromAll', function () {
+    mds.directive('connectedListBtnFromAll', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
-                var elem = angular.element(element),
-                    connectWith = elem.attr('connect-with');
-
-                elem.click(function (e) {
-                    var sourceContainer = $('.connected-list-source.' + connectWith),
-                        targetContainer = $('.connected-list-target.' + connectWith),
+            link: function (scope, element, attr) {
+                angular.element(element).click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = targetContainer.children();
 
-                        if(selectedItems.size() > 0) {
-                            scope.$apply(function() {
-                                 angular.forEach(target, function(item) {
+                        Entities.draft({
+                            id: scope.selectedEntity.id
+                        }, {
+                            edit: true,
+                            values: {
+                                path: attr.mdsPath,
+                                advanced: true,
+                                value: [[]]
+                            }
+                        }, function () {
+                             scope.selectedEntity.draft = true;
+
+                             scope.safeApply(function () {
+                                angular.forEach(target, function(item) {
                                     source.push(item);
-                                 });
-                                 target.length = 0;
-                                 sourceContainer.trigger('contentChange', [source]);
-                                 targetContainer.trigger('contentChange', [target]);
-                            });
-                        }
+                                });
+
+                                target.length = 0;
+
+                                sourceContainer.trigger('contentChange', [source]);
+                                targetContainer.trigger('contentChange', [target]);
+                             });
+                        });
                 });
             }
         };
@@ -699,7 +762,7 @@
             restrict: 'A',
             link: function (scope) {
                 scope.$watch('advancedSettings.browsing.filterableFields', function() {
-                    scope.checked = (scope.advancedSettings.browsing.filterableFields.indexOf(scope.field.basic.name) >= 0);
+                    scope.checked = (scope.advancedSettings.browsing.filterableFields.indexOf(scope.field.id) >= 0);
                 });
             }
         };
@@ -708,21 +771,20 @@
     /**
     * Displays entity instances data using jqGrid
     */
-    mds.directive('entityInstancesGrid', function($compile, $http, $templateCache) {
+    mds.directive('entityInstancesGrid', function () {
         return {
             restrict: 'A',
-            link: function(scope, element, attrs) {
+            link: function (scope, element, attrs) {
                 var elem = angular.element(element);
 
                 $.ajax({
                     type: "GET",
                     url: "../mds/entities/" + scope.selectedEntity.id + "/fields",
                     dataType: "json",
-                    success: function(result)
-                    {
+                    success: function (result) {
                         var colModel = [], i;
 
-                        for (i=0; i<result.length; i+=1) {
+                        for (i = 0; i < result.length; i += 1) {
                             colModel.push({
                                 name: result[i].basic.displayName,
                                 index: result[i].basic.displayName,
@@ -733,8 +795,8 @@
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
                             datatype: 'json',
-                            jsonReader:{
-                                repeatitems:false
+                            jsonReader: {
+                                repeatitems: false
                             },
                             prmNames: {
                                 sort: 'sortColumn',
@@ -764,7 +826,6 @@
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_resourceTable').width('auto');
                                 $('.ui-jqgrid-pager').width('100%');
-
                                 $(".jqgfirstrow").addClass("ng-hide");
                                 angular.forEach($("select.multiselect")[0], function(field) {
                                     if (field.selected){
@@ -877,7 +938,7 @@
                         }
 
                         elem.jqGrid({
-                            url: "../mds/entities/" + scope.selectedInstance + "/history",
+                            url: "../mds/instances/" + scope.selectedInstance + "/history",
                             datatype: 'json',
                             jsonReader:{
                                 repeatitems:false
@@ -915,94 +976,153 @@
         };
     });
 
-    mds.directive('draggable', function() {
-        return function(scope, element) {
-            var el = element[0];
-
-            el.draggable = true;
-            el.addEventListener(
-                'dragstart',
-                function(e) {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('Text', this.attributes.fieldId.value);
-                    this.classList.add('drag');
-                    return false;
-                },
-                false
-            );
-
-            el.addEventListener(
-                'dragend',
-                function(e) {
-                    this.classList.remove('drag');
-                    return false;
-                },
-                false
-            );
-        };
-    });
-
-    mds.directive('droppable', function() {
+    mds.directive('droppable', function () {
         return {
             scope: {
-              drop: '&',
-              container: '='
+                drop: '&'
             },
-            link: function(scope, element) {
+            link: function (scope, element) {
 
                 var el = element[0];
-                el.addEventListener(
-                    'dragover',
-                    function(e) {
-                        e.dataTransfer.dropEffect = 'move';
-                        if (e.preventDefault) {
-                            e.preventDefault();
+                el.addEventListener('dragover', function (e) {
+                    e.dataTransfer.dropEffect = 'move';
+
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+
+                    this.classList.add('over');
+
+                    return false;
+                }, false);
+
+                el.addEventListener('dragenter', function () {
+                    this.classList.add('over');
+                    return false;
+                }, false);
+
+                el.addEventListener('dragleave', function () {
+                    this.classList.remove('over');
+                    return false;
+                }, false);
+
+                el.addEventListener('drop', function (e) {
+                    var fieldId = e.dataTransfer.getData('Text'),
+                        containerId = this.id;
+
+                    if (e.stopPropagation) {
+                        e.stopPropagation();
+                    }
+
+                    scope.$apply(function (scope) {
+                        var fn = scope.drop();
+
+                        if (_.isFunction(fn)) {
+                            fn(fieldId, containerId);
                         }
-                        this.classList.add('over');
-                        return false;
-                    },
-                    false
-                );
+                    });
 
-                el.addEventListener(
-                    'dragenter',
-                    function(e) {
-                        this.classList.add('over');
-                        return false;
-                    },
-                    false
-                );
-
-                el.addEventListener(
-                    'dragleave',
-                    function(e) {
-                        this.classList.remove('over');
-                        return false;
-                    },
-                    false
-                );
-
-                el.addEventListener(
-                    'drop',
-                    function(e) {
-                        if (e.stopPropagation) {
-                            e.stopPropagation();
-                        }
-                        var fieldId = e.dataTransfer.getData('Text'),
-                            containerId = this.id;
-
-                        scope.$apply(function(scope) {
-                            var fn = scope.drop();
-                            if ('undefined' !== typeof fn) {
-                                fn(fieldId, containerId);
-                            }
-                        });
-
-                        return false;
-                    },
-                    false
-                );
+                    return false;
+                }, false);
             }
         };
     });
+
+    /**
+    * Add auto saving for field properties.
+    */
+    mds.directive('mdsAutoSaveFieldChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var func = attr.mdsAutoSaveFieldChange || 'focusout';
+
+                angular.element(element).on(func, function () {
+                    var fieldPath = attr.mdsPath,
+                        fieldId = attr.mdsFieldId,
+                        parent = scope,
+                        entity,
+                        value;
+
+                    while (parent.selectedEntity === undefined) {
+                        parent = parent.$parent;
+                    }
+
+                    entity = parent.selectedEntity;
+
+                    if (fieldPath === undefined) {
+                        fieldPath = attr.ngModel;
+                        fieldPath = fieldPath.substring(fieldPath.indexOf('.') + 1);
+                    }
+
+                    value = _.isBoolean(ngModel.$modelValue)
+                        ? !ngModel.$modelValue
+                        : ngModel.$modelValue;
+
+                    Entities.draft({
+                        id: entity.id
+                    }, {
+                        edit: true,
+                        values: {
+                            path: fieldPath,
+                            fieldId: fieldId,
+                            value: [value]
+                        }
+                    }, function () {
+                        entity.draft = true;
+                    });
+                });
+            }
+        };
+    });
+
+    /*
+    * Add auto saving for field properties.
+    */
+    mds.directive('mdsAutoSaveAdvancedChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var func = attr.mdsAutoSaveAdvancedChange || 'focusout';
+
+                angular.element(element).on(func, function () {
+                    var advancedPath = attr.mdsPath,
+                        parent = scope,
+                        entity,
+                        value;
+
+                    while (parent.selectedEntity === undefined) {
+                        parent = parent.$parent;
+                    }
+
+                    entity = parent.selectedEntity;
+
+                    if (advancedPath === undefined) {
+                        advancedPath = attr.ngModel;
+                        advancedPath = advancedPath.substring(advancedPath.indexOf('.') + 1);
+                    }
+
+                    value = _.isBoolean(ngModel.$modelValue)
+                        ? !ngModel.$modelValue
+                        : ngModel.$modelValue;
+
+                    Entities.draft({
+                        id: entity.id
+                    }, {
+                        edit: true,
+                        values: {
+                            path: advancedPath,
+                            advanced: true,
+                            value: [value]
+                        }
+                    }, function () {
+                        entity.draft = true;
+                    });
+                });
+            }
+        };
+    });
+
 }());

@@ -14,14 +14,22 @@ import java.util.List;
 public class BrowsingSettingsDto {
 
     private List<String> filterableFields = new ArrayList<>();
-    private List<String> displayedFields = new ArrayList();
+    private List<String> displayedFields = new ArrayList<>();
+
+    public void addFilterableField(String id) {
+        this.filterableFields.add(id);
+    }
+
+    public void removeFilterableField(String id) {
+        this.filterableFields.remove(id);
+    }
 
     public List<String> getFilterableFields() {
         return filterableFields;
     }
 
     public void setFilterableFields(List<String> filterableFields) {
-        this.filterableFields = filterableFields;
+        this.filterableFields = null != filterableFields ? filterableFields : new ArrayList<String>();
     }
 
     public List<String> getDisplayedFields() {
@@ -29,7 +37,7 @@ public class BrowsingSettingsDto {
     }
 
     public void setDisplayedFields(List<String> displayedFields) {
-        this.displayedFields = displayedFields;
+        this.displayedFields = null != displayedFields ? displayedFields : new ArrayList<String>();
     }
 
     /**
