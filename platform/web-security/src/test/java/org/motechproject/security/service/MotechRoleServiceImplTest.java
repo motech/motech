@@ -28,7 +28,7 @@ public class MotechRoleServiceImplTest {
     private AllMotechUsers allMotechUsers;
 
     @Mock
-    private MotechUserService motechUserService;
+    private UserContextService userContextsService;
 
     @Before
     public void before() {
@@ -42,7 +42,7 @@ public class MotechRoleServiceImplTest {
 
         motechRoleService.createRole(role);
 
-        verify(motechUserService).refreshAllUsersContextIfActive();
+        verify(userContextsService).refreshAllUsersContextIfActive();
     }
 
     @Test
@@ -54,7 +54,7 @@ public class MotechRoleServiceImplTest {
 
         motechRoleService.updateRole(role);
 
-        verify(motechUserService).refreshAllUsersContextIfActive();
+        verify(userContextsService).refreshAllUsersContextIfActive();
     }
 
     @Test
@@ -67,7 +67,7 @@ public class MotechRoleServiceImplTest {
 
         motechRoleService.deleteRole(role);
 
-        verify(motechUserService).refreshAllUsersContextIfActive();
+        verify(userContextsService).refreshAllUsersContextIfActive();
     }
 
 

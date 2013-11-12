@@ -127,13 +127,13 @@
     </bean>
 
 
-    <bean id="motechAuthenticationProvider" class="org.motechproject.security.authentication.MotechAuthenticationProvider"/>
+    <bean id="motechAuthenticationProvider" class="org.motechproject.security.service.authentication.MotechAuthenticationProvider"/>
 
     <bean id="motechOpenIdAuthenticationProvider" class="org.springframework.security.openid.OpenIDAuthenticationProvider">
         <property name="authenticationUserDetailsService" ref="motechUserDetailsService"/>
     </bean>
 
-    <bean id="motechUserDetailsService" class="org.motechproject.security.authentication.MotechOpenIdUserDetailsService"/>
+    <bean id="motechUserDetailsService" class="org.motechproject.security.service.authentication.MotechOpenIdUserDetailsService"/>
 
     <bean id="loginSuccessHandler" class="org.motechproject.security.authentication.MotechSuccessHandler">
         <property name="defaultTargetUrl" value="/module/server/home"/>

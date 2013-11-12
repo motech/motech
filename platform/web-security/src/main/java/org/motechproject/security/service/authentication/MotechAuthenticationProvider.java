@@ -1,11 +1,11 @@
-package org.motechproject.security.authentication;
+package org.motechproject.security.service.authentication;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
-import org.motechproject.security.helper.SecurityHelper;
-import org.motechproject.security.repository.AllMotechRoles;
-import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.domain.MotechUserProfile;
+import org.motechproject.security.repository.AllMotechUsers;
+import org.motechproject.security.service.AuthoritiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +14,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+/**
+ * Extends Spring's @AbstractUserDetailsAuthenticationProvider to provide implementation for the API retrieve user
+ * and additional checks on password.
+ */
 @Component
 public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
@@ -23,13 +27,13 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     private AllMotechUsers allMotechUsers;
     private MotechPasswordEncoder passwordEncoder;
-    private AllMotechRoles allMotechRoles;
+    private AuthoritiesService authoritiesService;
 
     @Autowired
-    public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder motechPasswordEncoder, AllMotechRoles allMotechRoles) {
+    public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder motechPasswordEncoder, AuthoritiesService authoritiesService) {
         this.allMotechUsers = allMotechUsers;
         this.passwordEncoder = motechPasswordEncoder;
-        this.allMotechRoles = allMotechRoles;
+        this.authoritiesService = authoritiesService;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new BadCredentialsException(USER_NOT_ACTIVATED);
         } else {
             authentication.setDetails(new MotechUserProfile(user));
-            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, SecurityHelper.getAuthorities(user.getRoles(), allMotechRoles));
+            return new User(user.getUserName(), user.getPassword(), user.isActive(), true, true, true, authoritiesService.authoritiesFor(user));
         }
     }
 
