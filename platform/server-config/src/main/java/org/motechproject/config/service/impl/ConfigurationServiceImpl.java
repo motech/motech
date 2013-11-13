@@ -384,7 +384,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
             return is;
         } else {
-            return resource.getInputStream();
+            return resource == null ? null : resource.getInputStream();
         }
     }
 
