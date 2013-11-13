@@ -45,6 +45,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

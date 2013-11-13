@@ -38,6 +38,10 @@ public class ConfigLocationFileStore {
         return map(configLocations);
     }
 
+    public String getPath() {
+        return loadAll().get(0);
+    }
+
     private Iterable<ConfigLocation> map(List<String> configPaths) {
         List<ConfigLocation> configLocations = new ArrayList<>();
 

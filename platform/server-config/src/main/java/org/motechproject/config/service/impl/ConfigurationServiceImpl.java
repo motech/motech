@@ -86,6 +86,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         configSource = bootstrapConfig.getConfigSource();
 
 
+        //TODO: Have a relook at this
         if (ConfigSource.FILE.equals(configSource)) {
             try {
                 configFileMonitor.monitor();
