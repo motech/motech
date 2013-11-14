@@ -36,3 +36,24 @@
     font-weight:200;
     line-height:20px;
 }
+
+.metadata-control-group {
+    margin: 20px 0 20px 0;
+    clear: both;
+}
+
+
+.metadata-control {
+    margin: 5px 0 5px 0;
+    float: left;
+}
+
+.metadata-control-label {
+    margin-right: 5px;
+}
+
+.metadata-control-save {
+    clear: both;
+    float: left;
+    margin: 5px 0 5px 140px;
+}

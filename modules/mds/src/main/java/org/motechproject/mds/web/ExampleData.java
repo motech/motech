@@ -9,8 +9,10 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SettingDto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.mds.dto.SettingOptions.POSITIVE;
@@ -71,10 +73,15 @@ public final class ExampleData {
         entities.add(new EntityDto("4", "Person", "OpenMRS", "accra"));
 
         entities.add(new EntityDto("5", "Appointments", "Appointments"));
+
+        Map<String, String> exampleMap1 = new HashMap();
+        exampleMap1.put("key1", "value1");
+        exampleMap1.put("key2", "value2");
         fields.add(
                 new FieldDto(
                         "1", "5", STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null)
+                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        exampleMap1
                 )
         );
 
@@ -84,25 +91,36 @@ public final class ExampleData {
         fields.add(
                 new FieldDto(
                         "2", "7", STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null)
+                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        null
                 )
         );
         fields.add(
                 new FieldDto(
                         "3", "7", STRING,
-                        new FieldBasicDto("Drug Regimen", "regimen")
+                        new FieldBasicDto("Drug Regimen", "regimen"),
+                        null
                 )
         );
+
+        Map<String, String> exampleMap2 = new HashMap();
+        exampleMap2.put("key1", "value1");
+        exampleMap2.put("key2", "value2");
         fields.add(
                 new FieldDto(
                         "4", "7", INTEGER,
-                        new FieldBasicDto("Voucher Number", "voucherNumber")
+                        new FieldBasicDto("Voucher Number", "voucherNumber"),
+                        exampleMap2
                 )
         );
+
+        Map<String, String> exampleMap3 = new HashMap();
+        exampleMap3.put("key3", "value3");
         fields.add(
                 new FieldDto(
                         "5", "7", STRING,
-                        new FieldBasicDto("Redeemed By", "redeemedBy")
+                        new FieldBasicDto("Redeemed By", "redeemedBy"),
+                        exampleMap3
                 )
         );
 
@@ -200,6 +218,7 @@ public final class ExampleData {
             found.setEntityId(field.getEntityId());
             found.setSettings(field.getSettings());
             found.setType(field.getType());
+            found.setMetadata(field.getMetadata());
         }
 
     }
