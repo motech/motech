@@ -19,7 +19,7 @@ public class TypeDto {
     private String typeClass;
 
     /**
-     * Constant <code>INTEGET</code> presents a integer type.
+     * Constant <code>INTEGER</code> presents a integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
             "mds.field.integer", "mds.field.description.integer", Integer.class.getName()
