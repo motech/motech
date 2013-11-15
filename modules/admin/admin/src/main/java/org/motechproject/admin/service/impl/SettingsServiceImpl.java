@@ -105,8 +105,8 @@ public class SettingsServiceImpl implements SettingsService {
         Properties props = ParamParser.constructProperties(settings);
 
         try {
-            configurationService.updateProperties(symbolicName, settings.getSection(),
-                    getBundleDefaultProperties(bundleId).get(settings.getSection()), props);
+            configurationService.addOrUpdateProperties(symbolicName, settings.getSection(),
+                    props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
         } catch (Exception e) {
             throw new MotechException("Error while saving bundle settings", e);
         }

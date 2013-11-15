@@ -27,29 +27,36 @@ public class ConfigLocationFileStore {
     public static final String CONFIG_LOCATION_PROPERTY_KEY = "config.location";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLocationFileStore.class);
 
+    private List<ConfigLocation> configLocations = new ArrayList<>();
+
     @Autowired
     public ConfigLocationFileStore(PropertiesConfiguration propertiesConfiguration) {
         this.propertiesConfiguration = propertiesConfiguration;
     }
 
+    ConfigLocationFileStore(PropertiesConfiguration propertiesConfiguration, List<ConfigLocation> configLocations) {
+        this.propertiesConfiguration = propertiesConfiguration;
+        this.configLocations = configLocations;
+    }
+
     public Iterable<ConfigLocation> getAll() {
-        List<String> configLocations = loadAll();
-
-        return map(configLocations);
-    }
-
-    public String getPath() {
-        return loadAll().get(0);
-    }
-
-    private Iterable<ConfigLocation> map(List<String> configPaths) {
-        List<ConfigLocation> configLocations = new ArrayList<>();
-
+        List<String> configPaths = loadAll();
         for (String configLocation : configPaths) {
-            configLocations.add(new ConfigLocation(configLocation));
+            if (!exists(configLocation)) {
+                configLocations.add(new ConfigLocation(configLocation));
+            }
         }
 
         return configLocations;
+    }
+
+    private boolean exists(String newLocation) {
+        for (ConfigLocation existingLocation : configLocations) {
+            if (existingLocation.getLocation().equals(newLocation)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<String> loadAll() {

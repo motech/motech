@@ -66,6 +66,7 @@ public class ConfigLoader {
                         eventAdmin.postEvent(new Event("org/motechproject/osgi/event/RELOAD", properties));
                     }
                 }
+                configLocation.markAsCurrentLocation();
                 break;
             } catch (IOException e) {
                 LOGGER.warn("Problem reading motech-settings.conf from location: " + configLocationResource.toString(), e);
@@ -75,6 +76,17 @@ public class ConfigLoader {
         checkSettingsRecord(settingsRecord);
 
         return settingsRecord;
+    }
+
+    //TODO: Relook at calling loadConfig()
+    public ConfigLocation getCurrentConfigLocation() {
+        loadConfig();
+        for (ConfigLocation configLocation : coreConfigurationService.getConfigLocations()) {
+            if (configLocation.isCurrentLocation()) {
+                return configLocation;
+            }
+        }
+        return null;
     }
 
     private void checkSettingsRecord(SettingsRecord settingsRecord) {

@@ -133,13 +133,14 @@ public interface ConfigurationService {
      *     database record or file doesn't exist yet for the given module, it will be created.
      * </p>
      *
+     *
      * @param module The module we wish to update properties for
      * @param filename Resource filename
-     * @param defaultProperties Default properties of the module
      * @param newProperties New properties to store
+     * @param defaultProperties Default properties of the module
      * @throws IOException if module properties cannot be retrieved from file
      */
-    void updateProperties(String module, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
+    void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
 
     /**
      * <p>

@@ -122,7 +122,7 @@ public class SettingsServiceTest {
         Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
-        verify(configurationService).updateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, null, bundleProperty);
+        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty, null);
     }
 
     private void initPlatformSettingsService() throws IOException {

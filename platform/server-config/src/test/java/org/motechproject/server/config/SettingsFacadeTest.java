@@ -80,8 +80,8 @@ public class SettingsFacadeTest {
         settingsFacade.afterPropertiesSet();
 
         ArgumentCaptor<Properties> argument = ArgumentCaptor.forClass(Properties.class);
-        verify(configurationService).updateProperties(eq(BUNDLE_NAME), eq(FILENAME),
-                any(Properties.class), argument.capture());
+        verify(configurationService).addOrUpdateProperties(eq(BUNDLE_NAME), eq(FILENAME),
+                argument.capture(), any(Properties.class));
         assertEquals(LANGUAGE_VALUE, argument.getValue().getProperty(LANGUAGE_PROP));
     }
 
