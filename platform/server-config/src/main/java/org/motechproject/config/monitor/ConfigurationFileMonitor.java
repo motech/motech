@@ -31,8 +31,8 @@ public class ConfigurationFileMonitor implements FileListener {
     private static final Long DELAY = 3000L;
 
     private ConfigLoader configLoader;
-    private ConfigurationService configurationService;
 
+    private ConfigurationService configurationService;
     private DefaultFileMonitor fileMonitor;
 
     ConfigurationFileMonitor() {
@@ -48,10 +48,15 @@ public class ConfigurationFileMonitor implements FileListener {
     }
 
     @PostConstruct
-    public void init() throws FileSystemException {
+    public void init() throws IOException {
+        configLoader.processExistingConfigs();
+
         ConfigLocation configLocation = configLoader.getCurrentConfigLocation();
+
+
         FileObject monitoredDir = VFS.getManager().resolveFile(configLocation.getLocation());
         fileMonitor.addFile(monitoredDir);
+        this.start();
     }
 
     public void start() {

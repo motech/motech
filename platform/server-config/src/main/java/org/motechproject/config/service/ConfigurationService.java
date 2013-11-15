@@ -6,6 +6,7 @@ import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,6 +142,12 @@ public interface ConfigurationService {
      * @throws IOException if module properties cannot be retrieved from file
      */
     void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
+
+    /**
+     * Overloaded method to save configurations in FILE mode only.
+     * @param files Files to read configuration from.
+     */
+    void addOrUpdateProperties(List<File> files);
 
     /**
      * <p>

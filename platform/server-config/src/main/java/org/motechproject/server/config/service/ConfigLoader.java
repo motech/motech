@@ -1,9 +1,11 @@
 package org.motechproject.server.config.service;
 
+import org.apache.commons.io.FileUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -16,11 +18,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,6 +36,8 @@ public class ConfigLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLoader.class);
     private static final String BROKER_URL = "jms.broker.url";
+    private static final String[] IGNORE_FILE_LIST = new String[]{"bootstrap.properties", "motech-settings.conf"};
+    private static final String[] SUPPORTED_FILE_EXTNS = new String[]{"properties", "json"};
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -41,6 +47,9 @@ public class ConfigLoader {
 
     @Autowired
     private CoreConfigurationService coreConfigurationService;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     public SettingsRecord loadConfig() {
         SettingsRecord settingsRecord = null;
@@ -78,15 +87,34 @@ public class ConfigLoader {
         return settingsRecord;
     }
 
+    findConfigLocation() {
+        iter - all configurationService and getCurrentConfigLocation() the location
+    }
+
     //TODO: Relook at calling loadConfig()
     public ConfigLocation getCurrentConfigLocation() {
-        loadConfig();
         for (ConfigLocation configLocation : coreConfigurationService.getConfigLocations()) {
             if (configLocation.isCurrentLocation()) {
                 return configLocation;
             }
         }
         return null;
+    }
+
+    /**
+     * Loads all configs from the config location and adds or updates the records in database.
+     * @throws IOException If there is any error while handling the files.
+     */
+    public void processExistingConfigs() throws IOException {
+        final ConfigLocation currentConfigLocation = getCurrentConfigLocation();
+        if(currentConfigLocation == null) {
+            loadConfig();
+        }
+        String location = currentConfigLocation.getLocation();
+
+        File dir = new File(location);
+        List<File> files = (List<File>) FileUtils.listFiles(dir, SUPPORTED_FILE_EXTNS, true);
+        configurationService.addOrUpdateProperties(files);
     }
 
     private void checkSettingsRecord(SettingsRecord settingsRecord) {
@@ -130,9 +158,5 @@ public class ConfigLoader {
 
     void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-
-    void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
-        this.coreConfigurationService = coreConfigurationService;
     }
 }

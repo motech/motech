@@ -290,6 +290,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public void addOrUpdateProperties(List<File> files) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void saveRawConfig(String module, String filename, InputStream rawData) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             Properties p = new Properties();

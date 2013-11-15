@@ -2,6 +2,7 @@ package org.motechproject.config.monitor;
 
 import org.apache.commons.vfs.FileChangeEvent;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +17,9 @@ import org.motechproject.server.config.service.ConfigLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +52,14 @@ public class ConfigurationFileMonitorTest {
 
     @Test
     public void shouldCreateConfigWhenNewFileCreated() throws IOException {
-        FileObject fileObject = mock(FileObject.class);
+        final String fileName = "res:config/motech-settings.conf";
+        FileObject fileObject = VFS.getManager().resolveFile(fileName);
+        Properties properties = new Properties();
+        properties.setProperty("system.language", "en");
+        properties.setProperty("login.mode", "repository");
+
         configFileMonitor.fileCreated(new FileChangeEvent(fileObject));
+
+        verify(configurationService).addOrUpdateProperties("config", "motech-settings.conf", properties, null);
     }
 }
