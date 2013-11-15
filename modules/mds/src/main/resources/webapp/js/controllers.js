@@ -62,6 +62,14 @@
                     $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
                     $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
 
+                    if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings) &&
+                        $scope.advancedSettings.indexes.size > 0) {
+
+                        $scope.activeIndex = 0;
+                    } else {
+                        $scope.activeIndex = -1;
+                    }
+
                     unblockUI();
                 }
             );
@@ -124,6 +132,17 @@
         * be not visible until a user try to add a new field
         */
         $scope.tryToCreate = false;
+
+        /**
+        * The $scope.availableFields array contains information about fields, that can be selected
+        * as lookup fields for certain index
+        */
+        $scope.availableFields = [];
+
+        /**
+        * The $scope.lookup persists currently active (selected) index
+        */
+        $scope.lookup = undefined;
 
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
@@ -526,6 +545,10 @@
                 expression = expression && $scope.uniqueMetadataKey(metadata);
             });
 
+            angular.forEach($scope.advancedSettings.indexes, function(index) {
+                expression = expression && index.lookupName;
+            });
+
             return expression;
         };
 
@@ -621,6 +644,123 @@
                 }
             }
         };
+
+        /**
+        * Adds a new index and sets it as the active one
+        */
+        $scope.addNewIndex = function () {
+            var newLookup = {
+                lookupName: "New lookup",
+                singleObjectReturn: true,
+                fieldList: []
+            };
+
+            $scope.advancedSettings.indexes.push(newLookup);
+            $scope.setActiveIndex(newLookup);
+        };
+
+        /**
+        * Specifies, whether a certain index is a currently active one
+        *
+        * @param index An index object to check
+        * @return {boolean} True, if passed index is the active one. False otherwise.
+        */
+        $scope.isActiveIndex = function(index) {
+            return $scope.lookup === index ? true : false;
+        };
+
+        /**
+        * Sets certain index as the currently active one
+        *
+        * @param index An index object to set active
+        */
+        $scope.setActiveIndex = function(index) {
+            $scope.activeIndex = $scope.advancedSettings.indexes.indexOf(index);
+            $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
+            $scope.setAvailableFields();
+        };
+
+        /**
+        * Removes currently actve index
+        */
+        $scope.deleteLookup = function() {
+            $scope.advancedSettings.indexes.remove($scope.activeIndex);
+            $scope.setActiveIndex(-1);
+        };
+
+        /**
+        * Adds new lookup field to the currently active index
+        */
+        $scope.addLookupField = function() {
+            var newField = {
+                displayName: "",
+                name: "",
+                required: false,
+                defaultValue: "",
+                tooltip: ""
+            };
+            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.push(newField);
+        };
+
+        /**
+        * Handles field selection. When clicking on one of the available fields from dropdown list,
+        * selected field is added or replaced on the list of selected fields of the currently active index
+        *
+        * @param oldField Previously selected field
+        * @param field Selected field
+        */
+        $scope.selectField = function(oldField, field) {
+            var selectedIndex;
+
+            selectedIndex = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(oldField);
+            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList[selectedIndex] = field.basic;
+            $scope.setAvailableFields();
+        };
+
+        /**
+        * Refreshes available fields for the currently active index. A field is considered available
+        * if it is not yet present in the lookup field list of the currently active index.
+        */
+        $scope.setAvailableFields = function() {
+            if ($scope.activeIndex !== -1) {
+                var availableFields = [],
+                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList,
+                i;
+
+                for (i = 0; i < $scope.fields.length; i += 1) {
+                    if (find(selectedFields, [{ field: 'name', value: $scope.fields[i].basic.name}], false ).length === 0) {
+                        availableFields.push($scope.fields[i]);
+                    }
+                }
+                $scope.availableFields = availableFields;
+            }
+        };
+
+        /**
+        * Removes given field from the lookup fields list of the currently active index
+        *
+        * @param field A field object to remove
+        */
+        $scope.removeLookupField = function(field) {
+            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.remove(
+                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(field)
+            );
+            $scope.setAvailableFields();
+        };
+
+        /**
+        * Checks if user can still add more lookup fields.
+        *
+        * @return {boolean} False if all available fields have already been selected
+        * or the amount of added fields is equal to amount of all fields for that object. True otherwise.
+        */
+        $scope.canAddLookupFields = function() {
+
+            return ($scope.activeIndex !== -1 && $scope.availableFields.length>0 &&
+                    $scope.lookup.fieldList.length < $scope.fields.length) ?
+                true : false;
+        };
+
 
         /* VALIDATION FUNCTIONS */
 
@@ -820,8 +960,15 @@
                 ? !arraysEqual(clone.fields, clone.original)
                 : (fields && !original) || (!fields && original);
 
-            changedAdvancedSettings = !_.isEqual(
+            angular.forEach($scope.advancedSettings.indexes, function(obj) {
+                delete obj.$$hashKey;
+            });
+
+            changedAdvancedSettings = ! (_.isEqual(
                 $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
+            ) && arraysEqual(
+                $scope.advancedSettings.indexes, $scope.originalAdvancedSettings.indexes
+            )
             );
 
             angular.forEach(metadataClone, function (obj) {

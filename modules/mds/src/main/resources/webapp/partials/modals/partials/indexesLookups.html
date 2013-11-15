@@ -1,3 +1,71 @@
-<div class="alert alert-error">
-    <strong>{{msg('mds.warning')}}</strong> {{msg('mds.warning.viewIsUnderConstruction')}}
+<div class="indexes-body">
+    <div class="indexes-column">
+        <div class="list" ng-if="advancedSettings.indexes.length">
+            <fieldset>
+                <ul class="indexes-pick">
+                    <li ng-repeat="index in advancedSettings.indexes">
+                        <a ng-click="setActiveIndex(index)" ng-class="{active: isActiveIndex(index)}">
+                            {{index.lookupName}}
+                        </a>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="lookups" ng-hide="activeIndex==-1">
+        <form>
+            <div class="form-field">
+                <label class="control-label">{{msg('mds.form.label.lookupName')}}:
+                    <input type='text' ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35"/>
+                    <span class="form-hint-error" ng-hide="lookup.lookupName">{{msg('mds.error.emptyLookup')}}</span>
+                </label>
+            </div>
+
+            <div class="form-field">
+                <label class="radio-input">{{msg('mds.form.label.lookupReturns')}}:</label>
+                <label class="radio-input">
+                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="true"/> {{msg('mds.form.singleObject')}}
+                </label>
+                <label class="radio-input">
+                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="false"/> {{msg('mds.form.multipleObjects')}}
+                </label>
+            </div>
+
+            <div class="form-field">
+                <div ng-repeat="lookupField in lookup.fieldList">
+                    {{msg('mds.form.label.field')}}:
+                    <div class="btn-group">
+                        <button class="btn dropdown-toggle lookup-field" data-toggle="dropdown" href="#">
+                           {{lookupField.displayName || msg('mds.form.selectField')}}
+                           <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu lookup-field-list">
+                            <li class="lookup-field-list" ng-repeat="field in availableFields">
+                                <a ng-click="selectField(lookupField, field)">{{field.basic.displayName}}</a>
+                            </li>
+                        </ul>
+                        <button href="#" type="button" class="btn btn-danger" ng-click="removeLookupField(lookupField)">
+                            <i class="icon-trash icon-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <button href="#" type="button" class="btn btn-success" ng-click="addLookupField()" ng-if="canAddLookupFields()">
+            <i class="icon-plus icon-white"></i> {{msg('mds.btn.newLookupField')}}
+        </button>
+    </div>
+</div>
+<div class="indexes-foot">
+    <button href="#" type="button" class="btn btn-success" ng-click="addNewIndex()">
+        <i class="icon-plus icon-white"></i> {{msg('mds.btn.newLookup')}}
+    </button>
+
+    <div class="button-delete" ng-if="activeIndex>-1">
+        <button href="#" type="button" class="btn btn-danger" ng-click="deleteLookup()">
+            <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
+        </button>
+    </div>
 </div>

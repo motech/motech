@@ -5,12 +5,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * The <code>AdvancedSettingsDto</code> constains information about advanced settings of an entity.
+ * The <code>AdvancedSettingsDto</code> contains information about advanced settings of an entity.
  */
 public class AdvancedSettingsDto {
     private String objectId;
     private TrackingDto tracking = new TrackingDto();
+    private List<LookupDto> indexes = new ArrayList<>();
 
     public String getObjectId() {
         return objectId;
@@ -26,6 +30,14 @@ public class AdvancedSettingsDto {
 
     public void setTracking(TrackingDto tracking) {
         this.tracking = null != tracking ? tracking : new TrackingDto();
+    }
+
+    public List<LookupDto> getIndexes() {
+        return indexes;
+    }
+
+    public void setIndexes(List<LookupDto> indexes) {
+        this.indexes = null != indexes ? indexes : new ArrayList<LookupDto>();
     }
 
     /**

@@ -249,6 +249,7 @@ public final class ExampleData {
             advancedSettings.add(advanced);
         } else {
             dto.setTracking(advanced.getTracking());
+            dto.setIndexes(advanced.getIndexes());
         }
     }
 }
