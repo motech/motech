@@ -8,7 +8,7 @@
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields) {
-        var setFields, setAdvancedSettings;
+        var setFields, setAdvancedSettings, setMetadata;
 
         /**
         * This function is used to set fields array. If fields are properly taken from server,
@@ -18,9 +18,31 @@
             $scope.fields = Fields.query({entityId: $scope.selectedEntity.id}, function () {
                 $scope.originalFields = cloneArray($scope.fields);
                 $scope.toRemove = [];
+                setMetadata($scope.selectedEntity.id);
 
                 unblockUI();
             });
+        };
+
+        /**
+        * This function is used to get entity metadata from controller and convert it for further usage.
+        */
+        setMetadata = function (id) {
+            $scope.selectedEntityMetadata = [];
+            $.each($scope.fields, function(inKey, field) {
+                if (typeof field.metadata !== "undefined" && field.metadata !== null) {
+                    $.each(field.metadata, function(valueKey, valueValue) {
+                        if (typeof $scope.selectedEntityMetadata[inKey] === "undefined") {
+                            $scope.selectedEntityMetadata[inKey] = [];
+                        }
+                        $scope.selectedEntityMetadata[inKey].push({
+                            key: valueKey,
+                            value: valueValue
+                        });
+                    });
+                }
+            });
+            $scope.orignalSelectedEntityMetadata = cloneObj($scope.selectedEntityMetadata);
         };
 
         /**
@@ -36,6 +58,17 @@
                 }
             );
         };
+
+        /**
+        * The $scope.selectedEntityMetadata contains metadata for selected entity.
+        */
+        $scope.selectedEntityMetadata = [];
+
+        /**
+        * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
+        * for changes in it.
+        */
+        $scope.originalSelectedEntityMetadata = [];
 
         /**
         * The $scope.selectedEntity contains selected entity. By default no entity is selected.
@@ -287,6 +320,47 @@
             }
         };
 
+        /* ~~~~~ METADATA FUNCTIONS ~~~~~ */
+
+        /**
+        * Adds new key/value pair.
+        */
+        $scope.addMetadata = function (index) {
+            if (typeof $scope.selectedEntityMetadata[index] === "undefined") {
+                $scope.selectedEntityMetadata[index] = [{
+                    key: "",
+                    value: ""
+                }];
+            } else {
+                $scope.selectedEntityMetadata[index].push({
+                    key: "",
+                    value: ""
+                });
+            }
+        };
+
+        /**
+        * Removes selected key/value pair.
+        */
+        $scope.removeMetadata = function (parentIndex, index) {
+            $scope.selectedEntityMetadata[parentIndex].splice(index,1);
+        };
+
+        /**
+        * Converts metadata into controller format and sends it.
+        */
+        $scope.saveMetadata = function () {
+            angular.forEach($scope.fields, function (field, idx) {
+                var metadata = {};
+                if (typeof $scope.selectedEntityMetadata[idx] !== "undefined") {
+                    $.each($scope.selectedEntityMetadata[idx], function(inKey, inValue) {
+                        metadata[inValue.key] = inValue.value;
+                    });
+                    $scope.fields[idx].metadata = metadata;
+                }
+            });
+        };
+
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         /**
@@ -311,7 +385,8 @@
                     basic: {
                         displayName: $scope.newField.displayName,
                         name: $scope.newField.name
-                    }
+                    },
+                    metadata: {}
                 });
 
                 selector = '#show-field-details-{0}'.format($scope.fields.length - 1);
@@ -449,6 +524,8 @@
 
             blockUI();
 
+            $scope.saveMetadata();
+
             angular.forEach($scope.fields, function (field, idx) {
                 Fields.save({entityId: $scope.selectedEntity.id}, field, function () {
                     setSave(idx);
@@ -552,7 +629,8 @@
                     original: original ? cloneArray($scope.originalFields) : []
                 },
                 changedFields,
-                changedAdvancedSettings;
+                changedAdvancedSettings,
+                changedMetadata;
 
             angular.forEach(clone.fields, function (obj) {
                 delete obj.$$hashKey;
@@ -570,7 +648,11 @@
                 $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
             );
 
-            return changedFields || changedAdvancedSettings;
+            changedMetadata = !_.isEqual(
+                $scope.selectedEntityMetadata, $scope.originalSelectedEntityMetadata
+            );
+
+            return changedFields || changedAdvancedSettings || changedMetadata;
         };
 
         /**

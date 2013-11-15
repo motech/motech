@@ -15,6 +15,7 @@ import org.motechproject.mds.web.ExampleData;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,25 +37,34 @@ public class FieldControllerTest {
         expected.add(
                 new FieldDto(
                         "2", "7", STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null)
+                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        null
                 )
         );
         expected.add(
                 new FieldDto(
                         "3", "7", STRING,
-                        new FieldBasicDto("Drug Regimen", "regimen")
+                        new FieldBasicDto("Drug Regimen", "regimen"),
+                        null
                 )
         );
+        HashMap expectedMap1 = new HashMap<String, String>();
+        expectedMap1.put("key1", "value1");
+        expectedMap1.put("key2", "value2");
         expected.add(
                 new FieldDto(
                         "4", "7", INTEGER,
-                        new FieldBasicDto("Voucher Number", "voucherNumber")
+                        new FieldBasicDto("Voucher Number", "voucherNumber"),
+                        expectedMap1
                 )
         );
+        HashMap expectedMap2 = new HashMap<String, String>();
+        expectedMap2.put("key3", "value3");
         expected.add(
                 new FieldDto(
                         "5", "7", STRING,
-                        new FieldBasicDto("Redeemed By", "redeemedBy")
+                        new FieldBasicDto("Redeemed By", "redeemedBy"),
+                        expectedMap2
                 )
         );
 
@@ -68,32 +78,41 @@ public class FieldControllerTest {
 
     @Test
     public void shouldSaveField() throws Exception {
-        FieldDto dto = new FieldDto("10", "7", STRING, null);
+        FieldDto dto = new FieldDto("10", "7", STRING, null, null);
         controller.saveField("7", dto);
 
         List<FieldDto> expected = new ArrayList<>();
         expected.add(
                 new FieldDto(
                         "2", "7", STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null)
+                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        null
                 )
         );
         expected.add(
                 new FieldDto(
                         "3", "7", STRING,
-                        new FieldBasicDto("Drug Regimen", "regimen")
+                        new FieldBasicDto("Drug Regimen", "regimen"),
+                        null
                 )
         );
+        HashMap expectedMap1 = new HashMap<String, String>();
+        expectedMap1.put("key1", "value1");
+        expectedMap1.put("key2", "value2");
         expected.add(
                 new FieldDto(
                         "4", "7", INTEGER,
-                        new FieldBasicDto("Voucher Number", "voucherNumber")
+                        new FieldBasicDto("Voucher Number", "voucherNumber"),
+                        expectedMap1
                 )
         );
+        HashMap expectedMap2 = new HashMap<String, String>();
+        expectedMap2.put("key3", "value3");
         expected.add(
                 new FieldDto(
                         "5", "7", STRING,
-                        new FieldBasicDto("Redeemed By", "redeemedBy")
+                        new FieldBasicDto("Redeemed By", "redeemedBy"),
+                        expectedMap2
                 )
         );
         expected.add(dto);
@@ -103,27 +122,35 @@ public class FieldControllerTest {
 
     @Test
     public void shouldUpdateField() throws Exception {
-        FieldDto dto = new FieldDto("3", "7", STRING, new FieldBasicDto("drugRegimen", "regimen"));
+        FieldDto dto = new FieldDto("3", "7", STRING, new FieldBasicDto("drugRegimen", "regimen"), null);
         controller.saveField("7", dto);
 
         List<FieldDto> expected = new ArrayList<>();
         expected.add(
                 new FieldDto(
                         "2", "7", STRING,
-                        new FieldBasicDto("ID", "ID", false, "pass", null)
+                        new FieldBasicDto("ID", "ID", false, "pass", null),
+                        null
                 )
         );
         expected.add(dto);
+        HashMap expectedMap1 = new HashMap<String, String>();
+        expectedMap1.put("key1", "value1");
+        expectedMap1.put("key2", "value2");
         expected.add(
                 new FieldDto(
                         "4", "7", INTEGER,
-                        new FieldBasicDto("Voucher Number", "voucherNumber")
+                        new FieldBasicDto("Voucher Number", "voucherNumber"),
+                        expectedMap1
                 )
         );
+        HashMap expectedMap2 = new HashMap<String, String>();
+        expectedMap2.put("key3", "value3");
         expected.add(
                 new FieldDto(
                         "5", "7", STRING,
-                        new FieldBasicDto("Redeemed By", "redeemedBy")
+                        new FieldBasicDto("Redeemed By", "redeemedBy"),
+                        expectedMap2
                 )
         );
         assertEquals(expected, controller.getFields("7"));
@@ -145,19 +172,27 @@ public class FieldControllerTest {
         expected.add(
                 new FieldDto(
                         "3", "7", STRING,
-                        new FieldBasicDto("Drug Regimen", "regimen")
+                        new FieldBasicDto("Drug Regimen", "regimen"),
+                        null
                 )
         );
+        HashMap expectedMap1 = new HashMap<String, String>();
+        expectedMap1.put("key1", "value1");
+        expectedMap1.put("key2", "value2");
         expected.add(
                 new FieldDto(
                         "4", "7", INTEGER,
-                        new FieldBasicDto("Voucher Number", "voucherNumber")
+                        new FieldBasicDto("Voucher Number", "voucherNumber"),
+                        expectedMap1
                 )
         );
+        HashMap expectedMap2 = new HashMap<String, String>();
+        expectedMap2.put("key3", "value3");
         expected.add(
                 new FieldDto(
                         "5", "7", STRING,
-                        new FieldBasicDto("Redeemed By", "redeemedBy")
+                        new FieldBasicDto("Redeemed By", "redeemedBy"),
+                        expectedMap2
                 )
         );
 

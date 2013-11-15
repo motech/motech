@@ -1,0 +1,29 @@
+<form class="form-horizontal">
+    <div>
+        <span ng-repeat="metadata in selectedEntityMetadata[$index]">
+            <div class="metadata-control-group">
+                <div class="metadata-control">
+                    <label class="control-label metadata-control-label">
+                        {{msg('mds.form.label.key')}}
+                    </label>
+                    <input type="text" ng-model="metadata.key" ng-disabled="selectedEntity.readOnly">
+                </div>
+                <div class="metadata-control">
+                    <label class="control-label metadata-control-label">
+                        {{msg('mds.form.label.value')}}
+                    </label>
+                    <input type="text" ng-model="metadata.value" ng-disabled="selectedEntity.readOnly">
+                    <a ui-if="!selectedEntity.readOnly" ng-click="removeMetadata($parent.$parent.$index, $index)">
+                        <i class="icon-remove icon-large"></i>
+                    </a>
+                </div>
+            </div>
+        </span>
+        <div class="metadata-control-save" ui-if="!selectedEntity.readOnly">
+            <button class="btn btn-primary" ng-click="addMetadata($index)">
+                {{msg('mds.btn.newMetadata')}}
+            </button>
+        </div>
+    </div>
+</form>
+
