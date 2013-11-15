@@ -42,7 +42,14 @@
                     });
                 }
             });
-            $scope.orignalSelectedEntityMetadata = cloneObj($scope.selectedEntityMetadata);
+
+            $scope.originalSelectedEntityMetadata = [];
+
+            angular.forEach($scope.flattenMetadataArray($scope.selectedEntityMetadata), function (object) {
+                var newObj = $.extend(true, {}, object);
+
+                $scope.originalSelectedEntityMetadata.push(newObj);
+            });
         };
 
         /**
@@ -52,6 +59,7 @@
         setAdvancedSettings = function () {
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
+                    $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
                     $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
 
                     unblockUI();
@@ -68,7 +76,7 @@
         * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
         * for changes in it.
         */
-        $scope.originalSelectedEntityMetadata = [];
+        $scope.originalSelectedEntityMetadata = undefined;
 
         /**
         * The $scope.selectedEntity contains selected entity. By default no entity is selected.
@@ -444,6 +452,20 @@
         };
 
         /**
+        * Check if the given metadata key/value pair is unique.
+        *
+        * @param {string} key metadata key to check..
+        * @return {boolean} true if the given key is unique; otherwise false.
+        */
+        $scope.uniqueMetadataKey = function (key) {
+            if (key.key !== "" && $scope.findMetadataByKey(key).length > 1) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        /**
         * Validate all information inside the given field.
         *
         * @param {object} field The field to validate.
@@ -495,6 +517,10 @@
 
             angular.forEach($scope.fields, function (field) {
                 expression = expression && $scope.validateField(field);
+            });
+
+            angular.forEach($scope.flattenMetadataArray($scope.selectedEntityMetadata), function (metadata) {
+                expression = expression && $scope.uniqueMetadataKey(metadata);
             });
 
             return expression;
@@ -606,6 +632,32 @@
         };
 
         /**
+        * Flatten array of arrays of metadata objects into simple array of objects.
+        *
+        * @return {Array} array of metadata objects.
+        */
+        $scope.flattenMetadataArray = function (array) {
+            var objects = [];
+            angular.forEach(array, function (objArrays) {
+                angular.forEach(objArrays, function (metadata) {
+                    objects.push(metadata);
+                });
+            });
+            return objects;
+        };
+
+        /**
+        * Find all metadata values for given key.
+        *
+        * @param {string} name Key used to find values.
+        * @return {Array} array of fields with the given key.
+        */
+        $scope.findMetadataByKey = function (key) {
+            var objects = [];
+            return find($scope.flattenMetadataArray($scope.selectedEntityMetadata), [{field: 'key', value: key.key}]);
+        };
+
+        /**
         * Find field setting with given name.
         *
         * @param {Array} settings A array of field settings.
@@ -628,6 +680,7 @@
                     fields: fields ? cloneArray($scope.fields) : [],
                     original: original ? cloneArray($scope.originalFields) : []
                 },
+                metadataClone = $scope.flattenMetadataArray($scope.selectedEntityMetadata),
                 changedFields,
                 changedAdvancedSettings,
                 changedMetadata;
@@ -648,8 +701,12 @@
                 $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
             );
 
-            changedMetadata = !_.isEqual(
-                $scope.selectedEntityMetadata, $scope.originalSelectedEntityMetadata
+            angular.forEach(metadataClone, function (obj) {
+                delete obj.$$hashKey;
+            });
+
+            changedMetadata = !arraysEqual(
+                metadataClone, $scope.originalSelectedEntityMetadata
             );
 
             return changedFields || changedAdvancedSettings || changedMetadata;
