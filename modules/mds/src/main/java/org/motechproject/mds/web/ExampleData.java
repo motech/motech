@@ -6,6 +6,7 @@ import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SettingDto;
 
 import java.util.ArrayList;
@@ -17,14 +18,14 @@ import java.util.Map;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.mds.dto.SettingOptions.POSITIVE;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
+import static org.motechproject.mds.dto.TypeDto.INTEGER;
+import static org.motechproject.mds.dto.TypeDto.DOUBLE;
+import static org.motechproject.mds.dto.TypeDto.STRING;
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
 import static org.motechproject.mds.dto.TypeDto.DATE;
-import static org.motechproject.mds.dto.TypeDto.DATETIME;
-import static org.motechproject.mds.dto.TypeDto.DOUBLE;
-import static org.motechproject.mds.dto.TypeDto.INTEGER;
-import static org.motechproject.mds.dto.TypeDto.LIST;
-import static org.motechproject.mds.dto.TypeDto.STRING;
 import static org.motechproject.mds.dto.TypeDto.TIME;
+import static org.motechproject.mds.dto.TypeDto.DATETIME;
+import static org.motechproject.mds.dto.TypeDto.LIST;
 
 /**
  * The <code>ExampleData</code> is a temporary class which contains example data for UI.
@@ -81,7 +82,7 @@ public final class ExampleData {
                 new FieldDto(
                         "1", "5", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
-                        exampleMap1
+                        exampleMap1, null
                 )
         );
 
@@ -92,14 +93,16 @@ public final class ExampleData {
                 new FieldDto(
                         "2", "7", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
-                        null
+                        null,
+                        FieldValidationDto.STRING
                 )
         );
         fields.add(
                 new FieldDto(
                         "3", "7", STRING,
                         new FieldBasicDto("Drug Regimen", "regimen"),
-                        null
+                        null,
+                        FieldValidationDto.STRING
                 )
         );
 
@@ -110,7 +113,8 @@ public final class ExampleData {
                 new FieldDto(
                         "4", "7", INTEGER,
                         new FieldBasicDto("Voucher Number", "voucherNumber"),
-                        exampleMap2
+                        exampleMap2,
+                        FieldValidationDto.INTEGER
                 )
         );
 
@@ -120,7 +124,8 @@ public final class ExampleData {
                 new FieldDto(
                         "5", "7", STRING,
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
-                        exampleMap3
+                        exampleMap3,
+                        FieldValidationDto.STRING
                 )
         );
 
@@ -219,6 +224,7 @@ public final class ExampleData {
             found.setSettings(field.getSettings());
             found.setType(field.getType());
             found.setMetadata(field.getMetadata());
+            found.setValidation(field.getValidation());
         }
 
     }

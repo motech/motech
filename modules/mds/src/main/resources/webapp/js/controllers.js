@@ -7,7 +7,7 @@
     /**
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields) {
+    mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields, FieldsValidation) {
         var setFields, setAdvancedSettings, setMetadata;
 
         /**
@@ -377,7 +377,7 @@
         * will be shown if a field name is not unique.
         */
         $scope.createField = function () {
-            var selector, validate;
+            var validate, type, selector;
 
             $scope.tryToCreate = true;
             validate = $scope.newField.type
@@ -390,6 +390,7 @@
                     entityId: $scope.selectedEntity.id,
                     type: $scope.newField.type.type,
                     settings: $scope.newField.type.settings,
+                    validation: $scope.newField.validation,
                     basic: {
                         displayName: $scope.newField.displayName,
                         name: $scope.newField.name
@@ -472,7 +473,9 @@
         * @return {boolean} true if all information inside the field are correct; otherwise false.
         */
         $scope.validateField = function (field) {
-            return $scope.validateFieldBasic(field) && $scope.validateFieldSettings(field);
+            return $scope.validateFieldBasic(field)
+                && $scope.validateFieldSettings(field)
+                && $scope.validateFieldValidation(field);
         };
 
         /**
@@ -619,6 +622,91 @@
             }
         };
 
+        /* VALIDATION FUNCTIONS */
+
+        /**
+        * Validate the validation information ('Validation' tab on UI) inside the given field.
+        *
+        * @param {object} field to validate.
+        * @return {boolean} true if all validation information inside the field are correct;
+        *                   otherwise false.
+        */
+        $scope.validateFieldValidation = function (field) {
+            var expression = true;
+
+            if (field.validation) {
+                angular.forEach(field.validation.validationCriteria, function (criterion) {
+                    if ($scope.validateCriterion(criterion, field.validation.validationCriteria)) {
+                        expression = false;
+                    }
+                });
+            }
+
+            return expression;
+        };
+
+        /**
+        * Checks if criterion value is valid
+        * @param {object} criterion to validate
+        * @param {object} list containing all field's validation criteria
+        * @return {string} empty if criterion is valid (otherwise contains validation error)
+        */
+        $scope.validateCriterion = function(criterion, validationCriteria) {
+            var anotherCriterion;
+
+            if (criterion.enabled) {
+                if (criterion.value === null || criterion.value.length === 0) {
+                    return 'mds.error.requiredField';
+                }
+
+                switch (criterion.displayName) {
+                    case 'mds.field.validation.minLength':
+                        if (criterion.value < 0) {
+                            return 'mds.error.lengthMustBePositive';
+                        } else {
+                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxLength');
+
+                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                                && anotherCriterion.value < criterion.value) {
+                                    return 'mds.error.minCannotBeBigger';
+                            }
+                        }
+                        break;
+                    case 'mds.field.validation.maxLength':
+                        if (criterion.value < 0) {
+                            return 'mds.error.lengthMustBePositive';
+                        } else {
+                            anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minLength');
+
+                            if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                                && anotherCriterion.value > criterion.value) {
+                                    return 'mds.error.maxCannotBeSmaller';
+                            }
+                        }
+                        break;
+                    case 'mds.field.validation.minValue':
+                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.maxValue');
+
+                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                            && anotherCriterion.value < criterion.value) {
+                                return 'mds.error.minCannotBeBigger';
+                        }
+                        break;
+                    case 'mds.field.validation.maxValue':
+                        anotherCriterion = $scope.findCriterionByName(validationCriteria, 'mds.field.validation.minValue');
+
+                        if (anotherCriterion !== null && anotherCriterion.enabled && anotherCriterion.value
+                            && anotherCriterion.value > criterion.value) {
+                                return 'mds.error.maxCannotBeSmaller';
+                        }
+                        break;
+                }
+            }
+
+            return '';
+        };
+
+
         /* UTILITY FUNCTIONS */
 
         /**
@@ -629,6 +717,23 @@
         */
         $scope.findFieldsByName = function (name) {
             return find($scope.fields, [{ field: 'basic.name', value: name}], false);
+        };
+
+        /**
+        * Find validation criterion with given name in field's validation criteria
+        * @param {object} list of field's validation criteria
+        * @param {string} name of criteria to be found
+        * @return {object} found criterion with given name or null if no such criterion exists
+        */
+        $scope.findCriterionByName = function (validationCriteria, name) {
+            var foundCriterion = null;
+            angular.forEach(validationCriteria, function (criterion) {
+                if (criterion.displayName === name) {
+                    foundCriterion = criterion;
+                }
+            });
+
+            return foundCriterion;
         };
 
         /**
@@ -666,6 +771,24 @@
         */
         $scope.findSettingByName = function (settings, name) {
             return find(settings, [{field: 'name', value: name}], true);
+        };
+
+        /*
+        * Gets type information from TypeDto object
+        * @param {object} TypeDto object containing type information
+        * @return {string} type information taken from parameter object
+        */
+        $scope.getTypeFromTypeObject = function(typeObject) {
+            return typeObject.displayName.substring(typeObject.displayName.lastIndexOf('.') + 1);
+        };
+
+        /**
+        * Checks if given field contains not empty validation object
+        * @param {object} field - field to be checked for including validation object
+        * @return {boolean} true if given field contains not empty validation
+        */
+        $scope.containsValidation = function(field) {
+            return field.validation && field.validation.validationCriteria.length;
         };
 
         /**
@@ -720,10 +843,10 @@
         * @return {string} url to appropriate form.
         */
         $scope.loadDefaultValueForm = function (type) {
-            var value = type.displayName.substring(type.displayName.lastIndexOf('.'));
+            var value = $scope.getTypeFromTypeObject(type);
 
             return '../mds/resources/partials/widgets/field-basic-defaultValue-{0}.html'
-                .format(value.substring(value.lastIndexOf('.') + 1).toLowerCase());
+                .format(value.substring(value.toLowerCase()));
         };
 
         /**
@@ -863,7 +986,7 @@
         * the unique id will be added to end of created field name.
         */
         $scope.$watch('newField.type', function () {
-            var found;
+            var found, type;
 
             if (isBlank($scope.newField.name) && $scope.newField.type) {
                 found = $scope.findFieldsByName($scope.newField.type.defaultName);
@@ -873,6 +996,11 @@
                 if (found.length !== 0) {
                     $scope.newField.name += '-{0}'.format(_.uniqueId());
                 }
+            }
+
+            if ($scope.newField.type) {
+                type = $scope.getTypeFromTypeObject($scope.newField.type.type);
+                $scope.newField.validation = FieldsValidation.getForType({type: type});
             }
         });
     });

@@ -52,6 +52,11 @@
                             {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
                         </a>
                     </li>
+                    <li ui-if="containsValidation(field)">
+                        <a href="#validation-{{$index}}" data-toggle="tab">
+                            {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
+                        </a>
+                    </li>
                     <li ui-if="field.settings">
                         <a href="#settings-{{$index}}" data-toggle="tab">
                             {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
@@ -65,6 +70,9 @@
                     </div>
                     <div class="tab-pane" id="metadata-{{$index}}">
                         <div ng-include="'../mds/resources/partials/widgets/field-metadata.html'"></div>
+                    </div>
+                    <div class="tab-pane" id="validation-{{$index}}" ui-if="containsValidation(field)">
+                        <div ng-include="'../mds/resources/partials/widgets/field-validation.html'"></div>
                     </div>
                     <div class="tab-pane" id="settings-{{$index}}" ui-if="field.settings">
                         <div ng-include="'../mds/resources/partials/widgets/field-settings.html'"></div>

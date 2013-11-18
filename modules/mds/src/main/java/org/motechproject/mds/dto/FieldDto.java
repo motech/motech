@@ -16,19 +16,21 @@ public class FieldDto extends SettingsDto {
     private TypeDto type;
     private FieldBasicDto basic;
     private Map<String, String> metadata;
+    private FieldValidationDto validation;
 
     public FieldDto() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, null);
     }
 
     public FieldDto(String id, String entityId, TypeDto type, FieldBasicDto basic, Map<String, String> metadata,
-                    SettingDto... settings) {
+                    FieldValidationDto validation, SettingDto... settings) {
         super(settings);
         this.id = id;
         this.entityId = entityId;
         this.type = type;
         this.basic = basic;
         this.metadata = metadata;
+        this.validation = validation;
     }
 
     public String getId() {
@@ -69,6 +71,14 @@ public class FieldDto extends SettingsDto {
 
     public void setMetadata(Map metadata) {
         this.metadata = metadata;
+    }
+
+    public FieldValidationDto getValidation() {
+        return validation;
+    }
+
+    public void setValidation(FieldValidationDto validation) {
+        this.validation = validation;
     }
 
     /**

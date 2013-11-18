@@ -1,0 +1,16 @@
+<form class="form-horizontal">
+    <div class="control-group" ng-repeat="criterion in field.validation.validationCriteria" ng-class="{error: validateCriterion(criterion, field.validation.validationCriteria)}">
+            <label class="checkbox-inline control-label">
+                <input type="checkbox" ng-model="criterion.enabled">
+                {{msg(criterion.displayName)}}:
+            </label>
+            <div class="controls" ng-switch on="getTypeFromTypeObject(criterion.type)">
+                <input ng-switch-when="integer" type="number" ng-model="criterion.value" ng-disabled="!criterion.enabled" />
+                <input ng-switch-when="decimal" type="number" step="any" double ng-model="criterion.value" ng-disabled="!criterion.enabled" />
+                <input ng-switch-default type="text" ng-model="criterion.value" ng-disabled="!criterion.enabled" />
+                <span class="help-inline" ng-class="{hide: !validateCriterion(criterion, field.validation.validationCriteria)}">
+                    {{msg(validateCriterion(criterion, field.validation.validationCriteria))}}
+                </span>
+            </div>
+    </div>
+</form>

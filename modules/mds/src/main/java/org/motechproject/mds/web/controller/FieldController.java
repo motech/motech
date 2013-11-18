@@ -2,6 +2,8 @@ package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.FieldNotFoundException;
@@ -72,4 +74,19 @@ public class FieldController extends MdsController {
         }
     }
 
+    @RequestMapping(value = "/fields/validation/get/{type}", method = RequestMethod.GET)
+    @ResponseBody
+    public FieldValidationDto getValidationByType(@PathVariable String type) {
+        String fieldType = "mds.field.".concat(type);
+
+        if (fieldType.equals(TypeDto.INTEGER.getDisplayName())) {
+            return FieldValidationDto.INTEGER;
+        } else if (fieldType.equals(TypeDto.DOUBLE.getDisplayName())) {
+            return FieldValidationDto.DECIMAL;
+        } else if (fieldType.equals(TypeDto.STRING.getDisplayName())) {
+            return FieldValidationDto.STRING;
+        }
+
+        return new FieldValidationDto();
+    }
 }

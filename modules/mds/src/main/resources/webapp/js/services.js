@@ -28,4 +28,17 @@
         );
     });
 
+    /**
+    * Creates a fieldValidation service which will contain methods related to field validation in general
+    */
+    angular.module('fieldValidationService', ['ngResource']).factory('FieldsValidation', function ($resource) {
+        return $resource(
+            '../mds/fields/validation/:action/:type',
+            { type: '@type' },
+            {
+                getForType: { method: 'GET', params: { action: 'get' } }
+            }
+        );
+    });
+
 }());
