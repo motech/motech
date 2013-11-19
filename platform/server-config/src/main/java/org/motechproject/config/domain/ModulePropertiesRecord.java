@@ -2,6 +2,7 @@ package org.motechproject.config.domain;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
 
     private static final long serialVersionUID = -2184859902798932902L;
     private static Logger logger = LoggerFactory.getLogger(ModulePropertiesRecord.class);
+    public static final String PROPERTIES_FILE_EXTENSION = "properties";
 
     private Map<String, String> properties;
     private String module;
@@ -58,7 +60,7 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
         try {
             inputStream = FileUtils.openInputStream(file);
             final String fileName = file.getName();
-            boolean raw = !isExtension(fileName, "properties");
+            boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
             Properties properties = buildProperties(inputStream, raw);
             return new ModulePropertiesRecord(properties, file.getParentFile().getName(), fileName, raw);
         } catch (IOException e) {
@@ -114,6 +116,16 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
+    }
+
+    @Override
+    public boolean sameAs(MotechBaseDataObject dataObject) {
+        ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
+        return new EqualsBuilder()
+                .append(this.module, record.module)
+                .append(this.filename, record.filename)
+                .append(this.raw, record.raw)
+                .isEquals();
     }
 
     @Override

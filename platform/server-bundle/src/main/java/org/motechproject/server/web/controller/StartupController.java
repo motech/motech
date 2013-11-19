@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static org.motechproject.server.config.domain.MotechSettings.AMQ_BROKER_URL;
+import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**

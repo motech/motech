@@ -17,7 +17,6 @@ import java.net.MalformedURLException;
  */
 public class ConfigLocation {
     private String configLocation;
-    private boolean isCurrentLocation;
 
     public ConfigLocation(String configLocation) {
         this.configLocation = configLocation;
@@ -42,14 +41,6 @@ public class ConfigLocation {
         } else {
             return new ClassPathResource(configLocation);
         }
-    }
-
-    public void markAsCurrentLocation() {
-        isCurrentLocation = true;
-    }
-
-    public boolean isCurrentLocation() {
-        return isCurrentLocation;
     }
 
     public String getLocation() {

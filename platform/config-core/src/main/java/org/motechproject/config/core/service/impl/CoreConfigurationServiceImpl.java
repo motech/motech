@@ -1,6 +1,7 @@
 package org.motechproject.config.core.service.impl;
 
 import org.motechproject.config.core.bootstrap.Environment;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -106,8 +108,21 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     }
 
     @Override
-    public Iterable<ConfigLocation> getConfigLocations() {
-        return configLocationFileStore.getAll();
+    public ConfigLocation getConfigLocation() {
+        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
+        for (ConfigLocation configLocation : configLocations) {
+            Resource configLocationResource = configLocation.toResource();
+            try {
+                Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);
+                if (motechSettings.isReadable()) {
+                    return configLocation;
+                }
+                logger.warn("Could not read motech-settings.conf from: " + configLocationResource.toString());
+            } catch (IOException e) {
+                logger.warn("Problem reading motech-settings.conf from location: " + configLocationResource.toString(), e);
+            }
+        }
+        throw new MotechConfigurationException("Could not read settings from any of the config locations.");
     }
 
     @Override

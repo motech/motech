@@ -1,5 +1,7 @@
 package org.motechproject.commons.couchdb.dao;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -31,6 +33,24 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
         } else {
             throw new BusinessIdNotUniqueException(businessFieldName, businessId);
         }
+    }
+
+    public void bulkAddOrUpdate(List<T> records) {
+        List<T> dbRecords = this.getAll();
+        for (final T record : records) {
+            T dbRecord = (T) CollectionUtils.find(dbRecords, new Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    T rec = (T) object;
+                    return rec.sameAs(record);
+                }
+            });
+            if (dbRecord != null) {
+                record.setId(dbRecord.getId());
+                record.setRevision(dbRecord.getRevision());
+            }
+        }
+        db.executeBulk(records);
     }
 
     private List<T> entities(String businessFieldName, String businessId) {

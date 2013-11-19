@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
@@ -42,13 +42,13 @@ public class
     @Test
     public void testExport() throws IOException {
         SettingsRecord settings = new SettingsRecord();
-        settings.savePlatformSetting(MotechSettings.LANGUAGE, "en");
+        settings.savePlatformSetting(ConfigurationConstants.LANGUAGE, "en");
         when(configFileMonitor.getCurrentSettings()).thenReturn(settings);
         when(allSettings.getSettings()).thenReturn(settings);
 
         Properties p = platformSettingsService.exportPlatformSettings();
 
-        assertTrue(p.containsKey(MotechSettings.LANGUAGE));
-        assertEquals(settings.getLanguage(), p.getProperty(MotechSettings.LANGUAGE));
+        assertTrue(p.containsKey(ConfigurationConstants.LANGUAGE));
+        assertEquals(settings.getLanguage(), p.getProperty(ConfigurationConstants.LANGUAGE));
     }
 }

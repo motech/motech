@@ -2,8 +2,8 @@ package org.motechproject.config.repository;
 
 import org.apache.commons.collections.MapUtils;
 import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.View;
+import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,7 @@ import java.util.Properties;
  */
 @Repository
 @View(name = "by_name", map = "function(doc) { if(doc.type === 'ModulePropertiesRecord') emit(doc.module); }")
-public final class AllModuleProperties extends CouchDbRepositorySupport<ModulePropertiesRecord> {
+public class AllModuleProperties extends MotechBaseRepository<ModulePropertiesRecord> {
 
     private static final String BY_NAME = "by_name";
 
@@ -73,6 +73,4 @@ public final class AllModuleProperties extends CouchDbRepositorySupport<ModulePr
         super(ModulePropertiesRecord.class, connector);
         initStandardDesignDocument();
     }
-
-
 }

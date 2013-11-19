@@ -18,10 +18,13 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 
+import static org.motechproject.config.core.constants.ConfigurationConstants.SETTINGS_FILE_NAME;
+
 /**
  * The <code>ConfigFileMonitor</code> is used to monitor changes in config files and send
  * appropriate events.
  */
+//TODO: REMOVE
 @Component
 public class ConfigFileMonitor implements FileListener {
     public static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
@@ -87,7 +90,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileCreated(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
+        if (SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was created: " + fileName);
         }
     }
@@ -95,7 +98,7 @@ public class ConfigFileMonitor implements FileListener {
     public void evictProperCache(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (fileName.equals(MotechSettings.SETTINGS_FILE_NAME)) {
+        if (fileName.equals(SETTINGS_FILE_NAME)) {
             configurationService.evictMotechSettingsCache();
         } else {
             platformSettingsService.evictBundleSettingsCache();
@@ -106,7 +109,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
+        if (SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.warn("Config file was deleted: " + fileName);
 
             evictProperCache(fileChangeEvent);
@@ -117,7 +120,7 @@ public class ConfigFileMonitor implements FileListener {
     public void fileChanged(FileChangeEvent fileChangeEvent) {
         String fileName = fileChangeEvent.getFile().getName().getBaseName();
 
-        if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
+        if (SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was changed: " + fileName);
 
             currentSettings = configLoader.loadConfig();

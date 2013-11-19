@@ -1,5 +1,6 @@
 package org.motechproject.server.config.service.impl;
 
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
@@ -42,7 +43,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         if (dbSettings != null) {
             export.putAll(dbSettings.getActivemqProperties());
-            export.put(MotechSettings.LANGUAGE, dbSettings.getLanguage());
+            export.put(ConfigurationConstants.LANGUAGE, dbSettings.getLanguage());
         }
 
         return export;

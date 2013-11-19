@@ -8,20 +8,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.UrlResource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -45,9 +48,8 @@ public class ConfigLoaderTest {
 
     @Test
     public void testMotechSettingsLoading() {
-        List<ConfigLocation> configLocations = new ArrayList<>();
-        configLocations.add(new ConfigLocation("config/"));
-        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
+        ConfigLocation configLocation = new ConfigLocation("config/");
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
         SettingsRecord settings = configLoader.loadConfig();
 
@@ -56,19 +58,20 @@ public class ConfigLoaderTest {
     }
 
     @Test(expected = MotechConfigurationException.class)
-    public void testNoFolderExists() {
-        List<ConfigLocation> configLocations = new ArrayList<>();
-        configLocations.add(new ConfigLocation("config1/"));
-        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
+    public void shouldThrowExceptionIfErrorReadingSettingsFile() throws MalformedURLException {
+        ConfigLocation configLocation = mock(ConfigLocation.class);
+        UrlResource resource = mock(UrlResource.class);
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
+        when(configLocation.toResource()).thenReturn(resource);
+        when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME)).thenThrow(new MalformedURLException());
 
         configLoader.loadConfig();
     }
 
     @Test
     public void testActiveMqPropertiesLoading() {
-        List<ConfigLocation> configLocations = new ArrayList<>();
-        configLocations.add(new ConfigLocation("config2/"));
-        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
+        ConfigLocation configLocation = new ConfigLocation("config2/");
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
         SettingsRecord settings = configLoader.loadConfig();
 
@@ -78,9 +81,6 @@ public class ConfigLoaderTest {
 
     @Test
     public void shouldLoadDefaultActiveMq() {
-        List<ConfigLocation> configLocations = new ArrayList<>();
-        when(coreConfigurationService.getConfigLocations()).thenReturn(configLocations);
-
         SettingsRecord settings = configLoader.loadDefaultConfig();
 
         assertNotNull(settings);
@@ -92,16 +92,15 @@ public class ConfigLoaderTest {
     public void shouldLoadSupportedFilesFromGivenConfigLocationAndProcessThem() throws IOException {
         final String dirPath = this.getClass().getClassLoader().getResource("config").getFile();
         final List<File> expectedFiles = Arrays.asList(
-                new File(dirPath, "somemodule.json"),
-                new File(dirPath, "somemodule.properties")
+                new File(dirPath, "org.motechproject.motech-module1/somemodule.properties"),
+                new File(dirPath, "org.motechproject.motech-module2/somemodule.json")
         );
         final ConfigLocation configLocation = new ConfigLocation(dirPath);
-        configLocation.markAsCurrentLocation();
-        when(coreConfigurationService.getConfigLocations()).thenReturn(Arrays.asList(configLocation));
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
         configLoader.processExistingConfigs();
 
-        verify(configurationService).addOrUpdateProperties(filesCaptor.capture());
+        verify(configurationService).addOrUpdate(filesCaptor.capture());
         List<File> actualFiles = filesCaptor.getValue();
         assertEquals(expectedFiles, actualFiles);
     }

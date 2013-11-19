@@ -7,6 +7,7 @@ import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
@@ -63,13 +64,13 @@ public class SettingsServiceImpl implements SettingsService {
 
             List<SettingsOption> miscOptions = new ArrayList<>();
 
-            SettingsOption languageOption = ParamParser.parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage());
+            SettingsOption languageOption = ParamParser.parseParam(ConfigurationConstants.LANGUAGE, motechSettings.getLanguage());
             miscOptions.add(languageOption);
-            SettingsOption msgOption = ParamParser.parseParam(MotechSettings.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
+            SettingsOption msgOption = ParamParser.parseParam(ConfigurationConstants.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
             miscOptions.add(msgOption);
-            SettingsOption serverUrlOption = ParamParser.parseParam(MotechSettings.SERVER_URL, motechSettings.getServerUrl());
+            SettingsOption serverUrlOption = ParamParser.parseParam(ConfigurationConstants.SERVER_URL, motechSettings.getServerUrl());
             miscOptions.add(serverUrlOption);
-            SettingsOption uploadSizeOption = ParamParser.parseParam(MotechSettings.UPLOAD_SIZE, motechSettings.getUploadSize());
+            SettingsOption uploadSizeOption = ParamParser.parseParam(ConfigurationConstants.UPLOAD_SIZE, motechSettings.getUploadSize());
             miscOptions.add(uploadSizeOption);
 
             Settings miscSettings = new Settings("other", miscOptions);
@@ -114,7 +115,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public InputStream exportConfig(String fileName) throws IOException {
-        return configurationService.createZipWithConfigFiles(MotechSettings.SETTINGS_FILE_NAME, fileName);
+        return configurationService.createZipWithConfigFiles(ConfigurationConstants.SETTINGS_FILE_NAME, fileName);
     }
 
     @Override

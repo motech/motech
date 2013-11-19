@@ -35,6 +35,6 @@ public class CoreConfigurationBundleIT extends BaseOsgiIT {
 
     @Override
     protected List<String> getImports() {
-        return Arrays.asList("org.motechproject.config.core.domain");
+        return Arrays.asList("org.motechproject.config.core.domain", "org.motechproject.config.core.service");
     }
 }

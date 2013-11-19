@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechMapUtils;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 
 import java.io.IOException;
 import java.security.DigestInputStream;
@@ -36,13 +37,13 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @JsonIgnore
     @Override
     public String getLanguage() {
-        return platformSettings.getProperty(LANGUAGE);
+        return platformSettings.getProperty(ConfigurationConstants.LANGUAGE);
     }
 
     @JsonIgnore
     @Override
     public String getStatusMsgTimeout() {
-        return platformSettings.getProperty(STATUS_MSG_TIMEOUT);
+        return platformSettings.getProperty(ConfigurationConstants.STATUS_MSG_TIMEOUT);
     }
 
     @JsonIgnore
@@ -60,36 +61,36 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @JsonIgnore
     @Override
     public LoginMode getLoginMode() {
-        return LoginMode.valueOf(platformSettings.getProperty(LOGINMODE));
+        return LoginMode.valueOf(platformSettings.getProperty(ConfigurationConstants.LOGINMODE));
     }
 
     @JsonIgnore
     public String getLoginModeValue() {
-        return platformSettings.getProperty(LOGINMODE);
+        return platformSettings.getProperty(ConfigurationConstants.LOGINMODE);
     }
 
     @JsonIgnore
     @Override
     public String getProviderName() {
-        return platformSettings.getProperty(PROVIDER_NAME);
+        return platformSettings.getProperty(ConfigurationConstants.PROVIDER_NAME);
     }
 
     @JsonIgnore
     @Override
     public String getProviderUrl() {
-        return platformSettings.getProperty(PROVIDER_URL);
+        return platformSettings.getProperty(ConfigurationConstants.PROVIDER_URL);
     }
 
     @JsonIgnore
     @Override
     public String getServerUrl() {
-        return new MotechURL(platformSettings.getProperty(SERVER_URL)).toString();
+        return new MotechURL(platformSettings.getProperty(ConfigurationConstants.SERVER_URL)).toString();
     }
 
     @JsonIgnore
     @Override
     public String getServerHost() {
-        return new MotechURL(platformSettings.getProperty(SERVER_URL)).getHost();
+        return new MotechURL(platformSettings.getProperty(ConfigurationConstants.SERVER_URL)).getHost();
     }
 
     @Override
@@ -105,32 +106,32 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @JsonIgnore
     @Override
     public String getUploadSize() {
-        return platformSettings.getProperty(UPLOAD_SIZE);
+        return platformSettings.getProperty(ConfigurationConstants.UPLOAD_SIZE);
     }
 
     @Override
     public void setLanguage(final String language) {
-        platformSettings.setProperty(LANGUAGE, language);
+        platformSettings.setProperty(ConfigurationConstants.LANGUAGE, language);
     }
 
     @Override
     public void setLoginModeValue(String loginMode) {
-        platformSettings.setProperty(LOGINMODE, loginMode);
+        platformSettings.setProperty(ConfigurationConstants.LOGINMODE, loginMode);
     }
 
     @Override
     public void setProviderName(String providerName) {
-        platformSettings.setProperty(PROVIDER_NAME, providerName);
+        platformSettings.setProperty(ConfigurationConstants.PROVIDER_NAME, providerName);
     }
 
     @Override
     public void setProviderUrl(String providerUrl) {
-        platformSettings.setProperty(PROVIDER_URL, providerUrl);
+        platformSettings.setProperty(ConfigurationConstants.PROVIDER_URL, providerUrl);
     }
 
     @Override
     public void setStatusMsgTimeout(final String statusMsgTimeout) {
-        platformSettings.setProperty(STATUS_MSG_TIMEOUT, statusMsgTimeout);
+        platformSettings.setProperty(ConfigurationConstants.STATUS_MSG_TIMEOUT, statusMsgTimeout);
     }
 
     @Override
@@ -145,12 +146,12 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     @Override
     public void setServerUrl(String serverUrl) {
-        platformSettings.setProperty(SERVER_URL, serverUrl);
+        platformSettings.setProperty(ConfigurationConstants.SERVER_URL, serverUrl);
     }
 
     @Override
     public void setUploadSize(String uploadSize) {
-        platformSettings.setProperty(UPLOAD_SIZE, uploadSize);
+        platformSettings.setProperty(ConfigurationConstants.UPLOAD_SIZE, uploadSize);
     }
 
     @Override

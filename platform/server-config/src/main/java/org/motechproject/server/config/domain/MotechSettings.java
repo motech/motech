@@ -11,24 +11,6 @@ import java.util.Properties;
  */
 
 public interface MotechSettings {
-    String SETTINGS_FILE_NAME = "motech-settings.conf";
-
-    String AMQ_QUEUE_EVENTS = "jms.queue.for.events";
-    String AMQ_QUEUE_SCHEDULER = "jms.queue.for.scheduler";
-    String AMQ_BROKER_URL = "jms.broker.url";
-    String AMQ_MAX_REDELIVERIES = "jms.maximumRedeliveries";
-    String AMQ_REDELIVERY_DELAY_IN_MILLIS = "jms.redeliveryDelayInMillis";
-    String AMQ_CONCURRENT_CONSUMERS = "jms.concurrentConsumers";
-    String AMQ_MAX_CONCURRENT_CONSUMERS = "jms.maxConcurrentConsumers";
-
-    String LANGUAGE = "system.language";
-    String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
-    String SERVER_URL = "server.url";
-    String UPLOAD_SIZE = "upload.size";
-
-    String PROVIDER_NAME = "provider.name";
-    String PROVIDER_URL = "provider.url";
-    String LOGINMODE = "login.mode";
 
     String getLanguage();
 

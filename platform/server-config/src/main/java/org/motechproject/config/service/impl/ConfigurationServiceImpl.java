@@ -3,7 +3,6 @@ package org.motechproject.config.service.impl;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
@@ -84,16 +83,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         configSource = bootstrapConfig.getConfigSource();
-
-
-        //TODO: Have a relook at this
-        if (ConfigSource.FILE.equals(configSource)) {
-            try {
-                configFileMonitor.monitor();
-            } catch (FileSystemException e) {
-                logger.error("Can't start config file monitor. ", e);
-            }
-        }
 
         if (logger.isDebugEnabled()) {
             logger.debug("BootstrapConfig:" + bootstrapConfig);
@@ -290,8 +279,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void addOrUpdateProperties(List<File> files) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void addOrUpdate(List<File> files) {
+        List<ModulePropertiesRecord> records = new ArrayList<>();
+        for (File file : files) {
+            records.add(ModulePropertiesRecord.build(file));
+        }
+        allModuleProperties.bulkAddOrUpdate(records);
+    }
+
+    @Override
+    public void addOrUpdate(File file) {
+        allModuleProperties.addOrUpdate(ModulePropertiesRecord.build(file));
     }
 
     @Override

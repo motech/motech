@@ -144,10 +144,19 @@ public interface ConfigurationService {
     void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
 
     /**
-     * Overloaded method to save configurations in FILE mode only.
+     * Saves both property and raw configurations in FILE mode only.
+     * Files are classified as either raw config or properties based on the extension of the file.
+     * Uses CouchDb's buld operations.
      * @param files Files to read configuration from.
      */
-    void addOrUpdateProperties(List<File> files);
+    void addOrUpdate(List<File> files);
+
+    /**
+     * Saves both property and raw configurations in FILE mode only.
+     * Files are classified as either raw config or properties based on the extension of the file.
+     * @param file File to read configuration from.
+     */
+    void addOrUpdate(File file);
 
     /**
      * <p>
