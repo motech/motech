@@ -546,7 +546,7 @@
             });
 
             angular.forEach($scope.advancedSettings.indexes, function(index) {
-                expression = expression && index.lookupName;
+                expression = expression && index.lookupName !== undefined && index.lookupName.length !== 0;
             });
 
             return expression;
