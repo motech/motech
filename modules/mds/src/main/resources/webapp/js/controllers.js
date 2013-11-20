@@ -45,7 +45,7 @@
 
             $scope.originalSelectedEntityMetadata = [];
 
-            angular.forEach($scope.flattenMetadataArray($scope.selectedEntityMetadata), function (object) {
+            angular.forEach($scope.flattenArray($scope.selectedEntityMetadata), function (object) {
                 var newObj = $.extend(true, {}, object);
 
                 $scope.originalSelectedEntityMetadata.push(newObj);
@@ -541,7 +541,7 @@
                 expression = expression && $scope.validateField(field);
             });
 
-            angular.forEach($scope.flattenMetadataArray($scope.selectedEntityMetadata), function (metadata) {
+            angular.forEach($scope.flattenArray($scope.selectedEntityMetadata), function (metadata) {
                 expression = expression && $scope.uniqueMetadataKey(metadata);
             });
 
@@ -877,16 +877,26 @@
         };
 
         /**
-        * Flatten array of arrays of metadata objects into simple array of objects.
+        * Flatten array of arrays of objects into simple array of objects and removes hashkeys from them.
         *
-        * @return {Array} array of metadata objects.
+        * @return {Array} array of objects.
         */
-        $scope.flattenMetadataArray = function (array) {
+        $scope.flattenArray = function (array) {
             var objects = [];
             angular.forEach(array, function (objArrays) {
-                angular.forEach(objArrays, function (metadata) {
-                    objects.push(metadata);
-                });
+                if ($.isArray(objArrays)) {
+                    angular.forEach(objArrays, function (value) {
+                        delete value.$$hashKey;
+                        objects.push(value);
+                    });
+                } else {
+                   angular.forEach(objArrays, function (obj) {
+                        angular.forEach(obj, function (value) {
+                            delete value.$$hashKey;
+                            objects.push(value);
+                        });
+                   });
+                }
             });
             return objects;
         };
@@ -899,7 +909,7 @@
         */
         $scope.findMetadataByKey = function (key) {
             var objects = [];
-            return find($scope.flattenMetadataArray($scope.selectedEntityMetadata), [{field: 'key', value: key.key}]);
+            return find($scope.flattenArray($scope.selectedEntityMetadata), [{field: 'key', value: key.key}]);
         };
 
         /**
@@ -943,22 +953,50 @@
                     fields: fields ? cloneArray($scope.fields) : [],
                     original: original ? cloneArray($scope.originalFields) : []
                 },
-                metadataClone = $scope.flattenMetadataArray($scope.selectedEntityMetadata),
+                validationClone = {
+                    fields: [],
+                    original: [],
+                    flattedFields: [],
+                    flattedOriginal: []
+                },
+                metadataClone = $scope.flattenArray($scope.selectedEntityMetadata),
                 changedFields,
                 changedAdvancedSettings,
                 changedMetadata;
 
             angular.forEach(clone.fields, function (obj) {
                 delete obj.$$hashKey;
+                validationClone.fields.push(obj.validation.validationCriteria);
+                obj.validation.validationCriteria = undefined;
             });
 
             angular.forEach(clone.original, function (obj) {
                 delete obj.$$hashKey;
+                validationClone.original.push(obj.validation.validationCriteria);
+                obj.validation.validationCriteria = undefined;
+            });
+
+            validationClone.flattedFields = $scope.flattenArray(validationClone.fields);
+            validationClone.flattedOriginal = $scope.flattenArray(validationClone.original);
+
+            angular.forEach(validationClone.flattedFields, function (obj, index) {
+                if (obj.enabled === false && index < validationClone.flattedOriginal.length) {
+                    obj.value = validationClone.flattedOriginal[index].value;
+                }
             });
 
             changedFields = fields && original
-                ? !arraysEqual(clone.fields, clone.original)
+                ? (!arraysEqual(clone.fields, clone.original) ||
+                !arraysEqual(validationClone.flattedFields, validationClone.flattedOriginal))
                 : (fields && !original) || (!fields && original);
+
+            angular.forEach(clone.fields, function (obj, index) {
+                obj.validation.validationCriteria = validationClone.fields[index];
+            });
+
+            angular.forEach(clone.original, function (obj, index) {
+                obj.validation.validationCriteria = validationClone.original[index];
+            });
 
             angular.forEach($scope.advancedSettings.indexes, function(obj) {
                 delete obj.$$hashKey;
@@ -1133,7 +1171,7 @@
         * the unique id will be added to end of created field name.
         */
         $scope.$watch('newField.type', function () {
-            var found, type;
+            var found, type, obj;
 
             if (isBlank($scope.newField.name) && $scope.newField.type) {
                 found = $scope.findFieldsByName($scope.newField.type.defaultName);
