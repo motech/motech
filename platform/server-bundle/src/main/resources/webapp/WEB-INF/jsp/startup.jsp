@@ -76,8 +76,14 @@
                     <div ng-show="!${isFileMode}" class="control-group">
                          <label class="control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
                          <div class="controls">
-                             <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'"><span class="label-radio">{{msg('server.repository')}}</span>
-                             <input type="radio" value="openId" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/><span class="label-radio">{{msg('server.openId')}}</span>
+                             <label class="radio inline">
+                                <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'">
+                                {{msg('server.repository')}}
+                             </label>
+                             <label class="radio inline">
+                                <input type="radio" value="openId" name="loginMode" ng-click="securityMode = 'openid'" ng-checked="securityMode == 'openid'"/>
+                                {{msg('server.openId')}}
+                             </label>
                          </div>
                      </div>
                     <div ng-show="securityMode=='repository' || ${isFileMode}" class="control-group">

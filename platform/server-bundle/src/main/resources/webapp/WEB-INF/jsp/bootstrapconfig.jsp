@@ -80,10 +80,14 @@
                     <div class="control-group">
                         <label class="control-label">{{msg('server.bootstrap.configSource')}}</label>
                         <div class="controls">
-                            <input type="radio" value="file" name="configSource" <c:if test="${bootstrapConfig.configSource == 'file'}">checked=checked</c:if> />
-                            <span class="label-radio">{{msg('server.configSource.file')}}</span>
-                            <input type="radio" value="ui" name="configSource" <c:if test="${bootstrapConfig.configSource != 'file'}">checked=checked</c:if> />
-                            <span class="label-radio">{{msg('server.configSource.ui')}}</span>
+                            <label class="radio inline">
+                                <input type="radio" value="file" name="configSource" <c:if test="${bootstrapConfig.configSource == 'file'}">checked=checked</c:if> />
+                                {{msg('server.configSource.file')}}
+                            </label>
+                            <label class="radio inline">
+                                <input type="radio" value="ui" name="configSource" <c:if test="${bootstrapConfig.configSource != 'file'}">checked=checked</c:if> />
+                                {{msg('server.configSource.ui')}}
+                            </label>
                         </div>
                     </div>
                     <div class="control-group">
