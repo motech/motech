@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-commons-date</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -75,6 +80,8 @@
                             org.springframework.web.servlet.support,
                             org.springframework.web.servlet.view,
                             org.motechproject.osgi.web,
+                            org.motechproject.server.config,
+                            org.motechproject.config.service,
                             *
                         </Import-Package>
                     </instructions>
@@ -210,7 +217,7 @@
                             <predefinedVars>
                                 _, $, angular, isBlank, handleResponse, camelCase, blockUI,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, find,
-                                arraysEqual, validateDecimal, cloneObj
+                                arraysEqual, validateDecimal, cloneObj, alertHandler
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>

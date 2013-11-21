@@ -41,4 +41,15 @@
         );
     });
 
+    angular.module('mdsSettingsService', ['ngResource']).factory('MdsSettings', function ($resource) {
+        return $resource(
+            '../mds/settings/:action/', {},
+            {
+                importFile: { method: 'POST', params: {action: 'importFile' } },
+                exportData: { method: 'POST', params: {action: 'exportData' } },
+                saveSettings: { method: 'POST', params: {action: 'saveSettings' } },
+                getSettings: { method: 'GET', params: { action: 'get' } }
+            }
+        );
+    });
 }());

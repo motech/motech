@@ -32,7 +32,7 @@ import java.util.List;
 @Controller
 public class EntityController extends MdsController {
 
-    @RequestMapping(value = "/entities", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectEntities", method = RequestMethod.GET)
     @ResponseBody
     public SelectResult<EntityDto> getEntities(SelectData data) {
         List<EntityDto> list = getExampleData().getEntities();
@@ -41,6 +41,12 @@ public class EntityController extends MdsController {
         Collections.sort(list, new EntityNameComparator());
 
         return new SelectResult<>(data, list);
+    }
+
+    @RequestMapping(value = "/entities", method = RequestMethod.GET)
+    @ResponseBody
+    public List<EntityDto> getAllEntities() {
+        return getExampleData().getEntities();
     }
 
     @RequestMapping(value = "/entities/{entityId}", method = RequestMethod.GET)
