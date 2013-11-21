@@ -1,8 +1,11 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.commons.api.Tenant;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -31,6 +34,8 @@ public class SettingsFacade {
     private String moduleName;
     private String symbolicName;
 
+    private static final String QUEUE_FOR_EVENTS = "jms.queue.for.events";
+    private static final String QUEUE_FOR_SCHEDULER = "jms.queue.for.scheduler";
 
     public void setConfigurationService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
@@ -225,7 +230,7 @@ public class SettingsFacade {
 
     protected void registerProperties(String filename, Properties properties) {
         try {
-            if (configurationService!= null &&
+            if (configurationService != null &&
                     !configurationService.registersProperties(getSymbolicName(), filename)) {
                 configurationService.updateProperties(
                         getSymbolicName(), filename, defaultConfig.get(filename), properties);
@@ -328,5 +333,51 @@ public class SettingsFacade {
         Properties props = config.get(filename);
         props.put(key, value);
         saveConfigProperties(filename, props);
+    }
+
+    public MotechSettings getPlatformSettings() {
+        return configurationService.getPlatformSettings();
+    }
+
+    public void savePlatformSettings(MotechSettings settings) {
+        configurationService.savePlatformSettings(settings);
+    }
+
+    public Properties getActivemqConfig() {
+        MotechSettings settings = getPlatformSettings();
+
+        if (settings == null) {
+            return new Properties();
+        }
+
+        Properties activemqConfig = settings.getActivemqProperties();
+
+        if (activemqConfig == null) {
+            return new Properties();
+        }
+
+        replaceQueueNames(activemqConfig);
+
+        return activemqConfig;
+    }
+
+    private void replaceQueueNames(Properties activeMqConfig) {
+        String queuePrefix = getQueuePrefix();
+
+        String queueForEvents = activeMqConfig.getProperty(QUEUE_FOR_EVENTS);
+
+        if (StringUtils.isNotBlank(queueForEvents)) {
+            activeMqConfig.setProperty(QUEUE_FOR_EVENTS, queuePrefix + queueForEvents);
+        }
+
+        String queueForScheduler = activeMqConfig.getProperty(QUEUE_FOR_SCHEDULER);
+
+        if (StringUtils.isNotBlank(queueForScheduler)) {
+            activeMqConfig.setProperty(QUEUE_FOR_SCHEDULER, queuePrefix + queueForScheduler);
+        }
+    }
+
+    private String getQueuePrefix() {
+        return Tenant.current().getSuffixedId();
     }
 }
