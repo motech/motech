@@ -14,6 +14,7 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     private static Logger logger = Logger.getLogger(CoreConfigurationServiceImpl.class);
 
     static final String BOOTSTRAP_PROPERTIES = "bootstrap.properties";
+    private static final String CORE_CONFIG_CACHE = "CORE_CONFIG_CACHE";
 
     private Environment environment;
     private ConfigFileReader configFileReader;
@@ -109,7 +111,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     }
 
     @Override
-    @Cacheable(value = "CORE_CONFIG_CACHE", key = "#root.methodName")
+    @Cacheable(value = CORE_CONFIG_CACHE, key = "#root.methodName")
     public ConfigLocation getConfigLocation() {
         Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
         for (ConfigLocation configLocation : configLocations) {
@@ -128,6 +130,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     }
 
     @Override
+    @CacheEvict(value = CORE_CONFIG_CACHE, allEntries=true)
     public void addConfigLocation(String location) throws FileSystemException {
         configLocationFileStore.add(location);
         logger.info("Changed config file location");

@@ -3,19 +3,21 @@ package org.motechproject.config.service.impl;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.MotechMapUtils;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
+import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.repository.AllModuleProperties;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -51,9 +53,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private static final String USER_HOME = "user.home";
 
     @Autowired
-    private ConfigFileMonitor configFileMonitor;
-
-    @Autowired
     private CoreConfigurationService coreConfigurationService;
 
     @Autowired
@@ -67,6 +66,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired
     private AllModuleProperties allModuleProperties;
+
+    @Autowired
+    private ConfigFileMonitor configFileMonitor;
 
     private ConfigSource configSource;
 
@@ -399,6 +401,22 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public void updateConfigLocation(String newConfigLocation) {
+        try {
+            coreConfigurationService.addConfigLocation(newConfigLocation);
+            configFileMonitor.updateFileMonitor();
+        } catch (FileSystemException | java.nio.file.FileSystemException e) {
+            throw new MotechConfigurationException("Cannot add and/or update file monitoring location", e);
+        }
+    }
+
+    @Override
+    public void delete(File file) {
+        ModulePropertiesRecord record = ModulePropertiesRecord.build(file);
+        allModuleProperties.remove(record);
+    }
+
+    @Override
     public boolean rawConfigExists(String module, String filename) {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = allModuleProperties.byModuleAndFileName(module, filename);
@@ -411,10 +429,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private String getConfigDir() {
-        if (configFileMonitor != null && configFileMonitor.getCurrentSettings() != null) {
-            return configFileMonitor.getCurrentSettings().getFilePath();
-        }
-        return String.format("%s/.motech/config/", System.getProperty(USER_HOME));
+        return coreConfigurationService.getConfigLocation().getLocation();
     }
 
     private String getModuleConfigDir(String module) {

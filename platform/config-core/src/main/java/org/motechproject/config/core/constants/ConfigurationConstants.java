@@ -22,6 +22,11 @@ public final class ConfigurationConstants {
 
     public static final String[] SUPPORTED_FILE_EXTNS = new String[]{"properties", "json"};
 
+    private static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
+    public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "deleted";
+    public static final String FILE_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "changed";
+    public static final String FILE_CREATED_EVENT_SUBJECT = BASE_SUBJECT + "created";
+
     private ConfigurationConstants() {
     }
 }

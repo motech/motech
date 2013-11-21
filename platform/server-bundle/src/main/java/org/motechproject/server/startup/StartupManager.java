@@ -64,7 +64,7 @@ public class StartupManager {
         if (!dbSettings.isPlatformInitialized()) {
             if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
-                settingsRecord = configLoader.loadConfig();
+                settingsRecord = configLoader.loadMotechSettings();
 
                 syncSettingsWithDb();
 

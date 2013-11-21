@@ -65,15 +65,9 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.server.config;version=${project.version},
-                            org.motechproject.server.config.db;version=${project.version},
                             org.motechproject.server.config.domain;version=${project.version},
-                            org.motechproject.server.config.monitor;version=${project.version},
-                            org.motechproject.server.config.repository;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
-                            org.motechproject.server.config.service.impl;version=${project.version},
-                            org.motechproject.server.config.settings;version=${project.version},
                             org.motechproject.config.domain;version=${project.version},
-                            org.motechproject.config.repository;version=${project.version},
                             org.motechproject.config.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>

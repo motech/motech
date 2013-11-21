@@ -233,4 +233,16 @@ public interface ConfigurationService {
      * @return True if properties exist, false otherwise
      */
     boolean registersProperties(String module, String filename);
+
+    /**
+     * Adds a new config location and restarts the monitor.
+     * @param newConfigLocation New config location
+     */
+    void updateConfigLocation(String newConfigLocation);
+
+    /**
+     * Deletes the db record corresponding to the file.
+     * @param file File that has been deleted.
+     */
+    void delete(File file);
 }

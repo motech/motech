@@ -6,16 +6,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
+import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.repository.AllModuleProperties;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +26,9 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -36,10 +38,10 @@ public class ConfigurationServiceTest {
     private CoreConfigurationService coreConfigurationService;
 
     @Mock
-    private ConfigFileMonitor configFileMonitor;
+    AllModuleProperties allModuleProperties;
 
     @Mock
-    AllModuleProperties allModuleProperties;
+    ConfigFileMonitor configFileMonitor;
 
     @Captor
     ArgumentCaptor<List<ModulePropertiesRecord>> propertiesCaptor;
@@ -74,16 +76,6 @@ public class ConfigurationServiceTest {
     }
 
     @Test
-    public void shouldNotMonitorConfigFilesIfBootstrapConfigIsNotFound() throws FileSystemException {
-        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(null);
-
-        BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
-
-        assertNull(bootstrapConfig);
-        verify(configFileMonitor, never()).monitor();
-    }
-
-    @Test
     public void shouldBulkAddOrUpdateProperties() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         File file1 = new File(classLoader.getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
@@ -96,5 +88,34 @@ public class ConfigurationServiceTest {
         assertEquals(2, actualRecords.size());
         assertEquals("somemodule.properties", actualRecords.get(0).getFilename());
         assertEquals("somemodule.json", actualRecords.get(1).getFilename());
+    }
+
+    @Test
+    public void shouldUpdateFileMonitor() throws FileSystemException, java.nio.file.FileSystemException {
+        String newConfigLocation = "new location";
+        configurationService.updateConfigLocation(newConfigLocation);
+
+        InOrder inOrder = inOrder(coreConfigurationService, configFileMonitor);
+        inOrder.verify(coreConfigurationService).addConfigLocation(newConfigLocation);
+        inOrder.verify(configFileMonitor).updateFileMonitor();
+    }
+
+    @Test(expected = MotechConfigurationException.class)
+    public void shouldThrowMotechExceptionIfUpdatingFileMonitorFailed() throws FileSystemException {
+        doThrow(new FileSystemException("test exception")).when(configFileMonitor).updateFileMonitor();
+
+        configurationService.updateConfigLocation("new location");
+    }
+
+    @Test
+    public void shouldDeleteModulePropertiesRecordCorrespondingToAFile() {
+        File fileToDelete = new File(this.getClass().getClassLoader().getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
+
+        configurationService.delete(fileToDelete);
+
+        ArgumentCaptor<ModulePropertiesRecord> recordCaptor = ArgumentCaptor.forClass(ModulePropertiesRecord.class);
+        verify(allModuleProperties).remove(recordCaptor.capture());
+        ModulePropertiesRecord deletedRecord = recordCaptor.getValue();
+        assertEquals("somemodule.properties", deletedRecord.getFilename());
     }
 }

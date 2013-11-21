@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.motechproject.commons.couchdb.service.impl.CouchDbManagerImpl;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.repository.AllSettings;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 
 import java.io.IOException;
@@ -19,8 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class
-    PlatformSettingsServiceImplTest {
+public class PlatformSettingsServiceImplTest {
 
     @Mock
     CouchDbManagerImpl couchDbManager;
@@ -29,7 +28,7 @@ public class
     AllSettings allSettings;
 
     @Mock
-    ConfigFileMonitor configFileMonitor;
+    ConfigLoader configLoader;
 
     @InjectMocks
     PlatformSettingsService platformSettingsService = new PlatformSettingsServiceImpl();
@@ -43,7 +42,7 @@ public class
     public void testExport() throws IOException {
         SettingsRecord settings = new SettingsRecord();
         settings.savePlatformSetting(ConfigurationConstants.LANGUAGE, "en");
-        when(configFileMonitor.getCurrentSettings()).thenReturn(settings);
+        when(configLoader.loadMotechSettings()).thenReturn(settings);
         when(allSettings.getSettings()).thenReturn(settings);
 
         Properties p = platformSettingsService.exportPlatformSettings();

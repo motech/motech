@@ -24,7 +24,7 @@ public class SettingsFileChangeEventHandler {
     private ConfigurationService configurationService;
 
     public void reloadSettings() {
-        SettingsRecord settingsRecord = configLoader.loadConfig();
+        SettingsRecord settingsRecord = configLoader.loadMotechSettings();
         SettingsRecord dbSettings = allSettings.getSettings();
         dbSettings.updateSettings(settingsRecord);
         allSettings.addOrUpdateSettings(dbSettings);

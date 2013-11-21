@@ -52,7 +52,7 @@ public class ConfigLoader {
     @Autowired
     private ConfigurationService configurationService;
 
-    public SettingsRecord loadConfig() {
+    public SettingsRecord loadMotechSettings() {
         SettingsRecord settingsRecord;
         ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
         Resource configLocationResource = configLocation.toResource();

@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.nio.file.FileSystemException;
+
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertSame;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,5 +25,15 @@ public class CoreConfigurationServiceIT {
         ConfigLocation cachedConfigLocation = coreConfigurationService.getConfigLocation();
 
         assertSame(configLocation, cachedConfigLocation);
+    }
+
+    @Test
+    public void shouldEvictConfigCacheWhenNewConfigLocationIsAdded() throws FileSystemException {
+        ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
+
+        coreConfigurationService.addConfigLocation("location");
+
+        ConfigLocation cachedConfigLocation = coreConfigurationService.getConfigLocation();
+        assertNotSame(configLocation, cachedConfigLocation);
     }
 }

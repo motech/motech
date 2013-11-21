@@ -161,9 +161,8 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void addSettingsPath(String path) throws IOException {
-        coreConfigurationService.addConfigLocation(path);
-        platformSettingsService.monitor();
+    public void addSettingsPath(String newConfigLocation) throws IOException {
+        configurationService.updateConfigLocation(newConfigLocation);
     }
 
     @Override

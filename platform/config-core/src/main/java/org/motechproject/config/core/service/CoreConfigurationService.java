@@ -20,7 +20,7 @@ public interface CoreConfigurationService {
     /**
      * Saves the bootstrap configuration
      *
-     * @param bootstrapConfig
+     * @param bootstrapConfig Bootstrap config
      */
     void saveBootstrapConfig(BootstrapConfig bootstrapConfig);
 

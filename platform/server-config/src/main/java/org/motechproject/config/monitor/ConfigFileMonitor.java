@@ -27,20 +27,21 @@ import java.io.IOException;
  */
 
 @Component
-public class ConfigurationFileMonitor implements FileListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFileMonitor.class);
+public class ConfigFileMonitor implements FileListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
     private static final Long DELAY = 3000L;
 
     private ConfigLoader configLoader;
     private ConfigurationService configurationService;
     private CoreConfigurationService coreConfigurationService;
     private DefaultFileMonitor fileMonitor;
+    private FileObject monitoredDir;
 
-    ConfigurationFileMonitor() {
+    ConfigFileMonitor() {
     }
 
     @Autowired
-    public ConfigurationFileMonitor(ConfigLoader configLoader, ConfigurationService configurationService, CoreConfigurationService coreConfigurationService)
+    public ConfigFileMonitor(ConfigLoader configLoader, ConfigurationService configurationService, CoreConfigurationService coreConfigurationService)
             throws FileSystemException {
         this.configLoader = configLoader;
         this.configurationService = configurationService;
@@ -52,10 +53,7 @@ public class ConfigurationFileMonitor implements FileListener {
     @PostConstruct
     public void init() throws IOException {
         configLoader.processExistingConfigs();
-
-        ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
-        FileObject monitoredDir = VFS.getManager().resolveFile(configLocation.getLocation());
-        fileMonitor.addFile(monitoredDir);
+        setupLocation();
         fileMonitor.start();
     }
 
@@ -64,7 +62,10 @@ public class ConfigurationFileMonitor implements FileListener {
         FileObject fileObject = fileChangeEvent.getFile();
         LOGGER.info(String.format("Received file creation event for file: %s", fileObject));
 
-        handleFile(fileObject);
+        File file = new File(fileObject.getName().getPath());
+        if (ConfigFileFilter.isFileSupported(file)) {
+            configurationService.addOrUpdate(file);
+        }
     }
 
     @Override
@@ -72,24 +73,41 @@ public class ConfigurationFileMonitor implements FileListener {
         FileObject fileObject = fileChangeEvent.getFile();
         LOGGER.info(String.format("Received file update event for file: %s", fileObject));
 
-        handleFile(fileObject);
-    }
-
-    private void handleFile(FileObject fileObject) {
         File file = new File(fileObject.getName().getPath());
-        if (!ConfigFileFilter.isFileSupported(file)) {
-            return;
+        if (ConfigFileFilter.isFileSupported(file)) {
+            configurationService.addOrUpdate(file);
         }
-        configurationService.addOrUpdate(file);
     }
 
     @Override
     public void fileDeleted(FileChangeEvent fileChangeEvent) throws FileSystemException {
-        LOGGER.info(String.format("Received file deletion event for file: %s", fileChangeEvent.getFile()));
+        FileObject fileObject = fileChangeEvent.getFile();
+        LOGGER.info(String.format("Received file deletion event for file: %s", fileObject));
+
+        File file = new File(fileObject.getName().getPath());
+        if (ConfigFileFilter.isFileSupported(file)) {
+            configurationService.delete(file);
+        }
     }
 
     @PreDestroy
     public void stop() throws FileSystemException {
         this.fileMonitor.stop();
+    }
+
+    public void updateFileMonitor() throws FileSystemException {
+        fileMonitor.stop();
+        fileMonitor.removeFile(monitoredDir);
+        LOGGER.info(String.format("Stopped Monitoring location %s", monitoredDir));
+
+        setupLocation();
+        fileMonitor.start();
+    }
+
+    private void setupLocation() throws FileSystemException {
+        ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
+        monitoredDir = VFS.getManager().resolveFile(configLocation.getLocation());
+        fileMonitor.addFile(monitoredDir);
+        LOGGER.info(String.format("Setting up monitoring for location: %s", monitoredDir));
     }
 }

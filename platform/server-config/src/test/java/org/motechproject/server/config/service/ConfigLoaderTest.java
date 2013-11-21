@@ -34,7 +34,6 @@ public class ConfigLoaderTest {
     private CoreConfigurationService coreConfigurationService;
     @Mock
     private ConfigurationService configurationService;
-    @Spy
     @InjectMocks
     private ConfigLoader configLoader = new ConfigLoader();
     @Captor
@@ -51,7 +50,7 @@ public class ConfigLoaderTest {
         ConfigLocation configLocation = new ConfigLocation("config/");
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
-        SettingsRecord settings = configLoader.loadConfig();
+        SettingsRecord settings = configLoader.loadMotechSettings();
 
         assertNotNull(settings);
         assertEquals(settings.getLanguage(), "en");
@@ -65,7 +64,7 @@ public class ConfigLoaderTest {
         when(configLocation.toResource()).thenReturn(resource);
         when(resource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME)).thenThrow(new MalformedURLException());
 
-        configLoader.loadConfig();
+        configLoader.loadMotechSettings();
     }
 
     @Test
@@ -73,7 +72,7 @@ public class ConfigLoaderTest {
         ConfigLocation configLocation = new ConfigLocation("config2/");
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
-        SettingsRecord settings = configLoader.loadConfig();
+        SettingsRecord settings = configLoader.loadMotechSettings();
 
         assertNotNull(settings);
         assertNotNull(settings.getActivemqProperties().get("jms.notRealActiveMqProperty"));
