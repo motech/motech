@@ -4,9 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.format.DateTimeFormat;
 import org.motechproject.admin.domain.StatusMessage;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.email.model.Mail;
 import org.motechproject.email.service.EmailSenderService;
+import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -26,7 +26,7 @@ import static org.motechproject.commons.date.util.DateUtil.setTimeZone;
 public class EmailNotifier {
 
     @Autowired
-    private ConfigurationService settingsService;
+    private SettingsFacade settingsFacade;
 
     @Autowired
     private VelocityEngine velocityEngine;
@@ -54,7 +54,7 @@ public class EmailNotifier {
     private String senderAddress() {
         String address = "noreply@";
 
-        String serverUrl = settingsService.getPlatformSettings().getServerHost();
+        String serverUrl = settingsFacade.getPlatformSettings().getServerHost();
 
         if (StringUtils.isNotBlank(serverUrl)) {
             address += serverUrl;
@@ -78,7 +78,7 @@ public class EmailNotifier {
     }
 
     String messagesUrl() {
-        String serverUrl = settingsService.getPlatformSettings().getServerUrl();
+        String serverUrl = settingsFacade.getPlatformSettings().getServerUrl();
         if (serverUrl == null) {
             serverUrl = "";
         }

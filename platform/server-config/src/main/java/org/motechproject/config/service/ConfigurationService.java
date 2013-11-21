@@ -3,6 +3,7 @@ package org.motechproject.config.service;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.domain.SettingsRecord;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 
@@ -151,7 +152,7 @@ public interface ConfigurationService {
      * @return Properties mapped by filename
      * @throws IOException if any of the module properties file cannot be read
      */
-    Map<String, Properties> getAllModuleProperties(String module, Map<String,Properties> defaultProperties) throws IOException;
+    Map<String, Properties> getAllModuleProperties(String module, Map<String, Properties> defaultProperties) throws IOException;
 
     /**
      * <p>
@@ -216,4 +217,8 @@ public interface ConfigurationService {
      * @return True if properties exist, false otherwise
      */
     boolean registersProperties(String module, String filename);
+
+    SettingsRecord loadConfig();
+
+    SettingsRecord loadDefaultConfig();
 }

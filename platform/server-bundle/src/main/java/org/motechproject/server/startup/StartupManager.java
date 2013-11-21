@@ -7,7 +7,6 @@ import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -32,9 +31,6 @@ public class StartupManager {
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
     private SettingsRecord settingsRecord;
     private MotechSettings dbSettings;
-
-    @Autowired
-    private ConfigLoader configLoader;
 
     @Autowired
     private EventAdmin eventAdmin;
@@ -64,7 +60,7 @@ public class StartupManager {
         if (!dbSettings.isPlatformInitialized()) {
             if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
-                settingsRecord = configLoader.loadConfig();
+                settingsRecord = configurationService.loadConfig();
 
                 syncSettingsWithDb();
 
@@ -95,7 +91,7 @@ public class StartupManager {
      * and is no config in the database or external files
      */
     public SettingsRecord getDefaultSettings() {
-        return configLoader.loadDefaultConfig();
+        return configurationService.loadDefaultConfig();
     }
 
     private void syncSettingsWithDb() {

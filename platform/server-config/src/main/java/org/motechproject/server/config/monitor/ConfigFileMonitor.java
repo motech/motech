@@ -9,7 +9,6 @@ import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ public class ConfigFileMonitor implements FileListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
     private static final Long DELAY = 2500L;
 
-    private ConfigLoader configLoader;
     private PlatformSettingsService platformSettingsService;
     private ConfigurationService configurationService;
     private FileSystemManager systemManager;
@@ -53,7 +51,7 @@ public class ConfigFileMonitor implements FileListener {
     public void monitor() throws FileSystemException {
         afterPropertiesSet();
         LOGGER.debug("Reading config file.");
-        MotechSettings motechSettings = configLoader.loadConfig();
+        MotechSettings motechSettings = configurationService.loadConfig();
 
         if (motechSettings != null) {
             try {
@@ -120,16 +118,13 @@ public class ConfigFileMonitor implements FileListener {
         if (MotechSettings.SETTINGS_FILE_NAME.equals(fileName)) {
             LOGGER.info("Config file was changed: " + fileName);
 
-            currentSettings = configLoader.loadConfig();
+            currentSettings = configurationService.loadConfig();
 
             evictProperCache(fileChangeEvent);
         }
     }
 
     public void afterPropertiesSet() throws FileSystemException {
-        if (configLoader == null) {
-            throw new MotechException("configLoader property is required.");
-        }
 
         if (configurationService == null) {
             throw new MotechException("configurationService property is required.");
@@ -143,11 +138,6 @@ public class ConfigFileMonitor implements FileListener {
         this.fileMonitor.setDelay(DELAY);
 
         this.currentSettings = null;
-    }
-
-    @Autowired
-    public void setConfigLoader(final ConfigLoader configLoader) {
-        this.configLoader = configLoader;
     }
 
     @Autowired

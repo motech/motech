@@ -10,13 +10,13 @@ import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.web.form.StartupForm;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.Errors;
-import org.motechproject.server.web.form.StartupForm;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /*StartupFormValidatorTest class provides tests for StartupFormValidator*/
 @RunWith(PowerMockRunner.class)

@@ -596,7 +596,7 @@
                                     <outputDirectory>${user.home}/.motech/config</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>../server-config/src/main/config</directory>
+                                            <directory>../server-config/src/main/resources</directory>
                                             <includes>
                                                 <include>motech-settings.conf</include>
                                             </includes>

@@ -10,4 +10,8 @@
 
     <bean id="eventAdmin" class="org.motechproject.server.mock.MockEventAdmin"/>
 
+    <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="platform-server-bundle"/>
+    </bean>
+
 </beans>

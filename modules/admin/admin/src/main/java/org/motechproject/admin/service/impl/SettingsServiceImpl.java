@@ -42,6 +42,7 @@ public class SettingsServiceImpl implements SettingsService {
     @Autowired
     private PlatformSettingsService platformSettingsService;
 
+    @Autowired
     private CoreConfigurationService coreConfigurationService;
 
     @Autowired

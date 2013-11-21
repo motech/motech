@@ -20,7 +20,6 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.date.util.DateUtil;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
@@ -49,7 +48,6 @@ public class AdminBundleIT extends BaseOsgiIT {
 
     public void testAdminBundleContext() {
         assertServicePresent(PlatformSettingsService.class);
-        assertServicePresent(ConfigurationService.class);
         assertServicePresent(EventListenerRegistryService.class);
     }
 

@@ -1,11 +1,11 @@
 package org.motechproject.security.web.controllers;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.ex.EmailExistsException;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class UserController {
     private MotechUserService motechUserService;
 
     @Autowired
-    private ConfigurationService settingsService;
+    private SettingsFacade settingsFacade;
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/create", method = RequestMethod.POST)
@@ -49,7 +49,7 @@ public class UserController {
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
     public List<MotechUserProfile> getUsers() {
-        return settingsService.getPlatformSettings().getLoginMode().isOpenId() ?
+        return settingsFacade.getPlatformSettings().getLoginMode().isOpenId() ?
                 motechUserService.getOpenIdUsers() :
                 motechUserService.getUsers();
     }
@@ -75,7 +75,7 @@ public class UserController {
     @RequestMapping(value = "/users/loginmode", method = RequestMethod.GET)
     @ResponseBody
     public String loginMode() {
-        MotechSettings settings = settingsService.getPlatformSettings();
+        MotechSettings settings = settingsFacade.getPlatformSettings();
         return settings.getLoginMode().getName().toLowerCase();
     }
 
