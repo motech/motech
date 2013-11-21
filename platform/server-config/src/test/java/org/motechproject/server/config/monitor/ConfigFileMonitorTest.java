@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -30,9 +29,6 @@ public class ConfigFileMonitorTest {
 
     @Mock
     ConfigLoader configLoader;
-
-    @Mock
-    ConfigLocationFileStore configLocationFileStore;
 
     @Mock
     PlatformSettingsService platformSettingsService;

@@ -43,6 +43,10 @@ public class ConfigLocation {
         }
     }
 
+    public String getLocation() {
+        return configLocation;
+    }
+
     UrlResource getUrlResource() throws MalformedURLException {
         return new UrlResource(String.format("file:%s", configLocation));
     }

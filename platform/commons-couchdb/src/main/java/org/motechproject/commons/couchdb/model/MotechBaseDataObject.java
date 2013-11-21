@@ -22,6 +22,10 @@ public abstract class MotechBaseDataObject extends CouchDbDocument {
         this.type = type;
     }
 
+    public boolean sameAs(MotechBaseDataObject dataObject) {
+        return this.equals(dataObject);
+    }
+
     private static final long serialVersionUID = 1L;
 
 }

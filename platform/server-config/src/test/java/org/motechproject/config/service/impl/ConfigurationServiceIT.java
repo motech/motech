@@ -1,10 +1,7 @@
 package org.motechproject.config.service.impl;
 
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.IsEqual;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.config.core.domain.BootstrapConfig;
@@ -15,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:testApplicationPlatformConfig.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class ConfigurationServiceIT {
 
     private String url = "http://www.testurl.com";
@@ -34,14 +30,6 @@ public class ConfigurationServiceIT {
 
     @Autowired
     private ConfigurationService configurationService;
-
-    @Autowired
-    private PropertiesConfiguration propertiesConfiguration;
-
-    @After
-    public void tearDown() {
-        FileUtils.deleteQuietly(new File(propertiesConfiguration.getString("config.location")));
-    }
 
     @Test
     public void shouldSaveBootstrapConfigToDefaultLocationAndLoadFromTheSameLocation() {
@@ -61,7 +49,7 @@ public class ConfigurationServiceIT {
         newProperties.put("test_prop3", "test3");
         newProperties.put("test_prop", "test_1");
         newProperties.put("test_prop2", "test_other");
-        configurationService.updateProperties("test_module", "file1", getDefaultProperties(), newProperties);
+        configurationService.addOrUpdateProperties("test_module", "file1", newProperties, getDefaultProperties());
 
         Thread.sleep(2000);
 

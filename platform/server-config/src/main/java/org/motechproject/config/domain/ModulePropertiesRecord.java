@@ -1,12 +1,22 @@
 package org.motechproject.config.domain;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+
+import static org.apache.commons.io.FilenameUtils.isExtension;
 
 /**
  * The <code>ModulePropertiesRecord</code> class represents a database record of a certain
@@ -16,7 +26,10 @@ import java.util.Properties;
 public class ModulePropertiesRecord extends MotechBaseDataObject {
 
     private static final long serialVersionUID = -2184859902798932902L;
-    private Map<String,String> properties;
+    private static Logger logger = LoggerFactory.getLogger(ModulePropertiesRecord.class);
+    public static final String PROPERTIES_FILE_EXTENSION = "properties";
+
+    private Map<String, String> properties;
     private String module;
     private String filename;
     private boolean raw;
@@ -40,6 +53,37 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
         }
         this.filename = filename;
         this.raw = raw;
+    }
+
+    public static ModulePropertiesRecord build(File file) {
+        InputStream inputStream = null;
+        try {
+            inputStream = FileUtils.openInputStream(file);
+            final String fileName = file.getName();
+            boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
+            Properties properties = buildProperties(inputStream, raw);
+            return new ModulePropertiesRecord(properties, file.getParentFile().getName(), fileName, raw);
+        } catch (IOException e) {
+            logger.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
+            return null;
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+    }
+
+    private static Properties buildProperties(InputStream inputStream, boolean raw) throws IOException {
+        Properties properties = new Properties();
+        if (raw) {
+            properties.put("rawData", IOUtils.toString(inputStream));
+        } else {
+            properties.load(inputStream);
+        }
+        return properties;
     }
 
     public String getModule() {
@@ -72,6 +116,16 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
+    }
+
+    @Override
+    public boolean sameAs(MotechBaseDataObject dataObject) {
+        ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
+        return new EqualsBuilder()
+                .append(this.module, record.module)
+                .append(this.filename, record.filename)
+                .append(this.raw, record.raw)
+                .isEquals();
     }
 
     @Override

@@ -1,16 +1,14 @@
 package org.motechproject.server.config.osgi;
 
 import org.junit.Test;
-import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.osgi.framework.ServiceReference;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
 
-@ContextConfiguration(locations = {"classpath*:testApplicationPlatformConfig.xml"})
 public class ConfigBundleIT extends BaseOsgiIT {
 
     @Test

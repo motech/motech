@@ -138,7 +138,7 @@ public class SettingsFacade {
         if (propsRegistered) {
             try {
                 if (configurationService != null) {
-                    configurationService.updateProperties(getSymbolicName(), filename, defaultConfig.get(filename), properties);
+                    configurationService.addOrUpdateProperties(getSymbolicName(), filename, properties, defaultConfig.get(filename));
                 }
             } catch (IOException e) {
                 throw new MotechException("Can't save settings " + filename, e);
@@ -227,8 +227,8 @@ public class SettingsFacade {
         try {
             if (configurationService!= null &&
                     !configurationService.registersProperties(getSymbolicName(), filename)) {
-                configurationService.updateProperties(
-                        getSymbolicName(), filename, defaultConfig.get(filename), properties);
+                configurationService.addOrUpdateProperties(
+                        getSymbolicName(), filename, properties, defaultConfig.get(filename));
             }
 
             Properties registeredProps = configurationService.getModuleProperties(

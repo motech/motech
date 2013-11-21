@@ -6,6 +6,7 @@ import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -133,13 +134,29 @@ public interface ConfigurationService {
      *     database record or file doesn't exist yet for the given module, it will be created.
      * </p>
      *
+     *
      * @param module The module we wish to update properties for
      * @param filename Resource filename
-     * @param defaultProperties Default properties of the module
      * @param newProperties New properties to store
+     * @param defaultProperties Default properties of the module
      * @throws IOException if module properties cannot be retrieved from file
      */
-    void updateProperties(String module, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
+    void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
+
+    /**
+     * Saves both property and raw configurations in FILE mode only.
+     * Files are classified as either raw config or properties based on the extension of the file.
+     * Uses CouchDb's buld operations.
+     * @param files Files to read configuration from.
+     */
+    void addOrUpdate(List<File> files);
+
+    /**
+     * Saves both property and raw configurations in FILE mode only.
+     * Files are classified as either raw config or properties based on the extension of the file.
+     * @param file File to read configuration from.
+     */
+    void addOrUpdate(File file);
 
     /**
      * <p>
