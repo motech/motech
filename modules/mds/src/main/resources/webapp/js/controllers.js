@@ -149,7 +149,7 @@
         */
         $scope.SELECT_ENTITY_CONFIG = {
             ajax: {
-                url: '../mds/entities',
+                url: '../mds/selectEntities',
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) {
@@ -1209,8 +1209,180 @@
     /**
     * The SettingsCtrl controller is used on the 'Settings' view.
     */
-    mds.controller('SettingsCtrl', function ($scope) {});
+    mds.controller('SettingsCtrl', function ($scope, Entities, MdsSettings) {
+        var result = [];
+        $scope.settings = MdsSettings.getSettings();
+        $scope.timeUnits = [
+            $scope.msg('mds.dataRetention.hours'),
+            $scope.msg('mds.dataRetention.days'),
+            $scope.msg('mds.dataRetention.weeks'),
+            $scope.msg('mds.dataRetention.months'),
+            $scope.msg('mds.dataRetention.years')];
+        $scope.entities = Entities.query();
 
+        /**
+        * This function is used to get entity metadata from controller and convert it for further usage
+        */
+        $scope.getEntities = function () {
+            if (result.length === 0) {
+                angular.forEach($scope.entities, function (entity) {
+                    var module = entity.module === null ? "Seuss" : entity.module.replace(/ /g, ''),
+                    found = false;
+                    angular.forEach(result, function (mod) {
+                        if (module === mod.name) {
+                            mod.entities.push(entity.name + (entity.namespace !== null ? " (" + entity.namespace + ")" : ""));
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        result.push({name: module, entities: [entity.name + (entity.namespace !== null ? " (" + entity.namespace + ")" : "")]});
+                    }
+                });
+            }
+            return result;
+        };
 
+        /**
+        * This function checking if input and select fields for time selection should be disabled.
+        * They are only enabled when deleting is set to "trash" and checkbox is selected
+        */
+        $scope.checkTimeSelectDisable = function () {
+            return $scope.settings.deleteMode !== "trash" || !$scope.settings.emptyTrash;
+        };
 
+        /**
+        * This function checking if checkbox in UI should be disabled. It is should be enabled when deleting is set to "trash"
+        */
+        $scope.checkCheckboxDisable = function () {
+            return $scope.settings.deleteMode !== "trash";
+        };
+
+        /**
+        * This function it is called when we change the radio. It's used for dynamically changing availability to fields
+        */
+        $scope.checkDisable = function () {
+            $scope.checkTimeSelectDisable();
+            $scope.checkCheckboxDisable();
+        };
+
+        /**
+        * Get imported file and sends it to controller.
+        */
+        $scope.importFile = function () {
+            MdsSettings.importFile($("#importFile")[0].files[0]);
+        };
+
+        /**
+        * Sending information what entities we want to export to controller
+        */
+        $scope.exportData = function () {
+            MdsSettings.exportData($("table")[0]);
+        };
+
+        /**
+        * Sends new settings to controller
+        */
+        $scope.saveSettings = function () {
+            MdsSettings.saveSettings({}, $scope.settings,
+                function () {
+                    handleResponse('mds.success', 'mds.dataRetention.success', '');
+                }, function (response) {
+                    handleResponse('mds.error', 'mds.dataRetention.error', response);
+                }
+            );
+        };
+
+        /**
+        * Called when we change state of "Schema" checkbox on the top of the table
+        * When checked: select all schema checkboxes in the table
+        * When unchecked: deselect all schema and data checkboxes
+        */
+        $scope.checkAllSchemas = function () {
+            if ($("#schema-all")[0].checked) {
+                $('input[id^="schema"]').prop("checked", true);
+            } else {
+                $('input[id^="schema"]').prop("checked", false);
+                $('input[id^="data"]').prop("checked", false);
+            }
+        };
+
+        /**
+        * Called when we change state of "Data" checkbox on the top of the table
+        * When checked: select all schema and data checkboxes in the table
+        * When unchecked: deselect all data checkboxes
+        */
+        $scope.checkAllData = function () {
+            if ($("#data-all")[0].checked) {
+                $('input[id^="data"]').prop("checked", true);
+                $('input[id^="schema"]').prop("checked", true);
+            } else {
+                $('input[id^="data"]').prop("checked", false);
+            }
+        };
+
+        /**
+         * Called when we change state of "Schema" checkbox on the module header
+         * When checked: select all schema checkboxes in the module section
+         * When unchecked: deselect all schema and data checkboxes in the module section
+         */
+        $scope.checkModuleSchemas = function (id) {
+            if ($("#schema-" + id.name)[0].checked) {
+                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
+            } else {
+                $('input[id^="schema-' + id.name + '"]').prop("checked", false);
+                $('input[id^="data-' + id.name + '"]').prop("checked", false);
+            }
+        };
+
+        /**
+        * Called when we change state of "Data" checkbox on the module header
+        * When checked: select all schema and data checkboxes in the module section
+        * When unchecked: deselect all data checkboxes in the module section
+        */
+        $scope.checkModuleData = function (id) {
+            if ($("#data-" + id.name)[0].checked) {
+                $('input[id^="data-' + id.name + '"]').prop("checked", true);
+                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
+            } else {
+                $('input[id^="data-' + id.name + '"]').prop("checked", false);
+            }
+        };
+
+        /**
+        * Called when we change state of "Data" checkbox in the entity row
+        * When checked: select schema checkbox in the entity row
+        */
+        $scope.checkSchema = function (id) {
+            if ($('input[id^="data-' + id.name + '"]')[0].checked) {
+                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
+            }
+        };
+
+        /**
+        * Called when we change state of "Schema" checkbox in the entity row
+        * When unchecked: deselect data checkbox in the entity row
+        */
+        $scope.uncheckData = function (id, entity) {
+            var name = id.name + entity;
+            if (!$('input[id^="schema-' + name + '"]')[0].checked) {
+                $('input[id^="data-' + name + '"]').prop("checked", false);
+            }
+        };
+
+        /**
+        * Hiding and collapsing module entities and changing arrow icon
+        * after clicking on arrow next to module name.
+        */
+        $scope.hideModule = function (id) {
+            if ($("." + id.name + ":hidden").length > 0) {
+                $("." + id.name).show("slow");
+                $("#" + id.name + "-arrow").addClass("icon-caret-down");
+                $("#" + id.name + "-arrow").removeClass("icon-caret-right");
+            } else {
+                $("." + id.name).hide("slow");
+                $("#" + id.name + "-arrow").addClass("icon-caret-right");
+                $("#" + id.name + "-arrow").removeClass("icon-caret-down");
+            }
+        };
+    });
 }());
