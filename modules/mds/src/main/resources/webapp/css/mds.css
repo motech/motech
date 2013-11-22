@@ -168,6 +168,45 @@
     position: relative;
 }
 
+.module-header {
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+    color: #224477;
+    background: #deefff;
+    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
+    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
+    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+    -webkit-box-shadow: 0 0 4px #bec9de;
+       -moz-box-shadow: 0 0 4px #bec9de;
+            box-shadow: 0 0 4px #bec9de;
+}
+
+.module-header a, .module-header a:hover, .module-header  a:link, .module-header a:active,
+.entity-entry a, .entity-entry a:hover, .entity-entry  a:link, .entity-entry a:active {
+    text-decoration: none;
+    color: #224477;
+}
+
+.entity-entry {
+    padding: 1px 20px 1px 35px;
+    line-height: 45px;
+    color: #224477;
+    font-weight: bold;
+    background-color: #f9f9f9;
+}
+
+.entity-entry:hover {
+    background-color: #e9e9e9;
+}
+
+.entity-buttons {
+    float: right;
+}
 .settings-label {
     margin: 5px;
 }

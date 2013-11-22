@@ -1204,7 +1204,54 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope) {});
+    mds.controller('DataBrowserCtrl', function ($scope, $http) {
+        /**
+        * An array perisisting currently hidden modules in data browser view
+        */
+        $scope.hidden = [];
+
+        /**
+        * A map containing names of all entities in Seuss, indexed by module names
+        */
+        $scope.modules = undefined;
+
+        /**
+        * Initializes a map of all entities in Seuss indexed by module name
+        */
+        $scope.setEntities = function() {
+            $http.get('../mds/entities/byModule').success(function (data) {
+                $scope.modules = data;
+            });
+        };
+
+        /**
+        * Hides/Shows all entities under passed module name
+        *
+        * @param {string} module  Module name
+        */
+        $scope.collapse = function (module) {
+            if ($.inArray(module, $scope.hidden) !== -1) {
+                $scope.hidden.remove($scope.hidden.indexOf(module));
+            } else {
+                $scope.hidden.push(module);
+            }
+        };
+
+        /**
+        * Checks if entities belonging to certain module are currently visible
+        *
+        * @param {string} module  Module name
+        * @return {boolean} true if entities for given module name are visible, false otherwise
+        */
+        $scope.visible = function (module) {
+            return $.inArray(module, $scope.hidden) !== -1 ? false : true;
+        };
+
+        $scope.arrow = function (module) {
+            return $scope.visible(module) ? "icon-chevron-down" : "icon-chevron-right";
+        };
+
+    });
 
     /**
     * The SettingsCtrl controller is used on the 'Settings' view.

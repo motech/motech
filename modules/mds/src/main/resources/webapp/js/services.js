@@ -3,7 +3,7 @@
     'use strict';
 
     /**
-    * Creates a entity service which will connect with the server and executes appropriate
+    * Creates the entity service that will connect to the server and execute appropriate
     * methods on an entity schema.
     */
     angular.module('entityService', ['ngResource']).factory('Entities', function ($resource) {
