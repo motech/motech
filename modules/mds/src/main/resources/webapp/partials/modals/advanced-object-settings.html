@@ -1,51 +1,58 @@
-<div id="advancedObjectSettingsModal" class="modal large hide fade" tabindex="-1" role="dialog"
+<div id="advancedObjectSettingsModal" class="modal fade" tabindex="-1" role="dialog"
      aria-labelledby="advancedObjectSettingsModalLabel" aria-hidden="true"
         ng-controller="AdvancedObjectSettingsCtrl">
-    <div class="modal-header">
-        <h3 id="advancedObjectSettingsModalLabel">{{msg('mds.advanced.title')}}</h3>
-    </div>
-    <div class="modal-body">
-        <ul id="advanced-content-tabs" class="nav nav-tabs">
-            <li class="active">
-                <a href="#indexesLookupsTab" data-toggle="tab">
-                    {{msg('mds.advanced.tab.indexesLookups')}}
-                </a>
-            </li>
-            <li>
-                <a href="#dataBrowsingTab" data-toggle="tab">
-                    {{msg('mds.advanced.tab.dataBrowsing')}}
-                </a>
-            </li>
-            <li>
-                <a href="#restApiTab" data-toggle="tab">
-                    {{msg('mds.advanced.tab.restApi')}}
-                </a>
-            </li>
-            <li>
-                <a href="#auditingRevisionTrackingTab" data-toggle="tab">
-                    {{msg('mds.advanced.tab.auditingRevisionTracking')}}
-                </a>
-            </li>
-        </ul>
+    <div class="modal-dialog">
+        <div class="modal-content large">
 
-        <div class="tab-content" id="advanced-content">
-            <div class="tab-pane active" id="indexesLookupsTab">
-                <div ng-include="'../mds/resources/partials/modals/partials/indexesLookups.html'"></div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="advancedObjectSettingsModalLabel">{{msg('mds.advanced.title')}}</h4>
             </div>
-            <div class="tab-pane" id="dataBrowsingTab">
-                <div ng-include="'../mds/resources/partials/modals/partials/dataBrowsing.html'"></div>
+            <div class="modal-body">
+                <ul id="advanced-content-tabs" class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#indexesLookupsTab" data-toggle="tab">
+                            {{msg('mds.advanced.tab.indexesLookups')}}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#dataBrowsingTab" data-toggle="tab">
+                            {{msg('mds.advanced.tab.dataBrowsing')}}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#restApiTab" data-toggle="tab">
+                            {{msg('mds.advanced.tab.restApi')}}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#auditingRevisionTrackingTab" data-toggle="tab">
+                            {{msg('mds.advanced.tab.auditingRevisionTracking')}}
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="advanced-content">
+                    <div class="tab-pane active" id="indexesLookupsTab">
+                        <div ng-include="'../mds/resources/partials/modals/partials/indexesLookups.html'"></div>
+                    </div>
+                    <div class="tab-pane" id="dataBrowsingTab">
+                        <div ng-include="'../mds/resources/partials/modals/partials/dataBrowsing.html'"></div>
+                    </div>
+                    <div class="tab-pane" id="restApiTab">
+                        <div ng-include="'../mds/resources/partials/modals/partials/restApi.html'"></div>
+                    </div>
+                    <div class="tab-pane" id="auditingRevisionTrackingTab">
+                        <div ng-include="'../mds/resources/partials/modals/partials/auditingRevisionTracking.html'"></div>
+                    </div>
+                </div>
             </div>
-            <div class="tab-pane" id="restApiTab">
-                <div ng-include="'../mds/resources/partials/modals/partials/restApi.html'"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="onAdvancedClose()">
+                    {{msg('mds.btn.close')}}
+                </button>
             </div>
-            <div class="tab-pane" id="auditingRevisionTrackingTab">
-                <div ng-include="'../mds/resources/partials/modals/partials/auditingRevisionTracking.html'"></div>
-            </div>
+
         </div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="onAdvancedClose()">
-            {{msg('mds.btn.close')}}
-        </button>
     </div>
 </div>

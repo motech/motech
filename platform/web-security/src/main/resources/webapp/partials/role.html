@@ -2,9 +2,9 @@
 <div ng-show="addRoleView" class="box-content clearfix">
     <div class="well3">
         <button ng-click="addRole()" type="submit" class="btn btn-primary"><i class="icon-plus icon-white"></i> {{msg('security.addNewRole')}}</button>
-        <div class="margin-before control-group form-inline">
+        <div class="margin-before form-group form-inline">
             <label >{{msg('security.searchRole')}}</label>
-            <input type="text" ng-model="propertyRoleName.roleName" class="input-medium search-query">
+            <input type="text" ng-model="propertyRoleName.roleName" class="form-control input-auto search-query">
         </div>
         <div class="margin-before">
             <table class="table table-condensed table-bordered table-striped table-lightblue table-role">
@@ -37,69 +37,71 @@
 <div ng-hide="addRoleView" class="box-header">{{msg('security.managePermissions')}}</div>
 <div ng-hide="addRoleView" class="box-content clearfix">
     <div class="well3">
-        <form id="roleForm" name="roleForm" novalidate class="form-inline">
-        <div class="margin-before control-group form-inline">
-            <div ng-class="cssClass('security.roleName')">
-            <label class="control-label">{{msg('security.enterRoleName')}}</label>
-                <input id="roleName" type="text" ng-model="role.roleName" class="input-medium" role-name-validate required>
-                <span ng-hide="pwdNameValidate" class="form-hint">{{msg('security.roleExist')}}</span>
-                <span ng-hide="hasValue('roleName')" class="form-hint">{{msg('security.roleNameRequired')}}</span>
+        <form id="roleForm" name="roleForm" novalidate class="form-inline margin-before">
+            <div class="col-sm-12" ng-class="cssClass('security.roleName')">
+                <label class="control-label margin-before">{{msg('security.enterRoleName')}}</label>
+                <input id="roleName" type="text" ng-model="role.roleName" class="form-control input-auto" role-name-validate required>
+                <span ng-hide="pwdNameValidate" class="offset-1 form-hint">{{msg('security.roleExist')}}</span>
+                <span ng-hide="hasValue('roleName')" class="offset-1 form-hint">{{msg('security.roleNameRequired')}}</span>
             </div>
-        </div>
-            <label class="control-label">{{msg('security.search')}}</label>
-            <input type="text" class="input-medium search-query" ng-model="roleNameFilter">
-            <label class="control-label">{{msg('security.module')}}</label>
-            <select ng-model="selectedItemRole">
-                <option value="">-- {{msg('security.chooseModule')}} --</option>
-                <option ng-repeat=" permissions in uniquePermissionList(permissionList)" value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
-            </select>
-        <div class="margin-before">
-            <div class="label-header">{{permission.bundleName}}</div>
-            <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
-                <thead class="table-header">
-                    <tr>
-                        <th>{{msg('security.id')}} </th>
-                        <th>{{msg('security.actions')}} </th>
-                        <th>{{msg('security.moduleName')}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
-                        <td>{{$index + 1}}</td>
-                        <td><label class="checkbox">
-                            <input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}
-                        </label></td>
-                        <td>{{permission.bundleName}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="control-group">
-            <input ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
-            <input class="btn" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
-        </div>
-        <div ng-show="role.deletable" class="control-group">
-            <h4>{{msg('security.deleteRole')}}</h4>
-        </div>
-        <div ng-show="role.deletable" class="control-group">
-            <div class="controls">
-                <p>{{msg('security.deletingRoleInfo')}}</p>
+            <div class="col-sm-12 margin-before">
+                <label class="control-label">{{msg('security.search')}}</label>
+                <input type="text" class="form-control input-auto search-query" ng-model="roleNameFilter">
+                <label class="control-label offset-1">{{msg('security.module')}}</label>
+                <select ng-model="selectedItemRole" class="form-control form-control-select">
+                    <option value="">-- {{msg('security.chooseModule')}} --</option>
+                    <option ng-repeat="permissions in uniquePermissionList(permissionList)" value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
+                </select>
             </div>
-        </div>
-        <div ng-show="role.deletable" class="control-group">
-            <div class="controls">
-                <label class="checkbox">
-                    <input type="checkbox" ng-model="deleteR"> {{msg('security.deletingRoleCheckMsg')}}
-                </label>
+            <div class="margin-before">
+                <div class="label-header">{{permission.bundleName}}</div>
+                <table class="table table-condensed table-bordered table-striped table-lightblue table-permission">
+                    <thead class="table-header">
+                        <tr>
+                            <th>{{msg('security.id')}} </th>
+                            <th>{{msg('security.actions')}} </th>
+                            <th>{{msg('security.moduleName')}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="permission in permissionList | filter:roleNameFilter | filter:selectedItemRole">
+                            <td>{{$index + 1}}</td>
+                            <td>
+                                <div class="checkbox">
+                                    <label><input ng-checked="isChecked(permission.permissionName)" type="checkbox" ng-click="addPermission(permission.permissionName)">{{permission.permissionName}}</label>
+                                </div>
+                            </td>
+                            <td>{{permission.bundleName}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        <div ng-show="role.deletable && deleteR" class="control-group">
-            <div class="controls">
-                <span>
-                    <input class="btn btn-primary" type="button" value="{{msg('security.delete')}}" ng-click="deleteRole()" />
-                </span>
+            <div class="form-group margin-after">
+                <input ng-disabled="roleForm.$invalid" class="btn btn-primary" type="submit" value="{{msg('security.save')}}" ng-click="saveRole()"/>
+                <input class="btn btn-default" type="submit" value="{{msg('security.cancel')}}" ng-click="cancelRole()"/>
             </div>
-        </div>
+            <div ng-show="role.deletable" class="form-group">
+                <h4>{{msg('security.deleteRole')}}</h4>
+            </div>
+            <div ng-show="role.deletable" class="form-group">
+                <div class="controls">
+                    <p>{{msg('security.deletingRoleInfo')}}</p>
+                </div>
+            </div>
+            <div ng-show="role.deletable" class="form-group">
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="deleteR"> {{msg('security.deletingRoleCheckMsg')}}
+                    </label>
+                </div>
+            </div>
+            <div ng-show="role.deletable && deleteR" class="form-group">
+                <div class="controls">
+                    <span>
+                        <input class="btn btn-primary" type="button" value="{{msg('security.delete')}}" ng-click="deleteRole()" />
+                    </span>
+                </div>
+            </div>
         </form>
     </div>
 </div>

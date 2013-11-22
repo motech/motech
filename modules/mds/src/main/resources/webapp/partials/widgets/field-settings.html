@@ -1,9 +1,9 @@
-<form class="form-horizontal">
-    <div ng-repeat="setting in field.settings" class="control-group" ng-class="{error: !checkOptions(setting)}">
+<form class="form-horizontal inside">
+    <div ng-repeat="setting in field.settings" class="form-group" ng-class="{error: !checkOptions(setting)}">
         <label class="control-label">
-            {{msg(setting.name)}}<span class="text-error" ui-if="hasOption(setting, 'REQUIRE')">*</span>
+            {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE')">*</span>
         </label>
-        <div class="controls">
+        <div class="form-inline">
             <textarea ui-if="hasType(setting, 'LIST')" ng-model="setting.value" ng-disabled="selectedEntity.readOnly" mds-split-array></textarea>
             <input ui-if="hasType(setting, 'BOOLEAN')" type="checkbox" ng-model="setting.value" ng-disabled="selectedEntity.readOnly">
             <input ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" ng-disabled="selectedEntity.readOnly">

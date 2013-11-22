@@ -1,16 +1,17 @@
 <div class="tab-frame margin-after"><!------------------------  Settings  ------------------------------------->
     <h4 class="frame-title">{{msg('task.settings.title')}}</h4>
     <form id="tasksSettingsForm" name="tasksSettingsForm" class="form-horizontal" novalidate>
-        <div ng-class="cssClass('taskPossibleErrors')">
-            <label class="control-label" for="taskPossibleErrors">{{msg('task.settings.label.possibleErrors')}}:</label>
-
-            <div class="controls">
-                <input ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
+        <div ng-class="cssClass('taskPossibleErrors')" class="form-group">
+            <label class="col-md-2 col-sm-3 control-label" for="taskPossibleErrors">{{msg('task.settings.label.possibleErrors')}}:</label>
+            <div class="form-inline col-md-10 col-sm-9">
+                <input class="form-control input-auto" ng-model="settings.taskPossibleErrors" type="text" id="taskPossibleErrors" required/>
                 <span ng-hide="isNumeric('taskPossibleErrors')" class="form-hint">{{msg('task.settings.error.possibleErrors')}}</span>
             </div>
         </div>
-        <div class="controls">
-            <input ng-disabled="tasksSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('task.settings.submit')}}" class="btn btn-primary"/>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-sm -offset-3 col-md-10 col-sm-9">
+                <input ng-disabled="tasksSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('task.settings.submit')}}" class="btn btn-primary"/>
+            </div>
         </div>
     </form>
 </div>

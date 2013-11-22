@@ -31,20 +31,20 @@
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                $('.accordion').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
+                $('.panel-group').on('show.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
-                $('.tasks-list').on('show', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
+                $('.tasks-list').on('show.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-right').removeClass('icon-caret-right').addClass('icon-caret-down');
                 });
 
-                $('.accordion').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
+                $('.panel-group').on('hide.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
 
-                $('.tasks-list').on('hide', function (e) {
-                    $(e.target).siblings('.accordion-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
+                $('.tasks-list').on('hide.bs.collapse', function (e) {
+                    $(e.target).siblings('.panel-heading').find('.accordion-toggle i.icon-caret-down').removeClass('icon-caret-down').addClass('icon-caret-right');
                 });
             }
         };

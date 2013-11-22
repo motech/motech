@@ -1,21 +1,20 @@
-<div>
+<div class="form-group">
     {{msg('mds.import.info')}}
 </div>
 <div class="clearfix"></div>
 <div class="input-append">
-    <form class="form-inline inside" id="importForm" action="../mds/import" method="post" enctype="multipart/form-data">
+    <form class="form-inline" id="importForm" action="../mds/import" method="post" enctype="multipart/form-data">
         <fieldset>
-            <label class="control-label settings-label">{{msg('mds.import.file')}}</label>
-            <div class="control-group fileupload fileupload-new settings-input-group" data-provides="fileupload">
-
-                <div class="uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
-                        <span class="btn btn-file">
+            <div class="form-group fileupload fileupload-new settings-input-group" data-provides="fileupload">
+                <label class="control-label settings-label">{{msg('mds.import.file')}}</label>
+                <div class="form-control input-auto uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
+                        <span class="btn btn-default btn-file">
                             <span class="fileupload-new">{{msg('mds.import.selectFile')}}</span>
                             <span class="fileupload-exists">{{msg('mds.import.changeFile')}}</span>
                             <input type="file" id="importFile" name="importFile" class="input-file"/>
                         </span>
                 <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('mds.import.remove')}}</a>
-                <span class="btn" ng-click="importFile()">{{msg('mds.import.submit')}}</span>
+                <span class="offset-1 btn btn-default" ng-click="importFile()">{{msg('mds.import.submit')}}</span>
             </div>
         </fieldset>
     </form>

@@ -1,21 +1,21 @@
-<form class="form-horizontal">
-    <div class="control-group" ng-class="{error: !field.basic.displayName}">
-        <label class="control-label">
-            {{msg('mds.form.label.displayName')}}<span class="text-error">*</span>
+<form class="form-horizontal inside">
+    <div class="form-group" ng-class="{error: !field.basic.displayName}">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{msg('mds.form.label.displayName')}}<span class="text-danger">*</span>
         </label>
-        <div class="controls">
-            <input id="field-display-name-{{$index}}" type="text" ng-model="field.basic.displayName" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+        <div class="col-md-8 col-sm-7 form-inline">
+            <input class="form-control input-large-fluid" id="field-display-name-{{$index}}" type="text" ng-model="field.basic.displayName" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
             <span class="help-inline" ng-class="{hide: field.basic.displayName}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
         </div>
     </div>
-    <div class="control-group" ng-class="{error: !field.basic.name || !uniqueField(field.basic.name)}">
-        <label class="control-label">
-            {{msg('mds.form.label.name')}}<span class="text-error">*</span>
+    <div class="form-group" ng-class="{error: !field.basic.name || !uniqueField(field.basic.name)}">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{msg('mds.form.label.name')}}<span class="text-danger">*</span>
         </label>
-        <div class="controls">
-            <input id="field-name-{{$index}}" type="text" ng-model="field.basic.name" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+        <div class="col-md-8 col-sm-7 form-inline">
+            <input class="form-control input-large-fluid" id="field-name-{{$index}}" type="text" ng-model="field.basic.name" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
             <span class="help-inline" ng-class="{hide: field.basic.name}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
@@ -24,27 +24,27 @@
             </span>
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label">
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.required')}}
         </label>
-        <div class="controls">
-            <input id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" ng-disabled="selectedEntity.readOnly">
+        <div class="col-md-8 col-sm-7 form-inline">
+            <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" ng-disabled="selectedEntity.readOnly">
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label">
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.tooltip')}}
         </label>
-        <div class="controls">
-            <input id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" ng-disabled="selectedEntity.readOnly">
+        <div class="col-md-8 col-sm-7 form-inline">
+            <input class="form-control input-large-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" ng-disabled="selectedEntity.readOnly">
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label">
+    <div class="form-group">
+        <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.defaultValue')}}
         </label>
-        <div class="controls">
+        <div class="col-md-8 col-sm-7 form-inline">
             <div ng-include="loadDefaultValueForm(field.type)"></div>
         </div>
     </div>

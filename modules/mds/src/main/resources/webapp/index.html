@@ -1,5 +1,5 @@
 <div>
-    <ul id="content-tabs" class="nav nav-tabs">
+    <ul id="content-tabs" class="nav nav-tabs mds">
         <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
             <a href="#/{{tab}}">
                 {{msg('mds.tab.' + tab)}}
@@ -7,7 +7,7 @@
         </li>
     </ul>
 
-    <div class="tab-content" id="tab-content">
+    <div class="tab-content mds" id="tab-content">
         <div id="main-content" class="tab-pane active">
             <div ng-view></div>
         </div>

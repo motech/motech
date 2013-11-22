@@ -270,6 +270,8 @@
 
                 return parent || $scope.msg('mds.error');
             },
+            containerCssClass: "form-control-select2"
+            ,
             escapeMarkup: function (markup) {
                 return markup;
             }

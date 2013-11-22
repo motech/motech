@@ -3,8 +3,8 @@
 
 <link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-1.9.1-redmond.css">
 <link rel="stylesheet" type="text/css" href="resources/css/angular-ui.css">
-<link rel="stylesheet" type="text/css" href="resources/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-responsive.css">
+<link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="resources/css/bootstrap-theme.min.css">
 <link rel="stylesheet" type="text/css" href="resources/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-fileupload.min.css">
 <link rel="stylesheet" type="text/css" href="resources/css/jquery-ui-min.css"/>

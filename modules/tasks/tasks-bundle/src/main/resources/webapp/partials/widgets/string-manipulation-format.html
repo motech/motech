@@ -1,42 +1,49 @@
-<div id="formatManipulation" class="modal hide fade" tabindex="-1" role="dialog" editformatmanipulation>
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h4 id="helpModalLabel">{{msg('task.format.set.header')}}</h4>
-    </div>
-    <div class="body">
-
-            <label class="control-label task-label">{{msg('task.info.availableFields')}}:</label>
-            <div class="controls move-element">
-                <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{msg(i.displayName)}}</span>​
-                <span ng-repeat="ds in getDataSources()">
-                    <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
-                        data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
-                        data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}" data-popover="no">
-                        {{msg(ds.providerName)}}.{{msg(ds.displayName)}}#{{ds.objectId}}.{{msg(i.displayName)}}
-                    </span>
-                </span>
+<div id="formatManipulation" class="modal fade" tabindex="-1" role="dialog" editformatmanipulation>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="helpModalLabel">{{msg('task.format.set.header')}}</h4>
             </div>
-
-        <label class="control-label task-label">{{msg('task.info.formatFields')}}:</label>
-        <div ng-repeat="lookupField in formatInput">
-            <!------------------------ Chrome & IE ------------------------>
-            <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
-                <div class="formatInput">
-                    <editable-content data="lookupField" index="{{$index}}" type="format"></editable-content>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="radio col-md-4 col-sm-5 task-label">{{msg('task.info.availableFields')}}:</label>
+                    <div class="move-element col-md-8 col-sm-7">
+                        <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}" data-popover="no">{{msg(i.displayName)}}</span>​
+                        <span ng-repeat="ds in getDataSources()">
+                            <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
+                                data-prefix="ad" data-source="{{ds.providerName}}" data-object="{{ds.displayName}}" data-object-type="{{ds.type}}"
+                                data-field="{{i.fieldKey}}" data-index="{{$index}}" data-object-id="{{ds.objectId}}" data-type="{{i.type}}" data-popover="no">
+                                {{msg(ds.providerName)}}.{{msg(ds.displayName)}}#{{ds.objectId}}.{{msg(i.displayName)}}
+                            </span>
+                        </span>
+                    </div>
                 </div>
-                <div class="formatInputDelete">
-                    <button  ng-click="deleteFormatInput($index)" class="btn btn-danger btn-in-heading">
-                        <i class="icon-remove icon-white"></i>
-                    </button>
+                <div class="form-group">
+                    <label class="radio task-label col-md-4 col-sm-5 task-label">{{msg('task.info.formatFields')}}:</label>
+                    <div ng-repeat="lookupField in formatInput">
+                        <!------------------------ Chrome & IE ------------------------>
+                        <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-12 col-sm-12">
+                            <div class="formatInput row col-md-11 col-sm-10">
+                                <editable-content data="lookupField" index="{{$index}}" type="format"></editable-content>
+                            </div>
+                            <div class="formatInputDelete col-md-1 col-sm-2">
+                                <button  ng-click="deleteFormatInput($index)" class="btn btn-danger">
+                                    <i class="icon-remove icon-white"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-sm-offset-5 col-md-8 col-sm-7">
+                        <button ui-if="!step.filters.length" class="btn btn-success ng-scope ng-binding" ng-click="addFormatInput()"><i class="icon-plus icon-white"></i>&nbsp;{{msg('task.button.addFormatField')}}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button ng-click="saveInput()" data-dismiss="modal" class="btn btn-success">{{msg('task.button.save')}}</button>
             </div>
         </div>
-
-        <div class="formatButtonGroup">
-            <button ui-if="!step.filters.length" class="btn btn-success ng-scope ng-binding" ng-click="addFormatInput()"><i class="icon-plus icon-white"></i>{{msg('task.button.addFormatField')}}</button>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button ng-click="saveInput()" data-dismiss="modal" class="btn btn-success">{{msg('task.button.save')}}</button>
     </div>
 </div>

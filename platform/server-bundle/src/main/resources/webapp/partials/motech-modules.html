@@ -1,6 +1,6 @@
-<div id="side-nav" class="span2" ng-show="ready">
-    <ul class="nav nav-tabs nav-stacked modulesWithSubMenu" ng-repeat="section in moduleMenu.sections">
-        <li class="nav-header">
+<div id="side-nav" class="col-lg-2  col-sm-3" ng-show="ready">
+    <ul class="nav nav-stacked modulesWithSubMenu margin-after" ng-repeat="section in moduleMenu.sections">
+        <li class="nav-header text-uppercase">
             {{msg(section.name)}}
         </li>
         <li ng-repeat="link in section.links" ng-class="{active: isActiveLink(link)}">

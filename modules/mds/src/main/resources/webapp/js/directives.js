@@ -17,12 +17,12 @@
 
                 target.livequery(function () {
                     angular.element(this).on({
-                        show: function () {
+                        'show.bs.collapse': function () {
                             elem.find('i')
                                 .removeClass('icon-chevron-right')
                                 .addClass('icon-chevron-down');
                         },
-                        hide: function () {
+                        'hide.bs.collapse': function () {
                             elem.find('i')
                                 .removeClass('icon-chevron-down')
                                 .addClass('icon-chevron-right');

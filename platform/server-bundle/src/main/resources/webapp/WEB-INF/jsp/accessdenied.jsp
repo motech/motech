@@ -23,9 +23,9 @@
 <body ng-controller="MasterCtrl"  ng-class="showDashboardLogo.backgroudUpDown()">
     <div id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
 
-    <div id="content" class="container-fluid">
-        <div class="row-fluid">
-            <div id="main-content" class="span10">
+    <div id="content" class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-10">
                 <div>
                     <div class="splash splash-alert">
                         <div class="splash-logo"></div>

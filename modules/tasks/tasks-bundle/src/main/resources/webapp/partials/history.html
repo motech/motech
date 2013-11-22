@@ -1,7 +1,7 @@
 <!------------------------  History ------------------------------------->
-<div class="row-fluid tab-frame" xmlns="http://www.w3.org/1999/html">
+<div class="row tab-frame" xmlns="http://www.w3.org/1999/html">
     <div class="margin-after history">
-        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+        <h4 class="frame-title">{{msg('task.header.taskHistory')}} <a href="#/task/" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
         <div class="tasks-list">
             <div class="inbox-header" ng-class="{true:'', false:'paused'}[enabled]">
                 <div class="task-bar">
@@ -50,7 +50,7 @@
             <div class="clearfix"></div><div class="margin-before2"></div>
 
             <div class="margin-after"  ng-show="activities.length &gt; 0">
-                <div class="control-group form-inline">
+                <div class="form-group form-inline">
                     <label class="interval">{{msg('task.header.filterActivity')}}</label>
                     <select ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
                     <label class="interval">{{msg('task.header.activitiesPerPage')}}</label>
@@ -76,7 +76,7 @@
                             <td class="message-history">
                                 <p class="wrap-paragraph" ng-hide="activity.stackTraceElement.length &gt; 1">{{msg(activity.message, activity.fields)}}</p>
                                 <p class="wrap-paragraph" ng-show="activity.stackTraceElement.length &gt; 1">{{msg(activity.message, activity.fields)}}
-                                    <span class="label label-important pointer" data-toggle="collapse" data-target="#stackHistory{{$index}}">
+                                    <span class="label label-danger pointer" data-toggle="collapse" data-target="#stackHistory{{$index}}">
                                         {{msg('task.button.showStackTrace')}}
                                     </span>
                                 </p>

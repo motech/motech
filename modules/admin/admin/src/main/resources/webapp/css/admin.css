@@ -158,9 +158,10 @@ h4.settings-section {
     text-align: left;
 }
 
-.table-bundles thead tr > th:first-child, .table-bundles thead tr > th:nth-child(2){
+.table-bundles thead tr > th:first-child,
+.table-bundles thead tr > th:nth-child(2) {
     text-align: center;
-    width: 35px;
+    width: 38px;
 }
 
 .table-bundles thead tr > th:nth-child(4){
@@ -194,15 +195,12 @@ h4.settings-section {
 /* ----- filter, statistics ----- */
 
 .statistics {
-    line-height: 25px;
-    padding: 10px 0;
-}
-.row-fluid .span8.statistics {
-    min-height: 24px;
+    line-height: 28px;
+    padding: 10px;
 }
 
 .statistics span {
-    padding: 14px 10px;
+    padding: 6px 10px;
     margin: 0;
 }
 
@@ -226,8 +224,9 @@ h4.settings-section {
     margin: 0;
 }
 
-.filter label {
-    margin-bottom: 0;
+.filter .form-inline .control-label {
+    text-align: left;
+    padding-right: 5px;
 }
 
 .log-line {
@@ -257,14 +256,14 @@ div.sidebar-container {
     height: 90px !important;
 }
 
-#changeLogLevels .control-group {
+#changeLogLevels .form-group {
     margin: 0;
     margin-bottom: 0;
     background-color: #E4F1F9;
     padding: 5px 5px 5px 45px;
 }
 
-#changeLogLevels .control-group.log {
+#changeLogLevels .form-group.log {
     padding: 10px 5px 2px 15px;
 }
 
@@ -286,7 +285,7 @@ div.sidebar-container {
 }
 
 #changeLogLevels .btn-log {
-    width: 60px;
+    width: 80px;
 }
 
 #changeLogLevels .btn-hidden {
@@ -305,7 +304,7 @@ div.sidebar-container {
     background-image: none;
 }
 
-.messages.control-group, #notificationRulesForm > div,
+.messages.form-group, #notificationRulesForm > div,
 #changeLogLevels > div {
     background-color: #EBF7FF;
     border-top: 1px solid #D2EBFC;
@@ -319,17 +318,17 @@ div.sidebar-container {
     padding-top: 0;
 }
 
-#notificationRulesForm > div .control-group {
+#notificationRulesForm > div .form-group {
     margin: 0 10px;
 }
 
-.box-content .messages.control-group:nth-child(2n+1),
+.box-content .messages.form-group:nth-child(2n+1),
 #notificationRulesForm > div:nth-child(2n+1),
 #changeLogLevels > div:nth-child(2n+1) {
     background: #F3FBFE;
 }
 
-.box-content .messages.control-group:last-child {
+.box-content .messages.form-group:last-child {
     margin: 0 -10px -10px;
 }
 
@@ -342,4 +341,3 @@ p#settingsMsg:empty {
     padding: 0;
     margin: 0;
 }
-

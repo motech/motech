@@ -1,7 +1,7 @@
-<div class="control-group">
-    <label class="control-label">{{ msg('aggregation.new.cron.rule.cron.expression.label') }}</label>
-    <div class="controls">
-        <input class="input-xlarge-fluid" type='text' ng-model='rule.aggregationSchedule.cronExpression' />
+<div class="form-group">
+    <label class="col-md-3 col-sm-4 control-label">{{ msg('aggregation.new.cron.rule.cron.expression.label') }}</label>
+    <div class="form-inline col-md-9 col-sm-8">
+        <input class="input-xlarge-fluid form-control input-auto" type='text' ng-model='rule.aggregationSchedule.cronExpression' />
     </div>
 </div>
 <div id='cron_container'></div>

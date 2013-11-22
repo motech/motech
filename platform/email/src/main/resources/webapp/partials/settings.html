@@ -1,24 +1,24 @@
 <!------------------------  Settings  ------------------------------------->
-<div class="row-fluid tab-frame">
+<div class="row tab-frame">
     <h4 class="frame-title">{{ msg('email.settings.title')}}</h4>
-    <div class="inside">
+    <div class="inside col-lg-7 col-md-9 col-sm-12">
         <div class="clearfix margin-before">
             <form id="emailSettingsForm" name="emailSettingsForm" class="form-horizontal" novalidate>
 
-                <div class="control-group" ng-class="{'error': !settings.host}">
-                    <label class="control-label" for="settingsHost">{{msg('email.settings.host')}}:</label>
+                <div class="form-group" ng-class="{'error': !settings.host}">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsHost">{{msg('email.settings.host')}}:</label>
 
-                    <div class="controls">
-                        <input ng-model="settings.host" type="text" id="settingsHost" required/>
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.host" type="text" id="settingsHost" required/>
                         <span ng-hide="settings.host" class="form-hint">{{msg('email.field.required', msg('email.settings.host'))}}</span>
                     </div>
                 </div>
 
-                <div class="control-group" ng-class="{'error': !settings.port}">
-                    <label class="control-label" for="settingsPort">{{msg('email.settings.port')}}:</label>
+                <div class="form-group" ng-class="{'error': !settings.port}">
+                    <label class="col-md-3 col-sm-4 control-label" for="settingsPort">{{msg('email.settings.port')}}:</label>
 
-                    <div class="controls">
-                        <input ng-model="settings.port" type="text" id="settingsPort" required/>
+                    <div class="form-inline col-md-9 col-sm-8">
+                        <input class="form-control input-auto" ng-model="settings.port" type="text" id="settingsPort" required/>
                         <span ng-hide="settings.port" class="form-hint">{{msg('email.field.required', msg('email.settings.port'))}}</span>
                         <span ng-hide="isNumeric('port')" class="form-hint">{{msg('email.field.numeric', msg('email.settings.port'))}}</span>
                     </div>
@@ -26,16 +26,18 @@
 
                 <h5>{{msg('email.settings.log.title1')}}</h5>
 
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="checkbox" for="settingsLogAddress">
-                            <input ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
-                                   ng-true-value="true" ng-false-value="false" />
-                            {{msg('email.settings.log.address')}}
-                        </label>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label for="settingsLogAddress">
+                                <input class="form-control input-auto" ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.address')}}
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="controls">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <label class="checkbox" for="settingsLogSubject">
                             <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
                                    ng-true-value="true" ng-false-value="false" />
@@ -43,7 +45,7 @@
                         </label>
                     </div>
 
-                    <div class="controls">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <label class="checkbox" for="settingsLogBody">
                             <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
                                    ng-true-value="true" ng-false-value="false" />
@@ -54,22 +56,21 @@
 
                 <h5>{{msg('email.settings.log.title2')}}</h5>
 
-                <div class="control-group">
-                    <div class="controls">
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <label class="checkbox inline">
                             <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
                                ng-true-value="true" ng-false-value="false" />
                             {{msg('email.settings.log.purge')}}
                         </label>
-
-                        <input purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
-
-                        <select ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" >
-                        </select>
+                        <div class="form-inline margin-before">
+                            <input class="form-control input-auto" purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
+                            <select class="form-control input-auto" ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" ></select>
+                        </div>
                     </div>
                     </div>
 
-                <div class="controls">
+                <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                     <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
                 </div>
 

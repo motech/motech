@@ -1,23 +1,23 @@
-<form class="form-horizontal">
-    <div>
+<form class="form-horizontal inside">
+    <div class="col-sm-12">
         <span ng-repeat="metadata in selectedEntityMetadata[$index]">
-            <div class="control-group" ng-class="{error: !uniqueMetadataKey(metadata)}">
-                <div class="metadata-control">
-                    <label class="control-label metadata-control-label">
+            <div class="form-group" ng-class="{error: !uniqueMetadataKey(metadata)}">
+                <div class="metadata-control form-inline">
+                    <label class="offset-2 control-label metadata-control-label">
                         {{msg('mds.form.label.key')}}
                     </label>
-                    <input type="text" ng-model="metadata.key" ng-disabled="selectedEntity.readOnly">
+                    <input class="form-control input-large-fluid" type="text" ng-model="metadata.key" ng-disabled="selectedEntity.readOnly">
                     <div class="metadata-error">
                         <span class="help-inline" ng-class="{hide: uniqueMetadataKey(metadata)}">
                             {{msg('mds.error.duplicateMetadataKeys')}}
                         </span>
                     </div>
                 </div>
-                <div class="metadata-control">
-                    <label class="control-label metadata-control-label">
+                <div class="metadata-control form-inline">
+                    <label class="offset-2 control-label metadata-control-label">
                         {{msg('mds.form.label.value')}}
                     </label>
-                    <input type="text" ng-model="metadata.value" ng-disabled="selectedEntity.readOnly">
+                    <input class="form-control input-large-fluid" type="text" ng-model="metadata.value" ng-disabled="selectedEntity.readOnly">
                     <a ui-if="!selectedEntity.readOnly" ng-click="removeMetadata($parent.$parent.$index, $index)">
                         <i class="icon-remove icon-large"></i>
                     </a>

@@ -587,7 +587,7 @@
                         cssClass = 'btn-inverse';
                         break;
                     default:
-                        cssClass = '';
+                        cssClass = ' btn-default';
                         break;
                 }
             }

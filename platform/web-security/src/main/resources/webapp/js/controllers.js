@@ -63,7 +63,7 @@
                 if ($scope.user.roles.indexOf(roleName)!==-1){
                     return "btn btn-success";
                 } else {
-                    return "btn disabled";
+                    return "btn";
                 }
            };
 

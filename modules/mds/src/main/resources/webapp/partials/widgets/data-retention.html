@@ -1,29 +1,29 @@
 <form>
-    <div class="control-group">
+    <div class="form-group">
         {{msg('mds.dataRetention.info')}}
     </div>
-    <div class="control-group">
+    <div class="form-group">
         <label class="label-radio">
             <input type="radio" ng-model="settings.deleteMode" value="delete" ng-click="checkDisable()">
             {{msg('mds.dataRetention.delete')}}
         </label>
     </div>
-    <div class="control-group">
+    <div class="form-group">
         <label class="label-radio">
             <input type="radio" ng-model="settings.deleteMode" value="trash" ng-click="checkDisable()">
             {{msg('mds.dataRetention.trash')}}
         </label>
     </div>
-    <div class="control-group">
+    <div class="form-group form-inline">
         <label class="label-radio">
             <input type="checkbox" ng-model="settings.emptyTrash" ng-disabled="checkCheckboxDisable()">
             {{msg('mds.dataRetention.emptyTrash')}}
         </label>
         <div class="settings-input-group">
-            <input ng-disabled="checkTimeSelectDisable()" type="number" min="1" ng-model="settings.timeValue">
-            <select ng-disabled="checkTimeSelectDisable()" ng-model="settings.timeUnit" ng-options="t for t in timeUnits"></select>
+            <input class="form-control input-auto" ng-disabled="checkTimeSelectDisable()" type="number" min="1" ng-model="settings.timeValue">
+            <select class="form-control input-auto" ng-disabled="checkTimeSelectDisable()" ng-model="settings.timeUnit" ng-options="t for t in timeUnits"></select>
         </div>
     </div>
-    <span class="btn" ng-click="saveSettings()">{{msg('mds.dataRetention.save')}}</span>
+    <span class="btn btn-default" ng-click="saveSettings()">{{msg('mds.dataRetention.save')}}</span>
 
 </form>

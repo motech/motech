@@ -2,14 +2,14 @@
     <div class="box-header">{{msg('security.administeringUsers')}}</div>
     <div class="box-content clearfix">
         <div class="well3">
-            <div class="control-group">
-                <a ng-click="addUser()" role="button" class="btn btn-primary"><i class="icon-plus icon-white"></i> {{msg('security.addUser')}}</a>
+            <div class="form-group">
+                <a ng-click="addUser()" role="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('security.addUser')}}</a>
             </div>
             <form class="form-search form-inline">
                 <label class="control-label">{{msg('security.searchUsername')}}</label>
-                <input type="text" ng-model="propertyUserName" class="input-medium search-query">
+                <input type="text" ng-model="propertyUserName" class="form-control input-auto search-query">
                 <label class="help-inline">{{msg('security.role')}}</label>
-                <select ng-model="selectedItem" ng-options="role.roleName for role in roleList">
+                <select class="form-control form-control-select" ng-model="selectedItem" ng-options="role.roleName for role in roleList">
                     <option value="">-- {{msg('security.chooseRole')}} --</option>
                 </select>
             </form>
@@ -43,85 +43,85 @@
     </div>
 </div>
 
-<div ng-hide="addUserView" class="span8">
+<div ng-hide="addUserView">
     <div class="box-header">{{msg('security.userRegistration')}}</div>
     <div class="box-content clearfix">
-        <div class="well3">
+        <div class="well3 col-lg-8 col-md-10 col-sm-12">
             <form id="createUserForm" name="createUserForm" class="form-horizontal inside" novalidate>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.user')}}</h4>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <div ng-class="cssClass('userName')">
-                        <label class="control-label">{{msg('security.userName')}}</label>
-                        <div class="controls">
-                            <input type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('security.userName')}}" user-name-validate required>
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.userName')}}</label>
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" type="text" id="userName" name="userName" ng-model="user.userName" placeholder="{{msg('security.userName')}}" user-name-validate required>
                             <span ng-hide="pwdNameValidate" class="form-hint">{{msg('security.userExist')}}</span>
                             <span ng-hide="hasValue('userName')" class="form-hint">{{msg('security.userNameRequired')}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <div ng-class="cssClass('email')">
-                        <label class="control-label">{{msg('security.email')}}</label>
-                        <div class="controls">
-                            <input id="email" name="email" type="email" ng-model="user.email" required>
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.email')}}</label>
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" id="email" name="email" type="email" ng-model="user.email" required>
                             <span ng-show="createUserForm.email.$error.required" class="form-hint">{{msg('security.emailRequired')}}</span>
                             <span ng-show="createUserForm.email.$error.email" class="form-hint">{{msg('security.emailFormat')}}</span>
                         </div>
                     </div>
                 </div>
-                <div ng-show="!user.generatePassword" class="control-group">
+                <div ng-show="!user.generatePassword" class="form-group">
                     <div ng-class="cssClass('password')">
-                        <label class="control-label">{{msg('security.password')}}</label>
-                        <div class="controls">
-                            <input ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.password')}}</label>
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" ng-model="user.password" required>
                             <span ng-hide="hasValue('password')" class="form-hint">{{msg('security.passwordRequired')}}</span>
                         </div>
                     </div>
                 </div>
-                <div ng-show="!user.generatePassword" class="control-group">
+                <div ng-show="!user.generatePassword" class="form-group">
                     <div ng-class="cssPassword()">
-                        <label class="control-label">{{msg('security.confirmPassword')}}</label>
-                        <div class="controls">
-                            <input ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
+                        <div class="form-inline col-md-9 col-sm-8">
+                            <input class="form-control input-auto" ng-disabled="user.generatePassword" type="password" name="confirmPassword" ng-model="confirmPassword" required confirm-password="user.password">
                             <span ng-show="createUserForm.confirmPassword.$error.equal" class="form-hint">{{msg('security.samePassword')}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div>
-                        <label class="control-label">{{msg('security.generatePassword')}}</label>
-                        <div class="controls">
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label>{{msg('security.generatePassword')}}</label>
                             <input type="checkbox" name="generatePassword" ng-model="user.generatePassword">
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.role')}}</h4>
                 </div>
-                <div ng-show="roleList.length &lt; 25" class="control-group">
-                    <div class="controls"> <!-- btn-success when active -->
+                <div ng-show="roleList.length &lt; 25" class="form-group">
+                    <div class="col-md-12 col-sm-12"> <!-- btn-success when active -->
                         <input ng-repeat="role in roleList" ng-class="getClass(role.roleName)" type="button" value="{{role.roleName}}" ng-click="activeRole(role.roleName)"/>
                     </div>
                 </div>
-                <div ng-show="roleList.length &gt;= 25" class="control-group">
-                    <div class="controls">
+                <div ng-show="roleList.length &gt;= 25" class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <div class="btn-group dropdown">
-                            <a class="btn dropdown-toggle" role="button" data-toggle="dropdown"  href="#">
+                            <a class="btn dropdown-toggle" role="button" data-toggle="dropdown" href="#">
                                 {{msg('security.role')}}
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
-                                <li ng-repeat="role in roleList" class="nav-header"><a class="ng-binding" href="" >{{role.roleName}}</a></li>
+                                <li ng-repeat="role in roleList" class="nav-header"><a class="ng-binding" href="">{{role.roleName}}</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <input class="btn btn-primary" type="button" value="{{msg('security.save')}}" ng-click="saveUser()" ng-disabled="!isFormValid()"/>
-                        <input class="btn" type="button" value="{{msg('security.cancel')}}" ng-click="cancelAddUser()"/>
+                        <input class="btn btn-default" type="button" value="{{msg('security.cancel')}}" ng-click="cancelAddUser()"/>
                     </div>
                 </div>
             </form>
@@ -130,52 +130,52 @@
 </div>
 
 
-<div ng-hide="editUserView" class="span8">
+<div ng-hide="editUserView">
     <div class="box-header">{{msg('security.administeringUsers')}}</div>
     <div class="box-content clearfix">
-        <div class="well3">
+        <div class="well3 col-lg-8 col-md-10 col-sm-12">
             <form id="editUserForm" name="editUserForm" class="form-horizontal inside" novalidate>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.user')}}: {{user.userName}}</h4>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <div ng-class="cssClass('email')">
-                        <label class="control-label">{{msg('security.email')}}</label>
-                        <div class="controls">
-                            <input name="email" type="email" ng-model="user.email" required>
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.email')}}</label>
+                        <div class="col-md-9 col-sm-8 form-inline">
+                            <input class="form-control input-auto" name="email" type="email" ng-model="user.email" required>
                             <span ng-show="editUserForm.email.$error.required" class="form-hint">{{msg('security.emailRequired')}}</span>
                             <span ng-show="editUserForm.email.$error.email" class="form-hint">{{msg('security.emailFormat')}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label">{{msg('security.password')}}</label>
-                    <div class="controls">
-                        <input type="password" ng-model="user.password">
+                <div class="form-group">
+                    <label class="col-md-3 col-sm-4 control-label">{{msg('security.password')}}</label>
+                    <div class="col-md-9 col-sm-8 form-inline">
+                        <input class="form-control input-auto" type="password" ng-model="user.password">
                         <!--<span class="help-inline"><a class="btn btn-small"  ng-click="generatePassword()">{{msg('generate')}}</a></span>-->
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <div ng-class="cssPassword()">
-                        <label class="control-label">{{msg('security.confirmPassword')}}</label>
-                        <div class="controls">
-                            <input type="password" name="confirmPassword" ng-model="confirmPassword" confirm-password="user.password">
+                        <label class="col-md-3 col-sm-4 control-label">{{msg('security.confirmPassword')}}</label>
+                        <div class="col-md-9 col-sm-8 form-inline">
+                            <input class="form-control input-auto" type="password" name="confirmPassword" ng-model="confirmPassword" confirm-password="user.password">
                             <span ng-show="editUserForm.confirmPassword.$error.equal" class="form-hint">{{msg('security.samePassword')}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.role')}}</h4>
                 </div>
-                <div ng-show="roleList.length &lt; 25" class="control-group">
-                    <div class="controls"> <!-- btn-success when active -->
+                <div ng-show="roleList.length &lt; 25" class="form-group">
+                    <div class="col-md-12 col-sm-12"> <!-- btn-success when active -->
                         <input ng-repeat="role in roleList" ng-class="getClass(role.roleName)" type="button" value="{{role.roleName}}" ng-click="activeRole(role.roleName)"/>
                     </div>
                 </div>
-                <div ng-show="roleList.length &gt;= 25" class="control-group">
-                    <div class="controls">
+                <div ng-show="roleList.length &gt;= 25" class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <div class="btn-group dropdown">
-                            <a class="btn dropdown-toggle"  role="button" data-toggle="dropdown"  href="#">
+                            <a class="btn btn-default dropdown-toggle"  role="button" data-toggle="dropdown"  href="#">
                                 {{msg('security.role')}}
                                 <span class="caret"></span>
                             </a>
@@ -185,42 +185,44 @@
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.enableUser')}}</h4>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="checkbox">
-                            <input type="checkbox" ng-model="user.active"> {{msg('security.enabled')}}
-                        </label>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="user.active"> {{msg('security.enabled')}}
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
+                <div class="form-group">
+                    <div class="margin-before col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <input ng-disabled="editUserForm.$invalid" class="btn btn-primary" type="button" value="{{msg('security.save')}}" ng-click="updateUser()"/>
-                        <input class="btn" type="button" value="{{msg('security.cancel')}}" ng-click="cancelEditUser()"/>
+                        <input class="btn btn-default" type="button" value="{{msg('security.cancel')}}" ng-click="cancelEditUser()"/>
                     </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                     <h4>{{msg('security.deleteUser')}}</h4>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
+                <div class="form-group">
+                    <div class="">
                         <p>{{msg('security.deletingUserInfo')}}</p>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="checkbox">
-                            <input type="checkbox" ng-model="deleteU"> {{msg('security.deletingUserCheckMsg')}}
-                        </label>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="deleteU"> {{msg('security.deletingUserCheckMsg')}}
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div ng-show="deleteU" class="control-group">
-                    <div class="controls">
-                        <span>
+                <div ng-show="deleteU" class="form-group">
+                    <div class="margin-before col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <input class="btn btn-primary" type="button" value="{{msg('security.delete')}}" ng-click="deleteUser()"/>
-                        </span>
                     </div>
                 </div>
             </form>

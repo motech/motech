@@ -12,8 +12,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>MOTECH - Mobile Technology for Community Health</title>
 
-        <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.css">
-        <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap-responsive.css">
+        <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
         <script src="../../server/resources/lib/jquery/jquery.js"></script>
@@ -25,7 +24,7 @@
             <div class="header">
                 <div class="container">
                     <a href="."><div class="dashboard-logo"></div></a>
-                    <div class="nav-collapse">
+                    <div class="navbar-collapse hidden-xs">
                         <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
                     </div>
                     <div class="clearfix"></div>
@@ -33,7 +32,7 @@
             </div>
 
             <div class="clearfix"></div>
-            <div class="nav-collapse">
+            <div class="navbar-wrapper navbar-default hidden-xs">
                 <div class="header-nav navbar">
                     <div class="navbar-inner navbar-inner-bg">
                     </div>

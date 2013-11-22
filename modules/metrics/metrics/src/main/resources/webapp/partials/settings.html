@@ -1,29 +1,40 @@
-<div class="box-content inside">
-    <h4 class="frame-title">{{ msg('metrics.settings.backends.title')}}</h4>
-    <form name="metricsAgentImplForm" class="form-horizontal inside">
-        <div class="control-group">
-            <label class="control-label">{{msg('metrics.settings.backend.select')}}</label>
-            <div class="controls">
-                <select class="multiselect" ng-model="selectedImplementations" ng-options="item as item for item in metricsImplementations"
-                        multiple="multiple" multiselect-dropdown >
-                </select>
+<div class="box-content inside clearfix">
+    <div class="col-md-10 col-sm-12">
+        <h4 class="frame-title">{{ msg('metrics.settings.backends.title')}}</h4>
+        <form name="metricsAgentImplForm" class="form-horizontal inside">
+            <div class="form-group">
+                <label class="col-md-3 col-sm-4 control-label">{{msg('metrics.settings.backend.select')}}</label>
+                <div class="form-inline col-md-9 col-sm-8">
+                    <select class="multiselect" ng-model="selectedImplementations" ng-options="item as item for item in metricsImplementations"
+                            multiple="multiple" multiselect-dropdown >
+                    </select>
+                </div>
             </div>
-        </div>
-        <button class="btn btn-primary ng-binding" ng-click="setUsedImplementations()">{{msg('metrics.save')}}</button>
-    </form>
-</div>
-<div class="box-content inside" ng-repeat="(impl, settings) in metricsSettings">
-    <h4 class="frame-title">{{impl}}</h4>
-    <form class="form-horizontal inside">
-        <div class="control-group" ng-repeat="(key, configProperty) in settings">
-            <label class="control-label">{{configProperty.displayName}}</label>
-            <div class="controls" ng-switch on="configProperty.type">
-                <input ng-switch-when="INTEGER" type="text" integer ng-model="configProperty.value" />
-                <input ng-switch-when="DOUBLE" type="text" double ng-model="configProperty.value" />
-                <input ng-switch-when="BOOLEAN" type="checkbox" ng-model="configProperty.value" ng-true-value="true" ng-false-value="false" />
-                <input ng-switch-default type="text" ng-model="configProperty.value" />
+            <div class="form-group">
+                <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                    <button class="btn btn-primary ng-binding" ng-click="setUsedImplementations()">{{msg('metrics.save')}}</button>
+                </div>
             </div>
+        </form>
+        <div class="form-group"><legend></legend></div>
+        <div class="inside" ng-repeat="(impl, settings) in metricsSettings">
+            <h4 class="frame-title">{{impl}}</h4>
+            <form class="form-horizontal inside">
+                <div class="form-group" ng-repeat="(key, configProperty) in settings">
+                    <label class="col-md-3 col-sm-4 control-label">{{configProperty.displayName}}</label>
+                    <div class="form-inline col-md-9 col-sm-8" ng-switch on="configProperty.type">
+                        <input class="form-control input-auto" ng-switch-when="INTEGER" type="text" integer ng-model="configProperty.value" />
+                        <input class="form-control input-auto" ng-switch-when="DOUBLE" type="text" double ng-model="configProperty.value" />
+                        <input class="" ng-switch-when="BOOLEAN" type="checkbox" ng-model="configProperty.value" ng-true-value="true" ng-false-value="false" />
+                        <input class="form-control input-auto" ng-switch-default type="text" ng-model="configProperty.value" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <button class="btn btn-primary ng-binding" ng-click="saveSettings(impl, settings)">{{msg('metrics.save')}}</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <button class="btn btn-primary ng-binding" ng-click="saveSettings(impl, settings)">{{msg('metrics.save')}}</button>
-    </form>
+    </div>
 </div>

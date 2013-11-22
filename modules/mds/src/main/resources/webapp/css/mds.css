@@ -1,10 +1,27 @@
+.mds.nav.nav-tabs {
+    border-bottom: none;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+.mds-settings.nav.nav-tabs {
+    border-bottom: 1px solid #D4E1F9;
+}
+
+.form-control-select2 {
+    height: 34px;
+    line-height: 1.42857;
+    padding: 5px 12px;
+}
+
 .hide {
     display: none;
 }
 
-.modal.large {
-    width: 80%;
-    margin-left: -40%;
+.modal-content.large {
+    width: 200%;
+    margin-left: -50%;
 }
 
 .select-entity {
@@ -31,17 +48,10 @@
     margin: 0 0 0 5px;
 }
 
-.welcome p {
-    font-size:15px;
-    font-weight:200;
-    line-height:20px;
-}
-
 .metadata-control-group {
     margin: 20px 0 20px 0;
     clear: both;
 }
-
 
 .metadata-control {
     margin: 5px 0 5px 0;
@@ -146,9 +156,6 @@
     width: 50px;
 }
 
-.backButton {
-    margin-bottom: 10px;
-}
 
 .button-delete {
     float: right;

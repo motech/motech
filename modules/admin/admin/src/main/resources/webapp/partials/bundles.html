@@ -1,17 +1,16 @@
 <div class="box-header">{{msg('admin.bundles')}}</div>
 <div class="table-content lightblue-2">
 
-    <div class="row-fluid">
+    <div class="row">
 
-        <div class="span4 filter">
+        <div class="col-sm-4 filter">
             <form class="inside form-inline">
-                <label for="filter"><span><b>{{msg('admin.filter')}}</b></span>
-                    <input class="search-query" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
-                </label>
+                <label class="control-label" for="filter">{{msg('admin.filter')}}</label>
+                <input class="input-auto form-control" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </form>
         </div>
 
-        <div class="span8 statistics">
+        <div class="col-sm-8 statistics">
             <div class="inline">
                 <span><b>{{msg('admin.bundles.statistics')}}:</b></span>
                 <span><b>{{msg('admin.bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
@@ -28,21 +27,21 @@
                 <div class="fileupload fileupload-new" data-provides="fileupload">
                     <span><b>{{msg('admin.bundles.upload')}} {{msg('admin.import.from')}} </b></span>
 
-                    <select name="moduleSource" ng-model="moduleSource" ng-options="k as v for (k,v) in moduleSources"/>
+                    <select class="form-control form-control-select" name="moduleSource" ng-model="moduleSource" ng-options="k as v for (k,v) in moduleSources"/>
 
-                    <select name="moduleId" ng-model="module" ng-options="k as v for (k,v) in modules" ng-show="moduleSource=='Repository'">
+                    <select class="form-control form-control-select" name="moduleId" ng-model="module" ng-options="k as v for (k,v) in modules" ng-show="moduleSource=='Repository'">
                         <option value="">Select a module</option>
                     </select>
 
-                    <div class="input-append" ng-show="moduleSource=='File'">
+                    <div class="input-append btn-group" ng-show="moduleSource=='File'">
                         <input type="file" id="bundleFile" name="bundleFile" class="input-file"
                                placeholder="{{msg('admin.bundles.file')}}" style="display: none;"/>
                         <div class="uneditable-input input-large fileupload-exists">
-                            <i class="icon-file"></i><span class="fileupload-preview"></span>
+                            &nbsp;<i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span>
                         </div>
-                    <span class="btn btn-file"><span class="fileupload-new">{{msg('admin.selectFile')}}</span>
+                    <span class="btn btn-default btn-file"><span class="fileupload-new">{{msg('admin.selectFile')}}</span>
                     <span class="fileupload-exists">{{msg('admin.bundles.change')}}</span><input type="file"/>
-                    </span><a href="#" class="btn fileupload-exists"
+                    </span><a href="#" class="btn btn-danger fileupload-exists"
                               data-dismiss="fileupload">{{msg('admin.bundles.remove')}}</a>
                     </div>
 

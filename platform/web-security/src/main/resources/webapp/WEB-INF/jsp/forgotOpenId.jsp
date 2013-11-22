@@ -12,8 +12,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap-responsive.css">
+    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
     <script src="../../server/resources/lib/jquery/jquery.js"></script>
@@ -25,7 +24,7 @@
     <div class="header">
         <div class="container">
             <a href="."><div class="dashboard-logo"></div></a>
-            <div class="nav-collapse">
+            <div class="navbar-collaps hidden-xse">
                 <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
             </div>
             <div class="clearfix"></div>
@@ -33,7 +32,7 @@
     </div>
 
     <div class="clearfix"></div>
-    <div class="nav-collapse">
+    <div class="navbar-wrapper navbar-default hidden-xs">
         <div class="header-nav navbar">
             <div class="navbar-inner navbar-inner-bg">
             </div>
@@ -42,21 +41,21 @@
 
     <div class="clearfix"></div>
     <div id="content" class="container">
-        <div class="row-fluid">
+        <div class="row">
             <div id="main-content">
                 <div class="well2 margin-center spn5">
                     <div class="box-header"><fmt:message key="security.oneTimeToken" bundle="${bundle}"/></div>
                     <div class="box-content">
                         <form class="inside" method="post">
                             <div class="well3">
-                                <div class="control-group">
+                                <div class="form-group">
                                     <p><fmt:message key="security.enterEmailMsgToken" bundle="${bundle}"/></p>
                                 </div>
-                                <div class="control-group">
+                                <div class="form-group">
                                     <label><fmt:message key="security.enterEmail" bundle="${bundle}"/></label>
-                                    <input class="span12" type="email" id="email" name="email">
+                                    <input class="col-sm-12 form-control" type="email" id="email" name="email">
                                 </div>
-                                <div class="control-group">
+                                <div class="form-group">
                                     <input class="btn btn-primary" type="submit" value="<fmt:message key="security.sendOneTimeToken" bundle="${bundle}"/>"/>
                                 </div>
                             </div>

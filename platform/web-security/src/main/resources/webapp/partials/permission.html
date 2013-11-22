@@ -8,32 +8,32 @@
                 <div class="margin-before">
                     <form ng-hide="addingPermission" id="searchFilterPermForm" novalidate class="form-inline">
                         <label class="control-label">{{msg('security.search')}}</label>
-                        <input type="text" class="input-medium search-query" ng-model="roleNameFilter">
-                        <label class="control-label">{{msg('security.module')}}</label>
-                        <select ng-model="selectedItemRole">
+                        <input type="text" class="form-control input-auto search-query" ng-model="roleNameFilter">
+                        <label class="control-label offset-1">{{msg('security.module')}}</label>
+                        <select class="form-control form-control-select" ng-model="selectedItemRole">
                             <option value="">-- {{msg('security.chooseModule')}} --</option>
-                            <option ng-repeat=" permissions in uniquePermissionList(permissionList)"
+                            <option ng-repeat="permissions in uniquePermissionList(permissionList)"
                                     value="{{permissions.bundleName}}">{{permissions.bundleName}}</option>
                         </select>
-                        <button ng-click="startAddingPermission()" type="button" class="btn btn-primary">
+                        <button ng-click="startAddingPermission()" type="button" class="btn btn-success">
                             <i class="icon-plus icon-white"></i> {{msg('security.addNewPermission')}}</button>
                     </form>
                 </div>
                 <!-- Adding permission -->
                 <form ng-show="addingPermission" id="addPermissionForm" name="addPermissionForm">
-                    <div class="margin-before control-group form-inline">
+                    <div class="margin-before form-group form-inline">
                         <label class="control-label">{{msg('security.enterPermissionName')}}</label>
-                        <input id="permissionName" type="text" ng-model="permission.permissionName" class="input-medium"
+                        <input id="permissionName" type="text" ng-model="permission.permissionName" class="form-control input-auto"
                                perm-name-validate required>
-                        <span ng-hide="pwdNameValidate" class="form-hint">{{msg('security.permissionExist')}}</span>
-                        <span ng-hide="permissionHasValue('permissionName')" class="form-hint">
+                        <span ng-hide="pwdNameValidate" class="form-hint offset-1">{{msg('security.permissionExist')}}</span>
+                        <span ng-hide="permissionHasValue('permissionName')" class="form-hint offset-1">
                             {{msg('security.permissionNameRequired')}}
                         </span>
                     </div>
-                    <div class="margin-before control-group form-inline">
+                    <div class="margin-before form-group form-inline">
                         <input ng-disabled="addPermissionForm.$invalid" class="btn btn-primary" type="submit"
                                value="{{msg('security.save')}}" ng-click="savePermission()"/>
-                        <input class="btn" type="button" value="{{msg('security.cancel')}}"
+                        <input class="btn btn-default" type="button" value="{{msg('security.cancel')}}"
                                ng-click="cancelAddingPermission()"/>
                     </div>
                 </form>

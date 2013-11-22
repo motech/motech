@@ -28,11 +28,11 @@
 <div class="bodywrap">
     <div ng-show="ready" id="content-header" ng-include="'../server/resources/partials/header.html'"></div>
 
-    <div id="content" class="container-fluid" ng-controller="HomeCtrl">
-        <div class="row-fluid">
+    <div id="content" class="container-full" ng-controller="HomeCtrl">
+        <div class="row">
             <motech-modules></motech-modules>
 
-            <div id="main-content" class="span10">
+            <div id="main-content" class="col-lg-10 col-sm-9">
                 <c:if test="${! empty currentModule}">
                     <div>
                         <div class="splash" ng-hide="ready">
@@ -44,7 +44,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <c:if test="${criticalNotification != null && criticalNotification != ''}">
-                            <div id="criticalNotification" class="alert alert-error">
+                            <div id="criticalNotification" class="alert alert-danger">
                                 ${criticalNotification}
                             </div>
                         </c:if>

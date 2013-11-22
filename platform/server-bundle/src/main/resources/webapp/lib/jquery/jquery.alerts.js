@@ -78,13 +78,19 @@
 			$.alerts._overlay('show');
 			
 			$("BODY").append(
-			  '<div id="popup_container" class="modal fade in">' +
-			    '<div class="modal-header">' +
-			        '<h3 id="popup_title"></h3>' + '</div>' +
-			    '<div id="popup_content" class="modal-body">' +
-			      '<div id="popup_message"></div>' +
-				'</div>' +
-			  '</div>');
+                '<div id="popup_container" class="modal fade in" role="dialog">' +
+                    '<div class="modal-dialog">' +
+                        '<div class="modal-content">' +
+                            '<div class="modal-header">' +
+                                '<h4 id="popup_title"></h4>' +
+                            '</div>' +
+                            '<div id="popup_content" class="modal-body">' +
+                                '<div id="popup_message"></div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
 			
 			if( $.alerts.dialogClass ) $("#popup_container").addClass($.alerts.dialogClass);
 			
@@ -93,6 +99,7 @@
 			
 			$("#popup_container").css({
 				position: pos,
+				display: 'block',
 				zIndex: 99999,
 				padding: 0
 			});
@@ -108,7 +115,7 @@
 			
 			//$.alerts._reposition();
 			$.alerts._maintainPosition(true);
-			
+
 			switch( type ) {
 				case 'alert':
 					$("#popup_content").after('<div id="popup_panel" class="modal-footer"><input class="btn btn-success" type="button" value="' + $.alerts.okButton + '" id="popup_ok" /></div>');

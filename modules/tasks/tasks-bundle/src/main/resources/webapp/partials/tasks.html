@@ -1,16 +1,17 @@
 <!------------------------  Tasks  ------------------------------------->
-<div class="row-fluid tab-frame">
-<div class="span8">
+<div class="tab-frame">
+<div class="row">
+<div class="col-sm-8 col-md-8">
 
     <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
     <div class="clearfix">
         <div class="inside btn-group">
             <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
-            <a role="button" class="btn" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
+            <a role="button" class="btn btn-default" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
         </div>
         <div class="inside form-inline">
             <label >{{msg('task.header.searchTasks')}}</label>
-            <input type="text" ng-model="query" ng-change="search()" class="input-large search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
+            <input type="text" ng-model="query" ng-change="search()" class="input-large form-control input-large-fluid search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
             <div data-toggle="buttons-checkbox" class="btn-group">
                 <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
                 <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
@@ -55,7 +56,7 @@
                 </div>
 
                 <div class="task-list-group" ng-show="item.task.hasRegisteredChannel">
-                    <div class="accordion-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
+                    <div class="panel-heading inbox-header" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar" expandaccordion>
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapse3{{$index}}">
                                 <ul class="task-nav">
@@ -102,7 +103,7 @@
                             <div class="clearfix"></div>
                         </div>
                     </div>
-                    <div id="collapse3{{$index}}" class="accordion-body accordion-inner collapse task-content clearfix" ng-class="{true:'', false:'paused'}[item.task.enabled]">
+                    <div id="collapse3{{$index}}" class="panel-collapse panel-body collapse task-content clearfix" ng-class="{true:'', false:'paused'}[item.task.enabled]">
                         <div class="task-bar">
                             <ul class="task-nav">
                                 <li class="task-element task-offset"></li>
@@ -165,7 +166,7 @@
 
     </div>
 </div>
-<div class="span4">
+<div class="col-sm-4">
     <!------------------------  Recent task activity  ------------------------>
     <div class="margin-after2">
         <div class="inbox-header">{{msg('task.header.recentTaskActivity')}}</div>
@@ -212,4 +213,5 @@
     </div>
 </div>
 <div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
+</div>
 </div>

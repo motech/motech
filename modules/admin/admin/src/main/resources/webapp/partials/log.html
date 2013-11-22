@@ -1,4 +1,4 @@
-<div class="well2" xmlns="http://www.w3.org/1999/html">
+<div class="well2">
     <div class="box-header">
         {{msg('admin.log')}}
         <a ng-click="refresh()">
@@ -6,11 +6,11 @@
         </a>
     </div>
     <div class="box-content">
-        <div class="row-fluid log-line">
-            <div class="span6 inside log-change">
+        <div class="log-line">
+            <div class="col-sm-6 inside log-change">
                 {{msg('admin.log.limitation')}} {{msg('admin.log.changeLogLevel')}} <a href="#/logOptions">{{ msg('admin.clickHere') | lowercase }}</a>.
             </div>
-            <div class="span6 inside log-download">
+            <div class="col-sm-6 inside log-download">
                 <a href="../admin/api/log/raw" class="btn btn-primary"><i class="icon-download-alt icon-white"></i> {{msg('admin.log.downloadFull')}}</a>
             </div>
             <div class="clearfix"></div>

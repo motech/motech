@@ -4,10 +4,10 @@
         <a htef="#" ng-click="refresh()"><img src="../admin/img/refresh.png" title="{{msg('admin.refresh')}}" alt="{{msg('admin.refresh')}}"/></a>
     </div>
     <div class="box-content inside">
-        <div class="control-group"><a href="#/notificationRules" class="btn btn-success"><i class="icon-plus icon-white"></i>&nbsp;{{msg('admin.messages.notifications.title')}}</a></div>
+        <div class="form-group"><a href="#/notificationRules" class="btn btn-success"><i class="icon-plus icon-white"></i>&nbsp;{{msg('admin.messages.notifications.title')}}</a></div>
         <span ng-show="messages.length < 1"><p>{{msg('admin.messages.empty')}}</p></span>
 
-        <div ng-repeat="message in messages" ng-class="getCssClass(message)" class="control-group messages">
+        <div ng-repeat="message in messages" ng-class="getCssClass(message)" class="form-group messages">
             <div class="status-message">
                 <a ng-click="remove(message)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i></a>&nbsp;
                 <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span>

@@ -1,36 +1,40 @@
-<div id="helpModalFieldSyntax" class="modal hide fade" tabindex="-1" role="dialog">
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">×</button>
-    <h4 id="helpModalLabel">{{msg('task.helpCustomFieldSyntax')}}</h4>
-</div>
-<div class="modal-body">
+<div id="helpModalFieldSyntax" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="helpModalLabel">{{msg('task.helpCustomFieldSyntax')}}</h4>
+            </div>
+            <div class="modal-body">
 
-<p class="header">{{msg('task.tooltip.customFieldSyntax.header')}}</p><br>
+                <p class="header">{{msg('task.tooltip.customFieldSyntax.header')}}</p><br>
 
-<table class="table table-striped table-lightblue table-condensed table-bordered table-striped table-help">
-    <thead>
-    <tr>
-        <th>{{msg('task.type')}}</th>
-        <th>{{msg('task.syntax')}}</th>
-        <th>{{msg('task.example')}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>{{msg('task.header.trigger')}}</td>
-        <td>{{msg('task.tooltip.customFieldSyntax.trigger.withoutBrackets')}}</td>
-        <td>{{msg('task.tooltip.customFieldSyntaxExample.trigger.withoutBrackets')}}</td>
-    </tr>
-    <tr>
-        <td>{{msg('task.header.dataSource')}}</td>
-        <td>{{msg('task.tooltip.customFieldSyntax.dataSource.withoutBrackets')}}</td>
-        <td>{{msg('task.tooltip.customFieldSyntaxExample.dataSource.withoutBrackets')}}</td>
-    </tr>
-    </tbody>
-</table>
-<br>
-</div>
-<div class="modal-footer">
-    <button class="btn" data-dismiss="modal">{{msg('task.button.close')}}</button>
-</div>
+                <table class="table table-striped table-lightblue table-condensed table-bordered table-striped table-help">
+                    <thead>
+                    <tr>
+                        <th>{{msg('task.type')}}</th>
+                        <th>{{msg('task.syntax')}}</th>
+                        <th>{{msg('task.example')}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{msg('task.header.trigger')}}</td>
+                        <td>{{msg('task.tooltip.customFieldSyntax.trigger.withoutBrackets')}}</td>
+                        <td>{{msg('task.tooltip.customFieldSyntaxExample.trigger.withoutBrackets')}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{msg('task.header.dataSource')}}</td>
+                        <td>{{msg('task.tooltip.customFieldSyntax.dataSource.withoutBrackets')}}</td>
+                        <td>{{msg('task.tooltip.customFieldSyntaxExample.dataSource.withoutBrackets')}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">{{msg('task.button.close')}}</button>
+            </div>
+        </div>
+    </div>
 </div>

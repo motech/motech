@@ -1,7 +1,7 @@
-<div class="control-group">
-    <label class="control-label">{{ msg('aggregation.new.periodic.rule.repeat.interval.label') }}</label>
-    <div class="controls">
-        <input class="input-xlarge-fluid" type='text' id='repeat_every' ng-model='rule.aggregationSchedule.period' tooltip="#repeat_period_tooltip_text" />
+<div class="form-group">
+    <label class="col-md-3 col-sm-4 control-label">{{ msg('aggregation.new.periodic.rule.repeat.interval.label') }}</label>
+    <div class="form-inline col-md-9 col-sm-8">
+        <input class="input-xlarge-fluid form-control input-auto" type='text' id='repeat_every' ng-model='rule.aggregationSchedule.period' tooltip="#repeat_period_tooltip_text" />
     </div>
 </div>
 
@@ -12,9 +12,9 @@
     </div>
 </div>
 
-<div class="control-group">
-    <label class="control-label">{{ msg('aggregation.new.periodic.rule.start.time.label') }}</label>
-    <div class="controls">
-        <input class="input-xlarge-fluid" type='text' ng-model='rule.aggregationSchedule.startTimeInMillis' datetime-picker />
+<div class="form-group">
+    <label class="col-md-3 col-sm-4 control-label">{{ msg('aggregation.new.periodic.rule.start.time.label') }}</label>
+    <div class="form-inline col-md-9 col-sm-8">
+        <input class="input-xlarge-fluid form-control input-auto" type='text' ng-model='rule.aggregationSchedule.startTimeInMillis' datetime-picker />
     </div>
 </div>

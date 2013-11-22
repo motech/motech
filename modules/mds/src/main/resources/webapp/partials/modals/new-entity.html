@@ -1,30 +1,35 @@
-<div id="newEntityModal" class="modal hide fade" tabindex="-1" role="dialog"
+<div id="newEntityModal" class="modal fade" tabindex="-1" role="dialog"
      aria-labelledby="newEntityModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <h3 id="newEntityModalLabel">{{msg('mds.form.newEntity')}}</h3>
-    </div>
-    <div class="modal-body">
-        <form name="newEntityModalForm" id="newEntityModalForm" class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label" for="inputEntityName">
-                    {{msg('mds.form.entityName')}}
-                </label>
-                <div class="controls">
-                    <input type="text" name="inputEntityName" id="inputEntityName"
-                           placeholder="{{mds.placeholder.enterEntityName}}">
-                    <span class="help-block hide">
-                        {{msg('mds.error.entityNameIsRequired')}}
-                    </span>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="newEntityModalLabel">{{msg('mds.form.newEntity')}}</h4>
             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="createEntity()">
-            {{msg('mds.btn.save')}}
-        </button>
-        <button class="btn" ng-click="clearEntityModal()">
-            {{msg('mds.btn.cancel')}}
-        </button>
+            <div class="modal-body">
+                <form name="newEntityModalForm" id="newEntityModalForm" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputEntityName">
+                            {{msg('mds.form.entityName')}}
+                        </label>
+                        <div class="col-sm-7">
+                            <input class="form-control" type="text" name="inputEntityName" id="inputEntityName"
+                                   placeholder="{{mds.placeholder.enterEntityName}}">
+                            <span class="help-block hide">
+                                {{msg('mds.error.entityNameIsRequired')}}
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="createEntity()">
+                    {{msg('mds.btn.save')}}
+                </button>
+                <button class="btn btn-default" ng-click="clearEntityModal()">
+                    {{msg('mds.btn.cancel')}}
+                </button>
+            </div>
+        </div>
     </div>
 </div>

@@ -12,8 +12,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>MOTECH - Mobile Technology for Community Health</title>
 
-    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap-responsive.css">
+    <link rel="stylesheet" type="text/css" href="../../server/resources/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
     <script src="../../server/resources/lib/jquery/jquery.js"></script>
@@ -25,7 +24,7 @@
     <div class="header">
         <div class="container">
             <a href="."><div class="dashboard-logo"></div></a>
-            <div class="nav-collapse">
+            <div class="navbar-collapse">
                 <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
             </div>
             <div class="clearfix"></div>
@@ -33,7 +32,7 @@
     </div>
 
     <div class="clearfix"></div>
-    <div class="nav-collapse">
+    <div class="navbar-wrapper navbar-default">
         <div class="header-nav navbar">
             <div class="navbar-inner navbar-inner-bg">
             </div>
@@ -42,7 +41,7 @@
 
     <div class="clearfix"></div>
     <div id="content" class="container">
-        <div class="row-fluid">
+        <div class="row">
             <div id="main-content">
                 <div class="well2 margin-center margin-before spnw5">
                 <div class="box-header"><fmt:message key="security.forgotPassword" bundle="${bundle}"/></div>
@@ -50,7 +49,7 @@
                 <div class="box-content well3">
                     <c:choose>
                         <c:when test="${error == null}">
-                            <div class="control-group">
+                            <div class="form-group">
                                 <p><fmt:message key="security.tokenSent" bundle="${bundle}"/></p>
                             </div>
                         </c:when>
@@ -58,10 +57,10 @@
                             <div class="login-error">
                                 <h4><fmt:message key="security.tokenSendError" bundle="${bundle}"/></h4>
                             </div>
-                            <div class="control-group login-error">
+                            <div class="form-group login-error">
                                 <p><fmt:message key="${error}" bundle="${bundle}"/></p>
                             </div>
-                            <div class="control-group login-error">
+                            <div class="form-group login-error">
                                 <a href="."><input type="button" class="btn btn-primary" value="<fmt:message key="security.back" bundle="${bundle}"/>" /></a>
                             </div>
                         </c:otherwise>

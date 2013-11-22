@@ -1,14 +1,15 @@
 <div class="well2">
     <div class="box-header">{{msg('admin.messages.notifications.title')}}
-        <a href="#/messages" class="btn btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
+        <a href="#/messages" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
     </div>
     <div class="box-content inside">
         <ng-form id="notificationRulesForm" name="rulesForm" novalidate>
             <div class="form-inline" ng-repeat="rule in notificationRuleDto.notificationRules">
-                <label>{{msg('admin.messages.notifications.actionType')}}</label>
+                <fieldset>
+                <label class="control-label">{{msg('admin.messages.notifications.actionType')}}</label>
 
                 <div class="btn-group">
-                    <a class="btn dropdown-toggle spn1" data-toggle="dropdown" href="#">
+                    <a class="btn btn-default dropdown-toggle input-mw" data-toggle="dropdown" href="#">
                         {{msg('admin.messages.notifications.' + rule.actionType)}}
                         <span class="caret"></span>
                     </a>
@@ -20,18 +21,19 @@
                     </ul>
                 </div>
 
-                <div class="control-group inline" ng-class="{error: !rule.recipient}">
-                    <label>{{msg('admin.messages.notifications.recipient')}}</label>
-                    <input ng-model="rule.recipient" type="text" value="" />
-                </div>
+                <span class="" ng-class="{error: !rule.recipient}">
+                    <label class="control-label offset-1">{{msg('admin.messages.notifications.recipient')}}</label>
+                    <input class="form-control input-auto" ng-model="rule.recipient" type="text" value="" />
+                </span>
 
                 <a ng-click="removeRule(rule)" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
+                </fieldset>
             </div>
 
-            <div class="control-group">
+            <div class="form-group">
                 <button class="btn btn-success" ng-click="newRule()"><i class="icon-plus icon-white"></i>&nbsp;{{msg('admin.messages.notifications.newRule')}}</button>
                 <button class="btn btn-primary" type="button" ng-click="save()">{{msg('admin.save')}}</button>
-                <a href="#/messages" class="btn">{{msg('admin.cancel')}}</a>
+                <a href="#/messages" class="btn btn-default">{{msg('admin.cancel')}}</a>
             </div>
         </ng-form>
     </div>

@@ -1,56 +1,50 @@
-<div class="row-fluid">
+<div class="row">
 
     <div ng-show="platformSettings.readOnly" class="not-editable-warning">
         {{msg('admin.settings.noteditble')}}
     </div>
 
-    <div ui-if="!platformSettings.readOnly" class="span7 well2">
+    <div ui-if="!platformSettings.readOnly" class="col-lg-7 well2">
         <div class="box-header"> {{msg('admin.settings.upload')}}</div>
         <div class="box-content">
             <h4 class="settings-section">{{msg('admin.platform.settings')}}</h4>
             <form class="form-inline inside" id="settingsFileForm" action="../admin/api/settings/platform/upload" method="post" enctype="multipart/form-data">
                 <fieldset>
-                    <div class="control-group fileupload fileupload-new" data-provides="fileupload">
+                    <div class="form-group fileupload fileupload-new" data-provides="fileupload">
                         <label class="control-label">{{msg('admin.settings.fileChosen')}}</label>
-                        <div class="uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
-                        <span class="btn btn-file">
+                        <div class="form-control input-auto uneditable-input input-large fileupload-exists"><i class="icon-file"></i>&nbsp;<span class="fileupload-preview"></span></div>
+                        <span class="btn btn-default btn-file">
                             <span class="fileupload-new">{{msg('admin.button.selectFile')}}</span>
                             <span class="fileupload-exists">{{msg('admin.button.changeFile')}}</span>
                             <input type="file" id="settingsFile" name="settingsFile" class="input-file"/>
                         </span>
                         <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-trash icon-white"></i>&nbsp;{{msg('admin.button.remove')}}</a>
-                        <span class="btn" ng-click="uploadSettings()">{{msg('admin.submit')}}</span>
+                        <span class="offset-1 btn btn-default" ng-click="uploadSettings()">{{msg('admin.submit')}}</span>
                     </div>
                 </fieldset>
             </form>
             <p id="settingsMsg" class="inside"></p>
         </div>
     </div>
-    <div ui-if="!platformSettings.readOnly" class="span5 well2">
+    <div ui-if="!platformSettings.readOnly" class="col-lg-5 well2">
         <div class="box-header"> {{msg('admin.settings.location')}}</div>
         <div class="box-content inside">
             <form class="form-inline" id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
                 <fieldset>
                     <label class="control-label">{{msg('admin.settings.location.new')}}</label>
-                    <span>
-                        <input type="text" id="settingsLocation" name="settingsLocation" ng-model="location">
-                    </span>
-                    <span>
-                        <input type="submit" value="{{msg('admin.submit')}}" class="btn"/>
-                    </span>
+                    <input class="form-control input-auto" type="text" id="settingsLocation" name="settingsLocation" ng-model="location">
+                    <input type="submit" value="{{msg('admin.submit')}}" class="btn btn-default"/>
                 </fieldset>
             </form>
         </div>
     </div>
-    <div class="span5 well2">
+    <div class="col-lg-5 well2">
         <div class="box-header"> {{msg('admin.settings.importexport.header')}}</div>
         <div class="box-content inside">
             <form class="form-inline">
                 <fieldset>
                     <label class="control-label">{{msg('admin.settings.importexport.export')}}</label>
-                        <span>
-                            <input type="button" ng-click="exportConfig()" value="{{msg('admin.settings.importexport.exportButton')}}" class="btn" />
-                        </span>
+                        <input type="button" ng-click="exportConfig()" value="{{msg('admin.settings.importexport.exportButton')}}" class="btn btn-default" />
                 </fieldset>
             </form>
         </div>
@@ -61,26 +55,28 @@
     <div ng-show="platformSettings.settingsList.length > 0">
         <div class="box-header"> {{msg('admin.settings.platform')}}</div>
         <div class="box-content">
-            <div class="settings-form lightblue-settings span6" ng-repeat="pSettings in platformSettings.settingsList" ng-show="pSettings.settings.length > 0">
+            <div class="settings-form lightblue-settings col-lg-6" ng-repeat="pSettings in platformSettings.settingsList" ng-show="pSettings.settings.length > 0">
                 <h4 class="settings-section">{{msg('admin.'+ pSettings.section)}}</h4>
                 <br />
 
-                <form id="platformSettingsForm" class="inside form-vertical">
+                <form id="platformSettingsForm" class="inside form-horizontal">
                     <fieldset>
-                        <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="control-group">
-                            <label class="control-label" for="{{option.key}}">{{option.key}}</label>
-                            <input ng-disabled="platformSettings.readOnly" type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/>
+                        <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="form-group">
+                            <label class="col-md-4 col-lg-5 control-label" for="{{option.key}}">{{option.key}}</label>
+                            <div class="col-md-8 col-lg-7"><input class="form-control" ng-disabled="platformSettings.readOnly" type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value"/></div>
                         </div>
-                        <div>
-                            <input ui-if="!platformSettings.readOnly" type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn"/>
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7">
+                                <input ui-if="!platformSettings.readOnly" type="submit" ng-click="saveSettings(pSettings)" value="{{msg('admin.save')}}" class="btn btn-default"/>
+                            </div>
                         </div>
                     </fieldset>
                 </form>
             </div>
             <div class="clearfix"></div>
-            <form class="form-vertical inside settings-form form-save">
-                <div class="pagination-centered">
-                    <input ui-if="!platformSettings.readOnly" type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="btn"/>
+            <form class="clearfix inside settings-form form-save">
+                <div class="form-group">
+                    <div class="col-sm-offset-5"><input ui-if="!platformSettings.readOnly" type="button" ng-click="saveAll()" value="{{msg('admin.saveAll')}}" class="col-sm-4 btn btn-default"/></div>
                 </div>
             </form>
         </div>
@@ -91,30 +87,30 @@
         <div class="box-content inside">
             <p>{{msg('admin.settings.noSettingsMsg')}}</p>
 
-            <form id="noSettingsForm" class="lightblue-settings inside form-vertical">
+            <form id="noSettingsForm" class="lightblue-settings inside form-horizontal">
                 <fieldset>
-                    <div class="control-group">
-                        <label class="control-label" for="new.db.host">{{msg('admin.label.db.host')}}</label>
-                        <input id="new.db.host" type="text" name="db.host"/>
+                    <div class="form-group">
+                        <label class="col-md-4 col-lg-5 control-label" for="new.db.host">{{msg('admin.label.db.host')}}</label>
+                        <div class="col-md-8 col-lg-7"><input class="form-control" id="new.db.host" type="text" name="db.host"/></div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label" for="new.db.port">{{msg('admin.label.db.port')}}</label>
-                        <input type="text" id="new.db.port" name="db.port"/>
+                    <div class="form-group">
+                        <label class="col-md-4 col-lg-5 control-label" for="new.db.port">{{msg('admin.label.db.port')}}</label>
+                        <div class="col-md-8 col-lg-7"><input class="form-control" type="text" id="new.db.port" name="db.port"/></div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label" for="new.db.user">{{msg('admin.label.db.username')}}</label>
-                        <input type="text" id="new.db.user" name="db.username"/>
+                    <div class="form-group">
+                        <label class="col-md-4 col-lg-5 control-label" for="new.db.user">{{msg('admin.label.db.username')}}</label>
+                        <div class="col-md-8 col-lg-7"><input class="form-control" type="text" id="new.db.user" name="db.username"/></div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label" for="new.db.password">{{msg('admin.label.db.password')}}</label>
-                        <input type="text" id="new.db.password" name="db.password"/>
+                    <div class="form-group">
+                        <label class="col-md-4 col-lg-5 control-label" for="new.db.password">{{msg('admin.label.db.password')}}</label>
+                        <div class="col-md-8 col-lg-7"><input class="form-control" type="text" id="new.db.password" name="db.password"/></div>
                     </div>
 
-                    <div class="control-group">
-                        <input type="button" ng-click="saveNewSettings()" value="{{msg('admin.submit')}}" class="btn"/>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8 col-lg-offset-5 col-lg-7"><input type="button" ng-click="saveNewSettings()" value="{{msg('admin.submit')}}" class="btn btn-default"/></div>
                     </div>
                 </fieldset>
             </form>

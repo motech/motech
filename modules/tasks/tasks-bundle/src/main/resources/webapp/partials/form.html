@@ -1,8 +1,8 @@
-<div class="row-fluid tab-frame create-edit-task">
-    <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/task/" type="button" class="btn btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
-    <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/task/" type="button" class="btn btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
+<div class="row tab-frame create-edit-task">
+    <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
+    <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
     <div class="inside">
-        <div ng-show="task.validationErrors.length" class="alert alert-block alert-error">
+        <div ng-show="task.validationErrors.length" class="alert alert-block alert-danger">
             <strong>{{msg('task.header.taskErrors')}}:</strong>
             <ul>
                 <li ng-repeat="error in task.validationErrors">
@@ -12,41 +12,41 @@
         </div>
     </div>
     <div>
-        <div class="row-fluid margin-before">
+        <div class="margin-before">
             <form class="inside task form-horizontal">
                 <!------------------ ENTER TASK NAME ------------------>
                 <div class="inside-0">
-                    <div class="control-group" ng-class="{error: !task.name}">
-                        <label class="control-label task-label">{{msg('task.name')}}</label>
-                        <div class="controls">
-                            <input class="span8" type='text' ng-model='task.name' id="task.name" maxlength="30"/>
+                    <div class="form-group" ng-class="{error: !task.name}">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.name')}}</label>
+                        <div class="form-inline col-md-10 col-sm-9">
+                            <input class="input-xlarge-fluid form-control" type='text' ng-model='task.name' id="task.name" maxlength="30"/>
                         </div>
                     </div>
                 </div>
 
                 <!------------------ ENTER TASK DESCRIPTION ------------------>
                 <div class="inside-0">
-                    <div class="control-group">
-                        <label class="control-label task-label">{{msg('task.section.taskDescription')}}</label>
-                        <div class="controls">
-                            <textarea class="span8" ng-model="task.description"></textarea>
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.section.taskDescription')}}</label>
+                        <div class="form-inline col-md-10 col-sm-9">
+                            <textarea class="input-xlarge-fluid form-control" ng-model="task.description"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <!------------------ SELECT TRIGGER ------------------>
-                <div class="accordion" id="select-trigger" overflow-change expand-accordion>
-                    <div class="task-group">
-                        <div class="accordion-heading">
-                            <div class="accordion-toggle inbox-header cursor-auto">
+                <div class="panel-group" id="select-trigger" overflow-change expand-accordion>
+                    <div class="task-group ">
+                        <div class="panel-heading panel-header">
+                            <div class="accordion-toggle cursor-auto">
                                 <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
                                 <span ng-hide="!task.trigger.displayName">
                                     &raquo; {{msg(task.trigger.channelName)}} : {{msg(task.trigger.displayName)}}
                                 </span>
                             </div>
                         </div>
-                        <div id="collapse-trigger" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
-                            <div class="accordion-inner">
+                        <div id="collapse-trigger" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                            <div class="panel-body">
                                 <div class="section-source">
                                     <ul class="task-selector">
                                         <li class="task-panel pointer" ng-repeat="channel in util.channels.withTriggers(channels)">
@@ -81,31 +81,31 @@
 
                 <div ng-hide="!task.trigger.subject">
                     <div ng-repeat="step in task.taskConfig.steps">
-                        <div ui-if="step['@type'] == 'FilterSet'" class="accordion" id="step-{{step.order}}" overflow-change expand-accordion>
+                        <div ui-if="step['@type'] == 'FilterSet'" class="panel-group" id="step-{{step.order}}" overflow-change expand-accordio>
                             <div class="task-group">
-                                <div class="accordion-heading">
+                                <div class="panel-heading panel-header">
                                     <div class="pull-right">
-                                        <button ng-click="removeFilterSet(step)" class="btn btn-danger btn-in-heading">
+                                        <button ng-click="removeFilterSet(step)" class="btn btn-danger  btn-in-header btn-sm">
                                             <i class="icon-remove icon-white"></i>
                                         </button>
                                     </div>
-                                    <a class="accordion-toggle inbox-header">
+                                    <a class="accordion-toggle">
                                         <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#filter-set-{{step.order}}" href="#collapse-step-{{step.order}}"></i>
                                         {{msg('task.section.filters')}}
                                     </a>
                                 </div>
-                                <div id="collapse-step-{{step.order}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
-                                    <div class="accordion-inner centered inside">
-                                        <form id="filtersForm" name="filterForm" class="form-horizontal">
+                                <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                                    <div class="panel-body centered inside">
+                                        <form id="filtersForm" name="filterForm" class="form-inline">
                                             <div class="margin-center margin-before">
                                                 <div ng-repeat="filter in step.filters">
-                                                    <div class="form-inline">
-                                                        <div class="control-group">
-                                                            <span class="validation-area">
-                                                                <div class="input-append">
-                                                                    <input ng-trigger="selectParam(filter, 'trigger', option)" name="autocomplete" type="text" id="appendedDropdownButton" ng-model="filter.displayName"/>
+                                                    <div class="form-group">
+                                                        <div class="form-inline">
+                                                            <span class="validation-area form-group">
+                                                                <div class="input-append input-group">
+                                                                    <input class="form-control input-auto offset-1" ng-trigger="selectParam(filter, 'trigger', option)" name="autocomplete" type="text" id="appendedDropdownButton" ng-model="filter.displayName"/>
                                                                     <div class="btn-group">
-                                                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                                                             <span class="caret"></span>
                                                                         </button>
                                                                         <ul class="dropdown-menu">
@@ -129,8 +129,8 @@
                                                                     </div>
                                                                 </div>
                                                             </span>
-                                                            <span class="validation-area">
-                                                                <div class="btn-group">
+                                                            <span class="validation-area form-group">
+                                                                <div class="btn-group offset-1">
                                                                     <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined}" ng-disabled="!filter.key">
                                                                         {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'task.info.filter.' + filter.negationOperator) || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
@@ -143,8 +143,8 @@
                                                                     </ul>
                                                                 </div>
                                                             </span>
-                                                            <span class="validation-area">
-                                                                <div class="btn-group">
+                                                            <span class="validation-area form-group">
+                                                                <div class="btn-group offset-1">
                                                                     <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.operator}" ng-disabled="filter.negationOperator == undefined">
                                                                         {{msg(filter.operator || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
@@ -161,33 +161,35 @@
                                                                     </ul>
                                                                 </div>
                                                             </span>
-                                                            <span class="validation-area" ng-class="{error: util.needExpression(filter.operator) && !filter.expression}">
-                                                                <input ng-disabled="!filter.operator || !util.needExpression(filter.operator)" ng-model="filter.expression" class="input-medium" type="text" value=""/>
+                                                            <span class="validation-area form-group" ng-class="{error: util.needExpression(filter.operator) && !filter.expression}">
+                                                                <input ng-disabled="!filter.operator || !util.needExpression(filter.operator)" ng-model="filter.expression" class="form-control input-auto offset-1" type="text" value=""/>
                                                             </span>
-                                                            <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a>
+                                                            <span class="form-group">
+                                                                <a ng-click="removeFilter(step, filter)" class="btn btn-small btn-danger offset-1"><i class="icon-trash icon-white"></i></a>
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="control-group">
-                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
-                                                <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
-                                                <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
+                                            <div class="form-group">
+                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary pull-left offset-1" data-toggle="modal">{{msg('task.help')}}</a>
+                                                <button ui-if="!step.filters.length" class="btn btn-success pull-left offset-1" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
+                                                <button ui-if="step.filters.length" class="btn btn-success pull-left offset-1" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div ui-if="step['@type'] == 'DataSource'" class="accordion" id="step-{{step.order}}" overflow-change expand-accordion>
+                        <div ui-if="step['@type'] == 'DataSource'" class="panel-group" id="step-{{step.order}}" overflow-change expand-accordion>
                             <div class="task-group">
-                                <div class="accordion-heading">
+                                <div class="panel-heading panel-header">
                                     <div class="pull-right">
-                                        <button ng-click="removeData(step)" class="btn btn-danger btn-in-heading">
+                                        <button ng-click="removeData(step)" class="btn btn-danger btn-in-header btn-sm">
                                             <i class="icon-remove icon-white"></i>
                                         </button>
                                     </div>
-                                    <a class="accordion-toggle inbox-header cursor-auto">
+                                    <a class="accordion-toggle cursor-auto">
                                         <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#data-source-{{step.order}}" href="#collapse-step-{{step.order}}"></i> {{msg('task.subsection.data')}}
                                         <span ng-hide="!step.displayName">
                                             &raquo; {{msg(step.providerName)}} : {{msg(step.displayName)}}
@@ -197,11 +199,11 @@
                                         </span>
                                     </a>
                                 </div>
-                                <div id="collapse-step-{{step.order}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
-                                    <div class="accordion-inner inside">
-                                        <div class="control-group control-section">
-                                            <label class="control-label task-label">{{msg('task.info.availableFields')}}:</label>
-                                            <div class="controls move-element">
+                                <div id="collapse-step-{{step.order}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                                    <div class="panel-body inside">
+                                        <div class="form-group control-section">
+                                            <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
+                                            <div class="form-inline col-md-10 col-sm-9 move-element">
                                                 <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                                                 <span ng-repeat="ds in getDataSources() | idLessThan:step.objectId">
                                                     <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
@@ -212,10 +214,10 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="control-group">
-                                            <span class="control-label">{{msg('task.subsubsection.source')}}:</span>
+                                        <div class="form-group">
+                                            <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.source')}}:</span>
                                             <div class="btn-group interval">
-                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                                     {{msg(step.providerName || 'task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
@@ -227,7 +229,7 @@
                                             </div>
                                             <span class="interval2">{{msg('task.subsubsection.object')}}:</span>
                                             <div class="btn-group interval">
-                                                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                                     {{msg(step.displayName || 'task.select')}}
                                                     <span class="caret"></span>
                                                 </button>
@@ -239,10 +241,10 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="control-group" ui-if="step.displayName">
-                                                <span class="control-label">{{msg('task.subsubsection.lookup')}}:</span>
+                                            <div class="form-group" ui-if="step.displayName">
+                                                <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.lookup')}}:</span>
                                                 <div class="btn-group interval">
-                                                    <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                                         {{msg(step.name || 'task.select')}}
                                                         <span class="caret"></span>
                                                     </button>
@@ -254,50 +256,50 @@
                                                 </div>
                                             </div>
                                             <div ng-repeat="lookupField in step.lookup">
-                                                <div class="control-group" ng-class="{error: actionCssClassError(lookupField)}" class="control-group form-inline clearfix">
-                                                    <label class="control-label">{{msg(lookupField.field)}}</label>
+                                                <div class="form-group" ng-class="{error: actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
+                                                    <label class="col-md-2 col-sm-3 control-label">{{msg(lookupField.field)}}</label>
 
                                                     <!------------------------ Chrome & IE ------------------------>
-                                                    <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                                    <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
                                                         <editable-content data="lookupField" index="$index" type="UNICODE"></editable-content>
                                                     </div>
 
                                                     <!------------------------ Other browsers  ------------------------>
-                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
-                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                    <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
+                                                        <input type="text" ng-model="lookupField.value" droppable class="dataSourceField input-xlarge-fluid form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="control-group" ui-if="step.displayName">
-                                            <span class="control-label">{{msg('task.subsubsection.failIfDataNotFound')}}</span>
-                                            <div class="controls">
+                                        <div class="form-group" ui-if="step.displayName">
+                                            <span class="col-md-2 col-sm-3 control-label">{{msg('task.subsubsection.failIfDataNotFound')}}</span>
+                                            <div class="form-inline col-md-10 col-sm-9">
                                                 <div class="btn-group">
                                                     <input type="checkbox" ng-model="step.failIfDataNotFound"/>
                                                 </div>
                                             </div>
                                         </div>
                                         <div ui-if="step.lookup.field">
-                                            <div class="control-group" ng-class="{error: actionCssClass(step.lookup)}" class="control-group form-inline clearfix">
-                                                <label class="control-label">{{msg(step.lookup.field)}}</label>
+                                            <div class="form-group" ng-class="{error: actionCssClass(step.lookup)}" class="form-group form-inline clearfix">
+                                                <label class="col-md-2 col-sm-3 control-label">{{msg(step.lookup.field)}}</label>
 
                                                 <!------------------------ Chrome & IE ------------------------>
-                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                                <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
                                                     <editable-content data="step.lookup" index="$index" type="UNICODE"></editable-content>
                                                 </div>
 
                                                 <!------------------------ Other browsers  ------------------------>
-                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
-                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField span8" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
+                                                <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
+                                                    <input type="text" ng-model="step.lookup.value" droppable class="dataSourceField input-xlarge-fluid form-control" data-index="{{step.providerId}}" data-object-id="{{step.objectId}}" data-type="UNICODE"/>
                                                 </div>
                                             </div>
-                                            <div class="control-group">
+                                            <div class="form-group">
                                                 <a href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary pull-left" data-toggle="modal">{{msg('task.help')}}</a>
                                             </div>
                                         </div>
-                                        <div class="control-group margin-before3 control-section" ng-hide="step.displayName == undefined">
-                                            <label class="control-label task-label">{{msg('task.subsubsection.objectFields')}}</label>
-                                            <div class="controls move-element">
+                                        <div class="form-group margin-before3 control-section" ng-hide="step.displayName == undefined">
+                                            <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.subsubsection.objectFields')}}</label>
+                                            <div class="form-inline col-md-10 col-sm-9 move-element">
                                                 <span ng-repeat="field in findObject(step.providerId, step.type).fields" class="badge badge-warning">{{msg(field.displayName)}}</span>​
                                             </div>
                                         </div>
@@ -308,8 +310,8 @@
                     </div>
 
                     <!------------------------ ADDING BUTTONS ------------------------>
-                    <div class="row-fluid inside section-additives">
-                        <div class="control-group centered">
+                    <div class="row inside section-additives">
+                        <div class="form-group centered">
                             <div class="btn-group">
                                 <button class="btn btn-warning" ng-click="addFilterSet()"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilterSet')}}</button>
                                 <button ui-if="dataSources != undefined && dataSources.length != 0" class="btn btn-warning" ng-click="addDataSource()"><i class="icon-white icon-plus"></i> {{msg('task.button.addDataSource')}}</button>
@@ -319,26 +321,26 @@
                     </div>
 
                     <!------------------------  ACTION  ------------------------->
-                    <div class="accordion" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
+                    <div class="panel-group" id="select-action-{{$index}}" ng-repeat="action in task.actions" overflow-change expand-accordion>
                         <div class="task-group">
-                            <div class="accordion-heading">
+                            <div class="panel-heading panel-header">
                                 <div class="pull-right">
-                                    <button ng-click="removeAction($index)" class="btn btn-danger btn-in-heading">
+                                    <button ng-click="removeAction($index)" class="btn btn-danger  btn-in-header btn-sm">
                                         <i class="icon-remove icon-white"></i>
                                     </button>
                                 </div>
-                                <a class="accordion-toggle inbox-header cursor-auto" action-sortable-cursor>
+                                <a class="accordion-toggle cursor-auto" action-sortable-cursor>
                                     <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-action-{{$index}}" href="#collapse-action-{{$index}}"></i> {{msg('task.header.action')}}
                                     <span ng-hide="!action.displayName">
                                         &raquo; {{msg(action.channelName)}} : {{msg(action.displayName)}}
                                     </span>
                                 </a>
                             </div>
-                            <div id="collapse-action-{{$index}}" class="accordion-body stripes-bg collapse in overflowChange" style="overflow: visible;">
-                                <div class="accordion-inner inside">
-                                    <div class="control-group control-section">
-                                        <label class="control-label task-label">{{msg('task.info.availableFields')}}:</label>
-                                        <div class="controls move-element">
+                            <div id="collapse-action-{{$index}}" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                                <div class="panel-body inside">
+                                    <div class="form-group control-section">
+                                        <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.info.availableFields')}}:</label>
+                                        <div class="form-inline col-md-10 col-sm-9 move-element">
                                             <span contenteditable="false" ng-repeat="i in selectedTrigger.eventParameters" class="badge badge-info triggerField" draggable data-prefix="trigger" data-index="{{$index}}" data-type="{{i.type}}">{{msg(i.displayName)}}</span>​
                                             <span ng-repeat="ds in getDataSources()">
                                                 <span contenteditable="false" ng-repeat="i in findObject(ds.providerId, ds.type).fields" class="badge badge-warning triggerField" draggable
@@ -349,10 +351,10 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="control-group">
-                                        <span class="control-label">{{msg('task.channel')}}:</span>
+                                    <div class="form-group">
+                                        <span class="col-md-2 col-sm-3 control-label">{{msg('task.channel')}}:</span>
                                         <div class="btn-group interval">
-                                            <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                                 {{msg(selectedActionChannel[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
@@ -364,7 +366,7 @@
                                         </div>
                                         <span class="interval2">{{msg('task.action')}}:</span>
                                         <div class="btn-group interval">
-                                            <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
                                                 {{msg(selectedAction[$index].displayName || 'task.select')}}
                                                 <span class="caret"></span>
                                             </button>
@@ -375,12 +377,12 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="control-group" ng-show="selectedAction[$index].description">
-                                        <label class="control-label">{{msg(selectedAction.description)}}</label>
+                                    <div class="form-group" ng-show="selectedAction[$index].description">
+                                        <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
                                     <div ui-if="selectedAction[$index]">
-                                        <div class="control-group" ng-class="{warning: actionCssClassWarning(i), error: actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="control-group form-inline clearfix">
-                                            <label class="control-label tip">
+                                        <div class="form-group" ng-class="{warning: actionCssClassWarning(i), haserror: actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="form-group form-inline clearfix">
+                                            <label class="col-md-2 col-sm-3 control-label tip">
                                                 {{msg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>
                                                 <span class="help-inline" ui-if="i.type == 'LIST'" help-popover="list" data-title="{{msg('task.header.listHelp')}}"><i class="icon-question-sign"></i></span>
@@ -391,7 +393,7 @@
                                             </label>
 
                                             <!------------------------ Chrome & IE ------------------------>
-                                            <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="controls">
+                                            <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
                                                 <div ui-if="i.type == 'UNICODE'" data="i">
                                                     <editable-content  index="{{$index}}" data="i" type="UNICODE"></editable-content>
                                                 </div>
@@ -424,14 +426,14 @@
                                             </div>
 
                                             <!------------------------ Other browsers  ------------------------>
-                                            <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="controls">
-                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" rows="5" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
-                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
-                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
-                                                <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
-                                                <button ui-if="i.type == 'DATE'" datetime-picker>{{msg('task.button.selectDate')}}</button>
-                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField span8" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
+                                            <div ui-if="BrowserDetect.browser!='Chrome' && BrowserDetect.browser!='Explorer'" class="form-inline col-md-10 col-sm-9">
+                                                <textarea ui-if="i.type == 'TEXTAREA' || i.type == 'MAP' || i.type == 'LIST'" rows="5" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"></textarea>
+                                                <input ui-if="i.type == 'INTEGER' || i.type == 'LONG'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'DOUBLE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" integer placeholder="{{msg('task.placeholder.numberOnly')}}"/>
+                                                <input ui-if="i.type == 'UNICODE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}"/>
+                                                <input ui-if="i.type == 'DATE'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" datetime-picker-input placeholder="{{msg('task.placeholder.dateOnly')}}" style="background:white;"/>
+                                                <button ui-if="i.type == 'DATE'" class="btn btn-default" datetime-picker>{{msg('task.button.selectDate')}}</button>
+                                                <input ui-if="i.type == 'TIME'" type="text" ng-model="i.value" droppable class="actionField input-xlarge-fluid form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" time-picker-input placeholder="{{msg('task.placeholder.timeOnly')}}" readonly="readonly" style="background:white;"/>
                                                 <div ui-if="i.type == 'BOOLEAN'">
                                                     <label class="radio radio-inline">
                                                         <input type="radio" ng-model="i.value" class="input-block-level" value="true"/> {{msg('yes')}}
@@ -440,15 +442,15 @@
                                                         <input type="radio" ng-model="i.value" class="input-block-level" value="false"/> {{msg('no')}}
                                                     </label>
                                                     <label class="radio-inline input-large-fluid">
-                                                        <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('task.placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
+                                                        <input type="text" value="{{getBooleanValue(i.value)}}" droppable class="actionField form-control" data-index="{{$index}}" data-type="{{i.type}}" data-action="{{$parent.$parent.$parent.$index}}" placeholder="{{msg('task.placeholder.booleanOnly')}}" readonly="readonly" style="background:white;"/>
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!------------------------ Help button  ------------------------>
-                                        <a href="#helpModalDate" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.modifications')}}</a>
-                                        <a href="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
+                                        <a data-target="#helpModalDate" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.modifications')}}</a>
+                                        <a data-target="#helpModalFieldSyntaxWithBrackets" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help.customSyntax')}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -463,14 +465,14 @@
                     <div ng-include="'../tasks/partials/widgets/string-manipulation-format.html'"></div>
 
                     <!------------------------ SAVE ------------------------>
-                    <div class="control-group inside">
+                    <div class="form-group inside">
                         <h4 class="margin-center centered input-large-fluid">{{msg('task.section.save')}}</h4>
                         <p class="centered input-xxlarge-fluid margin-center">{{msg('task.info.addSave')}}</p>
                         <div class="clearfix"></div>
-                        <div class="control-group centered inside">
+                        <div class="form-group centered inside">
                             <button ng-disabled="!task.name" ng-click="save(true)" class="btn btn-primary">{{msg('task.button.saveAndEnable')}}</button>
                             <button ng-disabled="!task.name" ng-click="save(false)" class="btn btn-success">{{msg('task.button.save')}}</button>
-                            <a href="#/task/" class="btn"> {{msg('task.button.cancel')}}</a>
+                            <a href="#/task/" class="btn btn-default"> {{msg('task.button.cancel')}}</a>
                         </div>
                     </div>
                 </div>

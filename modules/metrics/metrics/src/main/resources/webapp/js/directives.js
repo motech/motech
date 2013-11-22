@@ -9,7 +9,7 @@
             require : 'ngModel',
             link: function (scope, element, attrs) {
                 element.multiselect({
-                    buttonClass : 'btn',
+                    buttonClass : 'btn btn-default',
                     buttonWidth : 'auto',
                     buttonContainer : '<div class="btn-group" />',
                     maxHeight : false,

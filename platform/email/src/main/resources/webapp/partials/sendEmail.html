@@ -1,45 +1,47 @@
-<div class="row-fluid tab-frame">
-    <div class="clearfix">
+<div class="row tab-frame">
+    <div class="well2 col-lg-9 col-md-12 col-sm-12">
         <h4 class="frame-title">{{ msg('email.compose.title')}}</h4>
         <div class="inside">
             <form class="form-horizontal inside" ng-submit="sendEmail()">
 
-                <div class="control-group">
-                    <label class="control-label" for="fromAddress">{{msg('email.from.address')}}</label>
-                    <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="mail.fromAddress" id="fromAddress">
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="fromAddress">{{msg('email.from.address')}}</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <input class="input-xlarge-fluid form-control input-auto" type="text" ng-model="mail.fromAddress" id="fromAddress">
                         <span ng-hide="mail.fromAddress" class="form-hint">{{msg('email.field.required', msg('email.from.address'))}}</span>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label class="control-label" for="toAddress">{{msg('email.to.address')}}</label>
-                    <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="mail.toAddress" id="toAddress">
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="toAddress">{{msg('email.to.address')}}</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <input class="input-xlarge-fluid form-control input-auto" type="text" ng-model="mail.toAddress" id="toAddress">
                         <span ng-hide="mail.toAddress" class="form-hint">{{msg('email.field.required', msg('email.to.address'))}}</span>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label class="control-label" for="subject">{{msg('email.subject')}}</label>
-                    <div class="controls">
-                        <input class="input-xlarge-fluid" type="text" ng-model="mail.subject" id="subject">
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="subject">{{msg('email.subject')}}</label>
+                    <div class="form-inline col-md-10 col-sm-9">
+                        <input class="input-xlarge-fluid form-control input-auto" type="text" ng-model="mail.subject" id="subject">
                         <span ng-hide="mail.subject" class="form-hint">{{msg('email.field.required', msg('email.subject'))}}</span>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label class="control-label" for="text">{{msg('email.message')}}</label>
-                    <div class="controls">
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 control-label" for="text">{{msg('email.message')}}</label>
+                    <div class="form-inline col-md-10 col-sm-9">
                         <span id="text" rich-text-editor ng-model="mail.message">
-                            <textarea class="textarea input-xlarge-fluid" style="border: auto; color: auto; width: 470px; height: 150px" rows="5"></textarea>
+                            <textarea class="textarea input-xlarge-fluid form-control" style="border: auto; color: auto; width: 470px; height: 150px" rows="5"></textarea>
                         </span>
                         <span ng-hide="mail.message" class="form-hint">{{msg('email.field.required', msg('email.message'))}}</span>
                     </div>
                 </div>
 
-                <div class="controls">
-                    <input class="btn btn-primary" type="submit" value="{{msg('email.send')}}"/>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-sm-offset-3 col-md-10 col-sm-9">
+                        <input class="btn btn-primary" type="submit" value="{{msg('email.send')}}"/>
+                    </div>
                 </div>
             </form>
         </div>
