@@ -1,18 +1,26 @@
 <div>
-    <form>
-        <fieldset>
-            <label>{{msg('mds.legend.auditFields')}}</label>
-            <label class="checkbox inline" ng-repeat="field in fields">
-                <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
-            </label>
-        </fieldset>
-    </form>
-    <form>
-        <fieldset>
-            <label>{{msg('mds.legend.actionsToLog')}}</label>
-            <label class="checkbox inline" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
-                <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
-            </label>
-        </fieldset>
-    </form>
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#audit-fields">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.legend.auditFields')}}
+        </div>
+        <div class="accordion-content collapse in" id="audit-fields">
+            <form>
+                <label class="checkbox inline" ng-repeat="field in fields">
+                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
+                </label>
+            </form>
+        </div>
+    </div>
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#audit-actions">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.legend.auditFields')}}
+        </div>
+        <div class="accordion-content collapse in" id="audit-actions">
+            <form>
+                <label class="checkbox inline" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
+                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
+                </label>
+            </form>
+        </div>
+    </div>
 </div>

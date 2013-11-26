@@ -134,8 +134,16 @@
     margin-left: 5px;
 }
 
+.btn-group-rest {
+    margin-top: 40px;
+}
+
 .lookup-field-list {
     width: 300px;
+}
+
+.btn-rest-fields {
+    width: 50px;
 }
 
 .button-delete {
@@ -207,8 +215,90 @@
 .entity-buttons {
     float: right;
 }
+
 .settings-label {
+    padding-right: 50px;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.accordion-content {
+    border-style: dotted;
+    border-width: thin;
+    border-color: #2B88D9
+}
+
+.accordion-content form {
+    padding: 10px 5px 5px 5px;
+}
+
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid rgb(212, 233, 246);
+    border-radius: 4px;
+}
+
+.panel-head {
+    padding: 10px 15px;
+    background-color: rgb(234, 244, 250);
+    border-bottom: 1px solid rgb(212, 233, 246);
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.main-body {
+    padding: 15px;
+}
+
+.collapse-body {
+    margin-left: 20px;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    background-color: rgb(255, 255, 255);
+}
+
+.outer-container {
+    width: 300px;
+    height: auto;
+    float: left;
+    font-size: 110%;
+    color: rgb(0, 136, 204);
+}
+
+.scroll-container {
+    height: 300px;
+    width: 100%;
+    border: solid;
+    border-color: rgb(0, 136, 204);
+    border-width: thin;
+}
+
+.buttons-container {
+    width: auto;
+    float: left;
+    margin: 36px 50px 0px 50px;
+}
+
+.buttons-container .btn {
+    color: rgb(34, 68, 119);
+}
+
+.container-item {
+    background-color: rgb(228, 241, 249);
     margin: 5px;
+    clear: both;
+    overflow: hidden;
+}
+
+.item-text {
+    padding: 5px 5px 5px 10px;
 }
 
 .settings-input-group {
@@ -220,4 +310,33 @@
     margin: -4px 0 0 10px; !important
     vertical-align: top;
     display: inline-block;
+}
+
+.filter-checkbox-box {
+    float: right;
+    padding: 5px;
+    background-color: rgb(212, 233, 246);
+}
+
+.filter-checkbox {
+    margin: 2px !important;
+    height: 16px;
+    width: 16px !important;
+}
+
+.rest-fields-item-selected {
+    background-color: rgb(0, 136, 204);
+    color: rgb(255, 255, 255);
+}
+
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: move;
+}
+
+.drag {
+  opacity: 0.5;
 }

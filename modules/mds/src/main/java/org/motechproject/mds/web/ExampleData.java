@@ -7,6 +7,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.RestOptions;
 import org.motechproject.mds.dto.SettingDto;
 
 import java.util.ArrayList;
@@ -130,6 +131,17 @@ public final class ExampleData {
         );
 
         entities.add(new EntityDto("8", "Campaign", "Message Campaign"));
+
+        AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
+        RestOptions exampleRestOptions = new RestOptions();
+        List<String> fields = new LinkedList<>();
+        fields.add("2");
+        fields.add("5");
+        exampleRestOptions.setCreate(true);
+        exampleRestOptions.setFieldIds(fields);
+        exampleAdvancedSetting.setObjectId("7");
+        exampleAdvancedSetting.setRestOptions(exampleRestOptions);
+        advancedSettings.add(exampleAdvancedSetting);
     }
 
     public EntityDto getEntity(String id) {
@@ -250,6 +262,7 @@ public final class ExampleData {
         } else {
             dto.setTracking(advanced.getTracking());
             dto.setIndexes(advanced.getIndexes());
+            dto.setRestOptions(advanced.getRestOptions());
         }
     }
 }

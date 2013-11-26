@@ -1,3 +1,93 @@
-<div class="alert alert-error">
-    <strong>{{msg('mds.warning')}}</strong> {{msg('mds.warning.viewIsUnderConstruction')}}
+<div>
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#rest-fields">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.rest.fields')}}
+        </div>
+        <div class="accordion-content collapse in" id="rest-fields">
+            <div class="collapse-body">
+                <div id="availableFieldsContainer" class="outer-container">
+                    <h4>{{msg('mds.advanced.dataBrowsing.availableFields')}}</h4>
+                    <div class="scroll-container">
+                        <div droppable id="rest-fields-available" class="container rest-fields-available" drop="handleDrop">
+                            <div class="container-item item-text" draggable rest-fields-item="restFields-group" fieldId="{{field.id}}" order="{{$index}}" ng-repeat="field in selectedEntityAdvancedAvailableFields">
+                                {{field.basic.displayName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-container">
+                    <div id="controlButtonsLeft" class="btn-group-rest">
+                        <div>
+                            <button rest-fields-left="restFields-group" class="btn btn-rest-fields" ng-disabled="selectedEntityAdvancedFields.length == 0">
+                                <span class="icon-chevron-left" />
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-rest-fields" ng-click="restFieldsLeftAll()" ng-disabled="selectedEntityAdvancedFields.length == 0">
+                                <span class="icon-chevron-left" /><span class="icon-chevron-left" />
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+                    <div id="controlButtonsRight" class="btn-group-rest">
+                        <div>
+                            <button rest-fields-right="restFields-group" class="btn btn-rest-fields" ng-disabled="selectedEntityAdvancedAvailableFields.length == 0">
+                                <span class="icon-chevron-right" />
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-rest-fields" ng-click="restFieldsRightAll()" ng-disabled="selectedEntityAdvancedAvailableFields.length == 0">
+                                <span class="icon-chevron-right" /><span class="icon-chevron-right" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="displayFieldsContainer" class="outer-container">
+                    <h4>{{msg('mds.advanced.dataBrowsing.displayFields')}}</h4>
+                    <div class="scroll-container">
+                        <div droppable id="rest-fields-selected" class="container rest-fields-selected" drop="handleDrop">
+                            <div class="container-item item-text" draggable rest-fields-item="restFields-group" fieldId="{{field.id}}" order="{{$index}}" ng-repeat="field in selectedEntityAdvancedFields">
+                                {{field.basic.displayName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#rest-actions">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.rest.actions')}}
+        </div>
+        <div class="accordion-content collapse in" id="rest-actions">
+            <form>
+                <label class="checkbox inline">
+                    <input type="checkbox" ng-model="advancedSettings.restOptions.create"> {{msg('mds.rest.actions.create')}}
+                </label>
+                <label class="checkbox inline">
+                    <input type="checkbox" ng-model="advancedSettings.restOptions.read"> {{msg('mds.rest.actions.read')}}
+                </label>
+                <label class="checkbox inline">
+                    <input type="checkbox" ng-model="advancedSettings.restOptions.update"> {{msg('mds.rest.actions.update')}}
+                </label>
+                <label class="checkbox inline">
+                    <input type="checkbox" ng-model="advancedSettings.restOptions.delete"> {{msg('mds.rest.actions.delete')}}
+                </label>
+            </form>
+        </div>
+    </div>
+    <div ng-if="advancedSettings.indexes.length" class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#rest-lookups">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.rest.lookups')}}
+        </div>
+        <div class="accordion-content collapse in" id="rest-lookups">
+            <form>
+                <label class="checkbox" ng-repeat="lookup in advancedSettings.indexes">
+                    <input type="checkbox" ng-model="selectedEntityRestLookups[$index]"> {{lookup.lookupName}}
+                </label>
+            </form>
+        </div>
+    </div>
 </div>

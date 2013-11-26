@@ -15,6 +15,7 @@ public class AdvancedSettingsDto {
     private String objectId;
     private TrackingDto tracking = new TrackingDto();
     private List<LookupDto> indexes = new ArrayList<>();
+    private RestOptions restOptions = new RestOptions();
 
     public String getObjectId() {
         return objectId;
@@ -38,6 +39,14 @@ public class AdvancedSettingsDto {
 
     public void setIndexes(List<LookupDto> indexes) {
         this.indexes = null != indexes ? indexes : new ArrayList<LookupDto>();
+    }
+
+    public RestOptions getRestOptions() {
+        return restOptions;
+    }
+
+    public void setRestOptions(RestOptions restOptions) {
+        this.restOptions = restOptions;
     }
 
     /**

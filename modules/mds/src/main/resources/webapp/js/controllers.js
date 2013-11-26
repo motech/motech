@@ -8,7 +8,7 @@
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields, FieldsValidation) {
-        var setFields, setAdvancedSettings, setMetadata;
+        var setFields, setAdvancedSettings, setMetadata, setRest;
 
         /**
         * This function is used to set fields array. If fields are properly taken from server,
@@ -19,7 +19,7 @@
                 $scope.originalFields = cloneArray($scope.fields);
                 $scope.toRemove = [];
                 setMetadata($scope.selectedEntity.id);
-
+                setRest();
                 unblockUI();
             });
         };
@@ -53,6 +53,40 @@
         };
 
         /**
+        * This function is used to get entity advanced rest data from controller and prepare it for further usage.
+        */
+        setRest = function () {
+            $scope.selectedEntityAdvancedFields = [];
+            $scope.selectedEntityAdvancedAvailableFields = [];
+            $scope.selectedEntityRestLookups = [];
+            $scope.originalSelectedEntityAdvancedFields = [];
+            $scope.originalSelectedEntityRestLookups =  [];
+
+            if (typeof $scope.advancedSettings.restOptions !== "undefined") {
+                angular.forEach($scope.advancedSettings.restOptions.fieldIds, function (id) {
+                    $scope.selectedEntityAdvancedFields.push($scope.findFieldById(id, $scope.fields));
+                    $scope.originalSelectedEntityAdvancedFields.push($scope.findFieldById(id, $scope.fields));
+                });
+            }
+            angular.forEach($scope.fields, function (field) {
+                if (typeof $scope.findFieldById(field.id, $scope.selectedEntityAdvancedFields) === "undefined") {
+                    $scope.selectedEntityAdvancedAvailableFields.push($scope.findFieldById(field.id, $scope.fields));
+                }
+            });
+            if (typeof $scope.advancedSettings.indexes !== "undefined") {
+                angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
+                    if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
+                        $scope.selectedEntityRestLookups[index] = true;
+                        $scope.originalSelectedEntityRestLookups.push(true);
+                    } else {
+                        $scope.selectedEntityRestLookups[index] = false;
+                        $scope.originalSelectedEntityRestLookups.push(false);
+                    }
+                });
+            }
+        };
+
+        /**
         * This function is used to set advanced settings. If settings is properly taken from server,
         * the related $scope fields will be also set.
         */
@@ -69,7 +103,7 @@
                     } else {
                         $scope.activeIndex = -1;
                     }
-
+                    setRest();
                     unblockUI();
                 }
             );
@@ -79,6 +113,31 @@
         * The $scope.selectedEntityMetadata contains metadata for selected entity.
         */
         $scope.selectedEntityMetadata = [];
+
+        /**
+        * The $scope.selectedEntityAdvancedAvailableFields contains fields available for use in REST.
+        */
+        $scope.selectedEntityAdvancedAvailableFields = [];
+
+        /**
+        * The $scope.selectedEntityAdvancedFields contains fields selected for use in REST.
+        */
+        $scope.selectedEntityAdvancedFields = [];
+
+        /**
+        * The $scope.originalSelectedEntityAdvancedFields contains original fields selected for use in REST.
+        */
+        $scope.originalSelectedEntityAdvancedFields = [];
+
+        /**
+        * The $scope.selectedEntityRestLookups contains lookups selected for use in REST.
+        */
+        $scope.selectedEntityRestLookups = [];
+
+        /**
+        * The $scope.originalSelectedEntityRestLookups contains original lookups available for use in REST.
+        */
+        $scope.originalSelectedEntityRestLookups = [];
 
         /**
         * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
@@ -388,6 +447,22 @@
             });
         };
 
+        /**
+        * Converts rest data into controller format and sends it.
+        */
+        $scope.saveRest = function () {
+            $scope.advancedSettings.restOptions.lookupIds = [];
+            angular.forEach( $scope.selectedEntityRestLookups, function (selected, id) {
+                if (selected === true && typeof $scope.advancedSettings.indexes[id] !== "undefined") {
+                    $scope.advancedSettings.restOptions.lookupIds.push($scope.advancedSettings.indexes[id].lookupName);
+                }
+            });
+            $scope.advancedSettings.restOptions.fieldIds = [];
+            angular.forEach( $scope.selectedEntityAdvancedFields, function (selected, id) {
+                $scope.advancedSettings.restOptions.fieldIds.push($scope.selectedEntityAdvancedFields[id].id);
+            });
+        };
+
         /* ~~~~~ FIELD FUNCTIONS ~~~~~ */
 
         /**
@@ -442,6 +517,12 @@
                 if (val) {
                     $scope.safeApply(function () {
                         $scope.fields.removeObject(field);
+
+                        if (typeof $scope.findFieldById(field.id, $scope.selectedEntityAdvancedAvailableFields) !== "undefined") {
+                            $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
+                        } else {
+                            $scope.selectedEntityAdvancedFields.removeObject(field);
+                        }
 
                         // add only a existing field
                         if (field.id) {
@@ -577,6 +658,7 @@
             blockUI();
 
             $scope.saveMetadata();
+            $scope.saveRest();
 
             angular.forEach($scope.fields, function (field, idx) {
                 Fields.save({entityId: $scope.selectedEntity.id}, field, function () {
@@ -685,6 +767,7 @@
         */
         $scope.deleteLookup = function() {
             $scope.advancedSettings.indexes.remove($scope.activeIndex);
+            $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
             $scope.setActiveIndex(-1);
         };
 
@@ -761,6 +844,48 @@
                 true : false;
         };
 
+        /**
+        * Moves all fields in rest from available table to selected table.
+        */
+        $scope.restFieldsRightAll = function() {
+            angular.forEach($scope.selectedEntityAdvancedAvailableFields, function (field) {
+                $scope.selectedEntityAdvancedFields.push(field);
+            });
+            $scope.selectedEntityAdvancedAvailableFields = [];
+            $scope.safeApply();
+        };
+
+        /**
+        * Moves all fields in rest from selected table to available table.
+        */
+        $scope.restFieldsLeftAll = function() {
+            angular.forEach($scope.selectedEntityAdvancedFields, function (field) {
+                $scope.selectedEntityAdvancedAvailableFields.push(field);
+            });
+            $scope.selectedEntityAdvancedFields = [];
+            $scope.safeApply();
+        };
+
+        /**
+        * Handles rest fields drop events.
+        */
+        $scope.handleDrop = function(fieldId, containerId) {
+            var field;
+            if (containerId === "rest-fields-available") {
+                field = $scope.findFieldById(fieldId, $scope.selectedEntityAdvancedFields);
+                if (typeof field !== "undefined") {
+                    $scope.selectedEntityAdvancedFields.removeObject(field);
+                    $scope.selectedEntityAdvancedAvailableFields.push(field);
+                }
+            } else {
+                field = $scope.findFieldById(fieldId, $scope.selectedEntityAdvancedAvailableFields);
+                if (typeof field !== "undefined") {
+                    $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
+                    $scope.selectedEntityAdvancedFields.push(field);
+                }
+            }
+            $scope.safeApply();
+        };
 
         /* VALIDATION FUNCTIONS */
 
@@ -857,6 +982,38 @@
         */
         $scope.findFieldsByName = function (name) {
             return find($scope.fields, [{ field: 'basic.name', value: name}], false);
+        };
+
+        /**
+        * Find all fields with given id.
+        *
+        * @param {string} id This value will be used to find fields.
+        * @param {Array} array Array in which we're looking for id.
+        * @return {Array} array of fields with the given id.
+        */
+        $scope.findFieldById = function (id, array) {
+            var field = find(array, [{ field: 'id', value: id}], false);
+            if ($.isArray(field)) {
+                return field[0];
+            } else {
+                return field;
+            }
+        };
+
+        /**
+        * Find all lookups with given name.
+        *
+        * @param {string} name This value will be used to find lookups.
+        * @param {Array} array Array in which we're looking for name.
+        * @return {Array} array of lookups with the given name.
+        */
+        $scope.findLookupByName = function (name, array) {
+            var lookup = find(array, [{ lookup: 'lookupName', value: name}], false);
+            if ($.isArray(lookup)) {
+                return lookup[0];
+            } else {
+                return lookup;
+            }
         };
 
         /**
@@ -1002,12 +1159,21 @@
                 delete obj.$$hashKey;
             });
 
+            angular.forEach($scope.selectedEntityAdvancedFields, function(obj) {
+                delete obj.$$hashKey;
+            });
+
             changedAdvancedSettings = ! (_.isEqual(
                 $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
             ) && arraysEqual(
                 $scope.advancedSettings.indexes, $scope.originalAdvancedSettings.indexes
-            )
-            );
+            ) && _.isEqual(
+                $scope.advancedSettings.restOptions, $scope.originalAdvancedSettings.restOptions
+            ) && _.isEqual(
+                $scope.selectedEntityRestLookups, $scope.originalSelectedEntityRestLookups
+            ) && _.isEqual(
+                $scope.selectedEntityAdvancedFields, $scope.originalSelectedEntityAdvancedFields
+            ));
 
             angular.forEach(metadataClone, function (obj) {
                 delete obj.$$hashKey;
