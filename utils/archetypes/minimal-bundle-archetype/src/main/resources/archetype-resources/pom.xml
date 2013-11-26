@@ -88,15 +88,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
-            <version>${motech.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.jetty</artifactId>
             <version>2.0.4</version>
+            <scope>test</scope>
+        </dependency>
+#end
+#if ($http == 'true' && !($settings == 'true'))
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${motech.version}</version>
             <scope>test</scope>
         </dependency>
 #end
@@ -109,7 +111,7 @@
             <version>${motech.version}</version>
         </dependency>
 #end
-#if ($settings == 'true' && !($http == 'true'))
+#if ($settings == 'true')
 
         <!-- Settings -->
         <dependency>
