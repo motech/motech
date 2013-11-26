@@ -14,7 +14,7 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 public class HelloWorldRecordCouchdbImpl extends MotechBaseDataObject implements HelloWorldRecord {
 
     private static final long serialVersionUID = -2808972968196521169L;
-    
+
     public static final String DOC_TYPE = "HelloWorldRecord";
 
     @JsonProperty

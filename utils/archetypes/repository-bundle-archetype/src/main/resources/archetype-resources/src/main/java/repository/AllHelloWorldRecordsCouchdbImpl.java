@@ -27,7 +27,6 @@ public class AllHelloWorldRecordsCouchdbImpl extends MotechBaseRepository<HelloW
     @Autowired
     protected AllHelloWorldRecordsCouchdbImpl(@Qualifier("helloWorldDbConnector") CouchDbConnector db) {
         super(HelloWorldRecordCouchdbImpl.class, db);
-        initStandardDesignDocument();
     }
 
     @Override

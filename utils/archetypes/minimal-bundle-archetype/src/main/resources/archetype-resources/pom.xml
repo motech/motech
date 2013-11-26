@@ -109,7 +109,7 @@
             <version>${motech.version}</version>
         </dependency>
 #end
-#if ($settings == 'true')
+#if ($settings == 'true' && !($http == 'true'))
 
         <!-- Settings -->
         <dependency>
@@ -149,7 +149,7 @@
                     <instructions>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Resource-Path>${artifactId}/resources</Resource-Path>
-                        <Context-File>META-INF/motech/minimalBundleContext.xml</Context-File>
+                        <Context-File>META-INF/motech/applicationContext.xml</Context-File>
 #if ($http == 'true')
                         <Context-Path>${artifactId}</Context-Path>
 #end

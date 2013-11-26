@@ -11,7 +11,7 @@ mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexu
 Generate a bundle with repository support (run two commands from the same directory):
 mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.22-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Drepository=true
 mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=repository-bundle-archetype -DarchetypeVersion=0.22-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module"
-* note: this would be suport for a new, module-specific repository, not MRS or other existing repository. 
+* note: this would be suport for a new, module-specific repository, not MRS or other existing repository.
 
 Generate a bundle with settings support (run two commands from the same directory):
 mvn archetype:generate -DinteractiveMode=false -DarchetypeRepository=http://nexus.motechproject.org/content/repositories/releases -DarchetypeGroupId=org.motechproject -DarchetypeArtifactId=minimal-bundle-archetype -DarchetypeVersion=0.22-SNAPSHOT -DgroupId=org.motechproject -DartifactId=motech-test-module -Dpackage=archetype.test -Dversion=0.1-SNAPSHOT -DbundleName="Archetype Test Module" -Dsettings=true
