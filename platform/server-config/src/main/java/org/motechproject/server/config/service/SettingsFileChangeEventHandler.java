@@ -15,16 +15,13 @@ import org.springframework.stereotype.Component;
 public class SettingsFileChangeEventHandler {
 
     @Autowired
-    private ConfigLoader configLoader;
-
-    @Autowired
     private AllSettings allSettings;
 
     @Autowired
     private ConfigurationService configurationService;
 
     public void reloadSettings() {
-        SettingsRecord settingsRecord = configLoader.loadConfig();
+        SettingsRecord settingsRecord = configurationService.loadConfig();
         SettingsRecord dbSettings = allSettings.getSettings();
         dbSettings.updateSettings(settingsRecord);
         allSettings.addOrUpdateSettings(dbSettings);

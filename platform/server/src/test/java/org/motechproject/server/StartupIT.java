@@ -33,7 +33,7 @@ public class StartupIT {
         httpClient.setCookieStore(new BasicCookieStore());
         login(httpClient);
         JSONArray bundles = null;
-        int retryCount = 7;
+        int retryCount = 8;
         do {
             try {
                 bundles = getBundleStatusFromServer(httpClient);
@@ -45,7 +45,7 @@ public class StartupIT {
                     throw e;
                 }
             }
-            Thread.sleep(35 * 1000L);   //wait before next retry
+            Thread.sleep(45 * 1000L);   //wait before next retry
         } while (--retryCount > 0);
 
         if (retryCount == 0) {

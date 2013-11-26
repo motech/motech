@@ -176,6 +176,8 @@
                         <Import-Package>
                             org.aopalliance.aop,
                             org.motechproject.commons.couchdb.service,
+                            org.motechproject.server.config,
+                            org.motechproject.config.service,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.beans.factory.xml,

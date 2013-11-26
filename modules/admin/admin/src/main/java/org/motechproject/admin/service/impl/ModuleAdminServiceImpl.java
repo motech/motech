@@ -14,7 +14,6 @@ import org.motechproject.admin.bundles.MotechBundleFilter;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.osgi.web.ModuleRegistrationData;
@@ -22,6 +21,7 @@ import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -86,7 +86,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     private CommonsMultipartResolver commonsMultipartResolver;
 
     @Autowired
-    private ConfigurationService configurationService;
+    private SettingsFacade settingsFacade;
 
     @Autowired
     private UIFrameworkService uiFrameworkService;
@@ -367,7 +367,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @MotechListener(subjects = ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT)
     public void changeMaxUploadSize(MotechEvent event) {
-        String uploadSize = configurationService.getPlatformSettings().getUploadSize();
+        String uploadSize = settingsFacade.getPlatformSettings().getUploadSize();
 
         if (StringUtils.isNotBlank(uploadSize)) {
             commonsMultipartResolver.setMaxUploadSize(Long.valueOf(uploadSize));

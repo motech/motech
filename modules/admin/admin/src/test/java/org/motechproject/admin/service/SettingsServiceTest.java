@@ -4,24 +4,32 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.config.service.ConfigurationService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.security.web.savedrequest.Enumerator;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.AbstractMap;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -40,10 +48,10 @@ public class SettingsServiceTest {
     private static final String OPTION_VALUE = "test";
 
     @Mock
-    ConfigurationService configurationService;
+    PlatformSettingsService platformSettingsService;
 
     @Mock
-    PlatformSettingsService platformSettingsService;
+    ConfigurationService configurationService;
 
     @Mock
     BundleContext bundleContext;
@@ -60,18 +68,24 @@ public class SettingsServiceTest {
     Properties bundleProperty = new Properties();
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         initMocks(this);
 
         initMotechSettings();
         initBundle();
         initPlatformSettingsService();
+        initConfigurationService();
     }
 
     @Test
     public void testGetSettings() {
-        List<Settings> platformSettingsList = settingsService.getSettings();
+        AdminSettings adminSettings = settingsService.getSettings();
 
+        assertNotNull(adminSettings);
+
+        List<Settings> platformSettingsList = adminSettings.getSettingsList();
+
+        assertEquals(false, adminSettings.isReadOnly());
         assertEquals(2, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
@@ -105,10 +119,10 @@ public class SettingsServiceTest {
     public void testSaveBundleSettings() throws IOException {
         SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(OPTION_KEY, OPTION_VALUE));
 
-        Settings settings = new Settings(BUNDLE_FILENAME, Arrays.asList(option));
+        Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
-        verify(platformSettingsService).saveBundleProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty);
+        verify(configurationService).updateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, null, bundleProperty);
     }
 
     private void initPlatformSettingsService() throws IOException {
@@ -117,12 +131,19 @@ public class SettingsServiceTest {
         propertiesMap.put(BUNDLE_FILENAME, bundleProperty);
 
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
-        when(platformSettingsService.getAllProperties(BUNDLE_SYMBOLIC_NAME)).thenReturn(propertiesMap);
+        when(configurationService.getAllModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), anyMap())).thenReturn(propertiesMap);
     }
 
-    private void initBundle() {
+    private void initConfigurationService() throws IOException {
+        bundleProperty.put(OPTION_KEY, OPTION_VALUE);
+
+        when(configurationService.getModuleProperties(eq(BUNDLE_SYMBOLIC_NAME), eq(BUNDLE_FILENAME), any(Properties.class))).thenReturn(bundleProperty);
+    }
+
+    private void initBundle() throws Exception {
         when(bundleContext.getBundle(BUNDLE_ID)).thenReturn(bundle);
         when(bundle.getSymbolicName()).thenReturn(BUNDLE_SYMBOLIC_NAME);
+        when(bundle.findEntries("", "*.properties", false)).thenReturn(new Enumerator(new ArrayList<>(asList(new URL("http://mock.com")))));
     }
 
     private void initMotechSettings() {

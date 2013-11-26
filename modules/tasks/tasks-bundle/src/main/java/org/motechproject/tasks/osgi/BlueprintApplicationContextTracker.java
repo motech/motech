@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 /**
  * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is started/stopped respectively.
@@ -46,10 +47,11 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         }
 
         synchronized (contextsProcessed) {
-            if (contextsProcessed.contains(applicationContext.getId())) {
+            String bundleSymbolicName = nullSafeSymbolicName(serviceReference.getBundle());
+            if (contextsProcessed.contains(bundleSymbolicName)) {
                 return applicationContext;
             }
-            contextsProcessed.add(applicationContext.getId());
+            contextsProcessed.add(bundleSymbolicName);
         }
 
         try {
@@ -84,5 +86,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(format("Deregistered channel for %s.", module.getSymbolicName()));
         }
+
+        contextsProcessed.remove(nullSafeSymbolicName(module));
     }
 }

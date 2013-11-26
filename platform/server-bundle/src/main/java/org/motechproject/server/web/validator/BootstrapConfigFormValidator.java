@@ -1,6 +1,6 @@
 package org.motechproject.server.web.validator;
 
-import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.BootstrapConfigForm;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

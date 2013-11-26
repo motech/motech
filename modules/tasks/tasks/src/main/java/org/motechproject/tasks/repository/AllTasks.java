@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,27 +23,31 @@ import java.util.Set;
 @Repository
 public class AllTasks extends MotechBaseRepository<Task> {
 
+    private static Map<String, Object> taskUpdateLock = new HashMap<>();
+
     @Autowired
     public AllTasks(@Qualifier("taskDbConnector") final CouchDbConnector connector) {
         super(Task.class, connector);
     }
 
     public void addOrUpdate(Task task) {
-        boolean exists = null != task.getId();
-        Task existing = null;
-
-        if (exists) {
-            // When a user imports a task it contains '_id' property
-            // but in database a task with this id may not exist
-            // that's why we have to check if the task really exists in db
-            try {
-                existing = get(task.getId());
-            } catch (DocumentNotFoundException ex) {
-                exists = false;
-            }
+        String taskId = task.getId();
+        if (taskId == null) {
+            add(task);
+            return;
         }
 
-        if (exists) {
+        synchronized (getTaskUpdateLock(taskId)) {
+            Task existing;
+            try {
+                // When a user imports a task it contains '_id' property
+                // but in database a task with this id may not exist
+                // that's why we have to check if the task really exists in db
+                existing = get(taskId);
+            } catch (DocumentNotFoundException ex) {
+                add(task);
+                return;
+            }
             existing.setActions(task.getActions());
             existing.setDescription(task.getDescription());
             existing.setEnabled(task.isEnabled());
@@ -52,8 +58,6 @@ public class AllTasks extends MotechBaseRepository<Task> {
             existing.setValidationErrors(task.getValidationErrors());
 
             update(existing);
-        } else {
-            add(task);
         }
     }
 
@@ -83,5 +87,12 @@ public class AllTasks extends MotechBaseRepository<Task> {
             taskIds.add(row.getValue());
         }
         return db.queryView(new ViewQuery().allDocs().includeDocs(true).keys(taskIds), Task.class);
+    }
+
+    private Object getTaskUpdateLock(String taskId) {
+        if (!taskUpdateLock.containsKey(taskId)) {
+            taskUpdateLock.put(taskId, new Object());
+        }
+        return taskUpdateLock.get(taskId);
     }
 }

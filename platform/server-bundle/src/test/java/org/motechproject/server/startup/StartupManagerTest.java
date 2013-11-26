@@ -4,13 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
-import org.motechproject.config.domain.DBConfig;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.monitor.ConfigFileMonitor;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -25,9 +22,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class StartupManagerTest {
 
     @Mock
-    ConfigLoader configLoader;
-
-    @Mock
     ConfigFileMonitor configFileMonitor;
 
     @Mock
@@ -35,6 +29,9 @@ public class StartupManagerTest {
 
     @Mock
     private EventAdmin eventAdmin;
+
+    @Mock
+    SettingsRecord settingsRecord;
 
     @InjectMocks
     StartupManager startupManager = new StartupManager();
@@ -46,18 +43,18 @@ public class StartupManagerTest {
 
     @Test
     public void testNoSettings() {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://localhost:5984", null, null), null, ConfigSource.FILE);
-        when(configLoader.loadConfig()).thenReturn(null);
+
         when(configFileMonitor.getCurrentSettings()).thenReturn(null);
-        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
         when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
+        when(configurationService.loadConfig()).thenReturn(settingsRecord);
+        when(configFileMonitor.getCurrentSettings()).thenReturn(null);
+        when(settingsRecord.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         startupManager.startup();
 
         assertTrue(startupManager.isConfigRequired());
 
         assertFalse(startupManager.canLaunchBundles());
-        verify(configLoader).loadConfig();
 
         verify(eventAdmin, never()).postEvent(any(Event.class));
         verify(eventAdmin, never()).sendEvent(any(Event.class));

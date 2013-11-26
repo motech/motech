@@ -3,5 +3,5 @@
 
     /* App Module */
 
-    angular.module('motech-scheduler', ['motech-dashboard', 'motechSchedulerService', 'ngCookies', 'bootstrap']);
+    angular.module('motech-scheduler', ['motech-dashboard', 'motechSchedulerService', 'ngCookies', 'ngRoute', 'bootstrap']);
 }());

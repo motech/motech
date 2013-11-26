@@ -138,14 +138,14 @@ public abstract class BasePkgTest {
         request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
         HttpResponse response = httpClient.execute(request);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatusLine().getStatusCode());
     }
 
     protected void submitStartupData() throws IOException, InterruptedException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("queueUrl", "tcp://localhost:61616"));
         nameValuePairs.add(new BasicNameValuePair("schedulerUrl", "asd"));
-        nameValuePairs.add(new BasicNameValuePair("loginMode", "server.repository"));
+        nameValuePairs.add(new BasicNameValuePair("loginMode", "repository"));
         nameValuePairs.add(new BasicNameValuePair("adminLogin", MOTECH));
         nameValuePairs.add(new BasicNameValuePair("adminPassword", MOTECH));
         nameValuePairs.add(new BasicNameValuePair("adminConfirmPassword", MOTECH));

@@ -128,6 +128,8 @@
                         <Import-Package>
                             org.apache.activemq.command,
                             org.aopalliance.aop,
+                            org.motechproject.server.config,
+                            org.motechproject.config.service,
                             org.apache.activemq,
                             org.springframework.aop,
                             org.springframework.aop.framework,
@@ -226,7 +228,7 @@
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>src/main/resources</directory>
+                                            <directory>../server-config/src/main/resources</directory>
                                             <includes>
                                                 <include>motech-settings.conf</include>
                                             </includes>

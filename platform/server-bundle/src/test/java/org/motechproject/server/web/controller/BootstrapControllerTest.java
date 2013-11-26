@@ -6,10 +6,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.motechproject.config.MotechConfigurationException;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
-import org.motechproject.config.domain.DBConfig;
+import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.BootstrapConfigForm;
@@ -46,7 +46,7 @@ public class BootstrapControllerTest {
     @Mock
     private StartupManager startupManager;
     @Mock
-    private ConfigurationService configService;
+    private ConfigurationService configurationService;
 
     @InjectMocks
     private BootstrapController bootstrapController = new BootstrapController();
@@ -91,14 +91,14 @@ public class BootstrapControllerTest {
                 .andExpect(status().isOk()).andExpect(view().name("redirect:home"));
 
         BootstrapConfig expectedConfigToSave = new BootstrapConfig(new DBConfig("http://www.someurl.com", "some_username", "some_password"), "some_tenantId", ConfigSource.valueOf("UI"));
-        InOrder inOrder = inOrder(configService, startupManager);
-        inOrder.verify(configService).save(expectedConfigToSave);
+        InOrder inOrder = inOrder(configurationService, startupManager);
+        inOrder.verify(configurationService).save(expectedConfigToSave);
         inOrder.verify(startupManager).startup();
     }
 
     @Test
     public void shouldAddErrorOnSaveAndReturnTheSameBootstrapStartupView() throws Exception {
-        doThrow(new MotechConfigurationException("Test Exception")).when(configService).save(any(BootstrapConfig.class));
+        doThrow(new MotechConfigurationException("Test Exception")).when(configurationService).save(any(BootstrapConfig.class));
 
         MvcResult mvcResult = mockMvc.perform(post("/bootstrap")
                 .param("dbUrl", "http://www.someurl.com")

@@ -260,6 +260,9 @@
         };
 
         Bundle.prototype.printVersion = function () {
+            if (typeof this.version === "undefined") {
+               this.version = 0;
+            }
             var separator = '.',
             ver = this.version.major + separator + this.version.minor + separator + this.version.micro;
             if (this.version.qualifier) {
@@ -359,7 +362,7 @@
 
     adminModule.controller('SettingsCtrl', function($scope, PlatformSettings, i18nService, $http) {
 
-        $scope.platformSettings = PlatformSettings.query();
+        $scope.platformSettings = PlatformSettings.get();
 
         $scope.label = function (key) {
             return i18nService.getMessage('admin.settings.' + key);
@@ -367,16 +370,16 @@
 
         $scope.saveSettings = function (settings) {
             blockUI();
-            settings.$save(alertHandlerWithCallback('admin.settings.saved', function () {
-                $scope.platformSettings = PlatformSettings.query();
-            }), jFormErrorHandler);
+            $http.post('../admin/api/settings/platform', settings).
+                success(alertHandler('admin.settings.saved', 'admin.success')).
+                error(alertHandler('admin.settings.error.location'));
         };
 
         $scope.saveNewSettings = function () {
             blockUI();
             $('#noSettingsForm').ajaxSubmit({
                 success:alertHandlerWithCallback('admin.settings.saved', function () {
-                    $scope.platformSettings = PlatformSettings.query();
+                    $scope.platformSettings = PlatformSettings.get();
                 }),
                 error:jFormErrorHandler
             });
@@ -385,7 +388,7 @@
         $scope.uploadSettings = function () {
             $("#settingsFileForm").ajaxSubmit({
                 success:alertHandlerWithCallback('admin.settings.saved', function () {
-                    $scope.platformSettings = PlatformSettings.query();
+                    $scope.platformSettings = PlatformSettings.get();
                 }),
                 error:jFormErrorHandler
             });
@@ -399,9 +402,17 @@
 
         $scope.saveAll = function () {
             blockUI();
-            $http.post('../admin/api/settings/platform/list', $scope.platformSettings).
+            $http.post('../admin/api/settings/platform/list', $scope.platformSettings.settingsList).
                 success(alertHandler('admin.settings.saved', 'admin.success')).
                 error(alertHandler('admin.settings.error.location'));
+        };
+
+        $scope.exportConfig = function () {
+            $http.get('../admin/api/settings/platform/export').
+            success(function () {
+                window.location.replace("../admin/api/settings/platform/export");
+            }).
+            error(alertHandler('admin.settings.error.export', 'admin.error'));
         };
     });
 

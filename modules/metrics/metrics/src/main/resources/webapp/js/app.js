@@ -3,12 +3,12 @@
 
     /* App Module */
 
-    angular.module('motech-platform-metrics', ['motech-dashboard', 'ngCookies', 'bootstrap'])
+    angular.module('motech-platform-metrics', ['motech-dashboard', 'ngCookies', 'ngRoute', 'bootstrap'])
         .config(['$routeProvider',
         function ($routeProvider) {
            $routeProvider.
-               when('/', {templateUrl: '../metrics/resources/partials/operations.html', controller: 'OperationsCtrl'}).
+               when('/graphite', {templateUrl: '../metrics/resources/partials/operations.html', controller: 'OperationsCtrl'}).
                when('/settings', {templateUrl: '../metrics/resources/partials/settings.html', controller: 'SettingsCtrl'}).
-               otherwise({redirectTo: '/'});
+               otherwise({redirectTo: '/graphite'});
    }]);
 }());

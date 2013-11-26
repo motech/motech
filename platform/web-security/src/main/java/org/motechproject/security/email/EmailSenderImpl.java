@@ -1,9 +1,9 @@
 package org.motechproject.security.email;
 
 import org.apache.velocity.app.VelocityEngine;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
+import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,7 +37,7 @@ public class EmailSenderImpl implements EmailSender {
     private VelocityEngine velocityEngine;
 
     @Autowired
-    private ConfigurationService settingsService;
+    private SettingsFacade settingsFacade;
 
     @Autowired
     private ResourceBundleMessageSource messageSource;
@@ -107,7 +107,7 @@ public class EmailSenderImpl implements EmailSender {
     private Map<String, Object> loginInformationParams(MotechUser user, String password) {
         Map<String, Object> params = new HashMap<>();
 
-        String link = settingsService.getPlatformSettings().getServerUrl();
+        String link = settingsFacade.getPlatformSettings().getServerUrl();
 
         params.put("link", link);
         params.put("user", user.getUserName());
@@ -121,7 +121,7 @@ public class EmailSenderImpl implements EmailSender {
     private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
         Map<String, Object> params = new HashMap<>();
 
-        String link = joinUrls(settingsService.getPlatformSettings().getServerUrl(),
+        String link = joinUrls(settingsFacade.getPlatformSettings().getServerUrl(),
                 "/module/websecurity/api/" + flag + "?token=") + recovery.getToken();
 
         params.put("link", link);

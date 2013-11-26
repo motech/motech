@@ -17,6 +17,10 @@
         <constructor-arg value="motech-platform-startup"/>
     </bean>
 
+    <bean id="propertiesDbConnector" factory-bean="couchDbManager" factory-method="getConnector">
+        <constructor-arg value="motech-module-settings"/>
+    </bean>
+
     <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
         <property name="caches">
             <set>
@@ -34,6 +38,7 @@
     <bean id="settingsFacade" class="org.motechproject.server.config.SettingsFacade"/>
 
     <util:properties id="defaultSettings" location="classpath:motech-settings.conf"/>
+    <util:properties id="defaultAnnotations" location="classpath:default-settings-annotations.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.config"/>

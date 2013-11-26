@@ -192,6 +192,7 @@
                             org.apache.velocity.*;resolution:=optional,
                             org.springframework.jdbc.*;resolution:=optional,
                             org.motechproject.server.config.service,
+                            org.motechproject.config.service,
                             org.motechproject.commons.couchdb.service,
                             org.motechproject.quartz,
                             *

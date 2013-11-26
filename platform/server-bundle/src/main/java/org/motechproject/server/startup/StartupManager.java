@@ -2,12 +2,11 @@ package org.motechproject.server.startup;
 
 import org.joda.time.DateTime;
 import org.motechproject.commons.api.MotechException;
-import org.motechproject.config.domain.BootstrapConfig;
-import org.motechproject.config.domain.ConfigSource;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
@@ -32,9 +31,6 @@ public class StartupManager {
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
     private SettingsRecord settingsRecord;
     private MotechSettings dbSettings;
-
-    @Autowired
-    private ConfigLoader configLoader;
 
     @Autowired
     private EventAdmin eventAdmin;
@@ -62,17 +58,21 @@ public class StartupManager {
         dbSettings = configurationService.getPlatformSettings();
 
         if (!dbSettings.isPlatformInitialized()) {
-            platformState = MotechPlatformState.NEED_CONFIG;
             if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
                 LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
-                settingsRecord = configLoader.loadConfig();
+                settingsRecord = configurationService.loadConfig();
+
+                syncSettingsWithDb();
+
+                if (settingsRecord.getLoginMode().isRepository()) {
+                    platformState = MotechPlatformState.NEED_CONFIG;
+                }
             } else {
                 LOGGER.info("Config source is UI, and no settings in DB. Entering startup.");
+                platformState = MotechPlatformState.NEED_CONFIG;
             }
         } else {
             LOGGER.info("Found settings in db, normal run");
-
-            syncSettingsWithDb();
             platformState = MotechPlatformState.NORMAL_RUN;
         }
 
@@ -91,7 +91,7 @@ public class StartupManager {
      * and is no config in the database or external files
      */
     public SettingsRecord getDefaultSettings() {
-        return configLoader.loadDefaultConfig();
+        return configurationService.loadDefaultConfig();
     }
 
     private void syncSettingsWithDb() {

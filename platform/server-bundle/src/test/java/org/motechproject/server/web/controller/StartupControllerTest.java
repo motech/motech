@@ -6,10 +6,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
@@ -55,6 +55,7 @@ public class StartupControllerTest {
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
     private static final String LANGUAGES_KEY = "languages";
     private static final String PAGE_LANG_KEY = "pageLang";
+    private static final String IS_FILE_MODE_KEY = "isFileMode";
     private static  final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
                                                                         "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100","failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
                                                                         "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100","failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
@@ -119,6 +120,8 @@ public class StartupControllerTest {
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
         when(localeService.getAvailableLanguages()).thenReturn(map);
 
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
+
         ModelAndView result = startupController.startup(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
@@ -126,7 +129,7 @@ public class StartupControllerTest {
         verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
-        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY);
+        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY);
 
         StartupSuggestionsForm startupSuggestionsForm = (StartupSuggestionsForm) result.getModelMap().get(SUGGESTIONS_KEY);
 
@@ -155,6 +158,7 @@ public class StartupControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
@@ -172,6 +176,7 @@ public class StartupControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
 
@@ -185,7 +190,7 @@ public class StartupControllerTest {
     @Test
     public void testUriValidation() {
         StartupForm startupForm = startupForm();
-        StartupFormValidator validator =  new StartupFormValidator(userService);
+        StartupFormValidator validator =  new StartupFormValidator(userService, configurationService);
 
         Errors errors;
         for(String uri : uriAssertFalseList) {

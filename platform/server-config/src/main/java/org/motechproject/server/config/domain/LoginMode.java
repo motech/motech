@@ -6,8 +6,8 @@ package org.motechproject.server.config.domain;
 public final class LoginMode {
 
 
-    public static final LoginMode REPOSITORY = new LoginMode("server.repository");
-    public static final LoginMode OPEN_ID = new LoginMode("server.openId");
+    public static final LoginMode REPOSITORY = new LoginMode("repository");
+    public static final LoginMode OPEN_ID = new LoginMode("openId");
 
     private String loginMode;
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.server.ui.comparator.IndividualsComparator;
 import org.motechproject.server.ui.ex.AlreadyRegisteredException;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Implementation of the {@link UIFrameworkService} interface. Stores the registered {@link ModuleRegistrationData}
@@ -24,9 +25,9 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UIFrameworkServiceImpl.class);
 
-    private Map<String, ModuleRegistrationData> individuals = new LinkedHashMap<>();
-    private Map<String, ModuleRegistrationData> links = new LinkedHashMap<>();
-    private Map<String, ModuleRegistrationData> withoutUI = new LinkedHashMap<>();
+    private Map<String, ModuleRegistrationData> individuals = new TreeMap<>(new IndividualsComparator());
+    private Map<String, ModuleRegistrationData> links = new TreeMap<>();
+    private Map<String, ModuleRegistrationData> withoutUI = new TreeMap<>();
 
     @Override
     public void registerModule(ModuleRegistrationData module) {
@@ -45,6 +46,7 @@ public class UIFrameworkServiceImpl implements UIFrameworkService {
         } else {
             withoutUI.put(moduleName, module);
         }
+
 
         LOG.debug(String.format("Module %s registered in UI framework", module.getModuleName()));
     }

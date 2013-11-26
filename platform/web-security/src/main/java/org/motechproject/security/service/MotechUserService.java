@@ -7,7 +7,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Locale;
 
-
+/**
+ * Service interface that defines APIs to retrieve and manage user details
+ */
 public interface MotechUserService {
 
     void register(String username, String password, String email, String externalId, List<String> roles, Locale locale);
@@ -50,5 +52,4 @@ public interface MotechUserService {
 
     List<String> getRoles(String userName);
 
-    void refreshAllUsersContextIfActive();
 }

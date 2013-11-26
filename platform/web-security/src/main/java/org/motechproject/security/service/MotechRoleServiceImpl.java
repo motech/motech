@@ -28,7 +28,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
     private AllMotechUsers allMotechUsers;
 
     @Autowired
-    private MotechUserService motechUserService;
+    private UserContextService userContextsService;
 
     @Override
     public List<RoleDto> getRoles() {
@@ -60,7 +60,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         }
 
         allMotechRoles.update(motechRole);
-        motechUserService.refreshAllUsersContextIfActive();
+        userContextsService.refreshAllUsersContextIfActive();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MotechRoleServiceImpl implements MotechRoleService {
                 throw new RoleHasUserException("Role cannot be deleted because a user has the role.");
             }
             allMotechRoles.remove(motechRole);
-            motechUserService.refreshAllUsersContextIfActive();
+            userContextsService.refreshAllUsersContextIfActive();
         }
     }
 
@@ -81,6 +81,6 @@ public class MotechRoleServiceImpl implements MotechRoleService {
         MotechRole motechRole = new MotechRoleCouchdbImpl(role.getRoleName(), role.getPermissionNames(),
                 role.isDeletable());
         allMotechRoles.add(motechRole);
-        motechUserService.refreshAllUsersContextIfActive();
+        userContextsService.refreshAllUsersContextIfActive();
     }
 }

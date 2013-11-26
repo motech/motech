@@ -1,6 +1,5 @@
 package org.motechproject.tasks.domain;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -18,6 +17,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.collections.CollectionUtils.find;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * A task is set of actions that are executed in response to a trigger. The actions and the trigger are defined by their respective {@link Channel}s.
@@ -247,7 +248,7 @@ public class Task extends MotechBaseDataObject {
     }
 
     public void removeValidationError(final String message) {
-        TaskError taskError = (TaskError) CollectionUtils.find(validationErrors, new Predicate() {
+        TaskError taskError = (TaskError) find(validationErrors, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 return object instanceof TaskError
@@ -268,6 +269,10 @@ public class Task extends MotechBaseDataObject {
 
     public Set<TaskError> getValidationErrors() {
         return validationErrors;
+    }
+
+    public boolean hasValidationErrors() {
+        return isNotEmpty(validationErrors);
     }
 
     public TaskConfig getTaskConfig() {

@@ -1040,6 +1040,7 @@
         <module>platform/osgi-web-util</module>
         <module>platform/server-api</module>
         <module>platform/server-bundle</module>
+        <module>platform/config-core</module>
         <module>platform/server-config</module>
         <module>platform/web-security</module>
         <module>platform/email</module>

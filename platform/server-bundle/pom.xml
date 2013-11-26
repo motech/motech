@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-event</artifactId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -146,7 +146,7 @@
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
                                 $, angular, jQuery, jAlert, motechAlert, jConfirm, window, jAlertStackTrace,
-                                toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI
+                                toLocale, moment, parseUri, handleResponse, angularHandler, blockUI, unblockUI, _
                             </predefinedVars>
                             <failOnIssues>${jslint.enable}</failOnIssues>
                         </configuration>
@@ -175,8 +175,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.motechproject.commons.couchdb.service,
-                            org.motechproject.event.listener,
-                            org.motechproject.event.listener.annotations,
+                            org.motechproject.config.service,
                             org.osgi.framework;version="0.0.0",
                             org.osgi.util.tracker;version="0.0.0",
                             javax.annotation;version="0",

@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
@@ -37,7 +37,7 @@ public class LoginControllerTest {
     @Mock
     private LocaleService localeService;
     @Mock
-    private ConfigurationService settingsService;
+    private SettingsFacade settingsFacade;
 
     @Mock
     private StartupManager startupManager;
@@ -71,7 +71,7 @@ public class LoginControllerTest {
     public void testLogin() throws Exception {
 
         when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
-        when(settingsService.getPlatformSettings()).thenReturn(motechSettings);
+        when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
 
         ModelAndView actualModelAndView = controller.perform(
                 get("/login")

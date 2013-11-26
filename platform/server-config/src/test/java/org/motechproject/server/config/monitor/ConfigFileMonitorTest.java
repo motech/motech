@@ -9,11 +9,9 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.motechproject.config.filestore.ConfigLocationFileStore;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.service.ConfigLoader;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.core.io.ResourceLoader;
 
@@ -27,12 +25,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ConfigFileMonitorTest {
     private static final String MOTECH_SETTINGS_FILE_NAME = "motech-settings.conf";
     private static final String SETTINGS_FILE_NAME = "settings.properties";
-
-    @Mock
-    ConfigLoader configLoader;
-
-    @Mock
-    ConfigLocationFileStore configLocationFileStore;
 
     @Mock
     PlatformSettingsService platformSettingsService;
@@ -57,13 +49,11 @@ public class ConfigFileMonitorTest {
     ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
 
     private FileObject motechSettingsResource;
-    private FileObject settingsResource;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        configFileMonitor.setConfigLoader(configLoader);
         configFileMonitor.setPlatformSettingsService(platformSettingsService);
         configFileMonitor.setConfigurationService(configurationService);
         configFileMonitor.setSystemManager(systemManager);
@@ -71,15 +61,6 @@ public class ConfigFileMonitorTest {
         configFileMonitor.afterPropertiesSet();
 
         motechSettingsResource = VFS.getManager().resolveFile(String.format("res:%s", MOTECH_SETTINGS_FILE_NAME));
-        settingsResource = VFS.getManager().resolveFile(String.format("res:%s", SETTINGS_FILE_NAME));
-    }
-
-    @Test
-    public void testChangeConfigFileLocation() throws Exception {
-        configFileMonitor.changeConfigFileLocation(SETTINGS_FILE_NAME);
-
-        verify(configLocationFileStore).add(SETTINGS_FILE_NAME);
-        verify(configFileMonitor).monitor();
     }
 
     @Test
@@ -96,11 +77,11 @@ public class ConfigFileMonitorTest {
     @Test
     public void testMotechFileChanged() throws Exception {
         when(fileChangeEvent.getFile()).thenReturn(motechSettingsResource);
-        when(configLoader.loadConfig()).thenReturn(motechSettings);
+        when(configurationService.loadConfig()).thenReturn(motechSettings);
 
         configFileMonitor.fileChanged(fileChangeEvent);
 
-        verify(configLoader).loadConfig();
+        verify(configurationService).loadConfig();
         verify(configurationService).evictMotechSettingsCache();
 
         assertCurrentSettings();

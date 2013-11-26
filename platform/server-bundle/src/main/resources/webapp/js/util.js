@@ -71,19 +71,9 @@ Array.prototype.insert = function (index, item) {
   this.splice(index, 0, item);
 };
 
-function arraysEqual(arr1, arr2) {
+function arraysEqual(a, b) {
     'use strict';
-    var i;
-    if(arr1.length !== arr2.length) {
-        return false;
-    }
-    for(i = arr1.length; i>0; i-=1) {
-        if(arr1[i] !== arr2[i]) {
-            return false;
-        }
-    }
-
-    return true;
+    return _.isEqual(a, b);
 }
 
 function toLocale(lang) {
@@ -113,7 +103,19 @@ function toLocale(lang) {
 
 function cloneObj(obj) {
     'use strict';
-    return jQuery.extend(true, {}, obj);
+    var clone = {},
+        prop = '__proto__';
+
+    clone[prop] = obj[prop]; // JSLint: Reserved name '__proto__'
+
+    return $.extend(true, clone, obj);
+}
+
+function cloneArray(array) {
+    'use strict';
+    return jQuery.map(array, function (obj) {
+        return cloneObj(obj);
+    });
 }
 
 function isBlank(str) {

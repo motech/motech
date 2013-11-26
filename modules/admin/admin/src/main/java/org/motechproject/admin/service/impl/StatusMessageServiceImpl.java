@@ -9,10 +9,10 @@ import org.motechproject.admin.notification.EmailNotifier;
 import org.motechproject.admin.repository.AllNotificationRules;
 import org.motechproject.admin.repository.AllStatusMessages;
 import org.motechproject.admin.service.StatusMessageService;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     private AllNotificationRules allNotificationRules;
 
     @Autowired
-    private ConfigurationService configurationService;
+    private SettingsFacade settingsFacade;
 
     @Autowired
     private UIFrameworkService uiFrameworkService;
@@ -217,7 +217,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     private DateTime defaultTimeout() {
         DateTime timeout;
-        String timeoutStr = configurationService.getPlatformSettings().getStatusMsgTimeout();
+        String timeoutStr = settingsFacade.getPlatformSettings().getStatusMsgTimeout();
         try {
             Integer timeoutSecs = Integer.parseInt(timeoutStr);
             timeout = DateTime.now().plusSeconds(timeoutSecs);

@@ -5,7 +5,7 @@ import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class ModuleRegistrationData {
     private Bundle bundle;
 
     private List<String> angularModules = new ArrayList<>();
-    private Map<String, SubmenuInfo> subMenu = new LinkedHashMap<>();
+    private Map<String, SubmenuInfo> subMenu = new TreeMap<>();
     private Map<String, String> i18n = new HashMap<>();
 
     public ModuleRegistrationData() {

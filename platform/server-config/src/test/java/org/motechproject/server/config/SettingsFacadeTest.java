@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.config.service.ConfigurationService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -15,9 +15,7 @@ import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SettingsFacadeTest {
@@ -37,7 +35,7 @@ public class SettingsFacadeTest {
     Properties props;
 
     @Mock
-    PlatformSettingsService platformSettingsService;
+    ConfigurationService configurationService;
 
     @Before
     public void setUp() {
@@ -46,7 +44,8 @@ public class SettingsFacadeTest {
 
     @Test
     public void testGetConfigNoService() {
-        settingsFacade.setPlatformSettingsService(null);
+        settingsFacade.setConfigurationService(null);
+
         setUpConfig();
 
         String result = settingsFacade.getProperty(LANGUAGE_PROP);
@@ -57,7 +56,8 @@ public class SettingsFacadeTest {
     @Test
     public void testGetConfigWithService() throws IOException {
         setUpOsgiEnv();
-        when(platformSettingsService.getBundleProperties(BUNDLE_NAME, FILENAME)).thenReturn(props);
+        when(configurationService.getModuleProperties(eq(BUNDLE_NAME), eq(FILENAME),
+                any(Properties.class))).thenReturn(props);
         when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
         when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
         setUpConfig();
@@ -65,13 +65,14 @@ public class SettingsFacadeTest {
         String result = settingsFacade.getProperty(LANGUAGE_PROP);
 
         assertEquals(LANGUAGE_VALUE, result);
-        verify(platformSettingsService, times(2)).getBundleProperties(BUNDLE_NAME, FILENAME);
+        verify(configurationService).registersProperties(BUNDLE_NAME, FILENAME);
+        verify(configurationService, times(2)).getModuleProperties(eq(BUNDLE_NAME), eq(FILENAME), any(Properties.class));
     }
 
     @Test
     public void testSetConfig() throws IOException {
         setUpOsgiEnv();
-        when(platformSettingsService.getBundleProperties(BUNDLE_NAME, FILENAME)).thenReturn(null);
+        when(configurationService.getModuleProperties(eq(BUNDLE_NAME), eq(FILENAME), any(Properties.class))).thenReturn(null);
         when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
         when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
         setUpConfig();
@@ -79,7 +80,8 @@ public class SettingsFacadeTest {
         settingsFacade.afterPropertiesSet();
 
         ArgumentCaptor<Properties> argument = ArgumentCaptor.forClass(Properties.class);
-        verify(platformSettingsService).saveBundleProperties(eq(BUNDLE_NAME), eq(FILENAME), argument.capture());
+        verify(configurationService).updateProperties(eq(BUNDLE_NAME), eq(FILENAME),
+                any(Properties.class), argument.capture());
         assertEquals(LANGUAGE_VALUE, argument.getValue().getProperty(LANGUAGE_PROP));
     }
 
@@ -105,7 +107,7 @@ public class SettingsFacadeTest {
     }
 
     private void setUpOsgiEnv() {
-        settingsFacade.setModuleName(MODULE_NAME);
-        settingsFacade.setPlatformSettingsService(platformSettingsService);
+        settingsFacade.setModuleName(BUNDLE_NAME);
+        settingsFacade.setConfigurationService(configurationService);
     }
 }

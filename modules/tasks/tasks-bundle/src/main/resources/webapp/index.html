@@ -1,11 +1,11 @@
-<div> <!-- Only required for left/right tabs -->
+<div>
     <ul id="content-tabs" class="nav nav-tabs tasks">
-        <li ng-class="active('#/dashboard')"><a data-target="main-content" href="#/dashboard" data-toggle="tab">{{msg('task.tab')}}</a></li>
-        <li ng-class="active('#/settings')"><a data-target="main-content" href="#/settings" data-toggle="tab">{{msg('task.tab.settings')}}</a></li>
+        <li ng-class="active('#/dashboard')"><a  href="#/dashboard">{{msg('task.tab')}}</a></li>
+        <li ng-class="active('#/settings')"><a  href="#/settings">{{msg('task.tab.settings')}}</a></li>
     </ul>
 
     <div class="tab-content tasks" id="tab-content">
-        <div id="main-content" class="tab-pane active">
+        <div id="main-content" class="tab-pane active" >
             <div ng-view></div>
         </div>
     </div>

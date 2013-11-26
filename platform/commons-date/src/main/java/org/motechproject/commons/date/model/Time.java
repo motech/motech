@@ -62,7 +62,7 @@ public class Time implements Comparable<Time>, Serializable {
     public boolean le(Time toCompare) {
         return (this.getHour() < toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() <= toCompare.getMinute()));
     }
-    
+
     public boolean ge(Time toCompare) {
         return (this.getHour() > toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() >= toCompare.getMinute()));
     }
@@ -115,6 +115,9 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     public static Time parseTime(String time, String separator) {
+        if (time == null) {
+            return null;
+        }
         String[] strings = StringUtils.split(time, separator);
         if (strings.length != 2) {
             throw new IllegalArgumentException();

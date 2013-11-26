@@ -1,5 +1,8 @@
 package org.motechproject.admin.web.controller;
 
+import com.google.common.net.HttpHeaders;
+import org.apache.commons.io.IOUtils;
+import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
@@ -20,12 +23,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class responsible for communication between frontend and backend
+ */
 @Controller
 public class SettingsController {
 
@@ -75,8 +85,24 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
-    @ResponseBody public List<Settings> getPlatformSettings() {
+    @ResponseBody public AdminSettings getPlatformSettings() {
         return settingsService.getSettings();
+    }
+
+    @RequestMapping(value = "/settings/platform/export", method = RequestMethod.GET)
+    public void exportConfig(HttpServletResponse response) throws IOException {
+        Date dateNow = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat ("yyyy-MM-dd");
+        final String fileName = "config_" + dateFormat.format(dateNow) + ".zip";
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+        response.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        response.setContentType("application/octet-stream");
+
+        InputStream is = settingsService.exportConfig(fileName);
+        IOUtils.copy(is, response.getOutputStream());
+        is.close();
+
+        response.getOutputStream().flush();
     }
 
     @ResponseStatus(HttpStatus.OK)
