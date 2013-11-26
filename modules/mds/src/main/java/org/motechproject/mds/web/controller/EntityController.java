@@ -9,6 +9,8 @@ import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
+import org.motechproject.mds.web.domain.EntityRecords;
+import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -44,7 +46,7 @@ public class EntityController extends MdsController {
         List<EntityDto> entities = getAllEntities();
 
         for (EntityDto entity : entities) {
-            if ( !byModule.containsKey(entity.getModule()) && entity.getModule() != null ) {
+            if (!byModule.containsKey(entity.getModule()) && entity.getModule() != null) {
                 byModule.put(entity.getModule(), new ArrayList<String>());
             }
 
@@ -70,6 +72,23 @@ public class EntityController extends MdsController {
         Collections.sort(list, new EntityNameComparator());
 
         return new SelectResult<>(data, list);
+    }
+
+    @RequestMapping(value = "/entities/getEntity/{module}/{entityName}", method = RequestMethod.GET)
+    @ResponseBody
+    public EntityDto getEntityByModuleAndEntityName(@PathVariable String module, @PathVariable String entityName) {
+        List<EntityDto> entities = getAllEntities();
+        String moduleName = module.equals(NO_MODULE) ? null : module;
+
+        for (EntityDto entity : entities) {
+            if (entity.getModule() == null && moduleName == null && entity.getName().equals(entityName)) {
+                return entity;
+            } else if (entity.getModule() != null && entity.getModule().equals(moduleName) && entity.getName().equals(entityName)) {
+                return entity;
+            }
+        }
+
+        return null;
     }
 
     @RequestMapping(value = "/entities", method = RequestMethod.GET)
@@ -142,5 +161,13 @@ public class EntityController extends MdsController {
         }
 
         getExampleData().saveAdvanced(advanced);
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.GET)
+    @ResponseBody
+    public EntityRecords getInstances(@PathVariable String entityId, GridSettings settings) {
+        EntityRecords entityRecords = new EntityRecords(settings.getPage(), settings.getRows(), getExampleData().getEntityRecordsById(entityId));
+
+        return entityRecords;
     }
 }

@@ -1382,12 +1382,37 @@
         $scope.modules = undefined;
 
         /**
+        * This variable is set after user clicks "View" button next to chosen entity
+        */
+        $scope.selectedEntity = undefined;
+
+        /**
         * Initializes a map of all entities in Seuss indexed by module name
         */
         $scope.setEntities = function() {
+            blockUI();
             $http.get('../mds/entities/byModule').success(function (data) {
                 $scope.modules = data;
+                unblockUI();
             });
+        };
+
+        /**
+        * Sets selected entity by module and entity name
+        */
+        $scope.selectEntity = function(module, entityName) {
+            blockUI();
+            $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
+                $scope.selectedEntity = data;
+                unblockUI();
+            });
+        };
+
+        /**
+        * Unselects entity to allow user to return to entities list by modules
+        */
+        $scope.unselectEntity = function() {
+            $scope.selectedEntity = undefined;
         };
 
         /**

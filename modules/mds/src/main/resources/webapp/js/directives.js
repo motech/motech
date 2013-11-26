@@ -291,6 +291,75 @@
         };
     });
 
+    /**
+    * Displays entity instances data using jqGrid
+    */
+    mds.directive('entityInstancesGrid', function($compile, $http, $templateCache) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var elem = angular.element(element);
+
+                $.ajax({
+                    type: "GET",
+                    url: "../mds/entities/" + scope.selectedEntity.id + "/fields",
+                    dataType: "json",
+                    success: function(result)
+                    {
+                        var colModel = [], i;
+
+                        for (i=0; i<result.length; i+=1) {
+                            colModel.push({
+                                name: result[i].basic.displayName,
+                                index: result[i].basic.displayName,
+                                jsonmap: "fields." + i + ".value"
+                            });
+                        }
+
+                        elem.jqGrid({
+                            url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
+                            datatype: 'json',
+                            jsonReader:{
+                                repeatitems:false
+                            },
+                            prmNames: {
+                                sort: 'sortColumn',
+                                order: 'sortDirection'
+                            },
+                            shrinkToFit: true,
+                            autowidth: true,
+                            rownumbers: true,
+                            rowNum: 2,
+                            rowList: [2, 5, 10, 20, 50],
+                            colModel: colModel,
+                            pager: '#' + attrs.entityInstancesGrid,
+                            width: '100%',
+                            height: 'auto',
+                            viewrecords: true,
+                            gridComplete: function () {
+                                $('#entityInstancesTable').children('div').width('100%');
+                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-btable').addClass("table-lightblue");
+                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-bdiv').width('100%');
+                                $('.ui-jqgrid-hdiv').width('100%');
+                                $('.ui-jqgrid-hbox').width('100%');
+                                $('.ui-jqgrid-view').width('100%');
+                                $('#t_resourceTable').width('auto');
+                                $('.ui-jqgrid-pager').width('100%');
+                                $('#entityInstancesTable').children('div').each(function() {
+                                    $('table', this).width('100%');
+                                    $(this).find('#resourceTable').width('100%');
+                                    $(this).find('table').width('100%');
+                               });
+                            }
+                        });
+                    }
+                });
+            }
+        };
+    });
+
     mds.directive('draggable', function() {
         return function(scope, element) {
 

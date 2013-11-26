@@ -146,6 +146,10 @@
     width: 50px;
 }
 
+.backButton {
+    margin-bottom: 10px;
+}
+
 .button-delete {
     float: right;
 }
