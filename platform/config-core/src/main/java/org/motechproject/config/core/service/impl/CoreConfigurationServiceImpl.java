@@ -59,9 +59,10 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * - Default config location - bootstrap props in bootstrap.properties file from the default location.
      *   Default location of bootstrap.properties file is specified in config-locations.properties.
      * <p/>
-     * Returns the Bootstrapconfig if bootstrap config is defined in any of the above locations or returns null.
+     * Returns the Bootstrapconfig if bootstrap config is defined in any of the above locations.
      *
      * @return BootstrapConfig object
+     * @throws MotechConfigurationException if there is no bootstrap.properties file found.
      */
     @Override
     public BootstrapConfig loadBootstrapConfig() {
@@ -131,15 +132,15 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     }
 
     private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
-        File defaultBootstrapFile;
+        File bootstrapFile;
         try {
-            defaultBootstrapFile = getDefaultBootstrapFile(FileAccessType.READABLE);
+            bootstrapFile = getDefaultBootstrapFile(FileAccessType.READABLE);
         } catch (MotechConfigurationException ex) {
             logger.warn(ex.getMessage());
-            return null;
+            throw ex;
         }
 
-        return readBootstrapConfigFromFile(defaultBootstrapFile, StringUtils.EMPTY);
+        return readBootstrapConfigFromFile(bootstrapFile, StringUtils.EMPTY);
     }
 
     private String getConfigFile(String configLocation) {

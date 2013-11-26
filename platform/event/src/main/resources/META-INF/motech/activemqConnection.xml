@@ -11,15 +11,6 @@
         <property name="moduleName" value="event"/>
     </bean>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="propertiesArray">
-            <list>
-                <bean factory-bean="eventSettings" factory-method="getActivemqConfig" />
-            </list>
-        </property>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
-    </bean>
-
     <bean id="tenantIdentity" class="org.motechproject.commons.api.TenantIdentity"/>
 
     <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">

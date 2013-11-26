@@ -4,17 +4,14 @@ package org.motechproject.admin.web;
 import org.hamcrest.text.StringContains;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.domain.QueueMBean;
-import org.motechproject.commons.api.Tenant;
-import org.motechproject.admin.jmx.MBeanService;
 import org.motechproject.admin.domain.QueueMessage;
+import org.motechproject.admin.jmx.MBeanService;
 import org.motechproject.admin.web.controller.QueueStatisticsController;
+import org.motechproject.commons.api.Tenant;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.request.MockMvcRequestBuilders;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
@@ -28,9 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath*:testApplicationAdmin.xml")
-public class QueueStatisticsControllerIT {
+public class QueueStatisticsControllerTest {
 
 
     MockMvc mockMvc;

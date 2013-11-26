@@ -92,14 +92,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             logger.debug("Loading bootstrap configuration.");
         }
 
-        final BootstrapConfig bootstrapConfig = coreConfigurationService == null ? null : coreConfigurationService.loadBootstrapConfig();
+        final BootstrapConfig bootstrapConfig;
 
-        if (bootstrapConfig == null) {
+        try {
+            bootstrapConfig = coreConfigurationService == null ? null : coreConfigurationService.loadBootstrapConfig();
+        } catch (MotechConfigurationException e) {
             return null;
         }
 
         configSource = bootstrapConfig.getConfigSource();
-
 
         if (ConfigSource.FILE.equals(configSource)) {
             try {
@@ -267,24 +268,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     public Properties getModuleProperties(String module, String filename, Properties defaultProperties) throws IOException {
-        if (ConfigSource.UI.equals(configSource)) {
-            Properties properties = allModuleProperties.asProperties(module, filename);
-            return properties == null && defaultProperties == null ? new Properties() :
-                    MapUtils.toProperties(MotechMapUtils.mergeMaps(properties, defaultProperties));
-        } else if (ConfigSource.FILE.equals(configSource)) {
-            File file = new File(String.format("%s/%s", getModuleConfigDir(module), filename));
-            if (!file.exists()) {
-                return defaultProperties;
-            }
-
-            Properties properties = new Properties();
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                properties.load(fileInputStream);
-            }
-            return properties;
-        } else {
-            return defaultProperties;
-        }
+        Properties properties = allModuleProperties.asProperties(module, filename);
+        return MapUtils.toProperties(MotechMapUtils.mergeMaps(properties, defaultProperties));
     }
 
     @Override

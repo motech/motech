@@ -21,8 +21,6 @@ public class ConfigBundleIT extends BaseOsgiIT {
         assertNotNull(settings);
         settings.setPlatformSetting("jms.call.delay", "5000");
 
-        //settings.evictMotechSettingsCache();
-
         final MotechSettings platformSettings = settings.getPlatformSettings();
         final String delay = platformSettings.getActivemqProperties().getProperty("jms.call.delay");
         assertEquals("5000", delay);

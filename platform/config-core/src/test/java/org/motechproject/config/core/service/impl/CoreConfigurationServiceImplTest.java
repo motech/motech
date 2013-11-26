@@ -1,6 +1,5 @@
 package org.motechproject.config.core.service.impl;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -154,7 +153,11 @@ public class CoreConfigurationServiceImplTest {
         Mockito.when(environmentMock.getDBUrl()).thenReturn(null);
         Mockito.when(configLocationFileStoreMock.getAll()).thenReturn(new ArrayList<ConfigLocation>());
 
-        coreConfigurationService.loadBootstrapConfig();
+        try {
+            coreConfigurationService.loadBootstrapConfig();
+        } catch (MotechConfigurationException e) {
+            // Ignore error because invocation order is to be verified.
+        }
 
         InOrder inOrder = Mockito.inOrder(environmentMock, configLocationFileStoreMock, configFileReaderMock);
 
@@ -173,7 +176,7 @@ public class CoreConfigurationServiceImplTest {
         coreConfigurationService.loadBootstrapConfig();
     }
 
-    @Test
+    @Test(expected = MotechConfigurationException.class)
     public void shouldReturnNullIfNoneOfTheFilesInTheDefaultLocationIsReadable() throws IOException {
         when(environmentMock.getConfigDir()).thenReturn(null);
         when(environmentMock.getDBUrl()).thenReturn(null);
@@ -186,7 +189,7 @@ public class CoreConfigurationServiceImplTest {
         when(configLocation2.getFile(BOOTSTRAP_PROPERTIES, READABLE)).thenThrow(new MotechConfigurationException("Failed"));
         when(configLocationFileStoreMock.getAll()).thenReturn(configLocationList);
 
-        Assert.assertNull(coreConfigurationService.loadBootstrapConfig());
+        coreConfigurationService.loadBootstrapConfig();
     }
 
     @Test(expected = MotechConfigurationException.class)
