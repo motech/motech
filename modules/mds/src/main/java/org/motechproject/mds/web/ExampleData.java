@@ -278,24 +278,24 @@ public final class ExampleData {
         fields.add(new FieldRecord("ID", "f1992e633e"));
         fields.add(new FieldRecord("Drug Regimen", "Peldi"));
         fields.add(new FieldRecord("Voucher Number", "123"));
-        fields.add(new FieldRecord("Redeemed By", "Peson1"));
-        EntityRecord entityRecord = new EntityRecord("7", fields);
+        fields.add(new FieldRecord("Redeemed By", "Person1"));
+        EntityRecord entityRecord = new EntityRecord("1", "7", fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
         fields.add(new FieldRecord("ID", "dd2b824bbb"));
         fields.add(new FieldRecord("Drug Regimen", "Golden"));
         fields.add(new FieldRecord("Voucher Number", "456"));
-        fields.add(new FieldRecord("Redeemed By", "Peson2"));
-        entityRecord = new EntityRecord("7", fields);
+        fields.add(new FieldRecord("Redeemed By", "Person2"));
+        entityRecord = new EntityRecord("2", "7", fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
         fields.add(new FieldRecord("ID", "d5411b8d8"));
         fields.add(new FieldRecord("Drug Regimen", "Patata"));
         fields.add(new FieldRecord("Voucher Number", "312"));
-        fields.add(new FieldRecord("Redeemed By", "Peson3"));
-        entityRecord = new EntityRecord("7", fields);
+        fields.add(new FieldRecord("Redeemed By", "Person3"));
+        entityRecord = new EntityRecord("3", "7", fields);
         ret.add(entityRecord);
 
         return ret;
@@ -304,7 +304,7 @@ public final class ExampleData {
     public List<EntityRecord> getEntityRecordsById(String entityId) {
         List<EntityRecord> entityRecordList = new ArrayList<>();
         for (EntityRecord entityRecord : entityRecords) {
-            if (entityRecord.getId().equals(entityId)) {
+            if (entityRecord.getEntitySchemaId().equals(entityId)) {
                 entityRecordList.add(entityRecord);
             }
         }
