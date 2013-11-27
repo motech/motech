@@ -20,7 +20,7 @@ import java.util.Properties;
  */
 @Repository
 @View(name = "by_name", map = "function(doc) { if(doc.type === 'ModulePropertiesRecord') emit(doc.module); }")
-public final class AllModuleProperties extends CouchDbRepositorySupport<ModulePropertiesRecord> {
+public class AllModuleProperties extends CouchDbRepositorySupport<ModulePropertiesRecord> {
 
     private static final String BY_NAME = "by_name";
 
