@@ -1055,7 +1055,10 @@
         <module>modules/metrics/metrics</module>
 
         <!-- Archetypes modules -->
-        <module>utils/archetypes/maven-archetype-motech-module</module>
+        <module>utils/archetypes/minimal-bundle-archetype</module>
+        <module>utils/archetypes/http-bundle-archetype</module>
+        <module>utils/archetypes/repository-bundle-archetype</module>
+        <module>utils/archetypes/settings-bundle-archetype</module>
 
         <!-- Packaging modules -->
         <module>packaging/deb</module>
