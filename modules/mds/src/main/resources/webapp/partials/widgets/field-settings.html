@@ -1,5 +1,5 @@
 <form class="form-horizontal inside">
-    <div ng-repeat="setting in field.settings" class="form-group" ng-class="{error: !checkOptions(setting)}">
+    <div ng-repeat="setting in field.settings" class="form-group" ng-class="{'has-error': !checkOptions(setting)}">
         <label class="control-label">
             {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE')">*</span>
         </label>

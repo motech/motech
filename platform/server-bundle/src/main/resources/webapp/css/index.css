@@ -1242,3 +1242,43 @@ a, li a {
 label.checkbox {
     font-weight: normal;
 }
+
+.badge-important {
+  background-color: #b94a48;
+}
+
+.badge-important[href] {
+  background-color: #953b39;
+}
+
+.badge-warning {
+  background-color: #f89406;
+}
+
+.badge-warning[href] {
+  background-color: #c67605;
+}
+
+.badge-success {
+  background-color: #468847;
+}
+
+.badge-success[href] {
+  background-color: #356635;
+}
+
+.badge-info {
+  background-color: #3a87ad;
+}
+
+.badge-info[href] {
+  background-color: #2d6987;
+}
+
+.badge-inverse {
+  background-color: #333333;
+}
+
+.badge-inverse[href] {
+  background-color: #1a1a1a;
+}

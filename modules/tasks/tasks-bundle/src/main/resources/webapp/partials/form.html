@@ -16,7 +16,7 @@
             <form class="inside task form-horizontal">
                 <!------------------ ENTER TASK NAME ------------------>
                 <div class="inside-0">
-                    <div class="form-group" ng-class="{error: !task.name}">
+                    <div class="form-group" ng-class="{'has-error': !task.name}">
                         <label class="col-md-2 col-sm-3 control-label task-label">{{msg('task.name')}}</label>
                         <div class="form-inline col-md-10 col-sm-9">
                             <input class="input-xlarge-fluid form-control" type='text' ng-model='task.name' id="task.name" maxlength="30"/>
@@ -36,7 +36,7 @@
 
                 <!------------------ SELECT TRIGGER ------------------>
                 <div class="panel-group" id="select-trigger" overflow-change expand-accordion>
-                    <div class="task-group ">
+                    <div class="task-group">
                         <div class="panel-heading panel-header">
                             <div class="accordion-toggle cursor-auto">
                                 <i class="icon-caret-down icon-fixed-width icon-large pointer" data-toggle="collapse" data-parent="#select-trigger" href="#collapse-trigger"></i> {{msg('task.header.trigger')}}
@@ -99,8 +99,8 @@
                                         <form id="filtersForm" name="filterForm" class="form-inline">
                                             <div class="margin-center margin-before">
                                                 <div ng-repeat="filter in step.filters">
-                                                    <div class="form-group">
-                                                        <div class="form-inline">
+                                                    <div class="form-group centered">
+                                                        <div class="form-inline btn-group">
                                                             <span class="validation-area form-group">
                                                                 <div class="input-append input-group">
                                                                     <input class="form-control input-auto offset-1" ng-trigger="selectParam(filter, 'trigger', option)" name="autocomplete" type="text" id="appendedDropdownButton" ng-model="filter.displayName"/>
@@ -131,7 +131,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined}" ng-disabled="!filter.key">
+                                                                    <a class="btn dropdown-toggle dropdown-small-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': filter.negationOperator == undefined, 'btn-default': filter.negationOperator !== undefined}" ng-disabled="!filter.key">
                                                                         {{msg(((filter.negationOperator == true || filter.negationOperator == false) && 'task.info.filter.' + filter.negationOperator) || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
@@ -145,7 +145,7 @@
                                                             </span>
                                                             <span class="validation-area form-group">
                                                                 <div class="btn-group offset-1">
-                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.operator}" ng-disabled="filter.negationOperator == undefined">
+                                                                    <a class="btn dropdown-toggle dropdown-medium-fluid" data-toggle="dropdown" href="#" ng-class="{'btn-danger': !filter.operator, 'btn-default': filter.operator}" ng-disabled="filter.negationOperator == undefined">
                                                                         {{msg(filter.operator || 'task.info.filter.select')}}
                                                                         <span class="caret"></span>
                                                                     </a>
@@ -161,7 +161,7 @@
                                                                     </ul>
                                                                 </div>
                                                             </span>
-                                                            <span class="validation-area form-group" ng-class="{error: util.needExpression(filter.operator) && !filter.expression}">
+                                                            <span class="validation-area form-group" ng-class="{'has-error': util.needExpression(filter.operator) && !filter.expression}">
                                                                 <input ng-disabled="!filter.operator || !util.needExpression(filter.operator)" ng-model="filter.expression" class="form-control input-auto offset-1" type="text" value=""/>
                                                             </span>
                                                             <span class="form-group">
@@ -171,10 +171,10 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary pull-left offset-1" data-toggle="modal">{{msg('task.help')}}</a>
-                                                <button ui-if="!step.filters.length" class="btn btn-success pull-left offset-1" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
-                                                <button ui-if="step.filters.length" class="btn btn-success pull-left offset-1" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
+                                            <div class="form-group centered">
+                                                <a ui-if="step.filters.length" href="#helpModalFieldSyntax" role="button" class="btn btn-primary" data-toggle="modal">{{msg('task.help')}}</a>
+                                                <button ui-if="!step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addFilter')}}</button>
+                                                <button ui-if="step.filters.length" class="btn btn-success" ng-click="addFilter(step)"><i class="icon-plus icon-white"></i> {{msg('task.button.addAnotherFilter')}}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -256,7 +256,7 @@
                                                 </div>
                                             </div>
                                             <div ng-repeat="lookupField in step.lookup">
-                                                <div class="form-group" ng-class="{error: actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
+                                                <div class="form-group" ng-class="{'has-error': actionCssClassError(lookupField)}" class="form-group form-inline clearfix">
                                                     <label class="col-md-2 col-sm-3 control-label">{{msg(lookupField.field)}}</label>
 
                                                     <!------------------------ Chrome & IE ------------------------>
@@ -280,7 +280,7 @@
                                             </div>
                                         </div>
                                         <div ui-if="step.lookup.field">
-                                            <div class="form-group" ng-class="{error: actionCssClass(step.lookup)}" class="form-group form-inline clearfix">
+                                            <div class="form-group" ng-class="{'has-error': actionCssClass(step.lookup)}" class="form-group form-inline clearfix">
                                                 <label class="col-md-2 col-sm-3 control-label">{{msg(step.lookup.field)}}</label>
 
                                                 <!------------------------ Chrome & IE ------------------------>
@@ -381,7 +381,7 @@
                                         <label class="col-md-2 col-sm-3 control-label">{{msg(selectedAction.description)}}</label>
                                     </div>
                                     <div ui-if="selectedAction[$index]">
-                                        <div class="form-group" ng-class="{warning: actionCssClassWarning(i), haserror: actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="form-group form-inline clearfix">
+                                        <div class="form-group" ng-class="{'has-warning': actionCssClassWarning(i), 'has-error': actionCssClassError(i)}" ng-repeat="i in selectedAction[$index].actionParameters" class="form-group form-inline clearfix">
                                             <label class="col-md-2 col-sm-3 control-label tip">
                                                 {{msg(i.displayName)}}
                                                 <!------------------------ Tooltips ------------------------>

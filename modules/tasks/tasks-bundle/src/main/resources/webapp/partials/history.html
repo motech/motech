@@ -52,9 +52,9 @@
             <div class="margin-after"  ng-show="activities.length &gt; 0">
                 <div class="form-group form-inline">
                     <label class="interval">{{msg('task.header.filterActivity')}}</label>
-                    <select ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
+                    <select class="form-control input-auto" ng-model="filterHistory" ng-change="changeFilterHistory()" ng-options="history for history in histories"></select>
                     <label class="interval">{{msg('task.header.activitiesPerPage')}}</label>
-                    <select class="span1" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
+                    <select class="form-control input-auto" ng-model="itemsPerPage" ng-change="changeItemsPerPage()" ng-options="itemsPerPage for itemsPerPage in limitPages"></select>
                     <a href ng-click="clearHistory()" class="btn btn-danger"> {{msg('task.button.clearHistory')}}</a>
                 </div>
                 <div class="box-content clearfix" ng-hide="activities.length == 0">

@@ -85,13 +85,13 @@
     <tfoot ui-if="!selectedEntity.readOnly">
     <tr>
         <td></td>
-        <td id="new-field-displayName" class="form-group" ng-class="{error: tryToCreate && !newField.displayName}">
+        <td id="new-field-displayName" class="form-group" ng-class="{'has-error': tryToCreate && !newField.displayName}">
             <input class="form-control input-auto form-inline" type="text" ng-model="newField.displayName" mds-camel-case="new">
             <span class="help-block" ng-class="{hide: !tryToCreate || newField.displayName}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
         </td>
-        <td id="new-field-name" class="form-group" ng-class="{error: tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
+        <td id="new-field-name" class="form-group" ng-class="{'has-error': tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
             <input class="form-control input-auto form-inline" type="text" ng-model="newField.name" mds-camel-case="new">
             <span class="help-block" ng-class="{hide: !tryToCreate || newField.name}">
                 {{msg('mds.error.fieldIsRequired')}}
@@ -100,7 +100,7 @@
                 {{msg('mds.error.duplicateNames')}}
             </span>
         </td>
-        <td id="new-field-type" class="form-group" ng-class="{error: tryToCreate && !newField.type}">
+        <td id="new-field-type" class="form-group" ng-class="{'has-error': tryToCreate && !newField.type}">
             <input class="form-inline input-medium-fluid" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField" class="select-field-type"/>
             <span class="help-block" ng-class="{hide: !tryToCreate || newField.type}">
                 {{msg('mds.error.fieldIsRequired')}}

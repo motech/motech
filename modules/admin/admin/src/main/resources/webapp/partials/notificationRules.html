@@ -21,7 +21,7 @@
                     </ul>
                 </div>
 
-                <span class="" ng-class="{error: !rule.recipient}">
+                <span class="" ng-class="{'has-error': !rule.recipient}">
                     <label class="control-label offset-1">{{msg('admin.messages.notifications.recipient')}}</label>
                     <input class="form-control input-auto" ng-model="rule.recipient" type="text" value="" />
                 </span>

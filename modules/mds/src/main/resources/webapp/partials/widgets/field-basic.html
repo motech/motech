@@ -1,5 +1,5 @@
 <form class="form-horizontal inside">
-    <div class="form-group" ng-class="{error: !field.basic.displayName}">
+    <div class="form-group" ng-class="{'has-error': !field.basic.displayName}">
         <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.displayName')}}<span class="text-danger">*</span>
         </label>
@@ -10,7 +10,7 @@
             </span>
         </div>
     </div>
-    <div class="form-group" ng-class="{error: !field.basic.name || !uniqueField(field.basic.name)}">
+    <div class="form-group" ng-class="{'has-error': !field.basic.name || !uniqueField(field.basic.name)}">
         <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.name')}}<span class="text-danger">*</span>
         </label>

@@ -1,7 +1,7 @@
 <form class="form-horizontal inside">
     <div class="col-sm-12">
         <span ng-repeat="metadata in selectedEntityMetadata[$index]">
-            <div class="form-group" ng-class="{error: !uniqueMetadataKey(metadata)}">
+            <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(metadata)}">
                 <div class="metadata-control form-inline">
                     <label class="offset-2 control-label metadata-control-label">
                         {{msg('mds.form.label.key')}}

@@ -1,5 +1,5 @@
 <form class="inside">
-    <div class="form-group" ng-repeat="criterion in field.validation.validationCriteria" ng-class="{error: validateCriterion(criterion, field.validation.validationCriteria)}">
+    <div class="form-group" ng-repeat="criterion in field.validation.validationCriteria" ng-class="{'has-error': validateCriterion(criterion, field.validation.validationCriteria)}">
         <div class="row form-inline">
         <div class="checkbox col-md-2 col-sm-3">
             <label class="">
