@@ -11,6 +11,8 @@
 
     <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService" />
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay" />
+
     <bean id="rolePermissionRegListener" class="org.motechproject.security.osgi.RolePermissionRegistrationListener"/>
 
     <osgi:service id="motechPermissionServiceOsgi" ref="motechPermissionService"

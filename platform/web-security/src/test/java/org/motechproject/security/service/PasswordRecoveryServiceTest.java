@@ -8,16 +8,23 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.security.domain.PasswordRecoveryCouchDbImpl;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.security.email.EmailSender;
+import org.motechproject.security.email.EmailSenderImpl;
 import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.motechproject.security.repository.AllPasswordRecoveries;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.testing.utils.BaseUnitTest;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +35,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 public class PasswordRecoveryServiceTest extends BaseUnitTest {
 
@@ -38,8 +46,6 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     private static final String ENCODED_PASSWORD = "p455w012d";
     private static final List<String> ROLES = Arrays.asList("admin");
 
-    @Mock
-    private AllPasswordRecoveries allPasswordRecoveries;
 
     @Mock
     private MotechUser user;
@@ -56,12 +62,33 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
     @Mock
     private MotechPasswordEncoder passwordEncoder;
 
+    @Mock
+    private SettingsFacade settingsFacade;
+
+    @Mock
+    private AllPasswordRecoveries allPasswordRecoveries;
+
+    @Mock
+    private EventRelay eventRelay;
+
+    @Mock
+    private MotechEvent emailEvent;
+
+    @Mock
+    private VelocityEngine velocityEngine;
+
+    @InjectMocks
+    private EmailSender emailSenderInjected = new EmailSenderImpl();
+
     @InjectMocks
     private PasswordRecoveryService recoveryService = new PasswordRecoveryServiceImpl();
+
+    private MotechSettings motechSettings;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
     }
 
     @After
@@ -181,6 +208,24 @@ public class PasswordRecoveryServiceTest extends BaseUnitTest {
             }
         }), eq(Locale.ENGLISH));
         verify(emailSender).sendOneTimeToken(recovery);
+    }
+
+    @Test
+    public void testSendRecoveryEmail() {
+        motechSettings = mock(MotechSettings.class);
+        when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
+        when(motechSettings.getServerHost()).thenReturn("serverurl");
+        when(motechSettings.getServerUrl()).thenReturn("http://serverurl");
+
+        PasswordRecovery newRecovery = new PasswordRecoveryCouchDbImpl();
+        newRecovery.setUsername(USERNAME);
+        newRecovery.setEmail(EMAIL);
+        newRecovery.setToken(TOKEN);
+        newRecovery.setExpirationDate(DateTime.now().plusHours(1));
+        newRecovery.setLocale(Locale.ENGLISH);
+
+        emailSenderInjected.sendResecoveryEmail(newRecovery);
+        verify(eventRelay).sendEventMessage(any(emailEvent.getClass()));
     }
 
     @Test(expected = UserNotFoundException.class)
