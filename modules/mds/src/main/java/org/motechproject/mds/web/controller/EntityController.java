@@ -9,23 +9,25 @@ import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
+import org.motechproject.mds.web.comparator.EntityRecordComparator;
+import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.EntityRecords;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 /**
  * The <code>EntityController</code> is the Spring Framework Controller used by view layer for
@@ -166,7 +168,17 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.GET)
     @ResponseBody
     public EntityRecords getInstances(@PathVariable String entityId, GridSettings settings) {
-        EntityRecords entityRecords = new EntityRecords(settings.getPage(), settings.getRows(), getExampleData().getEntityRecordsById(entityId));
+        List<EntityRecord> entityList = getExampleData().getEntityRecordsById(entityId);
+
+        boolean sortAscending = settings.getSortDirection() == null ? true : settings.getSortDirection().equals("asc");
+
+        if (!settings.getSortColumn().isEmpty() && !entityList.isEmpty()) {
+            Collections.sort(
+                    entityList, new EntityRecordComparator(sortAscending, settings.getSortColumn())
+            );
+        }
+
+        EntityRecords entityRecords = new EntityRecords(settings.getPage(), settings.getRows(), entityList);
 
         return entityRecords;
     }

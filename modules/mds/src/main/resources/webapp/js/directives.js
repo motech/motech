@@ -362,12 +362,6 @@
 
     mds.directive('draggable', function() {
         return function(scope, element) {
-
-        };
-    });
-
-    mds.directive('draggable', function() {
-        return function(scope, element) {
             var el = element[0];
 
             el.draggable = true;

@@ -8,10 +8,12 @@ import java.util.List;
  */
 public class EntityRecord {
     private String id;
+    private String entitySchemaId;
     private List<FieldRecord> fields;
 
-    public EntityRecord(String id, List<FieldRecord> fields) {
+    public EntityRecord(String id, String entitySchemaId, List<FieldRecord> fields) {
         this.id = id;
+        this.entitySchemaId = entitySchemaId;
         this.fields = fields;
     }
 
@@ -22,16 +24,23 @@ public class EntityRecord {
     public List<FieldRecord> getFields() {
         return fields;
     }
-
-    public void setFields(List<FieldRecord> fields) {
-        this.fields = fields;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEntitySchemaId() {
+        return entitySchemaId;
+    }
+
+    public void setEntitySchemaId(String entitySchemaId) {
+        this.entitySchemaId = entitySchemaId;
+    }
+
+    public void setFields(List<FieldRecord> fields) {
+        this.fields = fields;
     }
 }
