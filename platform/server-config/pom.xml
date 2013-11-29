@@ -67,8 +67,9 @@
                             org.motechproject.server.config;version=${project.version},
                             org.motechproject.server.config.domain;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
+                            org.motechproject.config.service;version=${project.version},
                             org.motechproject.config.domain;version=${project.version},
-                            org.motechproject.config.service;version=${project.version}
+                            org.motechproject.config.monitor;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             net.sf.cglib.proxy,

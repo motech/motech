@@ -9,6 +9,7 @@ import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigSource;
+import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
@@ -43,6 +44,9 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Autowired
     private BundleContext bundleContext;
+
+    @Autowired(required = false)
+    private ConfigFileMonitor configFileMonitor;
 
     @Override
     public AdminSettings getSettings() {
@@ -156,6 +160,9 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void addSettingsPath(String newConfigLocation) throws IOException {
         configurationService.updateConfigLocation(newConfigLocation);
+        if (configFileMonitor != null) {
+            configFileMonitor.updateFileMonitor();
+        }
     }
 
     @Override

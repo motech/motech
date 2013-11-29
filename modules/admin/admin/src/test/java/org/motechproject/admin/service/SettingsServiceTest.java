@@ -2,15 +2,16 @@ package org.motechproject.admin.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.domain.AdminSettings;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
+import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.security.web.savedrequest.Enumerator;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -56,11 +58,14 @@ public class SettingsServiceTest {
     @Mock
     Bundle bundle;
 
-    @InjectMocks
-    SettingsService settingsService = new SettingsServiceImpl();
-
     @Mock
     MotechSettings motechSettings;
+
+    @Mock
+    private ConfigFileMonitor configFileMonitor;
+
+    @InjectMocks
+    SettingsService settingsService = new SettingsServiceImpl();
 
     Properties bundleProperty = new Properties();
 
@@ -120,6 +125,15 @@ public class SettingsServiceTest {
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
         verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty, null);
+    }
+
+    @Test
+    public void shouldAddSettingsPath() throws IOException {
+        final String path = "some-path";
+        settingsService.addSettingsPath(path);
+        InOrder inOrder = inOrder(configurationService, configFileMonitor);
+        inOrder.verify(configurationService).updateConfigLocation(path);
+        inOrder.verify(configFileMonitor).updateFileMonitor();
     }
 
     private void initConfigService() throws IOException {
