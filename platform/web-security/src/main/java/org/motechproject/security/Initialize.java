@@ -26,6 +26,7 @@ public class Initialize {
     private static final String WEB_SECURITY = "org.motechproject.motech-platform-web-security";
     private static final String EMAIL = "org.motechproject.motech-email-bundle";
     private static final String USER_ADMIN = "User Admin";
+    private static final String ROLES_ADMIN = "Roles Admin";
     private static final String ADMIN_USER = "Admin User";
 
     @Autowired
@@ -43,7 +44,7 @@ public class Initialize {
         //change role name only if it doesn't exist yet, to prevent multiple roles of the same name
         MotechRole userAdminRole = null;
         userAdminRole = allMotechRoles.findByRoleName(USER_ADMIN);
-        if (userAdminRole==null) {
+        if (userAdminRole == null) {
             changeRoleNameToUserAdmin();
         }
 
@@ -61,6 +62,7 @@ public class Initialize {
 
         //initialize startup role
         MotechRole userAdmin = new MotechRoleCouchdbImpl(USER_ADMIN, Arrays.asList(addUserPermission.getPermissionName(), editUserPermission.getPermissionName(), deleteUserPermission.getPermissionName(), manageUserPermission.getPermissionName(), activeUserPermission.getPermissionName(), manageRolePermission.getPermissionName()), false);
+        MotechRole rolesAdmin = new MotechRoleCouchdbImpl(ROLES_ADMIN, Arrays.asList(manageRolePermission.getPermissionName()), false);
 
         //add created permissions
         allMotechPermissions.add(addUserPermission);
@@ -73,6 +75,7 @@ public class Initialize {
         allMotechPermissions.add(viewDetailedLogs);
 
         allMotechRoles.add(userAdmin);
+        allMotechRoles.add(rolesAdmin);
     }
 
     //This method fixes a bug with role names - renames Admin User role to User Admin, if it exists in the database

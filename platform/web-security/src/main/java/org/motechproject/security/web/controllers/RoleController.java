@@ -1,28 +1,30 @@
 package org.motechproject.security.web.controllers;
 
+import org.motechproject.security.ex.RoleHasUserException;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
-import org.motechproject.security.ex.RoleHasUserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Handle HTTP requests from web clients for Manage Roles user interface.
  */
 @Controller
+@PreAuthorize("hasRole('manageRole')")
+@RequestMapping("/web-api")
 public class RoleController {
 
     @Autowired
