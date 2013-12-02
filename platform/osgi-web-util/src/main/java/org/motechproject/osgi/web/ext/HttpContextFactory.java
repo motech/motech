@@ -14,14 +14,14 @@ public final class HttpContextFactory {
     private HttpContextFactory() {
     }
 
-    public static HttpContext getHttpContext(HttpContext httpContext, Bundle bundle, ApplicationEnvironment environment) {
-        LOGGER.info("Environment is " + environment.getEnvironment());
+    public static HttpContext getHttpContext(HttpContext httpContext, Bundle bundle) {
+        LOGGER.info("Environment is " + ApplicationEnvironment.getEnvironment());
 
-        if (!environment.isInDevelopmentMode()) {
+        if (!ApplicationEnvironment.isInDevelopmentMode()) {
             return null;
         }
 
-        String resourceDirPath = environment.getModulePath(new BundleName(bundle.getSymbolicName()));
+        String resourceDirPath = ApplicationEnvironment.getModulePath(new BundleName(bundle.getSymbolicName()));
 
         if (isBlank(resourceDirPath)) {
             LOGGER.info(String.format("Resource path not given for bundle %s", bundle.getSymbolicName()));

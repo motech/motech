@@ -2,7 +2,6 @@ package org.motechproject.osgi.web;
 
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
 import org.motechproject.osgi.web.exception.ServletRegistrationException;
-import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.osgi.web.util.WebBundleUtil;
 import org.osgi.framework.BundleContext;
@@ -64,7 +63,7 @@ public class HttpServiceTracker extends ServiceTracker {
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                    HttpContext httpContext = HttpContextFactory.getHttpContext(httpService.createDefaultHttpContext(), context.getBundle(), new ApplicationEnvironment());
+                    HttpContext httpContext = HttpContextFactory.getHttpContext(httpService.createDefaultHttpContext(), context.getBundle());
                     httpService.unregister(contextPath);
                     httpService.registerServlet(contextPath, dispatcherServlet, null, httpContext);
                     if (resourceMapping != null) {

@@ -6,7 +6,6 @@ import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.exception.ServletRegistrationException;
-import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
 import org.motechproject.security.filter.MotechDelegatingFilterProxy;
 import org.motechproject.security.service.MotechProxyManager;
@@ -32,7 +31,6 @@ import java.io.StringWriter;
  * will be consulted for security configuration, if it's not
  * there then the default security filter from the securityContext
  * file is used.
- *
  */
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
@@ -120,8 +118,10 @@ public class Activator implements BundleActivator {
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
-                HttpContext httpContext = HttpContextFactory.getHttpContext(service.createDefaultHttpContext(),
-                        bundleContext.getBundle(), new ApplicationEnvironment());
+                HttpContext httpContext = HttpContextFactory.getHttpContext(
+                        service.createDefaultHttpContext(),
+                        bundleContext.getBundle()
+                );
 
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
                 service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
