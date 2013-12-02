@@ -11,6 +11,7 @@ import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.form.UserInfo;
 import org.motechproject.server.web.helper.MenuBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,15 +45,20 @@ public class DashboardController {
     @Autowired
     private MenuBuilder menuBuilder;
 
-    @RequestMapping({"/index", "/", "/home" })
+    @Autowired
+    @Qualifier("mainHeaderStr")
+    private String mainHeader;
+
+    @RequestMapping({"/index", "/", "/home"})
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
         ModelAndView mav;
 
         // check if this is the first run
         if (startupManager.isConfigRequired()) {
-            mav = new ModelAndView("redirect:startup.do");
+            mav = new ModelAndView(Constants.REDIRECT_STARTUP);
         } else {
             mav = new ModelAndView("index");
+            mav.addObject("mainHeader", mainHeader);
             String contextPath = request.getSession().getServletContext().getContextPath();
 
             if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {

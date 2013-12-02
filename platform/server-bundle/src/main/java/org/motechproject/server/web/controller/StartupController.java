@@ -13,6 +13,7 @@ import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -60,6 +61,10 @@ public class StartupController {
     @Autowired
     private SuggestionHelper suggestionHelper;
 
+    @Autowired
+    @Qualifier("mainHeaderStr")
+    private String mainHeader;
+
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new StartupFormValidator(userService, configurationService));
@@ -80,6 +85,7 @@ public class StartupController {
             StartupForm startupSettings = new StartupForm();
             startupSettings.setLanguage(userLocale.getLanguage());
 
+            view.addObject("mainHeader", mainHeader);
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);
             view.addObject("languages", localeService.getAvailableLanguages());
@@ -98,7 +104,7 @@ public class StartupController {
                 configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
 
         if (result.hasErrors()) {
-
+            view.addObject("mainHeader", mainHeader);
             view.addObject("suggestions", createSuggestions());
             view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("loginMode", form.getLoginMode());

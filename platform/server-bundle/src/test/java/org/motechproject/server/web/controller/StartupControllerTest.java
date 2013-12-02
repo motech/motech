@@ -48,14 +48,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({StartupManager.class})
 public class StartupControllerTest {
     private static final String SUGGESTIONS_KEY = "suggestions";
     private static final String STARTUP_SETTINGS_KEY = "startupSettings";
     private static final String LANGUAGES_KEY = "languages";
     private static final String PAGE_LANG_KEY = "pageLang";
     private static final String IS_FILE_MODE_KEY = "isFileMode";
+    private static final String HEADER_KEY = "mainHeader";
+
     private static final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
             "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
             "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100", "failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
@@ -98,8 +98,6 @@ public class StartupControllerTest {
 
     @Before
     public void setUp() {
-        PowerMockito.mockStatic(StartupManager.class);
-
         initMocks(this);
     }
 
@@ -129,7 +127,7 @@ public class StartupControllerTest {
         verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
-        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY);
+        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY, HEADER_KEY);
 
         StartupSuggestionsForm startupSuggestionsForm = (StartupSuggestionsForm) result.getModelMap().get(SUGGESTIONS_KEY);
 
@@ -210,7 +208,9 @@ public class StartupControllerTest {
         assertEquals(keys.length, modelMap.size());
 
         for (String k : keys) {
-            assertNotNull(modelMap.get(k));
+            if (!k.equalsIgnoreCase(HEADER_KEY)) {
+                assertNotNull(modelMap.get(k));
+            }
         }
     }
 

@@ -9,7 +9,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <%@include file="head.jsp" %>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>MOTECH - Mobile Technology for Community Health</title>
+
+    ${mainHeader}
 
     <c:if test="${! empty currentModule}">
         ${currentModule.header}

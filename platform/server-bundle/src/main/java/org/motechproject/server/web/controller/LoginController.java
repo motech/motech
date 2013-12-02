@@ -6,6 +6,7 @@ import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,22 +22,29 @@ public class LoginController {
 
     @Autowired
     private LocaleService localeService;
+
     @Autowired
     private SettingsFacade settingsFacade;
+
     @Autowired
     private StartupManager startupManager;
+
+    @Autowired
+    @Qualifier("mainHeaderStr")
+    private String mainHeader;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(final HttpServletRequest request) {
         if (startupManager.isBootstrapConfigRequired()) {
-            return new ModelAndView("redirect:bootstrap.do");
+            return new ModelAndView(Constants.REDIRECT_BOOTSTRAP);
         }
 
         if (startupManager.isConfigRequired()) {
-            return new ModelAndView("redirect:startup.do");
+            return new ModelAndView(Constants.REDIRECT_STARTUP);
         }
 
         ModelAndView view = new ModelAndView("loginPage");
+        view.addObject("mainHeader", mainHeader);
 
         String contextPath = request.getSession().getServletContext().getContextPath();
 
@@ -58,7 +66,10 @@ public class LoginController {
 
     @RequestMapping(value = "/accessdenied", method = RequestMethod.GET)
     public ModelAndView accessdenied(final HttpServletRequest request) {
-        return new ModelAndView("accessdenied");
+        ModelAndView view = new ModelAndView("accessdenied");
+        view.addObject("mainHeader", mainHeader);
+
+        return view;
     }
 
 }

@@ -14,10 +14,14 @@ import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.dto.ModuleMenu;
 import org.motechproject.server.web.dto.ModuleMenuLink;
 import org.motechproject.server.web.dto.ModuleMenuSection;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -43,9 +47,21 @@ public class MenuBuilderTest {
     @Mock
     private MotechUserService userService;
 
+    @Mock
+    private BundleContext bundleContext;
+
+    @Mock
+    private Bundle bundle;
+
+    private Dictionary dictionary = new Hashtable();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        when(bundleContext.getBundle()).thenReturn(bundle);
+        when(bundle.getHeaders()).thenReturn(dictionary);
+
         setUpMenu();
         setUpPermissions();
     }
@@ -91,7 +107,7 @@ public class MenuBuilderTest {
 
     private void setUpMenu() {
         HashMap<String, String> i18n = new HashMap<>();
-        Header header = new Header();
+        Header header = new Header(bundleContext);
         List<String> angularModules = Arrays.asList("m1", "m2");
 
         ModuleRegistrationData adminRegData = new ModuleRegistrationData("admin", "/admin",

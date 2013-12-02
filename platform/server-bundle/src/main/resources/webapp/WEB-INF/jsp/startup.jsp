@@ -8,8 +8,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <%@include file="head.jsp" %>
-    <script src="../server/resources/js/startup.js" type="text/javascript"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>MOTECH - Mobile Technology for Community Health</title>
+
+    ${mainHeader}
 
     <script type="text/javascript">
         $(window).load(function() {

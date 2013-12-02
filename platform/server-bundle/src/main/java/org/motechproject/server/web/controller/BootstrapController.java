@@ -13,6 +13,7 @@ import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.web.form.BootstrapConfigForm;
 import org.motechproject.server.web.validator.BootstrapConfigFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -53,6 +54,10 @@ public class BootstrapController {
     @Autowired
     private ConfigurationService configurationService;
 
+    @Autowired
+    @Qualifier("mainHeaderStr")
+    private String mainHeader;
+
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new BootstrapConfigFormValidator());
@@ -65,6 +70,7 @@ public class BootstrapController {
         }
 
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+        bootstrapView.addObject("mainHeader", mainHeader);
         bootstrapView.addObject("bootstrapConfig", new BootstrapConfigForm());
         bootstrapView.addObject("username", System.getProperty("user.name"));
         bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
@@ -76,6 +82,7 @@ public class BootstrapController {
     public ModelAndView submitForm(@ModelAttribute("bootstrapConfig") @Valid BootstrapConfigForm form, BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView.addObject("mainHeader", mainHeader);
             bootstrapView.addObject("errors", getErrors(result));
             bootstrapView.addObject("username", System.getProperty("user.name"));
             bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
@@ -88,6 +95,7 @@ public class BootstrapController {
             configurationService.save(bootstrapConfig);
         } catch (Exception e) {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
+            bootstrapView.addObject("mainHeader", mainHeader);
             bootstrapView.addObject("errors", Arrays.asList("server.error.bootstrap.save"));
             bootstrapView.addObject("username", System.getProperty("user.name"));
             bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
