@@ -1,5 +1,6 @@
 package org.motechproject.config.core.service.impl.mapper;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
@@ -22,13 +23,20 @@ public final class BootstrapConfigPropertyMapper {
      * @return Properties mapped from provided bootstrapConfig.
      */
     public static Properties toProperties(BootstrapConfig bootstrapConfig) {
-        Properties bootstrapProperties = new Properties();
-        bootstrapProperties.setProperty(BootstrapConfig.DB_URL, bootstrapConfig.getDbConfig().getUrl());
-        bootstrapProperties.setProperty(BootstrapConfig.DB_USERNAME, bootstrapConfig.getDbConfig().getUsername());
-        bootstrapProperties.setProperty(BootstrapConfig.DB_PASSWORD, bootstrapConfig.getDbConfig().getPassword());
-        bootstrapProperties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
-        bootstrapProperties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
-        return bootstrapProperties;
+        Properties properties = new Properties();
+        properties.setProperty(BootstrapConfig.DB_URL, bootstrapConfig.getDbConfig().getUrl());
+        setIfNotBlank(properties, BootstrapConfig.DB_USERNAME, bootstrapConfig.getDbConfig().getUsername());
+        setIfNotBlank(properties, BootstrapConfig.DB_PASSWORD, bootstrapConfig.getDbConfig().getPassword());
+        properties.setProperty(BootstrapConfig.TENANT_ID, bootstrapConfig.getTenantId());
+        properties.setProperty(BootstrapConfig.CONFIG_SOURCE, bootstrapConfig.getConfigSource().getName());
+        return properties;
+    }
+
+    private static void setIfNotBlank(Properties properties, String property, String value) {
+        if (properties == null || StringUtils.isBlank(property) || StringUtils.isBlank(value)) {
+            return;
+        }
+        properties.setProperty(property, value);
     }
 
     /**

@@ -22,7 +22,6 @@ import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.api.JarInformation;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -57,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
 import static org.motechproject.server.api.BundleIcon.ICON_LOCATIONS;
 
 
@@ -365,7 +365,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         }
     }
 
-    @MotechListener(subjects = ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT)
+    @MotechListener(subjects = FILE_CHANGED_EVENT_SUBJECT)
     public void changeMaxUploadSize(MotechEvent event) {
         String uploadSize = settingsFacade.getPlatformSettings().getUploadSize();
 

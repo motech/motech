@@ -6,6 +6,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.config" />
+        <context:annotation-config/>
+        <context:component-scan base-package="org.motechproject.config">
+            <context:exclude-filter type="regex" expression="org\.motechproject\.config\.core\..*"/>
+        </context:component-scan>
 </beans>

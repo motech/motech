@@ -1,5 +1,6 @@
 package org.motechproject.commons.couchdb.dao;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -10,6 +11,9 @@ import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base class that all CouchDb repository classes should extend.
+ */
 public abstract class MotechBaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
     private Class<T> type;
 
@@ -31,6 +35,23 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
         } else {
             throw new BusinessIdNotUniqueException(businessFieldName, businessId);
         }
+    }
+
+    public void bulkAddOrUpdate(List<T> records) {
+        if (CollectionUtils.isNotEmpty(records)) {
+            db.executeBulk(records);
+        }
+    }
+
+    public void bulkDelete(List<T> records) {
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        List<BulkDeleteDocument> bulkDocs = new ArrayList<>();
+        for (T record : records) {
+            bulkDocs.add(BulkDeleteDocument.of(record));
+        }
+        db.executeBulk(bulkDocs);
     }
 
     private List<T> entities(String businessFieldName, String businessId) {

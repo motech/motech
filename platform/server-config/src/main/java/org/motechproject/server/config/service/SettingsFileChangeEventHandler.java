@@ -18,10 +18,13 @@ public class SettingsFileChangeEventHandler {
     private AllSettings allSettings;
 
     @Autowired
+    private ConfigLoader configLoader;
+
+    @Autowired
     private ConfigurationService configurationService;
 
     public void reloadSettings() {
-        SettingsRecord settingsRecord = configurationService.loadConfig();
+        SettingsRecord settingsRecord = configLoader.loadMotechSettings();
         SettingsRecord dbSettings = allSettings.getSettings();
         dbSettings.updateSettings(settingsRecord);
         allSettings.addOrUpdateSettings(dbSettings);

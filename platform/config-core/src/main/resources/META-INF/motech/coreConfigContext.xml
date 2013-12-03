@@ -6,10 +6,11 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.config.core" />
+    <context:component-scan base-package="org.motechproject.config.core"/>
 
-    <bean id="propertiesConfiguration" class="org.apache.commons.configuration.PropertiesConfiguration" init-method="load">
-        <property name="basePath" value="#{systemProperties['user.home']}/.motech" />
-        <property name="fileName" value="config-locations.properties" />
+    <bean id="propertiesConfiguration" class="org.apache.commons.configuration.PropertiesConfiguration"
+          init-method="load">
+        <property name="basePath" value="#{systemProperties['user.home']}/.motech"/>
+        <property name="fileName" value="config-locations.properties"/>
     </bean>
 </beans>

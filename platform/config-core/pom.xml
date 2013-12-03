@@ -30,6 +30,10 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>org.motechproject.org.apache.commons.configuration</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.io</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -44,9 +48,20 @@
                         <Export-Package>
                             org.motechproject.config.core;version=${project.version},
                             org.motechproject.config.core.service;version=${project.version},
-                            org.motechproject.config.core.domain;version=${project.version}
+                            org.motechproject.config.core.filestore;version=${project.version},
+                            org.motechproject.config.core.domain;version=${project.version},
+                            org.motechproject.config.core.constants;version=${project.version}
                        </Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            org.aopalliance.aop,
+                            org.springframework.aop,
+                            org.springframework.aop.framework,
+                            org.springframework.cache.config,
+                            org.springframework.cache.concurrent,
+                            org.springframework.cache.support,
+                            org.apache.commons.configuration,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

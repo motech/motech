@@ -14,7 +14,6 @@ import org.motechproject.server.api.BundleIcon;
 import org.motechproject.server.api.BundleInformation;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -37,6 +36,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.config.core.constants.ConfigurationConstants.FILE_CHANGED_EVENT_SUBJECT;
 
 public class BundleAdminServiceTest {
 
@@ -235,7 +235,7 @@ public class BundleAdminServiceTest {
         when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
         when(motechSettings.getUploadSize()).thenReturn("1000000");
 
-        MotechEvent motechEvent = new MotechEvent(ConfigFileMonitor.FILE_CHANGED_EVENT_SUBJECT);
+        MotechEvent motechEvent = new MotechEvent(FILE_CHANGED_EVENT_SUBJECT);
 
         moduleAdminService.changeMaxUploadSize(motechEvent);
 

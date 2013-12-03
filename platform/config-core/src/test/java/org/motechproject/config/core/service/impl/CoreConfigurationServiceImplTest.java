@@ -1,7 +1,9 @@
 package org.motechproject.config.core.service.impl;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -21,10 +23,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -51,6 +55,8 @@ public class CoreConfigurationServiceImplTest {
     private ConfigFileReader configFileReaderMock;
     @Mock
     private ConfigLocationFileStore configLocationFileStoreMock;
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private CoreConfigurationServiceImpl coreConfigurationService;
 
@@ -226,13 +232,27 @@ public class CoreConfigurationServiceImplTest {
     }
 
     @Test
-    public void shouldGetConfigLocations() {
-        final ArrayList<ConfigLocation> configLocations = new ArrayList<>();
-        final ConfigLocation configLocation = new ConfigLocation("/etc");
-        configLocations.add(configLocation);
-        when(configLocationFileStoreMock.getAll()).thenReturn(configLocations);
-        final ConfigLocation actualConfigLocation = coreConfigurationService.getConfigLocations().iterator().next();
-        assertThat(actualConfigLocation, equalTo(configLocation));
+    public void shouldGetConfigLocation() {
+        String correctConfigPath = this.getClass().getClassLoader().getResource("config").getPath();
+        String inCorrectConfigPath = this.getClass().getClassLoader().getResource("some_random_dir").getPath();
+        ConfigLocation incorrectLocation = new ConfigLocation(inCorrectConfigPath);
+        ConfigLocation correctLocation = new ConfigLocation(correctConfigPath);
+        when(configLocationFileStoreMock.getAll()).thenReturn(Arrays.asList(incorrectLocation, correctLocation));
+
+        ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
+
+        assertEquals(correctLocation, configLocation);
+    }
+
+    @Test
+    public void shouldThrowExceptionIfNoneOfTheConfigLocationsAreReadable() {
+        String inCorrectConfigPath = this.getClass().getClassLoader().getResource("some_random_dir").getPath();
+        when(configLocationFileStoreMock.getAll()).thenReturn(Arrays.asList(new ConfigLocation(inCorrectConfigPath)));
+
+        expectedException.expect(MotechConfigurationException.class);
+        expectedException.expectMessage("Could not read settings from any of the config locations.");
+
+        coreConfigurationService.getConfigLocation();
     }
 
     @Test

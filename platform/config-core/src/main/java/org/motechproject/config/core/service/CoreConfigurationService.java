@@ -20,15 +20,15 @@ public interface CoreConfigurationService {
     /**
      * Saves the bootstrap configuration
      *
-     * @param bootstrapConfig
+     * @param bootstrapConfig Bootstrap config
      */
     void saveBootstrapConfig(BootstrapConfig bootstrapConfig);
 
     /**
-     * Gets the list of configuration locations in the order of priority.
-     * @return config locations.
+     * Returns the config location where all the config files are present.
+     * @return configLocation.
      */
-    Iterable<ConfigLocation> getConfigLocations();
+    ConfigLocation getConfigLocation();
 
     /**
      * Adds the new config location to the list of existing config locations where configurations are loaded from in the file system.

@@ -2,6 +2,9 @@ package org.motechproject.commons.couchdb.model;
 
 import org.ektorp.support.CouchDbDocument;
 
+/**
+ * Base class that all CouchDb entities should extend.
+ */
 public abstract class MotechBaseDataObject extends CouchDbDocument {
 
     private String type;
@@ -23,5 +26,4 @@ public abstract class MotechBaseDataObject extends CouchDbDocument {
     }
 
     private static final long serialVersionUID = 1L;
-
 }

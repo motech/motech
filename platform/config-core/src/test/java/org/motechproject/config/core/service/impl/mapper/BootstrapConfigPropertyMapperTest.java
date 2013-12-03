@@ -10,6 +10,7 @@ import org.motechproject.config.core.domain.DBConfig;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.motechproject.config.core.domain.BootstrapConfig.CONFIG_SOURCE;
 import static org.motechproject.config.core.domain.BootstrapConfig.DB_PASSWORD;
 import static org.motechproject.config.core.domain.BootstrapConfig.DB_URL;
@@ -32,6 +33,17 @@ public class BootstrapConfigPropertyMapperTest {
         Assert.assertThat(bootstrapProperties.getProperty(DB_USERNAME), Matchers.is(username));
         Assert.assertThat(bootstrapProperties.getProperty(DB_PASSWORD), Matchers.is(password));
         Assert.assertThat(bootstrapProperties.getProperty(TENANT_ID), Matchers.is(tenantId));
+        Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
+    }
+
+    @Test
+    public void shouldMapToPropertiesFromBootstrapConfig_WhenUsernameAndPasswordAreBlank() {
+        Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(new BootstrapConfig(new DBConfig(url, null, "  "), tenantId, configSource));
+
+        Assert.assertThat(bootstrapProperties.getProperty(DB_URL), is(url));
+        Assert.assertThat(bootstrapProperties.getProperty(DB_USERNAME), nullValue());
+        Assert.assertThat(bootstrapProperties.getProperty(DB_PASSWORD), nullValue());
+        Assert.assertThat(bootstrapProperties.getProperty(TENANT_ID), is(tenantId));
         Assert.assertThat(bootstrapProperties.getProperty(CONFIG_SOURCE), is(configSource.getName()));
     }
 
