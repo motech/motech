@@ -1,3 +1,79 @@
-<div class="alert alert-error">
-    <strong>{{msg('mds.warning')}}</strong> {{msg('mds.warning.viewIsUnderConstruction')}}
+<div>
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#browsing-displayed">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.advanced.dataBrowsing.displayFieldsTitle')}}
+        </div>
+        <div class="accordion-content collapse in" id="browsing-displayed">
+            <div class="collapse-body">
+                <div id="availableFieldsContainer" class="outer-container">
+                    <h4>{{msg('mds.advanced.dataBrowsing.availableFields')}}</h4>
+                    <div class="scroll-container">
+                        <div class="container-space" connected-list-source="browsingAvailable" connect-with="browsing" droppable="true">
+                            <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-source-item ng-repeat="field in browsingAvailable">
+                                {{field.basic.displayName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-container">
+                    <div class="btn-group-vertical">
+                        <button connected-list-btn-from connect-with="browsing" class="btn" ng-disabled="!canMoveLeft()">
+                            <span class="icon-chevron-left" />
+                        </button>
+                        <button connected-list-btn-from-all connect-with="browsing" class="btn"  ng-disabled="!canMoveAllLeft()">
+                            <span class="icon-chevron-left" /><span class="icon-chevron-left" />
+                        </button>
+                    </div>
+                    <br/><br/>
+                    <div class="btn-group-vertical">
+                        <button connected-list-btn-to-all connect-with="browsing" class="btn" ng-disabled="!canMoveAllRight()">
+                            <span class="icon-chevron-right" /><span class="icon-chevron-right" />
+                        </button>
+                        <button connected-list-btn-to connect-with="browsing" class="btn" ng-disabled="!canMoveRight()">
+                            <span class="icon-chevron-right" />
+                        </button>
+                    </div>
+                </div>
+
+                <div id="displayFieldsContainer" class="outer-container">
+                    <h4>
+                        {{msg('mds.advanced.dataBrowsing.displayFields')}}
+                        <div class="btn-group updown-buttons">
+                            <button ng-click="itemsUp()" class="btn btn-xs button-flat" ng-disabled="!canMoveUp()">
+                                <span class="icon-chevron-up"></span>
+                            </button>
+                            <button ng-click="itemsDown()" class="btn btn-xs button-flat" ng-disabled="!canMoveDown()">
+                                <span class="icon-chevron-down"></span>
+                            </button>
+                        </div>
+                    </h4>
+                    <div class="scroll-container">
+                        <div class="container-space" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
+                            <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-target-item ng-repeat="field in browsingDisplayed">
+                                {{field.basic.displayName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion" mds-header-accordion>
+        <div class="inbox-header" data-toggle="collapse" data-target="#browsing-filters">
+            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.advanced.dataBrowsing.filtersTitle')}}
+        </div>
+
+        <div id="browsing-filters" class="accordion-content collapse in">
+            <form>
+                <label class="checkbox inline" ng-repeat="field in fields | filter:isFilterable">
+                    <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange()"/> {{field.basic.displayName}}
+                </label>
+            </form>
+        </div>
+
+    </div>
+
+
 </div>

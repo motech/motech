@@ -7,8 +7,8 @@
     /**
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    mds.controller('SchemaEditorCtrl', function ($scope, $http, Entities, Fields, FieldsValidation) {
-        var setFields, setAdvancedSettings, setMetadata, setRest;
+    mds.controller('SchemaEditorCtrl', function ($scope, $timeout, $http, Entities, Fields, FieldsValidation) {
+        var setFields, setAdvancedSettings, setMetadata, setRest, setBrowsing;
 
         /**
         * This function is used to set fields array. If fields are properly taken from server,
@@ -20,6 +20,7 @@
                 $scope.toRemove = [];
                 setMetadata($scope.selectedEntity.id);
                 setRest();
+                setBrowsing($scope.fields, $scope.advancedSettings.browsing);
                 unblockUI();
             });
         };
@@ -87,6 +88,25 @@
         };
 
         /**
+        * This function splits fields to ones that are displayed and ones that are not
+        */
+        setBrowsing = function(fields, browsing) {
+            if(fields !== undefined && browsing !== undefined) {
+                $scope.browsingAvailable = $.grep(fields, function(field) {
+                    return browsing.displayedFields.indexOf(field.basic.name) < 0;
+                });
+                $scope.browsingDisplayed = $.grep(fields, function(field) {
+                    return browsing.displayedFields.indexOf(field.basic.name) >= 0;
+                });
+                $scope.browsingAvailable.sort(function(a,b) {
+                    if (a.basic.displayName < b.basic.displayName) { return -1; }
+                    if (a.basic.displayName > b.basic.displayName) { return 1; }
+                    return 0;
+                });
+            }
+        };
+
+        /**
         * This function is used to set advanced settings. If settings is properly taken from server,
         * the related $scope fields will be also set.
         */
@@ -103,7 +123,9 @@
                     } else {
                         $scope.activeIndex = -1;
                     }
+
                     setRest();
+                    setBrowsing($scope.fields, $scope.advancedSettings.browsing);
                     unblockUI();
                 }
             );
@@ -202,6 +224,17 @@
         * The $scope.lookup persists currently active (selected) index
         */
         $scope.lookup = undefined;
+
+        /**
+        * The $scope.browsingAvailable and $scope.browsingDisplayed separates fields that are visible from the ones that are not.
+        */
+        $scope.browsingAvailable = [];
+        $scope.browsingDisplayed = [];
+
+        /**
+        * The $scope.filterableTypes contains types that can be used as filters.
+        */
+        $scope.filterableTypes = ["mds.field.combobox", "mds.field.boolean", "mds.field.date", "mds.field.time", "mds.field.datetime"];
 
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
@@ -493,7 +526,7 @@
                     },
                     metadata: {}
                 });
-
+                setBrowsing($scope.fields, $scope.advancedSettings.browsing);
                 selector = '#show-field-details-{0}'.format($scope.fields.length - 1);
                 $scope.newField = {};
                 angular.element('#newField').select2('val', null);
@@ -518,6 +551,7 @@
             motechConfirm('mds.warning.removeField', 'mds.warning', function (val) {
                 if (val) {
                     $scope.safeApply(function () {
+                        var filterableIndex;
                         $scope.fields.removeObject(field);
 
                         if (typeof $scope.findFieldById(field.id, $scope.selectedEntityAdvancedAvailableFields) !== "undefined") {
@@ -526,7 +560,12 @@
                             $scope.selectedEntityAdvancedFields.removeObject(field);
                         }
 
-                        // add only a existing field
+                        filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.basic.name);
+                        if(filterableIndex >= 0) {
+                            $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
+                        }
+
+                        // add only an existing field
                         if (field.id) {
                             $scope.toRemove.push(field);
                         }
@@ -663,6 +702,7 @@
             $scope.saveRest();
 
             angular.forEach($scope.fields, function (field, idx) {
+
                 Fields.save({entityId: $scope.selectedEntity.id}, field, function () {
                     setSave(idx);
                 }, function (response) {
@@ -847,46 +887,31 @@
         };
 
         /**
-        * Moves all fields in rest from available table to selected table.
+        * Checks if there are fields selected to move left in REST view.
         */
-        $scope.restFieldsRightAll = function() {
-            angular.forEach($scope.selectedEntityAdvancedAvailableFields, function (field) {
-                $scope.selectedEntityAdvancedFields.push(field);
-            });
-            $scope.selectedEntityAdvancedAvailableFields = [];
-            $scope.safeApply();
+        $scope.canMoveLeftRest = function() {
+             return $('.target-item.rest-fields.selected').size() > 0;
         };
 
         /**
-        * Moves all fields in rest from selected table to available table.
+        * Checks if there are fields to move left in REST view.
         */
-        $scope.restFieldsLeftAll = function() {
-            angular.forEach($scope.selectedEntityAdvancedFields, function (field) {
-                $scope.selectedEntityAdvancedAvailableFields.push(field);
-            });
-            $scope.selectedEntityAdvancedFields = [];
-            $scope.safeApply();
+        $scope.canMoveAllLeftRest = function() {
+            return $scope.selectedEntityAdvancedFields.length > 0;
         };
 
         /**
-        * Handles rest fields drop events.
+        * Checks if there are fields selected to move right in REST view.
         */
-        $scope.handleDrop = function(fieldId, containerId) {
-            var field;
-            if (containerId === "rest-fields-available") {
-                field = $scope.findFieldById(fieldId, $scope.selectedEntityAdvancedFields);
-                if (typeof field !== "undefined") {
-                    $scope.selectedEntityAdvancedFields.removeObject(field);
-                    $scope.selectedEntityAdvancedAvailableFields.push(field);
-                }
-            } else {
-                field = $scope.findFieldById(fieldId, $scope.selectedEntityAdvancedAvailableFields);
-                if (typeof field !== "undefined") {
-                    $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
-                    $scope.selectedEntityAdvancedFields.push(field);
-                }
-            }
-            $scope.safeApply();
+        $scope.canMoveRightRest = function() {
+             return $('.source-item.rest-fields.selected').size() > 0;
+        };
+
+        /**
+        * Checks if there are fields to move right in REST view.
+        */
+        $scope.canMoveAllRightRest = function() {
+            return $scope.selectedEntityAdvancedAvailableFields.length > 0;
         };
 
         /* VALIDATION FUNCTIONS */
@@ -973,6 +998,197 @@
             return '';
         };
 
+        /* BROWSING FUNCTIONS */
+
+        /**
+        * Checks if field is filterable.
+        */
+        $scope.isFilterable = function(field) {
+            if ($scope.filterableTypes.indexOf(field.type.displayName) < 0) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        /**
+        * Function called each time when user changes the checkbox state on 'Browsing settings' view.
+        * Responsible for updating the model.
+        */
+        $scope.onFilterableChange = function() {
+            if(this.checked) {
+                $scope.advancedSettings.browsing.filterableFields.push(this.field.basic.name);
+            } else {
+                $scope.advancedSettings.browsing.filterableFields
+                    .splice($scope.advancedSettings.browsing.filterableFields.indexOf(this.field.basic.name), 1);
+            }
+        };
+
+        /**
+        * Callback function called each time when user adds, removes or moves items in 'Displayed Fields' on
+        * 'Browsing Settings' view. Responsible for updating the model.
+        */
+        $scope.onDisplayedChange = function(container) {
+            $scope.advancedSettings.browsing.displayedFields.length = 0;
+            angular.forEach(container, function(field) {
+                $scope.advancedSettings.browsing.displayedFields.push(field.basic.name);
+            });
+        };
+
+        /**
+        * Function moving "Fields to display" item up (in model).
+        */
+        $scope.targetItemMoveUp = function(index) {
+            var tmp;
+            if (index > 0) {
+                tmp = $scope.browsingDisplayed[index];
+                $scope.browsingDisplayed[index] = $scope.browsingDisplayed[index - 1];
+                $scope.browsingDisplayed[index - 1] = tmp;
+            }
+        };
+
+        /**
+        * Function moving "Fields to display" item down (in model).
+        */
+        $scope.targetItemMoveDown = function(index) {
+            var tmp;
+            if (index < $scope.browsingDisplayed.length - 1) {
+                tmp = $scope.browsingDisplayed[index + 1];
+                $scope.browsingDisplayed[index + 1] = $scope.browsingDisplayed[index];
+                $scope.browsingDisplayed[index] = tmp;
+            }
+        };
+
+        /**
+        * Function moving selected "Fields to display" items up (in model).
+        */
+        $scope.itemsUp = function() {
+            var items = $(".connected-list-target.browsing").children(),
+                indices = [],
+                firstUnselectedIndex = parseInt(items.filter(':not(.selected)').first().attr('item-index'),10),
+                selected = {};
+
+            items.filter('.selected').each(function() {
+                var item = $(this),
+                index =  parseInt($(item).attr('item-index'), 10);
+                    // save 'selected' state
+                    selected[$scope.browsingDisplayed[index].basic.name] = true;
+                    if(firstUnselectedIndex < index) {
+                        indices.push(index);
+                    }
+            });
+            angular.forEach(indices, function(index) {
+                $scope.targetItemMoveUp(index);
+            });
+            // restore 'selected' state
+            $timeout(function() {
+                $(".connected-list-target.browsing").children().each(function(index) {
+                    if(selected[$scope.browsingDisplayed[index].basic.name]) {
+                        $(this).addClass('selected');
+                    }
+                });
+            });
+        };
+
+        /**
+        * Function moving selected "Fields to display" items down (in model).
+        */
+        $scope.itemsDown = function() {
+            var items = $(".connected-list-target.browsing").children(),
+                indices = [],
+                lastUnselectedIndex = parseInt(items.filter(':not(.selected)').last().attr('item-index'),10),
+                selected = {};
+
+            items.filter('.selected').each(function() {
+                var item = $(this),
+                index =  parseInt($(item).attr('item-index'), 10);
+                // save 'selected' state
+                selected[$scope.browsingDisplayed[index].basic.name] = true;
+                if(lastUnselectedIndex > index) {
+                    indices.push(index);
+                }
+
+            });
+            angular.forEach(indices.reverse(), function(index) {
+                $scope.targetItemMoveDown(index);
+            });
+            // restore 'selected' state
+            $timeout(function() {
+                $(".connected-list-target.browsing").children().each(function(index) {
+                    if(selected[$scope.browsingDisplayed[index].basic.name]) {
+                        $(this).addClass('selected');
+                    }
+                });
+            });
+        };
+
+        /**
+        * Checks if there are fields allowed to move up in 'Browsing Settings' view.
+        */
+        $scope.canMoveUp = function() {
+            var items = $('.target-item.browsing'),
+                wasLastSelected = true,
+                ret = false;
+            if (items.filter('.selected').size() === 0) {
+                return false;
+            }
+            items.each(function() {
+                var isThisSelected = $(this).hasClass('selected');
+                if (!wasLastSelected && isThisSelected) {
+                    ret = true;
+                }
+                wasLastSelected = isThisSelected;
+            });
+            return ret;
+        };
+
+        /**
+        * Checks if there are fields allowed to move up in 'Browsing Settings' view.
+        */
+        $scope.canMoveDown = function() {
+            var items = $('.target-item.browsing'),
+                wasLastSelected = true,
+                ret = false;
+            if (items.filter('.selected').size() === 0) {
+                return false;
+            }
+            $(items.get().reverse()).each(function() {
+                var isThisSelected = $(this).hasClass('selected');
+                if (!wasLastSelected && isThisSelected) {
+                    ret = true;
+                }
+                wasLastSelected = isThisSelected;
+            });
+            return ret;
+        };
+
+        /**
+        * Checks if there are fields selected to move left in 'Browsing Settings' view.
+        */
+        $scope.canMoveLeft = function() {
+             return $('.target-item.browsing.selected').size() > 0;
+        };
+
+        /**
+        * Checks if there are fields to move left in 'Browsing Settings' view.
+        */
+        $scope.canMoveAllLeft = function() {
+            return $scope.browsingDisplayed.length > 0;
+        };
+
+        /**
+        * Checks if there are fields selected to move right in 'Browsing Settings' view.
+        */
+        $scope.canMoveRight = function() {
+             return $('.source-item.browsing.selected').size() > 0;
+        };
+
+        /**
+        * Checks if there are fields to move right in 'Browsing Settings' view.
+        */
+        $scope.canMoveAllRight = function() {
+            return $scope.browsingAvailable.length > 0;
+        };
 
         /* UTILITY FUNCTIONS */
 
@@ -1165,7 +1381,8 @@
                 delete obj.$$hashKey;
             });
 
-            changedAdvancedSettings = ! (_.isEqual(
+            changedAdvancedSettings = $scope.originalAdvancedSettings !== undefined && $scope.advancedSettings !== undefined
+            && !(_.isEqual(
                 $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
             ) && arraysEqual(
                 $scope.advancedSettings.indexes, $scope.originalAdvancedSettings.indexes
@@ -1175,6 +1392,10 @@
                 $scope.selectedEntityRestLookups, $scope.originalSelectedEntityRestLookups
             ) && _.isEqual(
                 $scope.selectedEntityAdvancedFields, $scope.originalSelectedEntityAdvancedFields
+            ) && arraysEqual(
+                $scope.advancedSettings.browsing.filterableFields, $scope.originalAdvancedSettings.browsing.filterableFields
+            ) && arraysEqual(
+                $scope.advancedSettings.browsing.displayedFields, $scope.originalAdvancedSettings.browsing.displayedFields
             ));
 
             angular.forEach(metadataClone, function (obj) {
@@ -1356,17 +1577,6 @@
                 $scope.newField.validation = FieldsValidation.getForType({type: type});
             }
         });
-    });
-
-    /**
-    * The AdvancedObjectSettingsCtrl controller is used on 'Schema Editor/Data Browsing' view.
-    */
-    mds.controller('AdvancedObjectSettingsCtrl', function($scope) {
-        $scope.onAdvancedClose = function() {
-            var modal = angular.element('#advancedObjectSettingsModal');
-
-            modal.modal('hide');
-        };
     });
 
     /**

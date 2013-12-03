@@ -19,6 +19,7 @@
     display: none;
 }
 
+
 .modal-content.large {
     width: 200%;
     margin-left: -50%;
@@ -243,23 +244,27 @@
     padding: 10px 5px 5px 5px;
 }
 
-.panel {
-    margin-bottom: 20px;
-    background-color: #fff;
-    border: 1px solid rgb(212, 233, 246);
-    border-radius: 4px;
+.settings-input-group {
+    vertical-align: top;
+    display: inline-block;
 }
 
-.panel-head {
-    padding: 10px 15px;
-    background-color: rgb(234, 244, 250);
-    border-bottom: 1px solid rgb(212, 233, 246);
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
+.settings-checkbox input {
+    margin: -4px 0 0 10px; !important
+    vertical-align: top;
+    display: inline-block;
 }
 
-.main-body {
-    padding: 15px;
+.filter-checkbox-box {
+    float: right;
+    padding: 5px;
+    background-color: rgb(212, 233, 246);
+}
+
+.filter-checkbox {
+    margin: 2px !important;
+    height: 16px;
+    width: 16px !important;
 }
 
 .collapse-body {
@@ -268,11 +273,15 @@
     overflow: hidden;
 }
 
-.container {
+.container-space {
     height: 100%;
     width: 100%;
     overflow-y: auto;
     background-color: rgb(255, 255, 255);
+}
+
+.container-space.over {
+    background-color: rgb(208, 240, 188);
 }
 
 .outer-container {
@@ -297,45 +306,24 @@
     margin: 36px 50px 0px 50px;
 }
 
-.buttons-container .btn {
+.buttons-container .btn, .updown-buttons .btn {
     color: rgb(34, 68, 119);
+}
+
+.updown-buttons {
+    display: inline;
+    float: right;
 }
 
 .container-item {
     background-color: rgb(228, 241, 249);
-    margin: 5px;
+    border-bottom: 1px solid;
     clear: both;
     overflow: hidden;
-}
-
-.item-text {
-    padding: 5px 5px 5px 10px;
-}
-
-.settings-input-group {
-    vertical-align: top;
-    display: inline-block;
-}
-
-.settings-checkbox input {
-    margin: -4px 0 0 10px; !important
-    vertical-align: top;
-    display: inline-block;
-}
-
-.filter-checkbox-box {
-    float: right;
     padding: 5px;
-    background-color: rgb(212, 233, 246);
 }
 
-.filter-checkbox {
-    margin: 2px !important;
-    height: 16px;
-    width: 16px !important;
-}
-
-.rest-fields-item-selected {
+.container-item.selected {
     background-color: rgb(0, 136, 204);
     color: rgb(255, 255, 255);
 }
@@ -359,4 +347,12 @@
     width: 20px;
     height: 20px;
     padding: 8px 2px;
+}
+
+.container-item.over {
+    background-color: rgb(208, 240, 188);
+}
+
+.button-flat {
+    width: 48px;
 }

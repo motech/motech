@@ -183,109 +183,523 @@
         };
     });
 
-    mds.directive('restFieldsItem', function () {
+    /**
+    * Add "Item" functionality of "Connected Lists" control to the element. "Connected Lists Group"
+    * is passed as a value of the attribute. If item is selected '.connected-list-item-selected-{group}
+    * class is added.
+    */
+    mds.directive('connectedListTargetItem', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
-                var elem = angular.element(element),
-                    group = elem.attr('rest-fields-item');
+                var jQelem = angular.element(element),
+                    elem = element[0],
+                    connectWith = jQelem.attr('connect-with'),
+                    sourceContainer = $('.connected-list-source.' + connectWith),
+                    targetContainer = $('.connected-list-target.' + connectWith);
 
-                elem.click(function() {
-                    $(this).toggleClass("rest-fields-item-selected");
+                jQelem.addClass(connectWith);
+                jQelem.addClass("target-item");
+
+                jQelem.click(function() {
+                    $(this).toggleClass("selected");
+                    scope.$apply();
                 });
 
-                elem.dblclick(function() {
-                    var elem = angular.element(element),
-                        id = elem.attr('fieldId'),
-                        order = elem.attr('order'),
-                        item;
+                jQelem.dblclick(function() {
+                    var e = $(this),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        index = parseInt(e.attr('item-index'), 10),
+                        item = target[index];
+                    e.removeClass("selected");
+                    scope.$apply(function() {
+                        source.push(item);
+                        target.splice(index, 1);
+                        sourceContainer.trigger('contentChange', [source]);
+                        targetContainer.trigger('contentChange', [target]);
+                    });
+                });
 
-                    if (typeof scope.findFieldById(id, scope.selectedEntityAdvancedAvailableFields) === "undefined") {
-                        item = scope.findFieldById(id, scope.selectedEntityAdvancedFields);
-                        scope.selectedEntityAdvancedFields.splice(order, 1);
-                        scope.selectedEntityAdvancedAvailableFields.push(item);
-                    } else {
-                        item = scope.findFieldById(id, scope.selectedEntityAdvancedAvailableFields);
-                        scope.selectedEntityAdvancedAvailableFields.splice(order, 1);
-                        scope.selectedEntityAdvancedFields.push(item);
+                elem.addEventListener('dragenter', function(e) {
+                    $(this).addClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragleave', function(e) {
+                    $(this).removeClass('over');
+                }, false);
+
+                elem.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragstart', function(e) {
+                    var item = $(this);
+                    item.addClass('selected');
+                    item.fadeTo(100, 0.4);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('origin', 'target');
+                    e.dataTransfer.setData('index', item.attr('item-index'));
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragend', function(e) {
+                    var item = $(this);
+                    item.removeClass('selected');
+                    item.fadeTo(100, 1.0);
+                    return false;
+                }, false);
+
+                elem.addEventListener('drop', function(e) {
+                    e.stopPropagation();
+                    var itemOriginContainer = e.dataTransfer.getData('origin'),
+                        index = parseInt(e.dataTransfer.getData('index'), 10),
+                        thisIndex = parseInt($(this).attr('item-index'), 10),
+                        source, target, item;
+
+                    $(this).removeClass('over');
+                    source = scope[sourceContainer.attr('connected-list-source')];
+                    target = scope[targetContainer.attr('connected-list-target')];
+
+                    if (itemOriginContainer === 'target') {
+                        // movement inside one container
+                        item = target[index];
+                        if(thisIndex > index) {
+                            thisIndex += 1;
+                        }
+                        scope.$apply(function() {
+                            target[index] = 'null';
+                            target.splice(thisIndex, 0, item);
+                            target.splice(target.indexOf('null'), 1);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    } else if (itemOriginContainer === 'source') {
+                        item = source[index];
+                        scope.$apply(function() {
+                            target.splice(thisIndex, 0, item);
+                            source.splice(index, 1);
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
                     }
-                    scope.safeApply();
-                });
+                    return false;
+                }, false);
 
-                elem.disableSelection();
+                jQelem.disableSelection();
             }
         };
     });
 
-    mds.directive('restFieldsRight', function () {
+    mds.directive('connectedListSourceItem', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var jQelem = angular.element(element),
+                    elem = element[0],
+                    connectWith = jQelem.attr('connect-with'),
+                    sourceContainer = $('.connected-list-source.' + connectWith),
+                    targetContainer = $('.connected-list-target.' + connectWith);
+
+                jQelem.addClass(connectWith);
+                jQelem.addClass("source-item");
+
+                jQelem.click(function() {
+                    $(this).toggleClass("selected");
+                    scope.$apply();
+                });
+
+                jQelem.dblclick(function() {
+                    var e = $(this),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        index = parseInt(e.attr('item-index'), 10),
+                        item = source[index];
+                    e.removeClass("selected");
+                    scope.$apply(function() {
+                        target.push(item);
+                        source.splice(index, 1);
+                        sourceContainer.trigger('contentChange', [source]);
+                        targetContainer.trigger('contentChange', [target]);
+                    });
+                });
+
+                elem.addEventListener('dragenter', function(e) {
+                    $(this).addClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragleave', function(e) {
+                    $(this).removeClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragstart', function(e) {
+                    var item = $(this);
+                    item.addClass('selected');
+                    item.fadeTo(100, 0.4);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('origin', 'source');
+                    e.dataTransfer.setData('index', item.attr('item-index'));
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragend', function(e) {
+                    var item = $(this);
+                    item.removeClass('selected');
+                    item.fadeTo(100, 1.0);
+                    return false;
+                }, false);
+
+                elem.addEventListener('drop', function(e) {
+                    e.stopPropagation();
+                    var itemOriginContainer = e.dataTransfer.getData('origin'),
+                        index = parseInt(e.dataTransfer.getData('index'), 10),
+                        thisIndex = parseInt($(this).attr('item-index'), 10),
+                        source, target, item;
+
+                    $(this).removeClass('over');
+                    source = scope[sourceContainer.attr('connected-list-source')];
+                    target = scope[targetContainer.attr('connected-list-target')];
+                    if (itemOriginContainer === 'source') {
+                        // movement inside one container
+                        item = source[index];
+                        if(thisIndex > index) {
+                            thisIndex += 1;
+                        }
+                        scope.$apply(function() {
+                            source[index] = 'null';
+                            source.splice(thisIndex, 0, item);
+                            source.splice(source.indexOf('null'), 1);
+                            sourceContainer.trigger('contentChange', [source]);
+                        });
+                    } else if (itemOriginContainer === 'target') {
+                        item = target[index];
+                        scope.$apply(function() {
+                            source.splice(thisIndex, 0, item);
+                            target.splice(index, 1);
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    }
+                    return false;
+                }, false);
+
+                jQelem.disableSelection();
+            }
+        };
+    });
+
+    /**
+    * Add "Source List" functionality of "Connected Lists" control to the element (container).
+    * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
+    * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
+    */
+    mds.directive('connectedListSource', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var jQelem = angular.element(element), elem = element[0], connectWith = jQelem.attr('connect-with'),
+                    onContentChange = jQelem.attr('on-content-change');
+
+                jQelem.addClass('connected-list-source');
+                jQelem.addClass(connectWith);
+
+                if(typeof scope[onContentChange] === typeof Function) {
+                    jQelem.on('contentChange', function(e, content) {
+                        scope[onContentChange](content);
+                    });
+                }
+
+                elem.addEventListener('dragenter', function(e) {
+                    $(this).addClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragleave', function(e) {
+                    $(this).removeClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    return false;
+                }, false);
+
+                elem.addEventListener('drop', function(e) {
+                    e.stopPropagation();
+
+                    var itemOriginContainer = e.dataTransfer.getData('origin'),
+                        index = parseInt(e.dataTransfer.getData('index'), 10),
+                        sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source, target, item;
+
+                    $(this).removeClass('over');
+                    source = scope[sourceContainer.attr('connected-list-source')];
+                    target = scope[targetContainer.attr('connected-list-target')];
+                    if (itemOriginContainer === 'source') {
+                        // movement inside one container
+                        item = source[index];
+                        scope.$apply(function() {
+                            source.splice(index, 1);
+                            source.push(item);
+                            sourceContainer.trigger('contentChange', [source]);
+                        });
+                    } else if (itemOriginContainer === 'target') {
+                        item = target[index];
+                        scope.$apply(function() {
+                            source.push(item);
+                            target.splice(index, 1);
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    }
+                    return false;
+                }, false);
+            }
+        };
+    });
+
+    /*
+    * Add "Target List" functionality of "Connected Lists" control to the element (container).
+    * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
+    * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
+    */
+    mds.directive('connectedListTarget', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var jQelem = angular.element(element), elem = element[0], connectWith = jQelem.attr('connect-with'),
+                    onContentChange = jQelem.attr('on-content-change');
+
+                jQelem.addClass('connected-list-target');
+                jQelem.addClass(connectWith);
+
+                if(typeof scope[onContentChange] === typeof Function) {
+                    jQelem.on('contentChange', function(e, content) {
+                        scope[onContentChange](content);
+                    });
+                }
+
+                elem.addEventListener('dragenter', function(e) {
+                    $(this).addClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragleave', function(e) {
+                    $(this).removeClass('over');
+                    return false;
+                }, false);
+
+                elem.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    return false;
+                }, false);
+
+                elem.addEventListener('drop', function(e) {
+                    e.stopPropagation();
+
+                    var itemOriginContainer = e.dataTransfer.getData('origin'),
+                        index = parseInt(e.dataTransfer.getData('index'), 10),
+                        sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source, target, item;
+
+                    $(this).removeClass('over');
+                    source = scope[sourceContainer.attr('connected-list-source')];
+                    target = scope[targetContainer.attr('connected-list-target')];
+                    if (itemOriginContainer === 'target') {
+                        // movement inside one container
+                        item = target[index];
+                        scope.$apply(function() {
+                            target.splice(index, 1);
+                            target.push(item);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    } else if (itemOriginContainer === 'source') {
+                        item = source[index];
+                        scope.$apply(function() {
+                            target.push(item);
+                            source.splice(index, 1);
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    }
+                    return false;
+                }, false);
+            }
+        };
+    });
+
+    /**
+    * Add "Move selected to target" functionality of "Connected Lists" control to the element (button).
+    * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
+    */
+    mds.directive('connectedListBtnTo', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
                 var elem = angular.element(element),
-                    selectedItemsSelector = ".rest-fields-item-selected";
+                    connectWith = elem.attr('connect-with');
 
                 elem.click(function (e) {
-                    var source = $(".rest-fields-available"),
-                        selected = source.children(selectedItemsSelector),
-                        addItems = [], removeItems = [];
+                    var sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedElements = sourceContainer.children('.selected'),
+                        selectedIndices = [], selectedItems = [];
 
-                    if (selected.size() !== 0) {
-                        selected.each(function() {
-                            var e = $(this),
-                            id = e.attr('fieldId'),
-                            item = scope.findFieldById(id, scope.selectedEntityAdvancedAvailableFields),
-                            keepGoing = true;
-
-                            $(this).toggleClass("rest-fields-item-selected");
-
-                            angular.forEach(scope.selectedEntityAdvancedAvailableFields, function (field, index) {
-                                if (field.id === id && keepGoing === true) {
-                                    scope.selectedEntityAdvancedAvailableFields.splice(index, 1);
-                                    keepGoing = false;
-                                }
+                        if(selectedElements.size() > 0) {
+                            selectedElements.each(function() {
+                                 var index = parseInt($(this).attr('item-index'), 10),
+                                     item = source[index];
+                                 $(this).removeClass('selected');
+                                 selectedIndices.push(index);
+                                 selectedItems.push(item);
                             });
-                            scope.selectedEntityAdvancedFields.push(item);
-                        });
-                    }
-                    scope.safeApply();
-                    e.preventDefault();
+                            scope.$apply(function() {
+                                 angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                                     source.splice(itemIndex, 1);
+                                 });
+                                 angular.forEach(selectedItems, function(item) {
+                                     target.push(item);
+                                 });
+                                 sourceContainer.trigger('contentChange', [source]);
+                                 targetContainer.trigger('contentChange', [target]);
+                            });
+                        }
                 });
             }
         };
     });
 
-    mds.directive('restFieldsLeft', function () {
+    /**
+    * Add "Move all to target" functionality of "Connected Lists" control to the element (button).
+    * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
+    */
+    mds.directive('connectedListBtnToAll', function () {
         return {
             restrict: 'A',
             link: function (scope, element) {
                 var elem = angular.element(element),
-                    selectedItemsSelector = ".rest-fields-item-selected";
+                    connectWith = elem.attr('connect-with');
 
                 elem.click(function (e) {
-                    var source = $(".rest-fields-selected"),
-                        selected = source.children(selectedItemsSelector),
-                        addItems = [], removeItems = [];
+                    var sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedItems = sourceContainer.children();
 
-                    if (selected.size() !== 0) {
-                        selected.each(function() {
-                            var e = $(this),
-                            id = e.attr('fieldId'),
-                            item = scope.findFieldById(id, scope.selectedEntityAdvancedFields),
-                            keepGoing = true;
-
-                            $(this).toggleClass("rest-fields-item-selected");
-
-                            angular.forEach(scope.selectedEntityAdvancedFields, function (field, index) {
-                                if (field.id === id && keepGoing === true) {
-                                    scope.selectedEntityAdvancedFields.splice(index, 1);
-                                    keepGoing = false;
-                                }
+                        if(selectedItems.size() > 0) {
+                            scope.$apply(function() {
+                                 angular.forEach(source, function(item) {
+                                     target.push(item);
+                                 });
+                                 source.length = 0;
+                                 sourceContainer.trigger('contentChange', [source]);
+                                 targetContainer.trigger('contentChange', [target]);
                             });
-                            scope.selectedEntityAdvancedAvailableFields.push(item);
-                        });
-                    }
-                    scope.safeApply();
-                    e.preventDefault();
+                        }
+                });
+            }
+        };
+    });
+
+    /**
+    * Add "Move selected to source" functionality of "Connected Lists" control to the element (button).
+    * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
+    */
+    mds.directive('connectedListBtnFrom', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var elem = angular.element(element),
+                    connectWith = elem.attr('connect-with');
+
+                elem.click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedElements = targetContainer.children('.selected'),
+                        selectedIndices = [], selectedItems = [];
+
+                        if(selectedElements.size() > 0) {
+                            selectedElements.each(function() {
+                                 var index = parseInt($(this).attr('item-index'), 10),
+                                     item = target[index];
+                                 $(this).removeClass('selected');
+                                 selectedIndices.push(index);
+                                 selectedItems.push(item);
+                            });
+                            scope.$apply(function() {
+                                 angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                                     target.splice(itemIndex, 1);
+                                 });
+                                 angular.forEach(selectedItems, function(item) {
+                                     source.push(item);
+                                 });
+                                 sourceContainer.trigger('contentChange', [source]);
+                                 targetContainer.trigger('contentChange', [target]);
+                            });
+                        }
+                });
+            }
+        };
+    });
+
+    /**
+    * Add "Move all to source" functionality of "Connected Lists" control to the element (button).
+    * "Connected Lists Group" is passed as a value of the 'connect-with' attribute.
+    */
+    mds.directive('connectedListBtnFromAll', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var elem = angular.element(element),
+                    connectWith = elem.attr('connect-with');
+
+                elem.click(function (e) {
+                    var sourceContainer = $('.connected-list-source.' + connectWith),
+                        targetContainer = $('.connected-list-target.' + connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedItems = targetContainer.children();
+
+                        if(selectedItems.size() > 0) {
+                            scope.$apply(function() {
+                                 angular.forEach(target, function(item) {
+                                    source.push(item);
+                                 });
+                                 target.length = 0;
+                                 sourceContainer.trigger('contentChange', [source]);
+                                 targetContainer.trigger('contentChange', [target]);
+                            });
+                        }
+                });
+            }
+        };
+    });
+
+    /**
+    * Initializes filterable checkbox and sets a watch in the filterable scope to track changes
+    * in "advancedSettings.browsing.filterableFields".
+    */
+    mds.directive('initFilterable', function () {
+        return {
+            restrict: 'A',
+            link: function (scope) {
+                scope.$watch('advancedSettings.browsing.filterableFields', function() {
+                    scope.checked = (scope.advancedSettings.browsing.filterableFields.indexOf(scope.field.basic.name) >= 0);
                 });
             }
         };
@@ -356,124 +770,6 @@
                         });
                     }
                 });
-            }
-        };
-    });
-
-    mds.directive('draggable', function() {
-        return function(scope, element) {
-            var el = element[0];
-
-            el.draggable = true;
-            el.addEventListener(
-                'dragstart',
-                function(e) {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('Text', this.attributes.fieldId.value);
-                    this.classList.add('drag');
-                    return false;
-                },
-                false
-            );
-
-            el.addEventListener(
-                'dragend',
-                function(e) {
-                    this.classList.remove('drag');
-                    return false;
-                },
-                false
-            );
-        };
-    });
-
-    mds.directive('draggable', function() {
-        return function(scope, element) {
-            var el = element[0];
-
-            el.draggable = true;
-            el.addEventListener(
-                'dragstart',
-                function(e) {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('Text', this.attributes.fieldId.value);
-                    this.classList.add('drag');
-                    return false;
-                },
-                false
-            );
-
-            el.addEventListener(
-                'dragend',
-                function(e) {
-                    this.classList.remove('drag');
-                    return false;
-                },
-                false
-            );
-        };
-    });
-
-    mds.directive('droppable', function() {
-        return {
-            scope: {
-              drop: '&',
-              container: '='
-            },
-            link: function(scope, element) {
-
-                var el = element[0];
-                el.addEventListener(
-                    'dragover',
-                    function(e) {
-                        e.dataTransfer.dropEffect = 'move';
-                        if (e.preventDefault) {
-                            e.preventDefault();
-                        }
-                        this.classList.add('over');
-                        return false;
-                    },
-                    false
-                );
-
-                el.addEventListener(
-                    'dragenter',
-                    function(e) {
-                        this.classList.add('over');
-                        return false;
-                    },
-                    false
-                );
-
-                el.addEventListener(
-                    'dragleave',
-                    function(e) {
-                        this.classList.remove('over');
-                        return false;
-                    },
-                    false
-                );
-
-                el.addEventListener(
-                    'drop',
-                    function(e) {
-                        if (e.stopPropagation) {
-                            e.stopPropagation();
-                        }
-                        var fieldId = e.dataTransfer.getData('Text'),
-                            containerId = this.id;
-
-                        scope.$apply(function(scope) {
-                            var fn = scope.drop();
-                            if ('undefined' !== typeof fn) {
-                                fn(fieldId, containerId);
-                            }
-                        });
-
-                        return false;
-                    },
-                    false
-                );
             }
         };
     });

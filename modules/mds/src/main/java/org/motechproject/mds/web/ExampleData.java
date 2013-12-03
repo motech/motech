@@ -268,6 +268,7 @@ public final class ExampleData {
             dto.setTracking(advanced.getTracking());
             dto.setIndexes(advanced.getIndexes());
             dto.setRestOptions(advanced.getRestOptions());
+            dto.setBrowsing(advanced.getBrowsing());
         }
     }
 

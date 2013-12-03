@@ -16,6 +16,7 @@ public class AdvancedSettingsDto {
     private TrackingDto tracking = new TrackingDto();
     private List<LookupDto> indexes = new ArrayList<>();
     private RestOptions restOptions = new RestOptions();
+    private BrowsingSettingsDto browsing = new BrowsingSettingsDto();
 
     public String getObjectId() {
         return objectId;
@@ -47,6 +48,14 @@ public class AdvancedSettingsDto {
 
     public void setRestOptions(RestOptions restOptions) {
         this.restOptions = restOptions;
+    }
+
+    public BrowsingSettingsDto getBrowsing() {
+        return browsing;
+    }
+
+    public void setBrowsing(BrowsingSettingsDto browsing) {
+        this.browsing = browsing;
     }
 
     /**
