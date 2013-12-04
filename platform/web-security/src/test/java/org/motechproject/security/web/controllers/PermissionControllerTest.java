@@ -38,7 +38,7 @@ public class PermissionControllerTest {
     @Test
     public void shouldSavePermissions() throws Exception {
         controller.perform(
-                post("/permissions/testName")
+                post("/web-api/permissions/testName")
         ).andExpect(
                 status().is(HttpStatus.OK.value())
         );
@@ -53,7 +53,7 @@ public class PermissionControllerTest {
     @Test
     public void shouldRemovePermissions() throws Exception {
         controller.perform(
-                delete("/permissions/testName")
+                delete("/web-api/permissions/testName")
         ).andExpect(
                 status().is(HttpStatus.OK.value())
         );

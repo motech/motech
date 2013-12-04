@@ -242,7 +242,7 @@
             $scope.saveRole = function() {
                 if ($scope.addOrEdit==="add") {
                     $scope.role.deletable = true;
-                    $http.post('../websecurity/api/roles/create', $scope.role).
+                    $http.post('../websecurity/api/web-api/roles/create', $scope.role).
                        success(function() {
                        motechAlert('security.create.role.saved', 'security.create');
                        $scope.roleList=Roles.query();
@@ -250,7 +250,7 @@
                        }).
                        error(function(){motechAlert('security.create.role.error', 'server.error');});
                 } else {
-                    $http.post('../websecurity/api/roles/update', $scope.role).
+                    $http.post('../websecurity/api/web-api/roles/update', $scope.role).
                        success(function() {
                        motechAlert('security.update.role.saved', 'security.update');
                        $scope.roleList=Roles.query();
@@ -263,7 +263,7 @@
 
             $scope.getRole = function(role)  {
                 $scope.addOrEdit = "edit";
-                $http.post('../websecurity/api/roles/getrole', role.roleName).success(function(data) {
+                $http.post('../websecurity/api/web-api/roles/getrole', role.roleName).success(function(data) {
                        $scope.role = data;
                        $scope.role.originalRoleName=role.roleName;
                 });
@@ -272,7 +272,7 @@
             };
 
             $scope.deleteRole = function() {
-                $http.post('../websecurity/api/roles/delete', $scope.role).
+                $http.post('../websecurity/api/web-api/roles/delete', $scope.role).
                 success(function(){
                     motechAlert('security.delete.role.saved', 'security.deleted');
                     $scope.addRoleView=!$scope.addRoleView;

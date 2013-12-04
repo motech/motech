@@ -4,7 +4,7 @@
     /* Services */
 
     angular.module('roleService', ['ngResource']).factory('Roles', function($resource) {
-        return $resource('../websecurity/api/roles');
+        return $resource('../websecurity/api/web-api/roles');
     });
 
     angular.module('userService', ['ngResource']).factory('Users', function($resource) {
@@ -12,6 +12,6 @@
     });
 
     angular.module('permissionService', ['ngResource']).factory('Permissions', function($resource) {
-        return $resource('../websecurity/api/permissions/:permissionName', {permissionName:'@permissionName'});
+        return $resource('../websecurity/api/web-api/permissions/:permissionName', {permissionName:'@permissionName'});
     });
 }());
