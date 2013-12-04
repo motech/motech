@@ -1,0 +1,52 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:annotation-config />
+    <context:component-scan base-package="${package}" />
+#if ($http == 'true')
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="moduleName" value="${artifactId}" />
+        <constructor-arg name="url" value="../${artifactId}/resources/index.html" />
+        <constructor-arg name="angularModules">
+            <list>
+                <value>hello-world</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../${artifactId}/resources/messages/" />
+            </map>
+        </constructor-arg>
+        <constructor-arg name="header">
+            <bean class="org.motechproject.osgi.web.Header" />
+        </constructor-arg>
+    </bean>
+#end
+#if ($repository == 'true')
+
+    <bean id="helloWorldDbConnector" factory-bean="couchDbManager"
+        factory-method="getConnector">
+        <constructor-arg value="motech-hello-world" />
+    </bean>
+#end
+#if ($settings == 'true')
+
+    <bean id="bundleSettings" class="org.motechproject.server.config.SettingsFacade"
+        autowire="byType">
+        <property name="moduleName" value="${artifactId}" />
+        <property name="configFiles">
+            <list>
+                <value>classpath:${artifactId}.properties</value>
+            </list>
+        </property>
+    </bean>
+#end
+
+</beans>
