@@ -151,6 +151,9 @@ public class TasksBundleIT extends BaseOsgiIT {
     protected List<String> getImports() {
         return asList(
                 "org.motechproject.tasks.util",
+                "org.motechproject.tasks.service",
+                "org.motechproject.tasks.domain",
+                "org.motechproject.tasks.repository",
                 "org.motechproject.server.config",
                 "org.motechproject.commons.couchdb.service",
                 "org.motechproject.commons.api"

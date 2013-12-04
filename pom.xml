@@ -1050,7 +1050,6 @@
         <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler</module>
         <module>modules/mds</module>
-        <module>modules/tasks/tasks-bundle</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>
