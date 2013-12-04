@@ -2,7 +2,7 @@
     <div class="col-sm-12">
         <div class="row">
             <div ng-init="setEntities()">
-                <div ng-repeat="(module, entities) in modules" ng-if="!selectedEntity">
+                <div ng-repeat="(module, entities) in modules" ng-if="!selectedEntity && !selectedInstance">
                     <div class="module-header">
                         <a ng-click="collapse(module)"><i class="icon-large" ng-class="arrow(module)"> </i>{{module}}</a>
                     </div>
@@ -26,4 +26,9 @@
             <div ng-include="'../mds/resources/partials/widgets/entityInstances.html'"></div>
         </div>
     </div>
+    <div class="row-fluid" ui-if="selectedInstance">
+        <div ng-include="'../mds/resources/partials/widgets/history.html'"></div>
+    </div>
 </div>
+
+

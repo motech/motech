@@ -341,12 +341,11 @@
 }
 
 .s-ico {
-    float: right;
-    margin-right: 2px;
-    display: block;
+    margin: 7px;
     width: 20px;
     height: 20px;
-    padding: 8px 2px;
+    position: absolute;
+    display: none;
 }
 
 .container-item.over {

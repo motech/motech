@@ -1,6 +1,7 @@
 //CHECKSTYLE:OFF
 package org.motechproject.mds.web;
 
+import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
@@ -11,6 +12,7 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.RestOptions;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.web.domain.FieldRecord;
+import org.motechproject.mds.web.domain.HistoryRecord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,9 +44,11 @@ import static org.motechproject.mds.dto.TypeDto.LIST;
 public final class ExampleData {
     private List<EntityDto> entities = new ArrayList<>();
     private List<FieldDto> fields = new ArrayList<>();
+    private List<FieldInstanceDto> instanceFields = new ArrayList<>();
     private List<AvailableTypeDto> types = new ArrayList<>();
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
     private List<EntityRecord> entityRecords = new ArrayList<>();
+    private List<HistoryRecord> entityHistory = new ArrayList<>();
 
     public ExampleData() {
         types.add(new AvailableTypeDto("1", "int", INTEGER));
@@ -146,7 +150,13 @@ public final class ExampleData {
         exampleAdvancedSetting.setRestOptions(exampleRestOptions);
         advancedSettings.add(exampleAdvancedSetting);
 
+        instanceFields.add(new FieldInstanceDto("1", "1", new FieldBasicDto("Date", "date")));
+        instanceFields.add(new FieldInstanceDto("2", "1", new FieldBasicDto("User", "user")));
+        instanceFields.add(new FieldInstanceDto("3", "1", new FieldBasicDto("Action", "action")));
+        instanceFields.add(new FieldInstanceDto("4", "1", new FieldBasicDto("Changes", "changes")));
+
         entityRecords = createEntityRecords();
+        entityHistory = createEntityHistoryRecords();
     }
 
     public EntityDto getEntity(String id) {
@@ -192,6 +202,18 @@ public final class ExampleData {
 
         for (FieldDto field : fields) {
             if (equalsIgnoreCase(field.getEntityId(), entityId)) {
+                list.add(field);
+            }
+        }
+
+        return list;
+    }
+
+    public List<FieldInstanceDto> getInstanceFields(String instanceId) {
+        List<FieldInstanceDto> list = new ArrayList<>();
+
+        for (FieldInstanceDto field : instanceFields) {
+            if (equalsIgnoreCase(field.getInstanceId(), instanceId)) {
                 list.add(field);
             }
         }
@@ -311,6 +333,48 @@ public final class ExampleData {
         }
 
         return entityRecordList;
+    }
+
+    public List<HistoryRecord> createEntityHistoryRecords() {
+        List<HistoryRecord> ret = new ArrayList<>();
+
+        List<FieldRecord> fields = new ArrayList<>();
+        fields.add(new FieldRecord("Date", "April 15, 2012 10:04 AM"));
+        fields.add(new FieldRecord("User", "User1"));
+        fields.add(new FieldRecord("Action", "CREATE"));
+        fields.add(new FieldRecord("Changes", ""));
+        HistoryRecord historyRecord = new HistoryRecord("1", fields);
+        ret.add(historyRecord);
+
+        fields = new ArrayList<>();
+        fields.add(new FieldRecord("Date", "April 16, 2012 11:04 AM"));
+        fields.add(new FieldRecord("User", "User2"));
+        fields.add(new FieldRecord("Action", "UPDATE"));
+        fields.add(new FieldRecord("Changes", "Changed state"));
+        historyRecord = new HistoryRecord("1", fields);
+        ret.add(historyRecord);
+
+        fields = new ArrayList<>();
+        fields.add(new FieldRecord("Date", "May 11, 2013 9:32 PM"));
+        fields.add(new FieldRecord("User", "User2"));
+        fields.add(new FieldRecord("Action", "UPDATE"));
+        fields.add(new FieldRecord("Changes", "Is Active"));
+        historyRecord = new HistoryRecord("1", fields);
+        ret.add(historyRecord);
+
+        return ret;
+    }
+
+    public List<HistoryRecord> getInstanceHistoryRecordsById(String instanceId) {
+        List<HistoryRecord> instanceHistoryList = new ArrayList<>();
+
+        for (HistoryRecord historyRecord : entityHistory) {
+            if (historyRecord.getId().equals(instanceId)) {
+                instanceHistoryList.add(historyRecord);
+            }
+        }
+
+        return instanceHistoryList;
     }
 }
 //CHECKSTYLE:ON

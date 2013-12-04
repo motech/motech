@@ -2,6 +2,7 @@ package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -56,6 +57,16 @@ public class FieldController extends MdsController {
         }
 
         getExampleData().addField(field);
+    }
+
+    @RequestMapping(value = "/instances/{instanceId}/fields", method = RequestMethod.GET)
+    @ResponseBody
+    public List<FieldInstanceDto> getInstanceFields(@PathVariable String instanceId) {
+        if (null == getExampleData().getEntity(instanceId)) {
+            throw new EntityNotFoundException();
+        }
+
+        return getExampleData().getInstanceFields(instanceId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/fields/{fieldId}", method = RequestMethod.DELETE)

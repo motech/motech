@@ -1599,6 +1599,11 @@
         $scope.selectedEntity = undefined;
 
         /**
+        * This variable is set after user clicks "History" button in instance view.
+        */
+        $scope.selectedInstance = undefined;
+
+        /**
         * Initializes a map of all entities in Seuss indexed by module name
         */
         $scope.setEntities = function() {
@@ -1607,6 +1612,26 @@
                 $scope.modules = data;
                 unblockUI();
             });
+        };
+
+        /**
+        * Sets selected instance history by id
+        */
+        $scope.selectInstanceHistory = function (id) {
+            blockUI();
+            $http.get('../mds/entities/' + id + '/history').success(function (data) {
+                $scope.selectedInstance = id;
+                $scope.unselectEntity();
+                unblockUI();
+            });
+        };
+
+        /**
+        * Unselects instace history to allow user to return to instance view
+        */
+        $scope.unselectInstanceHistory = function() {
+            // Temporary - should return to instance view
+            $scope.selectedInstance = undefined;
         };
 
         /**

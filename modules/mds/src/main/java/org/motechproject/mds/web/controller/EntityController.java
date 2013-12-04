@@ -11,8 +11,11 @@ import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
 import org.motechproject.mds.web.comparator.EntityRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecords;
 import org.motechproject.mds.web.domain.GridSettings;
+import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.mds.web.domain.HistoryRecords;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -181,5 +184,20 @@ public class EntityController extends MdsController {
         EntityRecords entityRecords = new EntityRecords(settings.getPage(), settings.getRows(), entityList);
 
         return entityRecords;
+    }
+
+    @RequestMapping(value = "/entities/{instanceId}/history", method = RequestMethod.GET)
+    @ResponseBody
+    public HistoryRecords getHistory(@PathVariable String instanceId, GridSettings settings) {
+        List<HistoryRecord> historyRecordsList = getExampleData().getInstanceHistoryRecordsById(instanceId);
+
+        boolean sortAscending = settings.getSortDirection() == null ? true : settings.getSortDirection().equals("asc");
+        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !historyRecordsList.isEmpty()) {
+            Collections.sort(
+                    historyRecordsList, new HistoryRecordComparator(sortAscending, settings.getSortColumn())
+            );
+        }
+
+        return new HistoryRecords(settings.getPage(), settings.getRows(), historyRecordsList);
     }
 }

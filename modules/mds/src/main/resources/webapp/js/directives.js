@@ -740,6 +740,9 @@
                                 sort: 'sortColumn',
                                 order: 'sortDirection'
                             },
+                            onSelectRow: function (id) {
+                                scope.selectInstanceHistory(id);
+                            },
                             shrinkToFit: true,
                             autowidth: true,
                             rownumbers: true,
@@ -770,6 +773,179 @@
                         });
                     }
                 });
+            }
+        };
+    });
+
+    /**
+    * Displays instance history data using jqGrid
+    */
+    mds.directive('instanceHistoryGrid', function($compile, $http, $templateCache) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var elem = angular.element(element);
+
+                $.ajax({
+                    type: "GET",
+                    url: "../mds/instances/" + scope.selectedInstance + "/fields",
+                    dataType: "json",
+                    success: function(result)
+                    {
+                        var colModel = [], i;
+
+                        colModel.push({
+                            name: "",
+                            width: 15,
+                            formatter: function () {
+                                return "<a><i class='icon-refresh icon-large'></i></a>";
+                            },
+                            sortable: false
+                        });
+
+                        for (i=0; i<result.length; i+=1) {
+                            if (result[i].basic.displayName === "Date") {
+                                colModel.push({
+                                    name: result[i].basic.displayName,
+                                    index: result[i].basic.displayName,
+                                    jsonmap: "fields." + i + ".value"
+                                });
+                            } else {
+                                colModel.push({
+                                    name: result[i].basic.displayName,
+                                    index: result[i].basic.displayName,
+                                    jsonmap: "fields." + i + ".value",
+                                    sortable: false
+                                });
+                            }
+                        }
+
+                        elem.jqGrid({
+                            url: "../mds/entities/" + scope.selectedInstance + "/history",
+                            datatype: 'json',
+                            jsonReader:{
+                                repeatitems:false
+                            },
+                            prmNames: {
+                                sort: 'sortColumn',
+                                order: 'sortDirection'
+                            },
+                            shrinkToFit: true,
+                            autowidth: true,
+                            rownumbers: true,
+                            rowNum: 2,
+                            rowList: [2, 5, 10, 20, 50],
+                            colModel: colModel,
+                            pager: '#' + attrs.instanceHistoryGrid,
+                            width: '100%',
+                            height: 'auto',
+                            viewrecords: true,
+                            gridComplete: function () {
+                                $('#instanceHistoryTable').children('div').width('100%');
+                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-btable').addClass("table-lightblue");
+                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-bdiv').width('100%');
+                                $('.ui-jqgrid-hdiv').width('100%');
+                                $('.ui-jqgrid-hbox').width('100%');
+                                $('.ui-jqgrid-view').width('100%');
+                                $('#t_historyTable').width('auto');
+                                $('.ui-jqgrid-pager').width('100%');
+                            }
+                        });
+                    }
+                });
+            }
+        };
+    });
+
+    mds.directive('draggable', function() {
+        return function(scope, element) {
+            var el = element[0];
+
+            el.draggable = true;
+            el.addEventListener(
+                'dragstart',
+                function(e) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('Text', this.attributes.fieldId.value);
+                    this.classList.add('drag');
+                    return false;
+                },
+                false
+            );
+
+            el.addEventListener(
+                'dragend',
+                function(e) {
+                    this.classList.remove('drag');
+                    return false;
+                },
+                false
+            );
+        };
+    });
+
+    mds.directive('droppable', function() {
+        return {
+            scope: {
+              drop: '&',
+              container: '='
+            },
+            link: function(scope, element) {
+
+                var el = element[0];
+                el.addEventListener(
+                    'dragover',
+                    function(e) {
+                        e.dataTransfer.dropEffect = 'move';
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        this.classList.add('over');
+                        return false;
+                    },
+                    false
+                );
+
+                el.addEventListener(
+                    'dragenter',
+                    function(e) {
+                        this.classList.add('over');
+                        return false;
+                    },
+                    false
+                );
+
+                el.addEventListener(
+                    'dragleave',
+                    function(e) {
+                        this.classList.remove('over');
+                        return false;
+                    },
+                    false
+                );
+
+                el.addEventListener(
+                    'drop',
+                    function(e) {
+                        if (e.stopPropagation) {
+                            e.stopPropagation();
+                        }
+                        var fieldId = e.dataTransfer.getData('Text'),
+                            containerId = this.id;
+
+                        scope.$apply(function(scope) {
+                            var fn = scope.drop();
+                            if ('undefined' !== typeof fn) {
+                                fn(fieldId, containerId);
+                            }
+                        });
+
+                        return false;
+                    },
+                    false
+                );
             }
         };
     });
