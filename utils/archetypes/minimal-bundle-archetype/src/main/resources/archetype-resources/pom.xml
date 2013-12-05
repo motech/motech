@@ -169,8 +169,8 @@
 	                        org.motechproject.commons.couchdb.service,
 #end
 #if ($settings == 'true')
-                            org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.config.service,
 #end
                             *
                         </Import-Package>
