@@ -1,15 +1,14 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-<div class="row-fluid tab-frame">
+<div class="tab-frame row">
     <div class="inside">
         <div class="clearfix margin-before">
 
-            <div class="control-group">
+            <div class="form-group">
                 <div class="controls">
-                    <input class="btn btn-primary" type="submit"
-                        value="{{msg('${artifactId}.btn.sayHello')}}"
-                        ng-click="sayHello()" />
+                    <button class="btn btn-primary" ng-click="sayHello()">
+                        {{msg('${artifactId}.btn.sayHello')}}</button>
                     {{msg('${artifactId}.info.instructions')}}
                 </div>
             </div>
@@ -18,8 +17,10 @@
                 <table
                     class="table table-bordered table-condensed table-lightblue">
                     <thead>
-                        <th>{{msg('${artifactId}.info.serviceResponse')}}</th>
-                        <th>{{msg('${artifactId}.info.serviceCount')}}</th>
+                        <tr>
+                            <th>{{msg('${artifactId}.info.serviceResponse')}}</th>
+                            <th>{{msg('${artifactId}.info.serviceCount')}}</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
