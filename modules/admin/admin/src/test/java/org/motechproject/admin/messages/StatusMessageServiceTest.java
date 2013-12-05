@@ -224,8 +224,8 @@ public class StatusMessageServiceTest {
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(captor.capture());
 
-        assertEquals("SendSMS", captor.getValue().getSubject());
-        assertEquals(asList("1111", "2222"), captor.getValue().getParameters().get("number"));
+        assertEquals("send_sms", captor.getValue().getSubject());
+        assertEquals(asList("1111", "2222"), captor.getValue().getParameters().get("recipients"));
         assertEquals("Motech Critical: [module] text", captor.getValue().getParameters().get("message"));
 
         verify(uiFrameworkService).moduleNeedsAttention("admin", "messages", "");
