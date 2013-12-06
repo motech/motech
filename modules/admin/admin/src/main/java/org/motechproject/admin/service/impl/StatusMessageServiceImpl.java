@@ -241,10 +241,10 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
         if (!smsRecipients.isEmpty()) {
             Map<String, Object> params = new HashMap<>();
-            params.put("number",  smsRecipients);
+            params.put("recipients",  smsRecipients);
             params.put("message", String.format("Motech Critical: [%s] %s", message.getModuleName(), message.getText()));
 
-            MotechEvent smsEvent = new MotechEvent("SendSMS", params);
+            MotechEvent smsEvent = new MotechEvent("send_sms", params);
             eventRelay.sendEventMessage(smsEvent);
         }
     }
