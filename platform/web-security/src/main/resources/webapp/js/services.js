@@ -14,4 +14,9 @@
     angular.module('permissionService', ['ngResource']).factory('Permissions', function($resource) {
         return $resource('../websecurity/api/web-api/permissions/:permissionName', {permissionName:'@permissionName'});
     });
+
+    angular.module('dynamicService', ['ngResource']).factory('Dynamic', function($resource) {
+        return $resource('../websecurity/api/web-api/securityRules');
+    });
+
 }());

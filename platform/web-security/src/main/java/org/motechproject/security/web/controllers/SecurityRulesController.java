@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Class for CRUD operations on security rule configuration.
  * Also provides a status method for testing purposes.
- *
  */
 @Controller
 public class SecurityRulesController {
@@ -25,12 +24,21 @@ public class SecurityRulesController {
     @Autowired
     private MotechURLSecurityService urlSecurityService;
 
-    @RequestMapping(value = "/web-api/updateSecurityRules", method = RequestMethod.POST)
+    @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void updateSecurityRules(@RequestBody SecurityConfigDto securityConfig) {
         MotechSecurityConfiguration dbConfig = new MotechSecurityConfiguration();
         dbConfig.setSecurityRules(securityConfig.getSecurityRules());
         urlSecurityService.updateSecurityConfiguration(dbConfig);
+    }
+
+    @RequestMapping(value = "/web-api/securityRules", method = RequestMethod.GET)
+    @ResponseBody
+    public SecurityConfigDto getSecurityRules() {
+        SecurityConfigDto security = new SecurityConfigDto();
+        security.setSecurityRules(urlSecurityService.findAllSecurityRules());
+
+        return security;
     }
 
     @RequestMapping(value = "/web-api/securityStatus")

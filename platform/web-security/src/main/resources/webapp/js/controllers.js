@@ -400,4 +400,120 @@
                 }).error(alertHandler('security.update.userPass.error', 'server.error'));
         };
     });
+
+    webSecurityModule.controller('DynamicCtrl', function ($scope, Users, Permissions, Dynamic) {
+        $scope.users = Users.query();
+        $scope.permissions = Permissions.query();
+        $scope.config = Dynamic.get();
+
+        $scope.createNewRule = function () {
+            var selector;
+
+            if (!$scope.config.securityRules) {
+                $scope.config.securityRules = [];
+            }
+
+            $scope.config.securityRules.push({
+                pattern: 'ANY',
+                protocol: 'HTTP',
+                priority: 0,
+                origin: 'SYSTEM_PLATFORM',
+                supportedSchemes: ['NO_SECURITY'],
+                permissionAccess: [],
+                userAccess: [],
+                methodsRequired: ['ANY'],
+                version: $scope.msg('server.version'),
+                active: false
+            });
+
+            selector = '#rule-{0}'.format($scope.config.securityRules.length - 1);
+
+            angular.element(selector).livequery(function () {
+                var elem = angular.element(selector + ' .panel-title');
+
+                elem.click();
+                elem.expire();
+
+                angular.element('body').animate({
+                    scrollTop: $(selector).offset().top
+                }, 2000);
+            });
+        };
+
+        $scope.toggleMethods = function (rule, item, param) {
+            if (_.isBoolean(param) && param) {
+                rule.methodsRequired = [item];
+            } else {
+                if (param) {
+                   rule.methodsRequired.removeObject(param);
+                }
+
+                if (rule.methodsRequired.indexOf(item) === -1) {
+                    rule.methodsRequired.push(item);
+                } else {
+                    rule.methodsRequired.removeObject(item);
+                }
+            }
+        };
+
+        $scope.toggleSchemas = function (rule, item, param) {
+            if (_.isBoolean(param) && param) {
+                rule.supportedSchemes = [item];
+            } else {
+                if (param) {
+                   rule.supportedSchemes.removeObject(param);
+                }
+
+                if (rule.supportedSchemes.indexOf(item) === -1) {
+                    rule.supportedSchemes.push(item);
+                } else {
+                    rule.supportedSchemes.removeObject(item);
+                }
+            }
+        };
+
+        $scope.toggleActive = function (rule) {
+            rule.active = !rule.active;
+        };
+
+        $scope.validateRules = function () {
+            var exp = true;
+
+            angular.forEach($scope.config.securityRules, function (rule) {
+                exp = exp && $scope.validateRule(rule);
+            });
+
+            return exp;
+        };
+
+        $scope.validateRule = function (rule) {
+            return rule.pattern && rule.priority >= 0;
+        };
+
+        $scope.removeRule = function (idx) {
+            motechConfirm('security.warning.removeRule', 'securtiy.warning', function (val) {
+                if (val) {
+                    $scope.safeApply(function () {
+                        $scope.config.securityRules.remove(idx);
+                    });
+                }
+            });
+        };
+
+        $scope.save = function () {
+            $scope.config.$save(
+                angularHandler('security.success', 'security.success.save'),
+                angularHandler('security.error', 'security.error.save')
+            );
+        };
+
+        $scope.cancel = function () {
+            motechConfirm('security.warning.cancel', 'securtiy.warning', function (val) {
+                if (val) {
+                    $scope.config = Dynamic.get();
+                }
+            });
+        };
+
+    });
 }());

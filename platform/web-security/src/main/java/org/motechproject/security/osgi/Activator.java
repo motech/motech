@@ -152,6 +152,7 @@ public class Activator implements BundleActivator {
         regData.addSubMenu("#/users", "security.manageUsers");
         regData.addSubMenu("#/roles", "security.manageRoles");
         regData.addSubMenu("#/permissions", "security.managePermissions");
+        regData.addSubMenu("#/dynamicURL", "securtiy.manageURL");
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
 

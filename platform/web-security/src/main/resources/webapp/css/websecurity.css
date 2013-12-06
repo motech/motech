@@ -24,3 +24,11 @@
     text-align: left;
     padding-left: 20px;
 }
+
+.panel-heading a {
+    text-decoration: none;
+}
+
+.dynamic-select {
+    width: 100%;
+}
