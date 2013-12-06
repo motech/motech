@@ -46,6 +46,8 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static org.motechproject.config.core.filestore.ConfigFileFilter.isPlatformCoreConfigFile;
+
 /**
  * Default implementation of {@link org.motechproject.config.service.ConfigurationService}.
  */
@@ -280,6 +282,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List<ModulePropertiesRecord> dbRecords = allModuleProperties.getAll();
 
         for (File file : files) {
+            if (isPlatformCoreConfigFile(file)) {
+                savePlatformSettings(loadConfig());
+                continue;
+            }
+
             final ModulePropertiesRecord record = ModulePropertiesRecord.buildFrom(file);
             if (record == null) {
                 continue;
@@ -297,6 +304,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
             records.add(record);
         }
+
         if (CollectionUtils.isNotEmpty(records)) {
             allModuleProperties.bulkAddOrUpdate(records);
         }
@@ -307,6 +315,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void addOrUpdate(File file) {
+        if (isPlatformCoreConfigFile(file)) {
+            savePlatformSettings(loadConfig());
+            return;
+        }
+
         allModuleProperties.addOrUpdate(ModulePropertiesRecord.buildFrom(file));
     }
 
@@ -425,6 +438,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public boolean registersProperties(String module, String filename) {
+        this.loadBootstrapConfig();
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = allModuleProperties.byModuleAndFileName(module, filename);
             return rec == null ? false : true;
@@ -444,9 +458,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void delete(File file) {
-        ModulePropertiesRecord record = ModulePropertiesRecord.buildFrom(file);
-        allModuleProperties.remove(record);
+    public void delete(String module) {
+        List<ModulePropertiesRecord> records = allModuleProperties.byModuleName(module);
+        allModuleProperties.remove(records.get(0));
     }
 
     @Override
@@ -476,7 +490,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public SettingsRecord loadDefaultConfig() {
         SettingsRecord settingsRecord = null;
-        org.springframework.core.io.Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.conf");
+        org.springframework.core.io.Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.properties");
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }

@@ -230,7 +230,7 @@
                                         <resource>
                                             <directory>../server-config/src/main/resources</directory>
                                             <includes>
-                                                <include>motech-settings.conf</include>
+                                                <include>motech-settings.properites</include>
                                             </includes>
                                         </resource>
                                     </resources>

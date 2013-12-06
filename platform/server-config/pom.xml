@@ -126,7 +126,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>motech-settings.conf</include>
+                                        <include>motech-settings.properties</include>
                                     </includes>
                                 </resource>
                             </resources>

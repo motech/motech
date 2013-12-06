@@ -4,7 +4,8 @@ package org.motechproject.config.core.constants;
  * Provides all the configuration constants.
  */
 public final class ConfigurationConstants {
-    public static final String SETTINGS_FILE_NAME = "motech-settings.conf";
+    public static final String CONFIG_MODULE_DIR_PREFIX = "org.motechproject.";
+    public static final String SETTINGS_FILE_NAME = "motech-settings.properties";
 
     public static final String AMQ_QUEUE_EVENTS = "jms.queue.for.events";
     public static final String AMQ_QUEUE_SCHEDULER = "jms.queue.for.scheduler";

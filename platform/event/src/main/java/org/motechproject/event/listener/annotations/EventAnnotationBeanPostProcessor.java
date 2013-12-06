@@ -59,6 +59,9 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     }
 
     public void processAnnotations(final Object bean, final String beanName) {
+        if (bean == null) {
+            return;
+        }
         ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
 
             @Override
