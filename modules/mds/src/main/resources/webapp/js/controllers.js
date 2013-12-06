@@ -1653,6 +1653,16 @@
         };
 
         /**
+        * Exports selected entity's instances to CSV file
+        */
+        $scope.exportEntityInstances = function() {
+            $http.get("../mds/entities/" + $scope.selectedEntity.id + "/exportInstances")
+            .success(function (data) {
+                 window.location.replace("../mds/entities/" + $scope.selectedEntity.id + "/exportInstances");
+            });
+        };
+
+        /**
         * Hides/Shows all entities under passed module name
         *
         * @param {string} module  Module name

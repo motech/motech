@@ -1,6 +1,9 @@
-<div class="inside">
+<div class="inside btn-group">
     <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
         {{msg('mds.btn.backToList')}}
+    </button>
+    <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">
+        {{msg('mds.btn.exportCsv')}}
     </button>
 </div>
 <div id="entityInstancesTable" class="overrideJqgridTable">

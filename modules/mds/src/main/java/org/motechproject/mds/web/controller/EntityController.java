@@ -1,8 +1,10 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -13,6 +15,7 @@ import org.motechproject.mds.web.comparator.EntityRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecords;
+import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.HistoryRecords;
@@ -26,11 +29,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang.CharEncoding.UTF_8;
 
 /**
  * The <code>EntityController</code> is the Spring Framework Controller used by view layer for
@@ -199,5 +206,41 @@ public class EntityController extends MdsController {
         }
 
         return new HistoryRecords(settings.getPage(), settings.getRows(), historyRecordsList);
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
+    public void exportEntityInstances(@PathVariable String entityId, HttpServletResponse response) throws IOException {
+        if (null == getExampleData().getEntity(entityId)) {
+            throw new EntityNotFoundException();
+        }
+
+        String fileName = "Entity_" + entityId + "_instances";
+        response.setContentType("text/csv");
+        response.setCharacterEncoding(UTF_8);
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=" + fileName + ".csv");
+
+        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(entityId, getExampleData().getEntityRecordsById(entityId))));
+    }
+
+    private List<List<String>> prepareForCsvConversion(String entityId, List<EntityRecord> entityList) {
+        List<List<String>> list = new ArrayList<>();
+
+        List<String> fieldNames = new ArrayList<>();
+        for (FieldDto field : getExampleData().getFields(entityId)) {
+            fieldNames.add(field.getBasic().getDisplayName());
+        }
+        list.add(fieldNames);
+
+        for (EntityRecord entityRecord : entityList) {
+            List<String> fieldValues = new ArrayList<>();
+            for (FieldRecord fieldRecord : entityRecord.getFields()) {
+                fieldValues.add(fieldRecord.getValue().toString());
+            }
+            list.add(fieldValues);
+        }
+
+        return list;
     }
 }
