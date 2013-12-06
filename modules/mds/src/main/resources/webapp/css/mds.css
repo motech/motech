@@ -355,3 +355,16 @@
 .button-flat {
     width: 48px;
 }
+
+.inline {
+    display: inline-flex;
+    list-style-type: none;
+}
+
+.fieldsSelect {
+    margin-left: 10px;
+}
+
+.exportCsvButton {
+    margin-left: 10px;
+}

@@ -1582,7 +1582,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope, $http) {
+    mds.controller('DataBrowserCtrl', function ($scope, $http, Fields) {
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -1641,8 +1641,12 @@
             blockUI();
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
+                $scope.fields = Fields.query({entityId: $scope.selectedEntity.id});
                 unblockUI();
             });
+            setTimeout(function() {
+                    $(".multiselect-all input").click();
+            }, 1000);
         };
 
         /**

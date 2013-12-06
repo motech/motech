@@ -764,17 +764,73 @@
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_resourceTable').width('auto');
                                 $('.ui-jqgrid-pager').width('100%');
-                                $('#entityInstancesTable').children('div').each(function() {
-                                    $('table', this).width('100%');
-                                    $(this).find('#resourceTable').width('100%');
-                                    $(this).find('table').width('100%');
-                               });
+
+                                $(".jqgfirstrow").addClass("ng-hide");
+                                angular.forEach($("select.multiselect")[0], function(field) {
+                                    if (field.selected){
+                                        $("th[id='resourceTable_" + field.label + "']").show();
+                                        $("td[aria-describedby='resourceTable_" + field.label + "']").show();
+                                    } else {
+                                        $("th[id='resourceTable_" + field.label + "']").hide();
+                                        $("td[aria-describedby='resourceTable_" + field.label + "']").hide();
+                                    }
+                                });
                             }
                         });
                     }
                 });
             }
         };
+    });
+
+    mds.directive('multiselectDropdown', function () {
+            return {
+                restrict: 'A',
+                require : 'ngModel',
+                link: function (scope, element, attrs) {
+                    var selectAll = scope.msg('mds.btn.selectAll');
+                    element.multiselect({
+                        buttonClass : 'btn btn-default',
+                        buttonWidth : 'auto',
+                        buttonContainer : '<div class="btn-group" />',
+                        maxHeight : false,
+                        buttonText : function() {
+                                return scope.msg('mds.btn.fields');
+                        },
+                        selectAllText: selectAll,
+                        selectAllValue: 'multiselect-all',
+                        includeSelectAllOption: true,
+                        onChange: function (optionElement, checked) {
+                            optionElement.removeAttr('selected');
+                            if (checked) {
+                                optionElement.attr('selected', 'selected');
+                            }
+                            element.change();
+
+                            $(".jqgfirstrow").addClass("ng-hide");
+                            angular.forEach(element[0], function(field) {
+                                if (field.selected){
+                                    $("th[id='resourceTable_" + field.label + "']").show("fast");
+                                    $("td[aria-describedby='resourceTable_" + field.label + "']").show("fast");
+                                } else {
+                                    $("th[id='resourceTable_" + field.label + "']").hide("fast");
+                                    $("td[aria-describedby='resourceTable_" + field.label + "']").hide("fast");
+                                }
+                            });
+                        }
+                   });
+
+                   scope.$watch(function () {
+                       return element[0].length;
+                   }, function () {
+                       element.multiselect('rebuild');
+                   });
+
+                   scope.$watch(attrs.ngModel, function () {
+                       element.multiselect('refresh');
+                   });
+                }
+            };
     });
 
     /**
