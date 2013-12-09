@@ -4,33 +4,41 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The <code>FieldDto</code> class contains information about an existing field in an entity.
  */
-public class FieldDto extends SettingsDto {
+public class FieldDto {
     private String id;
     private String entityId;
     private TypeDto type;
     private FieldBasicDto basic;
-    private Map<String, String> metadata;
+    private List<MetadataDto> metadata;
     private FieldValidationDto validation;
+    private List<SettingDto> settings;
 
     public FieldDto() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 
-    public FieldDto(String id, String entityId, TypeDto type, FieldBasicDto basic, Map<String, String> metadata,
-                    FieldValidationDto validation, SettingDto... settings) {
-        super(settings);
+    public FieldDto(String id, String entityId, TypeDto type, FieldBasicDto basic,
+                    List<MetadataDto> metadata, FieldValidationDto validation,
+                    List<SettingDto> settings) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
         this.basic = basic;
-        this.metadata = metadata;
         this.validation = validation;
+        this.metadata = CollectionUtils.isEmpty(metadata)
+                ? new LinkedList<MetadataDto>()
+                : metadata;
+        this.settings = CollectionUtils.isEmpty(settings)
+                ? new LinkedList<SettingDto>()
+                : settings;
     }
 
     public String getId() {
@@ -65,12 +73,24 @@ public class FieldDto extends SettingsDto {
         this.basic = basic;
     }
 
-    public Map getMetadata() {
+    public void addEmptyMetadata() {
+        metadata.add(new MetadataDto());
+    }
+
+    public void removeMetadata(Integer idx) {
+        if (null != idx && idx < metadata.size()) {
+            metadata.remove(idx.intValue());
+        }
+    }
+
+    public List<MetadataDto> getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(Map metadata) {
-        this.metadata = metadata;
+    public void setMetadata(List<MetadataDto> metadata) {
+        this.metadata = CollectionUtils.isEmpty(metadata)
+                ? new LinkedList<MetadataDto>()
+                : metadata;
     }
 
     public FieldValidationDto getValidation() {
@@ -79,6 +99,14 @@ public class FieldDto extends SettingsDto {
 
     public void setValidation(FieldValidationDto validation) {
         this.validation = validation;
+    }
+
+    public List<SettingDto> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(List<SettingDto> settings) {
+        this.settings = settings;
     }
 
     /**

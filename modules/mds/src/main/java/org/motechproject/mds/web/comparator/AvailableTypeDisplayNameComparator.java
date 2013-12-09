@@ -8,8 +8,8 @@ import java.util.Comparator;
 
 /**
  * The <code>AvailableTypeDisplayNameComparator</code> compares two objects of
- * {@link AvailableTypeDto} type by value of their display name key (it ignores case differences in
- * values).
+ * {@link org.motechproject.mds.dto.AvailableTypeDto} type by value of their display name key
+ * (it ignores case differences in values).
  */
 public class AvailableTypeDisplayNameComparator
         implements Comparator<AvailableTypeDto>, Serializable {
@@ -21,7 +21,9 @@ public class AvailableTypeDisplayNameComparator
         this.messageSource = messageSource;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compare(AvailableTypeDto one, AvailableTypeDto two) {
         String oneLabel = messageSource.getMessage(one.getType().getDisplayName(), null, null);

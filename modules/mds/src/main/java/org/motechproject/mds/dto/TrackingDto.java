@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.util.CollectionUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +21,26 @@ public class TrackingDto {
         return fields;
     }
 
+    public void addField(String fieldId) {
+        this.fields.add(fieldId);
+    }
+
+    public void removeField(String fieldId) {
+        this.fields.remove(fieldId);
+    }
+
     public void setFields(List<String> fields) {
-        this.fields = fields == null ? new LinkedList<String>() : fields;
+        this.fields = CollectionUtils.isEmpty(fields)
+                ? new LinkedList<String>()
+                : fields;
+    }
+
+    public void addAction(String action) {
+        this.actions.add(action);
+    }
+
+    public void removeAction(String action) {
+        this.actions.remove(action);
     }
 
     public List<String> getActions() {
@@ -29,7 +48,9 @@ public class TrackingDto {
     }
 
     public void setActions(List<String> actions) {
-        this.actions = actions == null ? new LinkedList<String>() : actions;
+        this.actions = CollectionUtils.isEmpty(actions)
+                ? new LinkedList<String>()
+                : actions;
     }
 
     /**

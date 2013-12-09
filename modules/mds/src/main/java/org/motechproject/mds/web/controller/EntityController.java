@@ -8,18 +8,17 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
+import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
 import org.motechproject.mds.web.comparator.EntityRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
-import org.motechproject.mds.web.comparator.HistoryRecordComparator;
-import org.motechproject.mds.web.domain.EntityRecords;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
-import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.HistoryRecords;
+import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.matcher.EntityMatcher;
+import org.motechproject.mds.web.matcher.WIPEntityMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,6 +72,16 @@ public class EntityController extends MdsController {
         }
 
         return byModule;
+    }
+
+    @RequestMapping(value = "/entities/wip", method = RequestMethod.GET)
+    @ResponseBody
+    public List<EntityDto> getWorkInProgressEntities() {
+        List<EntityDto> list = getExampleData().getEntities();
+
+        CollectionUtils.filter(list, new WIPEntityMatcher());
+
+        return list;
     }
 
     @RequestMapping(value = "/selectEntities", method = RequestMethod.GET)
@@ -147,40 +156,68 @@ public class EntityController extends MdsController {
         return entity;
     }
 
-    @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.GET)
-    @ResponseBody
-    public AdvancedSettingsDto getAdvanced(@PathVariable final String entityId) {
-        AdvancedSettingsDto settings = getExampleData().getAdvanced(entityId);
-
-        if (null == settings) {
-            settings = new AdvancedSettingsDto();
-            settings.setObjectId(entityId);
-        }
-
-        return settings;
-    }
-
-    @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.POST)
+    @RequestMapping(value = "/entities/{entityId}/draft", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void saveAdvanced(@PathVariable String entityId,
-                             @RequestBody AdvancedSettingsDto advanced) {
+    public void draft(@PathVariable String entityId, @RequestBody DraftData data) {
         EntityDto entity = getExampleData().getEntity(entityId);
 
         if (null == entity) {
             throw new EntityNotFoundException();
         } else if (entity.isReadOnly()) {
             throw new EntityReadOnlyException();
+        } else {
+            entity.setDraft(true);
         }
 
-        getExampleData().saveAdvanced(advanced);
+        getExampleData().draft(entityId, data);
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/abandon", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void abandonChanges(@PathVariable String entityId) {
+        if (null == getExampleData().getEntity(entityId)) {
+            throw new EntityNotFoundException();
+        } else {
+            getExampleData().abandonChanges(entityId);
+        }
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/commit", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void commitChanges(@PathVariable String entityId) {
+        if (null == getExampleData().getEntity(entityId)) {
+            throw new EntityNotFoundException();
+        } else {
+            getExampleData().commitChanges(entityId);
+        }
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/fields", method = RequestMethod.GET)
+    @ResponseBody
+    public List<FieldDto> getFields(@PathVariable String entityId) {
+        if (null == getExampleData().getEntity(entityId)) {
+            throw new EntityNotFoundException();
+        }
+
+        return getExampleData().getFields(entityId);
+    }
+
+    @RequestMapping(value = "entities/{entityId}/fields/{name}", method = RequestMethod.GET)
+    @ResponseBody
+    public FieldDto getFieldByName(@PathVariable String entityId, @PathVariable String name) {
+        if (null == getExampleData().getEntity(entityId)) {
+            throw new EntityNotFoundException();
+        }
+
+        return getExampleData().findFieldByName(entityId, name);
     }
 
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.GET)
     @ResponseBody
-    public EntityRecords getInstances(@PathVariable String entityId, GridSettings settings) {
+    public Records<EntityRecord> getInstances(@PathVariable String entityId, GridSettings settings) {
         List<EntityRecord> entityList = getExampleData().getEntityRecordsById(entityId);
 
-        boolean sortAscending = settings.getSortDirection() == null ? true : settings.getSortDirection().equals("asc");
+        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
 
         if (!settings.getSortColumn().isEmpty() && !entityList.isEmpty()) {
             Collections.sort(
@@ -188,24 +225,14 @@ public class EntityController extends MdsController {
             );
         }
 
-        EntityRecords entityRecords = new EntityRecords(settings.getPage(), settings.getRows(), entityList);
-
-        return entityRecords;
+        return new Records<>(settings.getPage(), settings.getRows(), entityList);
     }
 
-    @RequestMapping(value = "/entities/{instanceId}/history", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.GET)
     @ResponseBody
-    public HistoryRecords getHistory(@PathVariable String instanceId, GridSettings settings) {
-        List<HistoryRecord> historyRecordsList = getExampleData().getInstanceHistoryRecordsById(instanceId);
-
-        boolean sortAscending = settings.getSortDirection() == null ? true : settings.getSortDirection().equals("asc");
-        if (settings.getSortColumn() != null && !settings.getSortColumn().isEmpty() && !historyRecordsList.isEmpty()) {
-            Collections.sort(
-                    historyRecordsList, new HistoryRecordComparator(sortAscending, settings.getSortColumn())
-            );
-        }
-
-        return new HistoryRecords(settings.getPage(), settings.getRows(), historyRecordsList);
+    public AdvancedSettingsDto getAdvanced(@PathVariable final String entityId) {
+        return getExampleData().getAdvanced(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)

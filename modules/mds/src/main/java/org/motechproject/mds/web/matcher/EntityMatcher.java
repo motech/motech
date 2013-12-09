@@ -20,6 +20,9 @@ public class EntityMatcher extends MdsMatcher<EntityDto> {
         super(EntityDto.class, term);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean match(EntityDto obj) {
         String name = defaultIfBlank(obj.getName(), "");

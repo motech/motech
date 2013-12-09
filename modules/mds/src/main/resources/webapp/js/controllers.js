@@ -2,56 +2,85 @@
 
     'use strict';
 
-    var mds = angular.module('mds');
+    var mds = angular.module('mds'),
+        workInProgress = {
+            list: [],
+            actualEntity: undefined,
+            setList: function (service) {
+                this.list = service.getWorkInProggress();
+            },
+            setActualEntity: function (service, entityId) {
+                this.setList(service);
+                this.actualEntity = entityId;
+            }
+        },
+        loadEntity;
+
+    mds.controller('MdsBasicCtrl', function ($scope, $location, $route, Entities) {
+        var schemaEditorPath = '/{0}'.format($scope.AVAILABLE_TABS[0]);
+
+        workInProgress.setList(Entities);
+
+        $scope.hasWorkInProgress = function () {
+            var expression = workInProgress.list.length > 0,
+                idx;
+
+            for (idx = 0; expression && idx < workInProgress.list.length; idx += 1) {
+                if (workInProgress.list[idx].id === workInProgress.actualEntity) {
+                    expression = false;
+                }
+            }
+
+            return expression;
+        };
+
+        $scope.getWorkInProgress = function () {
+            var list = [];
+
+            angular.forEach(workInProgress.list, function (entity) {
+                if (entity.id !== workInProgress.actualEntity) {
+                    list.push(entity);
+                }
+            });
+
+            return list;
+        };
+
+        $scope.resumeEdits = function (entityId) {
+            if (schemaEditorPath !== $location.path()) {
+                $location.path(schemaEditorPath);
+            } else {
+                $route.reload();
+            }
+
+            loadEntity = entityId;
+        };
+
+        $scope.discard = function (entityId) {
+            motechConfirm('mds.wip.info.discard', 'mds.warning', function (val) {
+                if (val) {
+                    Entities.abandon({id: entityId}, function () {
+                        workInProgress.setList(Entities);
+                    });
+                }
+            });
+        };
+    });
 
     /**
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    mds.controller('SchemaEditorCtrl', function ($scope, $timeout, $http, Entities, Fields, FieldsValidation) {
-        var setFields, setAdvancedSettings, setMetadata, setRest, setBrowsing;
+    mds.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities) {
+        var setAdvancedSettings, setRest, setBrowsing, draft;
 
-        /**
-        * This function is used to set fields array. If fields are properly taken from server,
-        * the related $scope fields will be also set.
-        */
-        setFields = function () {
-            $scope.fields = Fields.query({entityId: $scope.selectedEntity.id}, function () {
-                $scope.originalFields = cloneArray($scope.fields);
-                $scope.toRemove = [];
-                setMetadata($scope.selectedEntity.id);
-                setRest();
-                setBrowsing($scope.fields, $scope.advancedSettings.browsing);
-                unblockUI();
+        workInProgress.setList(Entities);
+
+        if (loadEntity) {
+            $.ajax("../mds/entities/" + loadEntity).done(function (data) {
+                $scope.selectedEntity = data;
+                loadEntity = undefined;
             });
-        };
-
-        /**
-        * This function is used to get entity metadata from controller and convert it for further usage.
-        */
-        setMetadata = function (id) {
-            $scope.selectedEntityMetadata = [];
-            $.each($scope.fields, function(inKey, field) {
-                if (typeof field.metadata !== "undefined" && field.metadata !== null) {
-                    $.each(field.metadata, function(valueKey, valueValue) {
-                        if (typeof $scope.selectedEntityMetadata[inKey] === "undefined") {
-                            $scope.selectedEntityMetadata[inKey] = [];
-                        }
-                        $scope.selectedEntityMetadata[inKey].push({
-                            key: valueKey,
-                            value: valueValue
-                        });
-                    });
-                }
-            });
-
-            $scope.originalSelectedEntityMetadata = [];
-
-            angular.forEach($scope.flattenArray($scope.selectedEntityMetadata), function (object) {
-                var newObj = $.extend(true, {}, object);
-
-                $scope.originalSelectedEntityMetadata.push(newObj);
-            });
-        };
+        }
 
         /**
         * This function is used to get entity advanced rest data from controller and prepare it for further usage.
@@ -60,28 +89,25 @@
             $scope.selectedEntityAdvancedFields = [];
             $scope.selectedEntityAdvancedAvailableFields = [];
             $scope.selectedEntityRestLookups = [];
-            $scope.originalSelectedEntityAdvancedFields = [];
-            $scope.originalSelectedEntityRestLookups =  [];
 
-            if (typeof $scope.advancedSettings.restOptions !== "undefined") {
+            if ($scope.advancedSettings.restOptions) {
                 angular.forEach($scope.advancedSettings.restOptions.fieldIds, function (id) {
-                    $scope.selectedEntityAdvancedFields.push($scope.findFieldById(id, $scope.fields));
-                    $scope.originalSelectedEntityAdvancedFields.push($scope.findFieldById(id, $scope.fields));
+                    $scope.selectedEntityAdvancedFields.push($scope.findFieldById(id));
                 });
             }
+
             angular.forEach($scope.fields, function (field) {
-                if (typeof $scope.findFieldById(field.id, $scope.selectedEntityAdvancedFields) === "undefined") {
-                    $scope.selectedEntityAdvancedAvailableFields.push($scope.findFieldById(field.id, $scope.fields));
+                if (!$scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedFields)) {
+                    $scope.selectedEntityAdvancedAvailableFields.push($scope.findFieldById(field.id));
                 }
             });
-            if (typeof $scope.advancedSettings.indexes !== "undefined") {
+
+            if ($scope.advancedSettings.indexes) {
                 angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
                     if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
                         $scope.selectedEntityRestLookups[index] = true;
-                        $scope.originalSelectedEntityRestLookups.push(true);
                     } else {
                         $scope.selectedEntityRestLookups[index] = false;
-                        $scope.originalSelectedEntityRestLookups.push(false);
                     }
                 });
             }
@@ -90,14 +116,16 @@
         /**
         * This function splits fields to ones that are displayed and ones that are not
         */
-        setBrowsing = function(fields, browsing) {
-            if(fields !== undefined && browsing !== undefined) {
-                $scope.browsingAvailable = $.grep(fields, function(field) {
-                    return browsing.displayedFields.indexOf(field.basic.name) < 0;
+        setBrowsing = function() {
+            if($scope.fields !== undefined && $scope.advancedSettings.browsing !== undefined) {
+                $scope.browsingAvailable = $.grep($scope.fields, function(field) {
+                    return $scope.advancedSettings.browsing.displayedFields.indexOf(field.id) < 0;
                 });
-                $scope.browsingDisplayed = $.grep(fields, function(field) {
-                    return browsing.displayedFields.indexOf(field.basic.name) >= 0;
+
+                $scope.browsingDisplayed = $.grep($scope.fields, function(field) {
+                    return $scope.advancedSettings.browsing.displayedFields.indexOf(field.id) >= 0;
                 });
+
                 $scope.browsingAvailable.sort(function(a,b) {
                     if (a.basic.displayName < b.basic.displayName) { return -1; }
                     if (a.basic.displayName > b.basic.displayName) { return 1; }
@@ -113,28 +141,32 @@
         setAdvancedSettings = function () {
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
-                    $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
-                    $scope.originalAdvancedSettings = cloneObj($scope.advancedSettings);
-
-                    if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings) &&
-                        $scope.advancedSettings.indexes.size > 0) {
-
+                    if (!_.isNull($scope.advancedSettings)
+                            && !_.isUndefined($scope.advancedSettings)
+                            && $scope.advancedSettings.indexes.size > 0) {
                         $scope.activeIndex = 0;
                     } else {
                         $scope.activeIndex = -1;
                     }
 
                     setRest();
-                    setBrowsing($scope.fields, $scope.advancedSettings.browsing);
+                    setBrowsing();
                     unblockUI();
-                }
-            );
+                });
         };
 
-        /**
-        * The $scope.selectedEntityMetadata contains metadata for selected entity.
-        */
-        $scope.selectedEntityMetadata = [];
+        draft = function (data, callback) {
+            var pre = { id: $scope.selectedEntity.id },
+                func = function () {
+                    $scope.selectedEntity.draft = true;
+
+                    if (_.isFunction(callback)) {
+                        callback();
+                    }
+                };
+
+            Entities.draft(pre, data, func);
+        };
 
         /**
         * The $scope.selectedEntityAdvancedAvailableFields contains fields available for use in REST.
@@ -147,19 +179,9 @@
         $scope.selectedEntityAdvancedFields = [];
 
         /**
-        * The $scope.originalSelectedEntityAdvancedFields contains original fields selected for use in REST.
-        */
-        $scope.originalSelectedEntityAdvancedFields = [];
-
-        /**
         * The $scope.selectedEntityRestLookups contains lookups selected for use in REST.
         */
         $scope.selectedEntityRestLookups = [];
-
-        /**
-        * The $scope.originalSelectedEntityRestLookups contains original lookups available for use in REST.
-        */
-        $scope.originalSelectedEntityRestLookups = [];
 
         /**
         * The $scope.selectedEntityMetadata contains orignal metadata for selected entity used to check
@@ -179,28 +201,9 @@
         $scope.advancedSettings = null;
 
         /**
-        * The $scope.originalAdvancedSettings constains copy of advanced settings. There is used to
-        * check if a user made some changes in advanced settings.
-        */
-        $scope.originalAdvancedSettings = undefined;
-
-        /**
         * The $scope.fields contains entity fields. By default there are no fields.
         */
         $scope.fields = undefined;
-
-        /**
-        * The $scope.originalFields contains copy of entity fields. There are used to check if
-        * a user made some changes in fields.
-        */
-        $scope.originalFields = undefined;
-
-        /**
-        * The $scope.toRemove contains entity fields that should be removed when a user wants to
-        * save changes. The array contains only the existing fields. By default there are no fields
-        * to remove.
-        */
-        $scope.toRemove = undefined;
 
         /**
         * The $scope.newField contains information about new field which will be added to an
@@ -220,13 +223,16 @@
         */
         $scope.availableFields = [];
 
+        $scope.activeIndex = -1;
+
         /**
         * The $scope.lookup persists currently active (selected) index
         */
         $scope.lookup = undefined;
 
         /**
-        * The $scope.browsingAvailable and $scope.browsingDisplayed separates fields that are visible from the ones that are not.
+        * The $scope.browsingAvailable and $scope.browsingDisplayed separates fields that are
+        * visible from the ones that are not.
         */
         $scope.browsingAvailable = [];
         $scope.browsingDisplayed = [];
@@ -234,7 +240,10 @@
         /**
         * The $scope.filterableTypes contains types that can be used as filters.
         */
-        $scope.filterableTypes = ["mds.field.combobox", "mds.field.boolean", "mds.field.date", "mds.field.time", "mds.field.datetime"];
+        $scope.filterableTypes = [
+            "mds.field.combobox", "mds.field.boolean", "mds.field.date",
+            "mds.field.time", "mds.field.datetime"
+        ];
 
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
@@ -430,71 +439,102 @@
         * Deletes the selected entity. If the entity is read only (provided by module), action is
         * not allowed. If entity does not exist, error message is shown.
         */
-        $scope.deleteEntity = function() {
+        $scope.deleteEntity = function () {
             if ($scope.selectedEntity !== null) {
-                 Entities.remove({id:$scope.selectedEntity.id}, function () {
-                     $scope.selectedEntity = null;
-                     handleResponse('mds.success', 'mds.delete.success', '');
-                 }, function (response) {
-                     handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
-                 });
+                Entities.remove({id: $scope.selectedEntity.id}, function () {
+                    $scope.selectedEntity = null;
+                    handleResponse('mds.success', 'mds.delete.success', '');
+                }, function (response) {
+                    handleResponse('mds.error', 'mds.error.cantDeleteEntity', response);
+                });
             }
         };
 
         /* ~~~~~ METADATA FUNCTIONS ~~~~~ */
 
         /**
-        * Adds new key/value pair.
+        * Adds new metadata with empty key/value to field.
         */
-        $scope.addMetadata = function (index) {
-            if (typeof $scope.selectedEntityMetadata[index] === "undefined") {
-                $scope.selectedEntityMetadata[index] = [{
-                    key: "",
-                    value: ""
-                }];
-            } else {
-                $scope.selectedEntityMetadata[index].push({
-                    key: "",
-                    value: ""
+        $scope.addMetadata = function (field) {
+            draft({
+                edit: true,
+                values: {
+                    path: '$addEmptyMetadata',
+                    fieldId: field.id
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                    if (!field.metadata) {
+                        field.metadata = [];
+                    }
+
+                    field.metadata.push({key: '', value: ''});
                 });
-            }
-        };
-
-        /**
-        * Removes selected key/value pair.
-        */
-        $scope.removeMetadata = function (parentIndex, index) {
-            $scope.selectedEntityMetadata[parentIndex].splice(index,1);
-        };
-
-        /**
-        * Converts metadata into controller format and sends it.
-        */
-        $scope.saveMetadata = function () {
-            angular.forEach($scope.fields, function (field, idx) {
-                var metadata = {};
-                if (typeof $scope.selectedEntityMetadata[idx] !== "undefined") {
-                    $.each($scope.selectedEntityMetadata[idx], function(inKey, inValue) {
-                        metadata[inValue.key] = inValue.value;
-                    });
-                    $scope.fields[idx].metadata = metadata;
-                }
             });
         };
 
         /**
-        * Converts rest data into controller format and sends it.
+        * Removes selected metadata entry from field.
         */
-        $scope.saveRest = function () {
-            $scope.advancedSettings.restOptions.lookupIds = [];
-            angular.forEach( $scope.selectedEntityRestLookups, function (selected, id) {
-                if (selected === true && typeof $scope.advancedSettings.indexes[id] !== "undefined") {
-                    $scope.advancedSettings.restOptions.lookupIds.push($scope.advancedSettings.indexes[id].lookupName);
+        $scope.removeMetadata = function (field, idx) {
+            draft({
+                edit: true,
+                values: {
+                    path: '$removeMetadata',
+                    fieldId: field.id,
+                    value: [idx]
                 }
+            }, function () {
+                $scope.safeApply(function () {
+                    field.metadata.remove(idx);
+                });
             });
+        };
+
+        $scope.draftRestLookup = function (index) {
+            var value = $scope.selectedEntityRestLookups[index],
+                lookup = $scope.advancedSettings.indexes[index];
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'restOptions.${0}'.format(value ? 'addLookup' : 'removeLookup'),
+                    advanced: true,
+                    value: [lookup.lookupName]
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                    if (value) {
+                        $scope.advancedSettings.restOptions.lookupIds.push(
+                            lookup.lookupName
+                        );
+                    } else {
+                        $scope.advancedSettings.restOptions.lookupIds.removeObject(
+                            lookup.lookupName
+                        );
+                    }
+                });
+            });
+        };
+
+        /**
+        * Callback function called each time when user adds, removes or moves items in 'Displayed Fields' on
+        * 'REST API' view. Responsible for updating the model.
+        */
+        $scope.onRESTDisplayedChange = function(container) {
             $scope.advancedSettings.restOptions.fieldIds = [];
-            angular.forEach( $scope.selectedEntityAdvancedFields, function (selected, id) {
-                $scope.advancedSettings.restOptions.fieldIds.push($scope.selectedEntityAdvancedFields[id].id);
+
+            angular.forEach(container, function(field) {
+                $scope.advancedSettings.restOptions.fieldIds.push(field.id);
+            });
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'restOptions.$setFieldIds',
+                    advanced: true,
+                    value: [$scope.advancedSettings.restOptions.fieldIds]
+                }
             });
         };
 
@@ -506,7 +546,7 @@
         * will be shown if a field name is not unique.
         */
         $scope.createField = function () {
-            var validate, type, selector;
+            var validate, selector;
 
             $scope.tryToCreate = true;
             validate = $scope.newField.type
@@ -515,28 +555,35 @@
                 && $scope.findFieldsByName($scope.newField.name).length === 0;
 
             if (validate) {
-                $scope.fields.push({
-                    entityId: $scope.selectedEntity.id,
-                    type: $scope.newField.type.type,
-                    settings: $scope.newField.type.settings,
-                    validation: $scope.newField.validation,
-                    basic: {
+                draft({
+                    create: true,
+                    values: {
+                        typeClass: $scope.newField.type.type.typeClass,
                         displayName: $scope.newField.displayName,
                         name: $scope.newField.name
-                    },
-                    metadata: {}
-                });
-                setBrowsing($scope.fields, $scope.advancedSettings.browsing);
-                selector = '#show-field-details-{0}'.format($scope.fields.length - 1);
-                $scope.newField = {};
-                angular.element('#newField').select2('val', null);
-                $scope.tryToCreate = false;
+                    }
+                }, function () {
+                    var field;
 
-                angular.element(selector).livequery(function () {
-                    var elem = angular.element(selector);
+                    field = Entities.getField({
+                        id: $scope.selectedEntity.id,
+                        param: $scope.newField.name
+                    }, function () {
+                        $scope.fields.push(field);
+                        setBrowsing();
 
-                    elem.click();
-                    elem.expire();
+                        selector = '#show-field-details-{0}'.format($scope.fields.length - 1);
+                        $scope.newField = {};
+                        angular.element('#newField').select2('val', null);
+                        $scope.tryToCreate = false;
+
+                        angular.element(selector).livequery(function () {
+                            var elem = angular.element(selector);
+
+                            elem.click();
+                            elem.expire();
+                        });
+                    });
                 });
             }
         };
@@ -554,21 +601,23 @@
                         var filterableIndex;
                         $scope.fields.removeObject(field);
 
-                        if (typeof $scope.findFieldById(field.id, $scope.selectedEntityAdvancedAvailableFields) !== "undefined") {
+                        if ($scope.findFieldInArrayById(field.id, $scope.selectedEntityAdvancedAvailableFields)) {
                             $scope.selectedEntityAdvancedAvailableFields.removeObject(field);
                         } else {
                             $scope.selectedEntityAdvancedFields.removeObject(field);
                         }
 
-                        filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.basic.name);
+                        filterableIndex = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
                         if(filterableIndex >= 0) {
                             $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
                         }
 
-                        // add only an existing field
-                        if (field.id) {
-                            $scope.toRemove.push(field);
-                        }
+                        draft({
+                            remove: true,
+                            values: {
+                                fieldId: field.id
+                            }
+                        });
                     });
                 }
             });
@@ -579,8 +628,16 @@
         */
         $scope.abandonChanges = function () {
             blockUI();
-            setFields();
-            setAdvancedSettings();
+
+            Entities.abandon({id: $scope.selectedEntity.id}, function () {
+                $scope.selectedEntity.draft = false;
+
+                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                        setAdvancedSettings();
+                    });
+
+                unblockUI();
+            });
         };
 
         /**
@@ -594,17 +651,14 @@
         };
 
         /**
-        * Check if the given metadata key/value pair is unique.
+        * Check if the given metadata key is unique.
         *
         * @param {string} key metadata key to check..
         * @return {boolean} true if the given key is unique; otherwise false.
         */
-        $scope.uniqueMetadataKey = function (key) {
-            if (key.key !== "" && $scope.findMetadataByKey(key).length > 1) {
-                return false;
-            } else {
-                return true;
-            }
+        $scope.uniqueMetadataKey = function (field, key) {
+            return !_.isUndefined(key)
+                && find(field.metadata, [{ field: 'key', value: key}], false).length === 1;
         };
 
         /**
@@ -652,6 +706,27 @@
         };
 
         /**
+        * Validate the validation information ('Validation' tab on UI) inside the given field.
+        *
+        * @param {object} field The field to validate.
+        * @return {boolean} true if all validation information inside the field are correct;
+        *                   otherwise false.
+        */
+        $scope.validateFieldValidation = function (field) {
+            var expression = true;
+
+            if (field.validation) {
+                angular.forEach(field.validation.criteria, function (criterion) {
+                    if ($scope.validateCriterion(criterion, field.validation.criteria)) {
+                        expression = false;
+                    }
+                });
+            }
+
+            return expression;
+        };
+
+        /**
         * Check if a user can save field definitions to database.
         *
         * @return {boolean} true if field definitions are correct; otherwise false.
@@ -661,15 +736,17 @@
 
             angular.forEach($scope.fields, function (field) {
                 expression = expression && $scope.validateField(field);
+
+                angular.forEach(field.metadata, function (meta) {
+                    expression = expression && $scope.uniqueMetadataKey(field, meta.key);
+                });
             });
 
-            angular.forEach($scope.flattenArray($scope.selectedEntityMetadata), function (metadata) {
-                expression = expression && $scope.uniqueMetadataKey(metadata);
-            });
-
-            angular.forEach($scope.advancedSettings.indexes, function(index) {
-                expression = expression && index.lookupName !== undefined && index.lookupName.length !== 0;
-            });
+            if ($scope.advancedSettings.indexes) {
+                angular.forEach($scope.advancedSettings.indexes, function (index) {
+                    expression = expression && index.lookupName !== undefined && index.lookupName.length !== 0;
+                });
+            }
 
             return expression;
         };
@@ -679,52 +756,12 @@
         * database one by one. Next the method tries to delete existing fields from database.
         */
         $scope.saveChanges = function () {
-            var save = [],
-                toSave = $scope.fields.length,
-                toRemove = $scope.toRemove.length,
-                total = toSave + toRemove,
-                setSave = function (idx) {
-                    save[idx] = true;
-
-                    if (!_.contains(save, false)) {
-                        // all fields were saved and/or deleted
-                        setFields();
-                    }
-                };
-
-            _.times(total, function (idx) {
-                save[idx] = false;
-            });
-
             blockUI();
 
-            $scope.saveMetadata();
-            $scope.saveRest();
-
-            angular.forEach($scope.fields, function (field, idx) {
-
-                Fields.save({entityId: $scope.selectedEntity.id}, field, function () {
-                    setSave(idx);
-                }, function (response) {
-                    handleResponse('mds.error', 'mds.error.cantSaveField', response);
-                });
+            Entities.commit({id: $scope.selectedEntity.id}, {}, function () {
+                $scope.selectedEntity.draft = false;
+                unblockUI();
             });
-
-            angular.forEach($scope.toRemove, function (field, idx) {
-                Fields.remove({entityId: $scope.selectedEntity.id}, field, function () {
-                    setSave(toSave + idx);
-                }, function (response) {
-                    handleResponse('mds.error', 'mds.error.cantRemoveField', response);
-                });
-            });
-
-            Entities.saveAdvanced({id: $scope.selectedEntity.id}, $scope.advancedSettings,
-                function () {
-                    blockUI();
-
-                    setAdvancedSettings();
-                }
-            );
         };
 
         /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
@@ -741,11 +778,20 @@
             if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
                 idx = $scope.advancedSettings.tracking.fields.indexOf(field.id);
 
-                if (idx > -1) {
-                    $scope.advancedSettings.tracking.fields.remove(idx);
-                } else {
-                    $scope.advancedSettings.tracking.fields.push(field.id);
-                }
+                draft({
+                    edit: true,
+                    values: {
+                        path: idx > -1 ? 'tracking.$removeField' : 'tracking.$addField',
+                        advanced: true,
+                        value: [field.id]
+                    }
+                }, function () {
+                    if (idx > -1) {
+                        $scope.advancedSettings.tracking.fields.remove(idx);
+                    } else {
+                        $scope.advancedSettings.tracking.fields.push(field.id);
+                    }
+                });
             }
         };
 
@@ -761,11 +807,20 @@
             if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
                 idx = $scope.advancedSettings.tracking.actions.indexOf(action);
 
-                if (idx > -1) {
-                    $scope.advancedSettings.tracking.actions.remove(idx);
-                } else {
-                    $scope.advancedSettings.tracking.actions.push(action);
-                }
+                draft({
+                    edit: true,
+                    values: {
+                        path: idx > -1 ? 'tracking.$removeAction' : 'tracking.$addAction',
+                        advanced: true,
+                        value: [action]
+                    }
+                }, function () {
+                    if (idx > -1) {
+                        $scope.advancedSettings.tracking.actions.remove(idx);
+                    } else {
+                        $scope.advancedSettings.tracking.actions.push(action);
+                    }
+                });
             }
         };
 
@@ -779,8 +834,16 @@
                 fieldList: []
             };
 
-            $scope.advancedSettings.indexes.push(newLookup);
-            $scope.setActiveIndex(newLookup);
+            draft({
+                edit: true,
+                values: {
+                    path: '$addNewIndex',
+                    advanced: true
+                }
+            }, function () {
+                $scope.advancedSettings.indexes.push(newLookup);
+                $scope.setActiveIndex(newLookup);
+            });
         };
 
         /**
@@ -789,7 +852,7 @@
         * @param index An index object to check
         * @return {boolean} True, if passed index is the active one. False otherwise.
         */
-        $scope.isActiveIndex = function(index) {
+        $scope.isActiveIndex = function (index) {
             return $scope.lookup === index ? true : false;
         };
 
@@ -798,7 +861,7 @@
         *
         * @param index An index object to set active
         */
-        $scope.setActiveIndex = function(index) {
+        $scope.setActiveIndex = function (index) {
             $scope.activeIndex = $scope.advancedSettings.indexes.indexOf(index);
             $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
             $scope.setAvailableFields();
@@ -807,56 +870,81 @@
         /**
         * Removes currently actve index
         */
-        $scope.deleteLookup = function() {
-            $scope.advancedSettings.indexes.remove($scope.activeIndex);
-            $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
-            $scope.setActiveIndex(-1);
+        $scope.deleteLookup = function () {
+            draft({
+                edit: true,
+                values: {
+                    path: '$removeIndex',
+                    advanced: true,
+                    value: [$scope.activeIndex]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes.remove($scope.activeIndex);
+                $scope.selectedEntityRestLookups.splice($scope.activeIndex, 1);
+                $scope.setActiveIndex(-1);
+            });
         };
 
         /**
         * Adds new lookup field to the currently active index
         */
-        $scope.addLookupField = function() {
-            var newField = {
-                displayName: "",
-                name: "",
-                required: false,
-                defaultValue: "",
-                tooltip: ""
-            };
-            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.push(newField);
+        $scope.addLookupField = function () {
+            var value = $scope.availableFields[0] && $scope.availableFields[0].id;
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'indexes.{0}.$addField'.format($scope.activeIndex),
+                    advanced: true,
+                    value: [value]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.push(value);
+                $scope.setAvailableFields();
+            });
         };
 
         /**
         * Handles field selection. When clicking on one of the available fields from dropdown list,
-        * selected field is added or replaced on the list of selected fields of the currently active index
+        * selected field is added or replaced on the list of selected fields of the currently
+        * active index
         *
-        * @param oldField Previously selected field
-        * @param field Selected field
+        * @param oldField Previously selected field index
+        * @param field Selected field index
         */
-        $scope.selectField = function(oldField, field) {
-            var selectedIndex;
+        $scope.selectField = function (oldField, newField) {
+            var selectedIndex = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(oldField);
 
-            selectedIndex = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(oldField);
-            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList[selectedIndex] = field.basic;
-            $scope.setAvailableFields();
+            draft({
+                edit: true,
+                values: {
+                    path: 'indexes.{0}.$insertField'.format($scope.activeIndex),
+                    advanced: true,
+                    value: [selectedIndex, newField]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList[selectedIndex] = newField;
+                $scope.setAvailableFields();
+            });
         };
 
         /**
         * Refreshes available fields for the currently active index. A field is considered available
         * if it is not yet present in the lookup field list of the currently active index.
         */
-        $scope.setAvailableFields = function() {
+        $scope.setAvailableFields = function () {
+            var availableFields = [], func, selectedFields, i;
+
             if ($scope.activeIndex !== -1) {
-                var availableFields = [],
-                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList,
-                i;
+                func = function (num) { return num === $scope.fields[i].id; };
+                selectedFields = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList;
 
                 for (i = 0; i < $scope.fields.length; i += 1) {
-                    if (find(selectedFields, [{ field: 'name', value: $scope.fields[i].basic.name}], false ).length === 0) {
+                    if (_.filter(selectedFields, func).length === 0) {
                         availableFields.push($scope.fields[i]);
                     }
                 }
+
                 $scope.availableFields = availableFields;
             }
         };
@@ -866,24 +954,31 @@
         *
         * @param field A field object to remove
         */
-        $scope.removeLookupField = function(field) {
-            $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.remove(
-                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(field)
-            );
-            $scope.setAvailableFields();
+        $scope.removeLookupField = function (field) {
+            draft({
+                edit: true,
+                values: {
+                    path: 'indexes.{0}.$removeField'.format($scope.activeIndex),
+                    advanced: true,
+                    value: [field]
+                }
+            }, function () {
+                $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.removeObject(field);
+                $scope.setAvailableFields();
+            });
         };
 
         /**
         * Checks if user can still add more lookup fields.
         *
         * @return {boolean} False if all available fields have already been selected
-        * or the amount of added fields is equal to amount of all fields for that object. True otherwise.
+        *                   or the amount of added fields is equal to amount of all fields for
+        *                   that object. True otherwise.
         */
-        $scope.canAddLookupFields = function() {
-
-            return ($scope.activeIndex !== -1 && $scope.availableFields.length>0 &&
-                    $scope.lookup.fieldList.length < $scope.fields.length) ?
-                true : false;
+        $scope.canAddLookupFields = function () {
+            return $scope.activeIndex !== -1
+                            && $scope.availableFields.length > 0
+                            && $scope.lookup.fieldList.length < $scope.fields.length;
         };
 
         /**
@@ -915,27 +1010,6 @@
         };
 
         /* VALIDATION FUNCTIONS */
-
-        /**
-        * Validate the validation information ('Validation' tab on UI) inside the given field.
-        *
-        * @param {object} field to validate.
-        * @return {boolean} true if all validation information inside the field are correct;
-        *                   otherwise false.
-        */
-        $scope.validateFieldValidation = function (field) {
-            var expression = true;
-
-            if (field.validation) {
-                angular.forEach(field.validation.validationCriteria, function (criterion) {
-                    if ($scope.validateCriterion(criterion, field.validation.validationCriteria)) {
-                        expression = false;
-                    }
-                });
-            }
-
-            return expression;
-        };
 
         /**
         * Checks if criterion value is valid
@@ -1015,13 +1089,23 @@
         * Function called each time when user changes the checkbox state on 'Browsing settings' view.
         * Responsible for updating the model.
         */
-        $scope.onFilterableChange = function() {
-            if(this.checked) {
-                $scope.advancedSettings.browsing.filterableFields.push(this.field.basic.name);
-            } else {
-                $scope.advancedSettings.browsing.filterableFields
-                    .splice($scope.advancedSettings.browsing.filterableFields.indexOf(this.field.basic.name), 1);
-            }
+        $scope.onFilterableChange = function(field) {
+            var selected = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'browsing.${0}'.format(selected ? 'addFilterableField' : 'removeFilterableField'),
+                    advanced: true,
+                    value: [field.id]
+                }
+            }, function () {
+                if(selected) {
+                    $scope.advancedSettings.browsing.filterableFields.push(field.id);
+                } else {
+                    $scope.advancedSettings.browsing.filterableFields.removeObject(field.id);
+                }
+            });
         };
 
         /**
@@ -1029,9 +1113,19 @@
         * 'Browsing Settings' view. Responsible for updating the model.
         */
         $scope.onDisplayedChange = function(container) {
-            $scope.advancedSettings.browsing.displayedFields.length = 0;
+            $scope.advancedSettings.browsing.displayedFields = [];
+
             angular.forEach(container, function(field) {
-                $scope.advancedSettings.browsing.displayedFields.push(field.basic.name);
+                $scope.advancedSettings.browsing.displayedFields.push(field.id);
+            });
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'browsing.$setDisplayedFields',
+                    advanced: true,
+                    value: [$scope.advancedSettings.browsing.displayedFields]
+                }
             });
         };
 
@@ -1066,26 +1160,42 @@
             var items = $(".connected-list-target.browsing").children(),
                 indices = [],
                 firstUnselectedIndex = parseInt(items.filter(':not(.selected)').first().attr('item-index'),10),
-                selected = {};
+                selected = {},
+                array = [];
 
             items.filter('.selected').each(function() {
                 var item = $(this),
                 index =  parseInt($(item).attr('item-index'), 10);
                     // save 'selected' state
-                    selected[$scope.browsingDisplayed[index].basic.name] = true;
+                    selected[$scope.browsingDisplayed[index].id] = true;
                     if(firstUnselectedIndex < index) {
                         indices.push(index);
                     }
             });
+
             angular.forEach(indices, function(index) {
                 $scope.targetItemMoveUp(index);
             });
-            // restore 'selected' state
-            $timeout(function() {
-                $(".connected-list-target.browsing").children().each(function(index) {
-                    if(selected[$scope.browsingDisplayed[index].basic.name]) {
-                        $(this).addClass('selected');
-                    }
+
+            angular.forEach($scope.browsingDisplayed, function (item) {
+                array.push(item.id);
+            });
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'browsing.$setDisplayedFields',
+                    advanced: true,
+                    value: [array]
+                }
+            }, function () {
+                // restore 'selected' state
+                $timeout(function() {
+                    $(".connected-list-target.browsing").children().each(function(index) {
+                        if(selected[$scope.browsingDisplayed[index].id]) {
+                            $(this).addClass('selected');
+                        }
+                    });
                 });
             });
         };
@@ -1097,27 +1207,45 @@
             var items = $(".connected-list-target.browsing").children(),
                 indices = [],
                 lastUnselectedIndex = parseInt(items.filter(':not(.selected)').last().attr('item-index'),10),
-                selected = {};
+                selected = {},
+                array = [];
 
             items.filter('.selected').each(function() {
                 var item = $(this),
                 index =  parseInt($(item).attr('item-index'), 10);
                 // save 'selected' state
-                selected[$scope.browsingDisplayed[index].basic.name] = true;
+                selected[$scope.browsingDisplayed[index].id] = true;
                 if(lastUnselectedIndex > index) {
                     indices.push(index);
                 }
+            });
 
+            angular.forEach(indices, function(index) {
+                $scope.targetItemMoveUp(index);
             });
-            angular.forEach(indices.reverse(), function(index) {
-                $scope.targetItemMoveDown(index);
+
+            angular.forEach($scope.browsingDisplayed, function (item) {
+                array.push(item.id);
             });
-            // restore 'selected' state
-            $timeout(function() {
-                $(".connected-list-target.browsing").children().each(function(index) {
-                    if(selected[$scope.browsingDisplayed[index].basic.name]) {
-                        $(this).addClass('selected');
-                    }
+
+            draft({
+                edit: true,
+                values: {
+                    path: 'browsing.$setDisplayedFields',
+                    advanced: true,
+                    value: [array]
+                }
+            }, function () {
+                angular.forEach(indices.reverse(), function(index) {
+                    $scope.targetItemMoveDown(index);
+                });
+                // restore 'selected' state
+                $timeout(function() {
+                    $(".connected-list-target.browsing").children().each(function(index) {
+                        if(selected[$scope.browsingDisplayed[index].id]) {
+                            $(this).addClass('selected');
+                        }
+                    });
                 });
             });
         };
@@ -1193,32 +1321,6 @@
         /* UTILITY FUNCTIONS */
 
         /**
-        * Find all fields with given name.
-        *
-        * @param {string} name This value will be used to find fields.
-        * @return {Array} array of fields with the given name.
-        */
-        $scope.findFieldsByName = function (name) {
-            return find($scope.fields, [{ field: 'basic.name', value: name}], false);
-        };
-
-        /**
-        * Find all fields with given id.
-        *
-        * @param {string} id This value will be used to find fields.
-        * @param {Array} array Array in which we're looking for id.
-        * @return {Array} array of fields with the given id.
-        */
-        $scope.findFieldById = function (id, array) {
-            var field = find(array, [{ field: 'id', value: id}], false);
-            if ($.isArray(field)) {
-                return field[0];
-            } else {
-                return field;
-            }
-        };
-
-        /**
         * Find all lookups with given name.
         *
         * @param {string} name This value will be used to find lookups.
@@ -1227,11 +1329,7 @@
         */
         $scope.findLookupByName = function (name, array) {
             var lookup = find(array, [{ lookup: 'lookupName', value: name}], false);
-            if ($.isArray(lookup)) {
-                return lookup[0];
-            } else {
-                return lookup;
-            }
+            return $.isArray(lookup) ? lookup[0] : lookup;
         };
 
         /**
@@ -1252,39 +1350,46 @@
         };
 
         /**
-        * Flatten array of arrays of objects into simple array of objects and removes hashkeys from them.
+        * Find unique field with given id.
         *
-        * @return {Array} array of objects.
+        * @param {string} id This value will be used to find fields.
+        * @return {object} unique field with the given id.
         */
-        $scope.flattenArray = function (array) {
-            var objects = [];
-            angular.forEach(array, function (objArrays) {
-                if ($.isArray(objArrays)) {
-                    angular.forEach(objArrays, function (value) {
-                        delete value.$$hashKey;
-                        objects.push(value);
-                    });
-                } else {
-                   angular.forEach(objArrays, function (obj) {
-                        angular.forEach(obj, function (value) {
-                            delete value.$$hashKey;
-                            objects.push(value);
-                        });
-                   });
-                }
-            });
-            return objects;
+        $scope.findFieldById = function (id) {
+            return find($scope.fields, [{ field: 'id', value: id}], true);
         };
 
         /**
-        * Find all metadata values for given key.
+        * Find all fields with given id.
         *
-        * @param {string} name Key used to find values.
-        * @return {Array} array of fields with the given key.
+        * @param {string} id This value will be used to find fields.
+        * @param {Array} array Array in which we're looking for id.
+        * @return {Array} array of fields with the given id.
         */
-        $scope.findMetadataByKey = function (key) {
-            var objects = [];
-            return find($scope.flattenArray($scope.selectedEntityMetadata), [{field: 'key', value: key.key}]);
+        $scope.findFieldInArrayById = function (id, array) {
+            var field = find(array, [{ field: 'id', value: id}], false);
+            return $.isArray(field) ? field[0] : field;
+        };
+
+        /**
+        * Find all fields with given name.
+        *
+        * @param {string} name This value will be used to find fields.
+        * @return {Array} array of fields with the given name.
+        */
+        $scope.findFieldsByName = function (name) {
+            return find($scope.fields, [{ field: 'basic.name', value: name}], false);
+        };
+
+        /**
+        * Find validation criterion with given name in field's validation criteria.
+        *
+        * @param {object} validationCriteria list of field's validation criteria.
+        * @param {string} name The name of criteria to be found.
+        * @return {object} found criterion with given name or null if no such criterion exists.
+        */
+        $scope.findCriterionByName = function (validationCriteria, name) {
+            return find(validationCriteria, [{ field: 'displayName', value: name}], true);
         };
 
         /**
@@ -1299,114 +1404,13 @@
         };
 
         /*
-        * Gets type information from TypeDto object
-        * @param {object} TypeDto object containing type information
-        * @return {string} type information taken from parameter object
+        * Gets type information from TypeDto object.
+
+        * @param {object} typeObject TypeDto object containing type information
+        * @return {string} type information taken from parameter object.
         */
-        $scope.getTypeFromTypeObject = function(typeObject) {
-            return typeObject.displayName.substring(typeObject.displayName.lastIndexOf('.') + 1);
-        };
-
-        /**
-        * Checks if given field contains not empty validation object
-        * @param {object} field - field to be checked for including validation object
-        * @return {boolean} true if given field contains not empty validation
-        */
-        $scope.containsValidation = function(field) {
-            return field.validation && field.validation.validationCriteria.length;
-        };
-
-        /**
-        * Find out if user made changes in field definitions or advanced settings.
-        *
-        * @return {boolean} true if there are changes; otherwise false.
-        */
-        $scope.changed = function () {
-            var fields = $scope.fields !== undefined,
-                original = $scope.originalFields !== undefined,
-                clone = {
-                    fields: fields ? cloneArray($scope.fields) : [],
-                    original: original ? cloneArray($scope.originalFields) : []
-                },
-                validationClone = {
-                    fields: [],
-                    original: [],
-                    flattedFields: [],
-                    flattedOriginal: []
-                },
-                metadataClone = $scope.flattenArray($scope.selectedEntityMetadata),
-                changedFields,
-                changedAdvancedSettings,
-                changedMetadata;
-
-            angular.forEach(clone.fields, function (obj) {
-                delete obj.$$hashKey;
-                validationClone.fields.push(obj.validation.validationCriteria);
-                obj.validation.validationCriteria = undefined;
-            });
-
-            angular.forEach(clone.original, function (obj) {
-                delete obj.$$hashKey;
-                validationClone.original.push(obj.validation.validationCriteria);
-                obj.validation.validationCriteria = undefined;
-            });
-
-            validationClone.flattedFields = $scope.flattenArray(validationClone.fields);
-            validationClone.flattedOriginal = $scope.flattenArray(validationClone.original);
-
-            angular.forEach(validationClone.flattedFields, function (obj, index) {
-                if (obj.enabled === false && index < validationClone.flattedOriginal.length) {
-                    obj.value = validationClone.flattedOriginal[index].value;
-                }
-            });
-
-            changedFields = fields && original
-                ? (!arraysEqual(clone.fields, clone.original) ||
-                !arraysEqual(validationClone.flattedFields, validationClone.flattedOriginal))
-                : (fields && !original) || (!fields && original);
-
-            angular.forEach(clone.fields, function (obj, index) {
-                obj.validation.validationCriteria = validationClone.fields[index];
-            });
-
-            angular.forEach(clone.original, function (obj, index) {
-                obj.validation.validationCriteria = validationClone.original[index];
-            });
-
-            angular.forEach($scope.advancedSettings.indexes, function(obj) {
-                delete obj.$$hashKey;
-            });
-
-            angular.forEach($scope.selectedEntityAdvancedFields, function(obj) {
-                delete obj.$$hashKey;
-            });
-
-            changedAdvancedSettings = $scope.originalAdvancedSettings !== undefined && $scope.advancedSettings !== undefined
-            && !(_.isEqual(
-                $scope.advancedSettings.tracking, $scope.originalAdvancedSettings.tracking
-            ) && arraysEqual(
-                $scope.advancedSettings.indexes, $scope.originalAdvancedSettings.indexes
-            ) && _.isEqual(
-                $scope.advancedSettings.restOptions, $scope.originalAdvancedSettings.restOptions
-            ) && _.isEqual(
-                $scope.selectedEntityRestLookups, $scope.originalSelectedEntityRestLookups
-            ) && _.isEqual(
-                $scope.selectedEntityAdvancedFields, $scope.originalSelectedEntityAdvancedFields
-            ) && arraysEqual(
-                $scope.advancedSettings.browsing.filterableFields, $scope.originalAdvancedSettings.browsing.filterableFields
-            ) && arraysEqual(
-                $scope.advancedSettings.browsing.displayedFields, $scope.originalAdvancedSettings.browsing.displayedFields
-            ));
-
-            angular.forEach(metadataClone, function (obj) {
-                delete obj.$$hashKey;
-            });
-
-            changedMetadata = !arraysEqual(
-                metadataClone, $scope.originalSelectedEntityMetadata
-            );
-
-            return changedFields || changedAdvancedSettings || changedMetadata;
+        $scope.getTypeSingleClassName = function (type) {
+            return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
         };
 
         /**
@@ -1417,7 +1421,7 @@
         * @return {string} url to appropriate form.
         */
         $scope.loadDefaultValueForm = function (type) {
-            var value = $scope.getTypeFromTypeObject(type);
+            var value = $scope.getTypeSingleClassName(type);
 
             return '../mds/resources/partials/widgets/field-basic-defaultValue-{0}.html'
                 .format(value.substring(value.toLowerCase()));
@@ -1507,7 +1511,10 @@
         * @return {boolean} true if the setting has a value; otherwise false.
         */
         $scope.hasValue = function (setting) {
-            return setting.value && !_.isNull(setting.value) && !_.isUndefined(setting.value);
+            return setting
+                && !_.isNull(setting.value)
+                && !_.isUndefined(setting.value)
+                && (_.isArray(setting.value) ? setting.value.length > 0 : true);
         };
 
         /**
@@ -1517,9 +1524,7 @@
         * @return {boolean} true if the setting has a positive value; otherwise false.
         */
         $scope.hasPositiveValue = function (setting) {
-            return $scope.hasValue(setting.value)
-                && _.isNumber(setting.value)
-                && setting.value >= 0;
+            return $scope.hasValue(setting) && _.isNumber(setting.value) && setting.value >= 0;
         };
 
         /**
@@ -1531,7 +1536,7 @@
         */
         $scope.hasType = function (setting, type) {
             var fullName = setting.type.typeClass,
-                singleName = fullName.substring(fullName.lastIndexOf('.'));
+                singleName = fullName.substring(fullName.lastIndexOf('.') + 1);
 
             return _.isEqual(singleName.toLowerCase(), type.toLowerCase());
         };
@@ -1544,11 +1549,18 @@
             blockUI();
 
             if ($scope.selectedEntity && $scope.selectedEntity.id) {
-                setFields();
-                setAdvancedSettings();
+                workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
+
+                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                    setAdvancedSettings();
+                });
+
+                unblockUI();
             } else {
+                workInProgress.setActualEntity(Entities, undefined);
+
                 delete $scope.fields;
-                delete $scope.originalFields;
+                delete $scope.advancedSettings;
                 unblockUI();
             }
         });
@@ -1560,7 +1572,7 @@
         * the unique id will be added to end of created field name.
         */
         $scope.$watch('newField.type', function () {
-            var found, type, obj;
+            var found;
 
             if (isBlank($scope.newField.name) && $scope.newField.type) {
                 found = $scope.findFieldsByName($scope.newField.type.defaultName);
@@ -1571,18 +1583,15 @@
                     $scope.newField.name += '-{0}'.format(_.uniqueId());
                 }
             }
-
-            if ($scope.newField.type) {
-                type = $scope.getTypeFromTypeObject($scope.newField.type.type);
-                $scope.newField.validation = FieldsValidation.getForType({type: type});
-            }
         });
     });
 
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope, $http, Fields) {
+    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities) {
+        workInProgress.setActualEntity(Entities, undefined);
+
         /**
         * An array perisisting currently hidden modules in data browser view
         */
@@ -1606,7 +1615,7 @@
         /**
         * Initializes a map of all entities in Seuss indexed by module name
         */
-        $scope.setEntities = function() {
+        $scope.setEntities = function () {
             blockUI();
             $http.get('../mds/entities/byModule').success(function (data) {
                 $scope.modules = data;
@@ -1619,7 +1628,7 @@
         */
         $scope.selectInstanceHistory = function (id) {
             blockUI();
-            $http.get('../mds/entities/' + id + '/history').success(function (data) {
+            $http.get('../mds/instances/' + id + '/history').success(function (data) {
                 $scope.selectedInstance = id;
                 $scope.unselectEntity();
                 unblockUI();
@@ -1637,11 +1646,11 @@
         /**
         * Sets selected entity by module and entity name
         */
-        $scope.selectEntity = function(module, entityName) {
+        $scope.selectEntity = function (module, entityName) {
             blockUI();
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
-                $scope.fields = Fields.query({entityId: $scope.selectedEntity.id});
+                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id});
                 unblockUI();
             });
             setTimeout(function() {
@@ -1652,7 +1661,7 @@
         /**
         * Unselects entity to allow user to return to entities list by modules
         */
-        $scope.unselectEntity = function() {
+        $scope.unselectEntity = function () {
             $scope.selectedEntity = undefined;
         };
 
@@ -1692,13 +1701,14 @@
         $scope.arrow = function (module) {
             return $scope.visible(module) ? "icon-chevron-down" : "icon-chevron-right";
         };
-
     });
 
     /**
     * The SettingsCtrl controller is used on the 'Settings' view.
     */
     mds.controller('SettingsCtrl', function ($scope, Entities, MdsSettings) {
+        workInProgress.setActualEntity(Entities, undefined);
+
         var result = [];
         $scope.settings = MdsSettings.getSettings();
         $scope.timeUnits = [
@@ -1716,7 +1726,7 @@
             if (result.length === 0) {
                 angular.forEach($scope.entities, function (entity) {
                     var module = entity.module === null ? "Seuss" : entity.module.replace(/ /g, ''),
-                    found = false;
+                        found = false;
                     angular.forEach(result, function (mod) {
                         if (module === mod.name) {
                             mod.entities.push(entity.name + (entity.namespace !== null ? " (" + entity.namespace + ")" : ""));
@@ -1777,8 +1787,7 @@
                     handleResponse('mds.success', 'mds.dataRetention.success', '');
                 }, function (response) {
                     handleResponse('mds.error', 'mds.dataRetention.error', response);
-                }
-            );
+                });
         };
 
         /**

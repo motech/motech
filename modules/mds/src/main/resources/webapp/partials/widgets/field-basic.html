@@ -4,7 +4,7 @@
             {{msg('mds.form.label.displayName')}}<span class="text-danger">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-large-fluid" id="field-display-name-{{$index}}" type="text" ng-model="field.basic.displayName" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+            <input class="form-control input-large-fluid" type="text" ng-model="field.basic.displayName" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
             <span class="help-inline" ng-class="{hide: field.basic.displayName}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
@@ -15,7 +15,7 @@
             {{msg('mds.form.label.name')}}<span class="text-danger">*</span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-large-fluid" id="field-name-{{$index}}" type="text" ng-model="field.basic.name" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
+            <input class="form-control input-large-fluid" id="field-name-{{$index}}" type="text" ng-model="field.basic.name" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly" mds-camel-case="{{$index}}">
             <span class="help-inline" ng-class="{hide: field.basic.name}">
                 {{msg('mds.error.fieldIsRequired')}}
             </span>
@@ -29,7 +29,7 @@
             {{msg('mds.form.label.required')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" ng-disabled="selectedEntity.readOnly">
+            <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
         </div>
     </div>
     <div class="form-group">
@@ -37,7 +37,7 @@
             {{msg('mds.form.label.tooltip')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="form-control input-large-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" ng-disabled="selectedEntity.readOnly">
+            <input class="form-control input-large-fluid" id="field-tooltip-{{$index}}" type="text" ng-model="field.basic.tooltip" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
         </div>
     </div>
     <div class="form-group">

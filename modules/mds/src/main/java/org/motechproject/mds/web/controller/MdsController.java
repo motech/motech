@@ -11,8 +11,8 @@ import java.io.IOException;
 
 /**
  * The <code>MdsController</code> is a basic controller for other controllers defined in
- * the mds module. Its function is to handle all {@link MdsException} exceptions from extended
- * classes.
+ * the mds module. Its function is to handle all {@link org.motechproject.mds.ex.MdsException}
+ * exceptions from extended classes.
  *
  * @see MdsException
  */

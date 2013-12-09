@@ -3,7 +3,6 @@ package org.motechproject.mds.web.matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.web.ExampleData;

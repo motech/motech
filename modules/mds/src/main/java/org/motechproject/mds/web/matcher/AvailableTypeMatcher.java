@@ -18,6 +18,9 @@ public class AvailableTypeMatcher extends MdsMatcher<AvailableTypeDto> {
         this.messageSource = messageSource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean match(AvailableTypeDto obj) {
         String label = messageSource.getMessage(obj.getType().getDisplayName(), null, null);

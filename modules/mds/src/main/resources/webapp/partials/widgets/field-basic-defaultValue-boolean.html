@@ -1,4 +1,4 @@
-<select class="form-control input-auto" ng-model="field.basic.defaultValue" ng-disabled="selectedEntity.readOnly">
+<select class="form-control input-auto" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
     <option value="">{{msg('mds.form.label.select')}}</option>
     <option value="1">{{msg('mds.form.label.true')}}</option>
     <option value="0">{{msg('mds.form.label.false')}}</option>

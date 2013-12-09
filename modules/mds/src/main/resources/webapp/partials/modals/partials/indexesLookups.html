@@ -17,7 +17,7 @@
         <form>
             <div class="form-field">
                 <label class="control-label">{{msg('mds.form.label.lookupName')}}:
-                    <input type='text' ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35"/>
+                    <input type='text' ng-required="true" ng-model='lookup.lookupName' id="lookup.name" maxlength="35" mds-auto-save-advanced-change mds-path="indexes.{{activeIndex}}.lookupName"/>
                     <span class="form-hint-error" ng-hide="lookup.lookupName">{{msg('mds.error.emptyLookup')}}</span>
                 </label>
             </div>
@@ -25,10 +25,10 @@
             <div class="form-field">
                 <label class="radio-input">{{msg('mds.form.label.lookupReturns')}}:</label>
                 <label class="radio-input">
-                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="true"/> {{msg('mds.form.singleObject')}}
+                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="true" mds-auto-save-advanced-change="click" mds-path="indexes.{{activeIndex}}.singleObjectReturn"/> {{msg('mds.form.singleObject')}}
                 </label>
                 <label class="radio-input">
-                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="false"/> {{msg('mds.form.multipleObjects')}}
+                    <input type="radio" ng-model="lookup.singleObjectReturn" ng-value="false" mds-auto-save-advanced-change="click" mds-path="indexes.{{activeIndex}}.singleObjectReturn"/> {{msg('mds.form.multipleObjects')}}
                 </label>
             </div>
 
@@ -37,12 +37,12 @@
                     {{msg('mds.form.label.field')}}:
                     <div class="btn-group">
                         <button class="btn dropdown-toggle lookup-field" data-toggle="dropdown" href="#">
-                           {{lookupField.displayName || msg('mds.form.selectField')}}
+                           {{findFieldById(lookupField).basic.displayName || msg('mds.form.selectField')}}
                            <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu lookup-field-list">
                             <li class="lookup-field-list" ng-repeat="field in availableFields">
-                                <a ng-click="selectField(lookupField, field)">{{field.basic.displayName}}</a>
+                                <a ng-click="selectField(lookupField, field.id)">{{field.basic.displayName}}</a>
                             </li>
                         </ul>
                         <button href="#" type="button" class="btn btn-danger" ng-click="removeLookupField(lookupField)">

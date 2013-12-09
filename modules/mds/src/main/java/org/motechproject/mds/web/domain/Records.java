@@ -6,20 +6,20 @@ import java.util.List;
 /**
  * Class required for jqGrid to exchange data with server
  */
-public class EntityRecords {
+public class Records<T> {
     private Integer page;
     private Integer total;
     private Integer records;
-    private List<EntityRecord> rows;
+    private List<T> rows;
 
-    public EntityRecords(Integer page, Integer rows, List<EntityRecord> entityRecords) {
+    public Records(Integer page, Integer rows, List<T> list) {
         if (page != null && rows != null) {
             this.page = page;
-            records = entityRecords.size();
+            records = list.size();
             this.total = (this.records <= rows) ? 1 : (this.records / rows) + 1;
-            this.rows = new ArrayList<>(entityRecords.subList((page - 1) * rows, (page * rows > this.records ? this.records : page * rows)));
+            this.rows = new ArrayList<>(list.subList((page - 1) * rows, (page * rows > this.records ? this.records : page * rows)));
         } else {
-            this.rows = entityRecords;
+            this.rows = list;
         }
     }
 
@@ -47,11 +47,11 @@ public class EntityRecords {
         this.records = records;
     }
 
-    public List<EntityRecord> getRows() {
+    public List<T> getRows() {
         return rows;
     }
 
-    public void setRows(List<EntityRecord> rows) {
+    public void setRows(List<T> rows) {
         this.rows = rows;
     }
 }

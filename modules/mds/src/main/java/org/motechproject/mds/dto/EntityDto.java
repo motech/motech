@@ -17,6 +17,7 @@ public class EntityDto {
     private String module;
     private String namespace;
     private boolean readOnly;
+    private boolean draft;
 
     public EntityDto() {
         this(null, null);
@@ -78,19 +79,33 @@ public class EntityDto {
         this.readOnly = readOnly;
     }
 
-    /** {@inheritDoc} */
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

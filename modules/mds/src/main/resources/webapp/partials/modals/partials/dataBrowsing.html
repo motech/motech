@@ -18,19 +18,19 @@
 
                 <div class="buttons-container">
                     <div class="btn-group-vertical">
-                        <button connected-list-btn-from connect-with="browsing" class="btn" ng-disabled="!canMoveLeft()">
+                        <button connected-list-btn-from connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveLeft()">
                             <span class="icon-chevron-left" />
                         </button>
-                        <button connected-list-btn-from-all connect-with="browsing" class="btn"  ng-disabled="!canMoveAllLeft()">
+                        <button connected-list-btn-from-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn"  ng-disabled="!canMoveAllLeft()">
                             <span class="icon-chevron-left" /><span class="icon-chevron-left" />
                         </button>
                     </div>
                     <br/><br/>
                     <div class="btn-group-vertical">
-                        <button connected-list-btn-to-all connect-with="browsing" class="btn" ng-disabled="!canMoveAllRight()">
+                        <button connected-list-btn-to-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveAllRight()">
                             <span class="icon-chevron-right" /><span class="icon-chevron-right" />
                         </button>
-                        <button connected-list-btn-to connect-with="browsing" class="btn" ng-disabled="!canMoveRight()">
+                        <button connected-list-btn-to connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveRight()">
                             <span class="icon-chevron-right" />
                         </button>
                     </div>
@@ -68,7 +68,7 @@
         <div id="browsing-filters" class="accordion-content collapse in">
             <form>
                 <label class="checkbox inline" ng-repeat="field in fields | filter:isFilterable">
-                    <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange()"/> {{field.basic.displayName}}
+                    <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
                 </label>
             </form>
         </div>

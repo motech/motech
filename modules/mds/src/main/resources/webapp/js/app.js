@@ -2,8 +2,8 @@
     'use strict';
 
     var mds = angular.module('mds', [
-        'motech-dashboard', 'entityService', 'fieldService', 'fieldValidationService', 'mdsSettingsService', 'ngCookies', 'ui.directives', 'ngRoute', 'bootstrap',
-        'ui.directives'
+        'motech-dashboard', 'entityService', 'mdsSettingsService', 'ngCookies', 'ui.directives',
+        'ngRoute', 'bootstrap', 'ui.directives'
     ]);
 
     mds.constant('AVAILABLE_TABS', ['schemaEditor', 'dataBrowser', 'settings']);
