@@ -20,6 +20,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 
+import static org.motechproject.server.startup.MotechPlatformState.DB_ERROR;
+import static org.motechproject.server.startup.MotechPlatformState.FIRST_RUN;
+import static org.motechproject.server.startup.MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
+import static org.motechproject.server.startup.MotechPlatformState.NEED_CONFIG;
+import static org.motechproject.server.startup.MotechPlatformState.NORMAL_RUN;
+
 /**
  * StartupManager controlling and managing the application loading
  */
@@ -39,11 +45,11 @@ public class StartupManager {
     private ConfigurationService configurationService;
 
     public boolean isConfigRequired() {
-        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG || platformState == MotechPlatformState.NEED_CONFIG;
+        return platformState == NEED_BOOTSTRAP_CONFIG || platformState == NEED_CONFIG;
     }
 
     public boolean isBootstrapConfigRequired() {
-        return platformState == MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
+        return platformState == NEED_BOOTSTRAP_CONFIG;
     }
 
     @PostConstruct
@@ -51,10 +57,13 @@ public class StartupManager {
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
         if (bootstrapConfig == null) {
             LOGGER.info("Bootstrap config required from the user.");
-            platformState = MotechPlatformState.NEED_BOOTSTRAP_CONFIG;
+            markPlatformStateAs(NEED_BOOTSTRAP_CONFIG);
             return;
         }
-
+        if (configurationService.requiresConfigurationFiles()) {
+            markPlatformStateAs(NEED_CONFIG);
+            return;
+        }
         dbSettings = configurationService.getPlatformSettings();
 
         if (!dbSettings.isPlatformInitialized()) {
@@ -65,15 +74,15 @@ public class StartupManager {
                 syncSettingsWithDb();
 
                 if (settingsRecord.getLoginMode().isRepository()) {
-                    platformState = MotechPlatformState.NEED_CONFIG;
+                    markPlatformStateAs(NEED_CONFIG);
                 }
             } else {
                 LOGGER.info("Config source is UI, and no settings in DB. Entering startup.");
-                platformState = MotechPlatformState.NEED_CONFIG;
+                markPlatformStateAs(NEED_CONFIG);
             }
         } else {
             LOGGER.info("Found settings in db, normal run");
-            platformState = MotechPlatformState.NORMAL_RUN;
+            markPlatformStateAs(NORMAL_RUN);
         }
 
         if (canLaunchBundles()) {
@@ -82,8 +91,9 @@ public class StartupManager {
         }
     }
 
+
     public boolean canLaunchBundles() {
-        return platformState == MotechPlatformState.FIRST_RUN || platformState == MotechPlatformState.NORMAL_RUN;
+        return isFirstRun() || platformState == NORMAL_RUN;
     }
 
     /**
@@ -94,15 +104,16 @@ public class StartupManager {
         return configurationService.loadDefaultConfig();
     }
 
+
     private void syncSettingsWithDb() {
         try {
             if (dbSettings.getLastRun() == null) {
-                platformState = MotechPlatformState.FIRST_RUN;
+                markPlatformStateAs(FIRST_RUN);
             } else {
-                platformState = MotechPlatformState.NORMAL_RUN;
+                markPlatformStateAs(NORMAL_RUN);
             }
 
-            if (platformState == MotechPlatformState.FIRST_RUN || settingsRecord == null ||
+            if (isFirstRun() || settingsRecord == null ||
                     !Arrays.equals(settingsRecord.getConfigFileChecksum(), dbSettings.getConfigFileChecksum())) {
                 LOGGER.info("Updating database startup");
                 dbSettings.updateSettings(settingsRecord);
@@ -121,7 +132,17 @@ public class StartupManager {
             configurationService.savePlatformSettings(dbSettings);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            platformState = MotechPlatformState.DB_ERROR;
+            markPlatformStateAs(DB_ERROR);
         }
     }
+
+    private boolean isFirstRun() {
+        return platformState == FIRST_RUN;
+    }
+
+    private void markPlatformStateAs(MotechPlatformState platformState) {
+        this.platformState = platformState;
+    }
+
+
 }

@@ -45,5 +45,9 @@ public final class ConfigSource {
     public String getName() {
         return name;
     }
+
+    public boolean isFile() {
+        return this == FILE;
+    }
 }
 

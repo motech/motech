@@ -1,4 +1,4 @@
-package org.motechproject.config.core.filestore;
+package org.motechproject.config.core.filters;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -14,6 +14,13 @@ import static org.motechproject.config.core.constants.ConfigurationConstants.SUP
  * FileFilter implementation to filter configuration files.
  */
 public class ConfigFileFilter extends FileFileFilter {
+
+    public static final FileFileFilter PLATFORM_CORE_CONFIG_FILTER = new FileFileFilter() {
+        @Override
+        public boolean accept(File file) {
+            return isPlatformCoreConfigFile(file);
+        }
+    };
 
     @Override
     public boolean accept(File file) {

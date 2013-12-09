@@ -66,8 +66,7 @@ public interface ConfigurationService {
      * </p>
      *
      * @return Bootstrap configuration
-     * @throws org.motechproject.config.core.MotechConfigurationException
-     *          if bootstrap configuration cannot be loaded.
+     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be loaded.
      */
     BootstrapConfig loadBootstrapConfig();
 
@@ -79,8 +78,7 @@ public interface ConfigurationService {
      * </p>
      *
      * @param bootstrapConfig Bootstrap configuration.
-     * @throws org.motechproject.config.core.MotechConfigurationException
-     *          if bootstrap configuration cannot be saved.
+     * @throws org.motechproject.config.core.MotechConfigurationException if bootstrap configuration cannot be saved.
      */
     void save(BootstrapConfig bootstrapConfig);
 
@@ -263,4 +261,6 @@ public interface ConfigurationService {
     SettingsRecord loadDefaultConfig();
 
     SettingsRecord loadConfig();
+
+    boolean requiresConfigurationFiles();
 }

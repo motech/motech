@@ -4,8 +4,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.Tenant;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -21,6 +24,9 @@ import java.util.Properties;
  * SettingsFacade provides an interface to access application configuration present in files or database
  */
 public class SettingsFacade {
+
+
+    private static Logger logger = LoggerFactory.getLogger(SettingsFacade.class);
 
     private ConfigurationService configurationService;
 
@@ -43,11 +49,12 @@ public class SettingsFacade {
 
     @PostConstruct
     public void afterPropertiesSet() {
-        if (!propsRegistered) {
-            registerAllProperties();
-        }
-        if (!rawConfigRegistered) {
-            registerAllRawConfig();
+        try {
+            registerConfigurationSettings();
+        } catch (MotechConfigurationException ex) {
+            rawConfigRegistered = false;
+            propsRegistered = false;
+            logger.error(ex.getMessage(), ex);
         }
     }
 
@@ -162,24 +169,6 @@ public class SettingsFacade {
             }
         } catch (IOException e) {
             throw new MotechException("Error saving file " + filename, e);
-        }
-    }
-
-    public void registerProperties(Resource resource) {
-        String filename = getResourceFileName(resource);
-        InputStream is = null;
-        try {
-            is = resource.getInputStream();
-
-            Properties props = new Properties();
-            props.load(is);
-
-            config.put(filename, props);
-            registerProperties(filename, props);
-        } catch (IOException e) {
-            throw new MotechException("Error registering resource " + resource.getFilename(), e);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
     }
 
@@ -325,6 +314,16 @@ public class SettingsFacade {
         return name;
     }
 
+    private void registerConfigurationSettings() {
+        if (!propsRegistered) {
+            registerAllProperties();
+        }
+        if (!rawConfigRegistered) {
+            registerAllRawConfig();
+        }
+    }
+
+
     private void setProperty(String filename, String key, String value) {
         if (!config.containsKey(filename)) {
             config.put(filename, new Properties());
@@ -379,5 +378,9 @@ public class SettingsFacade {
 
     private String getQueuePrefix() {
         return Tenant.current().getSuffixedId();
+    }
+
+    public boolean areConfigurationSettingsRegistered() {
+        return propsRegistered && rawConfigRegistered;
     }
 }

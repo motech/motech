@@ -1,6 +1,7 @@
 package org.motechproject.server.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
@@ -79,12 +80,14 @@ public class StartupController {
         } else {
             Locale userLocale = localeService.getUserLocale(request);
 
-            ConfigSource configSource = (configurationService.loadBootstrapConfig() != null) ?
-                    configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
+            BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+            ConfigSource configSource = (bootstrapConfig != null) ? bootstrapConfig.getConfigSource() : ConfigSource.UI;
 
             StartupForm startupSettings = new StartupForm();
             startupSettings.setLanguage(userLocale.getLanguage());
 
+            boolean requiresConfigFiles = configSource.isFile() && configurationService.requiresConfigurationFiles();
+            view.addObject("requireConfigFiles", requiresConfigFiles);
             view.addObject("mainHeader", mainHeader);
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);

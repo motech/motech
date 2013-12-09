@@ -11,6 +11,7 @@ import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.MotechMapUtils;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
@@ -46,7 +47,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static org.motechproject.config.core.filestore.ConfigFileFilter.isPlatformCoreConfigFile;
+import static org.motechproject.config.core.filters.ConfigFileFilter.isPlatformCoreConfigFile;
 
 /**
  * Default implementation of {@link org.motechproject.config.service.ConfigurationService}.
@@ -503,11 +504,22 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return configLoader.loadMotechSettings();
     }
 
+    @Override
+    public boolean requiresConfigurationFiles() {
+        try {
+            if (getConfigSource() == null) {
+                configSource = loadBootstrapConfig().getConfigSource();
+            }
+            ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
+            return configSource.isFile() && !configLocation.hasPlatformConfigurationFile();
+        } catch (MotechConfigurationException ex) {
+            logger.error(ex.getMessage(), ex);
+            return true;
+        }
+    }
+
     void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
-    void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
-        this.coreConfigurationService = coreConfigurationService;
-    }
 }

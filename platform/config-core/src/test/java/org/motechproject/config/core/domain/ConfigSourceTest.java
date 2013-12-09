@@ -40,11 +40,17 @@ public class ConfigSourceTest {
     }
 
     @Test
-    public void shouldValidateGivenConfigSourceName(){
+    public void shouldValidateGivenConfigSourceName() {
         assertTrue(ConfigSource.isValid("UI"));
 
         assertTrue(ConfigSource.isValid("  file  "));
 
         assertFalse(ConfigSource.isValid("invalid"));
+    }
+
+    @Test
+    public void shouldReturnTrueIfConfigSourceIsFile() {
+        assertFalse(ConfigSource.UI.isFile());
+        assertTrue(ConfigSource.FILE.isFile());
     }
 }

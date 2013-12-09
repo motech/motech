@@ -1,19 +1,14 @@
 package org.motechproject.server.config.service;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
-import org.motechproject.config.core.filestore.ConfigFileFilter;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -36,8 +31,6 @@ import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ
  */
 @Component
 public class ConfigLoader {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLoader.class);
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -79,11 +72,7 @@ public class ConfigLoader {
      */
     public List<File> findExistingConfigs() throws IOException {
         final ConfigLocation currentConfigLocation = coreConfigurationService.getConfigLocation();
-        String location = currentConfigLocation.getLocation();
-
-        List<File> files = (List<File>) FileUtils.listFiles(new File(location), new ConfigFileFilter(), TrueFileFilter.INSTANCE);
-        LOGGER.debug(String.format("Found existing files. %s", files));
-        return files;
+        return currentConfigLocation.getExistingConfigFiles();
     }
 
     private void checkSettingsRecord(SettingsRecord settingsRecord) {

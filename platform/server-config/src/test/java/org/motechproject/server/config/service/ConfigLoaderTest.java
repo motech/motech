@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -101,5 +102,16 @@ public class ConfigLoaderTest {
 
         assertEquals(expectedFiles.size(), actualFiles.size());
         assertTrue(actualFiles.containsAll(expectedFiles));
+    }
+
+    @Test
+    public void shouldReturnFilesInConfigLocation() throws IOException {
+        ConfigLocation configLocation = mock(ConfigLocation.class);
+        File file = mock(File.class);
+        List<File> files = Arrays.asList(file);
+        when(configLocation.getExistingConfigFiles()).thenReturn(files);
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
+        List<File> existingConfigs = configLoader.findExistingConfigs();
+        assertSame(files, existingConfigs);
     }
 }

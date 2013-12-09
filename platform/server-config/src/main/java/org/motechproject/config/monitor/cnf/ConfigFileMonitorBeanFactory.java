@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * Spring Config class to create ConfigFileMonitor bean.
  */
 @Configuration
-public class ConfigFileMonitorCnf {
+public class ConfigFileMonitorBeanFactory {
 
     @Bean
     @Autowired

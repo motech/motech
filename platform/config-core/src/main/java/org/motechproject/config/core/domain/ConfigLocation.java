@@ -1,8 +1,13 @@
 package org.motechproject.config.core.domain;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.filters.ConfigFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -10,12 +15,17 @@ import org.springframework.core.io.UrlResource;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Defines a MOTECH configuration location. If the given location starts with a leading file separator character,
  * the location is treated as a file system directory. Otherwise, it is treated as a classpath location.
  */
 public class ConfigLocation {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigLocation.class);
+
     private String configLocation;
 
     public ConfigLocation(String configLocation) {
@@ -94,6 +104,17 @@ public class ConfigLocation {
         return "ConfigLocation{" +
                 "configLocation='" + configLocation + '\'' +
                 '}';
+    }
+
+    public List<File> getExistingConfigFiles() {
+        List<File> files = (List<File>) FileUtils.listFiles(new File(configLocation), new ConfigFileFilter(), TrueFileFilter.INSTANCE);
+        LOGGER.debug(String.format("Found existing files. %s", files));
+        return files;
+    }
+
+    public boolean hasPlatformConfigurationFile() {
+        Collection collection = FileUtils.listFiles(new File(configLocation), ConfigFileFilter.PLATFORM_CORE_CONFIG_FILTER, null);
+        return !collection.isEmpty();
     }
 
     /**
