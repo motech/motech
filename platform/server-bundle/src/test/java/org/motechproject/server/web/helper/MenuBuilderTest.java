@@ -2,12 +2,14 @@ package org.motechproject.server.web.helper;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.osgi.web.Header;
 import org.motechproject.osgi.web.ModuleRegistrationData;
 import org.motechproject.osgi.web.UIFrameworkService;
+import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.security.model.RoleDto;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.MotechUserService;
@@ -16,6 +18,9 @@ import org.motechproject.server.web.dto.ModuleMenuLink;
 import org.motechproject.server.web.dto.ModuleMenuSection;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +36,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ApplicationEnvironment.class)
 public class MenuBuilderTest {
 
     private static final String USERNAME = "motech";
@@ -58,6 +65,10 @@ public class MenuBuilderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        PowerMockito.mockStatic(ApplicationEnvironment.class);
+
+        when(ApplicationEnvironment.isInDevelopmentMode()).thenReturn(true);
 
         when(bundleContext.getBundle()).thenReturn(bundle);
         when(bundle.getHeaders()).thenReturn(dictionary);

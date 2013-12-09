@@ -1,0 +1,74 @@
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/alert-blackgloss.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/angular-ui.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap-fileupload.min.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap-notify.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap-responsive.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap-switch.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap-theme.min.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/font-awesome.min.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jqGrid/ui.jqgrid.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jqGrid/ui.jqgrid.override.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jquery-cron/jquery-cron.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jquery-cron/jquery-gentleSelect.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jquery-sidebar.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jquery-ui-1.9.1-redmond.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/jquery-ui-min.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/select2.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/tagit/jquery.tagit.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/tagmanager/bootstrap-tagmanager.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/tagsinput/jquery.tagsinput.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/timepicker/jquery-ui-timepicker-addon.css"/>
+<link rel="stylesheet" type="text/css" href="../$RESOURCE_PATH/css/index.css"/>
+
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-bootstrap.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-cookies.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-resource.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-route.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-ui.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/angular-ui.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/marked.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/angular/ui-bootstrap-custom-tpls-0.6.0.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/bootstrap/bootstrap-fileupload.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/bootstrap/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/bootstrap/bootstrap-notify.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/bootstrap/bootstrap-switch.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jqGrid/grid.locale-en.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jqGrid/jquery.jqGrid.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery-cron/jquery-cron.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery-cron/jquery-gentleSelect.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.alerts.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.blockUI.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.caret.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.i18n.properties-min-1.0.9.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.livequery.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.select2.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.sidebar.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/jquery/jquery.tools.min.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/moment/langs.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/moment/moment.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/parseuri/parseuri.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/tagit/jquery.tagit.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/tagmanager/bootstrap-tagmanager.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/tagsinput/jquery.tagsinput.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/timepicker/jquery-ui-sliderAccess.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/lib/underscore/underscore.js"></script>
+
+<script type="text/javascript" src="../$RESOURCE_PATH/js/browser-detect.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/app.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/common.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/controllers.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/dashboard.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/directives.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/localization.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/services.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/startup.js"></script>
+<script type="text/javascript" src="../$RESOURCE_PATH/js/util.js"></script>
+
