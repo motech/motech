@@ -33,8 +33,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.config.domain.MotechSettings.AMQ_REDELIVERY_DELAY_IN_MILLIS;
-import static org.motechproject.server.config.domain.MotechSettings.LANGUAGE;
+import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_REDELIVERY_DELAY_IN_MILLIS;
+import static org.motechproject.config.core.constants.ConfigurationConstants.LANGUAGE;
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;
@@ -46,9 +46,6 @@ public class SettingsServiceTest {
     private static final String BUNDLE_FILENAME = "test.properties";
     private static final String OPTION_KEY = "name";
     private static final String OPTION_VALUE = "test";
-
-    @Mock
-    PlatformSettingsService platformSettingsService;
 
     @Mock
     ConfigurationService configurationService;
@@ -73,7 +70,7 @@ public class SettingsServiceTest {
 
         initMotechSettings();
         initBundle();
-        initPlatformSettingsService();
+        initConfigService();
         initConfigurationService();
     }
 
@@ -122,10 +119,10 @@ public class SettingsServiceTest {
         Settings settings = new Settings(BUNDLE_FILENAME, asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
-        verify(configurationService).updateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, null, bundleProperty);
+        verify(configurationService).addOrUpdateProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty, null);
     }
 
-    private void initPlatformSettingsService() throws IOException {
+    private void initConfigService() throws IOException {
         bundleProperty.put(OPTION_KEY, OPTION_VALUE);
         Map<String, Properties> propertiesMap = new HashMap<>(1);
         propertiesMap.put(BUNDLE_FILENAME, bundleProperty);

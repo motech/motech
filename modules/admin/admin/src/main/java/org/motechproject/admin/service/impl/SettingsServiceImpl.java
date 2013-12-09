@@ -7,11 +7,10 @@ import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.commons.api.MotechException;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -40,12 +39,6 @@ public class SettingsServiceImpl implements SettingsService {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceImpl.class);
 
     @Autowired
-    private PlatformSettingsService platformSettingsService;
-
-    @Autowired
-    private CoreConfigurationService coreConfigurationService;
-
-    @Autowired
     private ConfigurationService configurationService;
 
     @Autowired
@@ -64,13 +57,13 @@ public class SettingsServiceImpl implements SettingsService {
 
             List<SettingsOption> miscOptions = new ArrayList<>();
 
-            SettingsOption languageOption = ParamParser.parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage());
+            SettingsOption languageOption = ParamParser.parseParam(ConfigurationConstants.LANGUAGE, motechSettings.getLanguage());
             miscOptions.add(languageOption);
-            SettingsOption msgOption = ParamParser.parseParam(MotechSettings.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
+            SettingsOption msgOption = ParamParser.parseParam(ConfigurationConstants.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
             miscOptions.add(msgOption);
-            SettingsOption serverUrlOption = ParamParser.parseParam(MotechSettings.SERVER_URL, motechSettings.getServerUrl());
+            SettingsOption serverUrlOption = ParamParser.parseParam(ConfigurationConstants.SERVER_URL, motechSettings.getServerUrl());
             miscOptions.add(serverUrlOption);
-            SettingsOption uploadSizeOption = ParamParser.parseParam(MotechSettings.UPLOAD_SIZE, motechSettings.getUploadSize());
+            SettingsOption uploadSizeOption = ParamParser.parseParam(ConfigurationConstants.UPLOAD_SIZE, motechSettings.getUploadSize());
             miscOptions.add(uploadSizeOption);
 
             Settings miscSettings = new Settings("other", miscOptions);
@@ -106,8 +99,8 @@ public class SettingsServiceImpl implements SettingsService {
         Properties props = ParamParser.constructProperties(settings);
 
         try {
-            configurationService.updateProperties(symbolicName, settings.getSection(),
-                    getBundleDefaultProperties(bundleId).get(settings.getSection()), props);
+            configurationService.addOrUpdateProperties(symbolicName, settings.getSection(),
+                    props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
         } catch (Exception e) {
             throw new MotechException("Error while saving bundle settings", e);
         }
@@ -115,7 +108,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public InputStream exportConfig(String fileName) throws IOException {
-        return configurationService.createZipWithConfigFiles(MotechSettings.SETTINGS_FILE_NAME, fileName);
+        return configurationService.createZipWithConfigFiles(ConfigurationConstants.SETTINGS_FILE_NAME, fileName);
     }
 
     @Override
@@ -161,9 +154,8 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void addSettingsPath(String path) throws IOException {
-        coreConfigurationService.addConfigLocation(path);
-        platformSettingsService.monitor();
+    public void addSettingsPath(String newConfigLocation) throws IOException {
+        configurationService.updateConfigLocation(newConfigLocation);
     }
 
     @Override
@@ -191,11 +183,11 @@ public class SettingsServiceImpl implements SettingsService {
         }
     }
 
-    private Map<String,Properties> getBundleDefaultProperties(long bundleId) throws IOException {
+    private Map<String, Properties> getBundleDefaultProperties(long bundleId) throws IOException {
         Bundle bundle = bundleContext.getBundle(bundleId);
         //Find all property files in main bundle directory
-        Enumeration<URL> enumeration = bundle.findEntries("", "*.properties",false);
-        Map<String,Properties> allDefaultProperties = new LinkedHashMap<>();
+        Enumeration<URL> enumeration = bundle.findEntries("", "*.properties", false);
+        Map<String, Properties> allDefaultProperties = new LinkedHashMap<>();
 
         while (enumeration.hasMoreElements()) {
             InputStream is = null;

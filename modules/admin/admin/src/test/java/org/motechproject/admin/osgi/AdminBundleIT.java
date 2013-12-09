@@ -20,8 +20,8 @@ import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.testing.osgi.BaseOsgiIT;
 import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
@@ -47,7 +47,7 @@ public class AdminBundleIT extends BaseOsgiIT {
     private PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 60);
 
     public void testAdminBundleContext() {
-        assertServicePresent(PlatformSettingsService.class);
+        assertServicePresent(ConfigurationService.class);
         assertServicePresent(EventListenerRegistryService.class);
     }
 

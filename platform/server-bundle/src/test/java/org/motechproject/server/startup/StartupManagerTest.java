@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.SettingsRecord;
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
+import org.motechproject.server.config.service.ConfigLoader;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -22,7 +22,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class StartupManagerTest {
 
     @Mock
-    ConfigFileMonitor configFileMonitor;
+    ConfigLoader configLoader;
 
     @Mock
     ConfigurationService configurationService;
@@ -43,11 +43,9 @@ public class StartupManagerTest {
 
     @Test
     public void testNoSettings() {
-
-        when(configFileMonitor.getCurrentSettings()).thenReturn(null);
+        when(configLoader.loadMotechSettings()).thenReturn(null);
         when(configurationService.getPlatformSettings()).thenReturn(new SettingsRecord());
-        when(configurationService.loadConfig()).thenReturn(settingsRecord);
-        when(configFileMonitor.getCurrentSettings()).thenReturn(null);
+        when(configLoader.loadMotechSettings()).thenReturn(settingsRecord);
         when(settingsRecord.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
         startupManager.startup();
@@ -61,7 +59,7 @@ public class StartupManagerTest {
     }
 
     @Test
-    public void shouldSetPlatformStateToNeedBootstrapIfNoBootstrapConfigFound(){
+    public void shouldSetPlatformStateToNeedBootstrapIfNoBootstrapConfigFound() {
         when(configurationService.loadBootstrapConfig()).thenReturn(null);
 
         startupManager.startup();

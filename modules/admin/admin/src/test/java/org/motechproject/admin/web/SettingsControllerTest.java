@@ -10,7 +10,7 @@ import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.admin.web.controller.SettingsController;
-import org.motechproject.server.config.domain.MotechSettings;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class SettingsControllerTest {
 
     @Test
     public void testGetPlatformSettings() {
-        SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(MotechSettings.LANGUAGE, "en"));
+        SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(ConfigurationConstants.LANGUAGE, "en"));
         List<Settings> pSettingsList = new ArrayList<>();
         pSettingsList.add(platformSettings);
         AdminSettings adminSettings = new AdminSettings(pSettingsList, false);

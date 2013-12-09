@@ -42,6 +42,16 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.collect</groupId>
+            <artifactId>com.springsource.com.google.common.collect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,21 +65,19 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.server.config;version=${project.version},
-                            org.motechproject.server.config.db;version=${project.version},
                             org.motechproject.server.config.domain;version=${project.version},
-                            org.motechproject.server.config.monitor;version=${project.version},
-                            org.motechproject.server.config.repository;version=${project.version},
                             org.motechproject.server.config.service;version=${project.version},
-                            org.motechproject.server.config.service.impl;version=${project.version},
-                            org.motechproject.server.config.settings;version=${project.version},
                             org.motechproject.config.domain;version=${project.version},
-                            org.motechproject.config.repository;version=${project.version},
                             org.motechproject.config.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.core,
+                            net.sf.cglib.reflect,
                             org.aopalliance.aop,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.beans.factory,
                             org.motechproject.commons.couchdb.service,
                             org.springframework.cache.config,
                             org.springframework.cache.concurrent,

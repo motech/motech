@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
@@ -106,7 +107,7 @@ public class StartupControllerTest {
         Properties properties = new Properties();
         properties.put("host", "localhost");
         properties.put("port", "12345");
-        properties.put(MotechSettings.AMQ_BROKER_URL, "test_url");
+        properties.put(ConfigurationConstants.AMQ_BROKER_URL, "test_url");
 
         NavigableMap<String, String> map = new TreeMap<>();
 

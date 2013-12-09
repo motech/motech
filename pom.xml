@@ -1307,7 +1307,7 @@
                         <version>2.6</version>
                         <executions>
                             <execution>
-                                <id>copy-config-files</id>
+                                <id>copy-test-config-files</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
@@ -1317,11 +1317,37 @@
                                     <resources>
                                         <resource>
                                             <directory>${modules.root.dir}/testdata</directory>
-                                            <include>motech-settings.conf</include>
                                             <include>bootstrap.properties</include>
-                                            <include>config-locations.properties</include>
+                                            <include>motech-settings.conf</include>
                                         </resource>
                                     </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>2.5</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>clean-test-config-files</id>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <filesets>
+                                        <fileset>
+                                            <followSymlinks>false</followSymlinks>
+                                            <directory>${user.home}/.motech/config</directory>
+                                            <includes>
+                                                <include>bootstrap.properties</include>
+                                                <include>motech-settings.conf</include>
+                                            </includes>
+                                        </fileset>
+                                    </filesets>
                                 </configuration>
                             </execution>
                         </executions>
