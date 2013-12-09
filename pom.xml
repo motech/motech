@@ -1318,7 +1318,7 @@
                                         <resource>
                                             <directory>${modules.root.dir}/testdata</directory>
                                             <include>bootstrap.properties</include>
-                                            <include>motech-settings.conf</include>
+                                            <include>motech-settings.properties</include>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -1344,7 +1344,7 @@
                                             <directory>${user.home}/.motech/config</directory>
                                             <includes>
                                                 <include>bootstrap.properties</include>
-                                                <include>motech-settings.conf</include>
+                                                <include>motech-settings.properties</include>
                                             </includes>
                                         </fileset>
                                     </filesets>

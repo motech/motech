@@ -256,11 +256,9 @@ public interface ConfigurationService {
     void updateConfigLocation(String newConfigLocation);
 
     /**
-     * Deletes the db record corresponding to the file.
-     *
-     * @param file File that has been deleted.
+     * Deletes the db record corresponding to the module.
      */
-    void delete(File file);
+    void delete(String module);
 
     SettingsRecord loadDefaultConfig();
 

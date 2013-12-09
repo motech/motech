@@ -84,7 +84,7 @@ public class ConfigFileMonitor implements FileListener {
 
         File file = new File(fileObject.getName().getPath());
         if (ConfigFileFilter.isFileSupported(file)) {
-            configurationService.delete(file);
+            configurationService.delete(file.getParentFile().getName());
         }
     }
 

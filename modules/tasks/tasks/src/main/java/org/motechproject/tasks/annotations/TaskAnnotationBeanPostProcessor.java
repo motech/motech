@@ -45,6 +45,9 @@ public class TaskAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(final Object bean, final String beanName) {
+        if (bean == null) {
+            return null;
+        }
         final Class<?> targetClass = getTargetClass(bean);
         final TaskChannel taskChannel = targetClass.getAnnotation(TaskChannel.class);
 

@@ -14,6 +14,9 @@ import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.repository.AllModuleProperties;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.repository.AllSettings;
+import org.motechproject.server.config.service.ConfigLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +40,15 @@ public class ConfigurationServiceTest {
 
     @Mock
     private AllModuleProperties allModuleProperties;
+
+    @Mock
+    private AllSettings allSettings;
+
+    @Mock
+    private Properties defaultConfig;
+
+    @Mock
+    private ConfigLoader configLoader;
 
     @Captor
     ArgumentCaptor<List<ModulePropertiesRecord>> propertiesCaptor;
@@ -71,7 +83,7 @@ public class ConfigurationServiceTest {
     }
 
     @Test
-    public void shouldBulkAddOrUpdateProperties() {
+    public void shouldBulkAddOrUpdateConfigsWhileProcessingExistingConfigs() {
         ClassLoader classLoader = this.getClass().getClassLoader();
         List<ModulePropertiesRecord> dbRecords = new ArrayList<>();
 
@@ -95,6 +107,21 @@ public class ConfigurationServiceTest {
         assertEquals("somemodule.properties", actualRecords.get(0).getFilename());
         assertEquals("somemodule.json", actualRecords.get(1).getFilename());
 
+        verify(allSettings, never()).addOrUpdateSettings((SettingsRecord) any());
+        verify(allModuleProperties, never()).bulkDelete((List<ModulePropertiesRecord>) any());
+    }
+
+    @Test
+    public void shouldUpdatePlatformCoreConfigWhileProcessingExistingConfigs() {
+        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
+        when(allSettings.getSettings()).thenReturn(new SettingsRecord());
+
+        File file = new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getPath());
+        configurationService.processExistingConfigs(Arrays.asList(file));
+
+        verify(allSettings).addOrUpdateSettings((SettingsRecord) any());
+
+        verify(allModuleProperties, never()).bulkAddOrUpdate((List<ModulePropertiesRecord>) any());
         verify(allModuleProperties, never()).bulkDelete((List<ModulePropertiesRecord>) any());
     }
 
@@ -130,8 +157,13 @@ public class ConfigurationServiceTest {
     @Test
     public void shouldDeleteModulePropertiesRecordCorrespondingToAFile() {
         File fileToDelete = new File(this.getClass().getClassLoader().getResource("config/org.motechproject.motech-module1/somemodule.properties").getPath());
+        final String module = fileToDelete.getParentFile().getName();
 
-        configurationService.delete(fileToDelete);
+        ModulePropertiesRecord record = new ModulePropertiesRecord();
+        record.setFilename("somemodule.properties");
+        when(allModuleProperties.byModuleName(module)).thenReturn(Arrays.asList(record));
+
+        configurationService.delete(module);
 
         ArgumentCaptor<ModulePropertiesRecord> recordCaptor = ArgumentCaptor.forClass(ModulePropertiesRecord.class);
         verify(allModuleProperties).remove(recordCaptor.capture());
@@ -164,5 +196,20 @@ public class ConfigurationServiceTest {
 
         final Properties moduleProperties = configurationService.getModuleProperties(module, filename, null);
         assertNotNull(moduleProperties);
+    }
+
+    @Test
+    public void shouldUpdateMotechSettings() {
+        when(configLoader.loadMotechSettings()).thenReturn(new SettingsRecord());
+        final SettingsRecord settingsRecord = new SettingsRecord();
+        when(allSettings.getSettings()).thenReturn(settingsRecord);
+        configurationService.addOrUpdate(new File(getClass().getClassLoader().getResource("config/motech-settings.properties").getFile()));
+        verify(allSettings).addOrUpdateSettings(settingsRecord);
+    }
+
+    @Test
+    public void shouldUpdateModuleProperties() {
+        configurationService.addOrUpdate(new File("some.properties"));
+        verify(allModuleProperties).addOrUpdate((ModulePropertiesRecord) any());
     }
 }

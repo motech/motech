@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder location="classpath:motech-settings.conf" system-properties-mode="OVERRIDE"/>
+    <context:property-placeholder location="classpath:motech-settings.properties" system-properties-mode="OVERRIDE"/>
 
     <bean id="eventSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="event"/>

@@ -95,7 +95,7 @@ public class ConfigLoader {
 
     public SettingsRecord loadDefaultConfig() {
         SettingsRecord settingsRecord = null;
-        Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.conf");
+        Resource defaultSettings = resourceLoader.getResource("classpath:motech-settings.properties");
         if (defaultSettings != null) {
             settingsRecord = loadSettingsFromStream(defaultSettings);
         }

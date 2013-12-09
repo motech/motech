@@ -98,7 +98,7 @@ public class ConfigFileMonitorTest {
 
     @Test
     public void shouldUpdateFileMonitoringLocation() throws FileSystemException {
-        final String fileName = "res:config/motech-settings.conf";
+        final String fileName = "res:config/motech-settings.properties";
         ConfigLocation configLocation = new ConfigLocation(fileName);
         FileObject newLocation = VFS.getManager().resolveFile(fileName);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
@@ -120,6 +120,6 @@ public class ConfigFileMonitorTest {
 
         configFileMonitor.fileDeleted(new FileChangeEvent(fileObject));
 
-        verify(configurationService).delete(new File(fileObject.getName().getPath()));
+        verify(configurationService).delete(new File(fileObject.getName().getPath()).getParentFile().getName());
     }
 }

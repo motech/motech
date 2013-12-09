@@ -118,9 +118,9 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
                 if (motechSettings.isReadable()) {
                     return configLocation;
                 }
-                logger.warn("Could not read motech-settings.conf from: " + configLocationResource.toString());
+                logger.warn("Could not read motech-settings.properties from: " + configLocationResource.toString());
             } catch (IOException e) {
-                logger.warn("Problem reading motech-settings.conf from location: " + configLocationResource.toString(), e);
+                logger.warn("Problem reading motech-settings.properties from location: " + configLocationResource.toString(), e);
             }
         }
         throw new MotechConfigurationException("Could not read settings from any of the config locations.");

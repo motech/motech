@@ -23,6 +23,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -88,13 +89,17 @@ public class ConfigLoaderTest {
     @Test
     public void shouldLoadSupportedFilesFromGivenConfigLocation() throws IOException {
         final String dirPath = this.getClass().getClassLoader().getResource("config").getFile();
-        final File file1 = new File(dirPath, "org.motechproject.motech-module1/somemodule.properties");
-        final File file2 = new File(dirPath, "org.motechproject.motech-module2/somemodule.json");
-        final List<File> expectedFiles = Arrays.asList(file1, file2);
-        final ConfigLocation configLocation = new ConfigLocation(dirPath);
+        final File file1 = new File(dirPath, "motech-settings.properties");
+        final File file2 = new File(dirPath, "org.motechproject.motech-module1/somemodule.properties");
+        final File file3 = new File(dirPath, "org.motechproject.motech-module2/somemodule.json");
+        final List<File> expectedFiles = Arrays.asList(file1, file2, file3);
 
+        final ConfigLocation configLocation = new ConfigLocation(dirPath);
         when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
 
-        assertEquals(expectedFiles, configLoader.findExistingConfigs());
+        final List<File> actualFiles = configLoader.findExistingConfigs();
+
+        assertEquals(expectedFiles.size(), actualFiles.size());
+        assertTrue(actualFiles.containsAll(expectedFiles));
     }
 }
