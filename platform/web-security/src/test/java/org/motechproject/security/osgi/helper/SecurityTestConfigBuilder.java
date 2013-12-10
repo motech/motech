@@ -86,9 +86,11 @@ public final class SecurityTestConfigBuilder {
 
         rule1.setMethodsRequired(methodsRequired);
         rule1.setSupportedSchemes(supportedSchemes);
+        rule1.setActive(true);
 
         rule2.setMethodsRequired(methodsRequired);
         rule2.setSupportedSchemes(supportedSchemes);
+        rule2.setActive(true);
 
         return new MotechSecurityConfiguration(newRules);
     }

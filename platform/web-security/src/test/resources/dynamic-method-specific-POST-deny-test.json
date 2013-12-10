@@ -14,7 +14,8 @@
            "version": "1",
            "methodsRequired": [
                "POST"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**",
@@ -27,7 +28,8 @@
            "version": "1",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        }
    ]
 }

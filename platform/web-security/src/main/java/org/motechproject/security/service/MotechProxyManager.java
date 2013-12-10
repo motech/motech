@@ -1,10 +1,5 @@
 package org.motechproject.security.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.motechproject.commons.api.MotechException;
 import org.motechproject.commons.api.json.MotechJsonReader;
 import org.motechproject.security.builder.SecurityRuleBuilder;
@@ -16,6 +11,11 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The MotechProxyManager acts as a wrapper around Spring's FilterChainProxy.
  * The FilterChainProxy contains a list of immutable SecurityFilterChain objects
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
  * to dynamically define new secure, a new FilterChainProxy is constructed and the
  * reference is updated. The MotechProxyManager acts as a customized delegate
  * in MotechDelegatingFilterProxy.
- *
  */
 @Component
 public class MotechProxyManager {
@@ -85,8 +84,10 @@ public class MotechProxyManager {
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();
 
         for (MotechURLSecurityRule securityRule : securityRules) {
-            for (String method: securityRule.getMethodsRequired()) {
-                newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));
+            if (securityRule.isActive()) {
+                for (String method : securityRule.getMethodsRequired()) {
+                    newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));
+                }
             }
         }
 

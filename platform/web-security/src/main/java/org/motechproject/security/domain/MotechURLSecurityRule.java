@@ -49,6 +49,7 @@ public class MotechURLSecurityRule implements Serializable {
     private String origin;
     private String version;
     private Set<String> methodsRequired;
+    private boolean active;
 
     public String getPattern() {
         return pattern;
@@ -128,5 +129,13 @@ public class MotechURLSecurityRule implements Serializable {
 
     public void setMethodsRequired(Set<String> methodsRequired) {
         this.methodsRequired = methodsRequired;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

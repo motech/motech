@@ -1,9 +1,5 @@
 package org.motechproject.security.osgi;
 
-import static java.util.Arrays.asList;
-import static org.osgi.framework.Bundle.ACTIVE;
-import static org.osgi.framework.Bundle.UNINSTALLED;
-import static org.osgi.framework.Bundle.RESOLVED;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -34,11 +30,17 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.web.context.WebApplicationContext;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import static java.util.Arrays.asList;
+import static org.osgi.framework.Bundle.ACTIVE;
+import static org.osgi.framework.Bundle.RESOLVED;
+import static org.osgi.framework.Bundle.UNINSTALLED;
 
 /**
  * Test class that verifies the web security services
@@ -62,7 +64,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String BAD_PASSWORD = "badpassword";
     private static final String SECURITY_BUNDLE_NAME = "motech-platform-web-security";
     private static final String QUERY_URL = "http://localhost:%d/websecurity/api/web-api/securityStatus";
-    private static final String UPDATE_URL = "http://localhost:%d/websecurity/api/web-api/updateSecurityRules";
+    private static final String UPDATE_URL = "http://localhost:%d/websecurity/api/web-api/securityRules";
     private static final String GET = "GET";
     private static final String POST = "POST";
 
@@ -135,7 +137,8 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         MotechProxyManager manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 3); //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
+        //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
+        assertEquals(3, manager.getFilterChainProxy().getFilterChains().size());
 
         MotechSecurityConfiguration updatedConfig = SecurityTestConfigBuilder.buildConfig("addPermissionAccess", "anyPermission", null);
         updateSecurity(updatedConfig);
@@ -143,10 +146,10 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         manager = getProxyManager();
-        assertTrue(manager.getFilterChainProxy().getFilterChains().size() == 4);
+        assertEquals(4, manager.getFilterChainProxy().getFilterChains().size());
     }
 
-    private void updateSecurity(String fileName) throws UnsupportedEncodingException, IOException, InterruptedException {
+    private void updateSecurity(String fileName) throws IOException, InterruptedException {
         HttpPost request = new HttpPost(String.format(UPDATE_URL, TestContext.getJettyPort()));
         addAuthHeader(request, USER_NAME, USER_PASSWORD);
 
@@ -167,8 +170,11 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         HttpUriRequest request = null;
 
         switch (requestType) {
-            case "POST" : request = new HttpPost(String.format(QUERY_URL, TestContext.getJettyPort())); break;
-            default : request = new HttpGet(String.format(QUERY_URL, TestContext.getJettyPort()));
+            case "POST":
+                request = new HttpPost(String.format(QUERY_URL, TestContext.getJettyPort()));
+                break;
+            default:
+                request = new HttpGet(String.format(QUERY_URL, TestContext.getJettyPort()));
         }
 
         addAuthHeader(request, username, password);

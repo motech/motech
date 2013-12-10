@@ -1,0 +1,149 @@
+<div class="box-header">{{msg('securtiy.manageURL')}}</div>
+
+<div class="box-content clearfix">
+    <div class="well3">
+        <div class="margin-before">
+            <div class="margin-before">
+
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success" ng-click="createNewRule()">{{msg('security.dynamic.addUrl')}}</button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()">{{msg('security.save')}}</button>
+                        <button type="button" class="btn btn-default" ng-click="cancel()">{{msg('security.cancel')}}</button>
+                    </div>
+                </div>
+
+                <div class="panel-group rule" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="pull-right">
+                                <button ng-click="removeRule($index)" class="btn btn-danger btn-in-header btn-sm">
+                                    <i class="icon-remove icon-white"></i>
+                                </button>
+                            </div>
+                            <a data-toggle="collapse" data-parent="#rule-{{$index}}" href="#rule-body-{{$index}}" expand-accordion>
+                                <h4 class="panel-title">
+                                    <i class="icon-chevron-right icon-large"></i>
+                                    <span class="icon-warning-sign text-danger" ng-show="!validateRule(rule)"></span>
+                                    {{rule.pattern}}
+                                </h4>
+                            </a>
+                        </div>
+                        <div id="rule-body-{{$index}}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <form class="form-horizontal">
+                                    <div class="form-group" ng-class="{'has-error': !rule.pattern}">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.urlPattern')}}</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" ng-model="rule.pattern">
+                                            <span class="help-block">
+                                                {{msg('security.dynamic.urlPattern.help')}}
+                                            </span>
+                                            <span class="help-block" ng-if="!rule.pattern">
+                                                {{msg('security.dynamic.urlPattern.empty')}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.protocol')}}</label>
+                                        <div class="col-sm-10">
+                                            <label class="radio-inline">
+                                                <input type="radio" ng-model="rule.protocol" value="HTTP"> {{msg('security.dynamic.protocol.http')}}
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" ng-model="rule.protocol" value="HTTPS">  {{msg('security.dynamic.protocol.https')}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.methods')}}</label>
+                                        <div class="col-sm-10">
+                                            <label class="radio">
+                                                <input type='radio' ng-checked="rule.methodsRequired.indexOf('ANY') != -1" ng-click="toggleMethods(rule, 'ANY', true)">
+                                                {{msg('security.dynamic.methods.any')}}
+                                            </label>
+                                            <label class="checkbox-inline" ng-repeat="method in ['GET','POST','HEAD','OPTIONS','DELETE','TRACE']">
+                                                <input type='checkbox' ng-checked="rule.methodsRequired.indexOf(method) != -1" ng-click="toggleMethods(rule, method, 'ANY')">
+                                                {{msg('security.dynamic.methods.' + method.toLowerCase())}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.rest')}}</label>
+                                        <div class="col-sm-10">
+                                            <label class="checkbox">
+                                                <input type='checkbox' ng-model="rule.rest">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.supportedSchemes')}}</label>
+                                        <div class="col-sm-10">
+                                            <label class="radio">
+                                                <input type='radio' ng-checked="rule.supportedSchemes.indexOf('NO_SECURITY') != -1" ng-click="toggleSchemas(rule, 'NO_SECURITY', true)">
+                                                {{msg('security.dynamic.supportedSchemes.nosecurity')}}
+                                            </label>
+                                            <label class="checkbox-inline" ng-repeat="schema in ['USERNAME_PASSWORD','BASIC','OPEN_ID']">
+                                                <input type='checkbox' ng-checked="rule.supportedSchemes.indexOf(schema) != -1" ng-click="toggleSchemas(rule, schema, 'NO_SECURITY')">
+                                                {{msg('security.dynamic.supportedSchemes.' + schema.toLowerCase().replace('_', ''))}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': rule.priority < 0}">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.priority')}}</label>
+                                        <div class="col-sm-10">
+                                            <input type="number" min="0" class="form-control" ng-model="rule.priority">
+                                            <span class="help-block" ng-if="rule.priority < 0">
+                                                {{msg('security.dynamic.priority.invalid')}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.userAccess')}}</label>
+                                        <div class="col-sm-10">
+                                            <select class="dynamic-select" ui-select2 multiple ng-model="rule.userAccess" ng-options="u.userName as u.userName for u in users">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{msg('security.dynamic.permissionAccess')}}</label>
+                                        <div class="col-sm-10">
+                                            <select class="dynamic-select" ui-select2 multiple ng-model="rule.permissionAccess" ng-options="p.permissionName as p.permissionName for p in permissions">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="submit" class="btn" ng-class="{true: 'btn-success', false: 'btn-warning'}[rule.active]" ng-click="toggleActive(rule)">
+                                                <i class="icon-white" ng-class="{true: 'icon-play', false: 'icon-stop'}[rule.active]"></i>
+                                                {{msg('security.dynamic.' + (rule.active ? 'activate' : 'deactivate'))}}
+                                            </button>
+                                            <button type="submit" class="btn btn-danger" ng-click="removeRule($index)">{{msg('security.remove')}}</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-toolbar" role="toolbar" ng-if="config.securityRules.length > 10">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success" ng-click="createNewRule()">{{msg('security.dynamic.addUrl')}}</button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" ng-disabled="!validateRules()" ng-click="save()">{{msg('security.save')}}</button>
+                        <button type="button" class="btn btn-default" ng-click="cancel()">{{msg('security.cancel')}}</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

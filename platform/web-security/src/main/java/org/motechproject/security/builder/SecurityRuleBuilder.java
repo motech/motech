@@ -1,12 +1,5 @@
 package org.motechproject.security.builder;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.Filter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.authentication.MotechAccessVoter;
@@ -55,13 +48,20 @@ import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.Filter;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * The security rule builder is responsible for building a
  * SecurityFilterChain, which consists of a matcher pattern
  * and a list of Spring security filters. The filters are
  * created and configured base upon the security rule's
  * settings.
- *
  */
 @Component
 public class SecurityRuleBuilder {
@@ -126,7 +126,7 @@ public class SecurityRuleBuilder {
 
         if (StringUtils.isEmpty(securityRule.getPattern())) {
             throw new SecurityConfigException(NO_PATTERN_EXCEPTION_MESSAGE);
-        } else if (StringUtils.isEmpty(securityRule.getProtocol()) ) {
+        } else if (StringUtils.isEmpty(securityRule.getProtocol())) {
             throw new SecurityConfigException(NO_PROTOCOL_EXCEPTION_MESSAGE);
         } else if (CollectionUtils.isEmpty(securityRule.getSupportedSchemes())) {
             throw new SecurityConfigException(NO_SUPPORTED_SCHEMES_EXCEPTION_MESSAGE);
@@ -184,7 +184,7 @@ public class SecurityRuleBuilder {
         }
 
         LogoutHandler springLogoutHandler = new SecurityContextLogoutHandler();
-        LogoutFilter logoutFilter = new LogoutFilter("/module/server/login", motechLogoutHandler, springLogoutHandler );
+        LogoutFilter logoutFilter = new LogoutFilter("/module/server/login", motechLogoutHandler, springLogoutHandler);
         logoutFilter.setFilterProcessesUrl("/module/server/j_spring_security_logout");
         filters.add(logoutFilter);
     }
@@ -255,7 +255,7 @@ public class SecurityRuleBuilder {
                 matcher = new AnyRequestMatcher();
                 requestMap.put(matcher, configAtts);
                 return;
-            } else if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD)){
+            } else if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD)) {
                 matcher = new AntPathRequestMatcher(pattern, null);
                 requestMap.put(matcher, configAtts);
                 return;
@@ -321,7 +321,7 @@ public class SecurityRuleBuilder {
             requestMap.put(anyRequest, configAtts);
             FilterInvocationSecurityMetadataSource securityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
             channelProcessingFilter.setSecurityMetadataSource(securityMetadataSource);
-        } else if (SecurityConfigConstants.HTTPS.equals(protocol)){
+        } else if (SecurityConfigConstants.HTTPS.equals(protocol)) {
             configAtts.add(new SecurityConfig("REQUIRES_SECURE_CHANNEL"));
             requestMap.put(anyRequest, configAtts);
             FilterInvocationSecurityMetadataSource securityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);

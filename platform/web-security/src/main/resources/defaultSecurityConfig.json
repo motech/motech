@@ -12,7 +12,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.gif",
@@ -26,7 +27,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.jpg",
@@ -40,7 +42,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.png",
@@ -54,7 +57,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.js",
@@ -68,7 +72,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.html",
@@ -82,7 +87,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/*.properties",
@@ -96,7 +102,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/login*",
@@ -110,7 +117,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/forgot*",
@@ -124,7 +132,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/reset*",
@@ -138,7 +147,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/onetimetoken*",
@@ -152,7 +162,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/lang*",
@@ -166,7 +177,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/list*",
@@ -180,7 +192,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/locate*",
@@ -194,7 +207,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/startup*",
@@ -208,7 +222,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/bootstrap/verify*",
@@ -222,7 +237,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/bootstrap*",
@@ -236,7 +252,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**/web-api/**",
@@ -251,7 +268,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        },
        {
            "pattern": "/**",
@@ -266,7 +284,8 @@
            "version": "0.22",
            "methodsRequired": [
                "ANY"
-           ]
+           ],
+           "active": true
        }
    ]
 }
