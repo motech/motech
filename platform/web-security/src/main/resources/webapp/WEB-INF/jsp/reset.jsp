@@ -16,6 +16,7 @@
         <link rel="stylesheet" type="text/css" href="../../server/resources/css/index.css" />
 
         <script src="../../server/resources/lib/jquery/jquery.js"></script>
+        <script src="../../server/resources/lib/jquery/jquery.migrate.min.js"></script>
         <script src="../../server/resources/lib/bootstrap/bootstrap.min.js"></script>
     </head>
 

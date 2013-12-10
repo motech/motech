@@ -29,9 +29,9 @@ public class Header {
     public String asString() {
         String css = createEntries("webapp/css/");
 
-        String jquery = createEntries("webapp/lib/jquery/", new String[]{"jquery.js"});
+        String jquery = createEntries("webapp/lib/jquery/", new String[]{"jquery.js", "jquery.migrate.min.js"});
         String angular = createEntries("webapp/lib/angular/", new String[]{"angular.min.js"});
-        String other = createEntries("webapp/lib/", null, new String[]{"jquery.js", "angular.min.js"});
+        String other = createEntries("webapp/lib/", null, new String[]{"jquery.js", "jquery.migrate.min.js", "angular.min.js"});
 
         String module = createEntries("webapp/js/");
 
