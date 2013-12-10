@@ -235,8 +235,6 @@
                 span.attr('unselectable', 'on');
                 span.attr('contenteditable', 'false');
 
-                span.css('position', 'relative');
-
                 span.addClass('popoverEvent nonEditable triggerField pointer badge');
 
                 if (data.param.type === 'UNKNOWN') {
@@ -283,6 +281,8 @@
                 if (data.popover === 'true') {
                     span.attr('data-popover', 'no');
                 }
+
+                span.css('position', 'relative');
 
                 switch (data.prefix) {
                 case this.TRIGGER_PREFIX:

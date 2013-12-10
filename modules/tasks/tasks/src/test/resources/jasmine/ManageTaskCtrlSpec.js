@@ -122,7 +122,6 @@
             triggerInfo.moduleName = channel.moduleName;
 
             scope.selectTrigger(channel, trigger);
-
             expect(angular.element('#popup_message').text()).toEqual('[task.confirm.trigger]');
             angular.element('#popup_ok').click();
 
@@ -241,7 +240,7 @@
 
         it('Should create draggable element', function () {
             var value = '{{trigger.key_1}} - {{ad.123.TestType1#0.filedKey1}}',
-                expected = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="STRING" data-prefix="trigger" data-type="UNICODE" data-object="Key 1">Key 1</span> - <span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="STRING" data-prefix="ad" data-type="UNICODE" data-object="fieldDisplayName1" data-source="ds-1" data-object-id="0" data-object-type="TestType1" data-field="filedKey1">ds-1.obj.1#0.fieldDisplayName1</span>';
+                expected = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="STRING" data-prefix="trigger" data-type="UNICODE" data-object="Key 1" style="position: relative;">Key 1</span> - <span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="STRING" data-prefix="ad" data-type="UNICODE" data-object="fieldDisplayName1" data-source="ds-1" data-object-id="0" data-object-type="TestType1" data-field="filedKey1" style="position: relative;">ds-1.obj.1#0.fieldDisplayName1</span>';
 
             scope.BrowserDetect = { browser: 'Explorer' };
             scope.msg = function (key) { return key; };

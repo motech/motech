@@ -1098,6 +1098,40 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.searls</groupId>
+                    <artifactId>jasmine-maven-plugin</artifactId>
+                    <version>1.3.1.3</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <!-- TO DO: Current version of jasmine-maven-plugin is not compatible with jquery v.1.10.2 so temporarily tests have to be skipped. To restore functionality put ${maven.test.skip} instead of true -->
+                        <!-- Similar issue: https://github.com/searls/jasmine-maven-plugin/issues/178 -->
+                        <skipTests>true</skipTests>
+                        <serverPort>${jasmine.server.port}</serverPort>
+
+                        <jsSrcDir>${project.build.directory}/jasmine</jsSrcDir>
+                        <sourceIncludes>
+                            <include>js/core/angular/angular.min.js</include>
+                            <include>js/core/angular/angular-resource.min.js</include>
+                            <include>js/core/jquery/jquery.js</include>
+                            <include>js/core/jquery/jquery.migrate.min.js</include>
+                            <include>js/core/**/*.js</include>
+                            <include>js/*.js</include>
+                        </sourceIncludes>
+
+                        <jsTestSrcDir>${project.build.directory}/jasmine/spec</jsTestSrcDir>
+                        <specIncludes>
+                            <include>lib/*.js</include>
+                            <include>spec/*.js</include>
+                        </specIncludes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 

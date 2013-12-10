@@ -310,9 +310,9 @@
                         displayName: 'displayName'
                     }
                 },
-                spanOther = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-unknown" data-prefix="other" data-type="UNKNOWN" data-object="displayName">displayName</span>',
-                spanTrigger = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="STRING" manipulate="toLower capitalize" data-prefix="trigger" data-type="UNICODE" data-object="displayName">displayname</span>',
-                spanDataSource = '<span unselectable="on" contenteditable="false" style="position: relative;" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="DATE" manipulate="toLower capitalize" data-prefix="ad" data-type="DATE" data-object="displayName" data-source="DS" data-object-id="0" data-object-type="TestType" data-field="field">ds.object#0.displayname</span>';
+                spanOther = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-unknown" data-prefix="other" data-type="UNKNOWN" data-object="displayName" style="position: relative;">displayName</span>',
+                spanTrigger = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-info" manipulationpopover="STRING" manipulate="toLower capitalize" data-prefix="trigger" data-type="UNICODE" data-object="displayName" style="position: relative;">displayname</span>',
+                spanDataSource = '<span unselectable="on" contenteditable="false" class="popoverEvent nonEditable triggerField pointer badge badge-warning" manipulationpopover="DATE" manipulate="toLower capitalize" data-prefix="ad" data-type="DATE" data-object="displayName" data-source="DS" data-object-id="0" data-object-type="TestType" data-field="field" style="position: relative;">ds.object#0.displayname</span>';
 
             expect(utils.createDraggableSpan(data)).toEqual(spanOther);
 
