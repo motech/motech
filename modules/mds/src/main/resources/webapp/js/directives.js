@@ -791,10 +791,17 @@
                                 jsonmap: "fields." + i + ".value"
                             });
                         }
-
                         elem.jqGrid({
                             url: "../mds/entities/" + scope.selectedEntity.id + "/instances",
+                            headers: {
+                                'Accept': 'application/x-www-form-urlencoded',
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
                             datatype: 'json',
+                            mtype: "POST",
+                            postData: {
+                                fields: JSON.stringify(scope.lookupBy)
+                            },
                             jsonReader: {
                                 repeatitems: false
                             },
@@ -808,6 +815,7 @@
                             shrinkToFit: true,
                             autowidth: true,
                             rownumbers: true,
+                            loadonce: false,
                             rowNum: 2,
                             rowList: [2, 5, 10, 20, 50],
                             colModel: colModel,
@@ -837,6 +845,13 @@
                                     }
                                 });
                             }
+                        });
+                        scope.$watch("lookupRefresh", function () {
+                            $('#' + attrs.id).jqGrid('setGridParam', {
+                                postData: {
+                                    fields: JSON.stringify(scope.lookupBy)
+                                }
+                            }).trigger('reloadGrid');
                         });
                     }
                 });

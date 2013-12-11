@@ -1,24 +1,76 @@
 <ul class=inline>
     <li class="backButton">
         <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
+            <i class="icon-large icon-caret-left" />
             {{msg('mds.btn.backToList')}}
+        </button>
+    </li>
+
+    <li class="lookupButton">
+        <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default">
+            <i class="icon-caret-down icon-large" />
+            {{msg('mds.btn.lookup')}}
         </button>
     </li>
 
     <li class="fieldsSelect">
         <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in fields"
                 multiple="multiple" multiselect-dropdown >
-            <option class="active" value="{{field.basic.displayName}}">{{field.basic.displayName}}</option>
+            <option class="active" value="{{field.basic.displayName}}">
+                {{field.basic.displayName}}
+            </option>
         </select>
     </li>
 
     <li class="exportCsvButton">
         <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">
+            <i class="icon-upload-alt"></i>
             {{msg('mds.btn.exportCsv')}}
         </button>
     </li>
+
 </ul>
 
+<div class="inside">
+    <div id="lookup-dialog" class="popover bottom" ng-style="lookupDialogStyle()">
+        <div class="arrow" style="left:110px"></div>
+        <div class="popover-content">
+            <label class="lookup-label">{{msg('mds.form.label.lookup')}}:</label>
+            <div class="btn-group">
+                <button class="btn dropdown-toggle lookup-field" data-toggle="dropdown" href="#">
+                    {{selectedLookup.lookupName || msg('mds.form.selectField')}}
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu lookup-field-list">
+                    <li class="lookup-field-list" ng-repeat="lookup in entityAdvanced.indexes">
+                        <a ng-click="selectLookup(lookup)">{{lookup.lookupName}}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="single-field-selection" ng-repeat="field in lookupFields">
+                    <label>
+                        <div class="lookup-label">{{field.basic.displayName}}:</div>
+                        <div class="lookup-input" ng-include="loadInputForLookupField(field)">
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="remove-button">
+                <buton type="button" class="btn btn-danger" ng-click="removeLookup()">
+                    {{msg('mds.btn.removeLookup')}}
+                </buton>
+            </div>
+            <div class="go-button">
+                <button type="button" class="btn btn-primary" ng-click="filterInstancesByLookup()">
+                    {{msg('mds.btn.go')}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="entityInstancesTable" class="overrideJqgridTable">
     <table id="resourceTable" entity-instances-grid="pageResourceTable"></table>
     <div id="pageResourceTable"></div>

@@ -1,6 +1,10 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -21,20 +25,25 @@ import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.motechproject.mds.web.matcher.WIPEntityMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 
@@ -212,10 +221,15 @@ public class EntityController extends MdsController {
         return getExampleData().findFieldByName(entityId, name);
     }
 
-    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.GET)
+    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @ResponseBody
-    public Records<EntityRecord> getInstances(@PathVariable String entityId, GridSettings settings) {
+    public Records<EntityRecord> getInstances(@PathVariable String entityId, @RequestBody final String url, GridSettings settings) {
         List<EntityRecord> entityList = getExampleData().getEntityRecordsById(entityId);
+        Map<String,Object> lookupMap = getLookupMap(url);
+
+        if (!lookupMap.isEmpty()) {
+            entityList = filterByLookup(entityList, lookupMap);
+        }
 
         boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
 
@@ -249,6 +263,45 @@ public class EntityController extends MdsController {
                 "attachment; filename=" + fileName + ".csv");
 
         response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(entityId, getExampleData().getEntityRecordsById(entityId))));
+    }
+
+    private List<EntityRecord> filterByLookup(List<EntityRecord> entityList, Map<String, Object> lookups) {
+        for (Map.Entry<String, Object> entry : lookups.entrySet()) {
+            Iterator<EntityRecord> it = entityList.iterator();
+            while (it.hasNext()) {
+                EntityRecord record = it.next();
+                for (FieldRecord field : record.getFields()) {
+                    if (entry.getKey().equals(field.getName()) &&
+                            !entry.getValue().toString().toLowerCase().equals(field.getValue().toString().toLowerCase())) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+
+        return entityList;
+    }
+
+    private Map<String, Object> getLookupMap(String url) {
+        final String fields = "fields=";
+
+        int fieldsParam = url.indexOf(fields) + fields.length();
+        String jsonFields = url.substring(fieldsParam, url.indexOf('&', fieldsParam));
+
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper mapper = new ObjectMapper(factory);
+        TypeReference<HashMap<String,Object>> typeRef
+                = new TypeReference<
+                HashMap<String,Object>
+                >() {};
+        try {
+            jsonFields = URLDecoder.decode(jsonFields, "UTF-8");
+            return mapper.readValue(jsonFields, typeRef);
+        } catch (IOException e) {
+            Logger.getLogger(EntityController.class).error("Failed to retrieve and/or parse lookup object from JSON" + e);
+        }
+
+        return new HashMap<>();
     }
 
     private List<List<String>> prepareForCsvConversion(String entityId, List<EntityRecord> entityList) {

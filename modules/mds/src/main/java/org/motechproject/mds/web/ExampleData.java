@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -128,10 +129,12 @@ public class ExampleData {
         );
         fields.add(
                 new FieldDto(
-                        "3", "7", STRING,
+                        "3", "7", LIST,
                         new FieldBasicDto("Drug Regimen", "regimen"),
-                        null,
-                        FieldValidationDto.STRING, null
+                        null, null,
+                        Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
+                                LIST, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, null),
+                                new SettingDto("mds.form.label.allowMultipleSelections", false, null))
                 )
         );
 
@@ -155,6 +158,15 @@ public class ExampleData {
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
                         exampleMetadata3,
                         FieldValidationDto.STRING, null
+                )
+        );
+
+        fields.add(
+                new FieldDto(
+                        "6", "7", BOOLEAN,
+                        new FieldBasicDto("Active", "active"),
+                        exampleMetadata3,
+                        null, null
                 )
         );
 
@@ -612,26 +624,29 @@ public class ExampleData {
         List<EntityRecord> ret = new ArrayList<>();
         List<FieldRecord> fields = new ArrayList<>();
 
-        fields.add(new FieldRecord("ID", "f1992e633e"));
-        fields.add(new FieldRecord("Drug Regimen", "Peldi"));
-        fields.add(new FieldRecord("Voucher Number", "123"));
-        fields.add(new FieldRecord("Redeemed By", "Person1"));
+        fields.add(new FieldRecord("ID", "ID", "f1992e633e"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Peldi"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", "123"));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person1"));
+        fields.add(new FieldRecord("active", "Active", true));
         EntityRecord entityRecord = new EntityRecord("1", "7", fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
-        fields.add(new FieldRecord("ID", "dd2b824bbb"));
-        fields.add(new FieldRecord("Drug Regimen", "Golden"));
-        fields.add(new FieldRecord("Voucher Number", "456"));
-        fields.add(new FieldRecord("Redeemed By", "Person2"));
+        fields.add(new FieldRecord("ID", "ID", "dd2b824bbb"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Golden"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", "456"));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person2"));
+        fields.add(new FieldRecord("active", "Active", true));
         entityRecord = new EntityRecord("2", "7", fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
-        fields.add(new FieldRecord("ID", "d5411b8d8"));
-        fields.add(new FieldRecord("Drug Regimen", "Patata"));
-        fields.add(new FieldRecord("Voucher Number", "312"));
-        fields.add(new FieldRecord("Redeemed By", "Person3"));
+        fields.add(new FieldRecord("ID", "ID", "d5411b8d8"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Patata"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", "312"));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person3"));
+        fields.add(new FieldRecord("active", "Active", false));
         entityRecord = new EntityRecord("3", "7", fields);
         ret.add(entityRecord);
 
@@ -653,26 +668,26 @@ public class ExampleData {
         List<HistoryRecord> ret = new ArrayList<>();
 
         List<FieldRecord> fields = new ArrayList<>();
-        fields.add(new FieldRecord("Date", "April 15, 2012 10:04 AM"));
-        fields.add(new FieldRecord("User", "User1"));
-        fields.add(new FieldRecord("Action", "CREATE"));
-        fields.add(new FieldRecord("Changes", ""));
+        fields.add(new FieldRecord("date", "Date", "April 15, 2012 10:04 AM"));
+        fields.add(new FieldRecord("user", "User", "User1"));
+        fields.add(new FieldRecord("action", "Action", "CREATE"));
+        fields.add(new FieldRecord("changes", "Changes", ""));
         HistoryRecord historyRecord = new HistoryRecord("1", fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
-        fields.add(new FieldRecord("Date", "April 16, 2012 11:04 AM"));
-        fields.add(new FieldRecord("User", "User2"));
-        fields.add(new FieldRecord("Action", "UPDATE"));
-        fields.add(new FieldRecord("Changes", "Changed state"));
+        fields.add(new FieldRecord("date", "Date", "April 16, 2012 11:04 AM"));
+        fields.add(new FieldRecord("user", "User", "User2"));
+        fields.add(new FieldRecord("action", "Action", "UPDATE"));
+        fields.add(new FieldRecord("changes", "Changes", "Changed state"));
         historyRecord = new HistoryRecord("1", fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
-        fields.add(new FieldRecord("Date", "May 11, 2013 9:32 PM"));
-        fields.add(new FieldRecord("User", "User2"));
-        fields.add(new FieldRecord("Action", "UPDATE"));
-        fields.add(new FieldRecord("Changes", "Is Active"));
+        fields.add(new FieldRecord("date", "Date", "May 11, 2013 9:32 PM"));
+        fields.add(new FieldRecord("user", "User", "User2"));
+        fields.add(new FieldRecord("action", "Action", "UPDATE"));
+        fields.add(new FieldRecord("changes", "Changes", "Is Active"));
         historyRecord = new HistoryRecord("1", fields);
         ret.add(historyRecord);
 

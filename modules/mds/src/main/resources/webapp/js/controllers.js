@@ -1608,6 +1608,16 @@
         $scope.selectedEntity = undefined;
 
         /**
+        * Fields that belong to a certain lookup
+        */
+        $scope.lookupFields = [];
+
+        /**
+        * Object that represents selected lookup options
+        */
+        $scope.lookupBy = {};
+
+        /**
         * This variable is set after user clicks "History" button in instance view.
         */
         $scope.selectedInstance = undefined;
@@ -1653,9 +1663,67 @@
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id});
                 unblockUI();
             });
+
             setTimeout(function() {
-                    $(".multiselect-all input").click();
+                $scope.entityAdvanced = Entities.getAdvanced({id: $scope.selectedEntity.id});
+                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/fields').success(function (data) {
+                    $scope.allEntityFields = data;
+                });
+                $(".multiselect-all input").click();
             }, 1000);
+        };
+
+        /**
+        * Marks passed lookup as selected. Sets fields that belong to the given lookup and resets lookupBy object
+        * used to filter instances by given values
+        */
+        $scope.selectLookup = function(lookup) {
+            var i;
+
+            $scope.selectedLookup = lookup;
+            $scope.lookupFields = [];
+            $scope.lookupBy = {};
+
+            for(i=0; i<$scope.allEntityFields.length; i+=1) {
+                if ($.inArray($scope.allEntityFields[i].id, $scope.selectedLookup.fieldList) !== -1) {
+                    $scope.lookupFields.push($scope.allEntityFields[i]);
+                }
+            }
+        };
+
+        /**
+        * Depending on the field type, includes proper html file containing visual representation for
+        * the object type. Radio input for boolean, select input for list and text input as default one.
+        */
+        $scope.loadInputForLookupField = function(field) {
+            var value = "default";
+
+            if (field.type.typeClass === "java.lang.Boolean") {
+                value = "boolean";
+            } else if (field.type.typeClass === "java.util.List") {
+                value = "list";
+            }
+
+            return '../mds/resources/partials/widgets/lookups/field-{0}.html'
+                .format(value.substring(value.toLowerCase()));
+        };
+
+        /**
+        * Hides lookup dialog and sends signal to refresh the grid with new data
+        */
+        $scope.filterInstancesByLookup = function() {
+            $scope.showLookupDialog();
+            $scope.lookupRefresh = !$scope.lookupRefresh;
+        };
+
+        /**
+        * Removes lookup and resets all fields associated with a lookup
+        */
+        $scope.removeLookup = function() {
+            $scope.lookupBy = {};
+            $scope.selectedLookup = undefined;
+            $scope.lookupFields = [];
+            $scope.filterInstancesByLookup();
         };
 
         /**
@@ -1701,6 +1769,26 @@
         $scope.arrow = function (module) {
             return $scope.visible(module) ? "icon-chevron-down" : "icon-chevron-right";
         };
+
+        /**
+        * Shows/Hides lookup dialog
+        */
+        $scope.showLookupDialog = function() {
+            $("#lookup-dialog").toggle();
+        };
+
+        /**
+        * Handles hiding lookup dialog while clicking outside the dialog
+        */
+        $(document).mouseup(function (e) {
+            var container = $("#lookup-dialog"),
+            button = $("#lookupDialogButton");
+
+            if (!container.is(e.target) && container.has(e.target).length === 0 &&
+                !button.is(e.target) && button.has(e.target).length === 0 && container.is(":visible")) {
+                    $scope.showLookupDialog();
+            }
+        });
     });
 
     /**

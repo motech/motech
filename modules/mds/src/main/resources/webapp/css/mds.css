@@ -23,7 +23,6 @@
     display: none;
 }
 
-
 .modal-content.large {
     width: 200%;
     margin-left: -50%;
@@ -138,7 +137,7 @@
 .lookup-field {
     float: left;
     margin-left: 10px;
-    width: 300px;
+    width: 250px;
 }
 
 .form-field .btn-group {
@@ -380,4 +379,46 @@
 .mds #entityFieldsTable.table > tbody > tr > td:first-child,
 .mds #entityFieldsTable.table > tfoot > tr > td:first-child {
     width: 72px;
+}
+
+.lookupButton {
+    margin-left: 10px;
+}
+
+.lookup-label {
+    float: left;
+    width: 130px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.lookup-input {
+    float: left;
+}
+
+.list-picker {
+    min-width: 200px;
+}
+
+#lookup-dialog {
+    max-width: 80%;
+    top: 50px;
+    left: 50px;
+}
+
+#lookup-dialog .single-field-selection {
+    margin-top: 10px;
+    width: 100%;
+}
+
+#lookup-dialog .remove-button {
+    float: left;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+#lookup-dialog .go-button {
+    float: right;
+    margin-top: 25px;
+    margin-bottom: 10px;
 }
