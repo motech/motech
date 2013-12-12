@@ -131,7 +131,6 @@
             'org.motechproject:motech-ivr-verboice-bundle:[0,)':'IVR Verboice',
             'org.motechproject:motech-ivr-voxeo-bundle:[0,)':'IVR Voxeo',
             'org.motechproject:motech-mobileforms-api:[0,)':'Mobile Forms',
-            'org.motechproject:motech-rules-api-bundle:[0,)':'Rules',
             'org.motechproject:motech-scheduler:[0,)':'Scheduler',
             'org.motechproject:motech-sms-bundle:[0,)':'SMS',
             'org.motechproject:motech-platform-metrics:[0,)':'Metrics'
