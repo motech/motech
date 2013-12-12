@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.commons.api.MotechException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -14,6 +16,8 @@ import java.io.StringWriter;
 import static org.motechproject.osgi.web.ext.ApplicationEnvironment.isInDevelopmentMode;
 
 public class Header {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Header.class);
+
     private static final String HEADER_TEMPLATE = "header.template";
     private static final String HEADER_MIN_TEMPLATE = "header-min.template";
     private static final String RESOURCE_PATH_PARAM = "$RESOURCE_PATH";
@@ -42,15 +46,17 @@ public class Header {
         InputStream is = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream(template);
 
-        try {
+        if (null != is) {
             try {
                 IOUtils.copy(is, out);
             } catch (IOException e) {
                 throw new MotechException("Header could not be written", e);
+            } finally {
+                IOUtils.closeQuietly(is);
+                IOUtils.closeQuietly(out);
             }
-        } finally {
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(out);
+        } else {
+            LOGGER.warn("Not found resource for: " + template);
         }
 
         return StringUtils.replace(out.toString(), RESOURCE_PATH_PARAM, resourcePath);
