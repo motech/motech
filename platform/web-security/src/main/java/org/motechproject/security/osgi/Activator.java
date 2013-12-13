@@ -29,7 +29,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * file is used.
  */
 public class Activator implements BundleActivator {
-    private static Logger logger = LoggerFactory.getLogger(Activator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
     private static final String CONTEXT_CONFIG_LOCATION = "classpath:META-INF/osgi/applicationWebSecurityBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/websecurity/api";
     private static final String RESOURCE_URL_MAPPING = "/websecurity";
@@ -48,6 +48,7 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) {
+        LOGGER.info("Starting web security bundle");
         setBundleContext(context);
 
         this.httpServiceTracker = new ServiceTracker(context,
@@ -84,6 +85,8 @@ public class Activator implements BundleActivator {
             }
         };
         this.uiServiceTracker.open();
+
+        LOGGER.info("Started web security bundle");
     }
 
     public void stop(BundleContext context) {
@@ -121,13 +124,13 @@ public class Activator implements BundleActivator {
 
                 service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
                 service.registerResources(RESOURCE_URL_MAPPING, "/webapp", httpContext);
-                logger.debug("Servlet registered");
+                LOGGER.debug("Servlet registered");
 
                 filter = new MotechDelegatingFilterProxy("springSecurityFilterChain", dispatcherServlet.getWebApplicationContext());
                 MotechProxyManager proxyManager = dispatcherServlet.getWebApplicationContext().getBean(MotechProxyManager.class);
                 proxyManager.initializeProxyChain();
                 service.registerFilter(filter, "/.*", null, 0, httpContext);
-                logger.debug("Filter registered");
+                LOGGER.debug("Filter registered");
             } finally {
                 Thread.currentThread().setContextClassLoader(old);
             }
@@ -138,10 +141,10 @@ public class Activator implements BundleActivator {
 
     private void serviceRemoved(ExtHttpService service) {
         service.unregister(SERVLET_URL_MAPPING);
-        logger.debug("Servlet unregistered");
+        LOGGER.debug("Servlet unregistered");
 
         service.unregisterFilter(filter);
-        logger.debug("Filter unregistered");
+        LOGGER.debug("Filter unregistered");
     }
 
     private void serviceAdded(UIFrameworkService service) {
@@ -161,12 +164,12 @@ public class Activator implements BundleActivator {
         regData.setHeader(header.asString());
 
         service.registerModule(regData);
-        logger.debug("Web Security registered in UI framework");
+        LOGGER.debug("Web Security registered in UI framework");
     }
 
     private void serviceRemoved(UIFrameworkService service) {
         service.unregisterModule(MODULE_NAME);
-        logger.debug("Web Security unregistered from ui framework");
+        LOGGER.debug("Web Security unregistered from ui framework");
     }
 
 }

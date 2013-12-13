@@ -3,6 +3,8 @@ package org.motechproject.security.service;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.helper.SessionHandler;
 import org.motechproject.security.repository.AllMotechUsers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,7 @@ import java.util.Collection;
  */
 @Service
 public class UserContextServiceImpl implements UserContextService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserContextServiceImpl.class);
 
     @Autowired
     private SessionHandler sessionHandler;
@@ -33,6 +36,7 @@ public class UserContextServiceImpl implements UserContextService {
 
     @Override
     public void refreshAllUsersContextIfActive() {
+        LOGGER.info("Refreshing context for all active users");
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
         MotechUser user;
 
@@ -46,10 +50,12 @@ public class UserContextServiceImpl implements UserContextService {
             context.setAuthentication(token);
         }
 
+        LOGGER.info("Refreshed context for all active users");
     }
 
     @Override
     public void refreshUserContextIfActive(String userName) {
+        LOGGER.info("Refreshing context for user: {}", userName);
         MotechUser user = allMotechUsers.findByUserName(userName);
         Collection<HttpSession> sessions = sessionHandler.getAllSessions();
 
@@ -63,6 +69,7 @@ public class UserContextServiceImpl implements UserContextService {
                 context.setAuthentication(token);
             }
         }
+        LOGGER.info("Refreshed context for user: {}", userName);
 
     }
 

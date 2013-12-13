@@ -6,6 +6,8 @@ import org.motechproject.security.builder.SecurityRuleBuilder;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.repository.AllMotechSecurityRules;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +28,7 @@ import java.util.List;
  */
 @Component
 public class MotechProxyManager {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechProxyManager.class);
     private static final String DEFAULT_SECURITY_CONFIG_FILE = "defaultSecurityConfig.json";
 
     @Autowired
@@ -50,7 +52,9 @@ public class MotechProxyManager {
      * list matters for filtering purposes.
      */
     public synchronized void rebuildProxyChain() {
+        LOGGER.info("Rebuilding proxy chain");
         updateSecurityChain(motechSecurityService.findAllSecurityRules());
+        LOGGER.info("Rebuilt proxy chain");
     }
 
     /**
@@ -59,6 +63,7 @@ public class MotechProxyManager {
      * which does not have an authentication object.
      */
     public void initializeProxyChain() {
+        LOGGER.info("Initializing proxy chain");
         List<MotechURLSecurityRule> securityRules = securityRulesDAO.getRules();
 
         MotechSecurityConfiguration securityConfig = securityRulesDAO.getMotechSecurityConfiguration();
@@ -70,6 +75,7 @@ public class MotechProxyManager {
         }
 
         updateSecurityChain(securityRules);
+        LOGGER.info("Initialized proxy chain");
     }
 
     public FilterChainProxy getFilterChainProxy() {
@@ -81,21 +87,27 @@ public class MotechProxyManager {
     }
 
     private void updateSecurityChain(List<MotechURLSecurityRule> securityRules) {
+        LOGGER.debug("Updating security chain");
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();
 
         for (MotechURLSecurityRule securityRule : securityRules) {
             if (securityRule.isActive()) {
+                LOGGER.debug("Creating SecurityFilterChain for: {}", securityRule.getPattern());
                 for (String method : securityRule.getMethodsRequired()) {
                     newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));
                 }
+                LOGGER.debug("Created SecurityFilterChain for: {}", securityRule.getPattern());
             }
         }
+
+        LOGGER.debug("Updated security chain.");
 
         proxy = new FilterChainProxy(newFilterChains);
     }
 
     private MotechSecurityConfiguration loadSecurityConfigFile() {
         try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_SECURITY_CONFIG_FILE)) {
+            LOGGER.debug("Load default security rules from: {}", DEFAULT_SECURITY_CONFIG_FILE);
             return (MotechSecurityConfiguration) motechJsonReader.readFromStream(in, MotechSecurityConfiguration.class);
         } catch (IOException e) {
             throw new MotechException("Error while loading json file", e);

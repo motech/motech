@@ -18,9 +18,7 @@ import java.util.Locale;
 
 @Controller
 public class ForgotPasswordController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ForgotPasswordController.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordController.class);
     private static final String ERROR = "server.error";
     private static final String PAGE_LANG = "pageLang";
 
@@ -49,10 +47,10 @@ public class ForgotPasswordController {
             recoveryService.passwordRecoveryRequest(email);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
-            LOG.debug("Request for a nonexistent email" ,e);
+            LOGGER.debug("Request for a nonexistent email", e);
         } catch (Exception e) {
             mav.addObject(ERROR, "security.forgot.errorSending");
-            LOG.error("Error processing recovery", e);
+            LOGGER.error("Error processing recovery", e);
         }
 
         return mav;
@@ -77,13 +75,13 @@ public class ForgotPasswordController {
             recoveryService.oneTimeTokenOpenId(email);
         } catch (UserNotFoundException e) {
             mav.addObject(ERROR, "security.forgot.noSuchUser");
-            LOG.debug("Request for a nonexistent email" ,e);
+            LOGGER.debug("Request for a nonexistent email", e);
         } catch (NonAdminUserException e) {
             mav.addObject(ERROR, "security.forgot.nonAdminUser");
-            LOG.debug("Request for a nonexistent email" ,e);
+            LOGGER.debug("Request for a nonexistent email", e);
         } catch (Exception e) {
             mav.addObject(ERROR, "security.forgot.errorSending");
-            LOG.error("Error processing recovery", e);
+            LOGGER.error("Error processing recovery", e);
         }
 
         return mav;

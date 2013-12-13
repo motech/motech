@@ -2,9 +2,9 @@ package org.motechproject.security.osgi;
 
 import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
 import org.motechproject.security.annotations.SecurityAnnotationBeanPostProcessor;
-import org.motechproject.security.service.SecurityRoleLoader;
 import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
+import org.motechproject.security.service.SecurityRoleLoader;
 import org.motechproject.security.service.SecurityRuleLoader;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -26,8 +26,7 @@ import java.util.List;
  * @see SecurityRoleLoader
  */
 public class SecurityContextTracker extends ServiceTracker {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityContextTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityContextTracker.class);
 
     private final Object lock = new Object();
 
@@ -48,13 +47,14 @@ public class SecurityContextTracker extends ServiceTracker {
     public Object addingService(ServiceReference reference) {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(reference);
 
-        LOG.debug("Starting to process " + applicationContext.getDisplayName());
+        LOGGER.info("Starting to process {}", applicationContext.getDisplayName());
 
         if (ApplicationContextServiceReferenceUtils.isNotValid(reference)) {
             return applicationContext;
         }
 
         String contextId = applicationContext.getId();
+        LOGGER.debug("Application context id: {}", contextId);
 
         synchronized (lock) {
             if (!contextProcessed.contains(contextId)) {
@@ -64,6 +64,8 @@ public class SecurityContextTracker extends ServiceTracker {
                 contextProcessed.add(contextId);
             }
         }
+
+        LOGGER.info("End to process {}", applicationContext.getDisplayName());
 
         return applicationContext;
     }

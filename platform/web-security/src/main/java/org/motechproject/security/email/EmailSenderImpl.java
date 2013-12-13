@@ -2,11 +2,13 @@ package org.motechproject.security.email;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.PasswordRecovery;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.Map;
  */
 @Service
 public class EmailSenderImpl implements EmailSender {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderImpl.class);
 
     private static final String RESET_MAIL_TEMPLATE = "/mail/resetMail.vm";
     private static final String ONE_TIME_TOKEN_TEMPLATE = "/mail/oneTimeTokenMail.vm";
@@ -51,6 +54,7 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendResecoveryEmail(final PasswordRecovery recovery) {
+        LOGGER.info("Sending recovery email");
         Map<String, Object> model = templateParams(recovery, "reset");
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, RESET_MAIL_TEMPLATE, model);
 
@@ -59,6 +63,7 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public void sendOneTimeToken(final PasswordRecovery recovery) {
+        LOGGER.info("Sending one time token");
         Map<String, Object> model = templateParams(recovery, "onetimetoken");
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, ONE_TIME_TOKEN_TEMPLATE, model);
 
@@ -66,6 +71,7 @@ public class EmailSenderImpl implements EmailSender {
     }
 
     public void sendLoginInfo(final MotechUser user, final String password) {
+        LOGGER.info("Sending login information to user: {}", user.getUserName());
         Map<String, Object> model = loginInformationParams(user, password);
         String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, LOGIN_INFORMATION_TEMPLATE, model);
 
@@ -119,6 +125,7 @@ public class EmailSenderImpl implements EmailSender {
 
         MotechEvent emailEvent = new MotechEvent("SendEMail", params);
         eventRelay.sendEventMessage(emailEvent);
+        LOGGER.info("Sent email event: {}", emailEvent.getSubject());
     }
 
     private String getSenderAddress() {

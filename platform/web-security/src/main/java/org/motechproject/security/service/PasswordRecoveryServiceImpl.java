@@ -35,8 +35,7 @@ import java.util.List;
 
 @Service
 public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PasswordRecoveryServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryServiceImpl.class);
 
     private static final int TOKEN_LENGTH = 60;
     private static final int EXPIRATION_HOURS = 1;
@@ -64,7 +63,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         for (PasswordRecovery recovery : expiredRecoveries) {
             allPasswordRecoveries.remove(recovery);
         }
-        LOG.info("Cleaned up all expired password recoveries");
+        LOGGER.info("Cleaned up all expired password recoveries");
     }
 
     @Override
@@ -98,7 +97,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
         emailSender.sendOneTimeToken(recovery);
 
-        LOG.info("Created a one time token for user " + user.getUserName());
+        LOGGER.info("Created a one time token for user " + user.getUserName());
     }
 
     @Override
@@ -133,7 +132,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
         emailSender.sendResecoveryEmail(recovery);
 
-        LOG.info("Created a password recovery for user " + user.getUserName());
+        LOGGER.info("Created a password recovery for user " + user.getUserName());
     }
 
     @Override

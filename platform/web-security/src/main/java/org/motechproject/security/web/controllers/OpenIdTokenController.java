@@ -15,8 +15,7 @@ import java.io.IOException;
 
 @Controller
 public class OpenIdTokenController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OpenIdTokenController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenIdTokenController.class);
 
     @Autowired
     private PasswordRecoveryService recoveryService;
@@ -26,7 +25,7 @@ public class OpenIdTokenController {
         try {
             recoveryService.validateTokenAndLoginUser(token, request, response);
         } catch (IOException e) {
-            LOG.debug("Error redirect.");
+            LOGGER.debug("Error redirect.");
         }
     }
 }

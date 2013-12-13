@@ -6,6 +6,8 @@ import org.motechproject.security.domain.MotechRole;
 import org.motechproject.security.model.PermissionDto;
 import org.motechproject.security.repository.AllMotechPermissions;
 import org.motechproject.security.repository.AllMotechRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.List;
  */
 @Service("motechPermissionService")
 public class MotechPermissionServiceImpl implements MotechPermissionService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechPermissionServiceImpl.class);
 
     @Autowired
     private AllMotechPermissions allMotechPermissions;
@@ -39,21 +42,26 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
 
     @Override
     public void addPermission(PermissionDto permission) {
+        LOGGER.info("Adding permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
         allMotechPermissions.add(new MotechPermissionCouchdbImpl(permission.getPermissionName(),
                 permission.getBundleName()));
+        LOGGER.info("Added permission: {} from bundle: {}", permission.getPermissionName(), permission.getBundleName());
     }
 
     @Override
     public void deletePermission(String permissionName) {
+        LOGGER.info("Deleting permission: {}", permissionName);
         MotechPermission permission = allMotechPermissions.findByPermissionName(permissionName);
         if (permission != null) {
             allMotechPermissions.delete(permission);
             removePermissionFromRoles(permissionName);
             userContextsService.refreshAllUsersContextIfActive();
         }
+        LOGGER.info("Deleted permission: {}", permissionName);
     }
 
     private void removePermissionFromRoles(String permissionName) {
+        LOGGER.info("Removing permission: {} from roles", permissionName);
         List<MotechRole> roles = allMotechRoles.getRoles();
         for (MotechRole role : roles) {
             if (role.hasPermission(permissionName)) {
@@ -61,6 +69,7 @@ public class MotechPermissionServiceImpl implements MotechPermissionService {
                 allMotechRoles.update(role);
             }
         }
+        LOGGER.info("Removed permission: {} from roles", permissionName);
     }
 
 }

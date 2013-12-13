@@ -7,6 +7,8 @@ import org.motechproject.security.domain.MotechUserProfile;
 import org.motechproject.security.email.EmailSender;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.repository.AllMotechUsers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @Service("motechUserService")
 public class MotechUserServiceImpl implements MotechUserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MotechUserServiceImpl.class);
 
     @Autowired
     private AllMotechUsers allMotechUsers;
@@ -43,6 +46,7 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Override
     public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale, boolean isActive, String openId) {
+        LOGGER.info("Registering new user: {}", username);
         if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
@@ -51,15 +55,18 @@ public class MotechUserServiceImpl implements MotechUserService {
         MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles, openId, locale);
         user.setActive(isActive);
         allMotechUsers.add(user);
+        LOGGER.info("Registered new user: {}", username);
     }
 
     @Override
     public void activateUser(String username) {
+        LOGGER.info("Activating user: {}", username);
         MotechUser motechUser = allMotechUsers.findByUserName(username);
         if (motechUser != null) {
             motechUser.setActive(true);
             allMotechUsers.update(motechUser);
         }
+        LOGGER.info("Activated user: {}", username);
     }
 
     @Override
@@ -152,8 +159,10 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Override
     public void deleteUser(UserDto user) {
+        LOGGER.info("Deleting user: {}", user.getUserName());
         MotechUser motechUser = allMotechUsers.findByUserName(user.getUserName());
         allMotechUsers.remove(motechUser);
+        LOGGER.info("Deleted user: {}", user.getUserName());
     }
 
     @Override

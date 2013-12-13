@@ -27,9 +27,7 @@ import java.util.List;
 
 @Controller
 public class ResetController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ResetController.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResetController.class);
     private static final String ERRORS = "errors";
     private static final String TOKEN = "token";
     private static final String PAGE_LANG = "pageLang";
@@ -75,10 +73,10 @@ public class ResetController {
             try {
                 recoveryService.resetPassword(form.getToken(), form.getPassword(), form.getPasswordConfirmation());
             } catch (InvalidTokenException e) {
-                LOG.debug("Reset with invalid token attempted", e);
+                LOGGER.debug("Reset with invalid token attempted", e);
                 mav.addObject(ERRORS, Arrays.asList("security.invalidToken"));
             } catch (Exception e) {
-                LOG.error("Error while reseting passsword", e);
+                LOGGER.error("Error while reseting passsword", e);
                 mav.addObject(ERRORS, Arrays.asList("security.error.reset"));
             }
         }

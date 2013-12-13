@@ -5,6 +5,8 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.motechproject.security.service.MotechRoleService;
 import org.motechproject.security.service.SecurityRuleLoader;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
  * security bundle has been started and processed
  */
 public class RolePermissionRegistrationListener implements OsgiServiceRegistrationListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RolePermissionRegistrationListener.class);
 
     private final Object lock = new Object();
 
@@ -32,8 +35,10 @@ public class RolePermissionRegistrationListener implements OsgiServiceRegistrati
     public void registered(Object service, Map serviceProperties) {
         if (service instanceof MotechRoleService) {
             roleService = (MotechRoleService) service;
+            LOGGER.debug("Found motech role service");
         } else if (service instanceof MotechPermissionService) {
             permissionService = (MotechPermissionService) service;
+            LOGGER.debug("Found motech permission service");
         }
 
         openTracker();

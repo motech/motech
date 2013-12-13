@@ -9,6 +9,8 @@ import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.ex.SecurityConfigException;
 import org.motechproject.server.config.SettingsFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.AccessDecisionManager;
@@ -65,6 +67,7 @@ import java.util.Map;
  */
 @Component
 public class SecurityRuleBuilder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleBuilder.class);
 
     public static final String NO_PATTERN_EXCEPTION_MESSAGE = "Pattern must be defined in security config";
     public static final String NO_PROTOCOL_EXCEPTION_MESSAGE = "Protocol must be defined in security config";
@@ -98,6 +101,8 @@ public class SecurityRuleBuilder {
     private AuthenticationEntryPoint loginAuthenticationEntryPoint;
 
     public synchronized SecurityFilterChain buildSecurityChain(MotechURLSecurityRule securityRule, String method) {
+        LOGGER.info("Building security chain for rule: {} and method: {}", securityRule.getPattern(), method);
+
         List<Filter> filters = new ArrayList<>();
         RequestMatcher matcher;
 
@@ -118,6 +123,8 @@ public class SecurityRuleBuilder {
         if (!noSecurity(securityRule)) {
             filters = addFilters(securityRule);
         }
+
+        LOGGER.info("Builded security chain for rule: {} and method: {}", securityRule.getPattern(), method);
 
         return new DefaultSecurityFilterChain(matcher, filters);
     }
