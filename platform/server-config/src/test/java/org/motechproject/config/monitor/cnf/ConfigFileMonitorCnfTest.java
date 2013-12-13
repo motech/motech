@@ -26,7 +26,7 @@ public class ConfigFileMonitorCnfTest {
     @Mock
     ConfigurationService configurationService;
 
-    private ConfigFileMonitorCnf cnf = new ConfigFileMonitorCnf();
+    private ConfigFileMonitorBeanFactory cnf = new ConfigFileMonitorBeanFactory();
 
     @Before
     public void setUp() {

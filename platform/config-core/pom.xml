@@ -50,7 +50,8 @@
                             org.motechproject.config.core.service;version=${project.version},
                             org.motechproject.config.core.filestore;version=${project.version},
                             org.motechproject.config.core.domain;version=${project.version},
-                            org.motechproject.config.core.constants;version=${project.version}
+                            org.motechproject.config.core.constants;version=${project.version},
+                            org.motechproject.config.core.filters;version=${project.version}
                        </Export-Package>
                         <Import-Package>
                             org.aopalliance.aop,

@@ -1,12 +1,15 @@
 package org.motechproject.server.web.controller;
 
+import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.core.constants.ConfigurationConstants;
+import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
@@ -18,9 +21,6 @@ import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.SuggestionHelper;
 import org.motechproject.server.web.validator.StartupFormValidator;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -28,6 +28,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -38,12 +39,14 @@ import java.util.TreeMap;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,6 +59,7 @@ public class StartupControllerTest {
     private static final String PAGE_LANG_KEY = "pageLang";
     private static final String IS_FILE_MODE_KEY = "isFileMode";
     private static final String HEADER_KEY = "mainHeader";
+    private static final String REQUIRES_CONFIG_FILES = "requireConfigFiles";
 
     private static final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
             "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
@@ -128,7 +132,7 @@ public class StartupControllerTest {
         verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
-        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY, HEADER_KEY);
+        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY, HEADER_KEY, REQUIRES_CONFIG_FILES);
 
         StartupSuggestionsForm startupSuggestionsForm = (StartupSuggestionsForm) result.getModelMap().get(SUGGESTIONS_KEY);
 
@@ -137,7 +141,9 @@ public class StartupControllerTest {
         assertTrue(startupSuggestionsForm.getSchedulerUrls().isEmpty());
 
         StartupForm startupSettings = (StartupForm) result.getModelMap().get(STARTUP_SETTINGS_KEY);
+        Boolean requiresConfigFiles = (Boolean) result.getModelMap().get(REQUIRES_CONFIG_FILES);
 
+        Assert.assertFalse(requiresConfigFiles);
         assertEquals("en", startupSettings.getLanguage());
     }
 
@@ -204,6 +210,53 @@ public class StartupControllerTest {
             assertFalse(errors.hasErrors());
         }
     }
+
+    @Test
+    public void shouldInformViewThatConfigFilesRequiredWhenConfigSourceIsFileAndConfigFilesDoNotExist() throws IOException {
+        when(configurationService.requiresConfigurationFiles()).thenReturn(true);
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
+
+        BootstrapConfig bootstrapConfig = mock(BootstrapConfig.class);
+        when(bootstrapConfig.getConfigSource()).thenReturn(ConfigSource.FILE);
+        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        when(configurationService.requiresConfigurationFiles()).thenReturn(true);
+
+        ModelAndView modelAndView = startupController.startup(httpServletRequest);
+        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(true));
+        verify(configurationService).requiresConfigurationFiles();
+    }
+
+    @Test
+    public void shouldInformViewThatConfigFilesNotRequiredWhenConfigSourceIsFileAndConfigFilesExist() throws IOException {
+        when(configurationService.requiresConfigurationFiles()).thenReturn(true);
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
+
+        BootstrapConfig bootstrapConfig = mock(BootstrapConfig.class);
+        when(bootstrapConfig.getConfigSource()).thenReturn(ConfigSource.FILE);
+        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        when(configurationService.requiresConfigurationFiles()).thenReturn(false);
+
+        ModelAndView modelAndView = startupController.startup(httpServletRequest);
+        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(false));
+        verify(configurationService).requiresConfigurationFiles();
+    }
+
+    @Test
+    public void shouldInformViewThatConfigFilesNotRequiredWhenConfigSourceIsUI() throws IOException {
+        when(configurationService.requiresConfigurationFiles()).thenReturn(true);
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en"));
+
+        BootstrapConfig bootstrapConfig = mock(BootstrapConfig.class);
+        when(bootstrapConfig.getConfigSource()).thenReturn(ConfigSource.UI);
+        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        ModelAndView modelAndView = startupController.startup(httpServletRequest);
+        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(false));
+        verify(configurationService, never()).requiresConfigurationFiles();
+    }
+
 
     private void assertModelMap(final ModelMap modelMap, String... keys) {
         assertEquals(keys.length, modelMap.size());

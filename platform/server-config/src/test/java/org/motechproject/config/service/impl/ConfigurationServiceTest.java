@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
+import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
@@ -26,9 +27,12 @@ import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -212,4 +216,41 @@ public class ConfigurationServiceTest {
         configurationService.addOrUpdate(new File("some.properties"));
         verify(allModuleProperties).addOrUpdate((ModulePropertiesRecord) any());
     }
+
+    @Test
+    public void shouldIndicateThatConfigFilesAreNotRequiredWhenConfigSourceIsUI() throws IOException {
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.UI);
+        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        assertFalse(configurationService.requiresConfigurationFiles());
+    }
+
+
+    @Test
+    public void shouldIndicateThatConfigFilesAreNotRequiredWhenPlatformConfigurationFileIsPresent() throws IOException {
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.FILE);
+        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        ConfigLocation configLocation = mock(ConfigLocation.class);
+        when(configLocation.hasPlatformConfigurationFile()).thenReturn(true);
+
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
+
+        assertFalse(configurationService.requiresConfigurationFiles());
+    }
+
+    @Test
+    public void shouldIndicateThatConfigFilesAreRequiredWhenPlatformConfigurationFileIsMissing() throws IOException {
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.FILE);
+        when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
+
+        ConfigLocation configLocation = mock(ConfigLocation.class);
+        when(configLocation.hasPlatformConfigurationFile()).thenReturn(false);
+
+        when(coreConfigurationService.getConfigLocation()).thenReturn(configLocation);
+
+        assertTrue(configurationService.requiresConfigurationFiles());
+    }
+
+
 }

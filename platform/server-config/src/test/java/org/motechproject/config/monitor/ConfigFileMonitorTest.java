@@ -12,6 +12,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
@@ -25,7 +26,10 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -121,5 +125,14 @@ public class ConfigFileMonitorTest {
         configFileMonitor.fileDeleted(new FileChangeEvent(fileObject));
 
         verify(configurationService).delete(new File(fileObject.getName().getPath()).getParentFile().getName());
+    }
+
+    @Test
+    public void shouldNotStartFileMonitorIfConfigLoaderThrowsException() throws IOException {
+        doThrow(new MotechConfigurationException("file could not be read")).when(configLoader).findExistingConfigs();
+        configFileMonitor.init();
+        verify(configurationService, never()).processExistingConfigs(anyList());
+        verify(fileMonitor, never()).run();
+
     }
 }

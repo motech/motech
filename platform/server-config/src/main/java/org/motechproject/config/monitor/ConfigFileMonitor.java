@@ -6,8 +6,9 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
+import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
-import org.motechproject.config.core.filestore.ConfigFileFilter;
+import org.motechproject.config.core.filters.ConfigFileFilter;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.ConfigLoader;
@@ -18,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,11 +51,17 @@ public class ConfigFileMonitor implements FileListener {
 
     @PostConstruct
     public void init() throws IOException {
-        final List<File> files = configLoader.findExistingConfigs();
+        final List<File> files = new ArrayList<>();
+        try {
+            files.addAll(configLoader.findExistingConfigs());
+        } catch (MotechConfigurationException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return;
+        }
         configurationService.processExistingConfigs(files);
-        setupLocation();
-        fileMonitor.start();
+        startFileMonitor();
     }
+
 
     @Override
     public void fileCreated(FileChangeEvent fileChangeEvent) throws IOException {
@@ -97,7 +105,11 @@ public class ConfigFileMonitor implements FileListener {
         fileMonitor.stop();
         fileMonitor.removeFile(monitoredDir);
         LOGGER.info(String.format("Stopped Monitoring location %s", monitoredDir));
+        startFileMonitor();
+    }
 
+
+    private void startFileMonitor() throws FileSystemException {
         setupLocation();
         fileMonitor.start();
     }
