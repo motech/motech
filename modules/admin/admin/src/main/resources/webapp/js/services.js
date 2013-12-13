@@ -9,6 +9,7 @@
             stop: {method:'POST', params: {action: 'stop'}},
             restart: {method:'POST', params: {action: 'restart'}},
             uninstall: {method: 'POST', params: {action: 'uninstall'}},
+            uninstallWithConfig: {method: 'POST', params: {action: 'uninstallconfig'}},
             details: {method: 'GET', params: {action: 'detail'}}
         });
     });

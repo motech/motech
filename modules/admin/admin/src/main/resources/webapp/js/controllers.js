@@ -138,6 +138,11 @@
         };
 
         $scope.module = "";
+        $scope.bundle = undefined;
+
+        $scope.selectBundle = function (bundle) {
+            $scope.bundle = bundle;
+        };
 
         $scope.stopBundle = function (bundle) {
             bundle.state = LOADING_STATE;
@@ -180,26 +185,38 @@
             });
         };
 
-        $scope.uninstallBundle = function (bundle) {
-            jConfirm(jQuery.i18n.prop('admin.bundles.uninstall.confirm'), jQuery.i18n.prop("admin.confirm"), function (val) {
-                if (val) {
-                    var oldState = bundle.state;
-                    bundle.state = LOADING_STATE;
+        $scope.closeRemoveBundleModal = function () {
+            $('#removeBundleModal').modal('hide');
+            $scope.bundle = undefined;
+        };
 
-                    blockUI();
-
-                    bundle.$uninstall(function () {
-                            // remove bundle from list
-                            $scope.bundles.removeObject(bundle);
-                            $scope.refreshModuleList();
-                            unblockUI();
-                        }, function () {
-                            motechAlert('admin.bundles.error.uninstall', 'admin.error');
-                            bundle.state = oldState;
-                            unblockUI();
-                        });
-                }
-            });
+        $scope.uninstallBundle = function (withConfig) {
+            $('#removeBundleModal').modal('hide');
+            var oldState = $scope.bundle.state;
+            $scope.bundle.state = LOADING_STATE;
+            if (withConfig) {
+                $scope.bundle.$uninstallWithConfig(function () {
+                    // remove bundle from list
+                    $scope.bundles.removeObject($scope.bundle);
+                    $scope.refreshModuleList();
+                    unblockUI();
+                }, function () {
+                    motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    $scope.bundle.state = oldState;
+                    unblockUI();
+                });
+            } else {
+                $scope.bundle.$uninstall(function () {
+                    // remove bundle from list
+                    $scope.bundles.removeObject($scope.bundle);
+                    $scope.refreshModuleList();
+                    unblockUI();
+                }, function () {
+                    motechAlert('admin.bundles.error.uninstall', 'admin.error');
+                    $scope.bundle.state = oldState;
+                    unblockUI();
+                });
+            }
         };
 
         $scope.getIconClass = function (bundle) {
@@ -213,7 +230,6 @@
         $scope.bundleStable = function (bundle) {
             return bundle.state !== LOADING_STATE;
         };
-
 
         $scope.startOnUpload = function () {
             if ($scope.startUpload !== true) {

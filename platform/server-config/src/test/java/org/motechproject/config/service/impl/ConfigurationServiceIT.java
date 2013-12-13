@@ -37,7 +37,7 @@ public class ConfigurationServiceIT {
         newProperties.put("test_prop3", "test3");
         newProperties.put("test_prop", "test_1");
         newProperties.put("test_prop2", "test_other");
-        configurationService.addOrUpdateProperties("test_module", "file1", newProperties, getDefaultProperties());
+        configurationService.addOrUpdateProperties("test_module", "1.0.0", "test_module", "file1", newProperties, getDefaultProperties());
 
         Thread.sleep(2000);
 

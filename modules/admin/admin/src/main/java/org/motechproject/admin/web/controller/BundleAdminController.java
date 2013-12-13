@@ -78,7 +78,14 @@ public class BundleAdminController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
-        moduleAdminService.uninstallBundle(bundleId);
+        moduleAdminService.uninstallBundle(bundleId, false);
+        statusMessageService.info("{bundles.uninstall.success}", ADMIN_MODULE_NAME);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/bundles/{bundleId}/uninstallconfig", method = RequestMethod.POST)
+    public void uninstallBundleWithConfig(@PathVariable long bundleId) throws BundleException {
+        moduleAdminService.uninstallBundle(bundleId, true);
         statusMessageService.info("{bundles.uninstall.success}", ADMIN_MODULE_NAME);
     }
 

@@ -9,6 +9,10 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -25,8 +29,10 @@ import java.util.Properties;
  */
 public class SettingsFacade {
 
-
     private static Logger logger = LoggerFactory.getLogger(SettingsFacade.class);
+
+    @Autowired(required = false)
+    private BundleContext bundleContext;
 
     private ConfigurationService configurationService;
 
@@ -42,6 +48,9 @@ public class SettingsFacade {
 
     private static final String QUEUE_FOR_EVENTS = "jms.queue.for.events";
     private static final String QUEUE_FOR_SCHEDULER = "jms.queue.for.scheduler";
+    private static final String STRING_BUNDLE_ENDING = "-bundle";
+
+    private Bundle bundle;
 
     public void setConfigurationService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
@@ -146,11 +155,12 @@ public class SettingsFacade {
 
     public void saveConfigProperties(String filename, Properties properties) {
         config.put(filename, properties);
-
+        String version = (bundle != null && bundle.getVersion() != null) ? bundle.getVersion().toString() : "";
+        String bundleSymbolicName = bundle != null ? bundle.getSymbolicName() : "";
         if (propsRegistered) {
             try {
                 if (configurationService != null) {
-                    configurationService.addOrUpdateProperties(getSymbolicName(), filename, properties, defaultConfig.get(filename));
+                    configurationService.addOrUpdateProperties(getSymbolicName(),version, bundleSymbolicName, filename, properties, defaultConfig.get(filename));
                 }
             } catch (IOException e) {
                 throw new MotechException("Can't save settings " + filename, e);
@@ -161,11 +171,12 @@ public class SettingsFacade {
 
     public void saveRawConfig(String filename, Resource resource) {
         rawConfig.put(filename, resource);
-
+        String version = (bundle != null && bundle.getVersion() != null) ? bundle.getVersion().toString() : "";
+        String bundleSymbolicName = bundle != null ? bundle.getSymbolicName() : "";
         try {
             InputStream is = resource.getInputStream();
             if (configurationService != null) {
-                configurationService.saveRawConfig(getSymbolicName(), filename, is);
+                configurationService.saveRawConfig(getSymbolicName(), version, bundleSymbolicName, filename, is);
             }
         } catch (IOException e) {
             throw new MotechException("Error saving file " + filename, e);
@@ -218,11 +229,17 @@ public class SettingsFacade {
     }
 
     protected void registerProperties(String filename, Properties properties) {
+        String version = (bundle != null && bundle.getVersion() != null) ? bundle.getVersion().toString() : "";
+        String bundleSymbolicName = bundle != null ? bundle.getSymbolicName() : "";
         try {
             if (configurationService != null &&
                     !configurationService.registersProperties(getSymbolicName(), filename)) {
                 configurationService.addOrUpdateProperties(
-                        getSymbolicName(), filename, properties, defaultConfig.get(filename));
+                        getSymbolicName(), version, bundleSymbolicName, filename, properties, defaultConfig.get(filename));
+            } else if (configurationService != null &&
+                    configurationService.registersProperties(getSymbolicName(), filename)) {
+                configurationService.updatePropertiesAfterReinstallation(getSymbolicName(), version, bundleSymbolicName,
+                        filename, defaultConfig.get(filename), properties);
             }
 
             Properties registeredProps = configurationService.getModuleProperties(
@@ -233,7 +250,13 @@ public class SettingsFacade {
         }
     }
 
+    public void unregisterProperties(String symbolicName) {
+        configurationService.removeProperties(symbolicName, "");
+    }
+
     protected void registerAllRawConfig() {
+        String version = (bundle != null && bundle.getVersion() != null) ? bundle.getVersion().toString() : "";
+        String bundleSymbolicName = bundle != null ? bundle.getSymbolicName() : "";
         if (configurationService != null) {
             for (Map.Entry<String, Resource> entry : rawConfig.entrySet()) {
                 String filename = entry.getKey();
@@ -243,7 +266,7 @@ public class SettingsFacade {
                     // register new config with the platform
                     try {
                         InputStream is = resource.getInputStream();
-                        configurationService.saveRawConfig(getSymbolicName(), filename, is);
+                        configurationService.saveRawConfig(getSymbolicName(), version, bundleSymbolicName, filename, is);
                     } catch (IOException e) {
                         throw new MotechException("Can't save raw config " + filename, e);
                     }
@@ -271,8 +294,8 @@ public class SettingsFacade {
 
         sb.append(moduleName);
 
-        if (!moduleName.endsWith("-bundle")) {
-            sb.append("-bundle");
+        if (!moduleName.endsWith(STRING_BUNDLE_ENDING)) {
+            sb.append(STRING_BUNDLE_ENDING);
         }
 
         return sb.toString();
@@ -315,6 +338,7 @@ public class SettingsFacade {
     }
 
     private void registerConfigurationSettings() {
+        bundle = bundleContext != null ? bundleContext.getBundle() : null;
         if (!propsRegistered) {
             registerAllProperties();
         }

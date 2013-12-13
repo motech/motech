@@ -31,26 +31,32 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
 
     private Map<String, String> properties;
     private String module;
+    private String version;
+    private String bundle;
     private String filename;
     private boolean raw;
 
     public ModulePropertiesRecord() {
-        this((Map<String, String>) null, null, null, false);
+        this((Map<String, String>) null, null, null, null, null, false);
     }
 
-    public ModulePropertiesRecord(Map<String, String> properties, String module, String filename, boolean raw) {
+    public ModulePropertiesRecord(Map<String, String> properties, String module, String version, String bundle, String filename, boolean raw) {
         this.properties = properties;
         this.module = module;
+        this.version = version;
+        this.bundle = bundle;
         this.filename = filename;
         this.raw = raw;
     }
 
-    public ModulePropertiesRecord(Properties props, String module, String filename, boolean raw) {
+    public ModulePropertiesRecord(Properties props, String module, String version, String bundle, String filename, boolean raw) {
         this.module = module;
         this.properties = new LinkedHashMap<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             this.properties.put(entry.getKey().toString(), entry.getValue().toString());
         }
+        this.version = version;
+        this.bundle = bundle;
         this.filename = filename;
         this.raw = raw;
     }
@@ -62,7 +68,7 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
             final String fileName = file.getName();
             boolean raw = !isExtension(fileName, PROPERTIES_FILE_EXTENSION);
             Properties properties = buildProperties(inputStream, raw);
-            return new ModulePropertiesRecord(properties, file.getParentFile().getName(), fileName, raw);
+            return new ModulePropertiesRecord(properties, file.getParentFile().getName(), "", "", fileName, raw);
         } catch (IOException e) {
             logger.error(String.format("Error reading config file %s", file.getAbsolutePath()), e);
             return null;
@@ -97,6 +103,22 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
         this.properties = properties;
     }
 
+    public String getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(String bundle) {
+        this.bundle = bundle;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     public String getFilename() {
         return filename;
     }
@@ -117,6 +139,8 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
         ModulePropertiesRecord record = (ModulePropertiesRecord) dataObject;
         return new EqualsBuilder()
                 .append(this.module, record.module)
+                .append(this.version, record.version)
+                .append(this.bundle, record.bundle)
                 .append(this.filename, record.filename)
                 .append(this.raw, record.raw)
                 .isEquals();
@@ -147,6 +171,8 @@ public class ModulePropertiesRecord extends MotechBaseDataObject {
 
         return Objects.equals(this.module, other.module) &&
                 Objects.equals(this.filename, other.filename) &&
+                Objects.equals(this.version, other.version) &&
+                Objects.equals(this.bundle, other.bundle) &&
                 Objects.equals(this.properties, other.properties) &&
                 Objects.equals(this.raw, other.raw);
     }

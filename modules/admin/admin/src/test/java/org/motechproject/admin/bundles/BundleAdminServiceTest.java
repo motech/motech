@@ -185,7 +185,7 @@ public class BundleAdminServiceTest {
     public void testUnInstallBundle() throws BundleException, IOException {
         setupBundleRetrieval();
 
-        moduleAdminService.uninstallBundle(BUNDLE_ID);
+        moduleAdminService.uninstallBundle(BUNDLE_ID, false);
 
         verify(bundleContext).getBundle(BUNDLE_ID);
         verify(bundle).uninstall();

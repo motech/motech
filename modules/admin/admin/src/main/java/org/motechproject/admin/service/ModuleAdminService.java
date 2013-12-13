@@ -80,10 +80,11 @@ public interface ModuleAdminService {
     /**
      * Uninstalls the bundle with the given bundle id from the system. The bundle file is also physically removed.
      * @param bundleId the id of the bundle that should be uninstalled.
+     * @param removeConfig true if config file for bundle should be removed
      * @throws BundleException when it failed to uninstall the bundle.
      */
     @PreAuthorize("hasRole('uninstallBundle')")
-    void uninstallBundle(long bundleId) throws BundleException;
+    void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException;
 
     /**
      * Installs a bundle in the system. The installed bundle is then automatically started. Used to install uploaded

@@ -1,0 +1,18 @@
+<div id="removeBundleModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="removeBundleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="closeRemoveBundleModal()">&times;</button>
+                <h4 class="modal-title" id="removeBundleModalLabel">{{msg('admin.confirm')}}</h4>
+            </div>
+            <div class="modal-body">
+                {{msg('admin.bundles.uninstall.confirm')}}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="uninstallBundle(false)">{{msg('admin.remove')}}</button>
+                <button class="btn btn-primary" ng-click="uninstallBundle(true)">{{msg('admin.remove.config')}}</button>
+                <button class="btn btn-default" ng-click="closeRemoveBundleModal()">{{msg('admin.cancel')}}</button>
+            </div>
+        </div>
+    </div>
+</div>

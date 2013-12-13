@@ -136,7 +136,7 @@ public class BundleAdminControllerTest {
     public void testUninstallBundle() throws BundleException {
         controller.uninstallBundle(BUNDLE_ID);
 
-        verify(moduleAdminService).uninstallBundle(BUNDLE_ID);
+        verify(moduleAdminService).uninstallBundle(BUNDLE_ID, false);
     }
 
     @Test

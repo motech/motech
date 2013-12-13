@@ -124,7 +124,7 @@
                              class="action action-settings"/>
                     </a>
                 </span>
-                    <a ng-click="uninstallBundle(bundle)">
+                    <a role="button" data-toggle="modal" data-target="#removeBundleModal" data-backdrop="static" ng-click="selectBundle(bundle)">
                         <img src="../admin/img/trans.gif" alt="{{msg('admin.bundles.uninstall')}}"
                              title="{{msg('admin.bundles.uninstall')}}"
                              class="action action-remove"/>
@@ -137,5 +137,6 @@
         </tr>
         </tbody>
     </table>
+    <div ng-include="'../admin/partials/widgets/remove-bundle-modal.html'"></div>
 </div>
 

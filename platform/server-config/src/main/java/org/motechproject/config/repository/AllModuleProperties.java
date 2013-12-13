@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -20,6 +21,7 @@ import java.util.Properties;
  */
 @Repository
 @View(name = "by_name", map = "function(doc) { if(doc.type === 'ModulePropertiesRecord') emit(doc.module); }")
+
 public class AllModuleProperties extends MotechBaseRepository<ModulePropertiesRecord> {
 
     private static final String BY_NAME = "by_name";
@@ -37,6 +39,17 @@ public class AllModuleProperties extends MotechBaseRepository<ModulePropertiesRe
             }
         }
         return null;
+    }
+
+    public List<ModulePropertiesRecord> byBundle(String bundle) {
+        List<ModulePropertiesRecord> records = getAll();
+        List<ModulePropertiesRecord> retRecords = new LinkedList<>();
+        for (ModulePropertiesRecord modulePropertiesRecord : records) {
+            if (modulePropertiesRecord.getBundle().equals(bundle)) {
+                retRecords.add(modulePropertiesRecord);
+            }
+        }
+        return retRecords.isEmpty() ? null : retRecords;
     }
 
     public List<String> retrieveFileNamesForModule(String module) {

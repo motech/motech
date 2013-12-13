@@ -140,8 +140,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     }
 
     @Override
-    public void uninstallBundle(long bundleId) throws BundleException {
+    public void uninstallBundle(long bundleId, boolean removeConfig) throws BundleException {
         Bundle bundle = getBundle(bundleId);
+        if (removeConfig) {
+            settingsFacade.unregisterProperties(bundle.getSymbolicName());
+        }
         bundle.uninstall();
 
         try {

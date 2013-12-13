@@ -80,6 +80,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    private static final String STRING_FORMAT = "%s/%s";
+
     @Override
     public BootstrapConfig loadBootstrapConfig() {
         if (logger.isDebugEnabled()) {
@@ -123,7 +125,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")})
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         if (allSettings == null) {
             return null;
@@ -259,7 +261,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException {
+    public void addOrUpdateProperties(String module, String version, String bundle, String filename, Properties newProperties, Properties defaultProperties) throws IOException {
         Properties toPersist;
         if (ConfigSource.UI.equals(configSource)) {
             //Persist only non-default properties in database
@@ -273,8 +275,51 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         } else {
             toPersist = newProperties;
         }
-        ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, filename, false);
+        ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
         allModuleProperties.addOrUpdate(properties);
+    }
+
+    @Override
+    public void updatePropertiesAfterReinstallation(String module, String version, String bundle, String filename, Properties defaultProperties, Properties newProperties) throws IOException {
+        if (ConfigSource.UI.equals(configSource)) {
+            Properties oldProperties = getModuleProperties(module, filename, defaultProperties);
+            //Persist only non-default properties in database
+            Properties toPersist = new Properties();
+            Properties tempPropreties = (Properties) newProperties.clone();
+            for (Map.Entry<Object, Object> entry : oldProperties.entrySet()) {
+                if (newProperties.containsKey(entry.getKey())) {
+                    tempPropreties.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            for (Map.Entry<Object, Object> entry : tempPropreties.entrySet()) {
+                if (!defaultProperties.containsKey(entry.getKey()) ||
+                        (!defaultProperties.get(entry.getKey()).equals(tempPropreties.get(entry.getKey())))) {
+                    toPersist.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
+            delete(module);
+            allModuleProperties.addOrUpdate(properties);
+        } else if (ConfigSource.FILE.equals(configSource)) {
+            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            setUpDirsForFile(file);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                newProperties.store(fileOutputStream, null);
+            }
+        }
+    }
+
+    public void removeProperties(String module, String filename) {
+        if (ConfigSource.UI.equals(configSource)) {
+            deleteByBundle(module);
+        } else if (ConfigSource.FILE.equals(configSource)) {
+            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            if (!file.delete()) {
+                throw new MotechConfigurationException("Could not delete configuration file");
+            }
+        }
     }
 
     @Override
@@ -343,11 +388,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void saveRawConfig(String module, String filename, InputStream rawData) throws IOException {
+    public void saveRawConfig(String module, String version, String bundle, String filename, InputStream rawData) throws IOException {
         if (ConfigSource.UI.equals(configSource)) {
             Properties p = new Properties();
             p.put("rawData", IOUtils.toString(rawData));
-            ModulePropertiesRecord record = new ModulePropertiesRecord(p, module, filename, true);
+            ModulePropertiesRecord record = new ModulePropertiesRecord(p, module, version, bundle, filename, true);
             allModuleProperties.addOrUpdate(record);
         } else if (ConfigSource.FILE.equals(configSource)) {
             File file = new File(String.format("%s/raw/%s", getModuleConfigDir(module), filename));
@@ -444,7 +489,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             ModulePropertiesRecord rec = allModuleProperties.byModuleAndFileName(module, filename);
             return rec == null ? false : true;
         } else {
-            File file = new File(String.format("%s/%s", getModuleConfigDir(module), filename));
+            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
             return file.exists();
         }
     }
@@ -461,6 +506,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public void delete(String module) {
         List<ModulePropertiesRecord> records = allModuleProperties.byModuleName(module);
+        allModuleProperties.remove(records.get(0));
+    }
+
+    @Override
+    public void deleteByBundle(String module) {
+        List<ModulePropertiesRecord> records = allModuleProperties.byBundle(module);
         allModuleProperties.remove(records.get(0));
     }
 

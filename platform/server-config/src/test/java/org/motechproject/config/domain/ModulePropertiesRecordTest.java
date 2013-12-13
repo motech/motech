@@ -57,14 +57,14 @@ public class ModulePropertiesRecordTest {
         existingProperties.setProperty("existingKey", "existingValue");
         Properties updatedProperties = new Properties();
         updatedProperties.setProperty("updatedKey", "updatedValue");
-        ModulePropertiesRecord existing = new ModulePropertiesRecord(existingProperties, "module", "file1.properties", false);
+        ModulePropertiesRecord existing = new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "file1.properties", false);
 
-        assertTrue(existing.sameAs(new ModulePropertiesRecord(updatedProperties, "module", "file1.properties", false)));
+        assertTrue(existing.sameAs(new ModulePropertiesRecord(updatedProperties, "module", "1.0.0", "module", "file1.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "differentModule", "file1.properties", false)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "differentModule", "1.0.0", "module", "file1.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "differentFile.properties", false)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "differentFile.properties", false)));
 
-        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "file1.properties", true)));
+        assertFalse(existing.sameAs(new ModulePropertiesRecord(existingProperties, "module", "1.0.0", "module", "file1.properties", true)));
     }
 }

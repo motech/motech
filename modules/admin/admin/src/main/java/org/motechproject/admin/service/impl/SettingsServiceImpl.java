@@ -16,6 +16,7 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,10 +107,12 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void saveBundleSettings(Settings settings, long bundleId) {
         String symbolicName = getSymbolicName(bundleId);
+        String version = getVersion(bundleId);
+        String bundleName = getBundleName(bundleId);
         Properties props = ParamParser.constructProperties(settings);
 
         try {
-            configurationService.addOrUpdateProperties(symbolicName, settings.getSection(),
+            configurationService.addOrUpdateProperties(symbolicName, version, bundleName, settings.getSection(),
                     props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
 
             Map<String, Object> params = new HashMap<>();
@@ -213,9 +216,12 @@ public class SettingsServiceImpl implements SettingsService {
     public void saveRawFile(MultipartFile file, String filename, long bundleId) {
         InputStream is = null;
         String symbolicName = getSymbolicName(bundleId);
+        String version = getVersion(bundleId);
+        String bundleName = getBundleName(bundleId);
+
         try {
             is = file.getInputStream();
-            configurationService.saveRawConfig(symbolicName, filename, is);
+            configurationService.saveRawConfig(symbolicName, version, bundleName, filename, is);
         } catch (IOException e) {
             LOG.error("Error reading uploaded file", e);
             throw new MotechException(e.getMessage(), e);
@@ -256,5 +262,18 @@ public class SettingsServiceImpl implements SettingsService {
         String symbolicName = bundle.getSymbolicName();
 
         return symbolicName.endsWith("-bundle") ? symbolicName : symbolicName + "-bundle";
+    }
+
+    private String getVersion(long bundleId) {
+        Bundle bundle = bundleContext.getBundle(bundleId);
+        Version version = bundle.getVersion();
+
+        return version != null ? version.toString() : "";
+    }
+
+    private String getBundleName(long bundleId) {
+        Bundle bundle = bundleContext.getBundle(bundleId);
+
+        return bundle.getSymbolicName();
     }
 }

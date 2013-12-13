@@ -139,12 +139,39 @@ public interface ConfigurationService {
      * </p>
      *
      * @param module            The module we wish to update properties for
+     * @param version           Version of updated bundle
+     * @param bundle            Symbolic name of updated bundle
      * @param filename          Resource filename
      * @param newProperties     New properties to store
      * @param defaultProperties Default properties of the module
      * @throws IOException if module properties cannot be retrieved from file
      */
-    void addOrUpdateProperties(String module, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
+    void addOrUpdateProperties(String module, String version, String bundle, String filename, Properties newProperties, Properties defaultProperties) throws IOException;
+
+    /**
+     * <p>
+     *     Works similar to <code>addOrUpdateProperties</code> but instead of just adding / updating properties
+     *     checks database for any deprecated properties and removes to ensure that only current ones are available
+     * </p>
+     *
+     * @param module            The module we wish to update properties for
+     * @param version           Version of updated bundle
+     * @param bundle            Symbolic name of updated bundle
+     * @param filename          Resource filename
+     * @param newProperties     New properties to store
+     * @param defaultProperties Default properties of the module
+     * @throws IOException if module properties cannot be retrieved from file
+     */
+    void updatePropertiesAfterReinstallation(String module, String version, String bundle, String filename, Properties defaultProperties, Properties newProperties) throws IOException;
+
+    /**
+     * <p>
+     *     Removes properties for given module from database or file.
+     * </p>
+     * @param module The module we wish to remove properties for
+     * @param filename Resource filename
+     */
+    void removeProperties(String module, String filename);
 
     /**
      * Adds, updates, or deletes configurations in FILE mode only.
@@ -187,7 +214,7 @@ public interface ConfigurationService {
      * @param rawData  Raw JSON data to persist
      * @throws IOException
      */
-    void saveRawConfig(final String module, final String filename, final InputStream rawData) throws IOException;
+    void saveRawConfig(final String module, final String version, final String bundle, final String filename, final InputStream rawData) throws IOException;
 
     /**
      * <p>
@@ -257,6 +284,11 @@ public interface ConfigurationService {
      * Deletes the db record corresponding to the module.
      */
     void delete(String module);
+
+    /**
+     * Deletes the db record corresponding to the module with given bundle symbolic name.
+     */
+    void deleteByBundle(String module);
 
     SettingsRecord loadDefaultConfig();
 

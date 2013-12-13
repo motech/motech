@@ -27,6 +27,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class SettingsFacadeTest {
 
     private static final String BUNDLE_NAME = "org.motechproject.motech-module-bundle";
+    private static final String BUNDLE_SIMPLE_NAME = "";
+    private static final String BUNDLE_VERSION = "";
     private static final String FILENAME = "settings.properties";
     private static final String LANGUAGE_PROP = "system.language";
     private static final String LANGUAGE_VALUE = "en";
@@ -86,7 +88,7 @@ public class SettingsFacadeTest {
         settingsFacade.afterPropertiesSet();
 
         ArgumentCaptor<Properties> argument = ArgumentCaptor.forClass(Properties.class);
-        verify(configurationService).addOrUpdateProperties(eq(BUNDLE_NAME), eq(FILENAME),
+        verify(configurationService).addOrUpdateProperties(eq(BUNDLE_NAME), eq(BUNDLE_VERSION), eq(BUNDLE_SIMPLE_NAME), eq(FILENAME),
                 argument.capture(), any(Properties.class));
         assertEquals(LANGUAGE_VALUE, argument.getValue().getProperty(LANGUAGE_PROP));
     }
