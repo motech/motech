@@ -57,6 +57,7 @@
                             org.aopalliance.aop,
                             org.springframework.aop,
                             org.springframework.aop.framework,
+                            org.springframework.cache,
                             org.springframework.cache.config,
                             org.springframework.cache.concurrent,
                             org.springframework.cache.support,
