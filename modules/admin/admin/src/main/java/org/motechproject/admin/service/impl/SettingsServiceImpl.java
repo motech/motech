@@ -11,6 +11,8 @@ import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -25,6 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,9 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Autowired
     private BundleContext bundleContext;
+
+    @Autowired
+    private EventRelay eventRelay;
 
     @Autowired(required = false)
     private ConfigFileMonitor configFileMonitor;
@@ -105,6 +111,14 @@ public class SettingsServiceImpl implements SettingsService {
         try {
             configurationService.addOrUpdateProperties(symbolicName, settings.getSection(),
                     props, getBundleDefaultProperties(bundleId).get(settings.getSection()));
+
+            Map<String, Object> params = new HashMap<>();
+            params.put(ConfigurationConstants.BUNDLE_ID, bundleId);
+            params.put(ConfigurationConstants.BUNDLE_SYMBOLIC_NAME, symbolicName);
+            params.put(ConfigurationConstants.BUNDLE_SECTION, settings.getSection());
+
+            MotechEvent bundleSettingsChangedEvent = new MotechEvent(ConfigurationConstants.BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT, params);
+            eventRelay.sendEventMessage(bundleSettingsChangedEvent);
         } catch (Exception e) {
             throw new MotechException("Error while saving bundle settings", e);
         }
@@ -120,6 +134,13 @@ public class SettingsServiceImpl implements SettingsService {
         for (SettingsOption option : settings.getSettings()) {
             configurationService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
         }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(ConfigurationConstants.SETTINGS, settings);
+
+        MotechEvent platformSettingsChangedEvent = new MotechEvent(ConfigurationConstants.BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT, params);
+        eventRelay.sendEventMessage(platformSettingsChangedEvent);
+
     }
 
     @Override
@@ -127,12 +148,25 @@ public class SettingsServiceImpl implements SettingsService {
         for (Settings s : settings) {
             savePlatformSettings(s);
         }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(ConfigurationConstants.SETTINGS, settings);
+
+        MotechEvent platformSettingsChangedEvent = new MotechEvent(ConfigurationConstants.PLATFORM_SETTINGS_CHANGED_EVENT_SUBJECT, params);
+        eventRelay.sendEventMessage(platformSettingsChangedEvent);
     }
 
     @Override
     public void saveSettingsFile(MultipartFile configFile) {
         Properties settings = loadMultipartFileIntoProperties(configFile);
         configurationService.savePlatformSettings(settings);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(ConfigurationConstants.SETTINGS, settings);
+
+        MotechEvent platformSettingsChangedEvent = new MotechEvent(ConfigurationConstants.PLATFORM_SETTINGS_CHANGED_EVENT_SUBJECT, params);
+        eventRelay.sendEventMessage(platformSettingsChangedEvent);
+
     }
 
     private Properties loadMultipartFileIntoProperties(MultipartFile configFile) {

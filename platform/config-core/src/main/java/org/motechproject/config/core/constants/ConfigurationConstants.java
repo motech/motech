@@ -26,10 +26,21 @@ public final class ConfigurationConstants {
 
     public static final String[] SUPPORTED_FILE_EXTNS = new String[]{"properties", "json"};
 
-    private static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
-    public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "deleted";
-    public static final String FILE_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "changed";
-    public static final String FILE_CREATED_EVENT_SUBJECT = BASE_SUBJECT + "created";
+    private static final String BASE_SUBJECT = "org.motechproject.server.config.";
+    public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "file.deleted";
+    public static final String FILE_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "file.changed";
+    public static final String FILE_CREATED_EVENT_SUBJECT = BASE_SUBJECT + "file.created";
+    public static final String BUNDLE_SETTINGS_CHANGED_EVENT_SUBJECT =  BASE_SUBJECT + "bundle.settings.changed";
+    public static final String PLATFORM_SETTINGS_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "platform.settings.changed";
+
+    public static final String FILE_PATH = "file.path";
+    public static final String BUNDLE_ID = "bundle.id";
+    public static final String BUNDLE_SYMBOLIC_NAME = "bundle.symbolic.name";
+    public static final String BUNDLE_SECTION = "bundle.section";
+    public static final String SETTINGS = "settings";
+
+    public static final String EVENT_RELAY_CLASS_NAME = "org.motechproject.event.listener.EventRelay";
+    public static final String MOTECH_EVENT_CLASS_NAME = "org.motechproject.event.MotechEvent";
 
     private ConfigurationConstants() {
     }
