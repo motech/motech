@@ -561,8 +561,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             if (getConfigSource() == null) {
                 configSource = loadBootstrapConfig().getConfigSource();
             }
+            if (!configSource.isFile()) {
+                return false;
+            }
             ConfigLocation configLocation = coreConfigurationService.getConfigLocation();
-            return configSource.isFile() && !configLocation.hasPlatformConfigurationFile();
+            return !configLocation.hasPlatformConfigurationFile();
         } catch (MotechConfigurationException ex) {
             logger.error(ex.getMessage(), ex);
             return true;
