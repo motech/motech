@@ -1,11 +1,13 @@
-<div ng-show="!editMode" class="box-header">{{msg('aggregation.create.page.heading')}}
-    <a href="#/" type="button" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
+<div ng-show="!editMode" class="row">
+    <a href="#/" type="button" class="btn btn-sm btn-primary pull-right"><i class="icon-remove icon-white"></i></a>
+    <h4 class="frame-title">{{msg('aggregation.create.page.heading')}}</h4>
 </div>
-<div ng-show="editMode" class="box-header">{{msg('aggregation.edit.page.heading')}}
-    <a href="#/" type="button" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
+<div ng-show="editMode" class="row">
+    <a href="#/" type="button" class="btn btn-sm btn-primary  pull-right"><i class="icon-remove icon-white"></i></a>
+    <h4 class="frame-title">{{msg('aggregation.edit.page.heading')}}</h4>
 </div>
 
-<div class="box-content inside clearfix" ng-controller="NewRulesController">
+<div class="row inside clearfix" ng-controller="NewRulesController">
 
     <div ng-show="errors.length > 0" class="span12 alert alert-block alert-error">
         <div ng-include="'../event-aggregation/resources/partials/form_errors.html'"></div>

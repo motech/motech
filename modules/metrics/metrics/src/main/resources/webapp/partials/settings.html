@@ -1,10 +1,10 @@
-<div class="box-content inside clearfix">
-    <div class="col-md-10 col-sm-12">
+<div class="row clearfix">
+    <div class="col-md-10 col-sm-12 row">
         <h4 class="frame-title">{{ msg('metrics.settings.backends.title')}}</h4>
-        <form name="metricsAgentImplForm" class="form-horizontal inside">
+        <form name="metricsAgentImplForm" class="form-horizontal">
             <div class="form-group">
                 <label class="col-md-3 col-sm-4 control-label">{{msg('metrics.settings.backend.select')}}</label>
-                <div class="form-inline col-md-9 col-sm-8">
+                <div class="col-md-9 col-sm-8">
                     <select class="multiselect" ng-model="selectedImplementations" ng-options="item as item for item in metricsImplementations"
                             multiple="multiple" multiselect-dropdown >
                     </select>
@@ -16,17 +16,17 @@
                 </div>
             </div>
         </form>
-        <div class="form-group"><legend></legend></div>
-        <div class="inside" ng-repeat="(impl, settings) in metricsSettings">
+        <div><legend></legend></div>
+        <div class="" ng-repeat="(impl, settings) in metricsSettings">
             <h4 class="frame-title">{{impl}}</h4>
-            <form class="form-horizontal inside">
+            <form class="form-horizontal">
                 <div class="form-group" ng-repeat="(key, configProperty) in settings">
                     <label class="col-md-3 col-sm-4 control-label">{{configProperty.displayName}}</label>
-                    <div class="form-inline col-md-9 col-sm-8" ng-switch on="configProperty.type">
-                        <input class="form-control input-auto" ng-switch-when="INTEGER" type="text" integer ng-model="configProperty.value" />
-                        <input class="form-control input-auto" ng-switch-when="DOUBLE" type="text" double ng-model="configProperty.value" />
-                        <input class="" ng-switch-when="BOOLEAN" type="checkbox" ng-model="configProperty.value" ng-true-value="true" ng-false-value="false" />
-                        <input class="form-control input-auto" ng-switch-default type="text" ng-model="configProperty.value" />
+                    <div class="col-md-9 col-sm-8" ng-switch on="configProperty.type">
+                        <input class="form-control input-large-fluid" ng-switch-when="INTEGER" type="text" integer ng-model="configProperty.value" />
+                        <input class="form-control input-large-fluid" ng-switch-when="DOUBLE" type="text" double ng-model="configProperty.value" />
+                        <div class="checkbox" ng-switch-when="BOOLEAN"><input type="checkbox" ng-model="configProperty.value" ng-true-value="true" ng-false-value="false" /></div>
+                        <input class="form-control input-large-fluid" ng-switch-default type="text" ng-model="configProperty.value" />
                     </div>
                 </div>
                 <div class="form-group">

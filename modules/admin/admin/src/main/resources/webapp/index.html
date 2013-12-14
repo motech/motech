@@ -1,7 +1,41 @@
-<div> <!-- Only required for left/right tabs -->
-    <div class="tab-content" id="tab-content">
-        <div id="main-content" class="tab-panel active">
-            <div ng-view></div>
+<div id="inner-center" class="admin inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="?moduleName=admin.module#/bundles">{{msg('admin.module')}}</a></li>
+            <li ng-show="active('#/bundles')" ng-class="active('#/bundles')">{{msg('admin.manageModules')}}</li>
+            <li ng-show="active('#/bundle/')" ng-class="active('#/bundle/')">{{msg('admin.bundle.title')}}</li>
+            <li ng-show="active('#/messages')" ng-class="active('#/messages')">{{msg('admin.messages')}}</li>
+            <li ng-show="active('#/notificationRules')"><a role="menu" href="?moduleName=admin.module#/messages">{{msg('admin.messages')}}</a></li>
+            <li ng-show="active('#/notificationRules')" ng-class="active('#/notificationRules')">{{msg('admin.messages.notifications.title')}}</li>
+            <li ng-show="active('#/platform-settings')" ng-class="active('#/platform-settings')">{{msg('admin.settings')}}</li>
+            <li ng-show="active('#/logOptions')"><a role="menu" href="?moduleName=admin.module#/log">{{msg('admin.log')}}</a></li>
+            <li ng-show="active('#/log')&&!active('#/logOptions')" ng-class="active('#/log')">{{msg('admin.log')}}</li>
+            <li ng-show="active('#/logOptions')" ng-class="active('#/logOptions')">{{msg('admin.log.options')}}</li>
+            <li ng-show="active('#/queues')&&!active('#/queues/browse')" ng-class="active('#/queues')">{{msg('admin.queues')}}</li>
+            <li ng-show="active('#/queues/browse')"><a role="menu" href="?moduleName=admin.module#/queues">{{msg('admin.queues')}}</a></li>
+            <li ng-show="active('#/queues/browse')" ng-class="active('#/queues/browse')">{{msg('admin.queue.messages.pending')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" role="tablist" class="nav nav-tabs">
+            <li class="active" ng-show="active('#/bundles')||active('#/bundle')"><a href="?moduleName=admin.module">{{msg('admin.bundles')}}</a></li>
+            <li class="active" ng-show="active('#/messages')"><a href="?moduleName=admin.module#/messages">{{msg('admin.messages')}}</a></li>
+            <li class="active" ng-show="active('#/notificationRules')"><a href="?moduleName=admin.module#/notificationRules">{{msg('admin.messages.notifications.title')}}</a></li>
+            <li class="active" ng-show="active('#/platform-settings')"><a href="?moduleName=admin.module#/platform-settings">{{msg('admin.settings')}}</a></li>
+            <li class="active" ng-show="active('#/log')&&!active('#/logOptions')"><a href="?moduleName=admin.module#/log">{{msg('admin.log')}}</a></li>
+            <li class="active" ng-show="active('#/logOptions')"><a href="?moduleName=admin.module#/logOptions">{{msg('admin.log.options')}}</a></li>
+            <li class="active" ng-show="active('#/queues')&&!active('#/queues/browse')"><a href="#/queues">{{msg('admin.queue.statistics')}}</a></li>
+            <li class="active" ng-show="active('#/queues/browse')"><a href="?moduleName=admin.module#/queues/browse">{{msg('admin.queue.messages.pending')}}</a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
 </div>

@@ -1,26 +1,21 @@
-<div class="well2">
-    <div class="box-header">
-        {{msg('admin.queue.messages.pending')}}
-    </div>
-    <div class="box-content inside" ng-show="dataAvailable">
-        <table class="table table-bordered table-striped table-lightblue">
-            <thead>
-            <tr>
-                <th class="ng-binding">{{msg('admin.queue.message.id')}}</th>
-                <th class="ng-binding">{{msg('admin.queue.message.redelivered')}}</th>
-                <th class="ng-binding">{{msg('admin.queue.message.timestamp')}}</th>
-            </tr>
-            </thead>
-            <tbody ng-repeat="message in messages">
-            <tr>
-                <td class="ng-binding">{{message.messageId}}</td>
-                <td class="ng-binding">{{message.redelivered}}</td>
-                <td class="ng-binding">{{message.timestamp}}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="box-content inside" ng-show="!dataAvailable">
-        {{msg('admin.queue.message.error')}}
-    </div>
+<div class="row" ng-show="dataAvailable">
+    <table class="table table-bordered table-striped table-lightblue">
+        <thead>
+        <tr>
+            <th class="ng-binding">{{msg('admin.queue.message.id')}}</th>
+            <th class="ng-binding">{{msg('admin.queue.message.redelivered')}}</th>
+            <th class="ng-binding">{{msg('admin.queue.message.timestamp')}}</th>
+        </tr>
+        </thead>
+        <tbody ng-repeat="message in messages">
+        <tr>
+            <td class="ng-binding">{{message.messageId}}</td>
+            <td class="ng-binding">{{message.redelivered}}</td>
+            <td class="ng-binding">{{message.timestamp}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="row inside" ng-show="!dataAvailable">
+    {{msg('admin.queue.message.error')}}
 </div>

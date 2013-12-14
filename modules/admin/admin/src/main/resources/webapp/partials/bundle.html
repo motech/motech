@@ -1,13 +1,12 @@
-<div class="well2">
-    <div class="box-header">
-        {{module.name}}
-        <a href="?moduleName=admin.module#/bundles" title="{{msg('admin.back')}}" alt="{{msg('admin.back')}}">
-            <i class="icon-circle-arrow-left pull-right icon icon-light-blue bundle-back"></i>
-        </a>
-    </div>
+<div class="row">
 
     <div class="box-content inside">
-        <div>
+        <div class="">
+            <a class="btn btn-info btn-xs pull-right" href="?moduleName=admin.module#/bundles" title="{{msg('admin.back')}}" alt="{{msg('admin.back')}}">
+                <i class="icon-circle-arrow-left icon"></i>
+            </a>
+        </div>
+        <div class="bundle-prop">
             <span><img ng-src="../admin/api/bundles/{{module.bundleId}}/icon" alt="module-logo" class="large-icon"/></span>
             <span class="inside"><h2>{{module.name}}</h2></span>
         </div>

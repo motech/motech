@@ -1,5 +1,19 @@
-<div ng-controller="MdsBasicCtrl">
-
+<div  ng-controller="MdsBasicCtrl" id="inner-center" class="mds inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li class="active">{{msg('data-services')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs mds">
+            <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
+                <a href="#/{{tab}}">
+                    {{msg('mds.tab.' + tab)}}
+                </a>
+            </li>
+        </ul>
+    </div>
     <div ui-if="hasWorkInProgress()">
         <fieldset>
             <legend>{{msg('mds.wip.legend')}}</legend>
@@ -22,18 +36,16 @@
             </ul>
         </fieldset>
     </div>
-
-    <ul id="content-tabs" class="nav nav-tabs mds">
-        <li ng-class="active('#/' + tab)" ng-repeat="tab in AVAILABLE_TABS">
-            <a href="#/{{tab}}">
-                {{msg('mds.tab.' + tab)}}
-            </a>
-        </li>
-    </ul>
-
-    <div class="tab-content mds" id="tab-content">
-        <div id="main-content" class="tab-pane active">
-            <div ng-view></div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
+</div>
+
+<div id="inner-east" class="scheduler inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <div  class="ui-layout-content"></div>
 </div>

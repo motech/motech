@@ -24,7 +24,7 @@
         <div class="bodywrap">
             <div class="header">
                 <div class="container">
-                    <a href="."><div class="dashboard-logo"></div></a>
+                    <a href="."><div class="dashboard-logo hidden-xs" ng-show="showDashboardLogo.showDashboard"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div></a>
                     <div class="navbar-collapse">
                         <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
                     </div>

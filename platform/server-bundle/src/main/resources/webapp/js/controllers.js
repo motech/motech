@@ -22,18 +22,64 @@
         $scope.pagedItems = [];
         $scope.currentPage = 0;
         $scope.config = {};
+        $scope.bodyState = true;
+        $scope.outerLayout = {};
+        $scope.innerLayout = {};
 
         $scope.showDashboardLogo = {
             showDashboard : true,
             changeClass : function () {
-                return this.showDashboard ? "minimize action-minimize-up" : "minimize action-minimize-down";
+                return this.showDashboard ? "minimize icon-white icon-caret-up" : "minimize icon-white icon-caret-down";
             },
             changeTitle : function () {
                 return this.showDashboard ? "server.minimizeLogo" : "server.expandLogo";
             },
             backgroudUpDown : function () {
                 return this.showDashboard ? "body-down" : "body-up";
+            },
+            changeHeight : function () {
+                return this.showDashboard ? "100" : "40";
             }
+        };
+
+        $scope.changeName = function (name) {
+            return name.replace('.', "");
+        };
+
+        $scope.showActiveMenu = {
+            hideSection : function (modulesSection) {
+                var nameModulesSection = $scope.changeName(modulesSection);
+                if (nameModulesSection === 'servermodules') {
+                    return $scope.showServerModules.modulesActiveMenu ? "" : "hidden";
+                }
+                if (nameModulesSection === 'adminmodule') {
+                    return $scope.showAdminModules.adminActiveMenu ? "" : "hidden";
+                }
+                if (nameModulesSection === 'websecurity') {
+                    return $scope.showSecurityModules.securityActiveMenu ? "" : "hidden";
+                }
+            },
+            changeModulesClass : function () {
+                return $scope.showServerModules.modulesActiveMenu ? "active" : "";
+            },
+            changeAdminClass : function () {
+                return $scope.showAdminModules.adminActiveMenu ? "active" : "";
+            },
+            changeSecurityClass : function () {
+                return $scope.showSecurityModules.securityActiveMenu ? "active" : "";
+            }
+        };
+
+        $scope.showServerModules = {
+            modulesActiveMenu : true
+        };
+
+        $scope.showAdminModules = {
+            adminActiveMenu : false
+        };
+
+        $scope.showSecurityModules = {
+            securityActiveMenu : false
         };
 
         $scope.setUserLang = function (lang, refresh) {
@@ -71,7 +117,39 @@
 
         $scope.minimizeHeader = function () {
             $scope.showDashboardLogo.showDashboard = !$scope.showDashboardLogo.showDashboard;
+            $scope.outerLayout.sizePane('north', $scope.showDashboardLogo.changeHeight());
             $cookieStore.put("showDashboardLogo", $scope.showDashboardLogo.showDashboard);
+        };
+
+        $scope.storeSelected = function () {
+            $cookieStore.put("showServerModules", $scope.showServerModules.modulesActiveMenu);
+            $cookieStore.put("showAdminModules", $scope.showAdminModules.adminActiveMenu);
+            $cookieStore.put("showSecurityModules", $scope.showSecurityModules.securityActiveMenu);
+        };
+
+        $scope.selectModules = function (sectionName) {
+            var sectionNameModules = $scope.changeName(sectionName);
+            if (sectionNameModules === 'servermodules') {
+                $scope.showServerModules.modulesActiveMenu = true;
+                $scope.showAdminModules.adminActiveMenu = false;
+                $scope.showSecurityModules.securityActiveMenu = false;
+                $scope.showActiveMenu.hideSection(sectionNameModules);
+                $scope.storeSelected();
+            }
+            if (sectionNameModules === 'adminmodule') {
+                $scope.showAdminModules.adminActiveMenu = true;
+                $scope.showServerModules.modulesActiveMenu = false;
+                $scope.showSecurityModules.securityActiveMenu = false;
+                $scope.showActiveMenu.hideSection(sectionNameModules);
+                $scope.storeSelected();
+            }
+            if (sectionNameModules === 'websecurity') {
+                $scope.showSecurityModules.securityActiveMenu = true;
+                $scope.showAdminModules.adminActiveMenu = false;
+                $scope.showServerModules.modulesActiveMenu = false;
+                $scope.showActiveMenu.hideSection(sectionNameModules);
+                $scope.storeSelected();
+            }
         };
 
         $scope.loadI18n = function (data) {
@@ -194,6 +272,12 @@
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {
            $scope.showDashboardLogo.showDashboard=$cookieStore.get("showDashboardLogo");
+        }
+
+        if ($cookieStore.get("showServerModules") !== undefined) {
+           $scope.showServerModules.modulesActiveMenu=$cookieStore.get("showServerModules");
+           $scope.showAdminModules.adminActiveMenu=$cookieStore.get("showAdminModules");
+           $scope.showSecurityModules.securityActiveMenu=$cookieStore.get("showSecurityModules");
         }
 
         $q.all([

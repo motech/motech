@@ -1,11 +1,10 @@
 form.form-horizontal {
     margin: 0;
 }
-.metrics.nav.nav-tabs {
+.metrics .nav.nav-tabs {
     border-bottom: medium none;
     margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 10px;
+    margin: 0;
 }
 
 .tab-content {

@@ -1,1 +1,26 @@
-<div ng-view></div>
+<div id="inner-center" class="event-aggregation inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="?moduleName=event-aggregation" >{{msg('event-aggregation')}}</a></li>
+            <li ng-show="active('#/rules/create')" ng-class="active('#/rules/create')">{{msg('aggregation.create.page.heading')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs">
+            <li ng-class="active('#/')"><a href="?moduleName=event-aggregation#/" >{{msg('event-aggregation')}}</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <div class="ui-layout-content"></div>
+</div>
