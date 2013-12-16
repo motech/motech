@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URL;
 
 import static org.motechproject.osgi.web.ext.ApplicationEnvironment.isInDevelopmentMode;
 
@@ -43,11 +44,12 @@ public class Header {
         }
 
         StringWriter out = new StringWriter();
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(template);
+        InputStream is = null;
+        URL resource = bundle.getResource(template);
 
-        if (null != is) {
+        if (null != resource) {
             try {
+                is = resource.openStream();
                 IOUtils.copy(is, out);
             } catch (IOException e) {
                 throw new MotechException("Header could not be written", e);
