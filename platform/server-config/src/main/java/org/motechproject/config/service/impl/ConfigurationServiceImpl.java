@@ -54,33 +54,29 @@ import static org.motechproject.config.core.filters.ConfigFileFilter.isPlatformC
  */
 @Service("configurationService")
 public class ConfigurationServiceImpl implements ConfigurationService {
-
+    private static final String STRING_FORMAT = "%s/%s";
     private static Logger logger = Logger.getLogger(ConfigurationServiceImpl.class);
 
-    @Autowired
+    private AllModuleProperties allModuleProperties;
+    private AllSettings allSettings;
+    private ConfigLoader configLoader;
+    private ConfigSource configSource;
+    private ResourceLoader resourceLoader;
     private CoreConfigurationService coreConfigurationService;
 
-    @Autowired
-    private AllSettings allSettings;
-
-    @javax.annotation.Resource(name = "defaultSettings")
     private Properties defaultConfig;
-
-    @javax.annotation.Resource(name = "defaultAnnotations")
     private Properties configAnnotation;
 
     @Autowired
-    private AllModuleProperties allModuleProperties;
-
-    @Autowired
-    private ConfigLoader configLoader;
-
-    private ConfigSource configSource;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
-
-    private static final String STRING_FORMAT = "%s/%s";
+    public ConfigurationServiceImpl(CoreConfigurationService coreConfigurationService,
+                                    AllSettings allSettings, AllModuleProperties allModuleProperties,
+                                    ConfigLoader configLoader, ResourceLoader resourceLoader) {
+        this.coreConfigurationService = coreConfigurationService;
+        this.allSettings = allSettings;
+        this.allModuleProperties = allModuleProperties;
+        this.configLoader = configLoader;
+        this.resourceLoader = resourceLoader;
+    }
 
     @Override
     public BootstrapConfig loadBootstrapConfig() {
@@ -96,7 +92,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             return null;
         }
 
-        configSource = bootstrapConfig.getConfigSource();
+        if (null != bootstrapConfig) {
+            configSource = bootstrapConfig.getConfigSource();
+        }
 
         if (logger.isDebugEnabled()) {
             logger.debug("BootstrapConfig:" + bootstrapConfig);
@@ -125,7 +123,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")})
     public MotechSettings getPlatformSettings() {
         if (allSettings == null) {
             return null;
@@ -183,30 +181,35 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         File file = new File(propertyFile);
         Properties properties = allSettings.getSettings().getPlatformSettings();
         ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(fileName));
-        BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
-        try {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(file))) {
             if (!properties.isEmpty()) {
                 StringBuilder stringBuilder = new StringBuilder();
 
                 for (Map.Entry<Object, Object> configProperty : properties.entrySet()) {
-                    stringBuilder.append("#" + configAnnotation.getProperty(configProperty.getKey().toString()) + "\n");
+                    stringBuilder.append("#")
+                            .append(configAnnotation.getProperty(configProperty.getKey().toString()))
+                            .append("\n");
 
                     if (defaultConfig.containsKey(configProperty.getKey())
                             && !defaultConfig.getProperty(configProperty.getKey().toString()).equals("")) {
-                        stringBuilder.append("#Default value:\n" + "#" + configProperty.getKey() +
-                                "=" + defaultConfig.getProperty(configProperty.getKey().toString()) +
-                                "\n");
+                        stringBuilder.append("#Default value:\n" + "#")
+                                .append(configProperty.getKey())
+                                .append("=")
+                                .append(defaultConfig.getProperty(configProperty.getKey().toString()))
+                                .append("\n");
                     }
 
-                    stringBuilder.append("\n" + configProperty.getKey() + "=" + configProperty.getValue() + "\n\n");
+                    stringBuilder.append("\n")
+                            .append(configProperty.getKey())
+                            .append("=")
+                            .append(configProperty.getValue())
+                            .append("\n\n");
                 }
 
                 out.write(stringBuilder.toString());
             }
         } finally {
-            out.close();
-
             if (!properties.isEmpty()) {
                 zipOutputStream.putNextEntry(new ZipEntry(propertyFile));
                 IOUtils.copy(new FileInputStream(file), zipOutputStream);
@@ -487,7 +490,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.loadBootstrapConfig();
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = allModuleProperties.byModuleAndFileName(module, filename);
-            return rec == null ? false : true;
+            return rec != null;
         } else {
             File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
             return file.exists();
@@ -519,7 +522,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public boolean rawConfigExists(String module, String filename) {
         if (ConfigSource.UI.equals(configSource)) {
             ModulePropertiesRecord rec = allModuleProperties.byModuleAndFileName(module, filename);
-            return (rec == null) ? false : rec.isRaw();
+            return (rec != null) && rec.isRaw();
         } else if (configSource != null && ConfigSource.FILE.equals(configSource)) {
             File file = new File(String.format("%s/raw/%s", getModuleConfigDir(module), filename));
             return file.exists();
@@ -576,4 +579,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.resourceLoader = resourceLoader;
     }
 
+    @javax.annotation.Resource(name = "defaultSettings")
+    public void setDefaultConfig(Properties defaultConfig) {
+        this.defaultConfig = defaultConfig;
+    }
+
+    @javax.annotation.Resource(name = "defaultAnnotations")
+    public void setConfigAnnotation(Properties configAnnotation) {
+        this.configAnnotation = configAnnotation;
+    }
 }

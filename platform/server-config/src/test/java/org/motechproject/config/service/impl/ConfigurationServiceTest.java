@@ -18,6 +18,7 @@ import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.repository.AllSettings;
 import org.motechproject.server.config.service.ConfigLoader;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,16 +55,24 @@ public class ConfigurationServiceTest {
     @Mock
     private ConfigLoader configLoader;
 
+    @Mock
+    private ResourceLoader resourceLoader;
+
     @Captor
     ArgumentCaptor<List<ModulePropertiesRecord>> propertiesCaptor;
 
-    @InjectMocks
-    private ConfigurationService configurationService = new ConfigurationServiceImpl();
+    private ConfigurationService configurationService;
 
     @Before
     public void setUp() {
         initMocks(this);
+        configurationService = new ConfigurationServiceImpl(coreConfigurationService, allSettings,
+                allModuleProperties, configLoader, resourceLoader);
         configurationService.evictMotechSettingsCache();
+
+        if (configurationService instanceof ConfigurationServiceImpl) {
+            ((ConfigurationServiceImpl) configurationService).setDefaultConfig(defaultConfig);
+        }
     }
 
     @Test
