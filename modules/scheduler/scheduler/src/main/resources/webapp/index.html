@@ -34,24 +34,24 @@
 <div id="inner-east" class="scheduler inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <!------------------------  Filters  ------------------------>
-    <div class="inbox-header">{{msg('scheduler.filters')}}</div>
+    <div class="filter-header">{{msg('scheduler.filters')}}</div>
     <div  class="ui-layout-content">
         <div class="inside">
             <fieldset class="inside">
                 <legend>{{msg('scheduler.name')}}</legend>
                 <div class="form-group">
-                    <input type="text" class="form-control  search-query" placeholder="{{msg('scheduler.search')}}" data-event-type="keyup" data-search-field="name"
+                    <input type="text" class="form-control input-sm search-query" placeholder="{{msg('scheduler.search')}}" data-event-type="keyup" data-search-field="name"
                            jqgrid-search="schedulerTable">
                 </div>
             </fieldset>
             <fieldset class="inside">
                 <legend>{{msg('scheduler.running')}}</legend>
                 <div class="form-group">
-                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control  search-query" placeholder="{{msg('scheduler.from')}}" data-event-type="change"
+                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('scheduler.from')}}" data-event-type="change"
                            data-search-field="timeFrom" jqgrid-search="schedulerTable">
                 </div>
                 <div class="form-group">
-                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control search-query" placeholder="{{msg('scheduler.to')}}"
+                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('scheduler.to')}}"
                            data-event-type="change" data-search-field="timeTo" jqgrid-search="schedulerTable">
                 </div>
             </fieldset>

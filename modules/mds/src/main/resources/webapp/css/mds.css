@@ -197,14 +197,14 @@
     font-size: 16px;
     padding: 10px;
     color: #224477;
-    background: #deefff;
-    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
-    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+    background: #CBE6FF;
+    background: -moz-linear-gradient(top,  #CBE6FF 0%, #B7D8F2 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#CBE6FF), color-stop(100%,#B7D8F2));
+    background: -webkit-linear-gradient(top,  #CBE6FF 0%,#B7D8F2 100%);
+    background: -o-linear-gradient(top,  #CBE6FF 0%,#B7D8F2 100%);
+    background: -ms-linear-gradient(top,  #CBE6FF 0%,#B7D8F2 100%);
+    background: linear-gradient(to bottom,  #CBE6FF 0%,#B7D8F2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CBE6FF', endColorstr='#B7D8F2',GradientType=0 );
     -webkit-box-shadow: 0 0 4px #bec9de;
        -moz-box-shadow: 0 0 4px #bec9de;
             box-shadow: 0 0 4px #bec9de;
@@ -221,7 +221,7 @@
     line-height: 45px;
     color: #224477;
     font-weight: bold;
-    background-color: #f9f9f9;
+    background-color: #F6FBFF;
 }
 
 .entity-entry:hover {

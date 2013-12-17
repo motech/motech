@@ -140,26 +140,26 @@ editable-content .actionField.input-block-level span.badge {
 }
 
 #accordion3 .panel-body.task-content {
-    background: #deefff;
-    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
-    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+    background: #CBE6FF;
+    background: -moz-linear-gradient(top,  #CBE6FF 0%, #98bede 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#CBE6FF), color-stop(100%,#98bede));
+    background: -webkit-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
+    background: -o-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
+    background: -ms-linear-gradient(top,  #CBE6FF 0%,#98bede 100%);
+    background: linear-gradient(to bottom,  #CBE6FF 0%,#B7D8F2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CBE6FF', endColorstr='#98bede',GradientType=0 );
 }
 
 .tasks-list .inbox-header.paused,
 #accordion3 .panel-body.task-content.paused {
-    background: #FCFCFC;
-    background: -moz-linear-gradient(top,  #FCFCFC 0%, #ACB7BF 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FCFCFC), color-stop(100%,#ACB7BF));
-    background: -webkit-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
-    background: -o-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
-    background: -ms-linear-gradient(top,  #FCFCFC 0%,#ACB7BF 100%);
-    background: linear-gradient(to bottom,  #FCFCFC 0%,#ACB7BF 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FCFCFC', endColorstr='#ACB7BF',GradientType=0 );
+    background: #EDF2F4;
+    background: -moz-linear-gradient(top,  #EDF2F4 0%, #CCD7DE 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#EDF2F4), color-stop(100%,#CCD7DE));
+    background: -webkit-linear-gradient(top,  #EDF2F4 0%,#CCD7DE 100%);
+    background: -o-linear-gradient(top,  #EDF2F4 0%,#CCD7DE 100%);
+    background: -ms-linear-gradient(top,  #EDF2F4 0%,#CCD7DE 100%);
+    background: linear-gradient(to bottom,  #EDF2F4 0%,#CCD7DE 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EDF2F4', endColorstr='#CCD7DE',GradientType=0 );
 }
 
 .tasks-list .inbox-header {

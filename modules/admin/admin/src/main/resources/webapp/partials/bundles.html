@@ -1,14 +1,14 @@
 <div class="row table-content">
 
     <div class="col-sm-12 row">
-        <div class="col-sm-4 filter">
+        <div class="col-sm-12 col-md-12 col-lg-4 filter">
             <form class="inside form-inline">
                 <label class="control-label" for="filter">{{msg('admin.filter')}}</label>
                 <input class="input-auto form-control" id="filter" type="text" ng-model="filterProp" autofocus="autofocus"/>
             </form>
         </div>
 
-        <div class="col-sm-8 statistics">
+        <div class="col-sm-12 col-md-12 col-lg-8 statistics">
             <div class="inline">
                 <span><b>{{msg('admin.bundles.statistics')}}:</b></span>
                 <span><b>{{msg('admin.bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>

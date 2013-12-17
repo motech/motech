@@ -1143,6 +1143,8 @@
                     east__spacing_open: 6,
                     spacing_closed: 30,
                     east__size: 300,
+                    east__minSize: 200,
+                    east__maxSize: 350,
                     showErrorMessages: true, // some panes do not have an inner layout
                     resizeWhileDragging: true,
                     center__minHeight: 100,

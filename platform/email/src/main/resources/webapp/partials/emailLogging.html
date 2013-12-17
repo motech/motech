@@ -11,43 +11,6 @@
         </div>
     </div>
 
-    <!--<div class="collapse in margin-before" id="collapse-email-logging">
-        <div class="inside">
-
-            <div class="row">
-                <div class="col-sm-5">
-                    <fieldset class="inside"><legend>{{msg('email.logging.search')}}</legend>
-                        <div class="form-group form-inline">
-                            <input type="text" class="input-xlarge-fluid form-control search-query" placeholder="{{msg('email.logging.search')}}" name="subject" auto-complete="subject" data-event-type="keyup" data-search-field="subject" jqgrid-search="emailLoggingTable">
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="col-sm-7">
-                    <fieldset class="inside"><legend>{{msg('email.logging.dates')}}</legend>
-                        <div class="form-group form-inline">
-                            <span class="col-md-3 col-sm-3 control-label">{{msg('email.logging.creationDate')}}</span>
-                            <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="col-sm-4 input-auto form-control search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="emailLoggingTable">
-                            <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="offset-1 col-sm-4 input-auto form-control search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="emailLoggingTable">
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <fieldset class="inside"><legend>{{msg('email.logging.disposition')}}</legend>
-                        <div data-toggle="buttons-checkbox" class="btn-group form-group">
-                            <button id="ERROR" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="ERROR" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.error')}}</button>
-                            <button id="SENT" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="SENT" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.sent')}}</button>
-                            <button id="RECEIVED" class="btn btn-info active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RECEIVED" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.received')}}</button>
-                         </div>
-                    </fieldset>
-                </div>
-            </div>
-
-        </div>
-    </div>-->
-
     <div id="outsideEmailLoggingTable" class="overrideJqgridTable">
         <table id="emailLoggingTable" emaillogging-grid="pageResourceTable"></table>
         <div id="pageResourceTable"></div>

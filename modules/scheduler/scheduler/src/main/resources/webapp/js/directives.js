@@ -23,6 +23,8 @@
                     east__spacing_open: 6,
                     spacing_closed: 30,
                     east__size: 300,
+                    east__minSize: 250,
+                    east__maxSize: 350,
                     showErrorMessages: true, // some panes do not have an inner layout
                     resizeWhileDragging: true,
                     center__minHeight: 100,
@@ -37,7 +39,7 @@
                     togglerLength_closed: 35,
                     togglerTip_open: "Close This Pane",
                     togglerTip_closed: "Open This Pane",
-                    east__initClosed: true,
+                    east__initClosed: false,
                     initHidden: false
                 };
 

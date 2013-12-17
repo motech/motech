@@ -27,22 +27,22 @@
 <div id="inner-east" class="email inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <!------------------------  Filters  ------------------------>
-    <div class="inbox-header">{{msg('email.logging.filters')}}</div>
+    <div class="filter-header">{{msg('email.logging.filters')}}</div>
     <div  class="ui-layout-content">
         <div class="inside">
             <fieldset class="inside">
                 <legend>{{msg('email.logging.search')}}</legend>
                 <div class="form-group">
-                    <input type="text" class="form-control search-query" placeholder="{{msg('email.logging.search')}}" name="subject" auto-complete="subject" data-event-type="keyup" data-search-field="subject" jqgrid-search="emailLoggingTable">
+                    <input type="text" class="form-control input-sm search-query" placeholder="{{msg('email.logging.search')}}" name="subject" auto-complete="subject" data-event-type="keyup" data-search-field="subject" jqgrid-search="emailLoggingTable">
                 </div>
             </fieldset>
             <fieldset class="inside">
                 <legend>{{msg('email.logging.creationDate')}}</legend>
                 <div class="form-group">
-                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="emailLoggingTable">
+                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="emailLoggingTable">
                 </div>
                 <div class="form-group">
-                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="emailLoggingTable">
+                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control input-sm search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="emailLoggingTable">
                 </div>
             </fieldset>
             <fieldset class="inside">

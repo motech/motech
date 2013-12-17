@@ -197,6 +197,7 @@ h4.settings-section {
 .statistics {
     line-height: 28px;
     padding: 10px;
+    border-left: 1px solid #D4E1F9;
 }
 
 .statistics span {
@@ -208,17 +209,10 @@ h4.settings-section {
     border-left: 1px solid #D4E1F9;
 }
 
-.statistics span b {
-    margin: 0 5px;
-}
-
 .top-line {
     border-top: 1px solid #D4E1F9;
 }
 
-.filter {
-    border-right: 1px solid #D4E1F9;
-}
 
 .filter form {
     margin: 0;

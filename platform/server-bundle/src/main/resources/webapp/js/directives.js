@@ -29,8 +29,10 @@
                     spacing_closed: 30,
                     north__spacing_closed: 0,
                     north__minSize: 40,
-                    center__showOverflowOnHover: true,
-                    west__size: 350,
+                    center__showOverflowOnHover: false,
+                    west__size: 300,
+                    west__minSize: 160,
+                    west__maxSize: 360,
                     useStateCookie: true,
                     cookie__keys: "north.size,north.isClosed,south.size,south.isClosed,west.size,west.isClosed,east.size,east.isClosed",
                     showErrorMessages: true, // some panes do not have an inner layout
@@ -108,7 +110,7 @@
     widgetModule.directive('goToTop', function () {
         return function (scope, element, attrs) {
             $(element).click(function () {
-                $('body, html').animate({
+                $('.inner-center .ui-layout-content').animate({
                     scrollTop: 0
                 }, 800);
 
@@ -120,8 +122,8 @@
     widgetModule.directive('goToEnd', function () {
         return function (scope, element, attrs) {
             $(element).click(function () {
-                $('body, html').animate({
-                    scrollTop: $(document).height()
+                $('.inner-center .ui-layout-content').animate({
+                    scrollTop: $(".inner-center .ui-layout-content .tab-content").height()
                 }, 800);
 
                 return false;

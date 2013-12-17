@@ -23,6 +23,8 @@
                          spacing_closed: 30,
                          center__showOverflowOnHover: true,
                          east__size: 300,
+                         east__minSize: 200,
+                         east__maxSize: 350,
                          center__size: 100,
                          showErrorMessages: true, // some panes do not have an inner layout
                          resizeWhileDragging: true,
