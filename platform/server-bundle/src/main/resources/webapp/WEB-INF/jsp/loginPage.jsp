@@ -31,7 +31,7 @@
     <div class="header">
         <div class="container">
             <a href=".">
-                <div class="dashboard-logo"></div>
+                <div class="dashboard-logo hidden-xs" ng-show="showDashboardLogo.showDashboard"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div>
             </a>
 
             <div class="navbar-collapse hidden-xs">

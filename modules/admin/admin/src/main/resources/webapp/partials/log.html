@@ -1,13 +1,10 @@
-<div class="well2">
-    <div class="box-header">
-        {{msg('admin.log')}}
-        <a ng-click="refresh()">
-            <img src="../admin/img/refresh.png" title="{{msg('admin.refresh')}}" alt="{{msg('admin.refresh')}}"/>
-        </a>
-    </div>
-    <div class="box-content">
-        <div class="log-line">
+<div class="row">
+     <div class="">
+        <div class="log-section">
             <div class="col-sm-6 inside log-change">
+                <a class="btn btn-default" ng-click="refresh()">
+                    <i class="icon-refresh"></i>&nbsp;{{msg('admin.refresh')}}
+                </a>
                 {{msg('admin.log.limitation')}} {{msg('admin.log.changeLogLevel')}} <a href="#/logOptions">{{ msg('admin.clickHere') | lowercase }}</a>.
             </div>
             <div class="col-sm-6 inside log-download">

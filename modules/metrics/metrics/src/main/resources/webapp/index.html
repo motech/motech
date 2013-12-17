@@ -1,12 +1,28 @@
-<div>
-    <ul id="content-tabs" class="nav nav-tabs metrics">
-        <li ng-class="active('#/graphite')"><a href="#/graphite" >{{msg('metrics.tab.graphite')}}</a></li>
-        <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('metrics.tab.settings')}}</a></li>
-    </ul>
-
-    <div class="tab-content metrics" id="tab-content">
-        <div id="main-content" class="tab-pane active">
-            <div ng-view></div>
+<div id="inner-center" class="metrics inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="#/graphite" >{{msg('metrics.metric')}}</a></li>
+            <li ng-show="active('#/graphite')" ng-class="active('#/graphite')">{{msg('metrics.tab.graphite')}}</li>
+            <li ng-show="active('#/settings')" ng-class="active('#/settings')">{{msg('metrics.tab.settings')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs">
+            <li ng-class="active('#/graphite')"><a href="#/graphite" >{{msg('metrics.tab.graphite')}}</a></li>
+            <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('metrics.tab.settings')}}</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
+</div>
+
+<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <div class="ui-layout-content"></div>
 </div>

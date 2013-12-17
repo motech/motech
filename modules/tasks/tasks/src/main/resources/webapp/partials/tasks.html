@@ -1,8 +1,5 @@
 <!------------------------  Tasks  ------------------------------------->
-<div class="tab-frame">
 <div class="row">
-<div class="col-sm-8 col-md-8">
-
     <h4 class="frame-title">{{msg('task.header.tasks')}}</h4>
     <div class="clearfix">
         <div class="inside btn-group">
@@ -159,59 +156,12 @@
             </ul>
         </div>
 
-        <div class="tasks-list alert" ng-show="allTasks.length == 0">
+        <div class="tasks-list alert alert-warning" ng-show="allTasks.length == 0">
             <strong>{{msg('task.warning')}}:</strong>
             {{msg('task.info.notFoundTasks')}}
         </div>
 
     </div>
 </div>
-<div class="col-sm-4">
-    <!------------------------  Recent task activity  ------------------------>
-    <div class="margin-after2">
-        <div class="inbox-header">{{msg('task.header.recentTaskActivity')}}</div>
-        <div class="box-content clearfix">
-            <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
-                <tbody ng-show="activities.length == 0">
-                <tr>
-                    <td>{{msg('task.info.notFoundActivities')}}</td>
-                </tr>
-                </tbody>
-                <tbody ng-hide="activities.length == 0">
-                <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
-                    <td>
-                        <div>
-                            <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <img src="../tasks/img/arrow.png" class="recent-activity-arrow"/>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <img ng-src="../tasks/api/channel/icon?moduleName={{activity.action.moduleName}}" class="recent-activity-img"/>
-                        </div>
-                    </td>
-                    <td><span class="recent-name-first">{{ activity.name }}<br></span>
-                        <span>{{ activity.date | fromNow }}</span>
-                    </td>
-                    <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('task.tooltip.clickToSeeDetails')}}">
-                        <div>
-                            <a href="#/task/{{activity.task}}/log">
-                                <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
-                                <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
-                                <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 <div ng-include="'../tasks/partials/widgets/import-modal.html'"></div>
-</div>
 </div>

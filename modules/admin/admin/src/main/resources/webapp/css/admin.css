@@ -233,12 +233,11 @@ h4.settings-section {
      border-bottom: 1px solid #D4E1F9;
 }
 
-.log-line .log-change {
-    margin-top: 5px;
+.log-section .log-change {
     margin-bottom: 0;
 }
 
-.log-line .log-download {
+.log-section .log-download {
      border-left: 1px solid #D4E1F9;
      padding-left: 10px;
      text-align: right;
@@ -307,13 +306,16 @@ div.sidebar-container {
 .messages.form-group, #notificationRulesForm > div,
 #changeLogLevels > div {
     background-color: #EBF7FF;
-    border-top: 1px solid #D2EBFC;
     border-top: 1px solid #D4E1F9;
     margin: 0 -10px 0px;
     padding: 5px 5px 5px 10px;
 }
+#changeLogLevels  > div.form-actions {
+    border-left: none;
+}
 
-#notificationRulesForm > div:first-child {
+#notificationRulesForm > div:first-child,
+#changeLogLevels > div:first-child {
     border: none;
     padding-top: 0;
 }

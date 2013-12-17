@@ -1,17 +1,17 @@
-<div class="row tab-frame">
+<div class="row">
 
     <div id="operations-email-logging" class="form-group">
         <div class="btn-group">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#exportEmailLogModal">
                 <i class="icon-upload-alt"></i>&nbsp;{{msg('email.logging.export')}}
             </button>
-            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#collapse-email-logging">
-                <i class="icon-eject icon-white"></i>&nbsp;{{msg('email.logging.filters')}}
+            <button type="button" class="btn btn-info" id="email-logging-filters">
+                <i class="icon-filter icon-white"></i>&nbsp;{{msg('email.logging.filters')}}
             </button>
         </div>
     </div>
 
-    <div class="collapse margin-before" id="collapse-email-logging">
+    <!--<div class="collapse in margin-before" id="collapse-email-logging">
         <div class="inside">
 
             <div class="row">
@@ -46,7 +46,7 @@
             </div>
 
         </div>
-    </div>
+    </div>-->
 
     <div id="outsideEmailLoggingTable" class="overrideJqgridTable">
         <table id="emailLoggingTable" emaillogging-grid="pageResourceTable"></table>

@@ -1,8 +1,6 @@
 .tasks.nav.nav-tabs {
     border-bottom: medium none;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 10px;
+    margin: 0;
 }
 
 .tab-content {
@@ -334,15 +332,18 @@ editable-content .actionField.input-block-level span.badge {
 #accordion3 .popover-title:empty, .history .popover-title:empty {
     display: none;
 }
+
 #accordion3 .panel-heading {
     border: none;
 }
+
 #accordion3 .panel-heading .accordion-toggle,
 #accordion4 .panel-heading .accordion-toggle {
     padding: 0;
     border: none;
     color: #224477;
 }
+
 #accordion3 .panel-heading .accordion-toggle li:nth-child(5):hover,
 #accordion4 .panel-heading .accordion-toggle li:nth-child(5):hover {
     color: #0088CC;
@@ -359,9 +360,11 @@ editable-content .actionField.input-block-level span.badge {
 #accordion3 > div:last-child {
     margin-bottom: 0;
 }
+
 .tasks .panel-heading {
     padding: 5px 10px;
 }
+
 .panel-heading .accordion-toggle.inbox-header {
     padding: 5px 10px;
 }
@@ -376,6 +379,7 @@ editable-content .actionField.input-block-level span.badge {
     margin: 10px -10px;
     padding: 0 0 0 10px;
 }
+
 .task-group .control-section label {
     padding-top: 5px;
 }
@@ -514,6 +518,11 @@ editable-content .actionField.input-block-level span.badge {
 
 .table-recent-activity tbody + tbody {
     border-top: 1px solid #DDDDDD;
+}
+
+.table-recent-activity.table td {
+    padding: 2px;
+    text-align: center;
 }
 
 .table-recent-activity.table-condensed td {
@@ -814,7 +823,6 @@ li.padding-botton6 {
     height: 20px;
 }
 
-
 .format-edit-img {
     margin: 4px 5px 0px 0px;
     float: right;
@@ -827,25 +835,9 @@ li.padding-botton6 {
     height: auto;
 }
 
-//.formatInputDelete {
-    float: right;
-}
-
-//.formatInputValueClear {
-    height: 40px;
-}
-
 input.input-popover {
     width: 50px;
     margin: 0px 8px;
-}
-
-//#formatManipulation.modal {
-    width: 860px;
-}
-
-//#formatManipulation.modal .body {
-    padding: 20px;
 }
 
 #helpModal.modal {
@@ -1077,6 +1069,23 @@ i.close-channel.icon-remove {
     min-width: 230px;
 }
 
-.filter-group {
-    width: 600px;
+.tasks fieldset {
+    border-top: 1px solid #B2D8F8;
+    border-radius: 0;
+}
+
+.tasks legend  {
+    border: none;
+    color: #165384;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    margin: 0 20px;
+    padding: 5px;
+    width: auto;
+}
+
+.tasks legend + .control-group {
+    margin-top: 2px;
 }

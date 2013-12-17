@@ -1,8 +1,36 @@
-<div>
-    <div class="tab-content"  id="tab-content">
-        <div id="main-content" class="tab-pane active">
-            <div ng-view></div>
+<div id="inner-center" class="security inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li ng-show="active('#/permissions')"><a role="menu" href="?moduleName=websecurity#/permissions">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/roles')"><a role="menu" href="?moduleName=websecurity#/roles">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/users')"><a role="menu" href="?moduleName=websecurity#/users">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/dynamicURL')"><a role="menu" href="?moduleName=websecurity#/dynamicURL">{{msg('websecurity')}}</a></li>
+            <li ng-show="active('#/permissions')" ng-class="active('#/permissions')">{{msg('security.managePermissions')}}</li>
+            <li ng-show="active('#/roles')" ng-class="active('#/roles')">{{msg('security.manageRoles')}}</li>
+            <li ng-show="active('#/users')" ng-class="active('#/users')">{{msg('security.administeringUsers')}}</li>
+            <li ng-show="active('#/dynamicURL')" ng-class="active('#/dynamicURL')">{{msg('securtiy.manageURL')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs">
+            <li ng-show="active('#/permissions')" ng-class="active('#/permissions')"><a  href="#/permissions">{{msg('security.managePermissions')}}</a></li>
+            <li ng-show="active('#/roles')" ng-class="active('#/roles')"><a href="#/roles">{{msg('security.manageRoles')}}</a></li>
+            <li ng-show="active('#/users')" ng-class="active('#/users')"><a href="#/users">{{msg('security.administeringUsers')}}</a></li>
+            <li ng-show="active('#/dynamicURL')" ng-class="active('#/dynamicURL')"><a href="#/users">{{msg('securtiy.manageURL')}}</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content"  id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
+    </div>
+</div>
+
+<div id="inner-east" class="inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="ui-layout-content">
     </div>
 </div>
 

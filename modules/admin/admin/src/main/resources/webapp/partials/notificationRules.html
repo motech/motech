@@ -1,8 +1,6 @@
-<div class="well2">
-    <div class="box-header">{{msg('admin.messages.notifications.title')}}
-        <a href="#/messages" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
-    </div>
-    <div class="box-content inside">
+<div class="row">
+    <div class="form-group col-sm-12 inside">
+        <a href="#/messages" class="btn btn-sm btn-primary pull-right"><i class="icon-remove icon-white"></i></a>
         <ng-form id="notificationRulesForm" name="rulesForm" novalidate>
             <div class="form-inline" ng-repeat="rule in notificationRuleDto.notificationRules">
                 <fieldset>

@@ -60,8 +60,13 @@ h1, h2, h3, h4, h5, h6 {
     color: #224477;
     font-weight: bold;
 }
+
 label {
     font-weight: normal;
+}
+
+a {
+    color: #046FD3;
 }
 
 .bodywrap {
@@ -80,24 +85,29 @@ label {
 
 #footer {
     width: 100%;
-    padding: 5px 0;
-    border-top: 1px solid #D4E1F9;
-    background: #e4f1f9;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    height: 22px;
+    padding: 0;
     display: block;
-    opacity: 0.8;
-    z-index: 990;
+    z-index: 0;
+    font-size: 13px;
+    line-height: 24px;
 }
 
 .dashboard-logo {
     width:320px;
-    height:70px;
+    height:50px;
     display:block;
     float:left;
-    margin: 0 5px 0 0;
-    background: #fff url("../img/motech-logo.jpg") no-repeat;
+    margin: 5px 20px;
+}
+.logo {
+    background: #fff;
+    height: 50px;
+    margin: 0;
+}
+
+.logo img {
+    max-width: 100%;
 }
 
 .header-title {
@@ -105,7 +115,7 @@ label {
     height:28px;
     display:block;
     float:left;
-    margin: 40px 0 0 8%;
+    margin: 30px 0 0 8%;
     background: #fff;
     color:#224477;
     text-weight:400;
@@ -115,14 +125,13 @@ label {
 }
 
 .header-nav {
-    display:block;
+    display: block;
     margin: 0 0 10px 0;
     padding: 0;
     color: #fff;
     line-height: 20px;
     font-size: 15px;
-    background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
-    border-bottom:1px solid #ff9900;
+    background: #073863;
 }
 
 .dropdown ul li a,.dropdown ul li {
@@ -152,7 +161,7 @@ label {
 }
 
 .navbar-inner-bg {
-    background: url("../img/navbar.jpg") repeat-x 0 0;
+    background: #073863;
 }
 
 .menu-left {
@@ -164,13 +173,11 @@ form.inside {
 }
 
 .navbar .btn-blue.navbar-btn, .navbar .btn-blue {
-    background: #224477 url("../img/navbar.jpg") repeat-x 0 -6px;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    border-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075);
 }
 
 .navbar .btn-blue.navbar-btn:hover, .navbar .btn-blue:hover, .navbar-collapse .nav > li > a:hover {
-    background: #224477 url("../img/navbar.jpg") repeat-x 0 -1px;
     box-shadow: 0 0 5px rgba(055, 055, 055, 0.3) inset, 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
@@ -191,7 +198,7 @@ form.inside {
 
 .navbar .btn.btn-blue {
     padding:  5px;
-    margin: 5px  0 0 0;
+    margin: 7px 10px 0;
     color: #c2eafe;
 }
 
@@ -214,18 +221,18 @@ form.inside {
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-    background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
+    background: #073863;
     color: #ffffff;
 }
 
 #minimize {
-    padding: 2px 0 0 0;
+    padding: 2px 8px;
+    font-size: 14px;
 }
 
 .minimize {
     width: 28px;
     height: 25px;
-    background:url("../img/action-btn-sprite.png") no-repeat;
 }
 .action-minimize-up {
     background-position: -248px 0;
@@ -239,13 +246,6 @@ form.inside {
 }
 .action-minimize-down:hover {
     background-position: -279px -24px;
-}
-.container-full {
-    margin: 0 auto;
-    width: 100%;
-    min-height:100%;
-    overflow:hidden;
-    padding: 0 10px;
 }
 
 .navbar .nav > li > a, .navbar .navbar-brand {
@@ -302,8 +302,9 @@ form.inside {
 }
 
 .nav.nav-stacked > li > a {
-    border-radius:6px;
+    border-radius:0px;
     border:1px solid #d4e1f9;
+    border-right: none;
     background:#e4f1f9;
     text-transform:capitalize;
 }
@@ -311,14 +312,9 @@ form.inside {
 .nav.nav-stacked > li:last-child > a,
 .nav.nav-stacked > li:last-child,
 .nav.nav-stacked > li {
-    border-radius:6px;
+    border-radius: 0;
 }
 
-.nav.nav-stacked li {
-    -webkit-box-shadow: 0 1px 3px #bec9de;
-       -moz-box-shadow: 0 1px 3px #bec9de;
-            box-shadow: 0 1px 3px #bec9de;
-}
 .nav.nav-stacked li.nav-header {
     -webkit-box-shadow: 0 0 0 #bec9de;
        -moz-box-shadow: 0 0 0 #bec9de;
@@ -343,7 +339,13 @@ form.inside {
     background: -ms-linear-gradient(top,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     background: linear-gradient(to bottom,  #3b679e 0%,#2b88d9 50%,#207cca 51%,#7db9e8 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3b679e', endColorstr='#7db9e8',GradientType=0 );
-    color: #ffffff;
+    color: #05346D;
+    background: #F6FBFF;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    border-color: #D4E1F9;
+    border-bottom: 1px solid #F6FBFF;
 }
 
 .nav-tabs > li > a, .nav.nav-stacked > li > a {
@@ -352,7 +354,7 @@ form.inside {
 
 .nav-tabs > .active > a,
 .nav-tabs > li.active > a {
-    border: 1px solid #0088cc;
+   // border: 1px solid #0088cc;
 }
 
 .nav > li > a:hover {
@@ -362,7 +364,7 @@ form.inside {
 .tab-content {
     overflow:visible;
     padding: 0;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 hr {
@@ -424,13 +426,13 @@ select {
 }
 
 .box-header {
-    border-radius: 4px;
+    border-radius: 2px;
     font-weight: bold;
     line-height: 20px;
     font-size: 15px;
     padding:5px 10px;
     color: #c2eafe;
-    background: #001e4f url("../img/head-bg.jpg") repeat-x left top;
+    background: #144573;
 }
 
 .btn-in-header {
@@ -444,14 +446,14 @@ select {
     font-size: 15px;
     padding:5px 10px;
     color: #224477;
-    background: #deefff;
-    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
-    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+    background: #D3E9FE;
+    background: -moz-linear-gradient(top,  #D3E9FE 0%, #BFDCF4 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D3E9FE), color-stop(100%,#BFDCF4));
+    background: -webkit-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: -o-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: -ms-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: linear-gradient(to bottom,  #D3E9FE 0%,#BFDCF4 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D3E9FE', endColorstr='#BFDCF4',GradientType=0 );
     -webkit-box-shadow: 0 0 4px #bec9de;
        -moz-box-shadow: 0 0 4px #bec9de;
             box-shadow: 0 0 4px #bec9de;
@@ -495,19 +497,19 @@ select {
             box-shadow: 0 1px 2px #bec9de;
 }
 
-.box-content form {
+.box-contents form {
     margin:0;
+}
+
+.box-reset {
+    border: none;
+    background: none;
+    box-shadow: 0 0 0 #ffffff;
 }
 
 .tab-frame {
     margin: 0;
-    border: 1px solid #D4E1F9;
-    border-radius: 4px 4px 4px 4px;
     padding: 0;
-    background: #dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
-    -webkit-box-shadow: 0 1px 2px #bec9de;
-       -moz-box-shadow: 0 1px 2px #bec9de;
-            box-shadow: 0 1px 2px #bec9de;
 }
 
 .frame-title {
@@ -625,17 +627,14 @@ select {
 .table-lightblue th, .table-lightblue th a, .pagination.lightblue ul > li > a {
     border-color: #fff;
     color: #224477;
-    background: #deefff;
-    background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede));
-    background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%);
-    background: linear-gradient(to bottom,  #deefff 0%,#98bede 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede', GradientType=0 );
-    -webkit-box-shadow: 0 0 2px #bec9de;
-       -moz-box-shadow: 0 0 2px #bec9de;
-            box-shadow: 0 0 2px #bec9de;
+    background: #D3E9FE;
+    background: -moz-linear-gradient(top,  #D3E9FE 0%, #BFDCF4 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#D3E9FE), color-stop(100%,#BFDCF4));
+    background: -webkit-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: -o-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: -ms-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
+    background: linear-gradient(to bottom, #D3E9FE 0%, #BFDCF4 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D3E9FE', endColorstr='#BFDCF4', GradientType=0 );
 }
 
 .table-lightblue thead .sorting-no {
@@ -908,7 +907,7 @@ select {
 
 .pagination.lightblue li.active a {
     color: #000000;
-    background: #deefff;
+    background: #D3E9FE;
 }
 
 .pagination.lightblue li.disabled a,
@@ -1171,6 +1170,67 @@ a, li a {
     background-color: #C09853;
 }
 
+/*override index css */
+.nav-tabs {
+    background-color: #E4F1F9;
+    border-color: #D4E1F9;
+    border-bottom: 1px solid #E4F1F9;
+    padding-top: 0px;
+}
+.nav-tabs > li > a {
+    border-radius: 0;
+}
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
+.nav-tabs > li > a:hover,
+.nav-tabs > .active > a:focus {
+    border: 1px solid #F6FBFF;
+    background: #F6FBFF;
+    color:#05346D;
+    border-top: 1px solid #F6FBFF;
+}
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+    background: #F6FBFF;
+    color: #0098EA;
+}
+.custom .nav-tabs.nav-stacked {
+    margin: 0;
+    padding-top: 0;
+}
+.nav-tabs.nav-stacked > li > a {
+    background: #E4F1F9;
+    border: 1px solid #D4E1F9;
+    border-radius: 0;
+    text-transform: capitalize;
+}
+.nav-tabs.nav-stacked > li:first-child > a {
+    border-radius: 0;
+}
+.nav-tabs.nav-stacked > li:last-child > a,
+.nav-tabs.nav-stacked > li:last-child,
+.nav-tabs.nav-stacked > li {
+    border-radius: 0;
+}
+.nav-tabs.nav-stacked > .active > a,
+.nav-tabs.nav-stacked > .active > a:focus {
+    border: 1px solid #F6FBFF;
+    background: #F6FBFF;
+    color:#05346D;
+    border-top: 1px solid #0098EA;
+}
+.nav-tabs.nav-stacked li {
+    box-shadow: none;
+}
+#content-tabs, #inner-east .nav.nav-tabs {
+    border-top: 1px solid #D4E1F9;
+}
+
+#inner-east .ui-layout-content {
+    background: #F6FBFF;
+    border-left: 1px solid #D4E1F9;
+}
+
 /* fileupload plugin */
 .fileupload .input-append .fileupload-exists {
     padding-top: 7px;
@@ -1282,3 +1342,488 @@ label.checkbox {
 .badge-inverse[href] {
   background-color: #1a1a1a;
 }
+
+#inner-east .btn-group-vertical .btn {
+    text-align: left;
+}
+#inner-east .btn-group-vertical {
+    display: block;
+}
+.hidden {
+    display: none;
+    visibility: none;
+}
+
+#page-loading {
+    color: #FFF;
+    font-size: 3em;
+    position: absolute;
+    left: 40%;
+    top: 40%;
+}
+.container {
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.allow-overflow {
+    overflow: visible;
+}
+
+.ui-layout-north,
+.ui-layout-south,
+.ui-layout-east  {
+    display: none;
+}
+#tabpanels .tab-panel {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+}
+#outer-center.ui-tabs ,
+#outer-center.ui-tabs>ul {
+    border-bottom: 0;
+    padding-bottom: 0;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
+.custom #outer-center.ui-tabs ,
+.custom #outer-center.ui-tabs>ul {
+    background: #F6FBFF;
+    color: #05346D;
+    border: 0;
+    padding: 0;
+}
+#outer-west-resizer {
+    background: #F6FBFF;
+    color: #05346D;
+}
+
+.custom .breadcrumb {
+    background: #E4F1F9;
+    border-radius: 0;
+    list-style: none;
+    margin: 0;
+}
+
+/*override jquery css */
+
+}
+.ui-widget-content a.btn-warning,
+.ui-widget-content a.btn-danger,
+.ui-widget-content a.btn-success,
+.ui-widget-content a.btn-primary,
+.ui-widget-content a.btn-info,
+.ui-widget-content a.btn-inverse {
+    color: #fff;
+}
+
+/*
+* Default Layout Theme
+*/
+html {
+    overflow: auto !important;
+}
+body {
+    background: #FFF;
+    padding: 0 !important;
+    margin: 0;
+    min-width: 760px;
+}
+/*
+* PANES & CONTENT-DIVs
+*/
+.ui-layout-pane { /* all 'panes' */
+    background: #F6FBFF;
+    border: 0;
+    padding: 0;
+    overflow: auto;
+    /* DO NOT add scrolling (or padding) to 'panes' that have a content-div,
+    otherwise you may get double-scrollbars - on the pane AND on the content-div
+    - use ui-layout-wrapper class if pane has a content-div
+    - use ui-layout-container if pane has an inner-layout
+    */
+}
+/* (scrolling) content-div inside pane allows for fixed header(s) and/or footer(s) */
+.ui-layout-content {
+    padding: 0;
+    position: relative; /* contain floated or positioned elements */
+    overflow: auto; /* add scrolling to content-div */
+}
+/*
+* UTILITY CLASSES
+* Must come AFTER pane-class above so will override
+* These classes are NOT auto-generated and are NOT used by Layout
+*/
+.layout-child-container,
+.layout-content-container {
+    padding: 0;
+    overflow: hidden;
+}
+.layout-child-container {
+    border: 0; /* remove border because inner-layout-panes probably have borders */
+}
+.layout-scroll {
+    overflow: auto;
+}
+.layout-hide {
+    display: none;
+}
+/*
+* RESIZER-BARS
+*/
+.ui-layout-resizer { /* all 'resizer-bars' */
+    background: #DDD;
+    border: 1px solid #BBB;
+    border-width: 0;
+}
+    .ui-layout-resizer-drag { /* REAL resizer while resize in progress */
+}
+    .ui-layout-resizer-hover { /* affects both open and closed states */
+}
+/* NOTE: It looks best when 'hover' and 'dragging' are set to the same color,
+otherwise color shifts while dragging when bar can't keep up with mouse */
+.ui-layout-resizer-open-hover , /* hover-color to 'resize' */
+.ui-layout-resizer-dragging { /* resizer beging 'dragging' */
+    background: #C4E1A4;
+}
+.ui-layout-resizer-dragging { /* CLONED resizer being dragged */
+    border: 1px solid #BBB;
+}
+.ui-layout-resizer-north-dragging,
+.ui-layout-resizer-south-dragging {
+    border-width: 1px 0;
+}
+.ui-layout-resizer-west-dragging,
+.ui-layout-resizer-east-dragging {
+    border-width: 0 1px;
+}
+/* NOTE: Add a 'dragging-limit' color to provide visual feedback when resizer hits min/max size limits */
+.ui-layout-resizer-dragging-limit { /* CLONED resizer at min or max size-limit */
+    background: #E1A4A4; /* red */
+}
+.ui-layout-resizer-closed-hover { /* hover-color to 'slide open' */
+    background: #EBD5AA;
+}
+.ui-layout-resizer-sliding { /* resizer when pane is 'slid open' */
+    opacity: .10; /* show only a slight shadow */
+    filter: alpha(opacity=10);
+}
+.ui-layout-resizer-sliding-hover { /* sliding resizer - hover */
+    opacity: 1.00; /* on-hover, show the resizer-bar normally */
+    filter: alpha(opacity=100);
+}
+/* sliding resizer - add 'outside-border' to resizer on-hover
+* this sample illustrates how to target specific panes and states */
+.ui-layout-resizer-north-sliding-hover { border-bottom-width: 1px; }
+.ui-layout-resizer-south-sliding-hover { border-top-width: 1px; }
+.ui-layout-resizer-west-sliding-hover { border-right-width: 1px; }
+.ui-layout-resizer-east-sliding-hover { border-left-width: 1px; }
+/*
+* TOGGLER-BUTTONS
+*/
+.ui-layout-toggler {
+    border: 1px solid #BBB; /* match pane-border */
+    background-color: #BBB;
+}
+.ui-layout-resizer-hover .ui-layout-toggler {
+    opacity: .60;
+    filter: alpha(opacity=60);
+}
+.ui-layout-toggler-hover , /* need when NOT resizable */
+.ui-layout-resizer-hover .ui-layout-toggler-hover { /* need specificity when IS resizable */
+    background-color: #FC6;
+    opacity: 1.00;
+    filter: alpha(opacity=100);
+}
+.ui-layout-toggler-north ,
+.ui-layout-toggler-south {
+    border-width: 0 1px; /* left/right borders */
+}
+.ui-layout-toggler-west ,
+.ui-layout-toggler-east {
+    border-width: 1px 0; /* top/bottom borders */
+}
+/* hide the toggler-button when the pane is 'slid open' */
+.ui-layout-resizer-sliding .ui-layout-toggler {
+    display: none;
+}
+
+/*
+* Layout Resizers
+*/
+.ui-layout-resizer-sliding {
+    background-color: #BBB; /* overridden by custom theme, above */
+}
+.ui-layout-resizer-open-hover,
+.ui-layout-resizer-drag, /* cloned bar */
+.ui-layout-resizer-dragging {
+    background: #BBB !important; /* need higher specificity */
+    opacity: 0.5 !important;  /* ditto - not sure why? */
+    filter: Alpha(Opacity=50) !important;
+}
+.ui-layout-resizer-dragging-limit {
+    background: #d44848 !important;
+}
+.ui-layout-resizer-closed-hover {
+     background: #ebd5aa;
+}
+/*
+* style the text we put INSIDE the togglers
+*/
+.ui-layout-toggler .content {
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    padding-bottom: 0.35ex; /* to 'vertically center' text inside text-span */
+}
+/*End default layout css */
+
+/*override jquery layout css */
+#outer-north {
+    background: #FFFFFF;
+    overflow: visible;
+    padding: 0;
+}
+
+#outer-center {
+    background: #DDD;
+    padding: 0;
+}
+
+#outer-north div.buttons {
+    float: right;
+    margin-right: 200px;
+    margin-top: 4px;
+}
+
+#outer-south {
+    padding: 0 0 0 15px;
+}
+
+#outer-south.inside {
+    padding: 0 0 0 15px;
+}
+
+#outer-west {
+    padding: 0;
+    background: #E4F1F9;
+    color: #05346D;
+}
+
+body.custom,
+.custom #outer-north,
+.custom #outer-center,
+.custom #outer-south {
+    background: #FFF;
+}
+
+.custom #outer-south {
+    border-top: 1px solid #D4E1F9;
+    background: #e4f1f9;
+}
+
+#inner-east {
+    background: #E4F1F9;
+}
+
+#inner-east-resizer {
+    background: #F6FBFF;
+}
+
+#outer-west-resizer.ui-layout-resizer-west-closed,
+#inner-east-resizer.ui-layout-resizer-east-closed {
+    background: #E4F1F9;
+    border-right: 1px solid #D4E1F9;
+}
+
+#outer-west-toggler, #inner-east-toggler {
+    background: #ADE0FB;
+}
+
+.ui-layout-pane-west {
+
+    padding: 0;
+}
+
+.custom #tabbuttons li.active a {
+    background: #E4F1F9;
+    color: #05346D;
+    box-shadow: 0 2px 2px rgba(055, 055, 055, 0.5) inset;
+}
+.custom .navbar-inverse #tabbuttons.navbar-brand, .custom .navbar-inverse #tabbuttons.navbar-nav > li > a {
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0.0);
+}
+
+#inner-center {
+    overflow: hidden;
+    position: relative;
+}
+
+#inner-center .ui-layout-content {
+    padding: 0 15px;
+}
+
+.ui-layout-toggler-north .btnWest {
+    background: #009900;
+}
+
+.ui-layout-toggler-north div {
+    float: left;
+    height: 18px;
+    width: 35px;
+    margin-left: 0;
+}
+
+.ui-layout-toggler-north .btnBoth {
+    background: #CC0000;
+}
+
+.ui-layout-toggler-north .btnCenter {
+    background: #0000CC;
+}
+
+#southpane-closed:hover,
+.southpane-open:hover  {
+    bottom: 1px;
+    background-color: #4F8FFF;
+}
+
+.custom .header-toolbar {
+    height: auto;
+    height: auto;
+    width: auto;
+    margin: 0;
+    padding: 8px;
+    overflow: hidden;
+    position: relative;
+    vertical-align: middle;
+}
+
+.button {
+    color: #001E4F;
+    padding: 4px 8px;
+    margin: 0;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+    text-shadow: none;
+    font-size: 16px;
+    overflow: hidden;
+    position: relative;
+
+}
+
+.button:hover {
+    background: #7EABF4;
+}
+
+.icon-caret-up.button, .icon-caret-down.button {
+    padding: 0px 10px 3px;
+    vertical-align: top;
+    line-height: 6px;
+}
+
+.icon-caret-down.button {
+    line-height: 25px;
+}
+
+.ui-layout-resizer, .ui-layout-toggler.ui-layout-toggler-south {
+    background-color: #E4F1F9;
+}
+
+.header-footer {
+    height: 36px !important;
+}
+
+.header-footer-breadcrumb {
+    height: 35px !important;
+}
+
+/* Template-specific stuff
+*
+* Customizations just for the template; these are not necessary for anything
+* with disabling the responsiveness.
+*/
+/* Account for fixed navbar */
+body {
+    padding-bottom: 30px;
+    min-width: 470px;
+}
+
+/* Non-responsive overrides
+*
+* Utilitze the following CSS to disable the responsive-ness of the container,
+* grid system, and navbar.
+*/
+/* Reset the container */
+.container {
+    max-width: none !important;
+}
+
+.container .navbar-header,
+.container .navbar-collapse {
+    margin-right: 0;
+    margin-left: 0;
+}
+/* Always float the navbar header */
+.navbar-header {
+    float: left;
+}
+/* Undo the collapsing navbar */
+.navbar-collapse {
+    display: block !important;
+    height: auto !important;
+    padding-bottom: 0;
+    overflow: visible !important;
+}
+.navbar-toggle {
+    display: none;
+}
+.navbar-collapse {
+    border-top: 0;
+}
+
+/* Always apply the floated nav */
+.navbar-nav {
+    float: left;
+    margin: 0;
+}
+.navbar-nav > li {
+    float: left;
+}
+/* Redeclare since we override the float above */
+.navbar-nav.navbar-right {
+    float: right;
+}
+/* Undo custom dropdowns */
+.navbar .navbar-nav .open .dropdown-menu {
+    position: absolute;
+    float: left;
+    background-color: #fff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-width: 0 1px 1px;
+    border-radius: 0 0 4px 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #333;
+}
+.navbar .navbar-nav .open .dropdown-menu > li > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > li > a:focus,
+.navbar .navbar-nav .open .dropdown-menu > .active > a,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
+    background-color: #428bca !important;
+}
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a,
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+.navbar .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+    background-color: transparent !important;
+}
+

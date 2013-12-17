@@ -1,54 +1,53 @@
-<div class="tab-frame">
-    <div class="col-sm-12">
-        <div class="row">
-            <div class="form-inline inside margin-before2">
-                <div class="form-group">
-                    <label class="control-label">{{msg('mds.entities')}}:</label>
-                </div>
-                <div class="form-group">
-                    <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity" id="selectEntity" class="select-entity"/>
-                </div>
-                <div class="form-group">
-                    <button href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
-                        <i class="icon-plus icon-white"></i> {{msg('mds.btn.newEntity')}}
-                    </button>
-                </div>
-                <div class="form-group">
-                    <button href="#advancedObjectSettingsModal" class="btn btn-warning" ng-show="selectedEntity"
-                            data-toggle="modal" data-backdrop="static">
-                        <i class="icon-cogs icon-white"></i> {{msg('mds.btn.advanced')}}
-                    </button>
-                </div>
-                <div class="form-group">
-                    <button href="#deleteEntityModal" class="btn btn-danger" ng-show="selectedEntity"
-                       ng-disabled="!selectedEntity || selectedEntity.readOnly" data-toggle="modal" data-backdrop="static">
-                        <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
-                    </button>
-                </div>
+<div class="">
+    <div class="row">
+        <div class="form-inline inside margin-before2">
+            <div class="form-group">
+                <label class="control-label">{{msg('mds.entities')}}:</label>
             </div>
-        </div>
-        <div class="row margin-before2" ui-if="selectedEntity">
-            <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
-            <div class="inside" ui-if="!selectedEntity.readOnly">
-                <button class="btn btn-danger" ng-disabled="!selectedEntity.draft" ng-click="abandonChanges()">
-                    <i class="icon-trash icon-white"></i> {{msg('mds.btn.abandonChanges')}}
+            <div class="form-group">
+                <input type="hidden" ui-select2="SELECT_ENTITY_CONFIG" ng-model="selectedEntity" id="selectEntity" class="select-entity"/>
+            </div>
+            <div class="form-group">
+                <button href="#newEntityModal" type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static">
+                    <i class="icon-plus icon-white"></i> {{msg('mds.btn.newEntity')}}
                 </button>
-                <button class="btn btn-primary" ng-disabled="!selectedEntity.draft || !canSaveChanges()" ng-click="saveChanges()">
-                    <i class="icon-save icon-white"></i> {{msg('mds.btn.saveChanges')}}
+            </div>
+            <div class="form-group">
+                <button href="#advancedObjectSettingsModal" class="btn btn-warning" ng-show="selectedEntity"
+                        data-toggle="modal" data-backdrop="static">
+                    <i class="icon-cogs icon-white"></i> {{msg('mds.btn.advanced')}}
+                </button>
+            </div>
+            <div class="form-group">
+                <button href="#deleteEntityModal" class="btn btn-danger" ng-show="selectedEntity"
+                   ng-disabled="!selectedEntity || selectedEntity.readOnly" data-toggle="modal" data-backdrop="static">
+                    <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
                 </button>
             </div>
         </div>
+    </div>
+    <div class="row margin-before2" ui-if="selectedEntity">
+        <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
+        <div class="inside" ui-if="!selectedEntity.readOnly">
+            <button class="btn btn-danger" ng-disabled="!selectedEntity.draft" ng-click="abandonChanges()">
+                <i class="icon-trash icon-white"></i> {{msg('mds.btn.abandonChanges')}}
+            </button>
+            <button class="btn btn-primary" ng-disabled="!selectedEntity.draft || !canSaveChanges()" ng-click="saveChanges()">
+                <i class="icon-save icon-white"></i> {{msg('mds.btn.saveChanges')}}
+            </button>
+        </div>
+    </div>
 
-        <div class="row inside margin-before2">
-            <div class="form-group" ui-if="!selectedEntity">
-                <h4>{{msg('mds.tab.schemaEditor')}}</h4>
-                <p></p>
-                <p>{{msg('mds.info.selectEntity')}}</p>
-            </div>
+    <div class="row inside margin-before2">
+        <div class="form-group" ui-if="!selectedEntity">
+            <h4>{{msg('mds.tab.schemaEditor')}}</h4>
+            <p></p>
+            <p>{{msg('mds.info.selectEntity')}}</p>
         </div>
+    </div>
 
     <div ng-include="'../mds/resources/partials/modals/new-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/delete-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/advanced-object-settings.html'"></div>
-    </div>
+
 </div>

@@ -150,7 +150,7 @@
            };
 
            $scope.cssPassword = function() {
-               var msg = 'control-group';
+               var msg = 'form-group';
                   if ($scope.user.password!==$scope.confirmPassword || (!$scope.hasValue('password') && $scope.editUserView)) {
                      msg = msg.concat(' server.error');
                   }
@@ -158,7 +158,7 @@
            };
 
            $scope.cssClass = function(prop, pass) {
-               var msg = 'control-group';
+               var msg = 'form-group';
                if (!$scope.hasValue(prop)) {
                     msg = msg.concat(' server.error');
                }
@@ -309,7 +309,7 @@
             $scope.savePermission = function() {
                 $scope.addingPermission = false;
                 Permissions.save($scope.permission, function() {
-                   $("#permissionSaveSuccessMsg").css('visibility', 'visible').animate({opacity:0}, 5000);
+                   $("#permissionSaveSuccessMsg").css('display', 'block').animate({opacity:0}, 5000);
                    Permissions.query(function(data) {
                         $scope.permissionList = data;
                    });
@@ -337,7 +337,7 @@
             };
 
             $scope.cssClass = function(prop) {
-                var msg = 'control-group';
+                var msg = 'form-group';
 
                 if (!$scope.hasValue(prop)) {
                     msg = msg.concat(' server.error');
@@ -361,7 +361,7 @@
         }
 
         $scope.cssPassword = function() {
-            var msg = 'control-group';
+            var msg = 'form-group';
 
             if ($scope.hasValue('newPassword') && $scope.newPassword !== $scope.confirmPassword) {
                 msg = msg.concat(' server.error');
@@ -371,7 +371,7 @@
         };
 
         $scope.cssClass = function (prop) {
-            var msg = 'control-group';
+            var msg = 'form-group';
 
             if (!$scope.hasValue(prop)) {
                  msg = msg.concat(' server.error');

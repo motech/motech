@@ -50,6 +50,7 @@
         $scope.itemsPerPage = 10;
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
+        $scope.innerLayout.show('east');
 
         $scope.getTasks = function () {
             $scope.allTasks = [];
@@ -186,10 +187,64 @@
 
     });
 
+    widgetModule.controller('RecentActivityCtrl', function ($scope, Tasks, Activities) {
+
+            var RECENT_TASK_COUNT = 7, tasks, activities = [];
+
+            $scope.activities = [];
+            $scope.formatInput = [];
+
+            $scope.getTasks = function () {
+
+                tasks = Tasks.query(function () {
+                    activities = Activities.query(function () {
+                        var item, i, j;
+
+                        for (i = 0; i < tasks.length; i += 1) {
+                            item = {
+                                task: tasks[i],
+                                success: 0,
+                                error: 0
+                            };
+
+                            for (j = 0; j < activities.length; j += 1) {
+                                if (activities[j].task === item.task._id && activities[j].activityType === 'SUCCESS') {
+                                    item.success += 1;
+                                }
+
+                                if (activities[j].task === item.task._id && activities[j].activityType === 'ERROR') {
+                                    item.error += 1;
+                                }
+                            }
+                        }
+
+                        for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
+                            for (j = 0; j < tasks.length; j += 1) {
+                                if (activities[i].task === tasks[j]._id) {
+                                    $scope.activities.push({
+                                        task: activities[i].task,
+                                        trigger: tasks[j].trigger,
+                                        actions: tasks[j].actions,
+                                        date: activities[i].date,
+                                        type: activities[i].activityType,
+                                        name: tasks[j].name
+                                    });
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+            $scope.getTasks();
+
+        });
+
     widgetModule.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
         $scope.util = ManageTaskUtils;
         $scope.selectedActionChannel = [];
         $scope.selectedAction = [];
+        $scope.innerLayout.hide('east');
         $scope.task = {
            taskConfig: {
                 steps: []
@@ -1242,6 +1297,7 @@
         $scope.itemsPerPage = $scope.limitPages[0];
         $scope.histories = ['ALL', 'WARNING', 'SUCCESS', 'ERROR'];
         $scope.filterHistory = $scope.histories[0];
+        $scope.innerLayout.hide('east');
 
         if ($routeParams.taskId !== undefined) {
             data = { taskId: $routeParams.taskId };
@@ -1310,6 +1366,7 @@
 
     widgetModule.controller('SettingsCtrl', function ($scope, Settings) {
         $scope.settings = Settings.get();
+        $scope.innerLayout.hide('east');
 
         $scope.submit = function() {
             $scope.settings.$save(function() {

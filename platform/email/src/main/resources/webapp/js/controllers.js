@@ -6,6 +6,7 @@
 
     emailModule.controller('SendEmailController', function ($scope, SendEmailService) {
         $scope.mail = {};
+        $scope.innerLayout.hide('east');
 
         $scope.sendEmail = function () {
             SendEmailService.save(
@@ -23,6 +24,8 @@
 
     emailModule.controller('EmailLoggingController', function($scope, EmailAuditService) {
 
+        $scope.innerLayout.show('east');
+        $scope.innerLayout.addToggleBtn("#email-logging-filters", "east");
         $scope.availableRange = ['all','table', 'month'];
         $scope.loggingRange = $scope.availableRange[0];
 
@@ -68,6 +71,7 @@
 
     emailModule.controller('SettingsController', function ($scope, SettingsService) {
         $scope.settings = SettingsService.get();
+        $scope.innerLayout.hide('east');
 
         $scope.timeMultipliers = {
             'hours': $scope.msg('email.settings.log.units.hours'),

@@ -1,11 +1,11 @@
-<div class="box-header">
-    {{ msg('aggregation.execution.page.heading') }}
-    <span ng-show="eventStatus == 'invalid'"> - {{msg('aggregation.errors.page.heading')}}</span>
-    <a href="#/" type="button" class="btn btn-sm btn-primary btn-in-header pull-right"><i class="icon-remove icon-white"></i></a>
+<div class="row">
+    <a href="#/" type="button" class="btn btn-sm btn-primary pull-right"><i class="icon-remove icon-white"></i></a>
+    <h4 class="frame-title">{{ msg('aggregation.execution.page.heading') }}
+    <span ng-show="eventStatus == 'invalid'"> - {{msg('aggregation.errors.page.heading')}}</span></h4>
 </div>
 
-<div ng-controller="AggregationsController">
-    <div class="box-content clearfix">
+<div class="row" ng-controller="AggregationsController">
+    <div class="inside clearfix">
         <div ng-include="'../event-aggregation/resources/partials/rule.html'"></div>
 
         <div ng-repeat="aggregation in aggregations" class="aggregation-container">

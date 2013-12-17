@@ -1,13 +1,58 @@
-<div> <!-- Only required for left/right tabs -->
-    <ul id="content-tabs" class="nav nav-tabs email">
-        <li ng-class="active('#/send')"><a  href="#/send" >{{msg('email.send')}}</a></li>
-        <li ng-class="active('#/logging')"><a href="#/logging" >{{msg('email.logging')}}</a></li>
-        <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('email.settings')}}</a></li>
-    </ul>
-    <div class="tab-content email"  id="tab-content">
-        <div id="main-content" class="tab-pane active">
-            <div ng-view></div>
+<div id="inner-center" class="email inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li><a role="menu" href="#/send">{{msg('email')}}</a></li>
+            <li ng-show="active('#/send')" ng-class="active('#/send')">{{msg('email.send')}}</li>
+            <li ng-show="active('#/logging')" ng-class="active('#/logging')">{{msg('email.logging')}}</li>
+            <li ng-show="active('#/settings')" ng-class="active('#/settings')">{{msg('email.settings')}}</li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs tasks ">
+            <li ng-class="active('#/send')"><a  href="#/send" >{{msg('email.send')}}</a></li>
+            <li ng-class="active('#/logging')"><a href="#/logging" >{{msg('email.logging')}}</a></li>
+            <li ng-class="active('#/settings')"><a  href="#/settings" >{{msg('email.settings')}}</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
 </div>
 
+<div id="inner-east" class="email inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <!------------------------  Filters  ------------------------>
+    <div class="inbox-header">{{msg('email.logging.filters')}}</div>
+    <div  class="ui-layout-content">
+        <div class="inside">
+            <fieldset class="inside">
+                <legend>{{msg('email.logging.search')}}</legend>
+                <div class="form-group">
+                    <input type="text" class="form-control search-query" placeholder="{{msg('email.logging.search')}}" name="subject" auto-complete="subject" data-event-type="keyup" data-search-field="subject" jqgrid-search="emailLoggingTable">
+                </div>
+            </fieldset>
+            <fieldset class="inside">
+                <legend>{{msg('email.logging.creationDate')}}</legend>
+                <div class="form-group">
+                    <input id="dateTimeFrom" grid-date-picker-from="" type="datetime" class="form-control search-query" placeholder="{{msg('email.logging.fromAddress')}}" data-event-type="change" data-search-field="timeFrom" jqgrid-search="emailLoggingTable">
+                </div>
+                <div class="form-group">
+                    <input id="dateTimeTo" grid-date-picker-to="" type="datetime" class="form-control search-query" placeholder="{{msg('email.logging.toAddress')}}" data-event-type="change" data-search-field="timeTo" jqgrid-search="emailLoggingTable">
+                </div>
+            </fieldset>
+            <fieldset class="inside">
+                <legend>{{msg('email.logging.disposition')}}</legend>
+                <div data-toggle="buttons-checkbox" class="form-group btn-group-vertical">
+                    <button id="ERROR" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="ERROR" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.error')}}</button>
+                    <button id="SENT" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="SENT" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.sent')}}</button>
+                    <button id="RECEIVED" class="btn btn-info btn-sm active" type="button" data-field-type="array" data-search-field="deliveryStatus" data-search-value="RECEIVED" jqgrid-search="emailLoggingTable"><i class="icon-white icon-ok"></i> {{msg('email.logging.received')}}</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>

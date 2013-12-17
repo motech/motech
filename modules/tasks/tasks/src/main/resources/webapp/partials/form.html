@@ -1,4 +1,4 @@
-<div class="row tab-frame create-edit-task">
+<div class="row create-edit-task">
     <h4 ng-hide="task._id" class="frame-title">{{msg('task.section.newTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-danger btn-in-frame-header pull-right"><i class="icon-remove icon-white"></i></a></h4>
     <h4 ng-show="task._id" class="frame-title">{{msg('task.section.editTask')}} <a href="#/task/" type="button" class="btn btn-sm btn-primary btn-in-frame-header pull-right"><i class="icon-mail-reply icon-white"></i></a></h4>
     <div class="inside">
@@ -11,7 +11,7 @@
             </ul>
         </div>
     </div>
-    <div>
+    <div class="col-sm-12">
         <div class="margin-before">
             <form class="inside task form-horizontal">
                 <!------------------ ENTER TASK NAME ------------------>
@@ -45,7 +45,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div id="collapse-trigger" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
+                        <div id="collapse-trigger" onmouseout="innerLayout.resetOverflow('center')" onmouseover="outerLayout.allowOverflow(this)" class="panel-collapse stripes-bg collapse in overflowChange" style="overflow: visible;">
                             <div class="panel-body">
                                 <div class="section-source">
                                     <ul class="task-selector">
@@ -465,7 +465,7 @@
                     <div ng-include="'../tasks/partials/widgets/string-manipulation-format.html'"></div>
 
                     <!------------------------ SAVE ------------------------>
-                    <div class="form-group inside">
+                    <div class="col-sm-12 form-group inside">
                         <h4 class="margin-center centered input-large-fluid">{{msg('task.section.save')}}</h4>
                         <p class="centered input-xxlarge-fluid margin-center">{{msg('task.info.addSave')}}</p>
                         <div class="clearfix"></div>
