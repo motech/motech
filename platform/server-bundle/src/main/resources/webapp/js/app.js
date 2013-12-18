@@ -13,10 +13,10 @@
             }
 
             function error(response) {
-                var status = response.status;
-                if (status === 403) {
+                if (response.status === 403) {
                     window.location = "./accessdenied";
                 }
+
                 return $q.reject(response);
             }
 

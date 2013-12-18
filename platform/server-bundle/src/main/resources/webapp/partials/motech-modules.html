@@ -1,7 +1,7 @@
 <div id="side-nav" ng-show="ready">
     <ul id="{{section.name}}" ng-class="showActiveMenu.hideSection('{{section.name}}')" class="nav nav-stacked modulesWithSubMenu" ng-repeat="section in moduleMenu.sections">
         <li ng-repeat="link in section.links" ng-class="{active: isActiveLink(link)}">
-            <a ng-href="?moduleName={{link.moduleName}}{{link.url}}" ng-click="setActiveLink(link)">
+            <a ng-href="home?moduleName={{link.moduleName}}{{link.url}}" ng-click="setActiveLink(link)">
                 <i ui-if="link.needsAttention" class="icon icon-exclamation-sign icon-red"></i>
                 {{msg(link.name)}}
             </a>

@@ -58,6 +58,7 @@ public class DashboardController {
             mav = new ModelAndView(Constants.REDIRECT_STARTUP);
         } else {
             mav = new ModelAndView("index");
+            mav.addObject("isAccessDenied", false);
             mav.addObject("mainHeader", mainHeader);
             String contextPath = request.getSession().getServletContext().getContextPath();
 
@@ -78,6 +79,14 @@ public class DashboardController {
         }
 
         return mav;
+    }
+
+    @RequestMapping(value = "/accessdenied", method = RequestMethod.GET)
+    public ModelAndView accessdenied(final HttpServletRequest request) {
+        ModelAndView view = index(null, request);
+        view.addObject("isAccessDenied", true);
+
+        return view;
     }
 
     @RequestMapping(value = "/modulemenu", method = RequestMethod.GET)
