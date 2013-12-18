@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
             http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
     <import resource="classpath*:/META-INF/motech/*.xml"/>
+    <cache:annotation-driven/>
 
     <osgi:reference id="couchDbManager" interface="org.motechproject.commons.couchdb.service.CouchDbManager" />
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
     <osgi:reference id="coreConfigurationService" interface="org.motechproject.config.core.service.CoreConfigurationService"/>
+    <osgi:reference id="cacheManager" interface="org.springframework.cache.CacheManager"/>
 
     <osgi:service ref="platformSettingsService" interface="org.motechproject.server.config.service.PlatformSettingsService"/>
     <osgi:service ref="settingsFacade" interface="org.motechproject.server.config.SettingsFacade"/>
     <osgi:service ref="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
+
 </beans>

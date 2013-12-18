@@ -14,6 +14,8 @@ import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -67,6 +69,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * @throws MotechConfigurationException if there is no bootstrap.properties file found.
      */
     @Override
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName")})
     public BootstrapConfig loadBootstrapConfig() {
         String configLocation = environment.getConfigDir();
 
@@ -130,6 +133,12 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     public void addConfigLocation(String location) throws FileSystemException {
         configLocationFileStore.add(location);
         logger.info("Changed config file location");
+    }
+
+    @Override
+    public void evictMotechCoreSettingsCache() {
+        // Left blank.
+        // Annotation will automatically remove all cached motech settings
     }
 
     File getDefaultBootstrapFile(FileAccessType accessType) {
