@@ -31,14 +31,8 @@ import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ
  */
 @Component
 public class ConfigLoader {
-
-    @Autowired
     private ResourceLoader resourceLoader;
-
-    @Autowired(required = false)
     private EventAdmin eventAdmin;
-
-    @Autowired
     private CoreConfigurationService coreConfigurationService;
 
     public SettingsRecord loadMotechSettings() {
@@ -110,7 +104,18 @@ public class ConfigLoader {
         }
     }
 
-    void setResourceLoader(ResourceLoader resourceLoader) {
+    @Autowired
+    public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
+    }
+
+    @Autowired(required = false)
+    public void setEventAdmin(EventAdmin eventAdmin) {
+        this.eventAdmin = eventAdmin;
+    }
+
+    @Autowired
+    public void setCoreConfigurationService(CoreConfigurationService coreConfigurationService) {
+        this.coreConfigurationService = coreConfigurationService;
     }
 }
