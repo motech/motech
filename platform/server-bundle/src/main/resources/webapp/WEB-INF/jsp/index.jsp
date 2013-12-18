@@ -49,28 +49,35 @@
         </div>
 
         <div innerlayout id="outer-center" class="outer-center ui-layout-pane ui-layout-pane-center ui-layout-container">
-            <c:if test="${! empty currentModule}">
-                <div id="main-content">
-                    <div class="splash" ng-hide="ready">
-                        <div class="splash-logo"></div>
-                        <div class="clearfix"></div>
-                        <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
-                        <div class="clearfix"></div>
-                        <div class="splash-msg">{{msg('server.module.loading')}}</div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <c:if test="${criticalNotification != null && criticalNotification != ''}">
-                        <div id="criticalNotification" class="alert alert-danger">
-                            ${criticalNotification}
+            <div id="main-content">
+                <c:choose>
+                    <c:when test="${isAccessDenied}">
+                        <div ng-include="'../server/resources/partials/access-denied-splash.html'"></div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:if test="${! empty currentModule}">
+                        <div class="splash" ng-hide="ready">
+                            <div class="splash-logo"></div>
+                            <div class="clearfix"></div>
+                            <div class="splash-loader"><img src="../server/resources/img/loader.gif" alt="loading" /></div>
+                            <div class="clearfix"></div>
+                            <div class="splash-msg">{{msg('server.module.loading')}}</div>
+                            <div class="clearfix"></div>
                         </div>
-                    </c:if>
-                    <div id="module-content" ng-show="ready">
-                        <script type="text/javascript">
-                            loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
-                        </script>
-                    </div>
-                </div>
-            </c:if>
+                        <c:if test="${criticalNotification != null && criticalNotification != ''}">
+                            <div id="criticalNotification" class="alert alert-danger">
+                                ${criticalNotification}
+                            </div>
+                        </c:if>
+                        <div id="module-content" ng-show="ready">
+                            <script type="text/javascript">
+                                loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
+                            </script>
+                        </div>
+                        </c:if>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div> <!-- #outer-center-->
 
     </div>

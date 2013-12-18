@@ -64,12 +64,4 @@ public class LoginController {
         return view;
     }
 
-    @RequestMapping(value = "/accessdenied", method = RequestMethod.GET)
-    public ModelAndView accessdenied(final HttpServletRequest request) {
-        ModelAndView view = new ModelAndView("accessdenied");
-        view.addObject("mainHeader", mainHeader);
-
-        return view;
-    }
-
 }
