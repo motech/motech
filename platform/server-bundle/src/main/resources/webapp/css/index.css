@@ -1027,10 +1027,11 @@ select {
 }
 
 .splash-header-alert {
-    height: 30px;
+    min-height: 30px;
+    height: auto;
     padding: 10px 0 0 0;
     color: #ffffff;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     background: #e6311c;
     background: -moz-linear-gradient(top,  #ff3523 0%, #e6311c 100%);
