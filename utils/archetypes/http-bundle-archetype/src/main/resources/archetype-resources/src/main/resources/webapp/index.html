@@ -1,13 +1,29 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-<div>
-    <ul id="content-tabs" class="nav nav-tabs">
-        <li ng-class="active('${symbol_pound}/hello-world')"><a data-target="main-content" href="${symbol_pound}/hello-world" data-toggle="tab">{{msg('${artifactId}')}}</a></li>
-    </ul>
-    <div class="tab-content"  id="tab-content">
-        <div id="main-content" class="tab-pane active">
-            <div ng-view></div>
+
+<div id="inner-center" class="inner-center ui-layout-center ui-layout-pane ui-layout-pane-center">
+    <div class="header-footer-breadcrumb">
+        <ul class="breadcrumb" role="navigation">
+            <li><a role="menu" href=".">{{msg('server.home')}}</a></li>
+            <li class="active"><a role="menu" href="${symbol_pound}/hello-world">{{msg('${artifactId}')}}</a></li>
+        </ul>
+    </div>
+    <div class="header-footer">
+        <ul id="content-tabs" class="nav nav-tabs">
+            <li ng-class="active('${symbol_pound}/hello-world')"><a href="${symbol_pound}/hello-world" >{{msg('${artifactId}')}}</a></li>
+        </ul>
+    </div>
+    <div class="ui-layout-content">
+        <div class="tab-content" id="tab-content">
+            <div id="main-content" class="tab-pane active">
+                <div ng-view></div>
+            </div>
         </div>
     </div>
+</div>
+
+<div id="inner-east" class="metrics inner-east ui-layout-pane ui-layout-pane-east">
+    <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
+    <div class="ui-layout-content"></div>
 </div>
