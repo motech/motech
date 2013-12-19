@@ -1026,7 +1026,6 @@
     <modules>
         <!-- Non-OSGI modules -->
         <module>platform/server</module>
-        <module>modules/rules/api</module>
         <module>modules/tasks/tasks</module>
         <module>modules/tasks/tasks-test-utils</module>
         <module>modules/tasks/tasks-test-bundle</module>
@@ -1049,7 +1048,6 @@
         <module>modules/admin/admin</module>
         <module>modules/event-aggregation/event-aggregation</module>
         <module>modules/event-logging/event-logging</module>
-        <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler</module>
         <module>modules/mds</module>
         <module>utils/http-agent/http-agent-bundle</module>
