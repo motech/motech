@@ -32,9 +32,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations ={ "classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
+@ContextConfiguration(locations = {"classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
 public class MotechUserServiceIT extends SpringIntegrationTest {
 
     @Autowired
@@ -157,6 +158,14 @@ public class MotechUserServiceIT extends SpringIntegrationTest {
         assertFalse(motechUserService.hasUser("username"));
         motechUserService.register("userName", "password", "1234", "", Arrays.asList("IT_ADMIN", "DB_ADMIN"), Locale.ENGLISH);
         assertTrue(motechUserService.hasUser("username"));
+    }
+
+
+    @Test
+    public void shouldReturnPresenceOfAdminUser() {
+        assertFalse(motechUserService.hasActiveAdminUser());
+        motechUserService.register("adminUser", "password", "1234", "", asList(USER_ADMIN_ROLE), Locale.ENGLISH, true, "");
+        assertTrue(motechUserService.hasActiveAdminUser());
     }
 
     @Test

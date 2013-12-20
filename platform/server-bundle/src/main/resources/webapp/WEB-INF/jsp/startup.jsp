@@ -91,29 +91,29 @@
                              </label>
                          </div>
                      </div>
-                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminLogin" bundle="${bundle}"/></label>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" name="adminLogin" value="${startupSettings.adminLogin}"/>
-                        </div>
-                    </div>
-                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminPassword" bundle="${bundle}"/></label>
-                        <div class="col-sm-6">
-                            <input type="password" class="form-control" name="adminPassword" value="${startupSettings.adminPassword}"/>
-                        </div>
-                    </div>
-                    <div ng-show="securityMode=='repository' || ${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminComfirmPassword" bundle="${bundle}"/></label>
-                        <div class="col-sm-6">
-                            <input type="password" class="form-control" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
-                        </div>
-                    </div>
-                     <div ng-show="securityMode=='repository' || ${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminEmail" bundle="${bundle}"/></label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control" name="adminEmail" value="${startupSettings.adminEmail}"/>
-                        </div>
+                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
+                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminLogin" bundle="${bundle}"/></label>
+                         <div class="col-sm-6">
+                             <input type="text" class="form-control" name="adminLogin" value="${startupSettings.adminLogin}"/>
+                         </div>
+                     </div>
+                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
+                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminPassword" bundle="${bundle}"/></label>
+                         <div class="col-sm-6">
+                             <input type="password" class="form-control" name="adminPassword" value="${startupSettings.adminPassword}"/>
+                         </div>
+                     </div>
+                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
+                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminComfirmPassword" bundle="${bundle}"/></label>
+                         <div class="col-sm-6">
+                             <input type="password" class="form-control" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
+                         </div>
+                     </div>
+                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
+                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminEmail" bundle="${bundle}"/></label>
+                         <div class="col-sm-6">
+                             <input type="email" class="form-control" name="adminEmail" value="${startupSettings.adminEmail}"/>
+                         </div>
                      </div>
                      <div ng-show="securityMode=='openid'" class="form-group">
                          <label class="col-sm-4 control-label"><fmt:message key="server.enter.providerName" bundle="${bundle}"/></label>

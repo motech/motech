@@ -1,5 +1,6 @@
 package org.motechproject.security.domain;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
@@ -124,13 +125,24 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
     }
 
     @Override
+    public boolean hasRole(String role) {
+        return CollectionUtils.isNotEmpty(roles) && roles.contains(role);
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MotechUserCouchdbImpl that = (MotechUserCouchdbImpl) o;
 
-        if (!userName.equals(that.userName)) { return false; }
+        if (!userName.equals(that.userName)) {
+            return false;
+        }
 
         return true;
     }
