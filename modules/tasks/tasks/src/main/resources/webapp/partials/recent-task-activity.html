@@ -27,9 +27,9 @@
                 <td><span class="recent-name-first">{{ activity.name }}<br></span>
                     <span>{{ activity.date | fromNow }}</span>
                 </td>
-                <td ui-jq="tooltip" ui-options="{placement:'left'}" data-original-title="{{msg('task.tooltip.clickToSeeDetails')}}">
+                <td bs-popover="{{msg('task.tooltip.clickToSeeDetails')}}" data-placement="left" data-trigger="hover">
                     <div>
-                        <a href="#/task/{{activity.task}}/log">
+                        <a ng-href="#/task/{{activity.task}}/log">
                             <img ng-show="activity.type == 'SUCCESS'" src="../tasks/img/icon-ok.png" class="recent-activity-icon"/>
                             <img ng-show="activity.type == 'ERROR'" src="../tasks/img/icon-exclamation.png" class="recent-activity-icon"/>
                             <img ng-show="activity.type == 'WARNING'" src="../tasks/img/icon-question.png" class="recent-activity-icon"/>

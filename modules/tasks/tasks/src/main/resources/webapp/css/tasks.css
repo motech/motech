@@ -109,9 +109,9 @@
 }
 
 editable-content .actionField.input-block-level {
-    min-height: 30px;
+    min-height: 34px;
     width: 100%;
-    padding: 3px 5px;
+    padding: 6px 12px;
     background-color: #FFFFFF;
     border: 1px solid #CCCCCC;
     border-radius: 4px;
@@ -545,6 +545,7 @@ editable-content .actionField.input-block-level span.badge {
 
 .recent-activity-icon {
     width: 30px;
+    margin-top: 4px;
 }
 
 .recent-name-first{

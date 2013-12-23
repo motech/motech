@@ -390,7 +390,6 @@
                                                 <span class="help-inline" ui-if="actionCssClassWarning(i)" help-popover="warning" data-title="{{msg('task.header.warning')}}"><i class="icon-exclamation-sign"></i></span>
                                                 <span class="help-inline" ui-if="actionCssClassError(i)" help-popover="error" data-title="{{msg('task.header.error')}}"><i class="icon-exclamation-sign"></i></span>
                                             </label>
-                                            </label>
 
                                             <!------------------------ Chrome & IE ------------------------>
                                             <div ui-if="BrowserDetect.browser=='Chrome' || BrowserDetect.browser=='Explorer'" class="form-inline col-md-10 col-sm-9">
@@ -409,17 +408,17 @@
                                                 <div ui-if="i.type == 'TIME'" data="i">
                                                     <editable-content  data="i" index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="TIME"></editable-content>
                                                 </div>
-                                                <div ui-if="i.type == 'DATE'" data="i">
+                                                <div ui-if="i.type == 'DATE'" data="i" class="">
                                                     <editable-content  index="{{$index}}" action="{{$parent.$parent.$parent.$index}}" type="DATE"></editable-content>
                                                 </div>
                                                 <div ui-if="i.type == 'BOOLEAN'">
-                                                    <label class="radio-inline no-margin-top">
-                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'true')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, true)"/> {{msg('yes')}}
+                                                    <label class="radio-inline">
+                                                        <input type="radio" class=" " ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'true')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, true)"/> {{msg('yes')}}
                                                     </label>
-                                                    <label class="radio-inline no-margin-top">
-                                                        <input type="radio" class="input-block-level" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'false')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, false)"/> {{msg('no')}}
+                                                    <label class="radio-inline">
+                                                        <input type="radio" class="" ng-checked="checkedBoolean($parent.$parent.$parent.$index, $index, 'false')" ng-click="setBooleanValue($parent.$parent.$parent.$index, $index, false)"/> {{msg('no')}}
                                                     </label>
-                                                    <label class="radio-inline input-large-fluid no-margin-bottom">
+                                                    <label class="radio-inline">
                                                         <editable-content data="i" index="$index" type="BOOLEAN"></editable-content>
                                                     </label>
                                                 </div>
