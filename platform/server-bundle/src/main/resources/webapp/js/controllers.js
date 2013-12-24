@@ -3,7 +3,7 @@
 
     var serverModule = angular.module('motech-dashboard');
 
-    serverModule.controller('MasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect) {
+    serverModule.controller('MasterCtrl', function ($scope, $http, i18nService, $cookieStore, $q, BrowserDetect, Menu) {
         var handle = function () {
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -367,6 +367,19 @@
         $scope.securityMode = false;
 
         $scope.moduleMenu = {};
+
+        $scope.hasMenu = function(menuName){
+            var hasMenuWithGivenName, menuSections ;
+            hasMenuWithGivenName = false;
+            menuSections  = $scope.moduleMenu.sections;
+            angular.forEach(menuSections,function(section){
+                if(section.name === menuName){
+                    hasMenuWithGivenName = true;
+                }
+            });
+            return hasMenuWithGivenName;
+        };
+
 
         $scope.isActiveLink = function(link) {
             return link.moduleName === $scope.getCurrentModuleName() &&

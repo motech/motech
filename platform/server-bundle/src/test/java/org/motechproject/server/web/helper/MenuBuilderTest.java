@@ -1,5 +1,6 @@
 package org.motechproject.server.web.helper;
 
+import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.osgi.web.Header;
 import org.motechproject.osgi.web.ModuleRegistrationData;
+import org.motechproject.osgi.web.SubmenuInfo;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.ext.ApplicationEnvironment;
 import org.motechproject.security.model.RoleDto;
@@ -33,6 +35,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -116,6 +119,50 @@ public class MenuBuilderTest {
         verifyModulesSection(modulesSection, true, false);
     }
 
+    @Test
+    public void shouldNotAddLinksForSubMenusForWhichUserDoesNotHaveRequisiteRole() {
+
+        setUpToTestAccessControlledSubMenuLinks(true);
+
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("fooRole"));
+
+        ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
+        assertNotNull(menu);
+
+        List<ModuleMenuSection> menuSections = menu.getSections();
+        assertNotNull(menuSections);
+
+        ModuleMenuLink onlyFooHasAccessToLink = new ModuleMenuLink("Foo", "foo", "#/foo", false);
+        ModuleMenuLink onlyBarHasAccessToLink = new ModuleMenuLink("Bar", "foo", "#/bar", false);
+        ModuleMenuLink linkIsNotAccessControlled = new ModuleMenuLink("Random", "foo", "#/random", false);
+
+        ModuleMenuSection fooMenuSection = menuSections.get(0);
+
+        assertNotNull(fooMenuSection);
+
+        assertTrue(fooMenuSection.hasLinkFor(onlyFooHasAccessToLink.getUrl()));
+        assertTrue(fooMenuSection.hasLinkFor(linkIsNotAccessControlled.getUrl()));
+        assertFalse(fooMenuSection.hasLinkFor(onlyBarHasAccessToLink.getUrl()));
+    }
+
+    @Test
+    public void shouldNotAddMenuSectionIfUserDoesNotHaveAccessToAnySubMenu() {
+
+        setUpToTestAccessControlledSubMenuLinks(false);
+
+        when(userService.getRoles(USERNAME)).thenReturn(Arrays.asList("someOtherRole"));
+
+        ModuleMenu menu = menuBuilder.buildMenu(USERNAME);
+        assertNotNull(menu);
+
+        List<ModuleMenuSection> menuSections = menu.getSections();
+        assertFalse(menuSections.isEmpty());
+
+        assertThat(menuSections.size(), Is.is(1));
+        assertThat(menuSections.get(0).getName(), Is.is("server.modules"));
+
+    }
+
     private void setUpMenu() {
         HashMap<String, String> i18n = new HashMap<>();
         Header header = new Header(bundleContext);
@@ -156,6 +203,38 @@ public class MenuBuilderTest {
         modules.put(UIFrameworkService.MODULES_WITHOUT_UI, Arrays.asList(outboxRegData));
 
         when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
+    }
+
+
+    private void setUpToTestAccessControlledSubMenuLinks(boolean addSubMenuWithoutAccessControl) {
+
+        ModuleRegistrationData fooRegData = new ModuleRegistrationData("foo", "foo");
+        Map<String, SubmenuInfo> subMenuMap = new HashMap<>();
+        SubmenuInfo subMenuWithAccessForUserFoo = new SubmenuInfo("#/foo");
+        subMenuWithAccessForUserFoo.setRoleForAccess("foo");
+        SubmenuInfo subMenuWithAccessForUserBar = new SubmenuInfo("#/bar");
+        subMenuWithAccessForUserBar.setRoleForAccess("bar");
+        SubmenuInfo subMenuWithoutAccessControl = new SubmenuInfo("#/random");
+
+        subMenuMap.put("Foo", subMenuWithAccessForUserFoo);
+        subMenuMap.put("Bar", subMenuWithAccessForUserBar);
+        if (addSubMenuWithoutAccessControl) {
+            subMenuMap.put("Random", subMenuWithoutAccessControl);
+        }
+
+        fooRegData.setSubMenu(subMenuMap);
+
+        Map<String, Collection<ModuleRegistrationData>> modules = new HashMap<>();
+
+        modules.put(UIFrameworkService.MODULES_WITH_SUBMENU, Arrays.asList(fooRegData));
+
+        when(uiFrameworkService.getRegisteredModules()).thenReturn(modules);
+
+        RoleDto fooRole = new RoleDto("fooRole", Arrays.asList("foo"));
+        RoleDto someOtherRole = new RoleDto("someOtherRole", Arrays.asList("someOtherPermission"));
+
+        when(roleService.getRole("fooRole")).thenReturn(fooRole);
+        when(roleService.getRole("someOtherRole")).thenReturn(someOtherRole);
     }
 
 

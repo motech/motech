@@ -16,6 +16,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.motechproject.security.constants.PermissionNames.ACTIVATE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.ADD_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.DELETE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.EDIT_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_PERMISSION_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_ROLE_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.MANAGE_USER_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.VIEW_BASIC_EMAIL_LOGS_PERMISSION;
+import static org.motechproject.security.constants.PermissionNames.VIEW_DETAILED_EMAIL_LOGS_PERMISSION;
+
 /**
  * This class initializes some of the Motech Permissions, initializes User Admin role, as well as
  * fixes a bug with "Admin User" role name.
@@ -49,20 +59,21 @@ public class Initialize {
         }
 
         //initialize startup permission for user admin
-        MotechPermission addUserPermission = new MotechPermissionCouchdbImpl("addUser", WEB_SECURITY);
-        MotechPermission editUserPermission = new MotechPermissionCouchdbImpl("editUser", WEB_SECURITY);
-        MotechPermission deleteUserPermission = new MotechPermissionCouchdbImpl("deleteUser", WEB_SECURITY);
-        MotechPermission manageUserPermission = new MotechPermissionCouchdbImpl("manageUser", WEB_SECURITY);
-        MotechPermission activeUserPermission = new MotechPermissionCouchdbImpl("activateUser", WEB_SECURITY);
-        MotechPermission manageRolePermission = new MotechPermissionCouchdbImpl("manageRole", WEB_SECURITY);
+        MotechPermission addUserPermission = new MotechPermissionCouchdbImpl(ADD_USER_PERMISSION, WEB_SECURITY);
+        MotechPermission editUserPermission = new MotechPermissionCouchdbImpl(EDIT_USER_PERMISSION, WEB_SECURITY);
+        MotechPermission deleteUserPermission = new MotechPermissionCouchdbImpl(DELETE_USER_PERMISSION, WEB_SECURITY);
+        MotechPermission manageUserPermission = new MotechPermissionCouchdbImpl(MANAGE_USER_PERMISSION, WEB_SECURITY);
+        MotechPermission activeUserPermission = new MotechPermissionCouchdbImpl(ACTIVATE_USER_PERMISSION, WEB_SECURITY);
+        MotechPermission manageRolePermission = new MotechPermissionCouchdbImpl(MANAGE_ROLE_PERMISSION, WEB_SECURITY);
+        MotechPermission managePermissionPermission = new MotechPermissionCouchdbImpl(MANAGE_PERMISSION_PERMISSION, WEB_SECURITY);
 
         //initialize startup permission for email admin
-        MotechPermission viewEmailLogs = new MotechPermissionCouchdbImpl("viewBasicEmailLogs", EMAIL);
-        MotechPermission viewDetailedLogs = new MotechPermissionCouchdbImpl("viewDetailedEmailLogs", EMAIL);
+        MotechPermission viewEmailLogs = new MotechPermissionCouchdbImpl(VIEW_BASIC_EMAIL_LOGS_PERMISSION, EMAIL);
+        MotechPermission viewDetailedLogs = new MotechPermissionCouchdbImpl(VIEW_DETAILED_EMAIL_LOGS_PERMISSION, EMAIL);
 
         //initialize startup role
         MotechRole userAdmin = new MotechRoleCouchdbImpl(USER_ADMIN, Arrays.asList(addUserPermission.getPermissionName(), editUserPermission.getPermissionName(), deleteUserPermission.getPermissionName(), manageUserPermission.getPermissionName(), activeUserPermission.getPermissionName(), manageRolePermission.getPermissionName()), false);
-        MotechRole rolesAdmin = new MotechRoleCouchdbImpl(ROLES_ADMIN, Arrays.asList(manageRolePermission.getPermissionName()), false);
+        MotechRole rolesAdmin = new MotechRoleCouchdbImpl(ROLES_ADMIN, Arrays.asList(manageRolePermission.getPermissionName(), managePermissionPermission.getPermissionName()), false);
 
         //add created permissions
         allMotechPermissions.add(addUserPermission);

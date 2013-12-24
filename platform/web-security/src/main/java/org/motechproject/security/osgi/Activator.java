@@ -7,6 +7,7 @@ import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.motechproject.osgi.web.UIFrameworkService;
 import org.motechproject.osgi.web.exception.ServletRegistrationException;
 import org.motechproject.osgi.web.ext.HttpContextFactory;
+import org.motechproject.security.constants.PermissionNames;
 import org.motechproject.security.filter.MotechDelegatingFilterProxy;
 import org.motechproject.security.service.MotechProxyManager;
 import org.osgi.framework.BundleActivator;
@@ -152,10 +153,10 @@ public class Activator implements BundleActivator {
         regData.setModuleName(MODULE_NAME);
         regData.setUrl("../websecurity/index.html");
         regData.addAngularModule("motech-web-security");
-        regData.addSubMenu("#/users", "security.manageUsers");
-        regData.addSubMenu("#/roles", "security.manageRoles");
-        regData.addSubMenu("#/permissions", "security.managePermissions");
-        regData.addSubMenu("#/dynamicURL", "securtiy.manageURL");
+        regData.addSubMenu("#/users", "security.manageUsers", PermissionNames.MANAGE_USER_PERMISSION);
+        regData.addSubMenu("#/roles", "security.manageRoles", PermissionNames.MANAGE_ROLE_PERMISSION);
+        regData.addSubMenu("#/permissions", "security.managePermissions", PermissionNames.MANAGE_ROLE_PERMISSION);
+        regData.addSubMenu("#/dynamicURL", "securtiy.manageURL", PermissionNames.VIEW_SECURITY);
         regData.addI18N("messages", "../websecurity/messages/");
         regData.setBundle(bundleContext.getBundle());
 
