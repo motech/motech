@@ -261,13 +261,13 @@
                 }
             };
 
-            $scope.getRole = function(role)  {
+            $scope.getRole = function (role) {
                 $scope.addOrEdit = "edit";
-                $http.post('../websecurity/api/web-api/roles/getrole', role.roleName).success(function(data) {
-                       $scope.role = data;
-                       $scope.role.originalRoleName=role.roleName;
+                $http.get('../websecurity/api/web-api/roles/role/' + role.roleName).success(function (data) {
+                    $scope.role = data;
+                    $scope.role.originalRoleName = role.roleName;
                 });
-                $scope.addRoleView=!$scope.addRoleView;
+                $scope.addRoleView = !$scope.addRoleView;
                 $scope.deleteR = false;
             };
 

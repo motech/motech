@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,9 +38,9 @@ public class RoleController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/roles/getrole", method = RequestMethod.POST)
+    @RequestMapping(value = "/roles/role/{roleName}")
     @ResponseBody
-    public RoleDto getRole(@RequestBody String roleName) {
+    public RoleDto role(@PathVariable String roleName) {
         return motechRoleService.getRole(roleName);
     }
 
