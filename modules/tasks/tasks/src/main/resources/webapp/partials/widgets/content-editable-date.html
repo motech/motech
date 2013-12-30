@@ -1,7 +1,7 @@
 <input type="hidden" data-index="{{index}}" data-action="{{action}}" datetime-picker-input/>
-<div class="btn btn-default" readonly contenteditable datetime-picker style="float: right;">
+<span class="btn-sm btn btn-default" readonly contenteditable datetime-picker style="">
     {{$parent.msg("task.button.selectDate")}}
-</div>
+</span>
 <div div-placeholder="task.placeholder.dateOnly" contenteditable ng-model="data.value" droppable class="actionField input-block-level" data-index="{{index}}" data-type="{{data.type}}">
     <span ng-bind-html-unsafe="data.value" ng-model="data.value" class="html">
         <h1 contentEditable="false">
