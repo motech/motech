@@ -23,6 +23,7 @@ public class ModuleMenuLink implements Serializable {
 
     /**
      * Text that is displayed as this link.
+     *
      * @return link text content.
      */
     public String getName() {
@@ -35,6 +36,7 @@ public class ModuleMenuLink implements Serializable {
 
     /**
      * Name of the module to which this link belongs to. Required for building the url.
+     *
      * @return the module to which this link belongs to.
      */
     public String getModuleName() {
@@ -48,6 +50,7 @@ public class ModuleMenuLink implements Serializable {
     /**
      * Url that is appended at the end of this links. In most cases an anchor to the partial loaded
      * by AngularJS.
+     *
      * @return url to be appended.
      */
     public String getUrl() {
@@ -60,6 +63,7 @@ public class ModuleMenuLink implements Serializable {
 
     /**
      * Specifies whether this link should be marked on the UI with a warning sign.
+     *
      * @return true if this module needs attention, false otherwise.
      */
     public boolean isNeedsAttention() {
@@ -68,5 +72,10 @@ public class ModuleMenuLink implements Serializable {
 
     public void setNeedsAttention(boolean needsAttention) {
         this.needsAttention = needsAttention;
+    }
+
+
+    public boolean hasUrl(String linkUrl) {
+        return linkUrl.equals(this.url);
     }
 }

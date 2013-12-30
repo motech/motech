@@ -49,12 +49,23 @@ public class MenuBuilder {
         ModuleMenu moduleMenu = new ModuleMenu();
 
         for (ModuleRegistrationData moduleRegistrationData : getModulesWithSubMenu(username)) {
-            String moduleName = moduleRegistrationData.getModuleName();
+            ModuleMenuSection menuSection = getModuleMenuSection(username, moduleRegistrationData);
+            if (!menuSection.getLinks().isEmpty()) {
+                moduleMenu.addMenuSection(menuSection);
+            }
+        }
+        moduleMenu.addMenuSection(serverModulesMenuSection(username));
+        return moduleMenu;
+    }
 
-            ModuleMenuSection menuSection = new ModuleMenuSection(moduleName, moduleRegistrationData.isNeedsAttention());
+    private ModuleMenuSection getModuleMenuSection(String username, ModuleRegistrationData moduleRegistrationData) {
+        String moduleName = moduleRegistrationData.getModuleName();
+        ModuleMenuSection menuSection = new ModuleMenuSection(moduleName, moduleRegistrationData.isNeedsAttention());
 
-            for (Map.Entry<String, SubmenuInfo> submenuEntry : moduleRegistrationData.getSubMenu().entrySet()) {
-                SubmenuInfo submenuInfo = submenuEntry.getValue();
+        for (Map.Entry<String, SubmenuInfo> submenuEntry : moduleRegistrationData.getSubMenu().entrySet()) {
+            SubmenuInfo submenuInfo = submenuEntry.getValue();
+
+            if (isSubMenuLinkAccessibleByCurrentUser(username, submenuInfo)) {
                 String name = submenuEntry.getKey();
 
                 ModuleMenuLink link = new ModuleMenuLink(name, moduleName, submenuInfo.getUrl(),
@@ -63,9 +74,11 @@ public class MenuBuilder {
                 menuSection.addLink(link);
             }
 
-            moduleMenu.addMenuSection(menuSection);
         }
+        return menuSection;
+    }
 
+    private ModuleMenuSection serverModulesMenuSection(String username) {
         ModuleMenuSection modulesSection = new ModuleMenuSection("server.modules", false);
 
         for (ModuleRegistrationData moduleRegistrationData : getModulesWithoutSubMenu(username)) {
@@ -78,9 +91,7 @@ public class MenuBuilder {
             modulesSection.addLink(link);
         }
 
-        moduleMenu.addMenuSection(modulesSection);
-
-        return moduleMenu;
+        return modulesSection;
     }
 
     private List<ModuleRegistrationData> getModulesWithSubMenu(String userName) {
@@ -117,6 +128,13 @@ public class MenuBuilder {
         return allowedModules;
     }
 
+    private boolean isSubMenuLinkAccessibleByCurrentUser(String userName, SubmenuInfo submenuInfo) {
+        String roleForAccess = submenuInfo.getRoleForAccess();
+        if (roleForAccess == null) {
+            return true;
+        }
+        return checkUserPermission(userService.getRoles(userName), roleForAccess);
+    }
 
     private boolean checkUserPermission(List<String> roles, String requiredPermission) {
         for (String userRole : roles) {

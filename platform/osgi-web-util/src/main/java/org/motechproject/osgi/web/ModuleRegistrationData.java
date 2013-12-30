@@ -5,9 +5,9 @@ import org.osgi.framework.Bundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Object used to registered a module withing the Motech UI system. Represents a module and is used
@@ -33,7 +33,7 @@ public class ModuleRegistrationData {
     private Map<String, String> i18n = new HashMap<>();
 
     public ModuleRegistrationData() {
-        this(null, (String)null);
+        this(null, (String) null);
     }
 
     public ModuleRegistrationData(String moduleName, String url, List<String> angularModules, Map<String, String> i18n, Header header) {
@@ -77,6 +77,13 @@ public class ModuleRegistrationData {
     @JsonIgnore
     public void addSubMenu(String url, String label) {
         subMenu.put(label, new SubmenuInfo(url));
+    }
+
+    @JsonIgnore
+    public void addSubMenu(String url, String label, String roleForAccess) {
+        SubmenuInfo submenuInfo = new SubmenuInfo(url);
+        submenuInfo.setRoleForAccess(roleForAccess);
+        subMenu.put(label, submenuInfo);
     }
 
     @JsonIgnore

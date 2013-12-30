@@ -49,4 +49,13 @@ public class ModuleMenuSection implements Serializable {
     public void addLink(ModuleMenuLink link) {
         links.add(link);
     }
+
+    public boolean hasLinkFor(String url) {
+        for (ModuleMenuLink link : links) {
+            if (link.hasUrl(url)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
