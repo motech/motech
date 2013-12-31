@@ -91,7 +91,7 @@ public class MotechProxyManager {
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();
 
         for (MotechURLSecurityRule securityRule : securityRules) {
-            if (securityRule.isActive()) {
+            if (securityRule.getActive()) {
                 LOGGER.debug("Creating SecurityFilterChain for: {}", securityRule.getPattern());
                 for (String method : securityRule.getMethodsRequired()) {
                     newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));

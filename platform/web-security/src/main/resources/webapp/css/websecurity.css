@@ -34,6 +34,10 @@
     text-decoration: none;
 }
 
+.panel-heading.active {
+    background: linear-gradient(to bottom, #D3E9FE 0%, #BFDCF4 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+
 .dynamic-select {
     width: 100%;
 }
