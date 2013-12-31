@@ -131,7 +131,7 @@ public class MotechURLSecurityRule implements Serializable {
         this.methodsRequired = methodsRequired;
     }
 
-    public boolean isActive() {
+    public boolean getActive() {
         return active;
     }
 

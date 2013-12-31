@@ -15,7 +15,7 @@
 
             <div class="panel-group rule" id="rule-{{$index}}" ng-repeat="rule in config.securityRules">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div ng-class="{false: 'panel-heading', true: 'panel-heading active'}[rule.active]">
                         <div class="pull-right">
                             <button ng-click="removeRule($index)" class="btn btn-danger btn-in-header btn-sm">
                                 <i class="icon-remove icon-white"></i>
@@ -116,9 +116,9 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" class="btn" ng-class="{true: 'btn-success', false: 'btn-warning'}[rule.active]" ng-click="toggleActive(rule)">
-                                            <i class="icon-white" ng-class="{true: 'icon-play', false: 'icon-stop'}[rule.active]"></i>
-                                            {{msg('security.dynamic.' + (rule.active ? 'activate' : 'deactivate'))}}
+                                        <button type="submit" class="btn" ng-class="{false: 'btn-success', true: 'btn-warning'}[rule.active]" ng-click="toggleActive(rule)">
+                                            <i class="icon-white" ng-class="{false: 'icon-play', true: 'icon-stop'}[rule.active]"></i>
+                                            {{msg('security.dynamic.' + (rule.active ? 'deactivate' : 'activate'))}}
                                         </button>
                                         <button type="submit" class="btn btn-danger" ng-click="removeRule($index)">{{msg('security.remove')}}</button>
                                     </div>
