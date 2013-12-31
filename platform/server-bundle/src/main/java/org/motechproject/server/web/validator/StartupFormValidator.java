@@ -2,7 +2,6 @@ package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
-import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.config.domain.LoginMode;
@@ -28,7 +27,6 @@ public class StartupFormValidator implements Validator {
     private UrlValidator urlValidator;
 
     private MotechUserService userService;
-    private ConfigurationService configurationService;
 
     private static final String ERROR_REQUIRED = "server.error.required.%s";
     private static final String ERROR_INVALID = "server.error.invalid.%s";
@@ -36,10 +34,9 @@ public class StartupFormValidator implements Validator {
     private static final String PROVIDER_URL = "providerUrl";
     private static final String LOGIN_MODE = "loginMode";
 
-    public StartupFormValidator(MotechUserService userService, ConfigurationService configurationService) {
+    public StartupFormValidator(MotechUserService userService) {
         urlValidator = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
         this.userService = userService;
-        this.configurationService = configurationService;
     }
 
     @Override
@@ -49,8 +46,8 @@ public class StartupFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        LoginMode loginModeFromConfig = configurationService.getPlatformSettings().getLoginMode();
-        if (loginModeFromConfig == null || loginModeFromConfig.isOpenId()) {
+        LoginMode loginMode = LoginMode.valueOf(String.valueOf(errors.getFieldValue("loginMode").toString()));
+        if (loginMode == null || loginMode.isOpenId()) {
             String queueUrl = "queueUrl";
             validateEmptyOrWhitespace(errors, ERROR_REQUIRED, "language", queueUrl);
 
@@ -59,7 +56,6 @@ public class StartupFormValidator implements Validator {
                 validateQueueUrl(errors, value, queueUrl);
             }
 
-            LoginMode loginMode = LoginMode.valueOf(errors.getFieldValue("loginMode").toString());
             if (LoginMode.REPOSITORY.equals(loginMode)) {
                 validateRepository(errors);
             } else if (LoginMode.OPEN_ID.equals(loginMode)) {

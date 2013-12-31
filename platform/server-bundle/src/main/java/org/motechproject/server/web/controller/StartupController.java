@@ -68,7 +68,7 @@ public class StartupController {
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new StartupFormValidator(userService, configurationService));
+        binder.setValidator(new StartupFormValidator(userService));
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.GET)

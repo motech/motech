@@ -195,7 +195,7 @@ public class StartupControllerTest {
     @Test
     public void testUriValidation() {
         StartupForm startupForm = startupForm();
-        StartupFormValidator validator = new StartupFormValidator(userService, configurationService);
+        StartupFormValidator validator = new StartupFormValidator(userService);
 
         Errors errors;
         for (String uri : uriAssertFalseList) {
