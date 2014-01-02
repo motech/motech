@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * The MotechProxyManager acts as a wrapper around Spring's FilterChainProxy.
@@ -87,10 +89,24 @@ public class MotechProxyManager {
     }
 
     private void updateSecurityChain(List<MotechURLSecurityRule> securityRules) {
-        LOGGER.debug("Updating security chain");
+            LOGGER.debug("Updating security chain");
+
+        // sort rules by priority descending
+        TreeSet<MotechURLSecurityRule> sortedRules = new TreeSet<>(new Comparator<MotechURLSecurityRule>() {
+            @Override
+            public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
+                Integer priority1 = o1.getPriority();
+                Integer priority2 = o2.getPriority();
+
+                int result = priority2.compareTo(priority1);
+                return (result == 0) ? 1 : result; // do not return 0(equals)
+            }
+        });
+        sortedRules.addAll(securityRules);
+
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();
 
-        for (MotechURLSecurityRule securityRule : securityRules) {
+        for (MotechURLSecurityRule securityRule : sortedRules) {
             if (securityRule.getActive()) {
                 LOGGER.debug("Creating SecurityFilterChain for: {}", securityRule.getPattern());
                 for (String method : securityRule.getMethodsRequired()) {
