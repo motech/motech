@@ -4,12 +4,14 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
+import org.motechproject.server.web.dto.LoginViewData;
 import org.motechproject.server.web.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,22 +48,29 @@ public class LoginController {
         ModelAndView view = new ModelAndView("loginPage");
         view.addObject("mainHeader", mainHeader);
 
-        String contextPath = request.getSession().getServletContext().getContextPath();
-
-        if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {
-            view.addObject("contextPath", contextPath.substring(1) + "/");
-        } else if (StringUtils.isBlank(contextPath) || "/".equals(contextPath)) {
-            view.addObject("contextPath", "");
-        }
-
-        view.addObject("loginMode", settingsFacade.getPlatformSettings().getLoginMode());
-        view.addObject("openIdProviderName", settingsFacade.getPlatformSettings().getProviderName());
-        view.addObject("openIdProviderUrl", settingsFacade.getPlatformSettings().getProviderUrl());
-        view.addObject("error", request.getParameter("error"));
-        view.addObject("loginForm", new LoginForm());
-        view.addObject("pageLang", localeService.getUserLocale(request));
-
         return view;
     }
 
+    @RequestMapping(value = "/loginviewdata", method = RequestMethod.GET)
+    @ResponseBody
+    public LoginViewData getLoginViewData(final HttpServletRequest request) {
+
+        LoginViewData view = new LoginViewData();
+        view.setLoginMode(settingsFacade.getPlatformSettings().getLoginMode());
+        view.setOpenIdProviderName(settingsFacade.getPlatformSettings().getProviderName());
+        view.setOpenIdProviderUrl(settingsFacade.getPlatformSettings().getProviderUrl());
+        view.setLoginForm(new LoginForm());
+        view.setError(request.getParameter("error"));
+        view.setPageLang(localeService.getUserLocale(request));
+
+        String contextPath = request.getSession().getServletContext().getContextPath();
+
+        if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {
+            view.setContextPath(contextPath.substring(1) + "/");
+        } else if (StringUtils.isBlank(contextPath) || "/".equals(contextPath)) {
+            view.setContextPath("");
+        }
+
+        return view;
+    }
 }

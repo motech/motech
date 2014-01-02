@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
@@ -69,16 +68,10 @@ public class LoginControllerTest {
 
     @Test
     public void testLogin() throws Exception {
-
-        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
-        when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
-
         ModelAndView actualModelAndView = controller.perform(
                 get("/login")
         ).andReturn().getModelAndView();
 
         assertEquals("loginPage", actualModelAndView.getViewName());
-
-        assertEquals(LoginMode.REPOSITORY, actualModelAndView.getModelMap().get("loginMode"));
     }
 }

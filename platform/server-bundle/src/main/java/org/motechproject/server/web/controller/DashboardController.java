@@ -59,6 +59,7 @@ public class DashboardController {
         } else {
             mav = new ModelAndView("index");
             mav.addObject("isAccessDenied", false);
+            mav.addObject("loginPage", false);
             mav.addObject("mainHeader", mainHeader);
             String contextPath = request.getSession().getServletContext().getContextPath();
 
@@ -85,7 +86,7 @@ public class DashboardController {
     public ModelAndView accessdenied(final HttpServletRequest request) {
         ModelAndView view = index(null, request);
         view.addObject("isAccessDenied", true);
-
+        view.addObject("loginPage", false);
         return view;
     }
 

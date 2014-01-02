@@ -28,6 +28,7 @@
         $scope.user = {
             anonymous: true
         };
+        $scope.loginViewData = {};
 
         $scope.showDashboardLogo = {
             showDashboard : true,
@@ -319,6 +320,22 @@
             ngtarget[ngkey] = value;
         };
 
+        $scope.getUrlVar = function (key) {
+            var result = new RegExp(key + "=([^&]*)", "i").exec(window.location.search);
+            return result || "";
+        };
+
+        $scope.getLoginViewData = function() {
+            $scope.doAJAXHttpRequest('GET', 'loginviewdata', function (data) {
+                var parameter = $scope.getUrlVar("error");
+                $scope.loginViewData = data;
+
+                if (parameter !== '') {
+                    $scope.loginViewData.error = parameter;
+                }
+            });
+        };
+
         $scope.verifyDbConnection = function() {
             var alerts = $('.alerts-container'), infos, warnings, errors;
             alerts.empty();
@@ -418,5 +435,4 @@
         });
 
     });
-
 }());
