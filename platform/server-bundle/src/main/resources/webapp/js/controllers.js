@@ -25,6 +25,9 @@
         $scope.bodyState = true;
         $scope.outerLayout = {};
         $scope.innerLayout = {};
+        $scope.user = {
+            anonymous: true
+        };
 
         $scope.showDashboardLogo = {
             showDashboard : true,
@@ -288,10 +291,7 @@
                 $scope.languages = data;
             }),
             $scope.doAJAXHttpRequest('GET', 'lang', function (data) {
-                $scope.user = {
-                    lang : data,
-                    anonymous: true
-                };
+                $scope.user.lang = data;
             })
         ]).then(function () {
             $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
@@ -398,7 +398,8 @@
             $scope.doAJAXHttpRequest('POST', 'getUser', function (data) {
                 var scope = angular.element("body").scope();
 
-                scope.user = data;
+                scope.user.userName = data.userName;
+                scope.user.securityLaunch = data.securityLaunch;
                 scope.user.anonymous = false;
 
                 if (!$scope.$$phase) {
