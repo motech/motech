@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var app = angular.module('event-aggregation', ['motech-dashboard', 'AggregationRuleServices', 'ngCookies', 'ngRoute', 'bootstrap'])
+    var app = angular.module('event-aggregation', ['motech-dashboard', 'AggregationRuleServices', 'ngCookies', 'ngRoute'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider.
                 when('/', {

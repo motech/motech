@@ -3,7 +3,7 @@
 
     var mds = angular.module('mds', [
         'motech-dashboard', 'entityService','instanceService', 'mdsSettingsService', 'ngCookies', 'ui.directives',
-        'ngRoute', 'bootstrap', 'ui.directives'
+        'ngRoute', 'ui.directives'
     ]);
 
     mds.constant('AVAILABLE_TABS', ['schemaEditor', 'dataBrowser', 'settings']);
