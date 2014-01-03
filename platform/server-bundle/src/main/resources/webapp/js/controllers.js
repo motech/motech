@@ -424,8 +424,10 @@
                 }
             })
         ]).then(function () {
-            $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
-            moment.lang($scope.user.lang);
+            if ($scope.user.lang) {
+                $scope.userLang = $scope.getLanguage(toLocale($scope.user.lang));
+                moment.lang($scope.user.lang);
+            }
         });
 
         $scope.$on('module.list.refresh', function () {
