@@ -14,7 +14,7 @@
                 <a href=".">
                     <div class="dashboard-logo"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div>
                 </a>
-                <div class="navbar-collapse hidden-xs">
+                <div class="hidden-xs hidden-sm">
                     <div class="header-title">
                         {{msg('server.motechTitle')}}
                     </div>
@@ -87,7 +87,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-if="loginViewData.error != null" class="well2 margin-center margin-before spnw10">
+                    <div ng-if="loginViewData.error != null" class="well2 margin-center margin-before col-sm-12">
                         <div class="box-header">
                             {{msg('security.signInUnsuccessful')}}
                         </div>

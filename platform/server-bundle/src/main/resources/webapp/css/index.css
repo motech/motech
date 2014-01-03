@@ -1029,7 +1029,7 @@ select {
 .splash-header-alert {
     min-height: 30px;
     height: auto;
-    padding: 10px 0 0 0;
+    padding: 10px 0 10px 0;
     color: #ffffff;
     font-size: 20px;
     font-weight: bold;

@@ -17,15 +17,15 @@
 
         <script src="../../server/resources/lib/jquery/jquery.js"></script>
         <script src="../../server/resources/lib/jquery/jquery.migrate.min.js"></script>
-        <script src="../../server/resources/lib/bootstrap/bootstrap.min.js"></script>
+        <script src="../../server/resources/lib/bootstrap/bootstrap.js"></script>
     </head>
 
     <body class="body-down">
         <div class="bodywrap">
             <div class="header">
                 <div class="container">
-                    <a href="."><div class="dashboard-logo hidden-xs" ng-show="showDashboardLogo.showDashboard"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../server/resources/img/motech-logo.jpg"></div></a>
-                    <div class="navbar-collapse hidden-xs">
+                    <a href="."><div class="dashboard-logo"><img class="logo" alt="Logo - {{msg('server.motechTitle')}}" src="../../server/resources/img/motech-logo.jpg"></div></a>
+                    <div class="hidden-xs hidden-sm">
                         <div class="header-title"><fmt:message key="server.motechTitle" bundle="${bundle}"/></div>
                     </div>
                     <div class="clearfix"></div>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="clearfix"></div>
-            <div class="navbar-wrapper navbar-default hidden-xs">
+            <div class="navbar-wrapper navbar-default">
                 <div class="header-nav navbar">
                     <div class="navbar-inner navbar-inner-bg">
                     </div>
