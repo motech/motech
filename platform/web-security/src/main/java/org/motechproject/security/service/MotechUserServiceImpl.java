@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -183,7 +184,8 @@ public class MotechUserServiceImpl implements MotechUserService {
 
     @Override
     public List<String> getRoles(String userName) {
-        return allMotechUsers.findByUserName(userName).getRoles();
+        MotechUser user = allMotechUsers.findByUserName(userName);
+        return (user == null) ? Collections.<String>emptyList() : user.getRoles();
     }
 
     @Override

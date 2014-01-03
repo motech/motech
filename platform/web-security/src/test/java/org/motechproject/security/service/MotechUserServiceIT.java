@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import static java.util.Arrays.asList;
@@ -173,6 +174,13 @@ public class MotechUserServiceIT extends SpringIntegrationTest {
         motechUserService.register("username", "password", "1234", "", asList("IT_ADMIN"), Locale.ENGLISH);
         assertNotNull(motechUserService.retrieveUserByCredentials("username", "password"));
         assertNull(motechUserService.retrieveUserByCredentials("username", "passw550rd"));
+    }
+
+    @Test
+    public void shouldReturnEmptyListOfRolesForNonExistentUser() {
+        List<String> roles = motechUserService.getRoles("non-existent");
+        assertNotNull(roles);
+        assertTrue(roles.isEmpty());
     }
 
     @After
