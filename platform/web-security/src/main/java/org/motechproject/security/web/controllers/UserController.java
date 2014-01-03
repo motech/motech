@@ -56,8 +56,16 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/users/getuser", method = RequestMethod.POST)
-    @ResponseBody public UserDto getUser(@RequestBody String userName) {
+    @ResponseBody
+    public UserDto getUser(@RequestBody String userName) {
         return motechUserService.getUser(userName);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/users/current", method = RequestMethod.GET)
+    @ResponseBody
+    public UserDto currentUser() {
+        return motechUserService.getCurrentUser();
     }
 
     @ResponseStatus(HttpStatus.OK)

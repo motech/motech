@@ -34,7 +34,7 @@
                     </a>
                     <ul id="localization" class="dropdown-menu" role="menu">
                         <li ui-if="user.securityLaunch">
-                            <a href="#/websecurity/profile/{{user.userName}}" tabindex="-1">
+                            <a ng-click="selectModules('websecurity')" role="menu" href="home?moduleName=websecurity#/profile" tabindex="-1">
                                 <span class="icon-user"></span> {{msg('server.profile')}}
                             </a>
                         </li>

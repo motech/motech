@@ -13,6 +13,9 @@ import org.motechproject.security.repository.AllMotechUsers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -117,6 +120,19 @@ public class MotechUserServiceImpl implements MotechUserService {
     public UserDto getUserByEmail(String email) {
         MotechUser user = allMotechUsers.findUserByEmail(email);
         return user == null ? null : new UserDto(user);
+    }
+
+    @Override
+    public UserDto getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userInSession = (authentication == null) ? null : (User) authentication.getPrincipal();
+        if (userInSession == null) {
+            return null;
+        }
+
+        String currentUserName = userInSession.getUsername();
+        MotechUser user = allMotechUsers.findByUserName(currentUserName);
+        return new UserDto(user);
     }
 
     @Override

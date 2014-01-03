@@ -352,13 +352,11 @@
     });
 
     webSecurityModule.controller('ProfileCtrl', function ($scope, Users, $http, $routeParams) {
-        if ($routeParams.username !== undefined) {
-            $http.post('../websecurity/api/users/getuser', $routeParams.username).
+            $http.get('../websecurity/api/users/current').
                 success(function(data) {
                     $scope.userName = data.userName;
                     $scope.email = data.email;
                 });
-        }
 
         $scope.cssPassword = function() {
             var msg = 'form-group';
