@@ -12,7 +12,7 @@ import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.SuggestionHelper;
-import org.motechproject.server.web.validator.StartupFormValidator;
+import org.motechproject.server.web.validator.StartupFormValidatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -33,6 +33,11 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
+import static org.motechproject.security.UserRoleNames.BUNDLE_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
+import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
 import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 
 /**
@@ -41,11 +46,6 @@ import static org.motechproject.server.web.controller.Constants.REDIRECT_HOME;
 @Controller
 public class StartupController {
 
-    public static final String BUNDLE_ADMIN_ROLE = "Bundle Admin";
-    public static final String USER_ADMIN_ROLE = "User Admin";
-    public static final String EMAIL_ADMIN_ROLE = "Email Admin";
-    public static final String SECURITY_ADMIN_ROLE = "Security Admin";
-    public static final String ROLES_ADMIN = "Roles Admin";
 
     @Autowired
     private StartupManager startupManager;
@@ -66,9 +66,12 @@ public class StartupController {
     @Qualifier("mainHeaderStr")
     private String mainHeader;
 
+    @Autowired
+    private StartupFormValidatorFactory startupFormValidatorFactory;
+
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new StartupFormValidator(userService));
+        binder.setValidator(startupFormValidatorFactory.getStartupFormValidator(userService));
     }
 
     @RequestMapping(value = "/startup", method = RequestMethod.GET)
@@ -94,6 +97,7 @@ public class StartupController {
             view.addObject("languages", localeService.getAvailableLanguages());
             view.addObject("pageLang", userLocale);
             view.addObject("isFileMode", ConfigSource.FILE.equals(configSource));
+            view.addObject("isAdminRegistered", userService.hasActiveAdminUser());
         }
 
         return view;
@@ -102,6 +106,12 @@ public class StartupController {
     @RequestMapping(value = "/startup", method = RequestMethod.POST)
     public ModelAndView submitForm(@ModelAttribute("startupSettings") @Valid StartupForm form,
                                    BindingResult result) {
+        // only allow this post in startup mode
+        if (startupManager.canLaunchBundles()) {
+            return new ModelAndView(REDIRECT_HOME);
+        }
+
+
         ModelAndView view = new ModelAndView(REDIRECT_HOME);
         ConfigSource configSource = (configurationService.loadBootstrapConfig() != null) ?
                 configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
@@ -113,6 +123,7 @@ public class StartupController {
             view.addObject("loginMode", form.getLoginMode());
             view.addObject("errors", getErrors(result));
             view.addObject("isFileMode", ConfigSource.FILE.equals(configSource));
+            view.addObject("isAdminRegistered", userService.hasActiveAdminUser());
 
             view.setViewName("startup");
         } else {
@@ -164,6 +175,11 @@ public class StartupController {
     }
 
     private void registerAdminUser(StartupForm form) {
+
+        if (userService.hasActiveAdminUser()) {
+            return;
+        }
+
         String login = form.getAdminLogin();
         String password = form.getAdminPassword();
         String email = form.getAdminEmail();

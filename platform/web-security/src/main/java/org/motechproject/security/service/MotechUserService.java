@@ -52,4 +52,5 @@ public interface MotechUserService {
 
     List<String> getRoles(String userName);
 
+    boolean hasActiveAdminUser();
 }

@@ -31,4 +31,8 @@ public class MotechUserProfile implements Serializable {
     public Boolean getActive() {
         return user.isActive();
     }
+
+    public boolean hasRole(String role) {
+        return user.hasRole(role);
+    }
 }

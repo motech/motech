@@ -20,11 +20,9 @@ import org.motechproject.server.ui.LocaleService;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.SuggestionHelper;
-import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +35,6 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +48,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.security.UserRoleNames.BUNDLE_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
+import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
+
 
 public class StartupControllerTest {
     private static final String SUGGESTIONS_KEY = "suggestions";
@@ -60,19 +63,8 @@ public class StartupControllerTest {
     private static final String IS_FILE_MODE_KEY = "isFileMode";
     private static final String HEADER_KEY = "mainHeader";
     private static final String REQUIRES_CONFIG_FILES = "requireConfigFiles";
+    private static final String IS_ADMIN_REGISTERED = "isAdminRegistered";
 
-    private static final List<String> uriAssertFalseList = Arrays.asList("failoverr:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://localhost:61616,tcp://remotehost:61616)?initialReconnectDelay=100",
-            "failover:(tcp://256.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://127.0..0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100",
-            "failover:((tcp:///127.0.0.1:61616,tcp://127.0.0.1:61616))?initialReconnectDelay=100", "failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:612616)?initialReconnectDelay=100",
-            "failover:(tcp://127.0.0.1:61616,tcp://1217.0.0.1:61616)?initialReconnectDelay=100", "failover://(tcp://137.0.0.1:61616,tcp://137.0.0.1:61616)?timeout=3000",
-            "fanout:(static:(tcp:///localhost:61629,tcp://localhost:61639,tcp://localhost:61649))", "fanout:(staatic:(tcp://localhost:61629,tcp://localhost:61639,tcp://localhost:61649))",
-            "vm:(brooker:(tcp://localhost:6000)?persistent=false)?marshal=false", "wjfwwfeweffwwewf", "  ", ".....");
-
-    private static final List<String> uriAssertTrueList = Arrays.asList("failover:(tcp://127.0.0.1:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100", "failover:(tcp://117.0.0.1:61616,tcp://117.0.0.1:61616)?randomize=false",
-            "fanout:(static:(tcp://127.0.0.1:61629,tcp://127.0.0.1:61639,tcp://127.0.0.1:61649))", "failover:(tcp://192.168.42.100:61616,tcp://192.168.42.101:61616)",
-            "failover:(tcp://137.0.0.1:61616,udp://137.0.0.1:61616)?randomize=false&priorityBackup=true", "vm:(broker:(tcp://127.0.0.1:6000)?persistent=false)?marshal=false",
-            "failover:(vm://137.0.0.1:61616,http://137.0.0.1:61616,https://137.0.0.1:61616)?randomize=false&priorityBackup=true&priorityURIs=tcp://137.0.0.1:61616,tcp://137.0.0.1:61616",
-            "vm:(static:(tcp://137.0.0.1:6000)?persistent=false)?marshal=false", "ssl://137.0.0.1:61616?transport.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
 
     @Mock
     private StartupManager startupManager;
@@ -132,7 +124,8 @@ public class StartupControllerTest {
         verify(localeService).getUserLocale(httpServletRequest);
 
         assertEquals("startup", result.getViewName());
-        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY, IS_FILE_MODE_KEY, HEADER_KEY, REQUIRES_CONFIG_FILES);
+        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY,
+                IS_FILE_MODE_KEY, HEADER_KEY, REQUIRES_CONFIG_FILES, IS_ADMIN_REGISTERED);
 
         StartupSuggestionsForm startupSuggestionsForm = (StartupSuggestionsForm) result.getModelMap().get(SUGGESTIONS_KEY);
 
@@ -162,7 +155,6 @@ public class StartupControllerTest {
         startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
-        when(startupManager.canLaunchBundles()).thenReturn(true);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
@@ -180,7 +172,6 @@ public class StartupControllerTest {
         startupForm.setLoginMode(LoginMode.OPEN_ID.getName());
         when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
-        when(startupManager.canLaunchBundles()).thenReturn(true);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
         ModelAndView result = startupController.submitForm(startupForm, bindingResult);
@@ -193,23 +184,21 @@ public class StartupControllerTest {
     }
 
     @Test
-    public void testUriValidation() {
-        StartupForm startupForm = startupForm();
-        StartupFormValidator validator = new StartupFormValidator(userService);
+    public void shouldAddErrorsAndOtherFlagsInModelWhenValidationFails() {
+        when(bindingResult.hasErrors()).thenReturn(true);
+        ObjectError error = new ObjectError("loginMode", new String[]{"error.required.loginMode"}, null, "LogIn Mode Required");
+        List<ObjectError> objectErrors = Arrays.asList(error);
+        when(bindingResult.getAllErrors()).thenReturn(objectErrors);
 
-        Errors errors;
-        for (String uri : uriAssertFalseList) {
-            errors = new BeanPropertyBindingResult(startupForm, "validQueue");
-            validator.validateQueueUrl(errors, uri, "queueUrl");
-            assertTrue(errors.hasErrors());
-        }
+        when(userService.hasActiveAdminUser()).thenReturn(true);
 
-        for (String uri : uriAssertTrueList) {
-            errors = new BeanPropertyBindingResult(startupForm, "validQueue");
-            validator.validateQueueUrl(errors, uri, "queueUrl");
-            assertFalse(errors.hasErrors());
-        }
+        ModelAndView modelAndView = startupController.submitForm(startupForm(), bindingResult);
+        assertThat(modelAndView.getViewName(), Is.is("startup"));
+        List<String> errors = (List<String>) modelAndView.getModelMap().get("errors");
+        assertThat(errors.contains("error.required.loginMode"), Is.is(true));
+        assertThat((Boolean) modelAndView.getModelMap().get("isAdminRegistered"), Is.is(true));
     }
+
 
     @Test
     public void shouldInformViewThatConfigFilesRequiredWhenConfigSourceIsFileAndConfigFilesDoNotExist() throws IOException {
@@ -258,6 +247,51 @@ public class StartupControllerTest {
     }
 
 
+    @Test
+    public void shouldAddFlagIndicatingAbsenceOfAdminUser() {
+        when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en", "US"));
+        when(userService.hasActiveAdminUser()).thenReturn(false);
+
+        ModelAndView startup = startupController.startup(httpServletRequest);
+        Boolean isAdminRegistered = (Boolean) startup.getModelMap().get(IS_ADMIN_REGISTERED);
+
+        assertThat(isAdminRegistered, Is.is(false));
+        verify(userService).hasActiveAdminUser();
+    }
+
+    @Test
+    public void shouldNotRegisterAdminUserIfActiveAdminUserAlreadyExists() {
+        StartupForm startupForm = startupForm();
+        startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
+        when(startupManager.canLaunchBundles()).thenReturn(true);
+        when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
+
+        when(userService.hasActiveAdminUser()).thenReturn(true);
+
+        startupController.submitForm(startupForm, bindingResult);
+
+        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
+
+    }
+
+    @Test
+    public void shouldNotAllowStartupPostAfterStartup() {
+        StartupForm form = new StartupForm();
+        form.setLoginMode(LoginMode.REPOSITORY.getName());
+
+        when(startupManager.canLaunchBundles()).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        ModelAndView mav = startupController.submitForm(form, bindingResult);
+
+        assertEquals("redirect:home", mav.getViewName());
+        verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
+        verify(startupManager, never()).startup();
+    }
+
     private void assertModelMap(final ModelMap modelMap, String... keys) {
         assertEquals(keys.length, modelMap.size());
 
@@ -290,9 +324,9 @@ public class StartupControllerTest {
                     @Override
                     public boolean matches(Object argument) {
                         List<String> val = (List<String>) argument;
-                        return val.equals(Arrays.asList(StartupController.USER_ADMIN_ROLE, StartupController.BUNDLE_ADMIN_ROLE, StartupController.EMAIL_ADMIN_ROLE,
-                                StartupController.SECURITY_ADMIN_ROLE,
-                                StartupController.ROLES_ADMIN));
+                        return val.equals(Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE,
+                                SECURITY_ADMIN_ROLE,
+                                ROLES_ADMIN));
                     }
                 }), eq(Locale.ENGLISH));
     }

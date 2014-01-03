@@ -1,5 +1,8 @@
 package org.motechproject.security.service;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.motechproject.security.UserRoleNames;
 import org.motechproject.security.authentication.MotechPasswordEncoder;
 import org.motechproject.security.domain.MotechUser;
 import org.motechproject.security.domain.MotechUserCouchdbImpl;
@@ -181,6 +184,19 @@ public class MotechUserServiceImpl implements MotechUserService {
     @Override
     public List<String> getRoles(String userName) {
         return allMotechUsers.findByUserName(userName).getRoles();
+    }
+
+    @Override
+    public boolean hasActiveAdminUser() {
+        List<MotechUserProfile> users = getUsers();
+        MotechUserProfile motechUser = (MotechUserProfile) CollectionUtils.find(users, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                MotechUserProfile user = (MotechUserProfile) object;
+                return user.getActive() && user.hasRole(UserRoleNames.USER_ADMIN_ROLE);
+            }
+        });
+        return motechUser != null;
     }
 
 }

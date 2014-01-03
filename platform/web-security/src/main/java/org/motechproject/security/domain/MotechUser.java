@@ -36,4 +36,6 @@ public interface MotechUser {
     Locale getLocale();
 
     void setLocale(Locale locale);
+
+    boolean hasRole(String role);
 }

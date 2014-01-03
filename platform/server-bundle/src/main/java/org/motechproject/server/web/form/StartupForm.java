@@ -3,6 +3,18 @@ package org.motechproject.server.web.form;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
 public class StartupForm {
+
+    public static final String LANGUAGE = "language";
+    public static final String QUEUE_URL = "queueUrl";
+    public static final String SCHEDULER_URL = "schedulerUrl";
+    public static final String ADMIN_LOGIN = "adminLogin";
+    public static final String ADMIN_PASSWORD = "adminPassword";
+    public static final String ADMIN_CONFIRM_PASSWORD = "adminConfirmPassword";
+    public static final String ADMIN_EMAIL = "adminEmail";
+    public static final String LOGIN_MODE = "loginMode";
+    public static final String PROVIDER_NAME = "providerName";
+    public static final String PROVIDER_URL = "providerUrl";
+
     private String language = EMPTY;
     private String queueUrl = EMPTY;
     private String schedulerUrl = EMPTY;
