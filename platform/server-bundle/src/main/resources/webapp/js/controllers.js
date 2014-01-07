@@ -29,6 +29,7 @@
             anonymous: true
         };
         $scope.loginViewData = {};
+        $scope.resetViewData = {};
 
         $scope.showDashboardLogo = {
             showDashboard : true,
@@ -333,6 +334,37 @@
                 if (parameter !== '') {
                     $scope.loginViewData.error = parameter;
                 }
+            });
+        };
+
+        $scope.getResetViewData = function() {
+            var parametr = window.location.search;
+
+            $scope.doAJAXHttpRequest('GET', '../server/resetviewdata' + parametr, function (data) {
+                $scope.resetViewData = data;
+            });
+        };
+
+        $scope.submitResetPasswordForm = function() {
+            blockUI();
+
+            $http({
+                method: 'POST',
+                url: '../server/reset',
+                data: $scope.resetViewData.resetForm
+            }).success(function(data) {
+                unblockUI();
+
+                if (data.errors === undefined || data.errors.length === 0) {
+                    data.errors = null;
+                }
+
+                $scope.resetViewData = data;
+            })
+            .error(function(data) {
+                unblockUI();
+                motechAlert('server.reset.error');
+                $scope.resetViewData.errors = ['server.reset.error'];
             });
         };
 

@@ -1,4 +1,4 @@
-package org.motechproject.security.web.form;
+package org.motechproject.server.web.form;
 
 public class ResetForm {
 

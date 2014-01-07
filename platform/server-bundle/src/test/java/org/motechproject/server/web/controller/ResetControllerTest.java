@@ -1,20 +1,21 @@
-package org.motechproject.security.web.controllers;
+package org.motechproject.server.web.controller;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.server.web.dto.ResetViewData;
+import org.motechproject.server.web.validator.ResetFormValidator;
 import org.motechproject.security.ex.InvalidTokenException;
 import org.motechproject.security.service.PasswordRecoveryService;
-import org.motechproject.security.web.form.ResetForm;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.motechproject.server.web.form.ResetForm;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,19 +36,16 @@ public class ResetControllerTest {
     private PasswordRecoveryService recoveryService;
 
     @Mock
-    private ObjectError objectError;
-
-    @Mock
-    private BindingResult bindingResult;
-
-    @Mock
-    private ResetForm form;
+    private ResetFormValidator resetFormValidator;
 
     @Mock
     private CookieLocaleResolver cookieLocaleResolver;
 
     @Mock
     private HttpServletRequest request;
+
+    @Mock
+    private ResetForm form;
 
     @InjectMocks
     private ResetController controller = new ResetController();
@@ -62,72 +60,70 @@ public class ResetControllerTest {
     public void testInvalidTokenOnView() {
         when(recoveryService.validateToken(TOKEN)).thenReturn(false);
 
-        ModelAndView mav = controller.resetView(TOKEN, request);
+        ResetViewData view = controller.getResetViewData(request);
 
-        assertEquals("invalidReset", mav.getViewName());
-        assertEquals(Locale.ENGLISH, mav.getModel().get(PAGE_LANG));
+        assertEquals(true, view.isInvalidToken());
+        assertEquals(false, view.isResetSucceed());
+        assertEquals(Locale.ENGLISH, view.getPageLang());
     }
 
     @Test
     public void testValidView() {
-        when(recoveryService.validateToken(TOKEN)).thenReturn(true);
+        String token = request.getParameter("token");
+        when(recoveryService.validateToken(token)).thenReturn(true);
 
-        ModelAndView mav = controller.resetView(TOKEN, request);
+        ResetViewData view = controller.getResetViewData(request);
 
-        assertEquals("reset", mav.getViewName());
-        assertEquals(TOKEN, mav.getModel().get("token"));
-        assertEquals(Locale.ENGLISH, mav.getModel().get(PAGE_LANG));
+        assertEquals(false, view.isInvalidToken());
+        assertEquals(false, view.isResetSucceed());
+        assertEquals(Locale.ENGLISH, view.getPageLang());
     }
 
     @Test
-    public void testBindingErrors() {
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(objectError));
-        when(objectError.getCode()).thenReturn(ERROR);
+    public void testValidationErrors() {
+        when(resetFormValidator.validate(form)).thenReturn(Arrays.asList(ERROR));
         when(form.getToken()).thenReturn(TOKEN);
 
-        ModelAndView mav = controller.reset(form, bindingResult, request);
+        ResetViewData view = controller.reset(form, request);
+        List<String> errors = view.getErrors();
 
-        List<String> errors = (List<String>) mav.getModel().get("errors");
-
-        assertEquals("reset", mav.getViewName());
-        assertEquals(TOKEN, mav.getModel().get("token"));
+        assertEquals(false, view.isInvalidToken());
+        assertEquals(false, view.isResetSucceed());
+        assertEquals(TOKEN, view.getResetForm().getToken());
         assertEquals(1, errors.size());
         assertEquals(ERROR, errors.get(0));
-        assertEquals(Locale.ENGLISH, mav.getModel().get(PAGE_LANG));
+        assertEquals(Locale.ENGLISH, view.getPageLang());
     }
 
     @Test
     public void testReset() throws InvalidTokenException {
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(form.getToken()).thenReturn(TOKEN);
         when(form.getPassword()).thenReturn(PASSWORD);
         when(form.getPasswordConfirmation()).thenReturn(PASSWORD);
 
-        ModelAndView mav = controller.reset(form, bindingResult, request);
+        ResetViewData view = controller.reset(form, request);
 
-        assertEquals("afterReset", mav.getViewName());
-        assertEquals(Locale.ENGLISH, mav.getModel().get(PAGE_LANG));
+        assertEquals(false, view.isInvalidToken());
+        assertEquals(true, view.isResetSucceed());
+        assertEquals(Locale.ENGLISH, view.getPageLang());
         verify(recoveryService).resetPassword(TOKEN, PASSWORD, PASSWORD);
     }
 
     @Test
     public void testResetInvalidToken() throws InvalidTokenException {
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(form.getToken()).thenReturn(TOKEN);
         when(form.getPassword()).thenReturn(PASSWORD);
         when(form.getPasswordConfirmation()).thenReturn(PASSWORD);
         doThrow(new InvalidTokenException()).when(recoveryService).resetPassword(TOKEN, PASSWORD, PASSWORD);
 
-        ModelAndView mav = controller.reset(form, bindingResult, request);
+        ResetViewData view = controller.reset(form, request);
 
-        List<String> errors = (List<String>) mav.getModel().get("errors");
+        List<String> errors = view.getErrors();
         assertEquals(1, errors.size());
-        assertEquals("security.invalidToken", errors.get(0));
+        assertEquals("server.reset.invalidToken", errors.get(0));
 
-        assertEquals("afterReset", mav.getViewName());
-        assertNull(mav.getModel().get("token"));
-        assertEquals(Locale.ENGLISH, mav.getModel().get(PAGE_LANG));
+        assertEquals(true, view.isResetSucceed());
+        assertEquals(Locale.ENGLISH, view.getPageLang());
         verify(recoveryService).resetPassword(TOKEN, PASSWORD, PASSWORD);
     }
 }

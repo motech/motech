@@ -96,8 +96,16 @@ public class EmailSenderImpl implements EmailSender {
     private Map<String, Object> templateParams(PasswordRecovery recovery, String flag) {
         Map<String, Object> params = new HashMap<>();
 
+        String path = "/module";
+
+        if (flag.equals("reset")) {
+            path += "/server/";
+        } else {
+            path += "/websecurity/api/";
+        }
+
         String link = joinUrls(settingsFacade.getPlatformSettings().getServerUrl(),
-                "/module/websecurity/api/" + flag + "?token=") + recovery.getToken();
+                path + flag + "?token=") + recovery.getToken();
 
         params.put(TEMPLATE_PARAM_LINK, link);
         params.put(TEMPLATE_PARAM_USERNAME, recovery.getUsername());

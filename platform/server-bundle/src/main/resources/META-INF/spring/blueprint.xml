@@ -33,6 +33,8 @@
 
     <osgi:reference id="roleService" interface="org.motechproject.security.service.MotechRoleService"/>
 
+    <osgi:reference id="recoveryService" interface="org.motechproject.security.service.PasswordRecoveryService"/>
+
     <osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"/>
 
     <osgi:reference id="configurationService" interface="org.motechproject.config.service.ConfigurationService"/>
