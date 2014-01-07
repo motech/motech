@@ -160,6 +160,20 @@
     width: 50px;
 }
 
+.btn-history {
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.btn-save {
+   float: right;
+}
+
+.btn-cancel {
+   float: right;
+   margin-right: 10px;
+}
 
 .button-delete {
     float: right;

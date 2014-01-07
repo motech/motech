@@ -1,0 +1,55 @@
+<form name="instanceForm" class="form-horizontal inside" ng-init="getHistory()">
+    <div class="form-group" ng-repeat="field in fields">
+        <label class="col-md-2 col-sm-3 control-label">
+            {{field.basic.displayName}}:
+        </label>
+        <div class="col-md-8 col-sm-7 form-inline">
+            <div ng-include="loadEditValueForm(field)" ></div>
+        </div>
+        <br />
+    </div>
+    <div ng-if="historyFields">
+        <div class="form-group" >
+            <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.creationDate')}}:</label>
+            <div class="col-md-8 col-sm-7">
+                <div>{{getMsg('date',historyFields[0])}}</div>
+            </div>
+         <br/>
+        </div>
+        <div class="form-group">
+            <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.createdBy')}}:</label>
+            <div class="col-md-8 col-sm-7">
+                <div>{{getMsg('user',historyFields[0])}}</div>
+            </div>
+            <br/>
+        </div>
+        <div class="form-group">
+            <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.modificationDate')}}:</label>
+            <div class="col-md-8 col-sm-7">
+                <div>{{getMsg('date',historyFields.last())}}</div>
+            </div>
+            <br/>
+        </div>
+        <div class="form-group">
+            <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.modifiedBy')}}:</label>
+            <div class="col-md-8 col-sm-7">
+                <div>{{getMsg('user',historyFields.last())}}</div>
+            </div>
+            <br/>
+        </div>
+        <div class="form-group">
+            <label  class="col-md-2 col-sm-3 text-right">{{msg('mds.form.label.action')}}:</label>
+            <div class="col-md-8 col-sm-7">
+                <div>{{getMsg('action',historyFields.last())}}</div>
+            </div>
+            <br/>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+
+

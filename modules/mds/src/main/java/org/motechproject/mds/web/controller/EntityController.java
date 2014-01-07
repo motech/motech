@@ -323,4 +323,16 @@ public class EntityController extends MdsController {
 
         return list;
     }
+
+    @RequestMapping(value = "/entities/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<FieldRecord> getInstance(@PathVariable String entityId, @PathVariable String instanceId) {
+        List<EntityRecord> entityList = getExampleData().getEntityRecordsById(entityId);
+        for (EntityRecord record : entityList) {
+            if (record.getId().equals(instanceId))  {
+                return record.getFields();
+            }
+        }
+        throw new EntityNotFoundException();
+    }
 }

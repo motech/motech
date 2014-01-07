@@ -2,7 +2,7 @@
     'use strict';
 
     var mds = angular.module('mds', [
-        'motech-dashboard', 'entityService', 'mdsSettingsService', 'ngCookies', 'ui.directives',
+        'motech-dashboard', 'entityService','instanceService', 'mdsSettingsService', 'ngCookies', 'ui.directives',
         'ngRoute', 'bootstrap', 'ui.directives'
     ]);
 

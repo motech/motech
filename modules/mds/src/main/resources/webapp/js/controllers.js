@@ -1589,7 +1589,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities) {
+    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities,Instances) {
         workInProgress.setActualEntity(Entities, undefined);
 
         /**
@@ -1618,9 +1618,24 @@
         $scope.lookupBy = {};
 
         /**
-        * This variable is set after user clicks "History" button in instance view.
+        * This variable is set after user clicks "Add" button next to chosen entity.
+        */
+        $scope.addedEntity= undefined;
+
+        /**
+        * This variable is set after user choose Entity in instance view.
         */
         $scope.selectedInstance = undefined;
+
+        /**
+        * This variable is set after user clicks "History" button in entity detail view.
+        */
+        $scope.instanceId = undefined;
+
+        /**
+        * An array of selected instance fields.
+        */
+        $scope.loadedFields = [];
 
         /**
         * Initializes a map of all entities in Seuss indexed by module name
@@ -1634,14 +1649,64 @@
         };
 
         /**
+        * Sets selected entity by module and entity name
+        */
+        $scope.addInstance = function(module, entityName) {
+            blockUI();
+            $scope.addedEntity  = Entities.getEntity({
+                param:  module,
+                params: entityName},
+                function () {
+                    $scope.fields = Entities.getFields({id: $scope.addedEntity.id},function () {
+                    unblockUI();
+                    });
+                });
+        };
+
+        /**
+        * Sets selected entity by module and entity name
+        */
+        $scope.editInstance = function(id) {
+            blockUI();
+            $scope.loadedFields = Entities.selectInstance({
+                id: $scope.selectedEntity.id,
+                 param: id},
+                function () {
+                    $scope.selectedInstance = id;
+                    $scope.unselectEntity();
+                    unblockUI();
+                });
+        };
+
+        /**
+        * Unselects adding or editing instance to allow user to return to entities list by modules
+        */
+        $scope.unselectAdd = function() {
+                $scope.addedEntity = undefined;
+                $scope.selectedInstance = undefined;
+                $scope.loadedFields = undefined;
+                $scope.historyFields = undefined;
+        };
+
+        /**
+        * Find field setting with given name.
+        *
+        * @param {Array} settings A array of field settings.
+        * @param {string} name This value will be used to find setting.
+        * @return {object} a single object which represent setting with the given name.
+        */
+        $scope.findSettingByName = function (settings, name) {
+            return find(settings, [{field: 'name', value: name}], true);
+        };
+
+        /**
         * Sets selected instance history by id
         */
         $scope.selectInstanceHistory = function (id) {
             blockUI();
-            $http.get('../mds/instances/' + id + '/history').success(function (data) {
-                $scope.selectedInstance = id;
-                $scope.unselectEntity();
+            Instances.getHistory({id: id},function () {
                 unblockUI();
+                $scope.instanceId = id;
             });
         };
 
@@ -1650,7 +1715,7 @@
         */
         $scope.unselectInstanceHistory = function() {
             // Temporary - should return to instance view
-            $scope.selectedInstance = undefined;
+            $scope.instanceId = undefined;
         };
 
         /**
@@ -1756,6 +1821,81 @@
             }
         };
 
+        /*
+        *  Gets field from FieldRecord to set field-edit value
+        */
+        $scope.getFieldValue = function(name) {
+            var myField = false;
+            angular.forEach($scope.loadedFields,function(loadedField) {
+                        if (_.isEqual(loadedField.displayName.toLowerCase(), name.toLowerCase())) {
+                            myField = loadedField;
+                            return loadedField;
+                        }
+            });
+            return myField;
+        };
+
+        /**
+        *  Gets history fields of entity instance
+        */
+        $scope.getHistory = function() {
+           blockUI();
+           var data =null;
+           data = Instances.getHistory({
+                      id:$scope.selectedInstance},
+                      function () {
+                          unblockUI();
+                          $scope.historyFields = data.rows;
+                      });
+        };
+
+        /*
+        * Return string with information about CRUD action
+        */
+        $scope.getMsg = function(name,field) {
+                var answer = "";
+                angular.forEach(field.fields,function(row) {
+                        if(_.isEqual(name,row.name )) {
+                            answer = row.value;
+                            return row.value;
+                        }
+                });
+                return answer;
+        };
+
+        /**
+        * Construct appropriate url according with a field type for form used to set correct
+        * value of edit value property.
+        */
+        $scope.loadEditValueForm = function (field) {
+            var value = $scope.getTypeSingleClassName(field.type);
+            if ($scope.getFieldValue(field.basic.displayName)) {
+              return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
+                              .format(value.substring(value.toLowerCase()));
+            }
+            else {
+              return '../mds/resources/partials/widgets/field-basic-defaultValue-{0}.html'
+                              .format(value.substring(value.toLowerCase()));
+            }
+        };
+
+        /*
+        * Gets type information from TypeDto object.
+        */
+        $scope.getTypeSingleClassName = function (type) {
+            return type.displayName.substring(type.displayName.lastIndexOf('.') + 1);
+        };
+
+        /**
+        * Return available values for combobox field.
+        *
+        * @param {Array} setting A array of field settings.
+        * @return {Array} A array of possible combobox values.
+        */
+        $scope.getComboboxValues = function (settings) {
+            return find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+        };
+
         /**
         * Checks if entities belonging to certain module are currently visible
         *
@@ -1764,6 +1904,37 @@
         */
         $scope.visible = function (module) {
             return $.inArray(module, $scope.hidden) !== -1 ? false : true;
+        };
+
+        /**
+        * Check if the given number has appropriate precision and scale.
+        *
+        * @param {number} number The number to validate.
+        * @param {object} settings Object with precision and scale properties.
+        * @return {boolean} true if number has appropriate precision and scale or it is undefined;
+        *                   otherwise false.
+        */
+        $scope.checkDecimalValue = function (number, settings) {
+            var precision = $scope.findSettingByName(settings, 'mds.form.label.precision'),
+                scale = $scope.findSettingByName(settings, 'mds.form.label.scale');
+
+            return _.isNumber(number)
+                ? validateDecimal(number, precision.value, scale.value)
+                : true;
+        };
+
+        /**
+        * Return message in correct language that inform user the decimal value has incorrect
+        * precision and/or scale.
+        *
+        * @param {Array} settings A array of field settings.
+        * @return {string} A appropriate error message.
+        */
+        $scope.getInvalidDecimalMessage = function (settings) {
+            var precision = $scope.findSettingByName(settings, 'mds.form.label.precision'),
+                scale = $scope.findSettingByName(settings, 'mds.form.label.scale');
+
+            return $scope.msg('mds.error.incorrectDecimalValue', precision.value, scale.value);
         };
 
         $scope.arrow = function (module) {

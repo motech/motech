@@ -1,0 +1,20 @@
+<div>
+<div>
+    <div class="entity-buttons" ng-show="selectedInstance">
+        <div class="btn-group">
+            <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
+                {{msg('mds.btn.history')}}
+            </button>
+        </div>
+    </div>
+</div>
+<div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
+<div  class="inside">
+    <button class="btn btn-primary btn-save" href="#">
+        {{msg('mds.btn.save')}}
+    </button>
+    <button class="btn btn-default btn-cancel" ng-click="unselectAdd()">
+        {{msg('mds.btn.cancel')}}
+    </button>
+</div>
+</div>

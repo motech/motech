@@ -810,7 +810,7 @@
                                 order: 'sortDirection'
                             },
                             onSelectRow: function (id) {
-                                scope.selectInstanceHistory(id);
+                                scope.editInstance(id);
                             },
                             shrinkToFit: true,
                             autowidth: true,
@@ -920,7 +920,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "../mds/instances/" + scope.selectedInstance + "/fields",
+                    url: "../mds/instances/" +  scope.instanceId + "/fields",
                     dataType: "json",
                     success: function(result)
                     {
@@ -953,7 +953,7 @@
                         }
 
                         elem.jqGrid({
-                            url: "../mds/instances/" + scope.selectedInstance + "/history",
+                            url: "../mds/instances/" +  scope.instanceId + "/history",
                             datatype: 'json',
                             jsonReader:{
                                 repeatitems:false

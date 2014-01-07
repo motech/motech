@@ -8,16 +8,28 @@
     */
     angular.module('entityService', ['ngResource']).factory('Entities', function ($resource) {
         return $resource(
-            '../mds/entities/:id/:action/:param',
+            '../mds/entities/:id/:action/:param/:params',
             { id: '@id' },
             {
                 getAdvanced: { method: 'GET', params: { action: 'advanced' } },
                 getWorkInProggress: { method: 'GET', params: { action: 'wip' }, isArray: true },
                 getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },
                 getField: { method: 'GET', params: {action: 'fields'} },
+                getEntity: { method: 'GET', params: {action: 'getEntity'}  },
+                selectInstance: { method: 'GET', params: {action: 'instance'}, isArray: true  },
                 draft: { method: 'POST', params: {action: 'draft' } },
                 abandon: { method: 'POST', params: {action: 'abandon' } },
                 commit: { method: 'POST', params: {action: 'commit' } }
+            }
+        );
+    });
+
+    angular.module('instanceService', ['ngResource']).factory('Instances', function ($resource) {
+        return $resource(
+            '../mds/instances/:id/:action/',
+            { id: '@id' },
+            {
+                getHistory: { method: 'GET', params: { action: 'history' } }
             }
         );
     });
