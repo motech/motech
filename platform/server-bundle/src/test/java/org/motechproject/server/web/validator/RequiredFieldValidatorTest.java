@@ -1,36 +1,33 @@
 package org.motechproject.server.web.validator;
 
 import org.junit.Test;
-import org.springframework.validation.Errors;
+import org.motechproject.server.web.form.StartupForm;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class RequiredFieldValidatorTest {
 
     @Test
     public void shouldRejectIfFieldIsNull() {
-        RequiredFieldValidator fieldValidator = new RequiredFieldValidator("name");
+        RequiredFieldValidator fieldValidator = new RequiredFieldValidator("name", null);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("name")).thenReturn(null);
+        List<String> errors = new ArrayList<>();
+        fieldValidator.validate(new StartupForm(), errors);
 
-        Object target = new Object();
-        fieldValidator.validate(target, errors);
-
-        verify(errors).getFieldValue("name");
-        verify(errors).rejectValue("name", String.format(RequiredFieldValidator.ERROR_REQUIRED, "name"), null, null);
+        assertTrue(errors.contains(String.format(RequiredFieldValidator.ERROR_REQUIRED, "name")));
     }
 
     @Test
     public void shouldBeConsideredEqualIfFieldNameIsEqual() {
-        RequiredFieldValidator fieldValidator = new RequiredFieldValidator("name");
-        RequiredFieldValidator equalFieldValidator = new RequiredFieldValidator("name");
-        RequiredFieldValidator differentFieldValidator = new RequiredFieldValidator("Name");
-        RequiredFieldValidator anotherDifferentFieldValidator = new RequiredFieldValidator("someOtherField");
+        RequiredFieldValidator fieldValidator = new RequiredFieldValidator("name", "");
+        RequiredFieldValidator equalFieldValidator = new RequiredFieldValidator("name", "");
+        RequiredFieldValidator differentFieldValidator = new RequiredFieldValidator("Name", "");
+        RequiredFieldValidator anotherDifferentFieldValidator = new RequiredFieldValidator("someOtherField", "");
+
         assertTrue(fieldValidator.equals(fieldValidator));
         assertTrue(fieldValidator.equals(equalFieldValidator));
         assertFalse(fieldValidator.equals(differentFieldValidator));

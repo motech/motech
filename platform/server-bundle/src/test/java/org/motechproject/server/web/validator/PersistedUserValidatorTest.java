@@ -7,11 +7,12 @@ import org.mockito.MockitoAnnotations;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
-import org.springframework.validation.Errors;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class PersistedUserValidatorTest {
@@ -30,108 +31,76 @@ public class PersistedUserValidatorTest {
     public void shouldValidateFieldsAndRejectEmptyFields() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn(EMPTY);
-        when(errors.getFieldValue("adminPassword")).thenReturn(EMPTY);
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn(EMPTY);
-        when(errors.getFieldValue("adminEmail")).thenReturn(EMPTY);
-
-
+        List<String> errors = new ArrayList<>();
         persistedUserValidator.validate(new StartupForm(), errors);
 
-        verify(errors).rejectValue("adminLogin", "server.error.required.adminLogin", null, null);
-        verify(errors).rejectValue("adminPassword", "server.error.required.adminPassword", null, null);
-        verify(errors).rejectValue("adminConfirmPassword", "server.error.required.adminConfirmPassword", null, null);
-        verify(errors).rejectValue("adminEmail", "server.error.invalid.email", null, null);
-
-        verify(errors, never()).rejectValue("adminPassword", "server.error.invalid.password", null, null);
+        assertTrue(errors.contains("server.error.required.adminLogin"));
+        assertTrue(errors.contains("server.error.required.adminPassword"));
+        assertTrue(errors.contains("server.error.invalid.email"));
+        assertFalse(errors.contains("server.error.invalid.password"));
     }
 
     @Test
     public void shouldRejectInvalidEmail() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn("admin");
-        when(errors.getFieldValue("adminPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn("Password");
-        when(errors.getFieldValue("adminEmail")).thenReturn("admin@motech");
+        StartupForm startupForm = getExampleStartupForm();
+        startupForm.setAdminEmail("admin@motech");
 
         when(userService.hasUser("admin")).thenReturn(false);
 
+        List<String> errors = new ArrayList<>();
+        persistedUserValidator.validate(startupForm, errors);
 
-        persistedUserValidator.validate(new StartupForm(), errors);
-
-        verify(errors).rejectValue("adminEmail", "server.error.invalid.email", null, null);
+        assertTrue(errors.contains("server.error.invalid.email"));
     }
 
     @Test
     public void shouldRejectPasswordIfConfirmPasswordValueIsDifferent() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn("admin");
-        when(errors.getFieldValue("adminPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn("Password");
-        when(errors.getFieldValue("adminEmail")).thenReturn("admin@motech.org");
+        StartupForm startupForm = getExampleStartupForm();
+        startupForm.setAdminConfirmPassword("Password");
 
         when(userService.hasUser("admin")).thenReturn(false);
 
-
-        persistedUserValidator.validate(new StartupForm(), errors);
+        List<String> errors = new ArrayList<>();
+        persistedUserValidator.validate(startupForm, errors);
 
         //If password is empty do not check against confirmPassword as empty password error is already added
-        verify(errors).rejectValue("adminPassword", "server.error.invalid.password", null, null);
+        assertTrue(errors.contains("server.error.invalid.password"));
     }
-
 
     @Test
     public void shouldRejectUserIfUserExists() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn("admin");
-        when(errors.getFieldValue("adminPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminEmail")).thenReturn("admin@motech.org");
-
         when(userService.hasUser("admin")).thenReturn(true);
 
-        persistedUserValidator.validate(new StartupForm(), errors);
+        List<String> errors = new ArrayList<>();
+        persistedUserValidator.validate(getExampleStartupForm(), errors);
 
-        verify(errors).rejectValue("adminLogin", "server.error.user.exist", null, null);
+        assertTrue(errors.contains("server.error.user.exist"));
     }
 
     @Test
     public void shouldRejectEmailIfInUse() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn("admin");
-        when(errors.getFieldValue("adminPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminEmail")).thenReturn("admin@motech.org");
-
         when(userService.hasUser("admin")).thenReturn(false);
         UserDto user = new UserDto();
         user.setUserName("john");
         when(userService.getUserByEmail("admin@motech.org")).thenReturn(user);
 
+        List<String> errors = new ArrayList<>();
+        persistedUserValidator.validate(getExampleStartupForm(), errors);
 
-        persistedUserValidator.validate(new StartupForm(), errors);
-
-        verify(errors).rejectValue("adminEmail", "server.error.email.exist", null, null);
+        assertTrue(errors.contains("server.error.email.exist"));
     }
 
     @Test
     public void shouldRejectOnlyUserIfUserExistsAndIsRegisteredWithIdenticalEmail() {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
-
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue("adminLogin")).thenReturn("admin");
-        when(errors.getFieldValue("adminPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminConfirmPassword")).thenReturn("password");
-        when(errors.getFieldValue("adminEmail")).thenReturn("admin@motech.org");
 
         when(userService.hasUser("admin")).thenReturn(true);
 
@@ -139,9 +108,20 @@ public class PersistedUserValidatorTest {
         userDto.setUserName("admin");
         when(userService.getUserByEmail("admin@motech.org")).thenReturn(userDto);
 
-        persistedUserValidator.validate(new StartupForm(), errors);
+        List<String> errors = new ArrayList<>();
+        persistedUserValidator.validate(getExampleStartupForm(), errors);
 
-        verify(errors).rejectValue("adminLogin", "server.error.user.exist", null, null);
-        verify(errors, never()).rejectValue("adminEmail", "server.error.email.exist", null, null);
+        assertTrue(errors.contains("server.error.user.exist"));
+        assertFalse(errors.contains("server.error.email.exist"));
+    }
+
+    private StartupForm getExampleStartupForm() {
+        StartupForm startupForm = new StartupForm();
+        startupForm.setAdminLogin("admin");
+        startupForm.setAdminPassword("password");
+        startupForm.setAdminConfirmPassword("password");
+        startupForm.setAdminEmail("admin@motech.org");
+
+        return startupForm;
     }
 }

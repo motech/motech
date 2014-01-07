@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class StartupFormValidatorFactory {
 
-    public StartupFormValidator getStartupFormValidator(MotechUserService userService) {
+    public StartupFormValidator getStartupFormValidator(StartupForm startupSettings, MotechUserService userService) {
         StartupFormValidator startupFormValidator = new StartupFormValidator();
 
-        startupFormValidator.add(new RequiredFieldValidator(StartupForm.LANGUAGE));
-        startupFormValidator.add(new RequiredFieldValidator(StartupForm.LOGIN_MODE));
+        startupFormValidator.add(new RequiredFieldValidator(StartupForm.LANGUAGE, startupSettings.getLanguage()));
+        startupFormValidator.add(new RequiredFieldValidator(StartupForm.LOGIN_MODE, startupSettings.getLoginMode()));
         startupFormValidator.add(new QueueURLValidator());
         startupFormValidator.add(new UserRegistrationValidator(new PersistedUserValidator(userService),
                 new OpenIdUserValidator(new UrlValidator())));

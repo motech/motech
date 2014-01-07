@@ -30,6 +30,7 @@
         };
         $scope.loginViewData = {};
         $scope.resetViewData = {};
+        $scope.startupViewData = {};
 
         $scope.showDashboardLogo = {
             showDashboard : true,
@@ -96,7 +97,7 @@
                         $scope.loadI18n($scope.i18n);
                     });
 
-                    $scope.userLang = $scope.getLanguage(locale);
+                    $scope.startupViewData.startupSettings.language = lang;
                     moment.lang(lang);
                     motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {
@@ -366,6 +367,27 @@
                 motechAlert('server.reset.error');
                 $scope.resetViewData.errors = ['server.reset.error'];
             });
+        };
+
+        $scope.getStartupViewData = function() {
+            $scope.doAJAXHttpRequest('GET', '../server/startupviewdata', function (data) {
+                $scope.startupViewData = data;
+            });
+        };
+
+        $scope.submitStartupConfig = function() {
+             $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
+             $http({
+                method: "POST",
+                url: "../server/startup",
+                data: $scope.startupViewData.startupSettings
+             })
+             .success(function(data) {
+                if (data.length === 0) {
+                    window.location.assign("../server/");
+                }
+                $scope.errors = data;
+             });
         };
 
         $scope.verifyDbConnection = function() {

@@ -3,15 +3,13 @@ package org.motechproject.server.web.validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.server.web.form.StartupForm;
-import org.springframework.validation.Errors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class QueueURLValidatorTest {
 
@@ -42,51 +40,53 @@ public class QueueURLValidatorTest {
 
     @Test
     public void shouldRejectQueueUrl() {
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue(QUEUE_URL)).thenReturn("");
-
+        List<String> errors = new ArrayList<>();
         queueURLValidator.validate(new StartupForm(), errors);
 
-        verify(errors).rejectValue(QUEUE_URL, String.format(ERROR_REQUIRED, QUEUE_URL), null, null);
+        assertTrue(errors.contains(String.format(ERROR_REQUIRED, QUEUE_URL)));
     }
 
     @Test
     public void shouldRejectInvalidQueueUrl() {
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue(QUEUE_URL)).thenReturn("some.krap.url");
+        StartupForm startupForm = new StartupForm();
+        startupForm.setQueueUrl("some.krap.url");
 
-        queueURLValidator.validate(new StartupForm(), errors);
+        List<String> errors = new ArrayList<>();
+        queueURLValidator.validate(startupForm, errors);
 
-        verify(errors).rejectValue(QUEUE_URL, String.format(ERROR_INVALID, QUEUE_URL), null, null);
+        assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
     }
 
     @Test
     public void shouldAcceptValidQueueURL() {
-        Errors errors = mock(Errors.class);
-        when(errors.getFieldValue(QUEUE_URL)).thenReturn("tcp://localhost:61616");
+        StartupForm startupForm = new StartupForm();
+        startupForm.setQueueUrl("tcp://localhost:61616");
 
-        queueURLValidator.validate(new StartupForm(), errors);
+        List<String> errors = new ArrayList<>();
+        queueURLValidator.validate(startupForm, errors);
 
-        verify(errors, never()).rejectValue(QUEUE_URL, String.format(ERROR_INVALID, QUEUE_URL), null, null);
+        assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
     }
 
     @Test
     public void shouldAcceptValidCompositeQueueURLs() {
+        StartupForm startupForm = new StartupForm();
         for (String validCompositeUrl : VALID_COMPOSITE_URLS) {
-            Errors errors = mock(Errors.class);
-            when(errors.getFieldValue(QUEUE_URL)).thenReturn(validCompositeUrl);
-            queueURLValidator.validate(new StartupForm(), errors);
-            verify(errors, never()).rejectValue(QUEUE_URL, String.format(ERROR_INVALID, QUEUE_URL), null, null);
+            startupForm.setQueueUrl(validCompositeUrl);
+            List<String> errors = new ArrayList<>();
+            queueURLValidator.validate(startupForm, errors);
+            assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
         }
     }
 
     @Test
     public void shouldRejectInvalidCompositeQueueURLs() {
+        StartupForm startupForm = new StartupForm();
         for (String invalidCompositeUrl : INVALID_COMPOSITE_URLS) {
-            Errors errors = mock(Errors.class);
-            when(errors.getFieldValue(QUEUE_URL)).thenReturn(invalidCompositeUrl);
-            queueURLValidator.validate(new StartupForm(), errors);
-            verify(errors).rejectValue(QUEUE_URL, String.format(ERROR_INVALID, QUEUE_URL), null, null);
+            startupForm.setQueueUrl(invalidCompositeUrl);
+            List<String> errors = new ArrayList<>();
+            queueURLValidator.validate(startupForm, errors);
+            assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
         }
     }
 }

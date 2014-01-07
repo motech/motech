@@ -1,41 +1,37 @@
 package org.motechproject.server.web.validator;
 
 import org.motechproject.server.web.form.StartupForm;
-import org.motechproject.server.web.form.StartupSuggestionsForm;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * StartupFormValidator validate user information during registration process
+ * StartupFormValidator validates user information during registration process
  */
-public class StartupFormValidator implements Validator {
+@Component
+public class StartupFormValidator {
 
-    private List<Validator> validators = new ArrayList<>();
+    private List<AbstractValidator> validators = new ArrayList<>();
 
     public StartupFormValidator() {
     }
 
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return StartupForm.class.equals(clazz) || StartupSuggestionsForm.class.equals(clazz);
-    }
+    public List<String> validate(StartupForm target) {
+        List<String> errors = new ArrayList<>();
 
-    @Override
-    public void validate(Object target, Errors errors) {
-
-        for (Validator validator : validators) {
+        for (AbstractValidator validator : validators) {
             validator.validate(target, errors);
         }
+
+        return errors;
     }
 
-    public void add(Validator validator) {
+    public void add(AbstractValidator validator) {
         validators.add(validator);
     }
 
-    public List<Validator> getValidators() {
+    public List<AbstractValidator> getValidators() {
         return validators;
     }
 }
