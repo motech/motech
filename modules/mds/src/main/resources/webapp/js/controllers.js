@@ -143,10 +143,10 @@
                 function () {
                     if (!_.isNull($scope.advancedSettings)
                             && !_.isUndefined($scope.advancedSettings)
-                            && $scope.advancedSettings.indexes.size > 0) {
-                        $scope.activeIndex = 0;
+                            && $scope.advancedSettings.indexes.length > 0) {
+                        $scope.setActiveIndex(0);
                     } else {
-                        $scope.activeIndex = -1;
+                        $scope.setActiveIndex(-1);
                     }
 
                     setRest();
@@ -842,29 +842,33 @@
                 }
             }, function () {
                 $scope.advancedSettings.indexes.push(newLookup);
-                $scope.setActiveIndex(newLookup);
+                $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
             });
         };
 
         /**
         * Specifies, whether a certain index is a currently active one
         *
-        * @param index An index object to check
+        * @param index An index in array of index object to check
         * @return {boolean} True, if passed index is the active one. False otherwise.
         */
         $scope.isActiveIndex = function (index) {
-            return $scope.lookup === index ? true : false;
+            return $scope.activeIndex === index;
         };
 
         /**
         * Sets certain index as the currently active one
         *
-        * @param index An index object to set active
+        * @param index  An index in array of index object to set active
         */
         $scope.setActiveIndex = function (index) {
-            $scope.activeIndex = $scope.advancedSettings.indexes.indexOf(index);
-            $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
-            $scope.setAvailableFields();
+            $scope.activeIndex = index;
+            if ($scope.activeIndex > -1) {
+                $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
+                $scope.setAvailableFields();
+            } else {
+                $scope.lookup = undefined;
+            }
         };
 
         /**

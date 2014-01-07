@@ -4,7 +4,7 @@
             <fieldset>
                 <ul class="indexes-pick">
                     <li ng-repeat="index in advancedSettings.indexes">
-                        <a ng-click="setActiveIndex(index)" ng-class="{active: isActiveIndex(index)}">
+                        <a ng-click="setActiveIndex($index)" ng-class="{active: isActiveIndex($index)}">
                             {{index.lookupName}}
                         </a>
                     </li>
