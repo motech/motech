@@ -1,6 +1,5 @@
 package org.motechproject.server.web.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.password.NonAdminUserException;
 import org.motechproject.security.service.PasswordRecoveryService;
@@ -72,14 +71,6 @@ public class ForgotController {
         view.setProcessed(false);
         view.setEmail("");
         view.setPageLang(cookieLocaleResolver.resolveLocale(request));
-
-        String contextPath = request.getSession().getServletContext().getContextPath();
-
-        if (StringUtils.isNotBlank(contextPath) && !"/".equals(contextPath)) {
-            view.setContextPath(contextPath.substring(1) + "/");
-        } else if (StringUtils.isBlank(contextPath) || "/".equals(contextPath)) {
-            view.setContextPath("");
-        }
 
         return view;
     }

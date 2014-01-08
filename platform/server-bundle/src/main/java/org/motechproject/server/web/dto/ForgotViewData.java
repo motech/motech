@@ -16,7 +16,6 @@ public class ForgotViewData {
     private String error;
     private LoginMode loginMode;
     private Locale pageLang;
-    private String contextPath;
 
     public String getEmail() {
         return email;
@@ -64,13 +63,5 @@ public class ForgotViewData {
 
     public void setPageLang(Locale pageLang) {
         this.pageLang = pageLang;
-    }
-
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public void setContextPath(String contextPath) {
-        this.contextPath = contextPath;
     }
 }
