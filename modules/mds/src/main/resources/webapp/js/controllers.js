@@ -2054,14 +2054,80 @@
         };
 
         /**
+        * Checks all schema checkboxes and setting the general schema checkbox state
+        */
+        $scope.updateAllSchemasCheckbox = function () {
+            if ($('input[id^="schema"]:checked').length >= $('input[id^="schema"]').length - 1) {
+                $("#schema-all").prop("checked", true);
+                $("#schema-all").prop("indeterminate", false);
+            } else if ($('input[id^="schema"]:checked').length === 0) {
+                $("#schema-all").prop("checked", false);
+                $("#schema-all").prop("indeterminate", false);
+            } else {
+                $("#schema-all").prop("checked", false);
+                $("#schema-all").prop("indeterminate", true);
+            }
+        };
+
+        /**
+        * Checks all data checkboxes and setting the general data checkbox state
+        */
+        $scope.updateAllDataCheckbox = function () {
+            if ($('input[id^="data"]:checked').length >= $('input[id^="data"]').length - 1) {
+                $("#data-all").prop("checked", true);
+                $("#data-all").prop("indeterminate", false);
+            } else if ($('input[id^="data"]:checked').length === 0) {
+                $("#data-all").prop("checked", false);
+                $("#data-all").prop("indeterminate", false);
+            } else {
+                $("#data-all").prop("checked", false);
+                $("#data-all").prop("indeterminate", true);
+            }
+        };
+
+        /**
+        * Checks all schema checkboxes in the module and setting the module schema checkbox state
+        */
+        $scope.updateModuleSchemaCheckbox = function (module) {
+            if ($('input[id^="schema-' + module + '-"]:checked').length === $('input[id^="schema-' + module + '-"]').length) {
+                $("#schema-" + module).prop("checked", true);
+                $("#schema-" + module).prop("indeterminate", false);
+            } else if ($('input[id^="schema-' + module + '-"]:checked').length === 0) {
+                $("#schema-" + module).prop("checked", false);
+                $("#schema-" + module).prop("indeterminate", false);
+            } else {
+                $("#schema-" + module).prop("checked", false);
+                $("#schema-" + module).prop("indeterminate", true);
+            }
+        };
+
+        /**
+        * Checks all data checkboxes in the module and setting the module data checkbox state
+        */
+        $scope.updateModuleDataCheckbox = function (module) {
+            if ($('input[id^="data-' + module + '-"]:checked').length === $('input[id^="data-' + module + '-"]').length) {
+                $("#data-" + module).prop("checked", true);
+                $("#data-" + module).prop("indeterminate", false);
+            } else if ($('input[id^="data-' + module + '-"]:checked').length === 0) {
+                $("#data-" + module).prop("checked", false);
+                $("#data-" + module).prop("indeterminate", false);
+            } else {
+                $("#data-" + module).prop("checked", false);
+                $("#data-" + module).prop("indeterminate", true);
+            }
+        };
+
+        /**
         * Called when we change state of "Schema" checkbox on the top of the table
         * When checked: select all schema checkboxes in the table
         * When unchecked: deselect all schema and data checkboxes
         */
         $scope.checkAllSchemas = function () {
+            $('input[id^="schema"]').prop("indeterminate", false);
             if ($("#schema-all")[0].checked) {
                 $('input[id^="schema"]').prop("checked", true);
             } else {
+                $('input[id^="data"]').prop("indeterminate", false);
                 $('input[id^="schema"]').prop("checked", false);
                 $('input[id^="data"]').prop("checked", false);
             }
@@ -2073,7 +2139,9 @@
         * When unchecked: deselect all data checkboxes
         */
         $scope.checkAllData = function () {
+            $('input[id^="schema"]').prop("indeterminate", false);
             if ($("#data-all")[0].checked) {
+                $('input[id^="data"]').prop("indeterminate", false);
                 $('input[id^="data"]').prop("checked", true);
                 $('input[id^="schema"]').prop("checked", true);
             } else {
@@ -2093,6 +2161,12 @@
                 $('input[id^="schema-' + id.name + '"]').prop("checked", false);
                 $('input[id^="data-' + id.name + '"]').prop("checked", false);
             }
+
+            $scope.updateModuleSchemaCheckbox(id.name);
+            $scope.updateModuleDataCheckbox(id.name);
+
+            $scope.updateAllSchemasCheckbox();
+            $scope.updateAllDataCheckbox();
         };
 
         /**
@@ -2107,16 +2181,29 @@
             } else {
                 $('input[id^="data-' + id.name + '"]').prop("checked", false);
             }
+
+            $scope.updateModuleSchemaCheckbox(id.name);
+            $scope.updateModuleDataCheckbox(id.name);
+
+            $scope.updateAllSchemasCheckbox();
+            $scope.updateAllDataCheckbox();
         };
 
         /**
         * Called when we change state of "Data" checkbox in the entity row
         * When checked: select schema checkbox in the entity row
         */
-        $scope.checkSchema = function (id) {
-            if ($('input[id^="data-' + id.name + '"]')[0].checked) {
-                $('input[id^="schema-' + id.name + '"]').prop("checked", true);
+        $scope.checkSchema = function (id, entity) {
+            var name = id.name + '-' + entity;
+            if ($('input[id^="data-' + name + '"]')[0].checked) {
+                $('input[id^="schema-' + name + '"]').prop("checked", true);
             }
+
+            $scope.updateModuleSchemaCheckbox(id.name);
+            $scope.updateModuleDataCheckbox(id.name);
+
+            $scope.updateAllSchemasCheckbox();
+            $scope.updateAllDataCheckbox();
         };
 
         /**
@@ -2124,10 +2211,16 @@
         * When unchecked: deselect data checkbox in the entity row
         */
         $scope.uncheckData = function (id, entity) {
-            var name = id.name + entity;
+            var name = id.name + '-' + entity;
             if (!$('input[id^="schema-' + name + '"]')[0].checked) {
                 $('input[id^="data-' + name + '"]').prop("checked", false);
             }
+
+            $scope.updateModuleSchemaCheckbox(id.name);
+            $scope.updateModuleDataCheckbox(id.name);
+
+            $scope.updateAllSchemasCheckbox();
+            $scope.updateAllDataCheckbox();
         };
 
         /**
