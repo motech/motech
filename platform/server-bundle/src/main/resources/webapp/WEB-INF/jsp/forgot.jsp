@@ -1,30 +1,10 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
-
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<fmt:setLocale value="${pageLang}" />
-<fmt:setBundle basename="org.motechproject.resources.messages" var="bundle"/>
-
 <!DOCTYPE html>
-<html>
+<html ng-app="motech-dashboard">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     ${mainHeader}
-
-    <c:if test="${! empty currentModule}">
-        ${currentModule.header}
-    </c:if>
-
-    <c:if test="${empty currentModule}">
-        <script type="text/javascript">
-            $(window).load(function () {
-                initAngular();
-            });
-        </script>
-    </c:if>
 </head>
 
 <body class="body-down" >

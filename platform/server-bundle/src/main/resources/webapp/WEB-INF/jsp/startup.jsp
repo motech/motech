@@ -1,19 +1,10 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
-<html>
+<html ng-app="motech-dashboard">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     ${mainHeader}
-
-    <script type="text/javascript">
-        $(window).load(function() {
-            initAngular();
-        });
-    </script>
 </head>
 <body ng-controller="MasterCtrl" class="body-startup">
 <div class="bodywrap">
