@@ -56,7 +56,12 @@
         <constructor-arg name="header">
             <bean class="org.motechproject.osgi.web.Header"/>
         </constructor-arg>
-        <property name="roleForAccess" value="viewBasicEmailLogs" />
+        <property name="roleForAccess">
+            <list>
+                <value>viewBasicEmailLogs</value>
+                <value>viewDetailedEmailLogs</value>
+            </list>
+        </property>
         <property name="settingsURL" value="/settings" />
     </bean>
 

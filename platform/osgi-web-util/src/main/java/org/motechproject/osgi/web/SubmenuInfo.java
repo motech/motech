@@ -1,5 +1,8 @@
 package org.motechproject.osgi.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /****
  * Class to encapsulate information about submenu Links to be shown on  UI
  */
@@ -8,7 +11,8 @@ public class SubmenuInfo {
     private String url;
     private boolean needsAttention;
     private String criticalMessage;
-    private String roleForAccess;
+
+    private List<String> roleForAccess = new ArrayList<>();
 
     public boolean isNeedsAttention() {
         return needsAttention;
@@ -38,11 +42,15 @@ public class SubmenuInfo {
         this.criticalMessage = criticalMessage;
     }
 
-    public String getRoleForAccess() {
+    public List<String> getRoleForAccess() {
         return roleForAccess;
     }
 
     public void setRoleForAccess(String roleForAccess) {
+        this.roleForAccess.add(roleForAccess);
+    }
+
+    public void setRoleForAccess(List<String> roleForAccess) {
         this.roleForAccess = roleForAccess;
     }
 }

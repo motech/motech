@@ -113,9 +113,9 @@ public class MenuBuilder {
 
         if (modules != null) {
             for (ModuleRegistrationData module : modules) {
-                String requiredPermissionForAccess = module.getRoleForAccess();
+                List<String> requiredPermissionForAccess = module.getRoleForAccess();
 
-                if (requiredPermissionForAccess != null) {
+                if (!requiredPermissionForAccess.isEmpty()) {
                     if (checkUserPermission(userService.getRoles(userName), requiredPermissionForAccess)) {
                         allowedModules.add(module);
                     }
@@ -129,17 +129,19 @@ public class MenuBuilder {
     }
 
     private boolean isSubMenuLinkAccessibleByCurrentUser(String userName, SubmenuInfo submenuInfo) {
-        String roleForAccess = submenuInfo.getRoleForAccess();
-        return roleForAccess == null || "Admin Mode".equals(userName) ||
+        List<String> roleForAccess = submenuInfo.getRoleForAccess();
+        return roleForAccess.isEmpty() || "Admin Mode".equals(userName) ||
                 checkUserPermission(userService.getRoles(userName), roleForAccess);
     }
 
-    private boolean checkUserPermission(List<String> roles, String requiredPermission) {
+    private boolean checkUserPermission(List<String> roles, List<String> requiredPermission) {
         for (String userRole : roles) {
             RoleDto role = roleService.getRole(userRole);
-            if (role != null && role.getPermissionNames() != null
-                    && role.getPermissionNames().contains(requiredPermission)) {
-                return true;
+            for (String permission : requiredPermission) {
+                if (role != null && role.getPermissionNames() != null
+                        && role.getPermissionNames().contains(permission)) {
+                    return true;
+                }
             }
         }
 

@@ -24,6 +24,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -183,7 +184,11 @@ public class MenuBuilderTest {
 
         ModuleRegistrationData emailRegData = new ModuleRegistrationData("email", "/email",
                 angularModules, i18n, header);
-        emailRegData.setRoleForAccess("emailPerm");
+        List<String> rolesForAccess = new ArrayList<>();
+        rolesForAccess.add("emailPerm");
+        rolesForAccess.add("otherPerm");
+        rolesForAccess.add("completlyOtherPerm");
+        emailRegData.setRoleForAccess(rolesForAccess);
 
         ModuleRegistrationData schedulerRegData = new ModuleRegistrationData("scheduler", "/scheduler",
                 angularModules, i18n, header);

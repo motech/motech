@@ -23,11 +23,11 @@ public class ModuleRegistrationData {
     private String url;
     private String header;
     private boolean needsAttention;
-    private String roleForAccess;
     private String criticalMessage;
     private String settingsURL;
     private Bundle bundle;
 
+    private List<String> roleForAccess = new ArrayList<>();
     private List<String> angularModules = new ArrayList<>();
     private Map<String, SubmenuInfo> subMenu = new TreeMap<>();
     private Map<String, String> i18n = new HashMap<>();
@@ -218,13 +218,18 @@ public class ModuleRegistrationData {
     }
 
     @JsonIgnore
-    public String getRoleForAccess() {
+    public List<String> getRoleForAccess() {
         return roleForAccess;
     }
 
     @JsonIgnore
     public void setRoleForAccess(String role) {
-        this.roleForAccess = role;
+        this.roleForAccess.add(role);
+    }
+
+    @JsonIgnore
+    public void setRoleForAccess(List<String> roles) {
+        this.roleForAccess = roles;
     }
 
     @JsonIgnore
