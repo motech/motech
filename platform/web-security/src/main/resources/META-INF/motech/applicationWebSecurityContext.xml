@@ -32,11 +32,6 @@
         </property>
     </bean>
 
-    <bean id="cookieLocaleResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
-        <property name="cookieName" value="userLang"/>
-        <property name="cookieMaxAge" value="100000"/>
-    </bean>
-
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.security"/>
 

@@ -28,9 +28,11 @@
         $scope.user = {
             anonymous: true
         };
+
         $scope.loginViewData = {};
         $scope.resetViewData = {};
         $scope.startupViewData = {};
+        $scope.forgotViewData = {};
 
         $scope.showDashboardLogo = {
             showDashboard : true,
@@ -388,6 +390,26 @@
                 }
                 $scope.errors = data;
              });
+        };
+
+        $scope.getForgotViewData = function() {
+            $scope.doAJAXHttpRequest('GET', 'forgotviewdata', function (data) {
+                $scope.forgotViewData = data;
+            });
+        };
+
+        $scope.sendReset = function () {
+             if ($scope.forgotViewData.email !== "") {
+                 $http({ method: "POST", url: "../server/forgot", data: $scope.forgotViewData.email})
+                     .success(function (response) {
+                        $scope.error=response;
+                        $scope.forgotViewData.emailGetter=false;
+                        $scope.forgotViewData.processed=true;
+                     })
+                     .error(function (response) {
+                        $scope.error = 'security.tokenSendError';
+                     });
+             }
         };
 
         $scope.verifyDbConnection = function() {

@@ -1,4 +1,4 @@
-package org.motechproject.security.web.controllers;
+package org.motechproject.server.web.controller;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +7,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.security.ex.UserNotFoundException;
 import org.motechproject.security.service.PasswordRecoveryService;
-import org.springframework.web.servlet.ModelAndView;
+import org.motechproject.server.config.SettingsFacade;
+import org.motechproject.server.config.domain.LoginMode;
+import org.motechproject.server.config.domain.MotechSettings;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +20,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ForgotPasswordControllerTest {
+public class ForgotControllerTest {
 
     private static final String EMAIL = "e@ma.il";
 
@@ -31,35 +33,41 @@ public class ForgotPasswordControllerTest {
     @Mock
     private HttpServletRequest request;
 
+    @Mock
+    private SettingsFacade settingsFacade;
+
+    @Mock
+    private MotechSettings motechSettings;
+
     @InjectMocks
-    private ForgotPasswordController controller = new ForgotPasswordController();
+    private ForgotController controller = new ForgotController();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(settingsFacade.getPlatformSettings()).thenReturn(motechSettings);
     }
 
     @Test
     public void testForgotPost() throws UserNotFoundException {
         when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.ENGLISH);
+        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
-        ModelAndView mav = controller.forgotPost(EMAIL, request);
+        controller.forgotPost(EMAIL);
 
-        assertEquals("forgotProcessed", mav.getViewName());
-        assertEquals(Locale.ENGLISH, mav.getModel().get("pageLang"));
         verify(recoveryService).passwordRecoveryRequest(EMAIL);
     }
+
+
 
     @Test
     public void testInvalidEmail() throws UserNotFoundException {
         doThrow(new UserNotFoundException()).when(recoveryService).passwordRecoveryRequest(EMAIL);
         when(cookieLocaleResolver.resolveLocale(request)).thenReturn(Locale.ENGLISH);
+        when(motechSettings.getLoginMode()).thenReturn(LoginMode.REPOSITORY);
 
-        ModelAndView mav = controller.forgotPost(EMAIL, request);
+        assertEquals("security.forgot.noSuchUser", controller.forgotPost(EMAIL));
 
-        assertEquals("forgotProcessed", mav.getViewName());
-        assertEquals(Locale.ENGLISH, mav.getModel().get("pageLang"));
-        assertEquals("security.forgot.noSuchUser", mav.getModel().get("server.error"));
         verify(recoveryService).passwordRecoveryRequest(EMAIL);
     }
 }

@@ -36,4 +36,7 @@
         <property name="prefix" value="/webapp/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <osgi:service ref="passwordRecoveryServiceImpl" interface="org.motechproject.security.service.PasswordRecoveryService"/>
+
 </beans>
