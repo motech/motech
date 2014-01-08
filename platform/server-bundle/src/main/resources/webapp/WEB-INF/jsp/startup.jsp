@@ -1,9 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<fmt:setLocale value="${pageLang}" />
-<fmt:setBundle basename="org.motechproject.resources.messages" var="bundle"/>
 
 <!DOCTYPE html>
 <html>
@@ -18,7 +14,6 @@
             initAngular();
         });
     </script>
-
 </head>
 <body ng-controller="MasterCtrl" class="body-startup">
 <div class="bodywrap">
@@ -31,55 +26,49 @@
         <div class="startup-title ng-binding">Mobile Technology for Community Health</div>
         <div class="clearfix"></div>
         <div class="startup-strip">
-            <div class="form-group" ng-show="!${requireConfigFiles}">
-                <h2 class="title ng-binding"><fmt:message key="server.welcome.startup" bundle="${bundle}"/></h2>
+            <div class="form-group" ng-show="!requireConfigFiles">
+                <h2 class="title ng-binding">{{msg('server.welcome.startup')}}</h2>
             </div>
-            <div class="form-group alert-danger" ng-show="${requireConfigFiles}">
-                <h2 class="title ng-binding"><fmt:message key="server.error.config.file.required" bundle="${bundle}"/></h2>
+            <div class="form-group alert-danger" ng-show="requireConfigFiles">
+                <h2 class="title ng-binding">{{msg('server.error.config.file.required')}}</h2>
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="startup-form" ng-show="!${requireConfigFiles}">
+        <div class="startup-form" ng-show="!requireConfigFiles">
             <div class="diver">
-                <form action="startup.do" method="POST" class="form-horizontal">
-                    <div ng-show="!${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.select.language" bundle="${bundle}"/></label>
+                <form id="startup-config-form" ng-init="getStartupViewData()" ng-submit="submitStartupConfig()" method="POST" class="form-horizontal">
+                    <div ng-show="!startupViewData.isFileMode" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.select.language')}}</label>
                         <div class="col-sm-6">
                             <div class="btn-group">
                                 <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="flag flag-${startupSettings.language} label-flag"></i> ${languages[startupSettings.language]}
+                                    <i class="flag flag-{{startupViewData.startupSettings.language}} label-flag"></i> {{startupViewData.languages[startupViewData.startupSettings.language]}}
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <c:forEach var="entry" items="${languages}">
-                                        <li>
-                                            <a ng-click="setUserLang('${entry.key}', true)">
-                                                <i class="flag flag-${entry.key} label-flag"></i> ${entry.value}
-                                            </a>
-                                        </li>
-                                    </c:forEach>
+                                    <li ng-repeat="(key, value) in startupViewData.languages">
+                                        <a ng-click="setUserLang(key, true)">
+                                            <i class="flag flag-{{key}} label-flag"></i> {{value}}
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div ng-show="!${isFileMode}" class="form-group">
-                        <label class="col-sm-4 control-label"><fmt:message key="server.enter.queueUrl" bundle="${bundle}"/></label>
+                    <div ng-show="!startupViewData.isFileMode" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.enter.queueUrl')}}</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="queueUrl" value="${startupSettings.queueUrl}"/>
-                            <c:if test="${ not empty suggestions.queueUrls }">
-                                <div id="queue.urls" class="queue-urls">
-                                <c:forEach var="url" items="${suggestions.queueUrls}" varStatus="status">
-                                    <div id="queue.url.${status.count}">
-                                        <span><fmt:message key="server.suggestion" bundle="${bundle}"/> #${status.count}: ${url}</span>
-                                        <button type="button" class="btn btn-default btn-xs"><fmt:message key="server.use" bundle="${bundle}"/></button>
-                                    </div>
-                                </c:forEach>
+                            <input type="text" class="form-control" name="queueUrl" ng-model="startupViewData.startupSettings.queueUrl"/>
+                            <div id="queue.urls" class="queue-urls" ng-repeat="url in startupViewData.suggestions.queueUrls">
+                                <div id="queue.url.{{$index}}">
+                                    <span>{{msg('server.suggestion')}}#{{$index}}: {{url}}</span>
+                                    <button type="button" ng-click="setSuggestedValue(startupViewData.startupSettings, 'queueUrl', url)" class="btn btn-default btn-xs">{{msg('server.use')}}</button>
                                 </div>
-                            </c:if>
+                            </div>
                         </div>
                     </div>
-                    <div ng-show="!${isFileMode}" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.select.loginMode" bundle="${bundle}"/></label>
+                    <div ng-show="!startupViewData.isFileMode" class="form-group">
+                         <label class="col-sm-4 control-label">{{msg('server.select.loginMode')}}</label>
                          <div class="col-sm-8">
                              <label class="radio-inline">
                                 <input type="radio" value="repository" name="loginMode" ng-click="securityMode = 'repository'" ng-checked="securityMode == 'repository'">
@@ -91,55 +80,53 @@
                              </label>
                          </div>
                      </div>
-                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminLogin" bundle="${bundle}"/></label>
-                         <div class="col-sm-6">
-                             <input type="text" class="form-control" name="adminLogin" value="${startupSettings.adminLogin}"/>
-                         </div>
+                    <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.enter.adminLogin')}}</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="adminLogin" ng-model="startupViewData.startupSettings.adminLogin"/>
+                        </div>
+                    </div>
+                    <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.enter.adminPassword')}}</label>
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" name="adminPassword" ng-model="startupViewData.startupSettings.adminPassword"/>
+                        </div>
+                    </div>
+                    <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.enter.adminConfirmPassword')}}</label>
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" name="adminConfirmPassword" ng-model="startupViewData.startupSettings.adminConfirmPassword"/>
+                        </div>
+                    </div>
+                     <div ng-show="!startupViewData.isAdminRegistered && (securityMode=='repository' || startupViewData.isFileMode)" class="form-group">
+                        <label class="col-sm-4 control-label">{{msg('server.enter.adminEmail')}}</label>
+                        <div class="col-sm-6">
+                            <input type="email" class="form-control" name="adminEmail" ng-model="startupViewData.startupSettings.adminEmail"/>
+                        </div>
                      </div>
-                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminPassword" bundle="${bundle}"/></label>
+                     <div ng-show="securityMode=='openid'" class="form-group">
+                         <label class="col-sm-4 control-label">{{msg('server.enter.providerName')}}</label>
                          <div class="col-sm-6">
-                             <input type="password" class="form-control" name="adminPassword" value="${startupSettings.adminPassword}"/>
-                         </div>
-                     </div>
-                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminComfirmPassword" bundle="${bundle}"/></label>
-                         <div class="col-sm-6">
-                             <input type="password" class="form-control" name="adminConfirmPassword" value="${startupSettings.adminConfirmPassword}"/>
-                         </div>
-                     </div>
-                     <div ng-show="!${isAdminRegistered} && (securityMode=='repository' || ${isFileMode})" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.adminEmail" bundle="${bundle}"/></label>
-                         <div class="col-sm-6">
-                             <input type="email" class="form-control" name="adminEmail" value="${startupSettings.adminEmail}"/>
+                             <input type="text" class="form-control" name="providerName" ng-model="startupViewData.startupSettings.providerName"/>
                          </div>
                      </div>
                      <div ng-show="securityMode=='openid'" class="form-group">
-                         <label class="col-sm-4 control-label"><fmt:message key="server.enter.providerName" bundle="${bundle}"/></label>
-                         <div class="col-sm-6">
-                             <input type="text" class="form-control" name="providerName" value="${startupSettings.providerName}"/>
-                         </div>
-                     </div>
-                     <div ng-show="securityMode=='openid'" class="form-group">
-                          <label class="col-sm-4 control-label"><fmt:message key="server.enter.providerUrl" bundle="${bundle}"/></label>
+                          <label class="col-sm-4 control-label">{{msg('server.enter.providerUrl')}}</label>
                           <div class="col-sm-6">
-                              <input type="text" class="form-control" name="providerUrl" value="${startupSettings.providerUrl}"/>
+                              <input type="text" class="form-control" name="providerUrl" ng-model="startupViewData.startupSettings.providerUrl"/>
                           </div>
                      </div>
                     <div class="form-group">
                         <div class="col-sm-offset-4 col-sm-8">
-                            <input type="hidden" name="language" value="${startupSettings.language}"/>
-                            <input class="btn btn-primary" type="submit" name="START" value="<fmt:message key="server.submit" bundle="${bundle}"/>"/>
+                            <input type="hidden" name="language" ng-model="startupViewData.startupSettings.language"/>
+                            <input class="btn btn-primary" type="submit" name="START" value="{{msg('server.submit')}}"/>
                         </div>
                     </div>
-                    <c:if test="${not empty errors}">
-                        <div class="alert alert-danger">
-                        <c:forEach var="error" items="${errors}">
-                            <fmt:message key="${error}" bundle="${bundle}"/><br/>
-                        </c:forEach>
+                    <div ng-show="errors" class="alert alert-danger">
+                        <div ng-repeat="error in errors">
+                            {{msg(error)}}<br/>
                         </div>
-                    </c:if>
+                    </div>
                 </form>
             </div>
         </div>

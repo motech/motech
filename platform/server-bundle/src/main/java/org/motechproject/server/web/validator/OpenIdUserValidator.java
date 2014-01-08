@@ -2,10 +2,10 @@ package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.UrlValidator;
 import org.motechproject.server.web.form.StartupForm;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
+import java.util.List;
+
+import static org.motechproject.commons.date.util.StringUtil.isNullOrEmpty;
 import static org.motechproject.server.web.form.StartupForm.PROVIDER_NAME;
 import static org.motechproject.server.web.form.StartupForm.PROVIDER_URL;
 
@@ -13,7 +13,7 @@ import static org.motechproject.server.web.form.StartupForm.PROVIDER_URL;
  * Validates presence of OpenId related field values
  * Also validates provider URL
  */
-public class OpenIdUserValidator implements Validator {
+public class OpenIdUserValidator implements AbstractValidator {
 
     private static final String ERROR_REQUIRED = "server.error.required.%s";
     private static final String ERROR_INVALID = "server.error.invalid.%s";
@@ -24,19 +24,16 @@ public class OpenIdUserValidator implements Validator {
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
-        String providerUrl = errors.getFieldValue(PROVIDER_URL).toString();
+    public void validate(StartupForm target, List<String> errors) {
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_NAME, String.format(ERROR_REQUIRED, PROVIDER_NAME));
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PROVIDER_URL, String.format(ERROR_REQUIRED, PROVIDER_URL));
-
-        if (errors.getFieldErrorCount(PROVIDER_URL) == 0 && !urlValidator.isValid(providerUrl)) {
-            errors.rejectValue(PROVIDER_URL, String.format(ERROR_INVALID, PROVIDER_URL), null, null);
+        if (isNullOrEmpty(target.getProviderName())) {
+            errors.add(String.format(ERROR_REQUIRED, PROVIDER_NAME));
         }
-    }
 
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return StartupForm.class.equals(clazz);
+        if (isNullOrEmpty(target.getProviderUrl())) {
+            errors.add(String.format(ERROR_REQUIRED, PROVIDER_URL));
+        } else if (!urlValidator.isValid(target.getProviderUrl())) {
+            errors.add(String.format(ERROR_INVALID, PROVIDER_URL));
+        }
     }
 }

@@ -39,19 +39,19 @@ public class StartupFormValidatorFactoryTest {
     public void shouldCreateStartupFormValidator() {
         when(motechUserService.hasActiveAdminUser()).thenReturn(false);
 
-        StartupFormValidator startupFormValidator = startupFormValidatorFactory.getStartupFormValidator(motechUserService);
+        StartupFormValidator startupFormValidator = startupFormValidatorFactory.getStartupFormValidator(new StartupForm(), motechUserService);
 
         assertNotNull(startupFormValidator);
-        List<Validator> validators = startupFormValidator.getValidators();
+        List<AbstractValidator> validators = startupFormValidator.getValidators();
         assertFalse(validators.isEmpty());
-        assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LANGUAGE)));
-        assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LOGIN_MODE)));
+        assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LANGUAGE, "")));
+        assertTrue(validators.contains(new RequiredFieldValidator(StartupForm.LOGIN_MODE, "")));
         assertContainsValidatorOfType(QueueURLValidator.class, validators);
         assertContainsValidatorOfType(UserRegistrationValidator.class, validators);
     }
 
-    private void assertContainsValidatorOfType(Class clazz, List<Validator> validators) {
-        for (Validator validator : validators) {
+    private void assertContainsValidatorOfType(Class clazz, List<AbstractValidator> validators) {
+        for (AbstractValidator validator : validators) {
             if (validator.getClass().equals(clazz)) {
                 return;
             }

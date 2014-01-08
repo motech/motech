@@ -17,12 +17,12 @@ import org.motechproject.server.config.domain.MotechSettings;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.startup.StartupManager;
 import org.motechproject.server.ui.LocaleService;
+import org.motechproject.server.web.dto.StartupViewData;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.helper.SuggestionHelper;
-import org.springframework.ui.ModelMap;
+import org.motechproject.server.web.validator.StartupFormValidatorFactory;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -56,15 +56,6 @@ import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
 
 
 public class StartupControllerTest {
-    private static final String SUGGESTIONS_KEY = "suggestions";
-    private static final String STARTUP_SETTINGS_KEY = "startupSettings";
-    private static final String LANGUAGES_KEY = "languages";
-    private static final String PAGE_LANG_KEY = "pageLang";
-    private static final String IS_FILE_MODE_KEY = "isFileMode";
-    private static final String HEADER_KEY = "mainHeader";
-    private static final String REQUIRES_CONFIG_FILES = "requireConfigFiles";
-    private static final String IS_ADMIN_REGISTERED = "isAdminRegistered";
-
 
     @Mock
     private StartupManager startupManager;
@@ -96,6 +87,7 @@ public class StartupControllerTest {
     @Before
     public void setUp() {
         initMocks(this);
+        startupController.setStartupFormValidatorFactory(new StartupFormValidatorFactory());
     }
 
     @Test
@@ -117,24 +109,22 @@ public class StartupControllerTest {
 
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
-        ModelAndView result = startupController.startup(httpServletRequest);
+        StartupViewData result = startupController.getStartupViewData(httpServletRequest);
 
         verify(startupManager).canLaunchBundles();
         verify(localeService).getAvailableLanguages();
         verify(localeService).getUserLocale(httpServletRequest);
 
-        assertEquals("startup", result.getViewName());
-        assertModelMap(result.getModelMap(), SUGGESTIONS_KEY, STARTUP_SETTINGS_KEY, LANGUAGES_KEY, PAGE_LANG_KEY,
-                IS_FILE_MODE_KEY, HEADER_KEY, REQUIRES_CONFIG_FILES, IS_ADMIN_REGISTERED);
+        assertThat(result.getRedirectHome(), Is.is(false));
 
-        StartupSuggestionsForm startupSuggestionsForm = (StartupSuggestionsForm) result.getModelMap().get(SUGGESTIONS_KEY);
+        StartupSuggestionsForm startupSuggestionsForm = result.getSuggestions();
 
         assertTrue(startupSuggestionsForm.getDatabaseUrls().isEmpty());
         assertTrue(startupSuggestionsForm.getQueueUrls().isEmpty());
         assertTrue(startupSuggestionsForm.getSchedulerUrls().isEmpty());
 
-        StartupForm startupSettings = (StartupForm) result.getModelMap().get(STARTUP_SETTINGS_KEY);
-        Boolean requiresConfigFiles = (Boolean) result.getModelMap().get(REQUIRES_CONFIG_FILES);
+        StartupForm startupSettings = result.getStartupSettings();
+        Boolean requiresConfigFiles = result.getRequireConfigFiles();
 
         Assert.assertFalse(requiresConfigFiles);
         assertEquals("en", startupSettings.getLanguage());
@@ -143,62 +133,51 @@ public class StartupControllerTest {
     @Test
     public void testStartupRedirectToHome() {
         when(startupManager.canLaunchBundles()).thenReturn(true);
-        ModelAndView result = startupController.startup(httpServletRequest);
+        ModelAndView result = startupController.startup();
 
         assertEquals("redirect:home", result.getViewName());
     }
 
-
     @Test
-    public void testSubmitFormStart() {
+    public void testSubmitFormStart() throws IOException {
         StartupForm startupForm = startupForm();
+        startupForm.setQueueUrl("tcp://127.0.0.1:61616");
         startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
-        ModelAndView result = startupController.submitForm(startupForm, bindingResult);
+        List<String> result = startupController.submitForm(startupForm);
 
+        assertTrue(result.isEmpty());
         verify(configurationService).savePlatformSettings(any(MotechSettings.class));
         verify(startupManager).startup();
         verifyUserRegistration();
-
-        assertEquals("redirect:home", result.getViewName());
     }
 
     @Test
-    public void testSubmitFormOpenId() {
+    public void testSubmitFormOpenId() throws IOException {
         StartupForm startupForm = startupForm();
+        startupForm.setQueueUrl("tcp://127.0.0.1:61616");
+        startupForm.setProviderUrl("https://www.example.com/accounts/id");
         startupForm.setLoginMode(LoginMode.OPEN_ID.getName());
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
 
-        ModelAndView result = startupController.submitForm(startupForm, bindingResult);
+        List<String> result = startupController.submitForm(startupForm);
 
+        assertTrue(result.isEmpty());
         verify(configurationService).savePlatformSettings(any(MotechSettings.class));
         verify(startupManager).startup();
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
-
-        assertEquals("redirect:home", result.getViewName());
     }
 
     @Test
-    public void shouldAddErrorsAndOtherFlagsInModelWhenValidationFails() {
-        when(bindingResult.hasErrors()).thenReturn(true);
-        ObjectError error = new ObjectError("loginMode", new String[]{"error.required.loginMode"}, null, "LogIn Mode Required");
-        List<ObjectError> objectErrors = Arrays.asList(error);
-        when(bindingResult.getAllErrors()).thenReturn(objectErrors);
-
+    public void shouldAddErrorsWhenValidationFails() throws IOException {
         when(userService.hasActiveAdminUser()).thenReturn(true);
 
-        ModelAndView modelAndView = startupController.submitForm(startupForm(), bindingResult);
-        assertThat(modelAndView.getViewName(), Is.is("startup"));
-        List<String> errors = (List<String>) modelAndView.getModelMap().get("errors");
-        assertThat(errors.contains("error.required.loginMode"), Is.is(true));
-        assertThat((Boolean) modelAndView.getModelMap().get("isAdminRegistered"), Is.is(true));
+        List<String> errors = startupController.submitForm(startupForm());
+        assertFalse(errors.isEmpty());
     }
-
 
     @Test
     public void shouldInformViewThatConfigFilesRequiredWhenConfigSourceIsFileAndConfigFilesDoNotExist() throws IOException {
@@ -211,8 +190,8 @@ public class StartupControllerTest {
 
         when(configurationService.requiresConfigurationFiles()).thenReturn(true);
 
-        ModelAndView modelAndView = startupController.startup(httpServletRequest);
-        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(true));
+        StartupViewData startupViewData = startupController.getStartupViewData(httpServletRequest);
+        assertThat((startupViewData.getRequireConfigFiles()), Is.is(true));
         verify(configurationService).requiresConfigurationFiles();
     }
 
@@ -227,8 +206,8 @@ public class StartupControllerTest {
 
         when(configurationService.requiresConfigurationFiles()).thenReturn(false);
 
-        ModelAndView modelAndView = startupController.startup(httpServletRequest);
-        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(false));
+        StartupViewData startupViewData = startupController.getStartupViewData(httpServletRequest);
+        assertThat((startupViewData.getRequireConfigFiles()), Is.is(false));
         verify(configurationService).requiresConfigurationFiles();
     }
 
@@ -241,65 +220,51 @@ public class StartupControllerTest {
         when(bootstrapConfig.getConfigSource()).thenReturn(ConfigSource.UI);
         when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
-        ModelAndView modelAndView = startupController.startup(httpServletRequest);
-        assertThat((Boolean) modelAndView.getModelMap().get("requireConfigFiles"), Is.is(false));
+        StartupViewData startupViewData = startupController.getStartupViewData(httpServletRequest);
+        assertThat(startupViewData.getRequireConfigFiles(), Is.is(false));
         verify(configurationService, never()).requiresConfigurationFiles();
     }
-
 
     @Test
     public void shouldAddFlagIndicatingAbsenceOfAdminUser() {
         when(localeService.getUserLocale(httpServletRequest)).thenReturn(new Locale("en", "US"));
         when(userService.hasActiveAdminUser()).thenReturn(false);
 
-        ModelAndView startup = startupController.startup(httpServletRequest);
-        Boolean isAdminRegistered = (Boolean) startup.getModelMap().get(IS_ADMIN_REGISTERED);
+        Boolean isAdminRegistered = startupController.getStartupViewData(httpServletRequest).getIsAdminRegistered();
 
         assertThat(isAdminRegistered, Is.is(false));
         verify(userService).hasActiveAdminUser();
     }
 
     @Test
-    public void shouldNotRegisterAdminUserIfActiveAdminUserAlreadyExists() {
+    public void shouldNotRegisterAdminUserIfActiveAdminUserAlreadyExists() throws IOException {
         StartupForm startupForm = startupForm();
         startupForm.setLoginMode(LoginMode.REPOSITORY.getName());
 
-        when(bindingResult.hasErrors()).thenReturn(false);
         when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
         when(configurationService.getPlatformSettings()).thenReturn(motechSettings);
-
         when(userService.hasActiveAdminUser()).thenReturn(true);
 
-        startupController.submitForm(startupForm, bindingResult);
+        startupController.submitForm(startupForm);
 
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
-
     }
 
     @Test
-    public void shouldNotAllowStartupPostAfterStartup() {
-        StartupForm form = new StartupForm();
+    public void shouldNotAllowStartupPostAfterStartup() throws IOException {
+        StartupForm form = startupForm();
+        form.setQueueUrl("tcp://127.0.0.1:61616");
         form.setLoginMode(LoginMode.REPOSITORY.getName());
 
+        when(startupManager.getDefaultSettings()).thenReturn(motechSettings);
         when(startupManager.canLaunchBundles()).thenReturn(true);
-        when(bindingResult.hasErrors()).thenReturn(false);
 
-        ModelAndView mav = startupController.submitForm(form, bindingResult);
+        List<String> result = startupController.submitForm(form);
 
-        assertEquals("redirect:home", mav.getViewName());
+        assertTrue(result.isEmpty());
         verify(userService, never()).register(anyString(), anyString(), anyString(), anyString(), anyListOf(String.class), any(Locale.class));
         verify(startupManager, never()).startup();
-    }
-
-    private void assertModelMap(final ModelMap modelMap, String... keys) {
-        assertEquals(keys.length, modelMap.size());
-
-        for (String k : keys) {
-            if (!k.equalsIgnoreCase(HEADER_KEY)) {
-                assertNotNull(modelMap.get(k));
-            }
-        }
     }
 
     private StartupForm startupForm() {
@@ -320,14 +285,14 @@ public class StartupControllerTest {
 
     private void verifyUserRegistration() {
         verify(userService).register(eq("motech"), eq("motech"), eq("motech@motech.com"), eq((String) null),
-                argThat(new ArgumentMatcher<List<String>>() {
-                    @Override
-                    public boolean matches(Object argument) {
-                        List<String> val = (List<String>) argument;
-                        return val.equals(Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE,
-                                SECURITY_ADMIN_ROLE,
-                                ROLES_ADMIN));
-                    }
-                }), eq(Locale.ENGLISH));
+            argThat(new ArgumentMatcher<List<String>>() {
+                @Override
+                public boolean matches(Object argument) {
+                    List<String> val = (List<String>) argument;
+                    return val.equals(Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE,
+                            SECURITY_ADMIN_ROLE,
+                            ROLES_ADMIN));
+                }
+            }), eq(Locale.ENGLISH));
     }
 }

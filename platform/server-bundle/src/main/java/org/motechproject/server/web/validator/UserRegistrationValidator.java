@@ -2,14 +2,14 @@ package org.motechproject.server.web.validator;
 
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.web.form.StartupForm;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+
+import java.util.List;
 
 /**
  * Validator to validate user registration details.
  * Delegates to either @OpenIdUserValidator or @UserRegistrationValidator depending on login mode preference.
  */
-public class UserRegistrationValidator implements Validator {
+public class UserRegistrationValidator implements AbstractValidator {
 
     private final PersistedUserValidator persistedUserValidator;
     private final OpenIdUserValidator openIdUserValidator;
@@ -20,14 +20,8 @@ public class UserRegistrationValidator implements Validator {
     }
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return StartupForm.class.equals(clazz);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        Object loginModeValue = errors.getFieldValue(StartupForm.LOGIN_MODE);
-        LoginMode loginMode = LoginMode.valueOf((String) loginModeValue);
+    public void validate(StartupForm target, List<String> errors) {
+        LoginMode loginMode = LoginMode.valueOf(target.getLoginMode());
         if (loginMode == null) {
             return;
         }
