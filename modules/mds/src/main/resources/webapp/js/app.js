@@ -6,7 +6,9 @@
         'ngRoute', 'ui.directives'
     ]);
 
-    mds.constant('AVAILABLE_TABS', ['schemaEditor', 'dataBrowser', 'settings']);
+    $.get('../mds/available/mdsTabs').done(function(data) {
+         mds.constant('AVAILABLE_TABS', data);
+    });
 
     mds.run(function ($rootScope, AVAILABLE_TABS) {
         $rootScope.AVAILABLE_TABS = AVAILABLE_TABS;

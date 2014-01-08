@@ -32,6 +32,7 @@ import java.util.Locale;
 import static org.motechproject.config.core.constants.ConfigurationConstants.AMQ_BROKER_URL;
 import static org.motechproject.security.UserRoleNames.BUNDLE_ADMIN_ROLE;
 import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.MDS_ADMIN;
 import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
 import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
 import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
@@ -168,7 +169,7 @@ public class StartupController {
         String email = form.getAdminEmail();
         Locale locale = new Locale(form.getLanguage());
 
-        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE, SECURITY_ADMIN_ROLE, ROLES_ADMIN);
+        List<String> roles = Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE, SECURITY_ADMIN_ROLE, ROLES_ADMIN, MDS_ADMIN);
 
         userService.register(login, password, email, null, roles, locale);
     }

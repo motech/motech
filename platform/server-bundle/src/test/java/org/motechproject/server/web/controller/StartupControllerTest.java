@@ -53,6 +53,7 @@ import static org.motechproject.security.UserRoleNames.EMAIL_ADMIN_ROLE;
 import static org.motechproject.security.UserRoleNames.ROLES_ADMIN;
 import static org.motechproject.security.UserRoleNames.SECURITY_ADMIN_ROLE;
 import static org.motechproject.security.UserRoleNames.USER_ADMIN_ROLE;
+import static org.motechproject.security.UserRoleNames.MDS_ADMIN;
 
 
 public class StartupControllerTest {
@@ -290,8 +291,7 @@ public class StartupControllerTest {
                 public boolean matches(Object argument) {
                     List<String> val = (List<String>) argument;
                     return val.equals(Arrays.asList(USER_ADMIN_ROLE, BUNDLE_ADMIN_ROLE, EMAIL_ADMIN_ROLE,
-                            SECURITY_ADMIN_ROLE,
-                            ROLES_ADMIN));
+                            SECURITY_ADMIN_ROLE, ROLES_ADMIN, MDS_ADMIN));
                 }
             }), eq(Locale.ENGLISH));
     }
