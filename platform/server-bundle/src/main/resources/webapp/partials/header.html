@@ -16,9 +16,9 @@
                 <li class="divider-vertical" ng-hide="showDashboardLogo.showDashboard" ></li>
             </ul>
             <ul role="tablist" id="tabbuttons" class="nav navbar-nav tabbuttons">
-                <li ng-class="showActiveMenu.changeModulesClass()"><a ng-click="selectModules('servermodules')" role="menu" class=" " href="home?moduleName=">{{msg('server.modules')}}</a></li>
-                <li ng-class="showActiveMenu.changeAdminClass()"><a ng-click="selectModules('adminmodule')" role="menu" class=" " href="home?moduleName=admin.module#/bundles">{{msg('admin.module')}}</a></li>
-                <li ng-class="showActiveMenu.changeSecurityClass()" ng-show="hasMenu('websecurity')"><a ng-click="selectModules('websecurity')" role="menu" class=" " href="home?moduleName=websecurity#/permissions">{{msg('websecurity')}}</a></li>
+                <li ng-class="showActiveMenu.changeModulesClass()"><a ng-click="selectModules('servermodules')" role="menu">{{msg('server.modules')}}</a></li>
+                <li ng-class="showActiveMenu.changeAdminClass()"><a ng-click="selectModules('adminmodule')" role="menu">{{msg('admin.module')}}</a></li>
+                <li ng-class="showActiveMenu.changeSecurityClass()" ng-show="hasMenu('websecurity')"><a ng-click="selectModules('websecurity')" role="menu">{{msg('websecurity')}}</a></li>
             </ul>
             <ul id="tabbuttons-right" class="nav navbar-nav pull-right menu-left">
                 <li><a id="minimize" class="btn btn-xs btn-blue" ng-click="minimizeHeader()">
