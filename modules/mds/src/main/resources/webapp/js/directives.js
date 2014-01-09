@@ -260,6 +260,7 @@
                         source, target, item;
 
                     $(this).removeClass('over');
+                    $(this.parentNode).removeClass('over');
                     source = scope[sourceContainer.attr('connected-list-source')];
                     target = scope[targetContainer.attr('connected-list-target')];
 
@@ -286,8 +287,6 @@
                     }
                     return false;
                 }, false);
-
-                jQelem.disableSelection();
             }
         };
     });
@@ -365,6 +364,7 @@
                         source, target, item;
 
                     $(this).removeClass('over');
+                    $(this.parentNode).removeClass('over');
                     source = scope[sourceContainer.attr('connected-list-source')];
                     target = scope[targetContainer.attr('connected-list-target')];
                     if (itemOriginContainer === 'source') {
@@ -390,8 +390,6 @@
                     }
                     return false;
                 }, false);
-
-                jQelem.disableSelection();
             }
         };
     });
@@ -401,10 +399,10 @@
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
     */
-    mds.directive('connectedListSource', function () {
+    mds.directive('connectedListSource', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
+            link: function (scope, element, attr) {
                 var jQelem = angular.element(element), elem = element[0], connectWith = jQelem.attr('connect-with'),
                     onContentChange = jQelem.attr('on-content-change');
 
@@ -463,6 +461,58 @@
                     }
                     return false;
                 }, false);
+
+                jQelem.keyup(function(event) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedElements = sourceContainer.children('.selected'),
+                        selectedIndices = [], selectedItems = [],
+                        array = [];
+
+                    if(event.which === 13) {
+                        selectedElements.each(function() {
+                             var that = $(this),
+                                 index = parseInt(that.attr('item-index'), 10),
+                                 item = source[index];
+
+                             that.removeClass('selected');
+                             selectedIndices.push(index);
+                             selectedItems.push(item);
+                        });
+
+                        scope.safeApply(function () {
+                            angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                                 source.splice(itemIndex, 1);
+                            });
+
+                            angular.forEach(selectedItems, function(item) {
+                                target.push(item);
+                            });
+
+                            angular.forEach(target, function (item) {
+                                array.push(item.id);
+                            });
+
+                            Entities.draft({
+                                id: scope.selectedEntity.id
+                            }, {
+                                edit: true,
+                                values: {
+                                    path: attr.mdsPath,
+                                    advanced: true,
+                                    value: [array]
+                                }
+                            }, function () {
+                                 scope.selectedEntity.draft = true;
+                            });
+
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    }
+                });
             }
         };
     });
@@ -472,10 +522,10 @@
     * "Connected Lists Group" is passed as a value of the attribute. "onItemsAdd", "onItemsRemove"
     * and "onItemMove" callback functions are registered to handle items adding/removing/sorting.
     */
-    mds.directive('connectedListTarget', function () {
+    mds.directive('connectedListTarget', function (Entities) {
         return {
             restrict: 'A',
-            link: function (scope, element) {
+            link: function (scope, element, attr) {
                 var jQelem = angular.element(element), elem = element[0], connectWith = jQelem.attr('connect-with'),
                     onContentChange = jQelem.attr('on-content-change');
 
@@ -534,6 +584,58 @@
                     }
                     return false;
                 }, false);
+
+                jQelem.keyup(function(event) {
+                    var sourceContainer = $('.connected-list-source.' + attr.connectWith),
+                        targetContainer = $('.connected-list-target.' + attr.connectWith),
+                        source = scope[sourceContainer.attr('connected-list-source')],
+                        target = scope[targetContainer.attr('connected-list-target')],
+                        selectedElements = targetContainer.children('.selected'),
+                        selectedIndices = [], selectedItems = [],
+                        array = [];
+
+                    if(event.which === 13) {
+                        selectedElements.each(function() {
+                             var that = $(this),
+                                 index = parseInt(that.attr('item-index'), 10),
+                                 item = target[index];
+
+                             that.removeClass('selected');
+                             selectedIndices.push(index);
+                             selectedItems.push(item);
+                        });
+
+                        scope.safeApply(function () {
+                            angular.forEach(selectedIndices.reverse(), function(itemIndex) {
+                                target.splice(itemIndex, 1);
+                            });
+
+                            angular.forEach(selectedItems, function(item) {
+                                source.push(item);
+                            });
+
+                            angular.forEach(target, function (item) {
+                                array.push(item.id);
+                            });
+
+                            Entities.draft({
+                                id: scope.selectedEntity.id
+                            }, {
+                                edit: true,
+                                values: {
+                                    path: attr.mdsPath,
+                                    advanced: true,
+                                    value: [array]
+                                }
+                            }, function () {
+                                 scope.selectedEntity.draft = true;
+                            });
+
+                            sourceContainer.trigger('contentChange', [source]);
+                            targetContainer.trigger('contentChange', [target]);
+                        });
+                    }
+                });
             }
         };
     });

@@ -8,7 +8,7 @@
                 <div id="availableFieldsContainer" class="outer-container">
                     <h4>{{msg('mds.advanced.dataBrowsing.availableFields')}}</h4>
                     <div class="scroll-container">
-                        <div class="container-space" connected-list-source="browsingAvailable" connect-with="browsing" droppable="true">
+                        <div class="container-space" tabindex="0" connected-list-source="browsingAvailable" connect-with="browsing" droppable="true">
                             <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-source-item ng-repeat="field in browsingAvailable">
                                 {{field.basic.displayName}}
                             </div>
@@ -49,7 +49,7 @@
                         </div>
                     </h4>
                     <div class="scroll-container">
-                        <div class="container-space" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
+                        <div class="container-space" tabindex="0" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
                             <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-target-item ng-repeat="field in browsingDisplayed">
                                 {{field.basic.displayName}}
                             </div>
