@@ -1,3 +1,3 @@
-<select class="form-control input-auto" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="getFieldValue(field.basic.displayName).value" ng-options="value for value in getComboboxValues(field.settings)">
+<select class="form-control input-auto" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-model="getFieldValue(field.basic.displayName).value" ng-options="value for value in getComboboxValues(field.settings)" ng-disabled="previousInstance">
     <option value="">{{msg('mds.form.label.select')}}</option>
 </select>

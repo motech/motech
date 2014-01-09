@@ -1,7 +1,7 @@
 <div>
         <div class="row">
             <div ng-init="setEntities()">
-                <div ng-repeat="(module, entities) in modules" ng-if="!selectedEntity && !selectedInstance && !addedEntity&& !instanceId">
+                <div ng-repeat="(module, entities) in modules" ng-if="!selectedEntity && !selectedInstance && !addedEntity">
                     <div class="module-header">
                         <a ng-click="collapse(module)"><i class="icon-large" ng-class="arrow(module)"> </i>{{module}}</a>
                     </div>
@@ -22,14 +22,17 @@
             </div>
         </div>
 </div>
-    <div class="row" ui-if="selectedEntity">
+    <div class="row" ui-if="selectedEntity && !addedEntity && !selectedInstance">
         <div ng-include="'../mds/resources/partials/widgets/entityInstances.html'"></div>
     </div>
-    <div class="row" ui-if="addedEntity||selectedInstance&&!instanceId">
+    <div class="row" ui-if="addedEntity || selectedInstance && !instanceId">
         <div ng-include="'../mds/resources/partials/widgets/addEntityInstance.html'"></div>
     </div>
-    <div class="row" ui-if=" instanceId">
+    <div class="row" ui-if="instanceId && !previousInstance">
         <div ng-include="'../mds/resources/partials/widgets/history.html'"></div>
+    </div>
+    <div class="row" ui-if="previousInstance">
+        <div ng-include="'../mds/resources/partials/widgets/previousVersion.html'"></div>
     </div>
 </div>
 

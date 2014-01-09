@@ -10,6 +10,8 @@ import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.motechproject.mds.web.domain.FieldRecord;
+import org.motechproject.mds.web.domain.PreviousRecord;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,4 +58,16 @@ public class InstanceController extends MdsController {
         return new Records<>(settings.getPage(), settings.getRows(), historyRecordsList);
     }
 
+    @RequestMapping(value = "/instances/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
+    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
+    @ResponseBody
+    public List<FieldRecord> getPreviousInstance(@PathVariable String instanceId,@PathVariable String historyId, GridSettings settings) {
+        List<PreviousRecord> previousRecordsList = getExampleData().getPreviousRecordsById(instanceId);
+        for (PreviousRecord record : previousRecordsList) {
+            if (record.getId().equals(historyId))  {
+                return record.getFields();
+            }
+        }
+        throw new EntityNotFoundException();
+    }
 }

@@ -1,0 +1,21 @@
+<div>
+    <div>
+        <div  class="inside">
+            <button ng-click="selectInstanceHistory(selectedInstance)" type="button" class="btn btn-primary btn-history">
+                {{msg('mds.btn.history')}}
+            </button>
+            <button href="#" type="button" class="btn btn-primary btn-history">
+                {{msg('mds.btn.revert')}}
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-8 col-sm-3">
+            <div>{{msg('mds.info.previousVersion')}}
+                <a href="" ng-click="backToInstance()">{{msg('mds.info.version')}}</a>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
+</div>

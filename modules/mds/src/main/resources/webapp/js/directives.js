@@ -1064,6 +1064,15 @@
                                 sort: 'sortColumn',
                                 order: 'sortDirection'
                             },
+                            onSelectRow: function (id) {
+                                var myGrid = $('#historyTable'),
+                                cellValue = myGrid.jqGrid ('getCell', id, 'Changes');
+                                if (cellValue === "Is Active") {
+                                    scope.backToInstance();
+                                } else {
+                                    scope.historyInstance(id);
+                                }
+                            },
                             shrinkToFit: true,
                             autowidth: true,
                             rownumbers: true,

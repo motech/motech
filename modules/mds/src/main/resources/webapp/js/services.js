@@ -26,10 +26,11 @@
 
     angular.module('instanceService', ['ngResource']).factory('Instances', function ($resource) {
         return $resource(
-            '../mds/instances/:id/:action/',
+            '../mds/instances/:id/:action/:param',
             { id: '@id' },
             {
-                getHistory: { method: 'GET', params: { action: 'history' } }
+                getHistory: { method: 'GET', params: { action: 'history' } },
+                getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true }
             }
         );
     });

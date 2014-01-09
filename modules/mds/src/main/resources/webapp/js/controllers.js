@@ -1637,6 +1637,11 @@
         $scope.instanceId = undefined;
 
         /**
+        * This variable is set after user choose field in history instance view.
+        */
+        $scope.previousInstance = undefined;
+
+        /**
         * An array of selected instance fields.
         */
         $scope.loadedFields = [];
@@ -1677,7 +1682,20 @@
                  param: id},
                 function () {
                     $scope.selectedInstance = id;
-                    $scope.unselectEntity();
+                    unblockUI();
+                });
+        };
+
+        /**
+        *  Sets loadedFields from previous instance
+        */
+        $scope.historyInstance = function(id) {
+            blockUI();
+            $scope.loadedFields = Instances.getPreviousVersion(
+                {id: $scope.selectedInstance,
+                param: id},
+                function () {
+                    $scope.previousInstance = id;
                     unblockUI();
                 });
         };
@@ -1690,6 +1708,7 @@
                 $scope.selectedInstance = undefined;
                 $scope.loadedFields = undefined;
                 $scope.historyFields = undefined;
+                $scope.unselectEntity();
         };
 
         /**
@@ -1710,8 +1729,14 @@
             blockUI();
             Instances.getHistory({id: id},function () {
                 unblockUI();
+                $scope.previousInstance = undefined;
                 $scope.instanceId = id;
             });
+        };
+
+        $scope.backToInstance = function() {
+            $scope.unselectInstanceHistory();
+            $scope.editInstance($scope.selectedInstance);
         };
 
         /**
@@ -1719,7 +1744,8 @@
         */
         $scope.unselectInstanceHistory = function() {
             // Temporary - should return to instance view
-            $scope.instanceId = undefined;
+                $scope.instanceId = undefined;
+                $scope.previousInstance = undefined;
         };
 
         /**
@@ -1873,7 +1899,7 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
-            if ($scope.getFieldValue(field.basic.displayName)) {
+            if ($scope.getFieldValue(field.basic.displayName) || $scope.previousInstance) {
               return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                               .format(value.substring(value.toLowerCase()));
             }

@@ -8,10 +8,12 @@ import java.util.List;
  */
 public class HistoryRecord {
     private String id;
+    private String instanceId;
     private List<FieldRecord> fields;
 
-    public HistoryRecord(String id, List<FieldRecord> fields) {
+    public HistoryRecord(String id, String instanceId, List<FieldRecord> fields) {
         this.id = id;
+        this.instanceId = instanceId;
         this.fields = fields;
     }
 
@@ -33,5 +35,13 @@ public class HistoryRecord {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }

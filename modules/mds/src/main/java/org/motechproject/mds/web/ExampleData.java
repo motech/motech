@@ -20,6 +20,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -64,6 +65,7 @@ public class ExampleData {
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
     private List<EntityRecord> entityRecords = new ArrayList<>();
     private List<HistoryRecord> entityHistory = new ArrayList<>();
+    private List<PreviousRecord> entityRecordsHistory = new ArrayList<>();
 
     private Map<TypeDto, List<SettingDto>> typeSettings = new HashMap<>();
     private Map<TypeDto, FieldValidationDto> typeValidation = new HashMap<>();
@@ -191,6 +193,7 @@ public class ExampleData {
 
         entityRecords = createEntityRecords();
         entityHistory = createEntityHistoryRecords();
+        entityRecordsHistory = createEntityRecordsHistory();
     }
 
     public EntityDto getEntity(String id) {
@@ -672,7 +675,7 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User1"));
         fields.add(new FieldRecord("action", "Action", "CREATE"));
         fields.add(new FieldRecord("changes", "Changes", ""));
-        HistoryRecord historyRecord = new HistoryRecord("1", fields);
+        HistoryRecord historyRecord = new HistoryRecord("1","1", fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
@@ -680,7 +683,7 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User2"));
         fields.add(new FieldRecord("action", "Action", "UPDATE"));
         fields.add(new FieldRecord("changes", "Changes", "Changed state"));
-        historyRecord = new HistoryRecord("1", fields);
+        historyRecord = new HistoryRecord("2","1", fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
@@ -688,7 +691,7 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User2"));
         fields.add(new FieldRecord("action", "Action", "UPDATE"));
         fields.add(new FieldRecord("changes", "Changes", "Is Active"));
-        historyRecord = new HistoryRecord("1", fields);
+        historyRecord = new HistoryRecord("3","1", fields);
         ret.add(historyRecord);
 
         return ret;
@@ -698,12 +701,56 @@ public class ExampleData {
         List<HistoryRecord> instanceHistoryList = new ArrayList<>();
 
         for (HistoryRecord historyRecord : entityHistory) {
-            if (historyRecord.getId().equals(instanceId)) {
+            if (historyRecord.getInstanceId().equals(instanceId)) {
                 instanceHistoryList.add(historyRecord);
             }
         }
 
         return instanceHistoryList;
+    }
+
+    public List<PreviousRecord> createEntityRecordsHistory() {
+        List<HistoryRecord> history = getInstanceHistoryRecordsById("1");
+        List<PreviousRecord> ret = new ArrayList<>();
+        List<FieldRecord> fields = new ArrayList<>();
+
+        fields.add(new FieldRecord("ID", "ID", "f1992e633e"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Peldi"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", ""));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", ""));
+        fields.add(new FieldRecord("active", "Active", false));
+        PreviousRecord entityRecord = new PreviousRecord("1", "1", fields);
+        ret.add(entityRecord);
+
+        fields = new ArrayList<>();
+        fields.add(new FieldRecord("ID", "ID", "f1992e633e"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Peldi"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", "668"));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", ""));
+        fields.add(new FieldRecord("active", "Active", true));
+        entityRecord = new PreviousRecord("2", "1", fields);
+        ret.add(entityRecord);
+
+        fields = new ArrayList<>();
+        fields.add(new FieldRecord("ID", "ID", "f1992e633e"));
+        fields.add(new FieldRecord("regimen", "Drug Regimen", "Peldi"));
+        fields.add(new FieldRecord("voucherNumber", "Voucher Number", "123"));
+        fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person1"));
+        fields.add(new FieldRecord("active", "Active", true));
+        entityRecord = new PreviousRecord("3", "1", fields);
+        ret.add(entityRecord);
+
+        return ret;
+    }
+
+    public List<PreviousRecord> getPreviousRecordsById(String historyId) {
+        List<PreviousRecord> previousRecordList = new ArrayList<>();
+        for (PreviousRecord previousRecord : entityRecordsHistory) {
+            if (previousRecord.getHistoryId().equals(historyId)) {
+                previousRecordList.add(previousRecord);
+            }
+        }
+        return previousRecordList;
     }
 
     private List<FieldDto> getFields() {

@@ -1,6 +1,6 @@
 <label class="radio-input">
-    <input type="radio" ng-model="getFieldValue(field.basic.displayName).value"  ng-value="1"/> {{msg('mds.form.label.true')}}
+    <input type="radio" ng-model="getFieldValue(field.basic.displayName).value"  ng-value="1" ng-disabled="previousInstance"/> {{msg('mds.form.label.true')}}
 </label>
 <label class="radio-input">
-    <input type="radio" ng-model="getFieldValue(field.basic.displayName).value"  ng-value="0"/> {{msg('mds.form.label.false')}}
+    <input type="radio" ng-model="getFieldValue(field.basic.displayName).value"  ng-value="0" ng-disabled="previousInstance"/> {{msg('mds.form.label.false')}}
 </label>
