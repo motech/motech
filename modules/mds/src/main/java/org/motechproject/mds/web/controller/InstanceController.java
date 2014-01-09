@@ -1,5 +1,6 @@
 package org.motechproject.mds.web.controller;
 
+import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -8,6 +9,7 @@ import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.Records;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,7 @@ import java.util.List;
 public class InstanceController extends MdsController {
 
     @RequestMapping(value = "/instances/{instanceId}/fields", method = RequestMethod.GET)
+    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
     @ResponseBody
     public List<FieldInstanceDto> getInstanceFields(@PathVariable String instanceId) {
         if (null == getExampleData().getEntity(instanceId)) {
@@ -38,6 +41,7 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{instanceId}/history", method = RequestMethod.GET)
+    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable String instanceId, GridSettings settings) {
         List<HistoryRecord> historyRecordsList = getExampleData().getInstanceHistoryRecordsById(instanceId);

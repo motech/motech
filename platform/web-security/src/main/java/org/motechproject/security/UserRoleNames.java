@@ -7,6 +7,7 @@ public final class UserRoleNames {
     public static final String EMAIL_ADMIN_ROLE = "Email Admin";
     public static final String SECURITY_ADMIN_ROLE = "Security Admin";
     public static final String ROLES_ADMIN = "Roles Admin";
+    public static final String MDS_ADMIN = "MDS Admin";
 
     private UserRoleNames() {
     }
