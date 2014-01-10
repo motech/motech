@@ -4,14 +4,26 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:security="http://www.springframework.org/schema/security"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.mds"/>
 
     <mvc:annotation-driven/>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <aop:aspectj-autoproxy/>
+
+    <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
@@ -21,6 +33,54 @@
         </property>
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="fallbackToSystemLocale" value="false"/>
+    </bean>
+
+    <bean id="moduleRegistrationData" class="org.motechproject.osgi.web.ModuleRegistrationData">
+        <constructor-arg name="url" value="../mds/resources/index.html"/>
+        <constructor-arg name="moduleName" value="data-services"/>
+        <constructor-arg name="angularModules">
+            <list>
+                <value>mds</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg name="i18n">
+            <map>
+                <entry key="messages" value="../mds/resources/messages/"/>
+            </map>
+        </constructor-arg>
+        <constructor-arg name="header">
+            <bean class="org.motechproject.osgi.web.Header"/>
+        </constructor-arg>
+        <property name="roleForAccess">
+            <list>
+                <value>seussSchemaAccess</value>
+                <value>seussDataAccess</value>
+                <value>seussSettingsAccess</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mdsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="motech-mds"/>
+        <property name="configFiles">
+            <list>
+                <value>classpath:motech-mds.properties</value>
+                <value>classpath:datanucleus.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
+        <property name="configLocation" value="classpath:datanucleus.properties"/>
+    </bean>
+
+    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
+        <property name="allowCreate" value="false"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+        <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 
 </beans>

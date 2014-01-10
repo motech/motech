@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<plugin id="motech-data-nucleus" name="DataNucleus plug-ins" provider-name="MOTECH">
+    <extension point="org.datanucleus.classloader_resolver">
+        <class-loader-resolver name="datanucleus" class-name="org.datanucleus.ClassLoaderResolverImpl"/>
+    </extension>
+</plugin>

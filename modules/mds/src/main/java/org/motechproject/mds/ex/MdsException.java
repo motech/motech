@@ -17,6 +17,18 @@ public class MdsException extends RuntimeException {
      *                   language on UI.
      */
     public MdsException(String messageKey) {
+        this(messageKey, null);
+    }
+
+    /**
+     * Constructs a new mds exception with the specified message key and the specified cause.
+     *
+     * @param messageKey the message key used later to display message in appropriate
+     *                   language on UI.
+     * @param cause      the cause of exception.
+     */
+    public MdsException(String messageKey, Throwable cause) {
+        super(cause);
         this.messageKey = messageKey;
     }
 

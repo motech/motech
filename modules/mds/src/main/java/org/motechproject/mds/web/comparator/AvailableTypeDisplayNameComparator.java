@@ -15,7 +15,7 @@ public class AvailableTypeDisplayNameComparator
         implements Comparator<AvailableTypeDto>, Serializable {
     private static final long serialVersionUID = 9000500317266112167L;
 
-    private transient MessageSource messageSource;
+    private MessageSource messageSource;
 
     public AvailableTypeDisplayNameComparator(MessageSource messageSource) {
         this.messageSource = messageSource;

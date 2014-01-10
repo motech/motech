@@ -1,8 +1,6 @@
 package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.constants.MdsRolesConstants;
-import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.web.comparator.HistoryRecordComparator;
@@ -25,8 +23,8 @@ import java.util.List;
  * The <code>FieldController</code> is the Spring Framework Controller used by view layer for
  * executing certain actions on entity fields.
  *
- * @see FieldDto
- * @see EntityDto
+ * @see org.motechproject.mds.dto.FieldDto
+ * @see org.motechproject.mds.dto.EntityDto
  */
 @Controller
 public class InstanceController extends MdsController {
