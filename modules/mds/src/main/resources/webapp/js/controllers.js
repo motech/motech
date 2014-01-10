@@ -71,7 +71,7 @@
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     mds.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities) {
-        var setAdvancedSettings, setRest, setBrowsing, draft;
+        var setAdvancedSettings, setRest, setBrowsing, draft, setIndexesLookupsTab;
 
         workInProgress.setList(Entities);
 
@@ -135,6 +135,19 @@
         };
 
         /**
+        * This function defines default behaviour on indexesLookupsTab shown event
+        */
+        setIndexesLookupsTab = function() {
+            $('#indexesLookupsTabLink').on('shown.bs.tab', function (e) {
+                $scope.setLookupFocus();
+            });
+
+            $('#advancedObjectSettingsModal').on('shown.bs.modal', function () {
+                $scope.setLookupFocus();
+            });
+        };
+
+        /**
         * This function is used to set advanced settings. If settings is properly taken from server,
         * the related $scope fields will be also set.
         */
@@ -151,6 +164,7 @@
 
                     setRest();
                     setBrowsing();
+                    setIndexesLookupsTab();
                     unblockUI();
                 });
         };
@@ -866,13 +880,42 @@
             if ($scope.activeIndex > -1) {
                 $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
                 $scope.setAvailableFields();
+                $scope.setLookupFocus();
             } else {
                 $scope.lookup = undefined;
             }
         };
 
         /**
-        * Removes currently actve index
+        * Changes active index depending on which arrow key user pressed
+        * up arrow - decrements active index
+        * down arrow - increments active index
+        */
+        $scope.changeActiveIndex = function($event) {
+            if ($event.keyCode === 38 && $scope.activeIndex > 0) { // up arrow
+                $scope.setActiveIndex($scope.activeIndex - 1);
+            } else if ($event.keyCode === 40 && $scope.activeIndex < $scope.advancedSettings.indexes.length - 1) { // down arrow
+                $scope.setActiveIndex($scope.activeIndex + 1);
+            }
+        };
+
+        /**
+        * Sets focus on lookup with active index
+        */
+        $scope.setLookupFocus = function() {
+            var selector;
+            if ($scope.activeIndex !== -1) {
+                selector = '#lookup-{0}'.format($scope.activeIndex);
+                $(selector).livequery(function () {
+                    var elem = $(selector);
+                    elem.focus();
+                    elem.expire();
+                });
+            }
+        };
+
+        /**
+        * Removes currently active index
         */
         $scope.deleteLookup = function () {
             draft({
