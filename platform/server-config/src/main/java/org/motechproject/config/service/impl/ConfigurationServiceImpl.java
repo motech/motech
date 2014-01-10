@@ -277,6 +277,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         } else {
             toPersist = newProperties;
+            File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
+            setUpDirsForFile(file);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                newProperties.store(fileOutputStream, null);
+            }
         }
         ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
         allModuleProperties.addOrUpdate(properties);
@@ -284,6 +289,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void updatePropertiesAfterReinstallation(String module, String version, String bundle, String filename, Properties defaultProperties, Properties newProperties) throws IOException {
+        if (!registersProperties(module, filename)) {
+            addOrUpdateProperties(module, version, bundle, filename, newProperties, defaultProperties);
+            return;
+        }
         if (ConfigSource.UI.equals(configSource)) {
             Properties oldProperties = getModuleProperties(module, filename, defaultProperties);
             //Persist only non-default properties in database
@@ -306,10 +315,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             delete(module);
             allModuleProperties.addOrUpdate(properties);
         } else if (ConfigSource.FILE.equals(configSource)) {
+            Properties currentProperties = getModuleProperties(module, filename, defaultProperties);
+            Properties toStore = MotechMapUtils.asProperties(MotechMapUtils.mergeMaps(currentProperties, newProperties));
+
             File file = new File(String.format(STRING_FORMAT, getModuleConfigDir(module), filename));
             setUpDirsForFile(file);
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                newProperties.store(fileOutputStream, null);
+                toStore.store(fileOutputStream, null);
             }
         }
     }
