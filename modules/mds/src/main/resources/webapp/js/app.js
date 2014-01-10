@@ -6,8 +6,12 @@
         'ngRoute', 'ui.directives'
     ]);
 
-    $.get('../mds/available/mdsTabs').done(function(data) {
-         mds.constant('AVAILABLE_TABS', data);
+    $.ajax({
+        url:      '../mds/available/mdsTabs',
+        success:  function(data) {
+            mds.constant('AVAILABLE_TABS', data);
+        },
+        async:    false
     });
 
     mds.run(function ($rootScope, AVAILABLE_TABS) {
