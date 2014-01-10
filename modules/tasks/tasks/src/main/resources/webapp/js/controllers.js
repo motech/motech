@@ -6,8 +6,8 @@
 
     var widgetModule = angular.module('motech-tasks');
 
-    widgetModule.controller('DashboardCtrl', function ($scope, $filter, Tasks, Activities) {
-        var RECENT_TASK_COUNT = 7, tasks, activities = [],
+    widgetModule.controller('DashboardCtrl', function ($scope, $filter, Tasks, Activities, $rootScope) {
+        var tasks, activities = [],
             searchMatch = function (item, method, searchQuery) {
                 var result;
 
@@ -51,6 +51,13 @@
         $scope.currentFilter = 'allItems';
         $scope.formatInput = [];
         $scope.innerLayout.show('east');
+        $scope.innerLayout.addOpenBtn("#tasks-filters", "east");
+        $("#tasks-filters").bind('click', function () {
+            $("#recentTaskActivity-tab").removeClass('active');
+            $("#recentTaskActivity").removeClass('in active');
+            $("#filters-tab").addClass('active');
+            $("#filters").addClass(' in active');
+        });
 
         $scope.getTasks = function () {
             $scope.allTasks = [];
@@ -78,23 +85,7 @@
                         $scope.allTasks.push(item);
                     }
 
-                    for (i = 0; i < RECENT_TASK_COUNT && i < activities.length; i += 1) {
-                        for (j = 0; j < tasks.length; j += 1) {
-                            if (activities[i].task === tasks[j]._id) {
-                                $scope.activities.push({
-                                    task: activities[i].task,
-                                    trigger: tasks[j].trigger,
-                                    actions: tasks[j].actions,
-                                    date: activities[i].date,
-                                    type: activities[i].activityType,
-                                    name: tasks[j].name
-                                });
-                                break;
-                            }
-                        }
-                    }
-
-                    $scope.search();
+                    $rootScope.search();
                 });
             });
         };
@@ -113,22 +104,22 @@
                 if (val) {
                     item.task.$remove(function () {
                         $scope.allTasks.removeObject(item);
-                        $scope.search();
+                        $rootScope.search();
                     }, alertHandler('task.error.removed', 'task.header.error'));
                 }
             });
         };
 
-        $scope.search = function () {
+        $rootScope.search = function () {
             $scope.filteredItems = $filter('filter')($scope.allTasks, function (item) {
-                return item && searchMatch(item, $scope.currentFilter, $scope.query);
+                return item && searchMatch(item, $scope.currentFilter, $rootScope.query);
             });
 
             $scope.setCurrentPage(0);
             $scope.groupToPages($scope.filteredItems, $scope.itemsPerPage);
         };
 
-        $scope.setHideActive = function () {
+        $rootScope.setHideActive = function () {
             if ($scope.hideActive === true) {
                 $scope.hideActive = false;
                 $scope.setFilter($scope.hidePaused ? 'pausedTaskFilter' : 'allItems');
@@ -142,7 +133,7 @@
             }
         };
 
-        $scope.setHidePaused = function () {
+        $rootScope.setHidePaused = function () {
             if ($scope.hidePaused === true) {
                 $scope.hidePaused = false;
                 $scope.setFilter($scope.hideActive ? 'activeTaskFilter' : 'allItems');
@@ -158,7 +149,7 @@
 
         $scope.setFilter = function (method) {
             $scope.currentFilter = method;
-            $scope.search();
+            $rootScope.search();
         };
 
         $scope.importTask = function () {
@@ -239,6 +230,23 @@
             $scope.getTasks();
 
         });
+
+    widgetModule.controller('FilterCtrl', function($scope, $rootScope) {
+
+        $scope.setHidePaused = function() {
+            $rootScope.setHidePaused();
+        };
+
+        $scope.setHideActive = function() {
+            $rootScope.setHideActive();
+        };
+
+        $scope.search = function() {
+            $rootScope.query = $scope.query;
+            $rootScope.search();
+        };
+
+    });
 
     widgetModule.controller('ManageTaskCtrl', function ($scope, ManageTaskUtils, Channels, DataSources, Tasks, $q, $timeout, $routeParams, $http, $compile) {
         $scope.util = ManageTaskUtils;

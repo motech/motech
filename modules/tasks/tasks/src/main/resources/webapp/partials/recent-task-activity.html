@@ -1,5 +1,5 @@
 <!------------------------  Recent task activity  ------------------------>
-<div class="">
+<div>
     <div class="box-content clearfix">
         <table class="table table-striped table-lightblue table-recent-activity table-condensed centered">
             <tbody ng-show="activities.length == 0">
@@ -8,7 +8,7 @@
             </tr>
             </tbody>
             <tbody ng-hide="activities.length == 0">
-            <tr ng-repeat="activity in activities" onclick="document.location.href = '#/task/{{activity.task}}/log'" class="pointer">
+            <tr ng-repeat="activity in activities">
                 <td>
                     <div>
                         <img ng-src="../tasks/api/channel/icon?moduleName={{activity.trigger.moduleName}}" class="recent-activity-img"/>

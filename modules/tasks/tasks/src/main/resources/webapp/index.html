@@ -26,8 +26,8 @@
 <div id="inner-east" class="tasks inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#recentTaskActivity" data-toggle="tab">{{msg('task.header.recentTaskActivity')}}</a></li>
-        <li class="hidden"><a href="#filters" data-toggle="tab">{{msg('task.section.filters')}}</a></li>
+        <li class="active" id="recentTaskActivity-tab"><a href="#recentTaskActivity" data-toggle="tab">{{msg('task.header.recentTaskActivity')}}</a></li>
+        <li class="" id="filters-tab"><a href="#filters" data-toggle="tab">{{msg('task.section.filters')}}</a></li>
     </ul>
     <div class="ui-layout-content">
         <div class="tab-content">
@@ -35,10 +35,22 @@
                 <!------------------------  Recent task activity  ------------------------>
                 <div ng-include="" src="'../tasks/partials/recent-task-activity.html'"></div>
             </div>
-            <div class="tab-pane fade" id="filters">
+            <div ng-controller="FilterCtrl" class="tab-pane fade" id="filters">
                 <!------------------------  Filters  ------------------------>
-                <div  class="inside">
-
+                <div class="inside">
+                    <fieldset class="inside">
+                        <legend>{{msg('task.header.searchTasks')}}</legend>
+                        <div class="form-group">
+                            <input type="text" ng-model="query" ng-change="search()" class="form-control input-sm search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
+                        </div>
+                    </fieldset>
+                    <fieldset class="inside">
+                        <legend>{{msg('scheduler.activity')}}</legend>
+                        <div class="form-group btn-group-vertical">
+                            <button filtersearch ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
+                            <button filtersearch ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
         </div>
