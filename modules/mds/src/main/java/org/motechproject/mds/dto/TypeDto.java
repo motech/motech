@@ -19,6 +19,10 @@ public class TypeDto {
     private String typeClass;
 
     /**
+     * TODO: Remove all the static fields after they are no longer used in temporary class "ExampleData"
+     */
+
+    /**
      * Constant <code>INTEGER</code> presents a integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(

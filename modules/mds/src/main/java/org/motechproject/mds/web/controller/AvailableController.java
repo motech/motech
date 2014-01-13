@@ -3,6 +3,7 @@ package org.motechproject.mds.web.controller;
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.AvailableTypeDto;
+import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.AvailableTypeDisplayNameComparator;
@@ -23,24 +24,20 @@ import java.util.List;
 
 
 /**
- * The <code>AvailableController</code> is the Spring Framework Controller used by view layer for
- * get list of available objects (like a field types).
+ * The <code>AvailableController</code> is the Spring Framework Controller, used by view layer for
+ * retrieving available objects, for example field types.
  *
  * @see AvailableTypeDto
  */
 @Controller
 public class AvailableController extends MdsController {
     private MessageSource messageSource;
-
-    @Autowired
-    public AvailableController(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
+    private TypeService typeService;
 
     @RequestMapping(value = "/available/types", method = RequestMethod.GET)
     @ResponseBody
     public SelectResult<AvailableTypeDto> getTypes(SelectData data) {
-        List<AvailableTypeDto> list = getExampleData().getTypes();
+        List<AvailableTypeDto> list = typeService.getAllFieldTypes();
 
         CollectionUtils.filter(list, new AvailableTypeMatcher(data.getTerm(), messageSource));
         Collections.sort(list, new AvailableTypeDisplayNameComparator(messageSource));
@@ -69,4 +66,9 @@ public class AvailableController extends MdsController {
         return availableTabs;
     }
 
+    @Autowired
+    public AvailableController(MessageSource messageSource, TypeService typeService) {
+        this.messageSource = messageSource;
+        this.typeService = typeService;
+    }
 }

@@ -1,6 +1,5 @@
 package org.motechproject.mds.dto;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -16,6 +15,10 @@ public class AvailableTypeDto {
 
     public AvailableTypeDto() {
         this(null, null, null);
+    }
+
+    public AvailableTypeDto(String defaultName, TypeDto type) {
+        this(null, defaultName, type);
     }
 
     public AvailableTypeDto(String id, String defaultName, TypeDto type) {
@@ -60,8 +63,24 @@ public class AvailableTypeDto {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AvailableTypeDto)) {
+            return false;
+        }
+
+        AvailableTypeDto that = (AvailableTypeDto) o;
+
+        if (defaultName != null ? !defaultName.equals(that.defaultName) : that.defaultName != null) {
+            return false;
+        }
+        if (type != null ? !type.equals(that.type) : that.type != null) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
