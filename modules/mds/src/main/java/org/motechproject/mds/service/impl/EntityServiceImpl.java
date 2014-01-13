@@ -54,6 +54,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         return entityMapping.toDto();
     }
 
+    @Override
+    @Transactional
+    public void deleteEntity(Long id) {
+        allEntityMappings.delete(id);
+    }
+
     @Autowired
     public void setAllEntityMappings(AllEntityMappings allEntityMappings) {
         this.allEntityMappings = allEntityMappings;

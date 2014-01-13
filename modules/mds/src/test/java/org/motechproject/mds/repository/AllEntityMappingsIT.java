@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -71,6 +72,11 @@ public class AllEntityMappingsIT extends BaseIT {
                 String.format("Found %s in database", BAR_CLASS),
                 allEntityMappings.containsEntity(simpleName)
         );
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void shouldThrowExceptionWhenDeletingNotExistingEntity() throws Exception {
+        allEntityMappings.delete(1000L);
     }
 
 }

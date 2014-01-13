@@ -1,13 +1,17 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityBuilder;
+import org.motechproject.mds.domain.EntityMapping;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * The <code>AllEntityMappings</code> class is a repository class that operates on instances of
@@ -35,5 +39,25 @@ public class AllEntityMappings extends BaseMdsRepository {
         List<EntityMapping> mappings = cast(EntityMapping.class, collection);
 
         return !mappings.isEmpty();
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        query.setFilter("entityId == id");
+        query.declareParameters("Long entityId");
+        query.setUnique(true);
+
+        EntityMapping entityMapping = (EntityMapping) query.execute(id);
+
+        if (entityMapping != null) {
+            if (isNotBlank(entityMapping.getModule()) || isNotBlank(entityMapping.getNamespace())) {
+                throw new EntityReadOnlyException();
+            }
+
+            getPersistenceManager().deletePersistent(entityMapping);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 }
