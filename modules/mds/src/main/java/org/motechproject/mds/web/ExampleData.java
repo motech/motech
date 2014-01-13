@@ -96,15 +96,15 @@ public class ExampleData {
                 new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
         );
 
-        entities.add(new EntityDto("entity1", "Patient", "OpenMRS", "navio"));
+        entities.add(new EntityDto("9001", "Patient", "OpenMRS", "navio"));
 
-        entities.add(new EntityDto("entity2", "Person", "OpenMRS", "navio"));
+        entities.add(new EntityDto("9002", "Person", "OpenMRS", "navio"));
 
-        entities.add(new EntityDto("entity3", "Patient", "OpenMRS", "accra"));
+        entities.add(new EntityDto("9003", "Patient", "OpenMRS", "accra"));
 
-        entities.add(new EntityDto("entity4", "Person", "OpenMRS", "accra"));
+        entities.add(new EntityDto("9004", "Person", "OpenMRS", "accra"));
 
-        entities.add(new EntityDto("entity5", "Appointments", "Appointments"));
+        entities.add(new EntityDto("9005", "Appointments", "Appointments"));
 
         List<MetadataDto> exampleMetadata1 = new LinkedList<>();
         exampleMetadata1.add(new MetadataDto("key1", "value1"));
@@ -112,18 +112,18 @@ public class ExampleData {
 
         fields.add(
                 new FieldDto(
-                        "1", "entity5", STRING,
+                        "1", "9005", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         exampleMetadata1, FieldValidationDto.STRING, null
                 )
         );
 
-        entities.add(new EntityDto("entity6", "Call Log Item", "IVR"));
+        entities.add(new EntityDto("9006", "Call Log Item", "IVR"));
 
-        entities.add(new EntityDto("entity7", "Voucher"));
+        entities.add(new EntityDto("9007", "Voucher"));
         fields.add(
                 new FieldDto(
-                        "2", "entity7", STRING,
+                        "2", "9007", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         null,
                         FieldValidationDto.STRING, null
@@ -131,7 +131,7 @@ public class ExampleData {
         );
         fields.add(
                 new FieldDto(
-                        "3", "entity7", LIST,
+                        "3", "9007", LIST,
                         new FieldBasicDto("Drug Regimen", "regimen"),
                         null, null,
                         Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
@@ -145,7 +145,7 @@ public class ExampleData {
         exampleMetadata2.add(new MetadataDto("key2", "value2"));
         fields.add(
                 new FieldDto(
-                        "4", "entity7", INTEGER,
+                        "4", "9007", INTEGER,
                         new FieldBasicDto("Voucher Number", "voucherNumber"),
                         exampleMetadata2,
                         FieldValidationDto.INTEGER, null
@@ -156,7 +156,7 @@ public class ExampleData {
         exampleMetadata3.add(new MetadataDto("key3", "value3"));
         fields.add(
                 new FieldDto(
-                        "5", "entity7", STRING,
+                        "5", "9007", STRING,
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
                         exampleMetadata3,
                         FieldValidationDto.STRING, null
@@ -165,14 +165,14 @@ public class ExampleData {
 
         fields.add(
                 new FieldDto(
-                        "6", "entity7", BOOLEAN,
+                        "6", "9007", BOOLEAN,
                         new FieldBasicDto("Active", "active"),
                         exampleMetadata3,
                         null, null
                 )
         );
 
-        entities.add(new EntityDto("entity8", "Campaign", "Message Campaign"));
+        entities.add(new EntityDto("9008", "Campaign", "Message Campaign"));
 
         AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
         RestOptions exampleRestOptions = new RestOptions();

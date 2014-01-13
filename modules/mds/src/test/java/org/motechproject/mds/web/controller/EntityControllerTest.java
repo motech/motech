@@ -55,14 +55,14 @@ public class EntityControllerTest {
     @Test
     public void shouldReturnRecordsSortedByName() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto("entity5", "Appointments", "Appointments"));
-        expected.add(new EntityDto("entity6", "Call Log Item", "IVR"));
-        expected.add(new EntityDto("entity8", "Campaign", "Message Campaign"));
-        expected.add(new EntityDto("entity1", "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto("entity3", "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto("entity2", "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto("entity4", "Person", "OpenMRS", "accra"));
-        expected.add(new EntityDto("entity7", "Voucher"));
+        expected.add(new EntityDto("9005", "Appointments", "Appointments"));
+        expected.add(new EntityDto("9006", "Call Log Item", "IVR"));
+        expected.add(new EntityDto("9008", "Campaign", "Message Campaign"));
+        expected.add(new EntityDto("9001", "Patient", "OpenMRS", "navio"));
+        expected.add(new EntityDto("9003", "Patient", "OpenMRS", "accra"));
+        expected.add(new EntityDto("9002", "Person", "OpenMRS", "navio"));
+        expected.add(new EntityDto("9004", "Person", "OpenMRS", "accra"));
+        expected.add(new EntityDto("9007", "Voucher"));
 
         SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
 
@@ -72,7 +72,7 @@ public class EntityControllerTest {
 
     @Test
     public void shouldReturnEntityById() throws Exception {
-        assertEquals(new EntityDto("entity7", "Voucher"), controller.getEntity("entity7"));
+        assertEquals(new EntityDto("9007", "Voucher"), controller.getEntity("9007"));
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -82,16 +82,16 @@ public class EntityControllerTest {
 
     @Test
     public void shouldDeleteEntity() throws Exception {
-        controller.deleteEntity("entity7");
+        controller.deleteEntity(9007L);
 
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto("entity5", "Appointments", "Appointments"));
-        expected.add(new EntityDto("entity6", "Call Log Item", "IVR"));
-        expected.add(new EntityDto("entity8", "Campaign", "Message Campaign"));
-        expected.add(new EntityDto("entity1", "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto("entity3", "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto("entity2", "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto("entity4", "Person", "OpenMRS", "accra"));
+        expected.add(new EntityDto("9005", "Appointments", "Appointments"));
+        expected.add(new EntityDto("9006", "Call Log Item", "IVR"));
+        expected.add(new EntityDto("9008", "Campaign", "Message Campaign"));
+        expected.add(new EntityDto("9001", "Patient", "OpenMRS", "navio"));
+        expected.add(new EntityDto("9003", "Patient", "OpenMRS", "accra"));
+        expected.add(new EntityDto("9002", "Person", "OpenMRS", "navio"));
+        expected.add(new EntityDto("9004", "Person", "OpenMRS", "accra"));
 
         SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
 
@@ -101,12 +101,12 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionIfEntityToDeleteNotExists() throws Exception {
-        controller.deleteEntity("1000");
+        controller.deleteEntity(1000L);
     }
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldThrowExceptionIfEntityToDeleteisReadonly() throws Exception {
-        controller.deleteEntity("entity1");
+        controller.deleteEntity(9001L);
     }
 
     @Test
@@ -135,8 +135,8 @@ public class EntityControllerTest {
         data.getValues().put(DraftData.FIELD_ID, "2");
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
 
-        EntityDto entity = controller.getEntity("entity7");
-        List<FieldDto> fields = controller.getFields("entity7");
+        EntityDto entity = controller.getEntity("9007");
+        List<FieldDto> fields = controller.getFields("9007");
         FieldDto fieldDto = findFieldById(fields, "2");
 
         // before change
@@ -145,10 +145,10 @@ public class EntityControllerTest {
         assertEquals("ID", fieldDto.getBasic().getDisplayName());
 
         // change
-        controller.draft("entity7", data);
+        controller.draft("9007", data);
 
-        entity = controller.getEntity("entity7");
-        fields = controller.getFields("entity7");
+        entity = controller.getEntity("9007");
+        fields = controller.getFields("9007");
         fieldDto = findFieldById(fields, "2");
 
         // after change
@@ -164,7 +164,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldNotSaveTemporaryChangeIfEntityIsReadonly() throws Exception {
-        controller.draft("entity1", new DraftData());
+        controller.draft("9001", new DraftData());
     }
 
     @Test
@@ -176,11 +176,11 @@ public class EntityControllerTest {
         data.getValues().put(DraftData.FIELD_ID, "2");
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
 
-        controller.draft("entity7", data);
-        assertTrue(controller.getEntity("entity7").isDraft());
+        controller.draft("9007", data);
+        assertTrue(controller.getEntity("9007").isDraft());
 
-        controller.abandonChanges("entity7");
-        assertFalse(controller.getEntity("entity7").isDraft());
+        controller.abandonChanges("9007");
+        assertFalse(controller.getEntity("9007").isDraft());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -197,11 +197,11 @@ public class EntityControllerTest {
         data.getValues().put(DraftData.FIELD_ID, "2");
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
 
-        controller.draft("entity7", data);
-        assertTrue(controller.getEntity("entity7").isDraft());
+        controller.draft("9007", data);
+        assertTrue(controller.getEntity("9007").isDraft());
 
-        controller.commitChanges("entity7");
-        assertFalse(controller.getEntity("entity7").isDraft());
+        controller.commitChanges("9007");
+        assertFalse(controller.getEntity("9007").isDraft());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -218,13 +218,13 @@ public class EntityControllerTest {
         List<FieldDto> expected = new LinkedList<>();
         expected.add(
                 new FieldDto(
-                        "1", "entity5", STRING,
+                        "1", "9005", STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         exampleMetadata, FieldValidationDto.STRING, null
                 )
         );
 
-        assertEquals(expected, controller.getFields("entity5"));
+        assertEquals(expected, controller.getFields("9005"));
 
     }
 
@@ -240,12 +240,12 @@ public class EntityControllerTest {
         exampleMetadata.add(new MetadataDto("key2", "value2"));
 
         FieldDto expected = new FieldDto(
-                "1", "entity5", STRING,
+                "1", "9005", STRING,
                 new FieldBasicDto("ID", "ID", false, "pass", null),
                 exampleMetadata, FieldValidationDto.STRING, null
         );
 
-        assertEquals(expected, controller.getFieldByName("entity5", "ID"));
+        assertEquals(expected, controller.getFieldByName("9005", "ID"));
 
     }
 

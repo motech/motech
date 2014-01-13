@@ -150,8 +150,10 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}", method = RequestMethod.DELETE)
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseBody
-    public void deleteEntity(@PathVariable final String entityId) {
-        EntityDto entity = getExampleData().getEntity(entityId);
+    public void deleteEntity(@PathVariable final Long entityId) {
+        entityService.deleteEntity(entityId);
+
+        EntityDto entity = getExampleData().getEntity(entityId.toString());
 
         if (null == entity) {
             throw new EntityNotFoundException();
@@ -238,7 +240,7 @@ public class EntityController extends MdsController {
     @ResponseBody
     public Records<EntityRecord> getInstances(@PathVariable String entityId, @RequestBody final String url, GridSettings settings) {
         List<EntityRecord> entityList = getExampleData().getEntityRecordsById(entityId);
-        Map<String,Object> lookupMap = getLookupMap(url);
+        Map<String, Object> lookupMap = getLookupMap(url);
 
         if (!lookupMap.isEmpty()) {
             entityList = filterByLookup(entityList, lookupMap);
@@ -318,10 +320,10 @@ public class EntityController extends MdsController {
 
         JsonFactory factory = new JsonFactory();
         ObjectMapper mapper = new ObjectMapper(factory);
-        TypeReference<HashMap<String,Object>> typeRef
+        TypeReference<HashMap<String, Object>> typeRef
                 = new TypeReference<
-                HashMap<String,Object>
-                >() {};
+                HashMap<String, Object>
+                >() { };
         try {
             jsonFields = URLDecoder.decode(jsonFields, "UTF-8");
             return mapper.readValue(jsonFields, typeRef);

@@ -11,4 +11,5 @@ public interface EntityService {
 
     EntityDto createEntity(EntityDto entity) throws IOException;
 
+    void deleteEntity(Long id);
 }
