@@ -5,15 +5,9 @@
         <div class="inside btn-group">
             <a href="#/task/new" type="button" class="btn btn-success"><i class="icon-plus icon-white"></i> {{msg('task.new')}}</a>
             <a role="button" class="btn btn-default" data-toggle="modal" data-target="#importTaskModal" data-backdrop="static"><i class="icon-download-alt icon-white"></i> {{msg('task.import')}}</a>
+            <button type="button" class="btn btn-info" id="tasks-filters"><i class="icon-filter icon-white"></i>&nbsp;{{msg('task.section.filters')}}</button>
         </div>
-        <div class="inside form-inline">
-            <label >{{msg('task.header.searchTasks')}}</label>
-            <input type="text" ng-model="query" ng-change="search()" class="input-large form-control input-large-fluid search-query" placeholder="{{msg('task.header.searchByNameOrDescription')}}">
-            <div data-toggle="buttons-checkbox" class="btn-group">
-                <button ng-click="setHideActive()" class="btn btn-info setHideActive active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.activeTasks')}}</button>
-                <button ng-click="setHidePaused()" class="btn btn-info setHidePaused active" type="button"><i class="icon-white icon-ok"></i> {{msg('task.header.pausedTasks')}}</button>
-            </div>
-        </div>
+
         <div class="tasks-list" id="accordion3" ng-show="allTasks.length != 0">
             <div ng-repeat="item in pagedItems[currentPage]">
 
