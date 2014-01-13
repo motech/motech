@@ -1,5 +1,8 @@
 package org.motechproject.mds.constants;
 
+/**
+ * Provides all the mds roles constants.
+ */
 public final class MdsRolesConstants {
     public static final String SCHEMA_ACCESS = "seussSchemaAccess";
     public static final String SETTINGS_ACCESS = "seussSettingsAccess";

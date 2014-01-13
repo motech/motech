@@ -4,9 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.service.EntityBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jdo.PersistenceManager;

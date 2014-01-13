@@ -3,8 +3,9 @@ package org.motechproject.mds.aspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.motechproject.mds.PersistanceClassLoader;
 import org.motechproject.mds.service.BaseMdsService;
-import org.motechproject.mds.service.JDOClassLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MdsServiceAspect {
+    private PersistanceClassLoader persistanceClassLoader;
 
     @Around("within(org.motechproject.mds.service.impl.*)")
     public Object changeClassLoader(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
@@ -32,7 +34,7 @@ public class MdsServiceAspect {
         ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-            Thread.currentThread().setContextClassLoader(JDOClassLoader.PERSISTANCE_CLASS_LOADER);
+            Thread.currentThread().setContextClassLoader(persistanceClassLoader);
 
             return joinPoint.proceed();
         } finally {
@@ -40,4 +42,8 @@ public class MdsServiceAspect {
         }
     }
 
+    @Autowired
+    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
+        this.persistanceClassLoader = persistanceClassLoader;
+    }
 }
