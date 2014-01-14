@@ -4,6 +4,7 @@ package org.motechproject.mds.web;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
@@ -14,6 +15,7 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptions;
+import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -63,6 +65,7 @@ public class ExampleData {
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
     private List<AvailableTypeDto> types = new ArrayList<>();
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
+    private List<SecuritySettingsDto> securitySettings = new ArrayList<>();
     private List<EntityRecord> entityRecords = new ArrayList<>();
     private List<HistoryRecord> entityHistory = new ArrayList<>();
     private List<PreviousRecord> entityRecordsHistory = new ArrayList<>();
@@ -70,7 +73,8 @@ public class ExampleData {
     private Map<TypeDto, List<SettingDto>> typeSettings = new HashMap<>();
     private Map<TypeDto, FieldValidationDto> typeValidation = new HashMap<>();
 
-    private Map<String, AdvancedSettingsDto> advancedHistroy = new HashMap<>();
+    private Map<String, AdvancedSettingsDto> advancedHistory = new HashMap<>();
+    private Map<String, SecuritySettingsDto> securityHistory = new HashMap<>();
     private Map<String, Map<String, FieldDto>> fieldsHistory = new HashMap<>();
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -185,6 +189,13 @@ public class ExampleData {
         exampleAdvancedSetting.setEntityId("7");
         exampleAdvancedSetting.setRestOptions(exampleRestOptions);
         advancedSettings.add(exampleAdvancedSetting);
+
+        SecuritySettingsDto exampleSecuritySettings = new SecuritySettingsDto();
+        exampleSecuritySettings.setId(String.valueOf(securitySettings.size() + 1));
+        exampleSecuritySettings.setEntityId("7");
+        exampleSecuritySettings.setAccess(AccessOptions.ROLES);
+        exampleSecuritySettings.addRole("User Admin");
+        securitySettings.add(exampleSecuritySettings);
 
         instanceFields.add(new FieldInstanceDto("1", "1", new FieldBasicDto("Date", "date")));
         instanceFields.add(new FieldInstanceDto("2", "1", new FieldBasicDto("User", "user")));
@@ -358,8 +369,8 @@ public class ExampleData {
     public AdvancedSettingsDto getAdvanced(String entityId) {
         AdvancedSettingsDto found = clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId));
 
-        if (advancedHistroy.containsKey(entityId)) {
-            AdvancedSettingsDto temporary = advancedHistroy.get(entityId);
+        if (advancedHistory.containsKey(entityId)) {
+            AdvancedSettingsDto temporary = advancedHistory.get(entityId);
 
             found.setId(temporary.getId());
             found.setEntityId(temporary.getEntityId());
@@ -388,6 +399,42 @@ public class ExampleData {
             found.setEntityId(entityId);
 
             advancedSettings.add(found);
+        }
+
+        return found;
+    }
+
+    public SecuritySettingsDto getSecurity(String entityId) {
+        SecuritySettingsDto found = clone(SecuritySettingsDto.class, getPurgeSecurity(entityId));
+
+        if (securityHistory.containsKey(entityId)) {
+            SecuritySettingsDto temporary = securityHistory.get(entityId);
+            found.setId(temporary.getId());
+            found.setEntityId(temporary.getEntityId());
+            found.setAccess(temporary.getAccess());
+            found.setUsers(temporary.getUsers());
+            found.setRoles(temporary.getRoles());
+        }
+
+        return found;
+    }
+
+    private SecuritySettingsDto getPurgeSecurity(String entityId) {
+        SecuritySettingsDto found = null;
+        for (SecuritySettingsDto item : securitySettings) {
+            if (item.getEntityId().equals(entityId)) {
+                found = item;
+                break;
+            }
+        }
+
+        if (null == found) {
+            found = new SecuritySettingsDto();
+            found.setId(String.valueOf(securitySettings.size() + 1));
+            found.setEntityId(entityId);
+            found.setAccess(AccessOptions.EVERYONE);
+
+            securitySettings.add(found);
         }
 
         return found;
@@ -451,18 +498,28 @@ public class ExampleData {
     private void draftEdit(String entityId, DraftData data) {
         Object advancedValue = data.getValues().get(DraftData.ADVANCED);
         boolean editAdvanced = null != advancedValue && parseBoolean(advancedValue.toString());
+        Object securityValue = data.getValues().get(DraftData.SECURITY);
+        boolean editSecurity = null != securityValue && parseBoolean(securityValue.toString());
         String[] path = data.getValue(DraftData.PATH).toString().split("\\.");
         List value = (List) data.getValue(DraftData.VALUE);
         Object start;
 
         if (editAdvanced) {
-            if (!advancedHistroy.containsKey(entityId)) {
-                advancedHistroy.put(
+            if (!advancedHistory.containsKey(entityId)) {
+                advancedHistory.put(
                         entityId, clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId))
                 );
             }
 
-            start = advancedHistroy.get(entityId);
+            start = advancedHistory.get(entityId);
+        } else if(editSecurity) {
+            if (!securityHistory.containsKey(entityId)) {
+                securityHistory.put(
+                        entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
+                );
+            }
+
+            start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
                 fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
@@ -544,7 +601,12 @@ public class ExampleData {
             }
         } else {
             try {
-                PropertyUtils.setProperty(current, property, value.get(0));
+                Class clazz = PropertyUtils.getProperty(current, property).getClass();
+                if (clazz.isEnum()) {
+                    PropertyUtils.setProperty(current, property, Enum.valueOf(clazz, (String)value.get(0)));
+                } else {
+                    PropertyUtils.setProperty(current, property, value.get(0));
+                }
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new IllegalStateException(e);
             }
@@ -576,9 +638,9 @@ public class ExampleData {
             }
         }
 
-        if (advancedHistroy.containsKey(entityId)) {
+        if (advancedHistory.containsKey(entityId)) {
             AdvancedSettingsDto current = getPurgeAdvanced(entityId);
-            AdvancedSettingsDto temporary = advancedHistroy.get(entityId);
+            AdvancedSettingsDto temporary = advancedHistory.get(entityId);
 
             current.setId(temporary.getId());
             current.setEntityId(temporary.getEntityId());
@@ -588,12 +650,24 @@ public class ExampleData {
             current.setBrowsing(clone(BrowsingSettingsDto.class, temporary.getBrowsing()));
         }
 
+        if (securityHistory.containsKey(entityId)) {
+            SecuritySettingsDto current = getPurgeSecurity(entityId);
+            SecuritySettingsDto temporary = securityHistory.get(entityId);
+
+            current.setId(temporary.getId());
+            current.setEntityId(temporary.getEntityId());
+            current.setAccess(temporary.getAccess());
+            current.setUsers(temporary.getUsers());
+            current.setRoles(temporary.getRoles());
+        }
+
         abandonChanges(entityId);
     }
 
     public void abandonChanges(String entityId) {
         fieldsHistory.remove(entityId);
-        advancedHistroy.remove(entityId);
+        advancedHistory.remove(entityId);
+        securityHistory.remove(entityId);
         getEntity(entityId).setDraft(false);
     }
 

@@ -436,3 +436,27 @@
     margin-top: 25px;
     margin-bottom: 10px;
 }
+
+.dynamic-select {
+    width: 480px;
+    display: block;
+}
+
+.dynamic-select input {
+    height: 20px !important;
+}
+
+.radio-button input {
+    position: absolute;
+    left: 40px;
+    z-index: -999;
+}
+
+.radio-button button {
+    min-width: 200px;
+}
+
+.security-content {
+    margin-left: 20px;
+    margin-top: 20px;
+}

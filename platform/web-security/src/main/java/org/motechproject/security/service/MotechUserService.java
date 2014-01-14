@@ -26,7 +26,7 @@ public interface MotechUserService {
 
     boolean hasUser(String username);
 
-    @PreAuthorize("hasRole('manageUser')")
+    @PreAuthorize("hasAnyRole('manageUser', 'viewUser')")
     List<MotechUserProfile> getUsers();
 
     @PreAuthorize("hasRole('editUser')")

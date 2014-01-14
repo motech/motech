@@ -3,6 +3,7 @@ package org.motechproject.mds.web.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -10,6 +11,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptions;
+import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -267,6 +269,17 @@ public class EntityControllerTest {
         expected.setRestOptions(restOptions);
 
         assertEquals(expected, controller.getAdvanced("7"));
+    }
+
+    @Test
+    public void shouldGetSecuritySettingsForEntity() throws Exception {
+        SecuritySettingsDto expected = new SecuritySettingsDto();
+        expected.setId("1");
+        expected.setEntityId("7");
+        expected.setAccess(AccessOptions.ROLES);
+        expected.addRole("User Admin");
+
+        assertEquals(expected, controller.getSecurity("7"));
     }
 
     private FieldDto findFieldById(List<FieldDto> fields, String id) {

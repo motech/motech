@@ -1260,6 +1260,56 @@
         };
     });
 
+    /*
+    * Add auto saving for security properties.
+    */
+    mds.directive('mdsAutoSaveSecurityChange', function (Entities) {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+                var func = attr.mdsAutoSaveAdvancedChange || 'focusout',
+                    callback = attr.mdsCallback;
+
+                angular.element(element).on(func, function () {
+                    var securityPath = attr.mdsPath,
+                        parent = scope,
+                        entity,
+                        value;
+
+                    while (parent.selectedEntity === undefined) {
+                        parent = parent.$parent;
+                    }
+
+                    entity = parent.selectedEntity;
+
+                    if (securityPath === undefined) {
+                        securityPath = attr.ngModel;
+                        securityPath = securityPath.substring(securityPath.indexOf('.') + 1);
+                    }
+
+                    value = _.isBoolean(ngModel.$modelValue)
+                        ? !ngModel.$modelValue
+                        : ngModel.$modelValue;
+
+                    Entities.draft({
+                        id: entity.id
+                    }, {
+                        edit: true,
+                        values: {
+                            path: securityPath,
+                            security: true,
+                            value: [value]
+                        }
+                    }, function () {
+                        entity.draft = true;
+                        scope.$eval(callback);
+                    });
+                });
+            }
+        };
+    });
+
     mds.directive('innerlayout', function() {
         return {
             restrict: 'EA',
@@ -1303,6 +1353,19 @@
 
                 // BIND events to hard-coded buttons
                 scope.innerLayout.addCloseBtn( "#tbarCloseEast", "east" );
+            }
+        };
+    });
+
+    /**
+    * Sets a callback function to select2 on('change') event.
+    */
+    mds.directive('select2NgChange', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var elem = angular.element(element), callback = elem.attr('select2-ng-change');
+                elem.on('change', scope[callback]);
             }
         };
     });

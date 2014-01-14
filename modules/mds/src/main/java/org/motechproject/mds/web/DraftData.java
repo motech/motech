@@ -14,6 +14,7 @@ public class DraftData {
     public static final String DISPLAY_NAME = "displayName";
     public static final String NAME = "name";
     public static final String ADVANCED = "advanced";
+    public static final String SECURITY = "security";
 
     private boolean create;
     private boolean edit;

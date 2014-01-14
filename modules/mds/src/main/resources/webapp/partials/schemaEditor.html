@@ -19,6 +19,12 @@
                 </button>
             </div>
             <div class="form-group">
+                <button href="#securityObjectSettingsModal" class="btn btn-info" ng-show="selectedEntity"
+                        data-toggle="modal" data-backdrop="static">
+                    <i class="icon-certificate icon-white"></i> {{msg('mds.btn.security')}}
+                </button>
+            </div>
+            <div class="form-group">
                 <button href="#deleteEntityModal" class="btn btn-danger" ng-show="selectedEntity"
                    ng-disabled="!selectedEntity || selectedEntity.readOnly" data-toggle="modal" data-backdrop="static">
                     <i class="icon-trash icon-white"></i> {{msg('mds.btn.delete')}}
@@ -49,5 +55,6 @@
     <div ng-include="'../mds/resources/partials/modals/new-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/delete-entity.html'"></div>
     <div ng-include="'../mds/resources/partials/modals/advanced-object-settings.html'"></div>
+    <div ng-include="'../mds/resources/partials/modals/security-object-settings.html'"></div>
 
 </div>
