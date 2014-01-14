@@ -9,7 +9,7 @@
                     <h4>{{msg('mds.advanced.dataBrowsing.availableFields')}}</h4>
                     <div class="scroll-container">
                         <div class="container-space" tabindex="0" connected-list-source="browsingAvailable" connect-with="browsing" droppable="true">
-                            <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-source-item ng-repeat="field in browsingAvailable">
+                            <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-source-item condition="!selectedEntity.readOnly" ng-repeat="field in browsingAvailable">
                                 {{field.basic.displayName}}
                             </div>
                         </div>
@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="buttons-container">
-                    <div class="btn-group-vertical">
+                    <div class="btn-group-vertical" ng-show="!selectedEntity.readOnly">
                         <button connected-list-btn-from connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveLeft()">
                             <span class="icon-chevron-left" />
                         </button>
@@ -26,7 +26,7 @@
                         </button>
                     </div>
                     <br/><br/>
-                    <div class="btn-group-vertical">
+                    <div class="btn-group-vertical" ng-show="!selectedEntity.readOnly">
                         <button connected-list-btn-to-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveAllRight()">
                             <span class="icon-chevron-right" /><span class="icon-chevron-right" />
                         </button>
@@ -39,7 +39,7 @@
                 <div id="displayFieldsContainer" class="outer-container">
                     <h4>
                         {{msg('mds.advanced.dataBrowsing.displayFields')}}
-                        <div class="btn-group updown-buttons">
+                        <div class="btn-group updown-buttons" ng-show="!selectedEntity.readOnly">
                             <button ng-click="itemsUp()" class="btn btn-xs button-flat" ng-disabled="!canMoveUp()">
                                 <span class="icon-chevron-up"></span>
                             </button>
@@ -50,7 +50,7 @@
                     </h4>
                     <div class="scroll-container">
                         <div class="container-space" tabindex="0" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
-                            <div class="container-item" draggable="true" connect-with="browsing" item-index="{{$index}}" connected-list-target-item ng-repeat="field in browsingDisplayed">
+                            <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-target-item condition="!selectedEntity.readOnly"  ng-repeat="field in browsingDisplayed">
                                 {{field.basic.displayName}}
                             </div>
                         </div>
@@ -68,7 +68,7 @@
         <div id="browsing-filters" class="accordion-content collapse in">
             <form>
                 <label class="checkbox inline" ng-repeat="field in fields | filter:isFilterable">
-                    <input type="checkbox" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
+                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
                 </label>
             </form>
         </div>
