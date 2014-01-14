@@ -12,7 +12,6 @@ import org.motechproject.mds.domain.EntityMapping;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.motechproject.mds.service.EntityBuilder.PACKAGE;
+import static org.motechproject.mds.builder.EntityBuilder.PACKAGE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllEntityMappingsTest {
@@ -80,7 +79,7 @@ public class AllEntityMappingsTest {
         assertTrue(allEntityMappings.containsEntity(SIMPLE_NAME));
 
         verify(query).setFilter("className == name");
-        verify(query).declareParameters("String name");
+        verify(query).declareParameters("java.lang.String name");
         verify(query).execute(CLASS_NAME);
     }
 
@@ -92,7 +91,7 @@ public class AllEntityMappingsTest {
         assertFalse(allEntityMappings.containsEntity(SIMPLE_NAME));
 
         verify(query).setFilter("className == name");
-        verify(query).declareParameters("String name");
+        verify(query).declareParameters("java.lang.String name");
         verify(query).execute(CLASS_NAME);
     }
 }

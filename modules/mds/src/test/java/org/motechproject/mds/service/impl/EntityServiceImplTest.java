@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
@@ -20,6 +21,9 @@ public class EntityServiceImplTest {
     private AllEntityMappings allEntityMappings;
 
     @Mock
+    private MdsJDOEnhancer enhancer;
+
+    @Mock
     private EntityDto entityDto;
 
     private EntityServiceImpl entityService;
@@ -28,7 +32,7 @@ public class EntityServiceImplTest {
     public void setUp() throws Exception {
         entityService = new EntityServiceImpl();
         entityService.setAllEntityMappings(allEntityMappings);
-
+        entityService.setEnhancer(enhancer);
     }
 
     @Test(expected = EntityReadOnlyException.class)
