@@ -196,7 +196,16 @@
                     elem = element[0],
                     connectWith = jQelem.attr('connect-with'),
                     sourceContainer = $('.connected-list-source.' + connectWith),
-                    targetContainer = $('.connected-list-target.' + connectWith);
+                    targetContainer = $('.connected-list-target.' + connectWith),
+                    condition = jQelem.attr('condition');
+
+                if (typeof condition !== 'undefined' && condition !== false) {
+                    if (!scope.$eval(condition)){
+                        return;
+                    }
+                }
+
+                jQelem.attr('draggable','true');
 
                 jQelem.addClass(connectWith);
                 jQelem.addClass("target-item");

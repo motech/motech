@@ -122,8 +122,11 @@
                     return $scope.advancedSettings.browsing.displayedFields.indexOf(field.id) < 0;
                 });
 
-                $scope.browsingDisplayed = $.grep($scope.fields, function(field) {
-                    return $scope.advancedSettings.browsing.displayedFields.indexOf(field.id) >= 0;
+                $scope.browsingDisplayed.length = 0;
+                angular.forEach($scope.advancedSettings.browsing.displayedFields, function(fieldId) {
+                    $scope.browsingDisplayed.push($.grep($scope.fields, function(field) {
+                        return field.id === fieldId;
+                    })[0]);
                 });
 
                 $scope.browsingAvailable.sort(function(a,b) {
@@ -1288,8 +1291,8 @@
                 }
             });
 
-            angular.forEach(indices, function(index) {
-                $scope.targetItemMoveUp(index);
+            angular.forEach(indices.reverse(), function(index) {
+                $scope.targetItemMoveDown(index);
             });
 
             angular.forEach($scope.browsingDisplayed, function (item) {
@@ -1304,9 +1307,6 @@
                     value: [array]
                 }
             }, function () {
-                angular.forEach(indices.reverse(), function(index) {
-                    $scope.targetItemMoveDown(index);
-                });
                 // restore 'selected' state
                 $timeout(function() {
                     $(".connected-list-target.browsing").children().each(function(index) {
