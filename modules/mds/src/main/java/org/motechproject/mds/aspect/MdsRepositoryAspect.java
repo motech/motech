@@ -1,8 +1,7 @@
 package org.motechproject.mds.aspect;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.motechproject.mds.repository.BaseMdsRepository;
 import org.springframework.stereotype.Component;
 
@@ -16,26 +15,21 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class MdsRepositoryAspect {
+public class MdsRepositoryAspect extends BaseMdsAspect {
 
-    @Around("within(org.motechproject.mds.repository.All*)")
-    public Object changeClassLoader(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
-        Object target = joinPoint.getTarget();
+    @Override
+    @Pointcut("within(org.motechproject.mds.repository.All*)")
+    protected void isChangeClassLoader() {
+        // Left blank.
+        // Annotation does all the work.
+    }
 
+    @Override
+    protected void checkTarget(Object target) {
         if (!(target instanceof BaseMdsRepository)) {
             throw new IllegalStateException(
                     "The target class should extend " + BaseMdsRepository.class.getName()
             );
-        }
-
-        ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            Thread.currentThread().setContextClassLoader(BaseMdsRepository.class.getClassLoader());
-
-            return joinPoint.proceed();
-        } finally {
-            Thread.currentThread().setContextClassLoader(webAppClassLoader);
         }
     }
 }

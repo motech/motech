@@ -9,7 +9,7 @@ import javax.jdo.PersistenceManagerFactory;
 /**
  * The <code>BaseMdsService</code> class is a base class for all services in mds module.
  */
-public class BaseMdsService {
+public abstract class BaseMdsService {
     private PersistenceManagerFactory persistenceManagerFactory;
     private PersistanceClassLoader persistanceClassLoader;
 

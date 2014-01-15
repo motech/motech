@@ -4,9 +4,12 @@ import org.motechproject.mds.dto.EntityDto;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * The <code>EntityMapping</code> class contains basic information about an entity. This class is
@@ -78,5 +81,10 @@ public class EntityMapping {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    @NotPersistent
+    public boolean isReadOnly() {
+        return isNotBlank(module) || isNotBlank(namespace);
     }
 }

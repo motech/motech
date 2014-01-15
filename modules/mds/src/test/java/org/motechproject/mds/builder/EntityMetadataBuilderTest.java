@@ -1,4 +1,4 @@
-package org.motechproject.mds.factory;
+package org.motechproject.mds.builder;
 
 import junit.framework.Assert;
 import org.datanucleus.api.jdo.metadata.JDOMetadataImpl;
@@ -11,7 +11,7 @@ import javax.jdo.metadata.PackageMetadata;
 import static javax.jdo.annotations.IdentityType.DATASTORE;
 import static javax.jdo.metadata.ClassPersistenceModifier.PERSISTENCE_CAPABLE;
 
-public class EntityMetadataFactoryTest {
+public class EntityMetadataBuilderTest {
 
     @Test
     public void testCreateBaseEntity() throws Exception {
@@ -20,7 +20,7 @@ public class EntityMetadataFactoryTest {
         String className = String.format("%s.%s", packageName, simpleName);
         JDOMetadata mainMetadata = new JDOMetadataImpl();
 
-        EntityMetadataFactory.createBaseEntity(mainMetadata, className);
+        EntityMetadataBuilder.createBaseEntity(mainMetadata, className);
 
         Assert.assertEquals(1, mainMetadata.getNumberOfPackages());
 

@@ -8,6 +8,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.EntityReadOnlyException;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -93,5 +95,43 @@ public class AllEntityMappingsTest {
         verify(query).setFilter("className == name");
         verify(query).declareParameters("java.lang.String name");
         verify(query).execute(CLASS_NAME);
+    }
+
+    @Test
+    public void shouldRemoveEntityById() throws Exception {
+        EntityMapping mapping = new EntityMapping();
+        Long entityId = 1L;
+
+        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(query.execute(entityId)).thenReturn(mapping);
+
+        allEntityMappings.delete(entityId);
+
+        verify(query).setFilter("entityId == id");
+        verify(query).declareParameters("java.lang.Long entityId");
+        verify(query).execute(entityId);
+        verify(pm).deletePersistent(mapping);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void shouldNotRemoveEntityIfNotExists() throws Exception {
+        Long entityId = 1L;
+
+        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(query.execute(entityId)).thenReturn(null);
+
+        allEntityMappings.delete(entityId);
+    }
+
+    @Test(expected = EntityReadOnlyException.class)
+    public void shouldNotRemoveEntityIfReadOnly() throws Exception {
+        EntityMapping mapping = new EntityMapping();
+        mapping.setModule("TestModule");
+        Long entityId = 1L;
+
+        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(query.execute(entityId)).thenReturn(mapping);
+
+        allEntityMappings.delete(entityId);
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityBuilderException;
+import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.MdsException;
@@ -23,6 +24,7 @@ public class MdsControllerTest {
             new EntityNotFoundException(),
             new EntityReadOnlyException(),
             new EntityBuilderException(new RuntimeException()),
+            new EntityInfrastructureException(new RuntimeException()),
             new MdsException("test.key")
     };
 

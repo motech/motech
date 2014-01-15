@@ -1,11 +1,8 @@
 package org.motechproject.mds.aspect;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.motechproject.mds.PersistanceClassLoader;
+import org.aspectj.lang.annotation.Pointcut;
 import org.motechproject.mds.service.BaseMdsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,32 +15,22 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class MdsServiceAspect {
-    private PersistanceClassLoader persistanceClassLoader;
+public class MdsServiceAspect extends BaseMdsAspect {
 
-    @Around("within(org.motechproject.mds.service.impl.*)")
-    public Object changeClassLoader(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
-        Object target = joinPoint.getTarget();
+    @Override
+    @Pointcut("within(org.motechproject.mds.service.impl.*)")
+    protected void isChangeClassLoader() {
+        // Left blank.
+        // Annotation does all the work.
+    }
 
+    @Override
+    protected void checkTarget(Object target) {
         if (!(target instanceof BaseMdsService)) {
             throw new IllegalStateException(
                     "The target class should extend " + BaseMdsService.class.getName()
             );
         }
-
-        ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            Thread.currentThread().setContextClassLoader(persistanceClassLoader);
-
-            return joinPoint.proceed();
-        } finally {
-            Thread.currentThread().setContextClassLoader(webAppClassLoader);
-        }
     }
 
-    @Autowired
-    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
-        this.persistanceClassLoader = persistanceClassLoader;
-    }
 }

@@ -22,7 +22,7 @@ public class MdsServiceAspectTest {
     public void shouldThrowExceptionIfTargetNotExtendBaseMdsService() throws Throwable {
         when(joinPoint.getTarget()).thenReturn(new Object());
 
-        aspect.changeClassLoader(joinPoint);
+        aspect.makeChange(joinPoint);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class MdsServiceAspectTest {
 
         when(joinPoint.getTarget()).thenReturn(service);
 
-        aspect.changeClassLoader(joinPoint);
+        aspect.makeChange(joinPoint);
 
         Assert.assertEquals(classLoader, Thread.currentThread().getContextClassLoader());
     }

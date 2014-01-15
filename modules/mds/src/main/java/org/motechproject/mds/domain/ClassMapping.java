@@ -1,5 +1,7 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -26,6 +28,17 @@ public class ClassMapping {
     @Persistent
     private byte[] bytecode;
 
+    public ClassMapping() {
+        this(null, null);
+    }
+
+    public ClassMapping(String className, byte[] bytecode) {
+        this.className = className;
+        this.bytecode = ArrayUtils.isNotEmpty(bytecode)
+                ? Arrays.copyOf(bytecode, bytecode.length)
+                : new byte[0];
+    }
+
     public Long getId() {
         return id;
     }
@@ -47,7 +60,9 @@ public class ClassMapping {
     }
 
     public void setBytecode(byte[] bytecode) {
-        this.bytecode = Arrays.copyOf(bytecode, bytecode.length);
+        this.bytecode = ArrayUtils.isNotEmpty(bytecode)
+                ? Arrays.copyOf(bytecode, bytecode.length)
+                : new byte[0];
     }
 
     public int getLength() {

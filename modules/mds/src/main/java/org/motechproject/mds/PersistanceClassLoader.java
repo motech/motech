@@ -1,5 +1,7 @@
 package org.motechproject.mds;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.domain.ClassMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import java.util.List;
 
 /**
  * The <code>PersistanceClassLoader</code> class is a wrapper for {@link ClassLoader} and its main
@@ -45,7 +48,8 @@ public class PersistanceClassLoader extends ClassLoader {
                     throw new ClassNotFoundException(name);
                 }
 
-                clazz = defineClass(name, mapping.getBytecode(), 0, mapping.getLength());
+                clazz = defineClass(mapping);
+                createEntityInfrastructure(clazz);
             }
         }
 
@@ -58,6 +62,20 @@ public class PersistanceClassLoader extends ClassLoader {
         mapping.setBytecode(codebyte);
 
         getPersistenceManager().makePersistent(mapping);
+    }
+
+    public Class<?> defineClass(ClassMapping mapping) {
+        return defineClass(mapping.getClassName(), mapping.getBytecode(), 0, mapping.getLength());
+    }
+
+    private void createEntityInfrastructure(Class<?> clazz) {
+        List<ClassMapping> mappings = EntityInfrastructureBuilder.create(this, clazz);
+
+        if (CollectionUtils.isNotEmpty(mappings)) {
+            for (ClassMapping mapping : mappings) {
+                defineClass(mapping);
+            }
+        }
     }
 
     @Autowired

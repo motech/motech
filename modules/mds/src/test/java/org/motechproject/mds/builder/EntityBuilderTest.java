@@ -2,7 +2,6 @@ package org.motechproject.mds.builder;
 
 import org.junit.Test;
 import org.motechproject.mds.PersistanceClassLoader;
-import org.motechproject.mds.ex.EntityBuilderException;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

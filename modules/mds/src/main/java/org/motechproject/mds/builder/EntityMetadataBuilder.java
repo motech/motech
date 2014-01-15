@@ -1,4 +1,4 @@
-package org.motechproject.mds.factory;
+package org.motechproject.mds.builder;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.metadata.ClassMetadata;
@@ -7,12 +7,12 @@ import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 
 /**
- * The <code>EntityMetadataFactory</code> class is responsible to create a jdo metadata about
+ * The <code>EntityMetadataBuilder</code> class is responsible to create a jdo metadata about
  * entity class.
  */
-public final class EntityMetadataFactory {
+public final class EntityMetadataBuilder {
 
-    private EntityMetadataFactory() {
+    private EntityMetadataBuilder() {
     }
 
     /**

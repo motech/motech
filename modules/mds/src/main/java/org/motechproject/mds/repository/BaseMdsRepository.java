@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The <code>BaseMdsRepository</code> class is a base class for all repositories in mds module.
  */
-public class BaseMdsRepository {
+public abstract class BaseMdsRepository {
     private PersistenceManagerFactory persistenceManagerFactory;
 
     @Autowired
