@@ -31,6 +31,7 @@ public class RoleController {
     @Autowired
     private MotechRoleService motechRoleService;
 
+    @PreAuthorize("hasAnyRole('manageRole', 'viewRole')")
     @RequestMapping(value = "/roles", method = RequestMethod.GET)
     @ResponseBody
     public List<RoleDto> getRoles() {

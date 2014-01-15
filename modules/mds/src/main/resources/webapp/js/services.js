@@ -12,6 +12,7 @@
             { id: '@id' },
             {
                 getAdvanced: { method: 'GET', params: { action: 'advanced' } },
+                getSecurity: { method: 'GET', params: { action: 'security' } },
                 getWorkInProggress: { method: 'GET', params: { action: 'wip' }, isArray: true },
                 getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },
                 getField: { method: 'GET', params: {action: 'fields'} },
@@ -45,5 +46,13 @@
                 getSettings: { method: 'GET', params: { action: 'get' } }
             }
         );
+    });
+
+    angular.module('roleService', ['ngResource']).factory('Roles', function($resource) {
+        return $resource('../websecurity/api/web-api/roles');
+    });
+
+    angular.module('userService', ['ngResource']).factory('Users', function($resource) {
+        return $resource('../websecurity/api/users');
     });
 }());

@@ -10,6 +10,7 @@ import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
@@ -263,6 +264,13 @@ public class EntityController extends MdsController {
     @ResponseBody
     public AdvancedSettingsDto getAdvanced(@PathVariable final String entityId) {
         return getExampleData().getAdvanced(entityId);
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/security", method = RequestMethod.GET)
+    @PreAuthorize(MdsRolesConstants.HAS_DATA_OR_SCHEMA_ACCESS)
+    @ResponseBody
+    public SecuritySettingsDto getSecurity(@PathVariable final String entityId) {
+        return getExampleData().getSecurity(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)

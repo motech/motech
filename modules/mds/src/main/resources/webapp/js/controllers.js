@@ -70,8 +70,8 @@
     /**
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
-    mds.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities) {
-        var setAdvancedSettings, setRest, setBrowsing, draft, setIndexesLookupsTab;
+    mds.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles) {
+        var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, draft;
 
         workInProgress.setList(Entities);
 
@@ -169,6 +169,17 @@
                 });
         };
 
+        /**
+        * This function is used to set security settings by getting them from the server.
+        */
+        setSecuritySettings = function () {
+            $scope.securitySettings = Entities.getSecurity({id: $scope.selectedEntity.id},
+                function() {
+                    $('#usersSelect').select2('val', $scope.securitySettings.users);
+                    $('#rolesSelect').select2('val', $scope.securitySettings.roles);
+                });
+        };
+
         draft = function (data, callback) {
             var pre = { id: $scope.selectedEntity.id },
                 func = function () {
@@ -215,6 +226,12 @@
         $scope.advancedSettings = null;
 
         /**
+        * The $scope.securitySettings contains security settings of selected entity. By default
+        * there are no security settings
+        */
+        $scope.securitySettings = null;
+
+        /**
         * The $scope.fields contains entity fields. By default there are no fields.
         */
         $scope.fields = undefined;
@@ -258,6 +275,9 @@
             "mds.field.combobox", "mds.field.boolean", "mds.field.date",
             "mds.field.time", "mds.field.datetime"
         ];
+
+        $scope.availableUsers = Users.query();
+        $scope.availableRoles = Roles.query();
 
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
@@ -647,6 +667,7 @@
                 $scope.selectedEntity.draft = false;
 
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                        setSecuritySettings();
                         setAdvancedSettings();
                     });
 
@@ -1599,6 +1620,7 @@
                 workInProgress.setActualEntity(Entities, $scope.selectedEntity.id);
 
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                    setSecuritySettings();
                     setAdvancedSettings();
                 });
 
@@ -1631,6 +1653,135 @@
                 }
             }
         });
+
+        /* ~~~~~ SECURITY FUNCTIONS ~~~~~ */
+
+        /**
+        * Gets a class for 'Security' view toggle button based on entity access option
+        */
+        $scope.getClass = function(access) {
+            if ($scope.securitySettings.access === access) {
+                return 'btn btn-success';
+            } else {
+                return 'btn';
+            }
+        };
+
+        /**
+        * Callback function called when entity access option changes
+        */
+        $scope.accessChanged = function(access) {
+            if (access !== 'USERS') {
+                $scope.clearUsers();
+            }
+            if (access !== 'ROLES') {
+                $scope.clearRoles();
+            }
+        };
+
+        /**
+        * Clears user list in 'Security' view
+        */
+        $scope.clearUsers = function() {
+            draft({
+                edit: true,
+                values: {
+                    path: '$removeAllUsers',
+                    security: true
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                   $scope.securitySettings.users.length = 0;
+                   $('#usersSelect').select2('val', $scope.securitySettings.users);
+                });
+            });
+        };
+
+        /**
+        * Clears roles list in 'Security' view
+        */
+        $scope.clearRoles = function() {
+            draft({
+                edit: true,
+                values: {
+                    path: '$removeAllRoles',
+                    security: true
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                   $scope.securitySettings.roles.length = 0;
+                   $('#rolesSelect').select2('val', $scope.securitySettings.roles);
+                });
+            });
+        };
+
+        /**
+        * Callback function called when users list under 'Security' view changes
+        */
+        $scope.usersChanged = function(change) {
+            var value, path;
+
+            if (change.added) {
+                path = '$addUser';
+                value = change.added.text;
+            } else if (change.removed) {
+                path = '$removeUser';
+                value = change.removed.text;
+            } else {
+                return;
+            }
+
+            draft({
+                edit: true,
+                values: {
+                    path: path,
+                    security: true,
+                    value: [value]
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                    if (change.added) {
+                        $scope.securitySettings.users.push(value);
+                    } else if (change.removed) {
+                        $scope.securitySettings.users.removeObject(value);
+                    }
+                });
+            });
+        };
+
+        /**
+        * Callback function called when roles list under 'Security' view changes
+        */
+        $scope.rolesChanged = function(change) {
+            var value, path;
+
+            if (change.added) {
+                path = '$addRole';
+                value = change.added.text;
+            } else if (change.removed) {
+                path = '$removeRole';
+                value = change.removed.text;
+            } else {
+                return;
+            }
+
+            draft({
+                edit: true,
+                values: {
+                    path: path,
+                    security: true,
+                    value: [value]
+                }
+            }, function () {
+                $scope.safeApply(function () {
+                    if (change.added) {
+                        $scope.securitySettings.roles.push(value);
+                    } else if (change.removed) {
+                        $scope.securitySettings.roles.removeObject(value);
+                    }
+                });
+            });
+        };
     });
 
     /**
