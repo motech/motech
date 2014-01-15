@@ -8,7 +8,6 @@
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server.osgi"/>
 
     <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
 
@@ -23,9 +22,7 @@
         <property name="bundleLoaders">
             <list>
                 <bean id="jspBundleLoader" class="org.motechproject.server.impl.JspBundleLoader"/>
-                <!-- <bean id="ruleBundleLoader" class="org.motechproject.server.osgi.RuleBundleLoader" /> -->
             </list>
         </property>
     </bean>
-
 </beans>

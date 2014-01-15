@@ -197,7 +197,7 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             clearMap(ResourceBundle.class, null, "cacheList");
             clearTomcatCache();
         } catch (Exception e) {
-            logger.error("Could not reload resource bundles"+e.getMessage());
+            logger.error("Could not reload resource bundles" + e.getMessage());
         }
     }
 
@@ -210,10 +210,10 @@ public class JspBundleLoader implements BundleLoader, ServletContextAware {
             if ("org.apache.catalina.loader.WebappClassLoader".equals(cl.getName())) {
                 clearMap(cl, loader, "resourceEntries");
             } else {
-                logger.error("class loader " + cl.getName() + " is not tomcat loader.");
+                logger.debug("class loader " + cl.getName() + " is not tomcat loader.");
             }
         } catch (Exception e) {
-            logger.error("couldn't clear tomcat cache"+e.getMessage());
+            logger.error("couldn't clear tomcat cache" + e.getMessage());
         }
     }
 

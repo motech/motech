@@ -66,3 +66,9 @@ file_filter = utils/archetypes/http-bundle-archetype/src/main/resources/archetyp
 source_file = utils/archetypes/http-bundle-archetype/src/main/resources/archetype-resources/src/main/resources/webapp/messages/messages.properties
 source_lang = en_US
 type = PROPERTIES
+
+[MOTECH.server]
+file_filter = platform/server/src/main/resources/messages/messages_<lang>.properties
+source_file = platform/server/src/main/resources/messages/messages.properties
+source_lang = en_US
+type = PROPERTIES

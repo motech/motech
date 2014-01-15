@@ -15,6 +15,7 @@ import org.apache.http.util.EntityUtils;
 import org.hamcrest.core.Is;
 import org.json.JSONException;
 import org.junit.Test;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class RestAPIAuthenticationIT {
     @Test
     public void testThatItShouldAllowRestApiAccessAfterFormAuthentication() throws IOException, JSONException, InterruptedException {
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 120);
         httpClient.setCookieStore(new BasicCookieStore());
 
 
@@ -58,7 +59,7 @@ public class RestAPIAuthenticationIT {
     }
 
 
-    private void login(DefaultHttpClient defaultHttpClient) throws IOException {
+    private void login(PollingHttpClient httpClient) throws IOException, InterruptedException {
         final HttpPost loginPost =
                 new HttpPost(String.format("http://%s:%d/motech-platform-server/module/server/motech-platform-server/j_spring_security_check", HOST, PORT));
 
@@ -68,7 +69,7 @@ public class RestAPIAuthenticationIT {
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
-        final HttpResponse response = defaultHttpClient.execute(loginPost);
+        final HttpResponse response = httpClient.execute(loginPost);
         EntityUtils.consume(response.getEntity());
     }
 }

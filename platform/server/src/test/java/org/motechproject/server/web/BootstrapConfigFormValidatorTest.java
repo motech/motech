@@ -1,10 +1,10 @@
-package org.motechproject.server.web.validator;
+package org.motechproject.server.web;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.motechproject.server.web.form.BootstrapConfigForm;
+import org.motechproject.server.web.validator.ValidationUtils;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -12,7 +12,7 @@ import org.springframework.validation.Errors;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.web.validator.BootstrapConfigFormValidator.ERROR_REQUIRED;
+import static org.motechproject.server.web.BootstrapConfigFormValidator.ERROR_REQUIRED;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 

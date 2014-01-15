@@ -2,6 +2,7 @@ package org.motechproject.testing.utils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -91,6 +92,10 @@ public class PollingHttpClient {
             return response;
         }
 
+    }
+
+    public void setCookieStore(CookieStore cookieStore) {
+        httpClient.setCookieStore(cookieStore);
     }
 }
 

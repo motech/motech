@@ -76,6 +76,14 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.motechproject.org.ektorp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+        </dependency>
         <!-- Felix bundles needed at runtime -->
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -117,6 +125,13 @@
         <!-- Core bundles needed at runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-config-core</artifactId>
+            <version>${project.version}</version>
+            <!-- Scope is not provided, because server uses classes from config core for
+                 loading bootstrap config. -->
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -153,6 +168,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-commons-couchdb</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-admin</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -167,6 +188,11 @@
             <groupId>org.objectweb.asm</groupId>
             <artifactId>com.springsource.org.objectweb.asm</artifactId>
             <version>1.5.3</version>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test-mvc</artifactId>
         </dependency>
     </dependencies>
     <build>

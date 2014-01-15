@@ -1,32 +1,21 @@
 package org.motechproject.config.core.service.impl;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.config.core.MotechConfigurationException;
-import org.motechproject.config.core.bootstrap.Environment;
+import org.motechproject.config.core.bootstrap.BootstrapManager;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
-import org.motechproject.config.core.domain.ConfigSource;
-import org.motechproject.config.core.domain.DBConfig;
-import org.motechproject.config.core.filestore.ConfigFileReader;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.motechproject.config.core.service.CoreConfigurationService;
-import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.FileSystemException;
-import java.util.Properties;
-
-import static org.motechproject.config.core.domain.ConfigLocation.FileAccessType;
 
 /**
  * Implementation of {@link org.motechproject.config.core.service.CoreConfigurationService}.
@@ -38,17 +27,13 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
 
     private static Logger logger = Logger.getLogger(CoreConfigurationServiceImpl.class);
 
-    static final String BOOTSTRAP_PROPERTIES = "bootstrap.properties";
-
-    private Environment environment;
-    private ConfigFileReader configFileReader;
     private ConfigLocationFileStore configLocationFileStore;
+    private BootstrapManager bootstrapManager;
 
     @Autowired
-    public CoreConfigurationServiceImpl(ConfigFileReader configFileReader, Environment environment, ConfigLocationFileStore configLocationFileStore) {
-        this.environment = environment;
-        this.configFileReader = configFileReader;
+    public CoreConfigurationServiceImpl(BootstrapManager bootstrapManager, ConfigLocationFileStore configLocationFileStore) {
         this.configLocationFileStore = configLocationFileStore;
+        this.bootstrapManager = bootstrapManager;
     }
 
     /**
@@ -71,20 +56,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     @Override
     @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName")})
     public BootstrapConfig loadBootstrapConfig() {
-        String configLocation = environment.getConfigDir();
-
-        if (configLocation != null) {
-            final String errorMessage = String.format("specified by '%s' environment variable.", Environment.MOTECH_CONFIG_DIR);
-            return readBootstrapConfigFromFile(new File(getConfigFile(configLocation)), errorMessage);
-        }
-
-        try {
-            return readBootstrapConfigFromEnvironment();
-        } catch (MotechConfigurationException e) {
-            logger.info("Could not find bootstrap configuration values from environment variables. So, trying to load " +
-                    "from default location.", e);
-            return readBootstrapConfigFromDefaultLocation();
-        }
+        return bootstrapManager.loadBootstrapConfig();
     }
 
     /**
@@ -94,21 +66,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      */
     @Override
     public void saveBootstrapConfig(BootstrapConfig bootstrapConfig) {
-        File defaultBootstrapFile = getDefaultBootstrapFile(FileAccessType.WRITABLE);
-        try {
-            defaultBootstrapFile.getParentFile().mkdirs();
-            defaultBootstrapFile.createNewFile();
-
-            Properties bootstrapProperties = BootstrapConfigPropertyMapper.toProperties(bootstrapConfig);
-
-            try (Writer writer = new FileWriter(defaultBootstrapFile)) {
-                bootstrapProperties.store(writer, "MOTECH bootstrap properties.");
-            }
-        } catch (IOException e) {
-            String errorMessage = "Error saving bootstrap properties to file";
-            logger.error(errorMessage + " " + e.getMessage());
-            throw new MotechConfigurationException(errorMessage, e);
-        }
+        bootstrapManager.saveBootstrapConfig(bootstrapConfig);
     }
 
     @Override
@@ -141,56 +99,4 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
         // Annotation will automatically remove all cached motech settings
     }
 
-    File getDefaultBootstrapFile(FileAccessType accessType) {
-        Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
-
-        for (ConfigLocation configLocation : configLocations) {
-            try {
-                return configLocation.getFile(BOOTSTRAP_PROPERTIES, accessType);
-            } catch (MotechConfigurationException e) {
-                logger.warn(e.getMessage());
-            }
-        }
-
-        throw new MotechConfigurationException(String.format("%s file is not %s from any of the default locations.", BOOTSTRAP_PROPERTIES, accessType.toString()));
-    }
-
-    private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
-        File bootstrapFile;
-        try {
-            bootstrapFile = getDefaultBootstrapFile(FileAccessType.READABLE);
-        } catch (MotechConfigurationException ex) {
-            logger.warn(ex.getMessage());
-            throw ex;
-        }
-
-        return readBootstrapConfigFromFile(bootstrapFile, StringUtils.EMPTY);
-    }
-
-    private String getConfigFile(String configLocation) {
-        return configLocation + File.separator + BOOTSTRAP_PROPERTIES;
-    }
-
-    private BootstrapConfig readBootstrapConfigFromEnvironment() {
-        String dbUrl = environment.getDBUrl();
-        String username = environment.getDBUsername();
-        String password = environment.getDBPassword();
-        String tenantId = environment.getTenantId();
-        String configSource = environment.getConfigSource();
-
-        return new BootstrapConfig(new DBConfig(dbUrl, username, password), tenantId, ConfigSource.valueOf(configSource));
-    }
-
-    private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {
-        try {
-            logger.debug("Trying to load bootstrap configuration from " + configFile.getAbsolutePath());
-
-            Properties properties = configFileReader.getProperties(configFile);
-            return BootstrapConfigPropertyMapper.fromProperties(properties);
-        } catch (IOException e) {
-            final String message = "Error loading bootstrap properties from config file " + configFile + " " + errorMessage;
-            logger.warn(message);
-            throw new MotechConfigurationException(message, e);
-        }
-    }
 }

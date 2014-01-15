@@ -411,49 +411,6 @@
                      });
              }
         };
-
-        $scope.verifyDbConnection = function() {
-            var alerts = $('.alerts-container'), infos, warnings, errors;
-            alerts.empty();
-            blockUI();
-
-            $http({
-                method: 'POST',
-                url: '../server/bootstrap/verify',
-                timeout: 8000,
-                data: $('form.bootstrap-config-form').serialize(),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            })
-            .success(function(data) {
-                unblockUI();
-                if (data.success !== undefined && data.success === true) {
-                    motechAlert('server.bootstrap.verify.success', 'server.bootstrap.verify.info');
-                    infos = $('<div class="alert alert-success">' + $scope.msg('server.bootstrap.verify.success') + '</div>');
-                    alerts.append(infos);
-                } else {
-                    if(data.errors !== undefined) {
-                        motechAlert('server.bootstrap.verify.error', 'server.bootstrap.verify.info');
-                        warnings = $('<div class="alert"></div>');
-                        errors = $('<div class="alert alert-error"></div>');
-                        warnings.append($scope.msg('server.bootstrap.verify.error'));
-                        data.errors.forEach(function(item) {
-                            errors.append($scope.msg(item) + '<br>');
-                        });
-                        alerts.append(warnings);
-                        alerts.append(errors);
-                    } else {
-                        motechAlert('server.bootstrap.verify.warning', 'server.bootstrap.verify.info');
-                        warnings = $('<div class="alert">' + $scope.msg('server.bootstrap.verify.warning') + '</div>');
-                        alerts.append(warnings);
-                    }
-                }
-            })
-            .error(function(data) {
-                unblockUI();
-                motechAlert('server.bootstrap.verify.server.error', 'server.bootstrap.verify.info');
-                alerts.append('<div class="alert">' + $scope.msg('server.bootstrap.verify.error') + '</div>');
-            });
-        };
     });
 
     serverModule.controller('HomeCtrl', function ($scope, $cookieStore, $q, Menu) {

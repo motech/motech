@@ -1,4 +1,4 @@
-package org.motechproject.server.web.form;
+package org.motechproject.server.web;
 
 /**
  * UI backing Form to capture bootstrap config from UI.
