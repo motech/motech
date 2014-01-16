@@ -1660,10 +1660,10 @@
         * Gets a class for 'Security' view toggle button based on entity access option
         */
         $scope.getClass = function(access) {
-            if ($scope.securitySettings.access === access) {
-                return 'btn btn-success';
-            } else {
+            if ($scope.securitySettings === null || $scope.securitySettings.access !== access) {
                 return 'btn';
+            } else {
+                return 'btn btn-success';
             }
         };
 
