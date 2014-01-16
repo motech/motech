@@ -8,6 +8,7 @@ import javassist.CtNewConstructor;
 import javassist.NotFoundException;
 import org.motechproject.mds.domain.ClassMapping;
 import org.motechproject.mds.ex.EntityInfrastructureException;
+import org.motechproject.mds.javassist.MotechClassPool;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,19 +33,7 @@ public final class EntityInfrastructureBuilder {
     private static final String SERVICE_BASE_CLASS = SERVICE_PACKAGE + ".MotechDataService";
     private static final String SERVICE_IMPL_BASE_CLASS = SERVICE_IMPL_PACKAGE + ".DefaultMotechDataService";
 
-    private static final ClassPool POOL;
-
-    static {
-        POOL = ClassPool.getDefault();
-
-        try {
-            POOL.appendClassPath(REPOSITORY_PACKAGE.replace('.', '/'));
-            POOL.appendClassPath(SERVICE_PACKAGE.replace('.', '/'));
-            POOL.appendClassPath(SERVICE_IMPL_PACKAGE.replace('.', '/'));
-        } catch (NotFoundException e) {
-            throw new EntityInfrastructureException(e);
-        }
-    }
+    private static final ClassPool POOL = MotechClassPool.getDefault();
 
     private EntityInfrastructureBuilder() {
     }

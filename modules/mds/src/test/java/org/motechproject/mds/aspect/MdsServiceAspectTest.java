@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.impl.EntityServiceImpl;
+import org.motechproject.mds.service.impl.internal.EntityServiceImpl;
 
 import static org.mockito.Mockito.when;
 
