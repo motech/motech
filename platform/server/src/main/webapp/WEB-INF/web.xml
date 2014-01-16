@@ -8,7 +8,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:META-INF/motech/*.xml
+            classpath*:META-INF/motech/applicationPlatformServer.xml
         </param-value>
     </context-param>
 
@@ -29,19 +29,23 @@
     <servlet>
         <servlet-name>proxy</servlet-name>
         <servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>2</load-on-startup>
     </servlet>
     
-    <!--<servlet>-->
-        <!--<servlet-name>dispatcher</servlet-name>-->
-        <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
-        <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
+    <servlet>
+        <servlet-name>bootstrap-servlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>WEB-INF/bootstrap-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>dispatcher</servlet-name>-->
-        <!--<url-pattern>/</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet-mapping>
+        <servlet-name>bootstrap-servlet</servlet-name>
+        <url-pattern>/bootstrap/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>proxy</servlet-name>
