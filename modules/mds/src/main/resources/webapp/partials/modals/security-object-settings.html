@@ -12,28 +12,28 @@
                     <div class="form-group">
                         <label class="radio-button">
                             <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.access" value="EVERYONE" mds-auto-save-security-change="click" mds-callback="accessChanged('EVERYONE')"/>
-                            <button ng-disabled="selectedEntity.readOnly" ng-class="getClass('EVERYONE')">{{msg('mds.security.everyone')}}</button>
+                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('EVERYONE')">{{msg('mds.security.everyone')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
                             <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.access" value="OWNER" mds-auto-save-security-change="click" mds-callback="accessChanged('OWNER')"/>
-                            <button ng-disabled="selectedEntity.readOnly" ng-class="getClass('OWNER')">{{msg('mds.security.owner')}}</button>
+                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('OWNER')">{{msg('mds.security.owner')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
                             <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.access" value="CREATOR" mds-auto-save-security-change="click" mds-callback="accessChanged('CREATOR')"/>
-                            <button ng-disabled="selectedEntity.readOnly" ng-class="getClass('CREATOR')">{{msg('mds.security.creator')}}</button>
+                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('CREATOR')">{{msg('mds.security.creator')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
                             <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.access" value="USERS" mds-auto-save-security-change="click" mds-callback="accessChanged('USERS')"/>
-                            <button ng-disabled="selectedEntity.readOnly" ng-class="getClass('USERS')">{{msg('mds.security.users')}}</button>
+                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('USERS')">{{msg('mds.security.users')}}</span>
                         </label>
 
                         <button class="btn btn-danger" ng-click="clearUsers()" ng-show="securitySettings.access==='USERS'" ng-disabled="securitySettings.users.length === 0">{{msg('mds.security.clear')}}</button>
@@ -48,7 +48,7 @@
                     <div class="form-group">
                         <label class="radio-button">
                             <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.access" value="ROLES" mds-auto-save-security-change="click" mds-callback="accessChanged('ROLES')"/>
-                            <button ng-disabled="selectedEntity.readOnly" ng-class="getClass('ROLES')">{{msg('mds.security.roles')}}</button>
+                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('ROLES')">{{msg('mds.security.roles')}}</span>
                         </label>
 
                         <button class="btn btn-danger" ng-click="clearRoles()" ng-show="securitySettings.access==='ROLES'" ng-disabled="securitySettings.roles.length === 0">{{msg('mds.security.clear')}}</button>

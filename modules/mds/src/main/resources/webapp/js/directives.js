@@ -882,7 +882,11 @@
             restrict: 'A',
             link: function (scope) {
                 scope.$watch('advancedSettings.browsing.filterableFields', function() {
-                    scope.checked = (scope.advancedSettings.browsing.filterableFields.indexOf(scope.field.id) >= 0);
+                    if (!scope.advancedSettings.browsing) {
+                        scope.checked = false;
+                    } else {
+                        scope.checked = (scope.advancedSettings.browsing.filterableFields.indexOf(scope.field.id) >= 0);
+                    }
                 });
             }
         };
