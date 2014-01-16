@@ -29,11 +29,11 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     @Transactional
     public void constructEntity(EntityMapping mapping) throws IOException {
         MDSClassLoader classLoader = MDSClassLoader.PERSISTANCE;
-        byte[] enhancedBytes = enhancer.enhance(mapping.getClassName());
+        byte[] enhancedBytes = enhancer.enhance(mapping);
 
         Class<?> clazz = classLoader.defineClass(mapping.getClassName(), enhancedBytes);
         JDOMetadata metadata = EntityMetadataBuilder.createBaseEntity(
-                getPersistenceManagerFactory().newMetadata(), mapping.getClassName()
+                getPersistenceManagerFactory().newMetadata(), mapping
         );
 
         getPersistenceManagerFactory().registerMetadata(metadata);
