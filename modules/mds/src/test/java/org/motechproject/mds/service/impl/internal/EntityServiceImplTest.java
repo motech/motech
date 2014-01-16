@@ -1,4 +1,4 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.internal;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +10,7 @@ import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
+import org.motechproject.mds.service.impl.internal.EntityServiceImpl;
 
 import static org.mockito.Mockito.when;
 

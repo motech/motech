@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class MdsServiceAspect extends BaseMdsAspect {
 
     @Override
-    @Pointcut("within(org.motechproject.mds.service.impl.*)")
+    @Pointcut("within(org.motechproject.mds.service.impl..*)")
     protected void isChangeClassLoader() {
         // Left blank.
         // Annotation does all the work.

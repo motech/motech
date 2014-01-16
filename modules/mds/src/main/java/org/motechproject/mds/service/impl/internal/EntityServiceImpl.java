@@ -1,5 +1,6 @@
-package org.motechproject.mds.service.impl;
+package org.motechproject.mds.service.impl.internal;
 
+import org.motechproject.mds.PersistanceClassLoader;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.EntityMapping;
@@ -24,6 +25,7 @@ import java.io.IOException;
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityMappings allEntityMappings;
     private MdsJDOEnhancer enhancer;
+    private PersistanceClassLoader persistanceClassLoader;
 
     @Override
     @Transactional
@@ -38,12 +40,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         EntityBuilder builder = new EntityBuilder()
                 .withSimpleName(entity.getName())
-                .withClassLoader(getPersistanceClassLoader());
+                .withClassLoader(persistanceClassLoader);
 
         String className = builder.getClassName();
         byte[] enhancedBytes = enhancer.enhance(builder);
 
-        getPersistanceClassLoader().saveClass(className, enhancedBytes);
+        persistanceClassLoader.saveClass(className, enhancedBytes);
         JDOMetadata metadata = EntityMetadataBuilder.createBaseEntity(
                 getPersistenceManagerFactory().newMetadata(), className
         );
@@ -68,5 +70,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setEnhancer(MdsJDOEnhancer enhancer) {
         this.enhancer = enhancer;
+    }
+
+    @Autowired
+    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
+        this.persistanceClassLoader = persistanceClassLoader;
     }
 }

@@ -1,7 +1,7 @@
 package org.motechproject.mds.builder;
 
-import javassist.ClassPool;
 import org.motechproject.mds.ex.EntityBuilderException;
+import org.motechproject.mds.javassist.MotechClassPool;
 
 import java.util.Arrays;
 
@@ -48,7 +48,7 @@ public class EntityBuilder {
 
     public void build() {
         try {
-            classBytes = ClassPool.getDefault().makeClass(className).toBytecode();
+            classBytes = MotechClassPool.getDefault().makeClass(className).toBytecode();
             classLoader.defineClass(className, classBytes);
         } catch (Exception e) {
             throw new EntityBuilderException(e);
