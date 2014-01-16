@@ -185,8 +185,8 @@
 
         draft = function (data, callback) {
             var pre = { id: $scope.selectedEntity.id },
-                func = function () {
-                    $scope.selectedEntity.draft = true;
+                func = function (data) {
+                        $scope.selectedEntity.draft = data.draft;
 
                     if (_.isFunction(callback)) {
                         callback();

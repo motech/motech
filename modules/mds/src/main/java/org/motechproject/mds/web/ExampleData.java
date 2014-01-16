@@ -551,6 +551,46 @@ public class ExampleData {
         map.put(fieldId, null);
     }
 
+    public boolean isAnyChangeInFields(String entityId) {
+        if (fieldsHistory.containsKey(entityId)) {
+            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+                FieldDto field = entry.getValue();
+                boolean found = false;
+
+                for (int i = fields.size() - 1; i >= 0; --i) {
+                    if (equalsIgnoreCase(fields.get(i).getId(), entry.getKey())) {
+                        if (null == field || !field.equals(fields.get(i))) {
+                            return true;
+                        }
+                        found = true;
+                    }
+                }
+
+                if (!found && null != field) {
+                    return true;
+                }
+            }
+        }
+        if (advancedHistory.containsKey(entityId)) {
+            AdvancedSettingsDto current = getPurgeAdvanced(entityId);
+            AdvancedSettingsDto temporary = advancedHistory.get(entityId);
+
+            if (!temporary.equals(current)) {
+                return true;
+            }
+        }
+        if (securityHistory.containsKey(entityId)) {
+            SecuritySettingsDto current = getPurgeSecurity(entityId);
+            SecuritySettingsDto temporary = securityHistory.get(entityId);
+
+            if (!temporary.equals(current)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private Object findField(String[] path, Object start) {
         Object current = start;
 

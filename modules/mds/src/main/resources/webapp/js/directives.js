@@ -522,8 +522,8 @@
                                     advanced: true,
                                     value: [array]
                                 }
-                            }, function () {
-                                 scope.selectedEntity.draft = true;
+                            }, function (data) {
+                                 scope.selectedEntity.draft = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -645,8 +645,8 @@
                                     advanced: true,
                                     value: [array]
                                 }
-                            }, function () {
-                                 scope.selectedEntity.draft = true;
+                            }, function (data) {
+                                 scope.selectedEntity.draft = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -707,8 +707,8 @@
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function () {
-                             scope.selectedEntity.draft = true;
+                        }, function (data) {
+                             scope.selectedEntity.draft = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -750,8 +750,8 @@
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function () {
-                             scope.selectedEntity.draft = true;
+                        }, function (data) {
+                             scope.selectedEntity.draft = data.draft;
 
                              scope.safeApply(function () {
                                 angular.forEach(source, function(item) {
@@ -818,8 +818,8 @@
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function () {
-                             scope.selectedEntity.draft = true;
+                        }, function (data) {
+                             scope.selectedEntity.draft = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -854,8 +854,8 @@
                                 advanced: true,
                                 value: [[]]
                             }
-                        }, function () {
-                             scope.selectedEntity.draft = true;
+                        }, function (data) {
+                             scope.selectedEntity.draft = data.draft;
 
                              scope.safeApply(function () {
                                 angular.forEach(target, function(item) {
@@ -1217,8 +1217,8 @@
                             fieldId: fieldId,
                             value: [value]
                         }
-                    }, function () {
-                        entity.draft = true;
+                    }, function (data) {
+                        entity.draft = data.draft;
                     });
                 });
             }
@@ -1265,8 +1265,8 @@
                             advanced: true,
                             value: [value]
                         }
-                    }, function () {
-                        entity.draft = true;
+                    }, function (data) {
+                        entity.draft = data.draft;
                     });
                 });
             }
@@ -1314,8 +1314,8 @@
                             security: true,
                             value: [value]
                         }
-                    }, function () {
-                        entity.draft = true;
+                    }, function (data) {
+                        entity.draft = data.draft;
                         scope.$eval(callback);
                     });
                 });

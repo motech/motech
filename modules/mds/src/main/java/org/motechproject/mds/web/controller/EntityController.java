@@ -177,8 +177,8 @@ public class EntityController extends MdsController {
 
     @RequestMapping(value = "/entities/{entityId}/draft", method = RequestMethod.POST)
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
-    @ResponseStatus(HttpStatus.OK)
-    public void draft(@PathVariable String entityId, @RequestBody DraftData data) {
+    @ResponseBody
+    public Map<String, Boolean> draft(@PathVariable String entityId, @RequestBody DraftData data) {
         EntityDto entity = getExampleData().getEntity(entityId);
 
         if (null == entity) {
@@ -186,10 +186,16 @@ public class EntityController extends MdsController {
         } else if (entity.isReadOnly()) {
             throw new EntityReadOnlyException();
         } else {
-            entity.setDraft(true);
+            getExampleData().draft(entityId, data);
+            if (getExampleData().isAnyChangeInFields(entityId)) {
+                entity.setDraft(true);
+            } else {
+                entity.setDraft(false);
+            }
         }
-
-        getExampleData().draft(entityId, data);
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("draft", entity.isDraft());
+        return map;
     }
 
     @RequestMapping(value = "/entities/{entityId}/abandon", method = RequestMethod.POST)
