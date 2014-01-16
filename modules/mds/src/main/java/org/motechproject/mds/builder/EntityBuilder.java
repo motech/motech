@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.ex.EntityBuilderException;
 import org.motechproject.mds.javassist.MotechClassPool;
 
@@ -15,18 +16,22 @@ public class EntityBuilder {
     public static final String PACKAGE = "org.motechproject.mds.entity";
 
     private String className;
-    private EntityClassLoader classLoader;
+    private MDSClassLoader classLoader;
     private byte[] classBytes;
 
     public EntityBuilder withSimpleName(String simpleName) {
-        this.className = String.format("%s.%s", PACKAGE, simpleName);
-        this.classBytes = new byte[0];
+        return withClassName(String.format("%s.%s", PACKAGE, simpleName));
+    }
+
+    public EntityBuilder withClassName(String className) {
+        this.className = className;
+        this.classBytes = null;
         return this;
     }
 
     public EntityBuilder withClassLoader(ClassLoader classLoader) {
-        this.classLoader = new EntityClassLoader(classLoader);
-        this.classBytes = new byte[0];
+        this.classLoader = new MDSClassLoader(classLoader);
+        this.classBytes = null;
         return this;
     }
 
@@ -35,11 +40,10 @@ public class EntityBuilder {
     }
 
     public byte[] getClassBytes() {
-        if (null == classBytes) {
-            classBytes = new byte[0];
-        }
+        return ArrayUtils.isNotEmpty(classBytes)
+                ? Arrays.copyOf(classBytes, classBytes.length)
+                : new byte[0];
 
-        return Arrays.copyOf(classBytes, classBytes.length);
     }
 
     public ClassLoader getClassLoader() {
@@ -55,19 +59,4 @@ public class EntityBuilder {
         }
     }
 
-    /**
-     * The <code>EntityClassLoader</code> class is a wrapper for {@link ClassLoader} and it is
-     * used by {@link EntityBuilder} when new entity is built.
-     */
-    private static class EntityClassLoader extends ClassLoader {
-
-        public EntityClassLoader(ClassLoader parent) {
-            super(parent);
-        }
-
-        public void defineClass(String className, byte[] classBytes) {
-            defineClass(className, classBytes, 0, classBytes.length);
-        }
-
-    }
 }

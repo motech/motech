@@ -19,7 +19,7 @@ public class MdsServiceAspect extends BaseMdsAspect {
 
     @Override
     @Pointcut("within(org.motechproject.mds.service.impl..*)")
-    protected void isChangeClassLoader() {
+    protected void isExecutable() {
         // Left blank.
         // Annotation does all the work.
     }

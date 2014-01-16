@@ -6,12 +6,13 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-import org.motechproject.mds.domain.ClassMapping;
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.MotechClassPool;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
@@ -24,14 +25,14 @@ import static javassist.bytecode.SignatureAttribute.TypeParameter;
  * in classpath.
  */
 public final class EntityInfrastructureBuilder {
-    private static final String BASE_PACKAGE = "org.motechproject.mds";
-    private static final String REPOSITORY_PACKAGE = BASE_PACKAGE + ".repository";
-    private static final String SERVICE_PACKAGE = BASE_PACKAGE + ".service";
-    private static final String SERVICE_IMPL_PACKAGE = SERVICE_PACKAGE + ".impl";
+    public static final String BASE_PACKAGE = "org.motechproject.mds";
+    public static final String REPOSITORY_PACKAGE = BASE_PACKAGE + ".repository";
+    public static final String SERVICE_PACKAGE = BASE_PACKAGE + ".service";
+    public static final String SERVICE_IMPL_PACKAGE = SERVICE_PACKAGE + ".impl";
 
-    private static final String REPOSITORY_BASE_CLASS = REPOSITORY_PACKAGE + ".MotechDataRepository";
-    private static final String SERVICE_BASE_CLASS = SERVICE_PACKAGE + ".MotechDataService";
-    private static final String SERVICE_IMPL_BASE_CLASS = SERVICE_IMPL_PACKAGE + ".DefaultMotechDataService";
+    public static final String REPOSITORY_BASE_CLASS = REPOSITORY_PACKAGE + ".MotechDataRepository";
+    public static final String SERVICE_BASE_CLASS = SERVICE_PACKAGE + ".MotechDataService";
+    public static final String SERVICE_IMPL_BASE_CLASS = SERVICE_IMPL_PACKAGE + ".DefaultMotechDataService";
 
     private static final ClassPool POOL = MotechClassPool.getDefault();
 
@@ -149,4 +150,27 @@ public final class EntityInfrastructureBuilder {
         return String.format("%s.%sServiceImpl", SERVICE_IMPL_PACKAGE, entityName);
     }
 
+    public static class ClassMapping {
+        private String className;
+        private byte[] bytecode;
+
+        public ClassMapping(String className, byte[] bytecode) {
+            this.className = className;
+            this.bytecode = ArrayUtils.isNotEmpty(bytecode)
+                    ? Arrays.copyOf(bytecode, bytecode.length)
+                    : new byte[0];
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public byte[] getBytecode() {
+            return Arrays.copyOf(bytecode, getLength());
+        }
+
+        public int getLength() {
+            return bytecode.length;
+        }
+    }
 }

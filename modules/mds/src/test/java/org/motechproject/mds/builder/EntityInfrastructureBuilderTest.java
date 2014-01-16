@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.ClassMapping;
 
 import java.util.List;
 
@@ -35,13 +34,13 @@ public class EntityInfrastructureBuilderTest {
     public void shouldCreateCodeIfClassNotExistsInClassPath() throws Exception {
         doThrow(new ClassNotFoundException()).when(classLoader).loadClass(SAMPLE_SERVICE);
 
-        List<ClassMapping> mappings = EntityInfrastructureBuilder.create(classLoader, Sample.class);
+        List<EntityInfrastructureBuilder.ClassMapping> mappings = EntityInfrastructureBuilder.create(classLoader, Sample.class);
 
         assertNotNull(mappings);
         assertFalse(mappings.isEmpty());
-        assertThat(mappings, hasItem(Matchers.<ClassMapping>hasProperty("className", equalTo(SAMPLE_REPOSITORY))));
-        assertThat(mappings, hasItem(Matchers.<ClassMapping>hasProperty("className", equalTo(SAMPLE_INTERFACE))));
-        assertThat(mappings, hasItem(Matchers.<ClassMapping>hasProperty("className", equalTo(SAMPLE_SERVICE))));
+        assertThat(mappings, hasItem(Matchers.<EntityInfrastructureBuilder.ClassMapping>hasProperty("className", equalTo(SAMPLE_REPOSITORY))));
+        assertThat(mappings, hasItem(Matchers.<EntityInfrastructureBuilder.ClassMapping>hasProperty("className", equalTo(SAMPLE_INTERFACE))));
+        assertThat(mappings, hasItem(Matchers.<EntityInfrastructureBuilder.ClassMapping>hasProperty("className", equalTo(SAMPLE_SERVICE))));
     }
 
     @Test

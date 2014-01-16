@@ -21,7 +21,7 @@ public class MdsRepositoryAspectTest {
     public void shouldThrowExceptionIfTargetNotExtendBaseMdsRepository() throws Throwable {
         when(joinPoint.getTarget()).thenReturn(new Object());
 
-        aspect.makeChange(joinPoint);
+        aspect.execute(joinPoint);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class MdsRepositoryAspectTest {
 
         when(joinPoint.getTarget()).thenReturn(mappings);
 
-        aspect.makeChange(joinPoint);
+        aspect.execute(joinPoint);
 
         Assert.assertEquals(classLoader, Thread.currentThread().getContextClassLoader());
     }

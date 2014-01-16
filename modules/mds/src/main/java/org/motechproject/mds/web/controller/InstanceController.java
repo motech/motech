@@ -59,10 +59,10 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/instances/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
     @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldRecord> getPreviousInstance(@PathVariable String instanceId,@PathVariable String historyId, GridSettings settings) {
+    public List<FieldRecord> getPreviousInstance(@PathVariable String instanceId, @PathVariable String historyId, GridSettings settings) {
         List<PreviousRecord> previousRecordsList = getExampleData().getPreviousRecordsById(instanceId);
         for (PreviousRecord record : previousRecordsList) {
-            if (record.getId().equals(historyId))  {
+            if (record.getId().equals(historyId)) {
                 return record.getFields();
             }
         }

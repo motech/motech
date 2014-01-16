@@ -33,7 +33,6 @@ public class EntityServiceImplTest {
     public void setUp() throws Exception {
         entityService = new EntityServiceImpl();
         entityService.setAllEntityMappings(allEntityMappings);
-        entityService.setEnhancer(enhancer);
     }
 
     @Test(expected = EntityReadOnlyException.class)

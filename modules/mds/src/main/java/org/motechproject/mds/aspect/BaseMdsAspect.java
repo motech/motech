@@ -2,26 +2,24 @@ package org.motechproject.mds.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.motechproject.mds.PersistanceClassLoader;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.mds.builder.MDSClassLoader;
 
 /**
  * The <code>BaseMdsAspect</code> class is a base class for all aspects in mds module.
  */
 public abstract class BaseMdsAspect {
-    private PersistanceClassLoader persistanceClassLoader;
 
-    protected abstract void isChangeClassLoader();
+    protected abstract void isExecutable();
 
     protected abstract void checkTarget(Object target);
 
-    @Around("isChangeClassLoader()")
-    public Object makeChange(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
+    @Around("isExecutable()")
+    public Object execute(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
         checkTarget(joinPoint.getTarget());
         ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-            Thread.currentThread().setContextClassLoader(getPersistanceClassLoader());
+            Thread.currentThread().setContextClassLoader(MDSClassLoader.PERSISTANCE);
 
             return joinPoint.proceed();
         } finally {
@@ -29,12 +27,4 @@ public abstract class BaseMdsAspect {
         }
     }
 
-    protected PersistanceClassLoader getPersistanceClassLoader() {
-        return persistanceClassLoader;
-    }
-
-    @Autowired
-    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
-        this.persistanceClassLoader = persistanceClassLoader;
-    }
 }

@@ -18,11 +18,11 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testMdsContext.xml"})
-@TransactionConfiguration
+@TransactionConfiguration(defaultRollback = true)
 @Transactional
 public abstract class BaseIT {
+
     private PersistenceManagerFactory persistenceManagerFactory;
-    private PersistanceClassLoader persistanceClassLoader;
 
     public PersistenceManagerFactory getPersistenceManagerFactory() {
         return persistenceManagerFactory;
@@ -38,15 +38,6 @@ public abstract class BaseIT {
         return null != persistenceManagerFactory
                 ? persistenceManagerFactory.getPersistenceManager()
                 : null;
-    }
-
-    public PersistanceClassLoader getPersistanceClassLoader() {
-        return persistanceClassLoader;
-    }
-
-    @Autowired
-    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
-        this.persistanceClassLoader = persistanceClassLoader;
     }
 
     protected boolean containsEntity(String className) {
