@@ -108,7 +108,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             // This is mandatory for Felix http servlet bridge
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
-            logger.debug("Installing all available bundles");
+            logger.info("Installing all available bundles");
 
             installAllBundles(servletContext, bundleContext);
 
@@ -130,7 +130,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             registerHttpServiceListener();
 
-            logger.debug("Starting 3rd party bundles");
+            logger.info("Starting 3rd party bundles");
 
             startBundles(THIRD_PARTY_BUNDLES);
 
@@ -138,7 +138,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             registerBundleLoaderExecutor();
 
-            logger.debug("Starting platform bundles");
+            logger.info("Starting platform bundles");
 
             startBundles(PLATFORM_BUNDLES);
 
