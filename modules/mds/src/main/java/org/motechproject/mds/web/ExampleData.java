@@ -383,7 +383,7 @@ public class ExampleData {
         return found;
     }
 
-    private AdvancedSettingsDto getPurgeAdvanced(String entityId) {
+    public AdvancedSettingsDto getPurgeAdvanced(String entityId) {
         AdvancedSettingsDto found = null;
 
         for (AdvancedSettingsDto item : advancedSettings) {
@@ -875,5 +875,7 @@ public class ExampleData {
 
         return list;
     }
+
+
 }
 //CHECKSTYLE:ON

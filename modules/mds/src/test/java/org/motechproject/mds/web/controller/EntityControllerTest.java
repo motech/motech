@@ -201,13 +201,13 @@ public class EntityControllerTest {
         controller.draft("9007", data);
         assertTrue(controller.getEntity("9007").isDraft());
 
-        controller.commitChanges("9007");
+        controller.commitChanges(9007L);
         assertFalse(controller.getEntity("9007").isDraft());
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotComitChangesIfEntityNotExists() throws Exception {
-        controller.commitChanges("10000");
+        controller.commitChanges(10000L);
     }
 
     @Test

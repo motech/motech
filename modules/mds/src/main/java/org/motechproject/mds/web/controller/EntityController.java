@@ -10,6 +10,7 @@ import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -212,11 +213,13 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/commit", method = RequestMethod.POST)
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
-    public void commitChanges(@PathVariable String entityId) {
-        if (null == getExampleData().getEntity(entityId)) {
+    public void commitChanges(@PathVariable Long entityId) {
+        if (null == getExampleData().getEntity(entityId.toString())) {
             throw new EntityNotFoundException();
         } else {
-            getExampleData().commitChanges(entityId);
+            getExampleData().commitChanges(entityId.toString());
+            List<LookupDto> updatedLookups = entityService.saveEntityLookups(entityId, getAdvanced(entityId.toString()).getIndexes());
+            getExampleData().getPurgeAdvanced(entityId.toString()).setIndexes(updatedLookups);
         }
     }
 

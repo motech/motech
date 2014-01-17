@@ -41,12 +41,7 @@ public class AllEntityMappings extends BaseMdsRepository {
 
     @Transactional
     public void delete(Long id) {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
-        query.setFilter("entityId == id");
-        query.declareParameters("java.lang.Long entityId");
-        query.setUnique(true);
-
-        EntityMapping entityMapping = (EntityMapping) query.execute(id);
+        EntityMapping entityMapping = getEntityById(id);
 
         if (entityMapping != null) {
             if (entityMapping.isReadOnly()) {
@@ -57,5 +52,15 @@ public class AllEntityMappings extends BaseMdsRepository {
         } else {
             throw new EntityNotFoundException();
         }
+    }
+
+    @Transactional
+    public EntityMapping getEntityById(Long id) {
+        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        query.setFilter("entityId == id");
+        query.declareParameters("java.lang.Long entityId");
+        query.setUnique(true);
+
+        return (EntityMapping) query.execute(id);
     }
 }

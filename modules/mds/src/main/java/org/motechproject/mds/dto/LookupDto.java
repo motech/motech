@@ -13,6 +13,7 @@ import java.util.List;
  * The <code>LookupDto</code> class contains information about single lookup defined by user
  */
 public class LookupDto {
+    private Long id;
     private String lookupName;
     private boolean singleObjectReturn;
     private List<String> fieldList;
@@ -32,6 +33,11 @@ public class LookupDto {
         this.fieldList = CollectionUtils.isEmpty(fieldList)
                 ? new LinkedList<String>()
                 : fieldList;
+    }
+
+    public LookupDto(Long id, String lookupName, boolean singleObjectReturn) {
+        this(lookupName, singleObjectReturn);
+        this.id = id;
     }
 
     public String getLookupName() {
@@ -73,6 +79,14 @@ public class LookupDto {
         this.fieldList = CollectionUtils.isEmpty(fieldList)
                 ? new LinkedList<String>()
                 : fieldList;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
