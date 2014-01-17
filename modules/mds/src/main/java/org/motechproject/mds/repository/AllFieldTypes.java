@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import javax.jdo.Extent;
 import javax.jdo.Query;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -26,10 +25,9 @@ public class AllFieldTypes extends BaseMdsRepository {
     public List<AvailableTypeDto> getAll() {
         List<AvailableTypeDto> allTypes = new ArrayList<>();
         Extent extent = getPersistenceManager().getExtent(AvailableFieldTypeMapping.class);
-        Iterator it = extent.iterator();
 
-        while (it.hasNext()) {
-            allTypes.add(((AvailableFieldTypeMapping)it.next()).toDto());
+        for (Object anExtent : extent) {
+            allTypes.add(((AvailableFieldTypeMapping) anExtent).toDto());
         }
 
         return allTypes;
