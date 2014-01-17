@@ -1603,10 +1603,16 @@
         * @return {boolean} true if the setting has a given type; otherwise false.
         */
         $scope.hasType = function (setting, type) {
-            var fullName = setting.type.typeClass,
+            var fullName, singleName;
+
+            if (!setting.type) {
+                return false;
+            } else {
+                fullName = setting.type.typeClass;
                 singleName = fullName.substring(fullName.lastIndexOf('.') + 1);
 
-            return _.isEqual(singleName.toLowerCase(), type.toLowerCase());
+                return _.isEqual(singleName.toLowerCase(), type.toLowerCase());
+            }
         };
 
         /**
@@ -1661,7 +1667,7 @@
         */
         $scope.getClass = function(access) {
             if ($scope.securitySettings === null || $scope.securitySettings.access !== access) {
-                return 'btn';
+                return 'btn btn-default';
             } else {
                 return 'btn btn-success';
             }

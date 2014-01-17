@@ -443,7 +443,7 @@
 }
 
 .dynamic-select input {
-    height: 20px !important;
+    height: 26px !important;
 }
 
 .radio-button input {
@@ -452,7 +452,7 @@
     z-index: -999;
 }
 
-.radio-button button {
+.radio-button span {
     min-width: 200px;
 }
 
