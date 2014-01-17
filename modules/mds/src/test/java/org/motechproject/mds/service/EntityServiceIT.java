@@ -2,6 +2,7 @@ package org.motechproject.mds.service;
 
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.dto.EntityDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class EntityServiceIT extends BaseIT {
         assertTrue(String.format("Not found %s in database", className), containsEntity(className));
 
         // 2. there should be ability to create a new instance of created entity
-        Class<?> clazz = getPersistanceClassLoader().loadClass(className);
+        Class<?> clazz = MDSClassLoader.PERSISTANCE.loadClass(className);
         Object instance = clazz.newInstance();
 
         assertNotNull(instance);

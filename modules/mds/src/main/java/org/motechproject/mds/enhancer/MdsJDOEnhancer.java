@@ -3,6 +3,7 @@ package org.motechproject.mds.enhancer;
 import org.datanucleus.api.jdo.JDOEnhancer;
 import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
+import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,19 +27,23 @@ public class MdsJDOEnhancer extends JDOEnhancer {
         setVerbose(true);
     }
 
-    public byte[] enhance(EntityBuilder builder) throws IOException {
+    public byte[] enhance(String className) throws IOException {
+        EntityBuilder builder = new EntityBuilder()
+                .withClassName(className)
+                .withClassLoader(MDSClassLoader.PERSISTANCE);
+
         builder.build();
 
         setClassLoader(builder.getClassLoader());
 
         JDOMetadata metadata = EntityMetadataBuilder.createBaseEntity(
-                newMetadata(), builder.getClassName()
+                newMetadata(), className
         );
 
         registerMetadata(metadata);
-        addClass(builder.getClassName(), builder.getClassBytes());
+        addClass(className, builder.getClassBytes());
         enhance();
 
-        return getEnhancedBytes(builder.getClassName());
+        return getEnhancedBytes(className);
     }
 }

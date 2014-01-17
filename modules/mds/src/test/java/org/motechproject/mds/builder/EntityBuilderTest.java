@@ -1,7 +1,6 @@
 package org.motechproject.mds.builder;
 
 import org.junit.Test;
-import org.motechproject.mds.PersistanceClassLoader;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -36,7 +35,7 @@ public class EntityBuilderTest {
         assertArrayEquals(expected, builder.getClassBytes());
 
         builder.build();
-        builder.withClassLoader(PersistanceClassLoader.class.getClassLoader());
+        builder.withClassLoader(MDSClassLoader.class.getClassLoader());
         assertArrayEquals(expected, builder.getClassBytes());
     }
 

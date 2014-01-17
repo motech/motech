@@ -1,22 +1,20 @@
 package org.motechproject.mds.service.impl.internal;
 
-import org.motechproject.mds.PersistanceClassLoader;
-import org.motechproject.mds.builder.EntityBuilder;
-import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.jdo.metadata.JDOMetadata;
 import java.io.IOException;
+
+import static org.motechproject.mds.builder.EntityBuilder.PACKAGE;
 
 /**
  * Default implmenetation of {@link org.motechproject.mds.service.EntityService} interface.
@@ -24,8 +22,7 @@ import java.io.IOException;
 @Service
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityMappings allEntityMappings;
-    private MdsJDOEnhancer enhancer;
-    private PersistanceClassLoader persistanceClassLoader;
+    private MDSConstructor constructor;
 
     @Override
     @Transactional
@@ -38,20 +35,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             throw new EntityAlreadyExistException();
         }
 
-        EntityBuilder builder = new EntityBuilder()
-                .withSimpleName(entity.getName())
-                .withClassLoader(persistanceClassLoader);
-
-        String className = builder.getClassName();
-        byte[] enhancedBytes = enhancer.enhance(builder);
-
-        persistanceClassLoader.saveClass(className, enhancedBytes);
-        JDOMetadata metadata = EntityMetadataBuilder.createBaseEntity(
-                getPersistenceManagerFactory().newMetadata(), className
-        );
-
-        getPersistenceManagerFactory().registerMetadata(metadata);
+        String className = String.format("%s.%s", PACKAGE, entity.getName());
         EntityMapping entityMapping = allEntityMappings.save(className);
+        constructor.constructEntity(entityMapping);
 
         return entityMapping.toDto();
     }
@@ -68,12 +54,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     @Autowired
-    public void setEnhancer(MdsJDOEnhancer enhancer) {
-        this.enhancer = enhancer;
-    }
-
-    @Autowired
-    public void setPersistanceClassLoader(PersistanceClassLoader persistanceClassLoader) {
-        this.persistanceClassLoader = persistanceClassLoader;
+    public void setConstructor(MDSConstructor constructor) {
+        this.constructor = constructor;
     }
 }
