@@ -5,7 +5,6 @@ import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.Query;
 import java.util.Collection;
@@ -18,7 +17,6 @@ import java.util.List;
 @Repository
 public class AllEntityMappings extends BaseMdsRepository {
 
-    @Transactional
     public EntityMapping save(String className) {
         EntityMapping mapping = new EntityMapping();
         mapping.setClassName(className);
@@ -26,7 +24,6 @@ public class AllEntityMappings extends BaseMdsRepository {
         return getPersistenceManager().makePersistent(mapping);
     }
 
-    @Transactional
     public boolean containsEntity(String simpleName) {
         Query query = getPersistenceManager().newQuery(EntityMapping.class);
         query.setFilter("className == name");
@@ -39,7 +36,6 @@ public class AllEntityMappings extends BaseMdsRepository {
         return !mappings.isEmpty();
     }
 
-    @Transactional
     public void delete(Long id) {
         EntityMapping entityMapping = getEntityById(id);
 
@@ -54,7 +50,6 @@ public class AllEntityMappings extends BaseMdsRepository {
         }
     }
 
-    @Transactional
     public EntityMapping getEntityById(Long id) {
         Query query = getPersistenceManager().newQuery(EntityMapping.class);
         query.setFilter("entityId == id");

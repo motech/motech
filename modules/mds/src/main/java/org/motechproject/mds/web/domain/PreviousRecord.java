@@ -6,29 +6,29 @@ import java.util.List;
  * Represents single entity instance
  */
 public class PreviousRecord {
-    private String id;
-    private String historyId;
+    private Long id;
+    private Long historyId;
     private List<FieldRecord> fields;
 
-    public PreviousRecord(String id, String historyId, List<FieldRecord> fields) {
+    public PreviousRecord(Long id, Long historyId, List<FieldRecord> fields) {
         this.id = id;
         this.historyId = historyId;
         this.fields = fields;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getHistoryId() {
+    public Long getHistoryId() {
         return historyId;
     }
 
-    public void setHistoryId(String historyId) {
+    public void setHistoryId(Long historyId) {
         this.historyId = historyId;
     }
 

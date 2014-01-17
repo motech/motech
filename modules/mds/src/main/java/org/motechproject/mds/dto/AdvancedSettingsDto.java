@@ -12,26 +12,26 @@ import java.util.List;
  * The <code>AdvancedSettingsDto</code> contains information about advanced settings of an entity.
  */
 public class AdvancedSettingsDto {
-    private String id;
-    private String entityId;
+    private Long id;
+    private Long entityId;
     private TrackingDto tracking = new TrackingDto();
     private List<LookupDto> indexes = new ArrayList<>();
     private RestOptions restOptions = new RestOptions();
     private BrowsingSettingsDto browsing = new BrowsingSettingsDto();
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(String entityId) {
+    public void setEntityId(Long entityId) {
         this.entityId = entityId;
     }
 

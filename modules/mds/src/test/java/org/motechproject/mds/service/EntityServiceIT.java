@@ -73,7 +73,7 @@ public class EntityServiceIT extends BaseIT {
         entityDto.setName("myEntity");
 
         entityDto = entityService.createEntity(entityDto);
-        entityService.saveEntityLookups(Long.parseLong(entityDto.getId()), lookups);
+        entityService.saveEntityLookups(entityDto.getId(), lookups);
 
         assertTrue(containsLookup("lookup1"));
         assertTrue(containsLookup("lookup2"));
@@ -86,8 +86,8 @@ public class EntityServiceIT extends BaseIT {
         entityDto.setName("entity");
 
         entityDto = entityService.createEntity(entityDto);
-        List<LookupDto> savedLookups = entityService.saveEntityLookups(Long.parseLong(entityDto.getId()), lookups);
-        entityService.saveEntityLookups(Long.parseLong(entityDto.getId()), savedLookups);
+        List<LookupDto> savedLookups = entityService.saveEntityLookups(entityDto.getId(), lookups);
+        entityService.saveEntityLookups(entityDto.getId(), savedLookups);
 
         assertThat(getLookupMappings().size(), Is.is(1));
     }
@@ -99,9 +99,9 @@ public class EntityServiceIT extends BaseIT {
         entityDto.setName("testEntity");
 
         entityDto = entityService.createEntity(entityDto);
-        List<LookupDto> savedLookups = entityService.saveEntityLookups(Long.parseLong(entityDto.getId()), lookups);
+        List<LookupDto> savedLookups = entityService.saveEntityLookups(entityDto.getId(), lookups);
         savedLookups.get(0).setLookupName("newLookupName");
-        savedLookups = entityService.saveEntityLookups(Long.parseLong(entityDto.getId()), savedLookups);
+        savedLookups = entityService.saveEntityLookups(entityDto.getId(), savedLookups);
 
         assertTrue(allLookupMappings.getLookupById(savedLookups.get(0).getId()).getLookupName().equals("newLookupName"));
     }
@@ -118,6 +118,6 @@ public class EntityServiceIT extends BaseIT {
         entity.setName("readOnlyEntity");
 
         entity = entityService.createEntity(entity);
-        entityService.saveEntityLookups(Long.parseLong(entity.getId()), Arrays.asList(new LookupDto()));
+        entityService.saveEntityLookups(entity.getId(), Arrays.asList(new LookupDto()));
     }
 }

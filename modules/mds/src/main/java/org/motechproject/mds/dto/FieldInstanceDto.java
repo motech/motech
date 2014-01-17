@@ -10,33 +10,33 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class FieldInstanceDto {
 
-    private String id;
-    private String instanceId;
+    private Long id;
+    private Long instanceId;
     private FieldBasicDto basic;
 
     public FieldInstanceDto() {
         this(null, null, null);
     }
 
-    public FieldInstanceDto(String id, String instanceId, FieldBasicDto basic) {
+    public FieldInstanceDto(Long id, Long instanceId, FieldBasicDto basic) {
         this.id = id;
         this.instanceId = instanceId;
         this.basic = basic;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getInstanceId() {
+    public Long getInstanceId() {
         return instanceId;
     }
 
-    public void setInstanceId(String instanceId) {
+    public void setInstanceId(Long instanceId) {
         this.instanceId = instanceId;
     }
 

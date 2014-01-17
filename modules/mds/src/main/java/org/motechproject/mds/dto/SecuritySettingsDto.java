@@ -12,8 +12,8 @@ import java.util.List;
  * The <code>SecuritySettingsDto</code> contains information about security settings of an entity.
  */
 public class SecuritySettingsDto {
-    private String id;
-    private String entityId;
+    private Long id;
+    private Long entityId;
     private AccessOptions access;
     private List<String> users;
     private List<String> roles;
@@ -22,7 +22,7 @@ public class SecuritySettingsDto {
         this(null, null, null, null, null);
     }
 
-    public SecuritySettingsDto(String id, String entityId, AccessOptions access, List<String> users, List<String> roles) {
+    public SecuritySettingsDto(Long id, Long entityId, AccessOptions access, List<String> users, List<String> roles) {
         this.id = id;
         this.entityId = entityId;
         this.access = access;
@@ -58,19 +58,19 @@ public class SecuritySettingsDto {
         roles.clear();
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(String entityId) {
+    public void setEntityId(Long entityId) {
         this.entityId = entityId;
     }
 

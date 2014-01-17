@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.motechproject.mds.dto.SettingOptions.POSITIVE;
 import static org.motechproject.mds.dto.SettingOptions.REQUIRE;
@@ -73,9 +72,9 @@ public class ExampleData {
     private Map<TypeDto, List<SettingDto>> typeSettings = new HashMap<>();
     private Map<TypeDto, FieldValidationDto> typeValidation = new HashMap<>();
 
-    private Map<String, AdvancedSettingsDto> advancedHistory = new HashMap<>();
-    private Map<String, SecuritySettingsDto> securityHistory = new HashMap<>();
-    private Map<String, Map<String, FieldDto>> fieldsHistory = new HashMap<>();
+    private Map<Long, AdvancedSettingsDto> advancedHistory = new HashMap<>();
+    private Map<Long, SecuritySettingsDto> securityHistory = new HashMap<>();
+    private Map<Long, Map<Long, FieldDto>> fieldsHistory = new HashMap<>();
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -100,15 +99,15 @@ public class ExampleData {
                 new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
         );
 
-        entities.add(new EntityDto("9001", "Patient", "OpenMRS", "navio"));
+        entities.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
 
-        entities.add(new EntityDto("9002", "Person", "OpenMRS", "navio"));
+        entities.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
 
-        entities.add(new EntityDto("9003", "Patient", "OpenMRS", "accra"));
+        entities.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
 
-        entities.add(new EntityDto("9004", "Person", "OpenMRS", "accra"));
+        entities.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
 
-        entities.add(new EntityDto("9005", "Appointments", "Appointments"));
+        entities.add(new EntityDto(9005L, "Appointments", "Appointments"));
 
         List<MetadataDto> exampleMetadata1 = new LinkedList<>();
         exampleMetadata1.add(new MetadataDto("key1", "value1"));
@@ -116,18 +115,18 @@ public class ExampleData {
 
         fields.add(
                 new FieldDto(
-                        "1", "9005", STRING,
+                        1L, 9005L, STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         exampleMetadata1, FieldValidationDto.STRING, null
                 )
         );
 
-        entities.add(new EntityDto("9006", "Call Log Item", "IVR"));
+        entities.add(new EntityDto(9006L, "Call Log Item", "IVR"));
 
-        entities.add(new EntityDto("9007", "Voucher"));
+        entities.add(new EntityDto(9007L, "Voucher"));
         fields.add(
                 new FieldDto(
-                        "2", "9007", STRING,
+                        2L, 9007L, STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         null,
                         FieldValidationDto.STRING, null
@@ -135,7 +134,7 @@ public class ExampleData {
         );
         fields.add(
                 new FieldDto(
-                        "3", "9007", LIST,
+                        3L, 9007L, LIST,
                         new FieldBasicDto("Drug Regimen", "regimen"),
                         null, null,
                         Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
@@ -149,7 +148,7 @@ public class ExampleData {
         exampleMetadata2.add(new MetadataDto("key2", "value2"));
         fields.add(
                 new FieldDto(
-                        "4", "9007", INTEGER,
+                        4L, 9007L, INTEGER,
                         new FieldBasicDto("Voucher Number", "voucherNumber"),
                         exampleMetadata2,
                         FieldValidationDto.INTEGER, null
@@ -160,7 +159,7 @@ public class ExampleData {
         exampleMetadata3.add(new MetadataDto("key3", "value3"));
         fields.add(
                 new FieldDto(
-                        "5", "9007", STRING,
+                        5L, 9007L, STRING,
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
                         exampleMetadata3,
                         FieldValidationDto.STRING, null
@@ -169,14 +168,14 @@ public class ExampleData {
 
         fields.add(
                 new FieldDto(
-                        "6", "9007", BOOLEAN,
+                        6L, 9007L, BOOLEAN,
                         new FieldBasicDto("Active", "active"),
                         exampleMetadata3,
                         null, null
                 )
         );
 
-        entities.add(new EntityDto("9008", "Campaign", "Message Campaign"));
+        entities.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
 
         AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
         RestOptions exampleRestOptions = new RestOptions();
@@ -185,33 +184,33 @@ public class ExampleData {
         fields.add("5");
         exampleRestOptions.setCreate(true);
         exampleRestOptions.setFieldIds(fields);
-        exampleAdvancedSetting.setId(String.valueOf(advancedSettings.size() + 1));
-        exampleAdvancedSetting.setEntityId("7");
+        exampleAdvancedSetting.setId(advancedSettings.size() + 1L);
+        exampleAdvancedSetting.setEntityId(7L);
         exampleAdvancedSetting.setRestOptions(exampleRestOptions);
         advancedSettings.add(exampleAdvancedSetting);
 
         SecuritySettingsDto exampleSecuritySettings = new SecuritySettingsDto();
-        exampleSecuritySettings.setId(String.valueOf(securitySettings.size() + 1));
-        exampleSecuritySettings.setEntityId("7");
+        exampleSecuritySettings.setId(securitySettings.size() + 1L);
+        exampleSecuritySettings.setEntityId(7L);
         exampleSecuritySettings.setAccess(AccessOptions.ROLES);
         exampleSecuritySettings.addRole("User Admin");
         securitySettings.add(exampleSecuritySettings);
 
-        instanceFields.add(new FieldInstanceDto("1", "1", new FieldBasicDto("Date", "date")));
-        instanceFields.add(new FieldInstanceDto("2", "1", new FieldBasicDto("User", "user")));
-        instanceFields.add(new FieldInstanceDto("3", "1", new FieldBasicDto("Action", "action")));
-        instanceFields.add(new FieldInstanceDto("4", "1", new FieldBasicDto("Changes", "changes")));
+        instanceFields.add(new FieldInstanceDto(1L, 1L, new FieldBasicDto("Date", "date")));
+        instanceFields.add(new FieldInstanceDto(2L, 1L, new FieldBasicDto("User", "user")));
+        instanceFields.add(new FieldInstanceDto(3L, 1L, new FieldBasicDto("Action", "action")));
+        instanceFields.add(new FieldInstanceDto(4L, 1L, new FieldBasicDto("Changes", "changes")));
 
         entityRecords = createEntityRecords();
         entityHistory = createEntityHistoryRecords();
         entityRecordsHistory = createEntityRecordsHistory();
     }
 
-    public EntityDto getEntity(String id) {
+    public EntityDto getEntity(Long id) {
         EntityDto found = null;
 
         for (EntityDto entity : entities) {
-            if (equalsIgnoreCase(entity.getId(), id)) {
+            if (entity.getId().equals(id)) {
                 found = entity;
             }
         }
@@ -244,23 +243,23 @@ public class ExampleData {
         return new ArrayList<>(entities);
     }
 
-    public List<FieldDto> getFields(String entityId) {
+    public List<FieldDto> getFields(Long entityId) {
         List<FieldDto> list = new ArrayList<>();
 
         for (FieldDto field : fields) {
-            if (equalsIgnoreCase(field.getEntityId(), entityId)) {
+            if (field.getEntityId().equals(entityId)) {
                 list.add(field);
             }
         }
 
         if (fieldsHistory.containsKey(entityId)) {
-            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+            for (Map.Entry<Long, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
                 boolean found = false;
 
                 for (int i = list.size() - 1; i >= 0; --i) {
                     FieldDto field = list.get(i);
 
-                    if (equalsIgnoreCase(field.getId(), entry.getKey())) {
+                    if (field.getId().equals(entry.getKey())) {
                         list.remove(i);
 
                         if (null != entry.getValue()) {
@@ -281,18 +280,18 @@ public class ExampleData {
         Collections.sort(list, new Comparator<FieldDto>() {
             @Override
             public int compare(FieldDto one, FieldDto two) {
-                return CASE_INSENSITIVE_ORDER.compare(one.getId(), two.getId());
+                return one.getId().compareTo(two.getId());
             }
         });
 
         return list;
     }
 
-    public List<FieldInstanceDto> getInstanceFields(String instanceId) {
+    public List<FieldInstanceDto> getInstanceFields(Long instanceId) {
         List<FieldInstanceDto> list = new ArrayList<>();
 
         for (FieldInstanceDto field : instanceFields) {
-            if (equalsIgnoreCase(field.getInstanceId(), instanceId)) {
+            if (field.getInstanceId().equals(instanceId)) {
                 list.add(field);
             }
         }
@@ -300,11 +299,11 @@ public class ExampleData {
         return list;
     }
 
-    public FieldDto getField(String id) {
+    public FieldDto getField(Long id) {
         FieldDto found = null;
 
         for (FieldDto field : fields) {
-            if (equalsIgnoreCase(field.getId(), id)) {
+            if (field.getId().equals(id)) {
                 found = field;
             }
         }
@@ -317,7 +316,7 @@ public class ExampleData {
         return found;
     }
 
-    public FieldDto findFieldByName(String entityId, String name) {
+    public FieldDto findFieldByName(Long entityId, String name) {
         List<FieldDto> fields = getFields(entityId);
         FieldDto found = null;
 
@@ -336,9 +335,9 @@ public class ExampleData {
         return found;
     }
 
-    public void removeField(String id) {
+    public void removeField(Long id) {
         for (int i = fields.size() - 1; i >= 0; i--) {
-            if (equalsIgnoreCase(fields.get(i).getId(), id)) {
+            if (fields.get(i).getId().equals(id)) {
                 fields.remove(i);
                 break;
             }
@@ -349,24 +348,7 @@ public class ExampleData {
         return new ArrayList<>(types);
     }
 
-    public void addOrUpdateField(FieldDto field) {
-        FieldDto found = getField(field.getId());
-
-        if (null == found) {
-            field.setId(String.valueOf(fields.size() + 1));
-            fields.add(field);
-        } else {
-            found.setBasic(field.getBasic());
-            found.setEntityId(field.getEntityId());
-            found.setSettings(field.getSettings());
-            found.setType(field.getType());
-            found.setMetadata(field.getMetadata());
-            found.setValidation(field.getValidation());
-        }
-
-    }
-
-    public AdvancedSettingsDto getAdvanced(String entityId) {
+    public AdvancedSettingsDto getAdvanced(Long entityId) {
         AdvancedSettingsDto found = clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId));
 
         if (advancedHistory.containsKey(entityId)) {
@@ -383,11 +365,11 @@ public class ExampleData {
         return found;
     }
 
-    public AdvancedSettingsDto getPurgeAdvanced(String entityId) {
+    public AdvancedSettingsDto getPurgeAdvanced(Long entityId) {
         AdvancedSettingsDto found = null;
 
         for (AdvancedSettingsDto item : advancedSettings) {
-            if (equalsIgnoreCase(item.getEntityId(), entityId)) {
+            if (item.getEntityId().equals(entityId)) {
                 found = item;
                 break;
             }
@@ -395,7 +377,7 @@ public class ExampleData {
 
         if (null == found) {
             found = new AdvancedSettingsDto();
-            found.setId(String.valueOf(advancedSettings.size() + 1));
+            found.setId(advancedSettings.size() + 1L);
             found.setEntityId(entityId);
 
             advancedSettings.add(found);
@@ -404,7 +386,7 @@ public class ExampleData {
         return found;
     }
 
-    public SecuritySettingsDto getSecurity(String entityId) {
+    public SecuritySettingsDto getSecurity(Long entityId) {
         SecuritySettingsDto found = clone(SecuritySettingsDto.class, getPurgeSecurity(entityId));
 
         if (securityHistory.containsKey(entityId)) {
@@ -419,7 +401,7 @@ public class ExampleData {
         return found;
     }
 
-    private SecuritySettingsDto getPurgeSecurity(String entityId) {
+    private SecuritySettingsDto getPurgeSecurity(Long entityId) {
         SecuritySettingsDto found = null;
         for (SecuritySettingsDto item : securitySettings) {
             if (item.getEntityId().equals(entityId)) {
@@ -430,7 +412,7 @@ public class ExampleData {
 
         if (null == found) {
             found = new SecuritySettingsDto();
-            found.setId(String.valueOf(securitySettings.size() + 1));
+            found.setId(securitySettings.size() + 1L);
             found.setEntityId(entityId);
             found.setAccess(AccessOptions.EVERYONE);
 
@@ -453,7 +435,7 @@ public class ExampleData {
         return found;
     }
 
-    public void draft(String entityId, DraftData data) {
+    public void draft(Long entityId, DraftData data) {
         if (data.isCreate()) {
             draftCreate(entityId, data);
         } else if (data.isEdit()) {
@@ -463,17 +445,17 @@ public class ExampleData {
         }
     }
 
-    private void draftCreate(String entityId, DraftData data) {
+    private void draftCreate(Long entityId, DraftData data) {
         if (!fieldsHistory.containsKey(entityId)) {
-            fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+            fieldsHistory.put(entityId, new HashMap<Long, FieldDto>());
         }
 
-        Map<String, FieldDto> map = fieldsHistory.get(entityId);
+        Map<Long, FieldDto> map = fieldsHistory.get(entityId);
 
         String typeClass = data.getValue(DraftData.TYPE_CLASS).toString();
         String displayName = data.getValue(DraftData.DISPLAY_NAME).toString();
         String name = data.getValue(DraftData.NAME).toString();
-        String fieldId = String.valueOf(getFields().size() + 1);
+        Long fieldId = getFields().size() + 1L;
 
         FieldBasicDto basic = new FieldBasicDto();
         basic.setName(name);
@@ -495,7 +477,7 @@ public class ExampleData {
         map.put(fieldId, field);
     }
 
-    private void draftEdit(String entityId, DraftData data) {
+    private void draftEdit(Long entityId, DraftData data) {
         Object advancedValue = data.getValues().get(DraftData.ADVANCED);
         boolean editAdvanced = null != advancedValue && parseBoolean(advancedValue.toString());
         Object securityValue = data.getValues().get(DraftData.SECURITY);
@@ -522,11 +504,11 @@ public class ExampleData {
             start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
-                fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+                fieldsHistory.put(entityId, new HashMap<Long, FieldDto>());
             }
 
-            Map<String, FieldDto> map = fieldsHistory.get(entityId);
-            String fieldId = data.getValue(DraftData.FIELD_ID).toString();
+            Map<Long, FieldDto> map = fieldsHistory.get(entityId);
+            Long fieldId = Long.valueOf(data.getValue(DraftData.FIELD_ID).toString());
 
             if (!map.containsKey(fieldId)) {
                 FieldDto field = getField(fieldId);
@@ -540,25 +522,25 @@ public class ExampleData {
         setField(field, path[path.length - 1], value);
     }
 
-    private void draftRemove(String entityId, DraftData data) {
+    private void draftRemove(Long entityId, DraftData data) {
         if (!fieldsHistory.containsKey(entityId)) {
-            fieldsHistory.put(entityId, new HashMap<String, FieldDto>());
+            fieldsHistory.put(entityId, new HashMap<Long, FieldDto>());
         }
 
-        Map<String, FieldDto> map = fieldsHistory.get(entityId);
+        Map<Long, FieldDto> map = fieldsHistory.get(entityId);
 
-        String fieldId = data.getValue(DraftData.FIELD_ID).toString();
+        Long fieldId = Long.valueOf(data.getValue(DraftData.FIELD_ID).toString());
         map.put(fieldId, null);
     }
 
-    public boolean isAnyChangeInFields(String entityId) {
+    public boolean isAnyChangeInFields(Long entityId) {
         if (fieldsHistory.containsKey(entityId)) {
-            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+            for (Map.Entry<Long, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
                 FieldDto field = entry.getValue();
                 boolean found = false;
 
                 for (int i = fields.size() - 1; i >= 0; --i) {
-                    if (equalsIgnoreCase(fields.get(i).getId(), entry.getKey())) {
+                    if (fields.get(i).getId().equals(entry.getKey())) {
                         if (null == field || !field.equals(fields.get(i))) {
                             return true;
                         }
@@ -653,14 +635,14 @@ public class ExampleData {
         }
     }
 
-    public void commitChanges(String entityId) {
+    public void commitChanges(Long entityId) {
         if (fieldsHistory.containsKey(entityId)) {
-            for (Map.Entry<String, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
+            for (Map.Entry<Long, FieldDto> entry : fieldsHistory.get(entityId).entrySet()) {
                 FieldDto field = entry.getValue();
                 boolean found = false;
 
                 for (int i = fields.size() - 1; i >= 0; --i) {
-                    if (equalsIgnoreCase(fields.get(i).getId(), entry.getKey())) {
+                    if (fields.get(i).getId().equals(entry.getKey())) {
                         if (null == field) {
                             fields.remove(i);
                         } else {
@@ -704,7 +686,7 @@ public class ExampleData {
         abandonChanges(entityId);
     }
 
-    public void abandonChanges(String entityId) {
+    public void abandonChanges(Long entityId) {
         fieldsHistory.remove(entityId);
         advancedHistory.remove(entityId);
         securityHistory.remove(entityId);
@@ -745,7 +727,7 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", "123"));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person1"));
         fields.add(new FieldRecord("active", "Active", true));
-        EntityRecord entityRecord = new EntityRecord("1", "7", fields);
+        EntityRecord entityRecord = new EntityRecord(1L, 7L, fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
@@ -754,7 +736,7 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", "456"));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person2"));
         fields.add(new FieldRecord("active", "Active", true));
-        entityRecord = new EntityRecord("2", "7", fields);
+        entityRecord = new EntityRecord(2L, 7L, fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
@@ -763,13 +745,13 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", "312"));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person3"));
         fields.add(new FieldRecord("active", "Active", false));
-        entityRecord = new EntityRecord("3", "7", fields);
+        entityRecord = new EntityRecord(3L, 7L, fields);
         ret.add(entityRecord);
 
         return ret;
     }
 
-    public List<EntityRecord> getEntityRecordsById(String entityId) {
+    public List<EntityRecord> getEntityRecordsById(Long entityId) {
         List<EntityRecord> entityRecordList = new ArrayList<>();
         for (EntityRecord entityRecord : entityRecords) {
             if (entityRecord.getEntitySchemaId().equals(entityId)) {
@@ -788,7 +770,7 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User1"));
         fields.add(new FieldRecord("action", "Action", "CREATE"));
         fields.add(new FieldRecord("changes", "Changes", ""));
-        HistoryRecord historyRecord = new HistoryRecord("1","1", fields);
+        HistoryRecord historyRecord = new HistoryRecord(1L, 1L, fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
@@ -796,7 +778,7 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User2"));
         fields.add(new FieldRecord("action", "Action", "UPDATE"));
         fields.add(new FieldRecord("changes", "Changes", "Changed state"));
-        historyRecord = new HistoryRecord("2","1", fields);
+        historyRecord = new HistoryRecord(2L, 1L, fields);
         ret.add(historyRecord);
 
         fields = new ArrayList<>();
@@ -804,13 +786,13 @@ public class ExampleData {
         fields.add(new FieldRecord("user", "User", "User2"));
         fields.add(new FieldRecord("action", "Action", "UPDATE"));
         fields.add(new FieldRecord("changes", "Changes", "Is Active"));
-        historyRecord = new HistoryRecord("3","1", fields);
+        historyRecord = new HistoryRecord(3L, 1L, fields);
         ret.add(historyRecord);
 
         return ret;
     }
 
-    public List<HistoryRecord> getInstanceHistoryRecordsById(String instanceId) {
+    public List<HistoryRecord> getInstanceHistoryRecordsById(Long instanceId) {
         List<HistoryRecord> instanceHistoryList = new ArrayList<>();
 
         for (HistoryRecord historyRecord : entityHistory) {
@@ -823,7 +805,6 @@ public class ExampleData {
     }
 
     public List<PreviousRecord> createEntityRecordsHistory() {
-        List<HistoryRecord> history = getInstanceHistoryRecordsById("1");
         List<PreviousRecord> ret = new ArrayList<>();
         List<FieldRecord> fields = new ArrayList<>();
 
@@ -832,7 +813,7 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", ""));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", ""));
         fields.add(new FieldRecord("active", "Active", false));
-        PreviousRecord entityRecord = new PreviousRecord("1", "1", fields);
+        PreviousRecord entityRecord = new PreviousRecord(1L, 1L, fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
@@ -841,7 +822,7 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", "668"));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", ""));
         fields.add(new FieldRecord("active", "Active", true));
-        entityRecord = new PreviousRecord("2", "1", fields);
+        entityRecord = new PreviousRecord(2L, 1L, fields);
         ret.add(entityRecord);
 
         fields = new ArrayList<>();
@@ -850,13 +831,13 @@ public class ExampleData {
         fields.add(new FieldRecord("voucherNumber", "Voucher Number", "123"));
         fields.add(new FieldRecord("redeemedBy", "Redeemed By", "Person1"));
         fields.add(new FieldRecord("active", "Active", true));
-        entityRecord = new PreviousRecord("3", "1", fields);
+        entityRecord = new PreviousRecord(3L, 1L, fields);
         ret.add(entityRecord);
 
         return ret;
     }
 
-    public List<PreviousRecord> getPreviousRecordsById(String historyId) {
+    public List<PreviousRecord> getPreviousRecordsById(Long historyId) {
         List<PreviousRecord> previousRecordList = new ArrayList<>();
         for (PreviousRecord previousRecord : entityRecordsHistory) {
             if (previousRecord.getHistoryId().equals(historyId)) {

@@ -1,7 +1,5 @@
 package org.motechproject.mds.repository;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
@@ -21,12 +19,10 @@ public abstract class MotechDataRepository<T> extends BaseMdsRepository {
         this.type = type;
     }
 
-    @Transactional
     public T create(T object) {
         return getPersistenceManager().makePersistent(object);
     }
 
-    @Transactional
     public T retrieve(String primaryKeyName, Object value) {
         Query query = getPersistenceManager().newQuery(type);
         query.setFilter(String.format("%s == param", primaryKeyName));
@@ -36,7 +32,6 @@ public abstract class MotechDataRepository<T> extends BaseMdsRepository {
         return type.cast(query.execute(value));
     }
 
-    @Transactional
     public List<T> retrieveAll() {
         Query query = getPersistenceManager().newQuery(type);
         Collection collection = (Collection) query.execute();
@@ -44,17 +39,14 @@ public abstract class MotechDataRepository<T> extends BaseMdsRepository {
         return cast(type, collection);
     }
 
-    @Transactional
     public T update(T object) {
         return getPersistenceManager().makePersistent(object);
     }
 
-    @Transactional
     public void delete(T object) {
         getPersistenceManager().deletePersistent(object);
     }
 
-    @Transactional
     public void delete(String primaryKeyName, Object value) {
         delete(retrieve(primaryKeyName, value));
     }

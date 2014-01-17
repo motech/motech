@@ -12,7 +12,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * module and namespace.
  */
 public class EntityDto {
-    private String id;
+    private Long id;
     private String name;
     private String module;
     private String namespace;
@@ -23,15 +23,15 @@ public class EntityDto {
         this(null, null);
     }
 
-    public EntityDto(String id, String name) {
+    public EntityDto(Long id, String name) {
         this(id, name, null);
     }
 
-    public EntityDto(String id, String name, String module) {
+    public EntityDto(Long id, String name, String module) {
         this(id, name, module, null);
     }
 
-    public EntityDto(String id, String name, String module, String namespace) {
+    public EntityDto(Long id, String name, String module, String namespace) {
         this.id = id;
         this.name = name;
         this.module = module;
@@ -39,11 +39,11 @@ public class EntityDto {
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

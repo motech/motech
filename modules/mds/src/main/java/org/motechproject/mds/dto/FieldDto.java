@@ -13,8 +13,8 @@ import java.util.List;
  * The <code>FieldDto</code> class contains information about an existing field in an entity.
  */
 public class FieldDto {
-    private String id;
-    private String entityId;
+    private Long id;
+    private Long entityId;
     private TypeDto type;
     private FieldBasicDto basic;
     private List<MetadataDto> metadata;
@@ -25,7 +25,7 @@ public class FieldDto {
         this(null, null, null, null, null, null, null);
     }
 
-    public FieldDto(String id, String entityId, TypeDto type, FieldBasicDto basic,
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic,
                     List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings) {
         this.id = id;
@@ -41,19 +41,19 @@ public class FieldDto {
                 : settings;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(String entityId) {
+    public void setEntityId(Long entityId) {
         this.entityId = entityId;
     }
 

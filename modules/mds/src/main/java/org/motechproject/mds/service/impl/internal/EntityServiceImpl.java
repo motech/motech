@@ -1,8 +1,12 @@
 package org.motechproject.mds.service.impl.internal;
 
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -11,6 +15,11 @@ import org.motechproject.mds.repository.AllLookupMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSConstructor;
+import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.web.ExampleData;
+import org.motechproject.mds.web.domain.EntityRecord;
+import org.motechproject.mds.web.domain.HistoryRecord;
+import org.motechproject.mds.web.domain.PreviousRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +38,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityMappings allEntityMappings;
     private MDSConstructor constructor;
     private AllLookupMappings allLookupMappings;
+
+    // TODO remove this once everything is in db
+    private ExampleData exampleData = new ExampleData();
 
     @Override
     @Transactional
@@ -50,8 +62,87 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void deleteEntity(Long id) {
-        allEntityMappings.delete(id);
+    public boolean saveDraftEntityChanges(Long entityId, DraftData draftData) {
+        exampleData.draft(entityId, draftData);
+        return exampleData.isAnyChangeInFields(entityId);
+    }
+
+    @Override
+    @Transactional
+    public void abandonChanges(Long entityId) {
+        exampleData.abandonChanges(entityId);
+    }
+
+    @Override
+    @Transactional
+    public void commitChanges(Long entityId) {
+        exampleData.commitChanges(entityId);
+    }
+
+    @Override
+    @Transactional
+    public List<EntityRecord> getEntityRecords(Long entityId) {
+        return exampleData.getEntityRecordsById(entityId);
+    }
+
+    @Override
+    @Transactional
+    public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
+        return exampleData.getAdvanced(entityId);
+    }
+
+    @Override
+    @Transactional
+    public SecuritySettingsDto getSecuritySettings(Long entityId) {
+        return exampleData.getSecurity(entityId);
+    }
+
+    @Override
+    @Transactional
+    public List<FieldInstanceDto> getInstanceFields(Long instanceId) {
+        return exampleData.getInstanceFields(instanceId);
+    }
+
+    @Override
+    @Transactional
+    public List<HistoryRecord> getInstanceHistory(Long instanceId) {
+        return exampleData.getInstanceHistoryRecordsById(instanceId);
+    }
+
+    @Override
+    @Transactional
+    public List<PreviousRecord> getPreviousRecords(Long instanceId) {
+        return exampleData.getPreviousRecordsById(instanceId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteEntity(EntityDto entity) {
+        exampleData.removeEntity(entity);
+        allEntityMappings.delete(entity.getId());
+    }
+
+    @Override
+    @Transactional
+    public List<EntityDto> listEntities() {
+        return exampleData.getEntities();
+    }
+
+    @Override
+    @Transactional
+    public EntityDto getEntity(Long entityId) {
+        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+        return (entity == null) ? exampleData.getEntity(entityId) : entity.toDto();
+    }
+
+    @Override
+    public List<FieldDto> getFields(Long entityId) {
+        return exampleData.getFields(entityId);
+    }
+
+    @Override
+    public FieldDto findFieldByName(Long entityId, String name) {
+        return exampleData.findFieldByName(entityId, name);
     }
 
     @Override
@@ -77,6 +168,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
                 updatedLookups.add(allLookupMappings.update(lookup).toDto());
             }
         }
+
+        // TODO: remove
+        exampleData.getPurgeAdvanced(entityId).setIndexes(updatedLookups);
 
         return updatedLookups;
     }

@@ -7,11 +7,11 @@ import java.util.List;
  * Represents single entity instance (used in jqGrid)
  */
 public class HistoryRecord {
-    private String id;
-    private String instanceId;
+    private Long id;
+    private Long instanceId;
     private List<FieldRecord> fields;
 
-    public HistoryRecord(String id, String instanceId, List<FieldRecord> fields) {
+    public HistoryRecord(Long id, Long instanceId, List<FieldRecord> fields) {
         this.id = id;
         this.instanceId = instanceId;
         this.fields = fields;
@@ -29,19 +29,19 @@ public class HistoryRecord {
         this.fields = fields;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getInstanceId() {
+    public Long getInstanceId() {
         return instanceId;
     }
 
-    public void setInstanceId(String instanceId) {
+    public void setInstanceId(Long instanceId) {
         this.instanceId = instanceId;
     }
 }

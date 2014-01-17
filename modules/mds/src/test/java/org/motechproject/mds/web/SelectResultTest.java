@@ -16,26 +16,26 @@ public class SelectResultTest {
     @Test
     public void shouldReturnCorrectNumberOfRecords() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto("9001", "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto("9002", "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto("9003", "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto("9004", "Person", "OpenMRS", "accra"));
+        expected.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
+        expected.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
+        expected.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
+        expected.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
 
         SelectResult<EntityDto> result = new SelectResult<>(new SelectData(null, 1, 4), ENTITIES);
         assertEquals(expected, result.getResults());
         assertTrue(result.isMore());
 
         expected.clear();
-        expected.add(new EntityDto("9005", "Appointments", "Appointments"));
-        expected.add(new EntityDto("9006", "Call Log Item", "IVR"));
+        expected.add(new EntityDto(9005L, "Appointments", "Appointments"));
+        expected.add(new EntityDto(9006L, "Call Log Item", "IVR"));
 
         result = new SelectResult<>(new SelectData(null, 3, 2), ENTITIES);
         assertEquals(expected, result.getResults());
         assertTrue(result.isMore());
 
         expected.clear();
-        expected.add(new EntityDto("9007", "Voucher"));
-        expected.add(new EntityDto("9008", "Campaign", "Message Campaign"));
+        expected.add(new EntityDto(9007L, "Voucher"));
+        expected.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
 
         result = new SelectResult<>(new SelectData(null, 4, 3), ENTITIES);
         assertEquals(expected, result.getResults());

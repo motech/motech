@@ -10,8 +10,8 @@ public class EntityNameComparatorTest {
 
     @Test
     public void shouldCompareTwoEntities() throws Exception {
-        EntityDto person = new EntityDto("1", "Person");
-        EntityDto appointment = new EntityDto("2", "Appointment");
+        EntityDto person = new EntityDto(1L, "Person");
+        EntityDto appointment = new EntityDto(2L, "Appointment");
 
         assertTrue(comparator.compare(person, appointment) > 0);
         assertTrue(comparator.compare(appointment, person) < 0);
