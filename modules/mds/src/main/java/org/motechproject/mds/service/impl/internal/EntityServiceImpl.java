@@ -3,9 +3,9 @@ package org.motechproject.mds.service.impl.internal;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.mds.builder.EntityBuilder.PACKAGE;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 /**
- * Default implmenetation of {@link org.motechproject.mds.service.EntityService} interface.
+ * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
  */
 @Service
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
@@ -53,7 +53,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             throw new EntityAlreadyExistException();
         }
 
-        String className = String.format("%s.%s", PACKAGE, entity.getName());
+        String className = String.format("%s.%s", Packages.ENTITY, entity.getName());
         EntityMapping entityMapping = allEntityMappings.save(className);
         constructor.constructEntity(entityMapping);
 

@@ -6,21 +6,18 @@ import org.motechproject.mds.javassist.MotechClassPool;
 
 import java.util.Arrays;
 
+import static org.motechproject.mds.constants.Constants.Packages;
+
 /**
  * The <code>EntityBuilder</code> is use to create a new empty class in a given class loader.
  */
 public class EntityBuilder {
-    /**
-     * Constant <code>PACKAGE</code> presents a package for a new entities.
-     */
-    public static final String PACKAGE = "org.motechproject.mds.entity";
-
     private String className;
     private MDSClassLoader classLoader;
     private byte[] classBytes;
 
     public EntityBuilder withSimpleName(String simpleName) {
-        return withClassName(String.format("%s.%s", PACKAGE, simpleName));
+        return withClassName(String.format("%s.%s", Packages.ENTITY, simpleName));
     }
 
     public EntityBuilder withClassName(String className) {

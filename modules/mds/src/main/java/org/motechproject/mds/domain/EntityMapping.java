@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.util.ClassName;
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -10,7 +11,6 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +55,7 @@ public class EntityMapping {
     }
 
     public EntityDto toDto() {
-        String simpleName = className.substring(className.lastIndexOf('.') + 1);
-
-        return new EntityDto(id, simpleName, module, namespace);
+        return new EntityDto(id, ClassName.getSimpleName(className), module, namespace);
     }
 
     public Long getId() {

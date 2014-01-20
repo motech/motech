@@ -3,16 +3,12 @@ package org.motechproject.mds.dto;
 import java.util.Objects;
 import java.util.Properties;
 
+import static org.motechproject.mds.constants.Constants.Config;
+
 /**
  * The <code>MdsSettingDto</code> contains module settings.
  */
 public class MdsSettingsDto {
-    public static final String MDS_PROPERTIES_FILE_NAME = "motech-mds.properties";
-    public static final String MDS_DELETE_MODE_PROPERTY = "mds.deleteMode";
-    public static final String MDS_EMPTY_TRASH_PROPERTY = "mds.emptyTrash";
-    public static final String MDS_TIME_VALUE_PROPERTY = "mds.emptyTrash.afterTimeValue";
-    public static final String MDS_TIME_UNIT_PROPERTY = "mds.emptyTrash.afterTimeUnit";
-
     private String deleteMode;
     private Boolean emptyTrash;
     private int timeValue;
@@ -24,10 +20,10 @@ public class MdsSettingsDto {
 
     public MdsSettingsDto(Properties properties) {
         this(
-                properties.getProperty(MDS_DELETE_MODE_PROPERTY, MDS_PROPERTIES_FILE_NAME),
-                properties.getProperty(MDS_EMPTY_TRASH_PROPERTY, MDS_PROPERTIES_FILE_NAME),
-                properties.getProperty(MDS_TIME_VALUE_PROPERTY, MDS_PROPERTIES_FILE_NAME),
-                properties.getProperty(MDS_TIME_UNIT_PROPERTY, MDS_PROPERTIES_FILE_NAME)
+                properties.getProperty(Config.MDS_DELETE_MODE, Config.MODULE_FILE),
+                properties.getProperty(Config.MDS_EMPTY_TRASH, Config.MODULE_FILE),
+                properties.getProperty(Config.MDS_TIME_VALUE, Config.MODULE_FILE),
+                properties.getProperty(Config.MDS_TIME_UNIT, Config.MODULE_FILE)
         );
     }
 
@@ -47,10 +43,10 @@ public class MdsSettingsDto {
 
     public Properties toProperties() {
         Properties properties = new Properties();
-        properties.put(MDS_DELETE_MODE_PROPERTY, deleteMode);
-        properties.put(MDS_EMPTY_TRASH_PROPERTY, emptyTrash);
-        properties.put(MDS_TIME_VALUE_PROPERTY, timeValue);
-        properties.put(MDS_TIME_UNIT_PROPERTY, timeUnit);
+        properties.put(Config.MDS_DELETE_MODE, deleteMode);
+        properties.put(Config.MDS_EMPTY_TRASH, emptyTrash);
+        properties.put(Config.MDS_TIME_VALUE, timeValue);
+        properties.put(Config.MDS_TIME_UNIT, timeUnit);
 
         return properties;
     }

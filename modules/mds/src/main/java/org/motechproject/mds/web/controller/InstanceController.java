@@ -1,6 +1,5 @@
 package org.motechproject.mds.web.controller;
 
-import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Collections;
 import java.util.List;
 
+import static org.motechproject.mds.constants.Constants.Roles;
+
 /**
  * The <code>FieldController</code> is the Spring Framework Controller used by view layer for
  * executing certain actions on entity fields.
@@ -35,7 +36,7 @@ public class InstanceController extends MdsController {
     private EntityService entityService;
 
     @RequestMapping(value = "/instances/{instanceId}/fields", method = RequestMethod.GET)
-    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public List<FieldInstanceDto> getInstanceFields(@PathVariable Long instanceId) {
         if (null == entityService.getEntity(instanceId)) {
@@ -46,7 +47,7 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{instanceId}/history", method = RequestMethod.GET)
-    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<HistoryRecord> getHistory(@PathVariable Long instanceId, GridSettings settings) {
         List<HistoryRecord> historyRecordsList = entityService.getInstanceHistory(instanceId);
@@ -62,7 +63,7 @@ public class InstanceController extends MdsController {
     }
 
     @RequestMapping(value = "/instances/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
-    @PreAuthorize(MdsRolesConstants.HAS_DATA_ACCESS)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public List<FieldRecord> getPreviousInstance(@PathVariable Long instanceId, @PathVariable Long historyId, GridSettings settings) {
         List<PreviousRecord> previousRecordsList = entityService.getPreviousRecords(instanceId);

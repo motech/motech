@@ -1,6 +1,5 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -9,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
+
+import static org.motechproject.mds.constants.Constants.Packages;
 
 /**
  * The <code>AllEntityMappings</code> class is a repository class that operates on instances of
@@ -29,7 +30,7 @@ public class AllEntityMappings extends BaseMdsRepository {
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
 
-        String className = String.format("%s.%s", EntityBuilder.PACKAGE, simpleName);
+        String className = String.format("%s.%s", Packages.ENTITY, simpleName);
         Collection collection = (Collection) query.execute(className);
         List<EntityMapping> mappings = cast(EntityMapping.class, collection);
 

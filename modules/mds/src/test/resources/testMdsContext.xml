@@ -2,9 +2,27 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
     <import resource="classpath*:META-INF/motech/mdsContext.xml"/>
 
-    <bean class="org.eclipse.gemini.blueprint.mock.MockBundleContext"/>
+    <bean class="org.eclipse.gemini.blueprint.mock.MockBundleContext">
+        <property name="bundle">
+            <bean class="org.eclipse.gemini.blueprint.mock.MockBundle">
+                <constructor-arg value="org.motechproject.motech-dataservices"/>
+                <constructor-arg>
+                    <util:map map-class="java.util.Properties">
+                        <entry key="Bundle-Version" value="0.22.0.SNAPSHOT"/>
+                        <entry key="Bundle-SymbolicName" value="org.motechproject.motech-dataservices"/>
+                        <entry key="Bundle-Name" value="MOTECH Data Services"/>
+                    </util:map>
+                </constructor-arg>
+                <constructor-arg>
+                    <null/>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
 </beans>

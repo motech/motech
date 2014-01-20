@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.builder.EntityBuilder;
+import org.motechproject.mds.constants.Constants;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.dto.LookupDto;
@@ -16,9 +16,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 public class AllLookupMappingsIT extends BaseIT {
-    private static final String SAMPLE_CLASS = String.format("%s.Sample", EntityBuilder.PACKAGE);
+    private static final String SAMPLE_CLASS = String.format("%s.Sample", Packages.ENTITY);
     private static final String SAMPLE_LOOKUP = "testLookup";
 
     @Autowired

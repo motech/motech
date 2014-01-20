@@ -24,12 +24,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.motechproject.mds.builder.EntityBuilder.PACKAGE;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllEntityMappingsTest {
     private static final String SIMPLE_NAME = "Sample";
-    private static final String CLASS_NAME = String.format("%s.%s", PACKAGE, SIMPLE_NAME);
+    private static final String CLASS_NAME = String.format("%s.%s", Packages.ENTITY, SIMPLE_NAME);
 
     @Mock
     private PersistenceManagerFactory pmf;

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.jdo.metadata.JDOMetadata;
 import java.io.IOException;
 
+import static org.motechproject.mds.constants.Constants.Config;
+
 /**
  * The <code>MdsJDOEnhancer</code> class is a wrapper for
  * {@link org.datanucleus.api.jdo.JDOEnhancer} class. Its task is to add the missing information
@@ -19,11 +21,10 @@ import java.io.IOException;
  */
 @Component
 public class MdsJDOEnhancer extends JDOEnhancer {
-    public static final String DATANUCLEUS_PROPERTIES = "datanucleus.properties";
 
     @Autowired
     public MdsJDOEnhancer(SettingsFacade settingsFacade) {
-        super(settingsFacade.getProperties(DATANUCLEUS_PROPERTIES));
+        super(settingsFacade.getProperties(Config.DATANUCLEUS_FILE));
 
         setVerbose(true);
     }
