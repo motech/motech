@@ -1,7 +1,6 @@
 package org.motechproject.testing.utils;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
@@ -82,7 +81,7 @@ public class PollingHttpClient {
     }
 
     private static boolean responseNotFound(HttpResponse response) {
-        return response == null || response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND;
+        return response == null || response.getStatusLine().getStatusCode() > 400;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

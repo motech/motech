@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public class CouchDbManagerImpl implements CouchDbManager {
+    private static final Logger LOG = LoggerFactory.getLogger(CouchDbManagerImpl.class);
+
     private static final String DB_URL = "url";
     private static final String DB_USERNAME = "username";
     private static final String DB_PASSWORD = "password";
@@ -47,6 +49,9 @@ public class CouchDbManagerImpl implements CouchDbManager {
 
     private void configureDb() {
         final Properties mergedCouchdbProps = getCouchdbProperties();
+
+        LOG.info("Configuring couchDb connection to " + mergedCouchdbProps.get(DB_URL));
+
         httpClientFactoryBean.setProperties(mergedCouchdbProps);
         httpClientFactoryBean.setTestConnectionAtStartup(true);
         httpClientFactoryBean.setCaching(false);

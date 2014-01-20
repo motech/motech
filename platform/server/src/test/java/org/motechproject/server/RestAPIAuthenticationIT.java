@@ -37,6 +37,7 @@ public class RestAPIAuthenticationIT {
         PollingHttpClient httpClient = new PollingHttpClient(new DefaultHttpClient(), 120);
         httpClient.setCookieStore(new BasicCookieStore());
 
+        waitForTomcat(httpClient);
 
         HttpGet statusRequest =
                 new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server/web-api/status", HOST, PORT));
@@ -71,5 +72,11 @@ public class RestAPIAuthenticationIT {
 
         final HttpResponse response = httpClient.execute(loginPost);
         EntityUtils.consume(response.getEntity());
+    }
+
+    private void waitForTomcat(PollingHttpClient httpClient) throws IOException, InterruptedException {
+        final HttpGet waitGet = new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server", HOST, PORT));
+        HttpResponse httpResponse = httpClient.execute(waitGet);
+        System.out.println("Proceeding after getting a response: " + httpResponse);
     }
 }

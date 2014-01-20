@@ -7,12 +7,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
+import org.motechproject.testing.utils.PollingHttpClient;
 import org.motechproject.testing.utils.TestContext;
 
 import java.io.IOException;
@@ -29,8 +29,11 @@ public class StartupIT {
 
     @Test
     public void shouldStartServerAndMakeAllBundlesActive() throws IOException, JSONException, InterruptedException{
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        PollingHttpClient httpClient = new PollingHttpClient();
         httpClient.setCookieStore(new BasicCookieStore());
+
+        waitForTomcat(httpClient);
+
         login(httpClient);
         JSONArray bundles = null;
         int retryCount = 8;
@@ -73,7 +76,7 @@ public class StartupIT {
         return false;
     }
 
-    private JSONArray getBundleStatusFromServer(DefaultHttpClient httpClient) throws IOException, JSONException {
+    private JSONArray getBundleStatusFromServer(PollingHttpClient httpClient) throws IOException, JSONException, InterruptedException {
         JSONArray bundles;
         login(httpClient); /* BugCard #208 remove this once we fix web authentication issue, currently
          till security modules started in osgi env there is not authentication for admin console. */
@@ -84,17 +87,23 @@ public class StartupIT {
         return bundles;
     }
 
-    private void login(DefaultHttpClient defaultHttpClient) throws IOException {
+    private void login(PollingHttpClient httpClient) throws IOException, InterruptedException {
         final HttpPost loginPost = new HttpPost(String.format(
                 "http://%s:%d/motech-platform-server/module/server/motech-platform-server/j_spring_security_check", HOST, PORT));
 
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("j_username", "motech"));
         nvps.add(new BasicNameValuePair("j_password", "motech"));
 
         loginPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF8"));
 
-        final HttpResponse response = defaultHttpClient.execute(loginPost);
+        final HttpResponse response = httpClient.execute(loginPost);
         EntityUtils.consume(response.getEntity());
+    }
+
+    private void waitForTomcat(PollingHttpClient httpClient) throws IOException, InterruptedException {
+        final HttpGet waitGet = new HttpGet(String.format("http://%s:%d/motech-platform-server/module/server", HOST, PORT));
+        HttpResponse httpResponse = httpClient.execute(waitGet);
+        System.out.println("Proceeding after getting a response: " + httpResponse);
     }
 }
