@@ -12,8 +12,8 @@ import org.motechproject.mds.service.impl.internal.EntityServiceImpl;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MdsServiceAspectTest {
-    private MdsServiceAspect aspect = new MdsServiceAspect();
+public class ServiceAspectTest {
+    private ServiceAspect aspect = new ServiceAspect();
 
     @Mock
     private ProceedingJoinPoint joinPoint;

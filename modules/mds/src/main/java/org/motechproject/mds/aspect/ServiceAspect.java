@@ -1,7 +1,9 @@
 package org.motechproject.mds.aspect;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.service.BaseMdsService;
 import org.springframework.stereotype.Component;
 
@@ -15,17 +17,23 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-public class MdsServiceAspect extends BaseMdsAspect {
+public class ServiceAspect {
 
-    @Override
-    @Pointcut("within(org.motechproject.mds.service.impl..*)")
-    protected void isExecutable() {
-        // Left blank.
-        // Annotation does all the work.
+    @Around("within(org.motechproject.mds.service.impl..*)")
+    public Object execute(ProceedingJoinPoint joinPoint) throws Throwable { // NO CHECKSTYLE IllegalThrowsCheck
+        checkTarget(joinPoint.getTarget());
+        ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
+
+        try {
+            Thread.currentThread().setContextClassLoader(MDSClassLoader.PERSISTANCE);
+
+            return joinPoint.proceed();
+        } finally {
+            Thread.currentThread().setContextClassLoader(webAppClassLoader);
+        }
     }
 
-    @Override
-    protected void checkTarget(Object target) {
+    private void checkTarget(Object target) {
         if (!(target instanceof BaseMdsService)) {
             throw new IllegalStateException(
                     "The target class should extend " + BaseMdsService.class.getName()
