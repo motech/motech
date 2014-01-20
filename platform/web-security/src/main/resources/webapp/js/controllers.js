@@ -29,9 +29,9 @@
            $scope.isFormValid = function() {
                if($scope.user.generatePassword) {
                     if($scope.createUserForm.userName.$valid && $scope.createUserForm.email.$valid) {
-                        return false;
-                    } else {
                         return true;
+                    } else {
+                        return false;
                     }
                } else {
                     return $scope.createUserForm.$valid;
