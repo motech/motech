@@ -4,8 +4,8 @@ import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.builder.EntityBuilder;
+import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -14,10 +14,13 @@ import org.motechproject.mds.repository.AllLookupMappings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -25,6 +28,9 @@ import static org.junit.Assert.assertTrue;
 
 public class EntityServiceIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
+    private static final String SIMPLE_NAME_2 = "Test2";
+    private static final String SIMPLE_NAME_3 = "Test3";
+
 
     @Autowired
     private EntityService entityService;
@@ -68,7 +74,7 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void shouldSaveEntityWithGivenLookups() throws IOException {
-        List<LookupDto> lookups = Arrays.asList(new LookupDto("lookup1", true), new LookupDto("lookup2", true));
+        List<LookupDto> lookups = asList(new LookupDto("lookup1", true), new LookupDto("lookup2", true));
         EntityDto entityDto = new EntityDto();
         entityDto.setName("myEntity");
 
@@ -81,7 +87,7 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void shouldNotAddNewLookupWhenLookupWithGivenIdAlreadyExists() throws IOException {
-        List<LookupDto> lookups = Arrays.asList(new LookupDto("myLookup", true));
+        List<LookupDto> lookups = asList(new LookupDto("myLookup", true));
         EntityDto entityDto = new EntityDto();
         entityDto.setName("entity");
 
@@ -94,7 +100,7 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void shouldUpdateLookupWhenLookupWithGivenIdAlreadyExists() throws IOException {
-        List<LookupDto> lookups = Arrays.asList(new LookupDto("testLookup", true));
+        List<LookupDto> lookups = asList(new LookupDto("testLookup", true));
         EntityDto entityDto = new EntityDto();
         entityDto.setName("testEntity");
 
@@ -108,7 +114,7 @@ public class EntityServiceIT extends BaseIT {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionWhenAddingLookupToNonExistingEntity() throws Exception {
-        entityService.saveEntityLookups(9999L, Arrays.asList(new LookupDto()));
+        entityService.saveEntityLookups(9999L, asList(new LookupDto()));
     }
 
     @Test(expected = EntityReadOnlyException.class)
@@ -118,6 +124,21 @@ public class EntityServiceIT extends BaseIT {
         entity.setName("readOnlyEntity");
 
         entity = entityService.createEntity(entity);
-        entityService.saveEntityLookups(entity.getId(), Arrays.asList(new LookupDto()));
+        entityService.saveEntityLookups(entity.getId(), asList(new LookupDto()));
+    }
+
+    @Test
+    public void shouldRetrieveAllEntities() throws IOException {
+        EntityDto entityDto = new EntityDto();
+
+        entityDto.setName(SIMPLE_NAME_2);
+        entityService.createEntity(entityDto);
+
+        entityDto.setName(SIMPLE_NAME_3);
+        entityService.createEntity(entityDto);
+
+        List<EntityDto> result = entityService.listEntities();
+
+        assertEquals(asList(SIMPLE_NAME_2, SIMPLE_NAME_3), extract(result, on(EntityDto.class).getName()));
     }
 }

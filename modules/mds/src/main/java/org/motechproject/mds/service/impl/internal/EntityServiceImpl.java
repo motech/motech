@@ -118,21 +118,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public void deleteEntity(EntityDto entity) {
-        exampleData.removeEntity(entity);
         allEntityMappings.delete(entity.getId());
     }
 
     @Override
     @Transactional
     public List<EntityDto> listEntities() {
-        return exampleData.getEntities();
+        List<EntityDto> entityDtos = new ArrayList<>();
+
+        for (EntityMapping entity : allEntityMappings.getAllEntities()) {
+            entityDtos.add(entity.toDto());
+        }
+
+        return entityDtos;
     }
 
     @Override
     @Transactional
     public EntityDto getEntity(Long entityId) {
         EntityMapping entity = allEntityMappings.getEntityById(entityId);
-        return (entity == null) ? exampleData.getEntity(entityId) : entity.toDto();
+        return (entity == null) ? null : entity.toDto();
     }
 
     @Override

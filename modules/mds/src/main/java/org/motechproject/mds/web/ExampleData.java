@@ -59,7 +59,6 @@ import static org.motechproject.mds.dto.TypeDto.TIME;
  */
 @SuppressWarnings("PMD")
 public class ExampleData {
-    private List<EntityDto> entities = new ArrayList<>();
     private List<FieldDto> fields = new ArrayList<>();
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
     private List<AvailableTypeDto> types = new ArrayList<>();
@@ -99,16 +98,6 @@ public class ExampleData {
                 new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)
         );
 
-        entities.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
-
-        entities.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
-
-        entities.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
-
-        entities.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
-
-        entities.add(new EntityDto(9005L, "Appointments", "Appointments"));
-
         List<MetadataDto> exampleMetadata1 = new LinkedList<>();
         exampleMetadata1.add(new MetadataDto("key1", "value1"));
         exampleMetadata1.add(new MetadataDto("key2", "value2"));
@@ -121,9 +110,6 @@ public class ExampleData {
                 )
         );
 
-        entities.add(new EntityDto(9006L, "Call Log Item", "IVR"));
-
-        entities.add(new EntityDto(9007L, "Voucher"));
         fields.add(
                 new FieldDto(
                         2L, 9007L, STRING,
@@ -175,8 +161,6 @@ public class ExampleData {
                 )
         );
 
-        entities.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
-
         AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
         RestOptions exampleRestOptions = new RestOptions();
         List<String> fields = new LinkedList<>();
@@ -204,43 +188,6 @@ public class ExampleData {
         entityRecords = createEntityRecords();
         entityHistory = createEntityHistoryRecords();
         entityRecordsHistory = createEntityRecordsHistory();
-    }
-
-    public EntityDto getEntity(Long id) {
-        EntityDto found = null;
-
-        for (EntityDto entity : entities) {
-            if (entity.getId().equals(id)) {
-                found = entity;
-            }
-        }
-
-        return found;
-    }
-
-
-    public void addEntity(EntityDto entity) {
-        entities.add(entity);
-    }
-
-    public void removeEntity(EntityDto entity) {
-        entities.remove(entity);
-    }
-
-    public boolean hasEntityWithName(String name) {
-        EntityDto found = null;
-
-        for (EntityDto entity : entities) {
-            if (equalsIgnoreCase(entity.getName(), name)) {
-                found = entity;
-            }
-        }
-
-        return null != found;
-    }
-
-    public List<EntityDto> getEntities() {
-        return new ArrayList<>(entities);
     }
 
     public List<FieldDto> getFields(Long entityId) {
@@ -455,7 +402,7 @@ public class ExampleData {
         String typeClass = data.getValue(DraftData.TYPE_CLASS).toString();
         String displayName = data.getValue(DraftData.DISPLAY_NAME).toString();
         String name = data.getValue(DraftData.NAME).toString();
-        Long fieldId = getFields().size() + 1L;
+        Long fieldId = fields.size() + 1L;
 
         FieldBasicDto basic = new FieldBasicDto();
         basic.setName(name);
@@ -690,7 +637,6 @@ public class ExampleData {
         fieldsHistory.remove(entityId);
         advancedHistory.remove(entityId);
         securityHistory.remove(entityId);
-        getEntity(entityId).setDraft(false);
     }
 
     private <T> T clone(Class<T> clazz, Object obj) {
@@ -846,17 +792,6 @@ public class ExampleData {
         }
         return previousRecordList;
     }
-
-    private List<FieldDto> getFields() {
-        List<FieldDto> list = new ArrayList<>();
-
-        for (EntityDto entity : entities) {
-            list.addAll(getFields(entity.getId()));
-        }
-
-        return list;
-    }
-
 
 }
 //CHECKSTYLE:ON

@@ -3,9 +3,11 @@ package org.motechproject.mds.web.controller;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Spy;
-import org.motechproject.mds.domain.EntityMapping;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.motechproject.mds.TestData;
 import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -15,17 +17,15 @@ import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptions;
 import org.motechproject.mds.dto.SecuritySettingsDto;
-import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
-import org.motechproject.mds.repository.AllEntityMappings;
-import org.motechproject.mds.service.impl.internal.EntityServiceImpl;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.web.DraftData;
+import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 
-import javax.jdo.PersistenceManagerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +37,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -46,29 +48,53 @@ import static org.motechproject.mds.dto.TypeDto.STRING;
 
 public class EntityControllerTest {
 
-    @Spy
-    private EntityServiceImpl entityService = new EntityServiceImpl();
+    @Mock
+    private EntityService entityService;
 
     private EntityController controller;
 
-    @Mock
-    private AllEntityMappings allEntityMappings;
-
-    @Mock
-    private MdsJDOEnhancer enhancer;
-
-    @Mock
-    private PersistenceManagerFactory persistenceManagerFactory;
+    private final ExampleData exampleData = new ExampleData();
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        entityService.setAllEntityMappings(allEntityMappings);
-        entityService.setPersistenceManagerFactory(persistenceManagerFactory);
-
         controller = new EntityController();
         controller.setEntityService(entityService);
+
+        when(entityService.listEntities()).thenReturn(TestData.getEntities());
+
+        when(entityService.getEntity(anyLong())).thenAnswer(new Answer<EntityDto>() {
+            @Override
+            public EntityDto answer(InvocationOnMock invocation) throws Throwable {
+                return TestData.getEntity((Long) invocation.getArguments()[0]);
+            }
+        });
+        when(entityService.getFields(anyLong())).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return exampleData.getFields((Long) invocation.getArguments()[0]);
+            }
+        });
+        when(entityService.getSecuritySettings(anyLong())).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return exampleData.getSecurity((Long) invocation.getArguments()[0]);
+            }
+        });
+        when(entityService.findFieldByName(anyLong(), anyString())).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return exampleData.findFieldByName((Long) invocation.getArguments()[0],
+                        (String) invocation.getArguments()[1]);
+            }
+        });
+        when(entityService.getAdvancedSettings(anyLong())).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return exampleData.getAdvanced((Long) invocation.getArguments()[0]);
+            }
+        });
     }
 
     @Test
@@ -103,19 +129,10 @@ public class EntityControllerTest {
     public void shouldDeleteEntity() throws Exception {
         controller.deleteEntity(9007L);
 
-        List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto(9005L, "Appointments", "Appointments"));
-        expected.add(new EntityDto(9006L, "Call Log Item", "IVR"));
-        expected.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
-        expected.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
+        ArgumentCaptor<EntityDto> captor = ArgumentCaptor.forClass(EntityDto.class);
+        verify(entityService).deleteEntity(captor.capture());
 
-        SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
-
-        assertEquals(expected, result.getResults());
-        assertFalse(result.isMore());
+        assertEquals(Long.valueOf(9007), captor.getValue().getId());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -167,14 +184,7 @@ public class EntityControllerTest {
         // change
         controller.draft(9007L, data);
 
-        entity = controller.getEntity(9007L);
-        fields = controller.getFields(9007L);
-        fieldDto = findFieldById(fields, 2L);
-
-        // after change
-        assertTrue(entity.isDraft());
-        assertNotNull(fieldDto);
-        assertEquals("test", fieldDto.getBasic().getDisplayName());
+        verify(entityService).saveDraftEntityChanges(9007L, data);
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -197,10 +207,10 @@ public class EntityControllerTest {
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
 
         controller.draft(9007L, data);
-        assertTrue(controller.getEntity(9007L).isDraft());
+        verify(entityService).saveDraftEntityChanges(9007L, data);
 
         controller.abandonChanges(9007L);
-        assertFalse(controller.getEntity(9007L).isDraft());
+        verify(entityService).abandonChanges(9007L);
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -217,8 +227,6 @@ public class EntityControllerTest {
         data.getValues().put(DraftData.PATH, "basic.displayName");
         data.getValues().put(DraftData.FIELD_ID, "2");
         data.getValues().put(DraftData.VALUE, Arrays.asList("test"));
-
-        when(allEntityMappings.getEntityById(9007L)).thenReturn(new EntityMapping("cl", null, null));
 
         controller.draft(9007L, data);
         assertTrue(controller.getEntity(9007L).isDraft());

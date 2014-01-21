@@ -396,7 +396,7 @@
                         <configuration>
                             <autocommit>true</autocommit>
                             <srcFiles>
-                                <srcFile>src/main/resources/schema.sql</srcFile>
+                                <srcFile>src/main/resources/sql/schema.sql</srcFile>
                             </srcFiles>
                         </configuration>
                     </execution>
@@ -450,7 +450,7 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <srcFiles>
-                                        <srcFile>src/main/resources/schema.sql</srcFile>
+                                        <srcFile>src/main/resources/sql/schema.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>

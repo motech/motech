@@ -1,15 +1,12 @@
 package org.motechproject.mds.web.matcher;
 
 import org.junit.Test;
+import org.motechproject.mds.TestData;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.web.ExampleData;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class EntityMatcherTest {
-    private static final List<EntityDto> ENTITIES = new ExampleData().getEntities();
 
     @Test
     public void shouldMatchAllEntitiesIfTermIsBlank() throws Exception {
@@ -41,7 +38,7 @@ public class EntityMatcherTest {
         int falseCout = 0;
         int trueCount = 0;
 
-        for (EntityDto entity : ENTITIES) {
+        for (EntityDto entity : TestData.getEntities()) {
             if (matcher.evaluate(entity)) {
                 ++trueCount;
             } else {

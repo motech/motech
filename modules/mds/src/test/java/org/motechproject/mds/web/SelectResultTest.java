@@ -1,6 +1,7 @@
 package org.motechproject.mds.web;
 
 import org.junit.Test;
+import org.motechproject.mds.TestData;
 import org.motechproject.mds.dto.EntityDto;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SelectResultTest {
-    private static final List<EntityDto> ENTITIES = new ExampleData().getEntities();
+    private static final List<EntityDto> ENTITIES = TestData.getEntities();
 
     @Test
     public void shouldReturnCorrectNumberOfRecords() throws Exception {

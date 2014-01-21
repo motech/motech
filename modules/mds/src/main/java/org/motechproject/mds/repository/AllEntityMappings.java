@@ -58,4 +58,10 @@ public class AllEntityMappings extends BaseMdsRepository {
 
         return (EntityMapping) query.execute(id);
     }
+
+    public List<EntityMapping> getAllEntities() {
+        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        Collection collection = (Collection) query.execute("*");
+        return cast(EntityMapping.class, collection);
+    }
 }
