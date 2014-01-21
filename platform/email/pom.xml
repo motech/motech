@@ -4,11 +4,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.23-SNAPSHOT</version>
+        <version>0.22-SNAPSHOT</version>
         <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>0.23-SNAPSHOT</version>
+    <version>0.22-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>MOTECH Email bundle</description>
     <groupId>org.motechproject</groupId>
