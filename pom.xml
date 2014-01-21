@@ -1434,7 +1434,8 @@
                         <phase>verify</phase>
                         <configuration>
                             <rules>
-                                <NoPackageCyclesRule implementation="PackageCycles" />
+                                <NoPackageCyclesRule
+                                        implementation="PackageCycles" />
                             </rules>
                             <skip>${enforcer.skip}</skip>
                         </configuration>
@@ -1790,6 +1791,6 @@
         <connection>${scm.connection}</connection>
         <developerConnection>${scm.developerConnection}</developerConnection>
         <url>${scm.url}</url>
-        <tag>0.22.X</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
