@@ -124,8 +124,8 @@ public class ExampleData {
                         new FieldBasicDto("Drug Regimen", "regimen"),
                         null, null,
                         Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
-                                LIST, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, null),
-                                new SettingDto("mds.form.label.allowMultipleSelections", false, null))
+                                LIST, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
+                                new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN))
                 )
         );
 
