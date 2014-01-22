@@ -68,6 +68,9 @@ label {
 a {
     color: #046FD3;
 }
+a:active, a:hover, a:focus {
+    outline: 0 none;
+}
 
 .bodywrap {
     min-height: 100%;
@@ -345,7 +348,7 @@ form.inside {
 }
 
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-    border-color: #D4E1F9;
+    border-color: #0098EA #D4E1F9 #F6FBFF;
     border-bottom: 1px solid #F6FBFF;
 }
 
@@ -353,9 +356,8 @@ form.inside {
     line-height: 14px;
 }
 
-.nav-tabs > .active > a,
-.nav-tabs > li.active > a {
-   // border: 1px solid #0088cc;
+.nav.nav-stacked > li.active > a {
+    border-top: 1px solid #0098EA;
 }
 
 .nav > li > a:hover {
@@ -365,7 +367,7 @@ form.inside {
 .tab-content {
     overflow:visible;
     padding: 0;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
 hr {
@@ -455,9 +457,16 @@ select {
     background: -ms-linear-gradient(top,  #D3E9FE 0%,#BFDCF4 100%);
     background: linear-gradient(to bottom,  #D3E9FE 0%,#BFDCF4 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D3E9FE', endColorstr='#BFDCF4',GradientType=0 );
-    -webkit-box-shadow: 0 0 4px #bec9de;
-       -moz-box-shadow: 0 0 4px #bec9de;
-            box-shadow: 0 0 4px #bec9de;
+}
+
+.section-header {
+    border-radius: 1px;
+    line-height: 20px;
+    font-size: 15px;
+    padding: 5px 10px;
+    color: #224477;
+    background: #D3E9FE;
+    cursor: pointer;
 }
 
 .panel-header {
@@ -1186,12 +1195,13 @@ a, li a {
     border: 1px solid #F6FBFF;
     background: #F6FBFF;
     color:#05346D;
-    border-top: 1px solid #F6FBFF;
+    border-top: 1px solid #0098EA;
 }
 .nav-tabs > li > a:hover,
 .nav-tabs > li > a:focus {
     background: #F6FBFF;
     color: #0098EA;
+    border-top: 1px solid #0098EA;
 }
 .custom .nav-tabs.nav-stacked {
     margin: 0;

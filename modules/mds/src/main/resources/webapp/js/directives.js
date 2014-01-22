@@ -19,13 +19,13 @@
                     angular.element(this).on({
                         'show.bs.collapse': function () {
                             elem.find('i')
-                                .removeClass('icon-chevron-right')
-                                .addClass('icon-chevron-down');
+                                .removeClass('icon-caret-right')
+                                .addClass('icon-caret-down');
                         },
                         'hide.bs.collapse': function () {
                             elem.find('i')
-                                .removeClass('icon-chevron-down')
-                                .addClass('icon-chevron-right');
+                                .removeClass('icon-caret-down')
+                                .addClass('icon-caret-right');
                         }
                     });
 
@@ -40,18 +40,18 @@
             restrict: 'A',
             link: function (scope, element) {
                 var elem = angular.element(element),
-                    target = elem.find(".accordion-content");
+                    target = elem.find(".panel-collapse");
 
                 target.on({
-                    show: function () {
-                        elem.find('.accordion-icon')
-                            .removeClass('icon-chevron-right')
-                            .addClass('icon-chevron-down');
+                    'show.bs.collapse': function () {
+                        elem.find('.panel-icon')
+                            .removeClass('icon-caret-right')
+                            .addClass('icon-caret-down');
                     },
-                    hide: function () {
-                        elem.find('.accordion-icon')
-                            .removeClass('icon-chevron-down')
-                            .addClass('icon-chevron-right');
+                    'hide.bs.collapse': function () {
+                        elem.find('.panel-icon')
+                            .removeClass('icon-caret-down')
+                            .addClass('icon-caret-right');
                     }
                 });
             }

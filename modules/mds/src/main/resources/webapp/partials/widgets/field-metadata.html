@@ -1,34 +1,30 @@
-<form class="form-horizontal inside">
-    <div class="col-sm-12">
-        <span ng-repeat="meta in field.metadata">
-            <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(field, meta.key)}">
-                <div class="metadata-control form-inline">
-                    <label class="offset-2 control-label metadata-control-label">
-                        {{msg('mds.form.label.key')}}
-                    </label>
-                    <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
-                    <div class="metadata-error">
-                        <span class="help-inline" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
-                            {{msg('mds.error.duplicateMetadataKeys')}}
-                        </span>
-                    </div>
-                </div>
-                <div class="metadata-control form-inline">
-                    <label class="offset-2 control-label metadata-control-label">
-                        {{msg('mds.form.label.value')}}
-                    </label>
-                    <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
-                    <a ui-if="!selectedEntity.readOnly" ng-click="removeMetadata(field, $index)">
-                        <i class="icon-remove icon-large"></i>
-                    </a>
-                </div>
+<form class=" ">
+    <div class="form-inline clearfix form-group" ng-repeat="meta in field.metadata">
+        <div class="form-group" ng-class="{'has-error': !uniqueMetadataKey(field, meta.key)}">
+            <label class="control-label">
+                {{msg('mds.form.label.key')}}
+            </label>
+            <input class="form-control input-large-fluid" type="text" ng-model="meta.key" mds-auto-save-field-change mds-path="metadata.{{$index}}.key" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+            <div class="text-danger">
+                <span class="help-block" ng-class="{hide: uniqueMetadataKey(field, meta.key)}">
+                    {{msg('mds.error.duplicateMetadataKeys')}}
+                </span>
             </div>
-        </span>
-        <div class="metadata-control-save" ui-if="!selectedEntity.readOnly">
-            <button class="btn btn-primary" ng-click="addMetadata(field)">
-                {{msg('mds.btn.newMetadata')}}
-            </button>
         </div>
+        <div class="form-group">
+            <label class="offset-2 control-label">
+                {{msg('mds.form.label.value')}}
+            </label>
+            <input class="form-control input-large-fluid" type="text" ng-model="meta.value" mds-auto-save-field-change mds-path="metadata.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+            <a class="btn btn-danger" ui-if="!selectedEntity.readOnly" ng-click="removeMetadata(field, $index)">
+                <i class="icon-trash icon-large"></i>
+            </a>
+        </div>
+    </div>
+    <div class="form-group" ui-if="!selectedEntity.readOnly">
+        <button class="btn btn-primary" ng-click="addMetadata(field)">
+            {{msg('mds.btn.newMetadata')}}
+        </button>
     </div>
 </form>
 

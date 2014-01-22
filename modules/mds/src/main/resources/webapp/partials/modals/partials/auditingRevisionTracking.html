@@ -1,26 +1,30 @@
 <div>
-    <div class="accordion" mds-header-accordion>
-        <div class="inbox-header" data-toggle="collapse" data-target="#audit-fields">
-            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.legend.auditFields')}}
+    <div class="panel panel-default" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#audit-fields">
+            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.legend.auditFields')}}
         </div>
-        <div class="accordion-content collapse in" id="audit-fields">
-            <form>
-                <label class="checkbox inline" ng-repeat="field in fields">
-                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
-                </label>
-            </form>
+        <div class="panel-collapse collapse in" id="audit-fields">
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <label class="checkbox" ng-repeat="field in fields">
+                        <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
+                    </label>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="accordion" mds-header-accordion>
-        <div class="inbox-header" data-toggle="collapse" data-target="#audit-actions">
-            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.legend.auditFields')}}
+    <div class="panel panel-default" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#audit-actions">
+            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.legend.auditFields')}}
         </div>
-        <div class="accordion-content collapse in" id="audit-actions">
-            <form>
-                <label class="checkbox inline" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
-                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
-                </label>
-            </form>
+        <div class="panel-collapse collapse in" id="audit-actions">
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <label class="checkbox" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
+                        <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
+                    </label>
+                </form>
+            </div>
         </div>
     </div>
 </div>

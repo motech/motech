@@ -1,13 +1,13 @@
 <div>
-    <div class="accordion" mds-header-accordion>
-        <div class="inbox-header" data-toggle="collapse" data-target="#browsing-displayed">
-            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.advanced.dataBrowsing.displayFieldsTitle')}}
+    <div class="panel panel-default" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#browsing-displayed">
+            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.advanced.dataBrowsing.displayFieldsTitle')}}
         </div>
-        <div class="accordion-content collapse in" id="browsing-displayed">
-            <div class="collapse-body">
-                <div id="availableFieldsContainer" class="outer-container">
-                    <h4>{{msg('mds.advanced.dataBrowsing.availableFields')}}</h4>
-                    <div class="scroll-container">
+        <div class="panel-collapse collapse in" id="browsing-displayed">
+            <div class="panel-body display-fields">
+                <div id="availableFieldsContainer" class="outer-container panel panel-default">
+                    <div class="panel-heading">{{msg('mds.advanced.dataBrowsing.availableFields')}}</div>
+                    <div class="panel-body scroll-container">
                         <div class="container-space" tabindex="0" connected-list-source="browsingAvailable" connect-with="browsing" droppable="true">
                             <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-source-item condition="!selectedEntity.readOnly" ng-repeat="field in browsingAvailable">
                                 {{field.basic.displayName}}
@@ -18,37 +18,36 @@
 
                 <div class="buttons-container">
                     <div class="btn-group-vertical" ng-show="!selectedEntity.readOnly">
-                        <button connected-list-btn-from connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveLeft()">
+                        <button connected-list-btn-from connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn btn-default" ng-disabled="!canMoveLeft()">
                             <span class="icon-chevron-left" />
                         </button>
-                        <button connected-list-btn-from-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn"  ng-disabled="!canMoveAllLeft()">
+                        <button connected-list-btn-from-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn btn-default"  ng-disabled="!canMoveAllLeft()">
                             <span class="icon-chevron-left" /><span class="icon-chevron-left" />
                         </button>
                     </div>
                     <br/><br/>
                     <div class="btn-group-vertical" ng-show="!selectedEntity.readOnly">
-                        <button connected-list-btn-to-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveAllRight()">
+                        <button connected-list-btn-to-all connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn btn-default" ng-disabled="!canMoveAllRight()">
                             <span class="icon-chevron-right" /><span class="icon-chevron-right" />
                         </button>
-                        <button connected-list-btn-to connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn" ng-disabled="!canMoveRight()">
+                        <button connected-list-btn-to connect-with="browsing" mds-path="browsing.$setDisplayedFields" class="btn btn-default" ng-disabled="!canMoveRight()">
                             <span class="icon-chevron-right" />
                         </button>
                     </div>
                 </div>
 
-                <div id="displayFieldsContainer" class="outer-container">
-                    <h4>
-                        {{msg('mds.advanced.dataBrowsing.displayFields')}}
+                <div id="displayFieldsContainer" class="outer-container panel panel-default">
+                    <div class="panel-heading">{{msg('mds.advanced.dataBrowsing.displayFields')}}
                         <div class="btn-group updown-buttons" ng-show="!selectedEntity.readOnly">
-                            <button ng-click="itemsUp()" class="btn btn-xs button-flat" ng-disabled="!canMoveUp()">
+                            <button ng-click="itemsUp()" class="btn btn-default btn-xs button-flat" ng-disabled="!canMoveUp()">
                                 <span class="icon-chevron-up"></span>
                             </button>
-                            <button ng-click="itemsDown()" class="btn btn-xs button-flat" ng-disabled="!canMoveDown()">
+                            <button ng-click="itemsDown()" class="btn btn-default btn-xs button-flat" ng-disabled="!canMoveDown()">
                                 <span class="icon-chevron-down"></span>
                             </button>
                         </div>
-                    </h4>
-                    <div class="scroll-container">
+                    </div>
+                    <div class="panel-body scroll-container">
                         <div class="container-space" tabindex="0" connected-list-target="browsingDisplayed" connect-with="browsing" droppable="true" on-content-change="onDisplayedChange">
                             <div class="container-item" connect-with="browsing" item-index="{{$index}}" connected-list-target-item condition="!selectedEntity.readOnly"  ng-repeat="field in browsingDisplayed">
                                 {{field.basic.displayName}}
@@ -60,20 +59,20 @@
         </div>
     </div>
 
-    <div class="accordion" mds-header-accordion>
-        <div class="inbox-header" data-toggle="collapse" data-target="#browsing-filters">
-            <i class="accordion-icon icon-chevron-down icon-large"></i>{{msg('mds.advanced.dataBrowsing.filtersTitle')}}
+    <div class="panel panel-default" mds-header-accordion>
+        <div class="panel-heading" data-toggle="collapse" data-target="#browsing-filters">
+            <i class="panel-icon icon-caret-down icon-large icon-fixed-width"></i>{{msg('mds.advanced.dataBrowsing.filtersTitle')}}
         </div>
 
-        <div id="browsing-filters" class="accordion-content collapse in">
-            <form>
-                <label class="checkbox inline" ng-repeat="field in fields | filter:isFilterable">
-                    <input type="checkbox" ng-disabled="selectedEntity.readOnly" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
-                </label>
-            </form>
+        <div id="browsing-filters" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <label class="checkbox" ng-repeat="field in fields | filter:isFilterable">
+                        <input type="checkbox" ng-disabled="selectedEntity.readOnly" init-filterable ng-model="checked" ng-change="onFilterableChange(field)"/> {{field.basic.displayName}}
+                    </label>
+                </form>
+            </div>
         </div>
-
     </div>
-
 
 </div>

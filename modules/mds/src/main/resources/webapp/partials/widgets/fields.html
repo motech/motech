@@ -1,116 +1,117 @@
-<table id="entityFieldsTable" class="table table-condensed no-border">
-    <thead>
-    <tr>
-        <th></th>
-        <th>{{msg('mds.table.schema.head.displayName')}}</th>
-        <th>{{msg('mds.table.schema.head.name')}}</th>
-        <th>{{msg('mds.table.schema.head.type')}}</th>
-        <th ui-if="!selectedEntity.readOnly"></th>
-    </tr>
-    </thead>
-    <tbody ng-repeat="field in fields">
-    <tr>
-        <td>
-            <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}" mds-expand-accordion>
-                <i class="icon-chevron-right icon-large"></i>
-            </a>
-            <i class="icon-warning-sign text-danger" ng-show="!validateField(field)"></i>
-        </td>
-        <td>
-            <span ui-if="selectedEntity.readOnly">{{field.basic.displayName}}</span>
-            <div mds-editable ui-if="!selectedEntity.readOnly">
-                <span>{{field.basic.displayName}}</span>
-                <input style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
-            </div>
-        </td>
-        <td>
-            <span ui-if="selectedEntity.readOnly">{{field.basic.name}}</span>
-            <div mds-editable ui-if="!selectedEntity.readOnly">
-                <span>{{field.basic.name}}</span>
-                <input style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
-            </div>
-        </td>
-        <td>{{msg(field.type.displayName)}}</td>
-        <td ui-if="!selectedEntity.readOnly">
-            <a ng-click="removeField(field)">
-                <i class="icon-remove icon-large"></i>
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td colspan="4">
-            <div class="collapse" id="field-tabs-{{$index}}">
-                <ul class="nav nav-tabs" id="myTab">
-                    <li class="active">
-                        <a href="#basic-{{$index}}" data-toggle="tab">
-                            {{msg('mds.tab.basic')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#metadata-{{$index}}" data-toggle="tab">
-                            {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
-                        </a>
-                    </li>
-                    <li ui-if="field.validation">
-                        <a href="#validation-{{$index}}" data-toggle="tab">
-                            {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
-                        </a>
-                    </li>
-                    <li ui-if="field.settings.length > 0">
-                        <a href="#settings-{{$index}}" data-toggle="tab">
-                            {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
-                        </a>
-                    </li>
-                </ul>
+<div id="entityFieldsLists" class="">
+    <div class="panel panel-default">
+        <div class="panel-heading no-bg top-header clearfix">
+            <div class="col-sm-1 row"></div>
+            <div class="col-sm-3">{{msg('mds.table.schema.head.displayName')}}</div>
+            <div class="col-sm-3">{{msg('mds.table.schema.head.name')}}</div>
+            <div class="col-sm-4">{{msg('mds.table.schema.head.type')}}</div>
+            <div class="col-sm-1" ui-if="!selectedEntity.readOnly"></div>
+        </div>
+    </div>
 
-                <div class="tab-content">
-                    <div class="tab-pane active" id="basic-{{$index}}">
-                        <div ng-include="'../mds/resources/partials/widgets/field-basic.html'"></div>
-                    </div>
-                    <div class="tab-pane" id="metadata-{{$index}}">
-                        <div ng-include="'../mds/resources/partials/widgets/field-metadata.html'"></div>
-                    </div>
-                    <div class="tab-pane" id="validation-{{$index}}" ui-if="field.validation">
-                        <div ng-include="'../mds/resources/partials/widgets/field-validation.html'"></div>
-                    </div>
-                    <div class="tab-pane" id="settings-{{$index}}" ui-if="field.settings.length > 0">
-                        <div ng-include="'../mds/resources/partials/widgets/field-settings.html'"></div>
+    <div class="panel panel-default" ng-repeat="field in fields">
+        <div class="panel-heading clearfix">
+            <div class="col-sm-1 row">
+                <a id="show-field-details-{{$index}}" data-toggle="collapse" data-target="#field-tabs-{{$index}}" mds-expand-accordion>
+                    <i class="icon-caret-right icon-large icon-fixed-width"></i>
+                </a>
+                <i class="icon-warning-sign text-danger" ng-show="!validateField(field)"></i>
+            </div>
+            <div class="col-sm-3">
+                <span ui-if="selectedEntity.readOnly">{{field.basic.displayName}}</span>
+                <div mds-editable ui-if="!selectedEntity.readOnly">
+                    <span>{{field.basic.displayName}}</span>
+                    <input class="form-control" style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <span ui-if="selectedEntity.readOnly">{{field.basic.name}}</span>
+                <div mds-editable ui-if="!selectedEntity.readOnly">
+                    <span>{{field.basic.name}}</span>
+                    <input class="form-control" style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
+                </div>
+            </div>
+            <div class="col-sm-4">{{msg(field.type.displayName)}}</div>
+            <div class="col-sm-1" ui-if="!selectedEntity.readOnly">
+                <a class="btn btn-sm btn-danger" ng-click="removeField(field)">
+                    <i class="icon-trash icon-large"></i>
+                </a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="clearfix">
+                <div class="collapse" id="field-tabs-{{$index}}">
+                    <ul class="nav nav-tabs" id="myTab">
+                        <li class="active">
+                            <a href="#basic-{{$index}}" data-toggle="tab">
+                                {{msg('mds.tab.basic')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#metadata-{{$index}}" data-toggle="tab">
+                                {{msg('mds.tab.metadata')}} <i class="icon-warning-sign" ng-show="!validateFieldBasic(field)"></i>
+                            </a>
+                        </li>
+                        <li ui-if="field.validation">
+                            <a href="#validation-{{$index}}" data-toggle="tab">
+                                {{msg('mds.tab.validation')}} <i class="icon-warning-sign" ng-show="!validateFieldValidation(field)"></i>
+                            </a>
+                        </li>
+                        <li ui-if="field.settings.length > 0">
+                            <a href="#settings-{{$index}}" data-toggle="tab">
+                                {{msg('mds.tab.settings')}} <i class="icon-warning-sign" ng-show="!validateFieldSettings(field)"></i>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content inside">
+                        <div class="tab-pane active" id="basic-{{$index}}">
+                            <div ng-include="'../mds/resources/partials/widgets/field-basic.html'"></div>
+                        </div>
+                        <div class="tab-pane" id="metadata-{{$index}}">
+                            <div ng-include="'../mds/resources/partials/widgets/field-metadata.html'"></div>
+                        </div>
+                        <div class="tab-pane" id="validation-{{$index}}" ui-if="field.validation">
+                            <div ng-include="'../mds/resources/partials/widgets/field-validation.html'"></div>
+                        </div>
+                        <div class="tab-pane" id="settings-{{$index}}" ui-if="field.settings.length > 0">
+                            <div ng-include="'../mds/resources/partials/widgets/field-settings.html'"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </td>
-    </tr>
-    </tbody>
-    <tfoot ui-if="!selectedEntity.readOnly">
-    <tr>
-        <td></td>
-        <td id="new-field-displayName" class="form-group" ng-class="{'has-error': tryToCreate && !newField.displayName}">
-            <input class="form-control input-auto form-inline" type="text" ng-model="newField.displayName" mds-camel-case="new">
-            <span class="help-block" ng-class="{hide: !tryToCreate || newField.displayName}">
-                {{msg('mds.error.fieldIsRequired')}}
-            </span>
-        </td>
-        <td id="new-field-name" class="form-group" ng-class="{'has-error': tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
-            <input class="form-control input-auto form-inline" type="text" ng-model="newField.name" mds-camel-case="new">
-            <span class="help-block" ng-class="{hide: !tryToCreate || newField.name}">
-                {{msg('mds.error.fieldIsRequired')}}
-            </span>
-            <span class="help-block" ng-class="{hide: !tryToCreate || findFieldsByName(newField.name).length == 0}">
-                {{msg('mds.error.duplicateNames')}}
-            </span>
-        </td>
-        <td id="new-field-type" class="form-group" ng-class="{'has-error': tryToCreate && !newField.type}">
-            <input class="form-inline input-medium-fluid" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField" class="select-field-type"/>
-            <span class="help-block" ng-class="{hide: !tryToCreate || newField.type}">
-                {{msg('mds.error.fieldIsRequired')}}
-            </span>
-        </td>
-        <td>
-            <a ng-click="createField()">
-                <i class="icon-plus icon-large"></i>
-            </a>
-        </td>
-    </tr>
-    </tfoot>
-</table>
+        </div>
+    </div>
+
+    <div class="panel panel-default new-field" ui-if="!selectedEntity.readOnly">
+        <div class="panel-heading clearfix">
+            <div class="col-sm-1 row"></div>
+            <div class="col-sm-3" id="new-field-displayName" ng-class="{'has-error': tryToCreate && !newField.displayName}">
+                <input class="form-control input-auto form-inline" type="text" ng-model="newField.displayName" mds-camel-case="new">
+                <span class="help-block" ng-class="{hide: !tryToCreate || newField.displayName}">
+                    {{msg('mds.error.fieldIsRequired')}}
+                </span>
+            </div>
+            <div class="col-sm-3" id="new-field-name" ng-class="{'has-error': tryToCreate && (!newField.name || findFieldsByName(newField.name).length > 0)}">
+                <input class="form-control input-auto form-inline" type="text" ng-model="newField.name" mds-camel-case="new">
+                <span class="help-block" ng-class="{hide: !tryToCreate || newField.name}">
+                    {{msg('mds.error.fieldIsRequired')}}
+                </span>
+                <span class="help-block" ng-class="{hide: !tryToCreate || findFieldsByName(newField.name).length == 0}">
+                    {{msg('mds.error.duplicateNames')}}
+                </span>
+            </div>
+            <div class="col-sm-4" id="new-field-type"  ng-class="{'has-error': tryToCreate && !newField.type}">
+                <input class="form-inline input-medium-fluid" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField" class="select-field-type"/>
+                <span class="help-block" ng-class="{hide: !tryToCreate || newField.type}">
+                    {{msg('mds.error.fieldIsRequired')}}
+                </span>
+            </div>
+            <div class="col-sm-1">
+                <a class="btn btn-sm btn-success" ng-click="createField()">
+                    <i class="icon-plus icon-large"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

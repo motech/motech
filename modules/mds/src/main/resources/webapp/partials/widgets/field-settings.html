@@ -1,13 +1,13 @@
-<form class="form-horizontal inside">
+<form class="form-horizontal">
     <div ng-repeat="setting in field.settings" class="form-group" ng-class="{'has-error': !checkOptions(setting)}">
-        <label class="control-label">
+        <label class="col-md-2 col-sm-3 control-label">
             {{msg(setting.name)}}<span class="text-danger" ui-if="hasOption(setting, 'REQUIRE')">*</span>
         </label>
-        <div class="form-inline">
-            <textarea ui-if="hasType(setting, 'LIST')" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly" mds-split-array></textarea>
-            <input ui-if="hasType(setting, 'BOOLEAN')" type="checkbox" ng-model="setting.value" mds-auto-save-field-change="click" mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
-            <input ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
-            <input ui-if="hasType(setting, 'DOUBLE')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+        <div class="col-md-8 col-sm-7 form-inline">
+            <textarea class="form-control input-large-fluid" ui-if="hasType(setting, 'LIST')" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly" mds-split-array></textarea>
+            <div class="checkbox"><input ui-if="hasType(setting, 'BOOLEAN')" type="checkbox" ng-model="setting.value" mds-auto-save-field-change="click" mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly"></div>
+            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'INTEGER')" type="number" step="1" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+            <input class="form-control input-large-fluid" ui-if="hasType(setting, 'DOUBLE')" type="number" step="any" ng-model="setting.value" mds-auto-save-field-change mds-path="settings.{{$index}}.value" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
 
             <span class="help-inline" ng-class="{hide: !hasOption(setting, 'REQUIRE') || hasValue(setting)}">
                 {{msg('mds.error.fieldIsRequired')}}

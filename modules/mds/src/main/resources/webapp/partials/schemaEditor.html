@@ -1,6 +1,6 @@
 <div class="">
     <div class="row">
-        <div class="form-inline inside margin-before2">
+        <div class="form-inline inside margin-before">
             <div class="form-group">
                 <label class="control-label">{{msg('mds.entities')}}:</label>
             </div>
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="row margin-before2" ui-if="selectedEntity">
+    <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
         <div class="inside" ui-if="!selectedEntity.readOnly">
             <button class="btn btn-danger" ng-disabled="!selectedEntity.draft" ng-click="abandonChanges()">

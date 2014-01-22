@@ -1,4 +1,4 @@
-<form class="form-horizontal inside">
+<form class="form-horizontal">
     <div class="form-group" ng-class="{'has-error': !field.basic.displayName}">
         <label class="col-md-2 col-sm-3 control-label">
             {{msg('mds.form.label.displayName')}}<span class="text-danger">*</span>
@@ -29,7 +29,9 @@
             {{msg('mds.form.label.required')}}
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+            <div class="checkbox">
+                <input class="" id="field-required-{{$index}}" type="checkbox" ng-model="field.basic.required" mds-auto-save-field-change="click" mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+            </div>
         </div>
     </div>
     <div class="form-group">
