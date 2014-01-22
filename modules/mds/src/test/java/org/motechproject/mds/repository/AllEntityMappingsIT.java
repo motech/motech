@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.constants.Constants;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

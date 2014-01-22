@@ -1,7 +1,6 @@
 package org.motechproject.mds.builder;
 
 import org.junit.Test;
-import org.motechproject.mds.constants.Constants;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
