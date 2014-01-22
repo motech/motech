@@ -20,6 +20,8 @@ public class PollingHttpClient {
     private DefaultHttpClient httpClient;
     private int maxWaitPeriodInMilliSeconds;
 
+    public static final int ERROR_NOT_EXPECTED = -1;
+
     public PollingHttpClient() {
         this(new DefaultHttpClient(), 60);
     }
@@ -34,25 +36,33 @@ public class PollingHttpClient {
     }
 
     public HttpResponse execute(HttpUriRequest request) throws IOException, InterruptedException {
-        return execute(request, new DefaultResponseHandler());
+        return execute(request, new DefaultResponseHandler(), ERROR_NOT_EXPECTED);
     }
 
+    public HttpResponse execute(HttpUriRequest request, int expectedErrorCode) throws IOException, InterruptedException {
+        return execute(request, new DefaultResponseHandler(), expectedErrorCode);
+    }
 
     public <T> T get(String uri, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
-        return execute(new HttpGet(uri), responseHandler);
+        return execute(new HttpGet(uri), responseHandler, ERROR_NOT_EXPECTED);
     }
-
 
     public <T> T execute(HttpUriRequest request, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
-        return executeOnUriAvailability(request, responseHandler);
+        return execute(request, responseHandler, ERROR_NOT_EXPECTED);
     }
 
-    private <T> T executeOnUriAvailability(HttpUriRequest httpUriRequest, final ResponseHandler<? extends T> responseHandler) throws IOException, InterruptedException {
-        waitForUriAvailability(httpUriRequest);
+    public <T> T execute(HttpUriRequest request, final ResponseHandler<? extends T> responseHandler,
+                         int expectedErrorCode) throws IOException, InterruptedException {
+        return executeOnUriAvailability(request, responseHandler, expectedErrorCode);
+    }
+
+    private <T> T executeOnUriAvailability(HttpUriRequest httpUriRequest, final ResponseHandler<? extends T> responseHandler,
+                                           int expectedErrorCode) throws IOException, InterruptedException {
+        waitForUriAvailability(httpUriRequest, expectedErrorCode);
         return httpClient.execute(httpUriRequest, responseHandler);
     }
 
-    private void waitForUriAvailability(HttpUriRequest httpUriRequest) throws InterruptedException {
+    private void waitForUriAvailability(HttpUriRequest httpUriRequest, int expectedErrorCode) throws InterruptedException {
         HttpResponse response = null;
         long startTime = System.currentTimeMillis();
         long waitingFor;
@@ -61,7 +71,7 @@ public class PollingHttpClient {
             try {
                 response = httpClient.execute(httpUriRequest);
 
-                if (responseNotFound(response)) {
+                if (responseNotFound(response, expectedErrorCode)) {
                     LOG.warn("Response not found. Thread stopped for 2 seconds.");
                     Thread.sleep(2 * MILLIS_PER_SEC);
                 }
@@ -73,15 +83,21 @@ public class PollingHttpClient {
             }
 
             waitingFor = System.currentTimeMillis() - startTime;
-        } while (responseNotFound(response) && waitingFor < maxWaitPeriodInMilliSeconds);
+        } while (responseNotFound(response, expectedErrorCode) && waitingFor < maxWaitPeriodInMilliSeconds);
     }
 
     public CredentialsProvider getCredentialsProvider() {
         return httpClient.getCredentialsProvider();
     }
 
-    private static boolean responseNotFound(HttpResponse response) {
-        return response == null || response.getStatusLine().getStatusCode() > 400;
+    private static boolean responseNotFound(HttpResponse response, int exptectedErrorCode) {
+        if (response == null) {
+            return true;
+        }
+
+        int statusCode = response.getStatusLine().getStatusCode();
+
+        return statusCode > 400 && statusCode != exptectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

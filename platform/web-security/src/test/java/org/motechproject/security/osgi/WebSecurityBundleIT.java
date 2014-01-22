@@ -26,13 +26,13 @@ import org.motechproject.testing.utils.Wait;
 import org.motechproject.testing.utils.WaitCondition;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +63,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     private static final String BAD_USER_NAME = "doesNotExist";
     private static final String BAD_PASSWORD = "badpassword";
     private static final String SECURITY_BUNDLE_NAME = "motech-platform-web-security";
+    private static final String SECURITY_BUNDLE_SYMBOLIC_NAME = "org.motechproject." + SECURITY_BUNDLE_NAME;
     private static final String QUERY_URL = "http://localhost:%d/websecurity/api/web-api/securityStatus";
     private static final String UPDATE_URL = "http://localhost:%d/websecurity/api/web-api/securityRules";
     private static final String GET = "GET";
@@ -123,14 +124,14 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     public void testProxyInitialization() throws Exception {
-        WebApplicationContext theContext = getService(WebApplicationContext.class);
+        WebApplicationContext theContext = getWebSecurityContext();
         MotechProxyManager manager = theContext.getBean(MotechProxyManager.class);
         FilterChainProxy proxy = manager.getFilterChainProxy();
         assertNotNull(proxy);
         assertNotNull(proxy.getFilterChains());
     }
 
-    public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException {
+    public void testUpdatingProxyOnRestart() throws InterruptedException, BundleException, IOException, ClassNotFoundException, InvalidSyntaxException {
         MotechSecurityConfiguration config = SecurityTestConfigBuilder.buildConfig("noSecurity", null, null);
         updateSecurity(config);
 
@@ -179,10 +180,37 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
 
         addAuthHeader(request, username, password);
 
-        HttpResponse response = httpClient.execute(request);
+        // Don't retry when you receive an error code which you are expecting
+        HttpResponse response = (expectedResponseStatus > 400) ? httpClient.execute(request, expectedResponseStatus) :
+                httpClient.execute(request);
 
         assertNotNull(response);
         assertEquals(expectedResponseStatus, response.getStatusLine().getStatusCode());
+    }
+
+    private WebApplicationContext getWebSecurityContext() throws InvalidSyntaxException, InterruptedException {
+        WebApplicationContext theContext = null;
+
+        int tries = 0;
+
+        do {
+            ServiceReference[] references =
+                    bundleContext.getAllServiceReferences(WebApplicationContext.class.getName(), null);
+
+            for (ServiceReference ref : references) {
+                if (SECURITY_BUNDLE_SYMBOLIC_NAME.equals(ref.getBundle().getSymbolicName())) {
+                    theContext = (WebApplicationContext) bundleContext.getService(ref);
+                    break;
+                }
+            }
+
+            ++tries;
+            Thread.sleep(2000);
+        } while (theContext == null && tries < TRIES_COUNT);
+
+        assertNotNull("Unable to retrieve the web security bundle context", theContext);
+
+        return theContext;
     }
 
     private <T> T getService(Class<T> clazz) throws InterruptedException {
@@ -235,21 +263,21 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         assertEquals(state, bundle.getState());
     }
 
-    private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException {
-        WebApplicationContext theContext = getService(WebApplicationContext.class);
+    private void updateSecurity(MotechSecurityConfiguration config) throws InterruptedException, InvalidSyntaxException {
+        WebApplicationContext theContext = getWebSecurityContext();
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         allSecurityRules.addOrUpdate(config);
     }
 
-    private void resetSecurityConfig() throws InterruptedException {
-        WebApplicationContext theContext = getService(WebApplicationContext.class);
+    private void resetSecurityConfig() throws InterruptedException, InvalidSyntaxException {
+        WebApplicationContext theContext = getWebSecurityContext();
         AllMotechSecurityRules allSecurityRules = theContext.getBean(AllMotechSecurityRules.class);
         ((AllMotechSecurityRulesCouchdbImpl) allSecurityRules).removeAll();
         getProxyManager().setFilterChainProxy(originalSecurityProxy);
     }
 
-    private MotechProxyManager getProxyManager() throws InterruptedException {
-        WebApplicationContext theContext = getService(WebApplicationContext.class);
+    private MotechProxyManager getProxyManager() throws InterruptedException, InvalidSyntaxException {
+        WebApplicationContext theContext = getWebSecurityContext();
         return theContext.getBean(MotechProxyManager.class);
     }
 
@@ -262,7 +290,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     @Override
-    public void onSetUp() throws InterruptedException {
+    public void onSetUp() throws InterruptedException, InvalidSyntaxException {
         MotechPermissionService permissions = getService(MotechPermissionService.class);
         MotechRoleService roles = getService(MotechRoleService.class);
         MotechUserService users = getService(MotechUserService.class);
@@ -278,7 +306,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
     }
 
     @Override
-    public void onTearDown() throws InterruptedException {
+    public void onTearDown() throws InterruptedException, InvalidSyntaxException {
         resetSecurityConfig();
     }
 

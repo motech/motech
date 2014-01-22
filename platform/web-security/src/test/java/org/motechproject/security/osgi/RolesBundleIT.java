@@ -57,48 +57,48 @@ public class RolesBundleIT extends BaseOsgiIT {
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToViewRoles() throws Exception {
-        HttpResponse httpResponse = get("http://localhost:%s/websecurity/api/web-api/roles", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        get("http://localhost:%s/websecurity/api/web-api/roles",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToCreateRoles() throws Exception {
-        HttpResponse httpResponse = post("http://localhost:%s/websecurity/api/web-api/roles/create", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        post("http://localhost:%s/websecurity/api/web-api/roles/create",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA, HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToUpdateRoles() throws Exception {
-        HttpResponse httpResponse = post("http://localhost:%s/websecurity/api/web-api/roles/update", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        post("http://localhost:%s/websecurity/api/web-api/roles/update",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA, HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToDeleteRoles() throws Exception {
-        HttpResponse httpResponse = post("http://localhost:%s/websecurity/api/web-api/roles/delete", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        post("http://localhost:%s/websecurity/api/web-api/roles/delete",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, POST_DATA, HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAuthorisedUserCanViewRoles() throws Exception {
-        HttpResponse httpResponse = get("http://localhost:%s/websecurity/api/web-api/roles", USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD);
-        assertEquals(HttpStatus.SC_OK, httpResponse.getStatusLine().getStatusCode());
+        get("http://localhost:%s/websecurity/api/web-api/roles",
+                USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, HttpStatus.SC_OK);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToViewPermissions() throws Exception {
-        HttpResponse httpResponse = get("http://localhost:%s/websecurity/api/web-api/permissions", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        get("http://localhost:%s/websecurity/api/web-api/permissions",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAuthorisedUserCanViewPermissions() throws Exception {
-        HttpResponse httpResponse = get("http://localhost:%s/websecurity/api/web-api/permissions", USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD);
-        assertEquals(HttpStatus.SC_OK, httpResponse.getStatusLine().getStatusCode());
+        get("http://localhost:%s/websecurity/api/web-api/permissions",
+                USER_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, HttpStatus.SC_OK);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToCreatePermission() throws Exception {
-        HttpResponse httpResponse = post("http://localhost:%s/websecurity/api/web-api/permissions/foo-permission", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "{}");
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        post("http://localhost:%s/websecurity/api/web-api/permissions/foo-permission",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, "{}", HttpStatus.SC_FORBIDDEN);
     }
 
     public void testThatAccessIsDeniedForUnAuthorisedUserTryingToDeletePermission() throws Exception {
-        HttpResponse httpResponse = delete("http://localhost:%s/websecurity/api/web-api/permissions/foo-permission", USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD);
-        assertEquals(HttpStatus.SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+        delete("http://localhost:%s/websecurity/api/web-api/permissions/foo-permission",
+                USER_NOT_AUTHORISED_TO_MANAGE_ROLES, USER_PASSWORD, HttpStatus.SC_FORBIDDEN);
     }
 
 
@@ -146,34 +146,37 @@ public class RolesBundleIT extends BaseOsgiIT {
         return serviceReference;
     }
 
-    private HttpResponse get(String urlTemplate, String username, String password) throws Exception {
+    private void get(String urlTemplate, String username, String password, int exptectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         System.out.println(url);
         HttpGet httpGet = new HttpGet(url);
-        return request(httpGet, username, password);
+        request(httpGet, username, password, exptectedResponseCode);
     }
 
-    private HttpResponse post(String urlTemplate, String username, String password, String postData) throws Exception {
+    private void post(String urlTemplate, String username, String password, String postData, int exptectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         HttpPost httpPost = new HttpPost(url);
         StringEntity entity = new StringEntity(postData);
         httpPost.setEntity(entity);
         httpPost.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return request(httpPost, username, password);
+        request(httpPost, username, password, exptectedResponseCode);
     }
 
-    private HttpResponse delete(String urlTemplate, String username, String password) throws Exception {
+    private void delete(String urlTemplate, String username, String password, int exptectedResponseCode) throws Exception {
         String url = String.format(urlTemplate, TestContext.getJettyPort());
         System.out.println(url);
         HttpDelete httpDelete = new HttpDelete(url);
-        return request(httpDelete, username, password);
+        request(httpDelete, username, password, exptectedResponseCode);
     }
 
-    private HttpResponse request(HttpUriRequest request, String username, String password) throws InterruptedException, IOException, BundleException {
+    private void request(HttpUriRequest request, String username, String password, int expectedResponseCode) throws InterruptedException, IOException, BundleException {
         addAuthHeader(request, username, password);
-        HttpResponse response = httpClient.execute(request);
+
+        HttpResponse response = (expectedResponseCode > 400) ?
+                httpClient.execute(request, expectedResponseCode) : httpClient.execute(request);
+
         assertNotNull(response);
-        return response;
+        assertEquals(expectedResponseCode, response.getStatusLine().getStatusCode());
     }
 
     private void addAuthHeader(HttpUriRequest request, String userName, String password) {
