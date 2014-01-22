@@ -174,6 +174,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             }
         }
 
+        for (LookupDto lookup : allEntityMappings.getEntityById(entityId).getLookupsDtos()) {
+            if (lookup.getId() != null && !updatedLookups.contains(lookup)) {
+                allLookupMappings.remove(lookup);
+            }
+        }
+
         // TODO: remove
         exampleData.getPurgeAdvanced(entityId).setIndexes(updatedLookups);
 

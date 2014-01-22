@@ -34,6 +34,14 @@ public class AllLookupMappings extends BaseMdsRepository {
         return getPersistenceManager().makePersistent(mapping);
     }
 
+    public void remove(LookupDto lookup) {
+        LookupMapping lookupMapping = getLookupById(lookup.getId());
+
+        if (lookupMapping != null) {
+            getPersistenceManager().deletePersistent(lookupMapping);
+        }
+    }
+
     public LookupMapping getLookupById(Long id) {
         Query query = getPersistenceManager().newQuery(LookupMapping.class);
         query.setFilter("lookupId == id");
