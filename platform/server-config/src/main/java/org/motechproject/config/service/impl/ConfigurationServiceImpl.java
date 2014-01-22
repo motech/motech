@@ -67,6 +67,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private Properties defaultConfig;
     private Properties configAnnotation;
 
+    public ConfigurationServiceImpl() {
+    }
+
     @Autowired
     public ConfigurationServiceImpl(CoreConfigurationService coreConfigurationService,
                                     AllSettings allSettings, AllModuleProperties allModuleProperties,
@@ -223,7 +226,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     public Properties getModuleProperties(String module, String filename, Properties defaultProperties) throws IOException {
-        Properties properties = allModuleProperties.asProperties(module, filename);
+        Properties properties = (allModuleProperties ==  null) ? new Properties() : allModuleProperties.asProperties(module, filename);
         return MapUtils.toProperties(MotechMapUtils.mergeMaps(properties, defaultProperties));
     }
 
@@ -284,7 +287,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         }
         ModulePropertiesRecord properties = new ModulePropertiesRecord(toPersist, module, version, bundle, filename, false);
-        allModuleProperties.addOrUpdate(properties);
+        if (allModuleProperties != null) {
+            allModuleProperties.addOrUpdate(properties);
+        }
     }
 
     @Override
@@ -339,6 +344,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public void processExistingConfigs(List<File> files) {
+        if (allModuleProperties == null) {
+            logger.warn("Unable to retrieve module properties ");
+            return;
+        }
+
         List<ModulePropertiesRecord> records = new ArrayList<>();
         List<ModulePropertiesRecord> dbRecords = allModuleProperties.getAll();
 
@@ -543,6 +553,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private String getConfigDir() {
+        if (coreConfigurationService == null) {
+            return System.getProperty("user.home") + "/config";
+        }
         return coreConfigurationService.getConfigLocation().getLocation();
     }
 
