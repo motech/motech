@@ -867,7 +867,7 @@
         */
         $scope.addNewIndex = function () {
             var newLookup = {
-                lookupName: "New lookup",
+                lookupName: "New lookup name",
                 singleObjectReturn: true,
                 fieldList: []
             };
@@ -2168,7 +2168,7 @@
         };
 
         $scope.arrow = function (module) {
-            return $scope.visible(module) ? "icon-chevron-down" : "icon-chevron-right";
+            return $scope.visible(module) ? "icon-caret-down" : "icon-caret-right";
         };
 
         /**

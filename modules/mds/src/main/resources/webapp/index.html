@@ -14,27 +14,25 @@
             </li>
         </ul>
     </div>
-    <div ui-if="hasWorkInProgress()">
-        <fieldset>
-            <legend>{{msg('mds.wip.legend')}}</legend>
-            <div>
-                {{msg('mds.wip.info')}}
-            </div>
-            <ul>
-                <li ng-repeat="entity in getWorkInProgress()">
-                    {{entity.name}}
-                    <span>
-                        <a ng-click="resumeEdits(entity.id)">
-                            {{ msg('mds.wip.resumeEdits') }}
-                        </a>
-                        {{msg('mds.or')}}
-                        <a ng-click="discard(entity.id)">
-                            {{ msg('mds.wip.discard') | lowercase }}
-                        </a>
-                    </span>
-                </li>
-            </ul>
-        </fieldset>
+    <div ui-if="hasWorkInProgress()" class="mds alert alert-info margin-before">
+        <h4>{{msg('mds.wip.legend')}}</h4>
+        <div class="mds-alert">
+            {{msg('mds.wip.info')}}
+        </div>
+        <ul class="mds-alert-list">
+            <li ng-repeat="entity in getWorkInProgress()">
+                {{entity.name}}
+                <span>
+                    <a class="alert-link" ng-click="resumeEdits(entity.id)">
+                        {{ msg('mds.wip.resumeEdits')}}
+                    </a>
+                    {{ msg('mds.or')}}
+                    <a class="alert-link" ng-click="discard(entity.id)">
+                        {{ msg('mds.wip.discard') | lowercase }}
+                    </a>
+                </span>
+            </li>
+        </ul>
     </div>
     <div class="ui-layout-content">
         <div class="tab-content" id="tab-content">
@@ -45,7 +43,7 @@
     </div>
 </div>
 
-<div id="inner-east" class="scheduler inner-east ui-layout-pane ui-layout-pane-east">
+<div id="inner-east" class="mds inner-east ui-layout-pane ui-layout-pane-east">
     <div class="header-toolbar header-footer"><i id="tbarCloseEast" class="button icon-caret-right pull-right"></i></div>
     <div  class="ui-layout-content"></div>
 </div>
