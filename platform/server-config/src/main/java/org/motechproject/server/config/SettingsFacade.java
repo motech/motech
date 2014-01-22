@@ -370,7 +370,14 @@ public class SettingsFacade {
         MotechSettings settings = getPlatformSettings();
 
         if (settings == null) {
-            return new Properties();
+            // try reading from classpath
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream("motech-settings.properties")) {
+                Properties properties = new Properties();
+                properties.load(in);
+                return properties;
+            } catch (IOException e) {
+                return new Properties();
+            }
         }
 
         Properties activemqConfig = settings.getActivemqProperties();
