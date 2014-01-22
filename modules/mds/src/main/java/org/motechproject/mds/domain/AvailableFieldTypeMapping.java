@@ -18,7 +18,7 @@ public class AvailableFieldTypeMapping {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
-    private String id;
+    private Long id;
 
     @Persistent
     private String defaultName;
@@ -37,7 +37,7 @@ public class AvailableFieldTypeMapping {
         this(null, null, null);
     }
 
-    public AvailableFieldTypeMapping(String id, String defaultName, TypeDto type) {
+    public AvailableFieldTypeMapping(Long id, String defaultName, TypeDto type) {
         this.id = id;
         this.defaultName = defaultName;
         this.displayName = type == null ? null : type.getDisplayName();
@@ -49,11 +49,11 @@ public class AvailableFieldTypeMapping {
         return new AvailableTypeDto(this.getId(), this.getDefaultName(), new TypeDto(displayName, description, typeClass));
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

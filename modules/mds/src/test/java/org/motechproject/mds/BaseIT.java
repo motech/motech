@@ -1,8 +1,12 @@
 package org.motechproject.mds;
 
 import org.junit.runner.RunWith;
+import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.LookupMapping;
+import org.motechproject.mds.domain.TypeSettingsMapping;
+import org.motechproject.mds.domain.TypeValidationMapping;
+import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -73,6 +77,43 @@ public abstract class BaseIT {
         Query query = persistenceManager.newQuery(LookupMapping.class);
 
         return cast(LookupMapping.class, (Collection) query.execute());
+    }
+
+    protected List<TypeSettingsMapping> getTypeSettingsMappings() {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(TypeSettingsMapping.class);
+
+        return cast(TypeSettingsMapping.class, (Collection) query.execute());
+    }
+
+    protected List<TypeValidationMapping> getTypeValidationMappings() {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(TypeValidationMapping.class);
+
+        return cast(TypeValidationMapping.class, (Collection) query.execute());
+    }
+
+    protected List<ValidationCriterionMapping> getValidationCriterionMappings() {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(ValidationCriterionMapping.class);
+
+        return cast(ValidationCriterionMapping.class, (Collection) query.execute());
+    }
+
+    protected List<AvailableFieldTypeMapping> getAvailableFieldTypeMappings() {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(AvailableFieldTypeMapping.class);
+
+        return cast(AvailableFieldTypeMapping.class, (Collection) query.execute());
+    }
+
+    protected void clearDB() {
+        getPersistenceManager().deletePersistentAll(getValidationCriterionMappings());
+        getPersistenceManager().deletePersistentAll(getTypeValidationMappings());
+        getPersistenceManager().deletePersistentAll(getTypeSettingsMappings());
+        getPersistenceManager().deletePersistentAll((getAvailableFieldTypeMappings()));
+        getPersistenceManager().deletePersistentAll((getLookupMappings()));
+        getPersistenceManager().deletePersistentAll((getEntityMappings()));
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {

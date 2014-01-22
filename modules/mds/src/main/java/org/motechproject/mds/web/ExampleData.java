@@ -78,20 +78,20 @@ public class ExampleData {
     private ObjectMapper mapper = new ObjectMapper();
 
     public ExampleData() {
-        addType(new AvailableTypeDto("1", "int", INTEGER), FieldValidationDto.INTEGER, null);
-        addType(new AvailableTypeDto("2", "str", STRING), FieldValidationDto.STRING, null);
-        addType(new AvailableTypeDto("3", "bool", BOOLEAN), null);
-        addType(new AvailableTypeDto("4", "date", DATE), null);
-        addType(new AvailableTypeDto("5", "time", TIME), null);
-        addType(new AvailableTypeDto("6", "datetime", DATETIME), null);
+        addType(new AvailableTypeDto(1L, "int", INTEGER), FieldValidationDto.INTEGER, null);
+        addType(new AvailableTypeDto(2L, "str", STRING), FieldValidationDto.STRING, null);
+        addType(new AvailableTypeDto(3L, "bool", BOOLEAN), null);
+        addType(new AvailableTypeDto(4L, "date", DATE), null);
+        addType(new AvailableTypeDto(5L, "time", TIME), null);
+        addType(new AvailableTypeDto(6L, "datetime", DATETIME), null);
         addType(
-                new AvailableTypeDto("7", "decimal", DOUBLE),
+                new AvailableTypeDto(7L, "decimal", DOUBLE),
                 FieldValidationDto.DOUBLE,
                 new SettingDto("mds.form.label.precision", 9, INTEGER, REQUIRE, POSITIVE),
                 new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
         );
         addType(
-                new AvailableTypeDto("8", "list", LIST),
+                new AvailableTypeDto(8L, "list", LIST),
                 null,
                 new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
                 new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),

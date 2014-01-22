@@ -33,21 +33,23 @@ public class AllFieldTypes extends BaseMdsRepository {
         return allTypes;
     }
 
-    public boolean typeExists(AvailableTypeDto type) {
+    public AvailableFieldTypeMapping getByName(String name) {
         Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
         query.setFilter("displayName == name");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        AvailableFieldTypeMapping result = (AvailableFieldTypeMapping) query.execute(type.getType().getDisplayName());
-
-        return result != null;
+        return (AvailableFieldTypeMapping) query.execute(name);
     }
 
-    public void delete(String id) {
+    public boolean typeExists(AvailableTypeDto type) {
+        return getByName(type.getType().getDisplayName()) != null;
+    }
+
+    public void delete(Long id) {
         Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
         query.setFilter("typeId == id");
-        query.declareParameters("java.lang.String typeId");
+        query.declareParameters("java.lang.Long typeId");
         query.setUnique(true);
 
         AvailableFieldTypeMapping result = (AvailableFieldTypeMapping) query.execute(id);

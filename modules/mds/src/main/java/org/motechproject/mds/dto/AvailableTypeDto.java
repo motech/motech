@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * field.
  */
 public class AvailableTypeDto {
-    private String id;
+    private Long id;
     private String defaultName;
     private TypeDto type;
 
@@ -21,17 +21,17 @@ public class AvailableTypeDto {
         this(null, defaultName, type);
     }
 
-    public AvailableTypeDto(String id, String defaultName, TypeDto type) {
+    public AvailableTypeDto(Long id, String defaultName, TypeDto type) {
         this.id = id;
         this.defaultName = defaultName;
         this.type = type;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

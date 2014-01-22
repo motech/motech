@@ -66,25 +66,15 @@ public class AvailableControllerIT extends BaseIT {
 
     private List<AvailableTypeDto> getAllAvailableTypes() {
         List<AvailableTypeDto> allTypes = new ArrayList<>();
-        allTypes.add(new AvailableTypeDto("1", "int", INTEGER));
-        allTypes.add(new AvailableTypeDto("2", "string", STRING));
-        allTypes.add(new AvailableTypeDto("3", "bool", BOOLEAN));
-        allTypes.add(new AvailableTypeDto("4", "date", DATE));
-        allTypes.add(new AvailableTypeDto("5", "time", TIME));
-        allTypes.add(new AvailableTypeDto("6", "dateTime", DATETIME));
-        allTypes.add(new AvailableTypeDto("7", "double", DOUBLE));
-        allTypes.add(new AvailableTypeDto("8", "list", LIST));
+        allTypes.add(new AvailableTypeDto(1L, "int", INTEGER));
+        allTypes.add(new AvailableTypeDto(2L, "string", STRING));
+        allTypes.add(new AvailableTypeDto(3L, "bool", BOOLEAN));
+        allTypes.add(new AvailableTypeDto(4L, "date", DATE));
+        allTypes.add(new AvailableTypeDto(5L, "time", TIME));
+        allTypes.add(new AvailableTypeDto(6L, "dateTime", DATETIME));
+        allTypes.add(new AvailableTypeDto(7L, "double", DOUBLE));
+        allTypes.add(new AvailableTypeDto(8L, "list", LIST));
 
         return allTypes;
     }
-
-    private void clearDB() {
-        List<AvailableTypeDto> allTypes = allFieldTypes.getAll();
-
-        for (AvailableTypeDto type : allTypes) {
-            allFieldTypes.delete(type.getId());
-        }
-    }
-
-
 }
