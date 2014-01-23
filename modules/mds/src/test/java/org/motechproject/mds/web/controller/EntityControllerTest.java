@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -129,19 +130,21 @@ public class EntityControllerTest {
     public void shouldDeleteEntity() throws Exception {
         controller.deleteEntity(9007L);
 
-        ArgumentCaptor<EntityDto> captor = ArgumentCaptor.forClass(EntityDto.class);
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         verify(entityService).deleteEntity(captor.capture());
 
-        assertEquals(Long.valueOf(9007), captor.getValue().getId());
+        assertEquals(Long.valueOf(9007), captor.getValue());
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionIfEntityToDeleteNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).deleteEntity(1000L);
         controller.deleteEntity(1000L);
     }
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldThrowExceptionIfEntityToDeleteisReadonly() throws Exception {
+        doThrow(new EntityReadOnlyException()).when(entityService).deleteEntity(9001L);
         controller.deleteEntity(9001L);
     }
 
@@ -190,11 +193,13 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotSaveTemporaryChangeIfEntityNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).saveDraftEntityChanges(eq(100L), any(DraftData.class));
         controller.draft(100L, new DraftData());
     }
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldNotSaveTemporaryChangeIfEntityIsReadonly() throws Exception {
+        doThrow(new EntityReadOnlyException()).when(entityService).saveDraftEntityChanges(eq(9001L), any(DraftData.class));
         controller.draft(9001L, new DraftData());
     }
 
@@ -216,6 +221,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotAbandonChangesIfEntityNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).abandonChanges(10000L);
         controller.abandonChanges(10000L);
     }
 
@@ -238,6 +244,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotComitChangesIfEntityNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).commitChanges(10000L);
         controller.commitChanges(10000L);
     }
 
@@ -263,6 +270,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetEntityFieldsIfEntityNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).getFields(10000L);
         controller.getFields(10000L);
     }
 
@@ -285,6 +293,7 @@ public class EntityControllerTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotFindFieldByNameIfEntityNotExists() throws Exception {
+        doThrow(new EntityNotFoundException()).when(entityService).findFieldByName(500L, "ID");
         controller.getFieldByName(500L, "ID");
     }
 

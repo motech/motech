@@ -27,6 +27,9 @@ public class EntityDraft extends EntityMapping {
     @Persistent
     private Long parentVersion;
 
+    @Persistent
+    private Boolean changesMade;
+
     public String getDraftOwnerUsername() {
         return draftOwnerUsername;
     }
@@ -57,6 +60,14 @@ public class EntityDraft extends EntityMapping {
 
     public void setParentVersion(Long parentVersion) {
         this.parentVersion = parentVersion;
+    }
+
+    public Boolean getChangesMade() {
+        return changesMade;
+    }
+
+    public void setChangesMade(Boolean changesMade) {
+        this.changesMade = changesMade;
     }
 
     @Override

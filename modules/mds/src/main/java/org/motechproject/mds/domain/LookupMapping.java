@@ -72,4 +72,8 @@ public class LookupMapping {
     public void setEntity(EntityMapping entity) {
         this.entity = entity;
     }
+
+    public LookupMapping copy() {
+        return new LookupMapping(getLookupName(), isSingleObjectReturn());
+    }
 }

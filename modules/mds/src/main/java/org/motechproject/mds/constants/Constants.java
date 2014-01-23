@@ -230,6 +230,16 @@ public final class Constants {
         }
     }
 
+    /**
+     * Utility constants to help avoid string literal repetition
+     */
+    public static final class Util {
+
+        public static final String TRUE = "true";
+
+        public static final String FALSE = "false";
+    }
+
     private Constants() {
     }
 }

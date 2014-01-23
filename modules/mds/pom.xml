@@ -6,7 +6,7 @@
         <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.motechproject</groupId>
+
     <artifactId>motech-dataservices</artifactId>
     <version>0.23-SNAPSHOT</version>
     <packaging>bundle</packaging>

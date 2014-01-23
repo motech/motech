@@ -19,6 +19,7 @@ import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -26,7 +27,6 @@ import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -467,7 +467,7 @@ public class ExampleData {
         }
 
         Object field = findField(path, start);
-        setField(field, path[path.length - 1], value);
+        FieldHelper.setField(field, path[path.length - 1], value);
     }
 
     private void draftRemove(Long entityId, DraftData data) {
@@ -546,42 +546,6 @@ public class ExampleData {
         return current;
     }
 
-    private void setField(Object current, String property, List value) {
-        if (property.startsWith("$")) {
-            String methodName = property.substring(1);
-
-            try {
-                Class<?> clazz = current.getClass();
-
-                if (value == null) {
-                    Method method = clazz.getMethod(methodName);
-                    method.invoke(current);
-                } else {
-                    Class[] clazzes = new Class[value.size()];
-                    for (int i = 0; i < value.size(); ++i) {
-                        Object item = value.get(i);
-                        clazzes[i] = item instanceof List ? List.class : item.getClass();
-                    }
-
-                    Method method = clazz.getMethod(methodName, clazzes);
-                    method.invoke(current, value.toArray(new Object[value.size()]));
-                }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new IllegalStateException(e);
-            }
-        } else {
-            try {
-                Class clazz = PropertyUtils.getProperty(current, property).getClass();
-                if (clazz.isEnum()) {
-                    PropertyUtils.setProperty(current, property, Enum.valueOf(clazz, (String)value.get(0)));
-                } else {
-                    PropertyUtils.setProperty(current, property, value.get(0));
-                }
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-    }
 
     public void commitChanges(Long entityId) {
         if (fieldsHistory.containsKey(entityId)) {

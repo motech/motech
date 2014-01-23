@@ -75,7 +75,7 @@ public class AllEntityMappings extends BaseMdsRepository {
     }
 
     public EntityMapping update(EntityMapping entity) {
-        if (entity== null) {
+        if (entity == null) {
             throw new EntityNotFoundException();
         }
         return getPersistenceManager().makePersistent(entity);

@@ -4,6 +4,7 @@ import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.LookupMapping;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
@@ -26,9 +27,12 @@ public class AllEntityDrafts extends BaseMdsRepository {
         draft.setNamespace(entity.getNamespace());
         draft.setModule(entity.getModule());
 
-        // TODO: copy lookups, adv-settings, etc.
         for (FieldMapping field : entity.getFields()) {
             draft.addField(field.copy());
+        }
+
+        for (LookupMapping lookup : entity.getLookups()) {
+            draft.addLookup(lookup.copy());
         }
 
         return getPersistenceManager().makePersistent(draft);
@@ -56,6 +60,7 @@ public class AllEntityDrafts extends BaseMdsRepository {
 
     public void save(EntityDraft draft) {
         draft.setLastModificationDate(DateUtil.nowUTC());
+        draft.setChangesMade(true);
     }
 
     public void delete(EntityDraft draft) {

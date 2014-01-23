@@ -1,5 +1,6 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.util.ClassName;
@@ -22,12 +23,13 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.constants.Constants.Util.TRUE;
 
 /**
  * The <code>EntityMapping</code> class contains basic information about an entity. This class is
  * related with table in database with the same name.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "VERSION",
         extensions = {@Extension(vendorName = "datanucleus", key = "field-name", value = "entityVersion")})
@@ -47,16 +49,16 @@ public class EntityMapping {
     private String namespace;
 
     @Persistent(mappedBy = "entity")
-    @Element(dependent = "true")
+    @Element(dependent = TRUE)
     private List<LookupMapping> lookups;
 
     @Persistent(mappedBy = "entity")
-    @Element(dependent = "true")
+    @Element(dependent = TRUE)
     private List<FieldMapping> fields;
 
     @Persistent(mappedBy = "parentEntity")
     //@Join(deleteAction = ForeignKeyAction.CASCADE)
-    @Element(dependent = "true")
+    @Element(dependent = TRUE)
     private List<EntityDraft> drafts;
 
     private Long entityVersion;
@@ -164,8 +166,17 @@ public class EntityMapping {
     }
 
     public FieldMapping getField(Long id) {
-        for (FieldMapping field : this.getFields()) {
+        for (FieldMapping field : getFields()) {
             if (field.getId().equals(id)) {
+                return field;
+            }
+        }
+        return null;
+    }
+
+    public FieldMapping getField(String name) {
+        for (FieldMapping field : getFields()) {
+            if (StringUtils.equals(name, field.getName())) {
                 return field;
             }
         }
@@ -186,8 +197,24 @@ public class EntityMapping {
         getFields().add(field);
     }
 
+    public void addLookup(LookupMapping lookup) {
+        getLookups().add(lookup);
+    }
+
+    public void removeLookup(LookupMapping lookup) {
+        getLookups().remove(lookup);
+    }
+
     public void updateFromDraft(EntityDraft draft) {
-        setFields(draft.getFields());
+        getFields().clear();
+        for (FieldMapping field : draft.getFields()) {
+            addField(field.copy());
+        }
+
+        getLookups().clear();
+        for (LookupMapping lookup : draft.getLookups()) {
+            addLookup(lookup.copy());
+        }
     }
 
     @NotPersistent

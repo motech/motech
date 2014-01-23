@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Utility class handling dynamic setting of field values
  */
-public class FieldHelper {
+public final class FieldHelper {
 
     public static void setField(Object current, String property, List value) {
         if (property.startsWith("$")) {

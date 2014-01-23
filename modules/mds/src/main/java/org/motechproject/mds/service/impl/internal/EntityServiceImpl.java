@@ -18,6 +18,7 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
+import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.NoSuchTypeException;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllEntityMappings;
@@ -90,8 +91,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             draftRemove(draft, draftData);
         }
 
-        // TODO: remove
-        return exampleData.isAnyChangeInFields(entityId);
+        return draft.getChangesMade();
     }
 
     private void createFieldForDraft(EntityDraft draft, DraftData draftData) {
@@ -170,10 +170,11 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public void commitChanges(Long entityId) {
         EntityDraft draft = getEntityDraft(entityId);
-
         EntityMapping parent = draft.getParentEntity();
-        parent.setFields(draft.getFields());
-        //TODO: adv, rest, etc
+
+        parent.updateFromDraft(draft);
+
+        allEntityDrafts.delete(draft);
     }
 
 
@@ -272,13 +273,32 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     @Override
+    @Transactional
     public List<FieldDto> getFields(Long entityId) {
-        return exampleData.getFields(entityId);
+        EntityMapping entity = getEntityDraft(entityId);
+
+        List<FieldMapping> fields = entity.getFields();
+
+        List<FieldDto> fieldDtos = new ArrayList<>();
+        for (FieldMapping field : fields) {
+            fieldDtos.add(field.toDto());
+        }
+
+        return fieldDtos;
     }
 
     @Override
+    @Transactional
     public FieldDto findFieldByName(Long entityId, String name) {
-        return null;
+        EntityMapping entity = getEntityDraft(entityId);
+
+        FieldMapping field = entity.getField(name);
+
+        if (field  == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
     }
 
     private String getUsername() {
