@@ -28,6 +28,7 @@ public class AllEntityMappingsIT extends BaseIT {
 
     @Before
     public void setUp() throws Exception {
+        getPersistenceManager().deletePersistentAll(getEntityMappings());
         PersistenceManager persistenceManager = getPersistenceManager();
         persistenceManager.makePersistent(new EntityMapping(SAMPLE_CLASS));
         persistenceManager.makePersistent(new EntityMapping(EXAMPLE_CLASS));

@@ -1,10 +1,12 @@
 package org.motechproject.mds.service;
 
+import org.junit.Before;
 import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -37,6 +39,11 @@ public class EntityServiceIT extends BaseIT {
 
     @Autowired
     private AllLookupMappings allLookupMappings;
+
+    @Before
+    public void setUp() throws Exception {
+        getPersistenceManager().deletePersistentAll(getEntityMappings());
+    }
 
     @After
     public void tearDown() throws Exception {

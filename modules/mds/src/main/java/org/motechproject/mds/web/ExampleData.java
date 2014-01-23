@@ -60,6 +60,7 @@ import static org.motechproject.mds.dto.TypeDto.TIME;
 @SuppressWarnings("PMD")
 public class ExampleData {
     private List<FieldDto> fields = new ArrayList<>();
+    private List<FieldDto> draftFields = new ArrayList<>();
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
     private List<AvailableTypeDto> types = new ArrayList<>();
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
@@ -193,7 +194,7 @@ public class ExampleData {
     public List<FieldDto> getFields(Long entityId) {
         List<FieldDto> list = new ArrayList<>();
 
-        for (FieldDto field : fields) {
+        for (FieldDto field : draftFields) {
             if (field.getEntityId().equals(entityId)) {
                 list.add(field);
             }
@@ -249,7 +250,7 @@ public class ExampleData {
     public FieldDto getField(Long id) {
         FieldDto found = null;
 
-        for (FieldDto field : fields) {
+        for (FieldDto field : draftFields) {
             if (field.getId().equals(id)) {
                 found = field;
             }
@@ -283,7 +284,7 @@ public class ExampleData {
     }
 
     public void removeField(Long id) {
-        for (int i = fields.size() - 1; i >= 0; i--) {
+        for (int i = draftFields.size() - 1; i >= 0; i--) {
             if (fields.get(i).getId().equals(id)) {
                 fields.remove(i);
                 break;
@@ -402,7 +403,7 @@ public class ExampleData {
         String typeClass = data.getValue(DraftData.TYPE_CLASS).toString();
         String displayName = data.getValue(DraftData.DISPLAY_NAME).toString();
         String name = data.getValue(DraftData.NAME).toString();
-        Long fieldId = fields.size() + 1L;
+        Long fieldId = draftFields.size() + 1L;
 
         FieldBasicDto basic = new FieldBasicDto();
         basic.setName(name);
@@ -486,9 +487,9 @@ public class ExampleData {
                 FieldDto field = entry.getValue();
                 boolean found = false;
 
-                for (int i = fields.size() - 1; i >= 0; --i) {
-                    if (fields.get(i).getId().equals(entry.getKey())) {
-                        if (null == field || !field.equals(fields.get(i))) {
+                for (int i = draftFields.size() - 1; i >= 0; --i) {
+                    if (draftFields.get(i).getId().equals(entry.getKey())) {
+                        if (null == field || !field.equals(draftFields.get(i))) {
                             return true;
                         }
                         found = true;
@@ -588,12 +589,12 @@ public class ExampleData {
                 FieldDto field = entry.getValue();
                 boolean found = false;
 
-                for (int i = fields.size() - 1; i >= 0; --i) {
-                    if (fields.get(i).getId().equals(entry.getKey())) {
+                for (int i = draftFields.size() - 1; i >= 0; --i) {
+                    if (draftFields.get(i).getId().equals(entry.getKey())) {
                         if (null == field) {
-                            fields.remove(i);
+                            draftFields.remove(i);
                         } else {
-                            fields.set(i, field);
+                            draftFields.set(i, field);
                         }
 
                         found = true;
@@ -602,7 +603,7 @@ public class ExampleData {
                 }
 
                 if (!found && null != field) {
-                    fields.add(field);
+                    draftFields.add(field);
                 }
             }
         }

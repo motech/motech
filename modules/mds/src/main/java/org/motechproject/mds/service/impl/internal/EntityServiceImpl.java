@@ -1,6 +1,8 @@
 package org.motechproject.mds.service.impl.internal;
 
+import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.FieldMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -11,6 +13,7 @@ import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
+import org.motechproject.mds.repository.AllFieldTypes;
 import org.motechproject.mds.repository.AllLookupMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
@@ -38,6 +41,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityMappings allEntityMappings;
     private MDSConstructor constructor;
     private AllLookupMappings allLookupMappings;
+    private AllFieldTypes allFieldTypes;
 
     // TODO remove this once everything is in db
     private ExampleData exampleData = new ExampleData();
@@ -75,7 +79,27 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void commitChanges(Long entityId) {
+    public void commitChanges(Long entityId, List<FieldDto> fields) {
+
+        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        if (entity.isReadOnly()) {
+            throw new EntityReadOnlyException();
+        }
+
+        for (FieldDto field : fields) {
+            if (field.getId() == null || entity.getField(field.getId()) == null) {
+                AvailableFieldTypeMapping type = allFieldTypes.getByName(field.getType().getDisplayName());
+                entity.getFields().add( new FieldMapping(field, entity, type));
+
+            } else {
+                entity.getField(field.getId()).update(field);
+            }
+        }
         exampleData.commitChanges(entityId);
     }
 
@@ -199,5 +223,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllLookupMappings(AllLookupMappings allLookupMappings) {
         this.allLookupMappings = allLookupMappings;
+    }
+
+    @Autowired
+    public void setAllFieldTypes(AllFieldTypes allFieldTypes) {
+        this.allFieldTypes = allFieldTypes;
     }
 }

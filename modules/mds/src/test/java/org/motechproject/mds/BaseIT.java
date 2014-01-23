@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.LookupMapping;
+import org.motechproject.mds.domain.FieldMapping;
 import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.domain.ValidationCriterionMapping;
@@ -72,6 +73,13 @@ public abstract class BaseIT {
         return cast(EntityMapping.class, (Collection) query.execute());
     }
 
+    protected List<FieldMapping> getFieldMappings() {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(FieldMapping.class);
+
+        return cast(FieldMapping.class, (Collection) query.execute());
+    }
+
     protected List<LookupMapping> getLookupMappings() {
         PersistenceManager persistenceManager = getPersistenceManager();
         Query query = persistenceManager.newQuery(LookupMapping.class);
@@ -109,11 +117,13 @@ public abstract class BaseIT {
 
     protected void clearDB() {
         getPersistenceManager().deletePersistentAll(getValidationCriterionMappings());
+        getPersistenceManager().deletePersistentAll((getFieldMappings()));
         getPersistenceManager().deletePersistentAll(getTypeValidationMappings());
         getPersistenceManager().deletePersistentAll(getTypeSettingsMappings());
         getPersistenceManager().deletePersistentAll((getAvailableFieldTypeMappings()));
         getPersistenceManager().deletePersistentAll((getLookupMappings()));
         getPersistenceManager().deletePersistentAll((getEntityMappings()));
+
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
@@ -127,5 +137,4 @@ public abstract class BaseIT {
 
         return list;
     }
-
 }

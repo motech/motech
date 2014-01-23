@@ -28,6 +28,7 @@ public class MDSConstructorIT extends BaseIT {
 
     @Before
     public void setUp() throws Exception {
+        getPersistenceManager().deletePersistentAll(getEntityMappings());
         PersistenceManager persistenceManager = getPersistenceManager();
         persistenceManager.makePersistent(new EntityMapping(VOUCHER_CLASS));
     }

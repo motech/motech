@@ -41,6 +41,13 @@ public class FieldDto {
                 : settings;
     }
 
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic) {
+        this.id = id;
+        this.entityId = entityId;
+        this.type = type;
+        this.basic = basic;
+    }
+
     public Long getId() {
         return id;
     }

@@ -58,5 +58,4 @@ public class AllFieldTypes extends BaseMdsRepository {
             getPersistenceManager().deletePersistent(result);
         }
     }
-
 }
