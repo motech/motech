@@ -10,9 +10,8 @@
     <title>MOTECH - Mobile Technology for Community Health</title>
 
     <link href="static/css/angular-ui.css" type="text/css" rel="stylesheet"/>
+    <link href="static/css/jquery-ui.min.css" type="text/css" rel="stylesheet"/>
     <link href="static/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/jquery-ui-min.css" type="text/css" rel="stylesheet"/>
-    <link href="static/css/jquery-ui-1.9.1-redmond.css" type="text/css" rel="stylesheet"/>
     <link href="static/css/bootstrap-page.css" type="text/css" rel="stylesheet"/>
 
     <script type="text/javascript" src="static/js/jquery.js"></script>
