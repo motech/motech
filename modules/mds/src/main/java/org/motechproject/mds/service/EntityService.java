@@ -34,7 +34,7 @@ public interface EntityService {
 
     boolean saveDraftEntityChanges(Long entityId, DraftData draftData);
     void abandonChanges(Long entityId);
-    void commitChanges(Long entityId);
+    void commitChanges(Long entityId, List <FieldDto> fields);
 
     List<EntityRecord> getEntityRecords(Long entityId);
 

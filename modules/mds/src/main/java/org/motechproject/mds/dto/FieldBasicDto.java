@@ -20,7 +20,7 @@ public class FieldBasicDto {
     }
 
     public FieldBasicDto(String displayName, String name) {
-        this(displayName, name, false, null, null);
+        this(displayName, name, false, "", "");
     }
 
     public FieldBasicDto(String displayName, String name, boolean required, Object defaultValue,

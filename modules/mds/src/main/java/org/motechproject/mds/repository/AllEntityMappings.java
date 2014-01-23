@@ -64,4 +64,11 @@ public class AllEntityMappings extends BaseMdsRepository {
         Collection collection = (Collection) query.execute("*");
         return cast(EntityMapping.class, collection);
     }
+
+    public EntityMapping update(EntityMapping entity) {
+        if (entity== null) {
+            throw new EntityNotFoundException();
+        }
+        return getPersistenceManager().makePersistent(entity);
+    }
 }

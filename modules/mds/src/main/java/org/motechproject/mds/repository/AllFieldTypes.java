@@ -59,4 +59,12 @@ public class AllFieldTypes extends BaseMdsRepository {
         }
     }
 
+    public AvailableFieldTypeMapping getTypeByDisplayName(String displayName) {
+        Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
+        query.setFilter("name == displayName");
+        query.declareParameters("java.lang.String name");
+        query.setUnique(true);
+
+        return (AvailableFieldTypeMapping) query.execute(displayName);
+    }
 }

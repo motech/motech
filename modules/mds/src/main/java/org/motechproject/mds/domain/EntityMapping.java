@@ -11,6 +11,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,11 @@ public class EntityMapping {
     @Persistent(mappedBy = "entity")
     @Element(dependent = "true")
     private List<LookupMapping> lookups;
+
+    @Persistent(mappedBy = "entity")
+    @Element(dependent = "true")
+    private List<FieldMapping> fields;
+
 
     public EntityMapping() {
         this(null);
@@ -112,5 +118,22 @@ public class EntityMapping {
     @NotPersistent
     public boolean isReadOnly() {
         return isNotBlank(module) || isNotBlank(namespace);
+    }
+
+    public List<FieldMapping> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<FieldMapping> fields) {
+        this.fields = fields;
+    }
+
+    public FieldMapping getField(Long id) {
+         for (FieldMapping field: this.getFields()) {
+            if (field.getId().equals(id)) {
+                return field;
+            }
+         }
+        return null;
     }
 }
