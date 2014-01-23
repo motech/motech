@@ -57,7 +57,6 @@ public class EntityMapping {
     private List<FieldMapping> fields;
 
     @Persistent(mappedBy = "parentEntity")
-    //@Join(deleteAction = ForeignKeyAction.CASCADE)
     @Element(dependent = TRUE)
     private List<EntityDraft> drafts;
 

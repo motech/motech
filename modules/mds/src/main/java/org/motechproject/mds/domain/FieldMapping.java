@@ -3,14 +3,12 @@ package org.motechproject.mds.domain;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.persistence.ManyToOne;
 
 /**
  * The <code>FieldMapping</code> class contains information about a single field
@@ -22,7 +20,7 @@ public class FieldMapping {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @ManyToOne
+    @Persistent
     private EntityMapping entity;
 
     @Persistent
@@ -59,7 +57,6 @@ public class FieldMapping {
     }
 
     public FieldDto toDto() {
-
         FieldBasicDto fieldBasic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
         TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
         return new FieldDto(id, entity.getId(), basicType, fieldBasic);

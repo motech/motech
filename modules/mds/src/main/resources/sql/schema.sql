@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS motech_data_services.AvailableFieldTypeMapping(
     displayName varchar(255),
     typeClass varchar(255),
     PRIMARY KEY (id)
-);
+) ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS motech_data_services.TypeSettingsMapping(
     id bigint NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS motech_data_services.TypeSettingsMapping(
     PRIMARY KEY (id),
     FOREIGN KEY (valueType) REFERENCES motech_data_services.AvailableFieldTypeMapping(id),
     FOREIGN KEY (type) REFERENCES motech_data_services.AvailableFieldTypeMapping(id)
-);
+)ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS motech_data_services.SettingOptionsMapping(
     id bigint NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS motech_data_services.SettingOptionsMapping(
     settingId bigint,
     PRIMARY KEY (id),
     FOREIGN KEY (settingId) REFERENCES motech_data_services.TypeSettingsMapping(id)
-);
+)ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS motech_data_services.TypeValidationMapping(
     id bigint NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS motech_data_services.TypeValidationMapping(
     type bigint,
     PRIMARY KEY (id),
     FOREIGN KEY (type) REFERENCES motech_data_services.AvailableFieldTypeMapping (id)
-);
+)ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS motech_data_services.ValidationCriterionMapping(
     id bigint NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS motech_data_services.ValidationCriterionMapping(
     PRIMARY KEY (id),
     FOREIGN KEY (validation) REFERENCES motech_data_services.TypeValidationMapping (id),
     FOREIGN KEY (valueType) REFERENCES motech_data_services.AvailableFieldTypeMapping (id)
-);
+)ENGINE = INNODB;
 
 INSERT IGNORE INTO motech_data_services.AvailableFieldTypeMapping
     (id, defaultName, description, displayName, typeClass)
