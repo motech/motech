@@ -1,13 +1,18 @@
 package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.LookupDto;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -30,6 +35,10 @@ public class EntityMapping {
 
     @Persistent
     private String namespace;
+
+    @Persistent(mappedBy = "entity")
+    @Element(dependent = "true")
+    private List<LookupMapping> lookups;
 
     public EntityMapping() {
         this(null);
@@ -81,6 +90,23 @@ public class EntityMapping {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public List<LookupDto> getLookupsDtos() {
+        List<LookupDto> dtos = new ArrayList<>();
+
+        for (LookupMapping mapping : lookups) {
+            dtos.add(mapping.toDto());
+        }
+        return dtos;
+    }
+
+    public List<LookupMapping> getLookups() {
+        return lookups;
+    }
+
+    public void setLookups(List<LookupMapping> lookups) {
+        this.lookups = lookups;
     }
 
     @NotPersistent
