@@ -21,7 +21,11 @@ public class AllEntityMappings extends BaseMdsRepository {
         EntityMapping mapping = new EntityMapping();
         mapping.setClassName(className);
 
-        return getPersistenceManager().makePersistent(mapping);
+        return save(mapping);
+    }
+
+    public EntityMapping save(EntityMapping entity) {
+        return getPersistenceManager().makePersistent(entity);
     }
 
     public boolean containsEntity(String simpleName) {
@@ -44,10 +48,14 @@ public class AllEntityMappings extends BaseMdsRepository {
                 throw new EntityReadOnlyException();
             }
 
-            getPersistenceManager().deletePersistent(entityMapping);
+            delete(entityMapping);
         } else {
             throw new EntityNotFoundException();
         }
+    }
+
+    public void delete(EntityMapping entity) {
+        getPersistenceManager().deletePersistent(entity);
     }
 
     public EntityMapping getEntityById(Long id) {

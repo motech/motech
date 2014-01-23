@@ -794,5 +794,12 @@ public class ExampleData {
         return previousRecordList;
     }
 
+    public List<SettingDto> getTypeSettings(TypeDto typeDto) {
+        return typeSettings.get(typeDto);
+    }
+
+    public FieldValidationDto getFieldValidationForType(TypeDto typeDto) {
+        return typeValidation.get(typeDto);
+    }
 }
 //CHECKSTYLE:ON

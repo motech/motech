@@ -12,7 +12,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
@@ -91,7 +90,7 @@ public class EntityController extends MdsController {
     @PreAuthorize(MdsRolesConstants.HAS_ANY_SEUSS_ROLE)
     @ResponseBody
     public List<EntityDto> getWorkInProgressEntities() {
-        List<EntityDto> list = entityService.listEntities();
+        List<EntityDto> list = entityService.listWorkInProgress();
 
         CollectionUtils.filter(list, new WIPEntityMatcher());
 
@@ -152,15 +151,7 @@ public class EntityController extends MdsController {
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseBody
     public void deleteEntity(@PathVariable final Long entityId) {
-        EntityDto entity = entityService.getEntity(entityId);
-
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        } else if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        } else {
-            entityService.deleteEntity(entity);
-        }
+        entityService.deleteEntity(entityId);
     }
 
     @RequestMapping(value = "/entities", method = RequestMethod.POST)
@@ -174,18 +165,10 @@ public class EntityController extends MdsController {
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseBody
     public Map<String, Boolean> draft(@PathVariable Long entityId, @RequestBody DraftData data) {
-        EntityDto entity = entityService.getEntity(entityId);
+        boolean stateChanged = entityService.saveDraftEntityChanges(entityId, data);
 
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        } else if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        } else {
-            boolean stateChanged = entityService.saveDraftEntityChanges(entityId, data);
-            entity.setDraft(stateChanged);
-        }
         Map<String, Boolean> map = new HashMap<>();
-        map.put("draft", entity.isDraft());
+        map.put("draft", stateChanged);
         return map;
     }
 
@@ -193,32 +176,20 @@ public class EntityController extends MdsController {
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void abandonChanges(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        } else {
-            entityService.abandonChanges(entityId);
-        }
+        entityService.abandonChanges(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/commit", method = RequestMethod.POST)
     @PreAuthorize(MdsRolesConstants.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        } else {
-            entityService.commitChanges(entityId, getFields(entityId));
-            entityService.saveEntityLookups(entityId, getAdvanced(entityId).getIndexes());
-        }
+        entityService.commitChanges(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/fields", method = RequestMethod.GET)
     @PreAuthorize(MdsRolesConstants.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getFields(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
         return entityService.getFields(entityId);
     }
 
@@ -226,10 +197,6 @@ public class EntityController extends MdsController {
     @PreAuthorize(MdsRolesConstants.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public FieldDto getFieldByName(@PathVariable Long entityId, @PathVariable String name) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
-
         return entityService.findFieldByName(entityId, name);
     }
 

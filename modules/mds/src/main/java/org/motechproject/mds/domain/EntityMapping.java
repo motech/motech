@@ -3,17 +3,22 @@ package org.motechproject.mds.domain;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Element;
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -22,6 +27,9 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
+@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
+@Version(strategy = VersionStrategy.VERSION_NUMBER, column = "VERSION",
+        extensions = {@Extension(vendorName = "datanucleus", key = "field-name", value = "entityVersion")})
 public class EntityMapping {
 
     @PrimaryKey
@@ -45,6 +53,12 @@ public class EntityMapping {
     @Element(dependent = "true")
     private List<FieldMapping> fields;
 
+    @Persistent(mappedBy = "parentEntity")
+    //@Join(deleteAction = ForeignKeyAction.CASCADE)
+    @Element(dependent = "true")
+    private List<EntityDraft> drafts;
+
+    private Long entityVersion;
 
     public EntityMapping() {
         this(null);
@@ -115,12 +129,34 @@ public class EntityMapping {
         this.lookups = lookups;
     }
 
+    public List<EntityDraft> getDrafts() {
+        if (drafts == null) {
+            drafts = new ArrayList<>();
+        }
+        return drafts;
+    }
+
+    public void setDrafts(List<EntityDraft> drafts) {
+        this.drafts = drafts;
+    }
+
+    public Long getEntityVersion() {
+        return entityVersion;
+    }
+
+    public void setEntityVersion(Long entityVersion) {
+        this.entityVersion = entityVersion;
+    }
+
     @NotPersistent
     public boolean isReadOnly() {
         return isNotBlank(module) || isNotBlank(namespace);
     }
 
     public List<FieldMapping> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
         return fields;
     }
 
@@ -129,11 +165,34 @@ public class EntityMapping {
     }
 
     public FieldMapping getField(Long id) {
-         for (FieldMapping field: this.getFields()) {
+        for (FieldMapping field : this.getFields()) {
             if (field.getId().equals(id)) {
                 return field;
             }
-         }
+        }
         return null;
+    }
+
+    public void removeField(Long fieldId) {
+        for (Iterator<FieldMapping> it = getFields().iterator(); it.hasNext(); ) {
+            FieldMapping field = it.next();
+            if (Objects.equals(field.getId(), fieldId)) {
+                it.remove();
+                break;
+            }
+        }
+    }
+
+    public void addField(FieldMapping field) {
+        getFields().add(field);
+    }
+
+    public void updateFromDraft(EntityDraft draft) {
+        setFields(draft.getFields());
+    }
+
+    @NotPersistent
+    public boolean isDraft() {
+        return false;
     }
 }

@@ -99,8 +99,3 @@ VALUES
     (9, 'mds.field.validation.regex', NULL, FALSE, 3, 2),
     (10, 'mds.field.validation.minLength', NULL, FALSE, 3, 1),
     (11, 'mds.field.validation.maxLength', NULL, FALSE, 3, 1);
-
-
-
-
-

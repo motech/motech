@@ -55,6 +55,10 @@
             <artifactId>datanucleus-api-jpa</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-jodatime</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
         </dependency>

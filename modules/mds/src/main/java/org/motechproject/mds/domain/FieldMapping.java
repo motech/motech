@@ -1,14 +1,16 @@
 package org.motechproject.mds.domain;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
+
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.ManyToOne;
 
 /**
  * The <code>FieldMapping</code> class contains information about a single field
@@ -20,7 +22,7 @@ public class FieldMapping {
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
-    @Persistent
+    @ManyToOne
     private EntityMapping entity;
 
     @Persistent
@@ -40,6 +42,9 @@ public class FieldMapping {
 
     @Persistent
     private AvailableFieldTypeMapping type;
+
+    public FieldMapping() {
+    }
 
     public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type) {
         this.entity = entity;
@@ -133,5 +138,19 @@ public class FieldMapping {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
         }
         return this;
+    }
+
+    @NotPersistent
+    public FieldMapping copy() {
+        FieldMapping copy = new FieldMapping();
+
+        copy.setName(name);
+        copy.setDefaultValue(defaultValue);
+        copy.setDisplayName(displayName);
+        copy.setRequired(required);
+        copy.setTooltip(tooltip);
+        copy.setType(type);
+
+        return copy;
     }
 }
