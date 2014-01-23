@@ -1,6 +1,7 @@
 package org.motechproject.mds.builder;
 
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.util.ClassName;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.metadata.ClassMetadata;
@@ -29,8 +30,8 @@ public final class EntityMetadataBuilder {
      * and class name.
      */
     public static JDOMetadata createBaseEntity(JDOMetadata md, EntityMapping mapping) {
-        PackageMetadata pmd = md.newPackageMetadata(getPackage(mapping.getClassName()));
-        ClassMetadata cmd = pmd.newClassMetadata(getSimpleName(mapping.getClassName()));
+        PackageMetadata pmd = md.newPackageMetadata(ClassName.getPackage(mapping.getClassName()));
+        ClassMetadata cmd = pmd.newClassMetadata(ClassName.getSimpleName(mapping.getClassName()));
 
         cmd.setTable(getTableName(mapping));
         cmd.setDetachable(true);
@@ -41,7 +42,7 @@ public final class EntityMetadataBuilder {
     }
 
     private static String getTableName(EntityMapping mapping) {
-        String simpleName = getSimpleName(mapping.getClassName());
+        String simpleName = ClassName.getSimpleName(mapping.getClassName());
         String module = mapping.getModule();
         String namespace = mapping.getNamespace();
 
@@ -57,16 +58,6 @@ public final class EntityMetadataBuilder {
         builder.append(simpleName);
 
         return builder.toString().toUpperCase();
-    }
-
-    private static String getPackage(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? EntityBuilder.PACKAGE : className.substring(0, idx);
-    }
-
-    private static String getSimpleName(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? className : className.substring(idx + 1);
     }
 
 }

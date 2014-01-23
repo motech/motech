@@ -5,6 +5,7 @@ package org.motechproject.mds.ex;
  * with a display name that already exists in the database
  */
 public class TypeAlreadyExistsException extends MdsException {
+    private static final long serialVersionUID = 3541279968870604095L;
 
     public TypeAlreadyExistsException() {
         super("mds.error.typeAlreadyExists");

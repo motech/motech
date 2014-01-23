@@ -5,7 +5,6 @@ import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
@@ -27,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 public class EntityServiceIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
@@ -62,7 +62,7 @@ public class EntityServiceIT extends BaseIT {
 
         // then
         // 1. new entry in db should be added
-        String className = String.format("%s.%s", EntityBuilder.PACKAGE, "Test");
+        String className = String.format("%s.%s", Packages.ENTITY, "Test");
         assertTrue(String.format("Not found %s in database", className), containsEntity(className));
 
         // 2. there should be ability to create a new instance of created entity

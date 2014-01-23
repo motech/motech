@@ -9,6 +9,7 @@ import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.ClassName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
 import static javassist.bytecode.SignatureAttribute.ClassType;
 import static javassist.bytecode.SignatureAttribute.TypeParameter;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 /**
  * The <code>EntityInfrastructureBuilder</code> class is responsible to create for a given entity
@@ -25,14 +27,9 @@ import static javassist.bytecode.SignatureAttribute.TypeParameter;
  * in classpath.
  */
 public final class EntityInfrastructureBuilder {
-    public static final String BASE_PACKAGE = "org.motechproject.mds";
-    public static final String REPOSITORY_PACKAGE = BASE_PACKAGE + ".repository";
-    public static final String SERVICE_PACKAGE = BASE_PACKAGE + ".service";
-    public static final String SERVICE_IMPL_PACKAGE = SERVICE_PACKAGE + ".impl";
-
-    public static final String REPOSITORY_BASE_CLASS = REPOSITORY_PACKAGE + ".MotechDataRepository";
-    public static final String SERVICE_BASE_CLASS = SERVICE_PACKAGE + ".MotechDataService";
-    public static final String SERVICE_IMPL_BASE_CLASS = SERVICE_IMPL_PACKAGE + ".DefaultMotechDataService";
+    public static final String REPOSITORY_BASE_CLASS = Packages.REPOSITORY + ".MotechDataRepository";
+    public static final String SERVICE_BASE_CLASS = Packages.SERVICE + ".MotechDataService";
+    public static final String SERVICE_IMPL_BASE_CLASS = Packages.SERVICE_IMPL + ".DefaultMotechDataService";
 
     private static final ClassPool POOL = MotechClassPool.getDefault();
 
@@ -41,21 +38,21 @@ public final class EntityInfrastructureBuilder {
 
     public static List<ClassMapping> create(ClassLoader loader, Class<?> entityClass) {
         List<ClassMapping> list = new ArrayList<>();
-        String entityName = entityClass.getSimpleName();
+        String className = entityClass.getName();
 
-        String repositoryClassName = getRepositoryName(entityName);
+        String repositoryClassName = ClassName.getRepositoryName(className);
         if (!existsInClassPath(loader, repositoryClassName)) {
             byte[] repositoryCode = getRepositoryCode(repositoryClassName, entityClass);
             list.add(new ClassMapping(repositoryClassName, repositoryCode));
         }
 
-        String interfaceClassName = getInterfaceName(entityName);
+        String interfaceClassName = ClassName.getInterfaceName(className);
         if (!existsInClassPath(loader, interfaceClassName)) {
             byte[] interfaceCode = getInterfaceCode(interfaceClassName, entityClass);
             list.add(new ClassMapping(interfaceClassName, interfaceCode));
         }
 
-        String serviceClassName = getServiceName(entityName);
+        String serviceClassName = ClassName.getServiceName(className);
         if (!existsInClassPath(loader, serviceClassName)) {
             byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entityClass);
             list.add(new ClassMapping(serviceClassName, serviceCode));
@@ -83,7 +80,7 @@ public final class EntityInfrastructureBuilder {
 
             CtClass subClass = POOL.makeClass(repositoryClassName, superClass);
 
-            String repositoryName = getSimpleName(repositoryClassName);
+            String repositoryName = ClassName.getSimpleName(repositoryClassName);
             String constructorAsString = String.format(
                     "public %s(){super(%s.class);}", repositoryName, type.getName()
             );
@@ -131,23 +128,6 @@ public final class EntityInfrastructureBuilder {
         ClassSignature sig = new ClassSignature(new TypeParameter[]{parameter});
 
         return sig.encode();
-    }
-
-    private static String getSimpleName(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? className : className.substring(idx + 1);
-    }
-
-    private static String getRepositoryName(String entityName) {
-        return String.format("%s.All%ss", REPOSITORY_PACKAGE, entityName);
-    }
-
-    private static String getInterfaceName(String entityName) {
-        return String.format("%s.%sService", SERVICE_PACKAGE, entityName);
-    }
-
-    private static String getServiceName(String entityName) {
-        return String.format("%s.%sServiceImpl", SERVICE_IMPL_PACKAGE, entityName);
     }
 
     public static class ClassMapping {

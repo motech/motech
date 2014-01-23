@@ -4,6 +4,7 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.domain.EntityRecord;

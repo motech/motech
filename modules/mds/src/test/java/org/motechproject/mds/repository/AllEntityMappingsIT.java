@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.builder.EntityBuilder;
+import org.motechproject.mds.constants.Constants;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,13 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 public class AllEntityMappingsIT extends BaseIT {
-    private static final String SAMPLE_CLASS = String.format("%s.Sample", EntityBuilder.PACKAGE);
-    private static final String EXAMPLE_CLASS = String.format("%s.Example", EntityBuilder.PACKAGE);
-    private static final String FOO_CLASS = String.format("%s.Foo", EntityBuilder.PACKAGE);
-    private static final String BAR_CLASS = String.format("%s.Bar", EntityBuilder.PACKAGE);
+    private static final String SAMPLE_CLASS = String.format("%s.Sample", Packages.ENTITY);
+    private static final String EXAMPLE_CLASS = String.format("%s.Example", Packages.ENTITY);
+    private static final String FOO_CLASS = String.format("%s.Foo", Packages.ENTITY);
+    private static final String BAR_CLASS = String.format("%s.Bar", Packages.ENTITY);
 
     @Autowired
     private AllEntityMappings allEntityMappings;

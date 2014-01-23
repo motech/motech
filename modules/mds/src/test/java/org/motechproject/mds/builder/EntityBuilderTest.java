@@ -1,17 +1,19 @@
 package org.motechproject.mds.builder;
 
 import org.junit.Test;
+import org.motechproject.mds.constants.Constants;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 public class EntityBuilderTest {
 
     @Test
     public void shouldAddDefaultPackageToName() throws Exception {
         String simpleName = "Example";
-        String expected = String.format("%s.%s", EntityBuilder.PACKAGE, simpleName);
+        String expected = String.format("%s.%s", Packages.ENTITY, simpleName);
         EntityBuilder builder = new EntityBuilder().withSimpleName(simpleName);
 
         assertEquals(expected, builder.getClassName());
@@ -42,7 +44,7 @@ public class EntityBuilderTest {
     @Test
     public void shouldBuildEntity() throws Exception {
         String simpleName = "Test";
-        String className = String.format("%s.%s", EntityBuilder.PACKAGE, simpleName);
+        String className = String.format("%s.%s", Packages.ENTITY, simpleName);
 
         EntityBuilder builder = new EntityBuilder()
                 .withSimpleName(simpleName)

@@ -22,7 +22,6 @@ import org.motechproject.mds.ex.NoSuchTypeException;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.AllFieldTypes;
-import org.motechproject.mds.repository.AllLookupMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSConstructor;
@@ -44,10 +43,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.mds.builder.EntityBuilder.PACKAGE;
+import static org.motechproject.mds.constants.Constants.Packages;
 
 /**
- * Default implmenetation of {@link org.motechproject.mds.service.EntityService} interface.
+ * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.
  */
 @Service
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
@@ -70,7 +69,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             throw new EntityAlreadyExistException();
         }
 
-        String className = String.format("%s.%s", PACKAGE, entity.getName());
+        String className = String.format("%s.%s", Packages.ENTITY, entity.getName());
         EntityMapping entityMapping = allEntityMappings.save(className);
         constructor.constructEntity(entityMapping);
 

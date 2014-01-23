@@ -1,7 +1,6 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mds.constants.MdsRolesConstants;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.motechproject.mds.constants.Constants.Roles;
 
 
 /**
@@ -51,15 +52,15 @@ public class AvailableController extends MdsController {
         List<String> availableTabs = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(MdsRolesConstants.SCHEMA_ACCESS))) {
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SCHEMA_ACCESS))) {
             availableTabs.add("schemaEditor");
         }
 
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(MdsRolesConstants.DATA_ACCESS))) {
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.DATA_ACCESS))) {
             availableTabs.add("dataBrowser");
         }
 
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(MdsRolesConstants.SETTINGS_ACCESS))) {
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SETTINGS_ACCESS))) {
             availableTabs.add("settings");
         }
 
