@@ -4,7 +4,7 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>0.21-SNAPSHOT</version>
+    <version>0.21.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
