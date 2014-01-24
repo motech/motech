@@ -72,7 +72,9 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
     @Override
     public ConfigLocation getConfigLocation() {
         Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
+        StringBuilder sb = new StringBuilder("");
         for (ConfigLocation configLocation : configLocations) {
+            sb.append(configLocation.getLocation()).append(' ');
             Resource configLocationResource = configLocation.toResource();
             try {
                 Resource motechSettings = configLocationResource.createRelative(ConfigurationConstants.SETTINGS_FILE_NAME);
@@ -84,7 +86,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
                 logger.warn("Problem reading motech-settings.properties from location: " + configLocationResource.toString(), e);
             }
         }
-        throw new MotechConfigurationException("Could not read settings from any of the config locations.");
+        throw new MotechConfigurationException(String.format("Could not read settings from any of the config locations. Searched directories: %s.", sb));
     }
 
     @Override

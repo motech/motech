@@ -79,8 +79,9 @@ public class BootstrapManagerImpl implements BootstrapManager {
 
     private File getDefaultBootstrapFile(ConfigLocation.FileAccessType accessType) {
         Iterable<ConfigLocation> configLocations = configLocationFileStore.getAll();
-
+        StringBuilder sb = new StringBuilder("");
         for (ConfigLocation configLocation : configLocations) {
+            sb.append(configLocation.getLocation()).append(' ');
             try {
                 return configLocation.getFile(BOOTSTRAP_PROPERTIES, accessType);
             } catch (MotechConfigurationException e) {
@@ -88,7 +89,7 @@ public class BootstrapManagerImpl implements BootstrapManager {
             }
         }
 
-        throw new MotechConfigurationException(String.format("%s file is not %s from any of the default locations.", BOOTSTRAP_PROPERTIES, accessType.toString()));
+        throw new MotechConfigurationException(String.format("%s file is not %s from any of the default locations. Searched directories: %s.", BOOTSTRAP_PROPERTIES, accessType.toString(), sb));
     }
 
     private BootstrapConfig readBootstrapConfigFromDefaultLocation() {
