@@ -66,7 +66,7 @@ public class CoreConfigurationServiceImplTest {
         when(configLocationFileStoreMock.getAll()).thenReturn(Arrays.asList(new ConfigLocation(inCorrectConfigPath)));
 
         expectedException.expect(MotechConfigurationException.class);
-        expectedException.expectMessage("Could not read settings from any of the config locations.");
+        expectedException.expectMessage(String.format("Could not read settings from any of the config locations. Searched directories: %s .", new ConfigLocation(inCorrectConfigPath).getLocation()));
 
         coreConfigurationService.getConfigLocation();
     }
