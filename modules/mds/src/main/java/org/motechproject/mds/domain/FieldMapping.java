@@ -3,6 +3,8 @@ package org.motechproject.mds.domain;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -46,9 +48,13 @@ public class FieldMapping {
     @Persistent(mappedBy = "field")
     private List<FieldMetadataMapping> metadata;
 
-    public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type) {
+    @Persistent(dependent = "true")
+    private TypeValidationMapping validation;
+
+    public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type, TypeValidationMapping validation) {
         this.entity = entity;
         this.type = type;
+        this.validation = validation;
         this.displayName = field.getBasic().getDisplayName();
         this.name = field.getBasic().getName();
         this.required = field.getBasic().isRequired();
@@ -77,7 +83,8 @@ public class FieldMapping {
             }
         }
 
-        return new FieldDto(id, entity.getId(), type.toDto().getType(), fieldBasic, metadataDto, null, null);
+        TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
+        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validation.toDto(), null);
     }
 
     public String getDisplayName() {
@@ -159,6 +166,13 @@ public class FieldMapping {
         if (null != field.getMetadata()) {
             for (MetadataDto meta : field.getMetadata()) {
                 metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
+            }
+        }
+
+        if (field.getValidation() != null) {
+            for (ValidationCriterionDto criterionDto : field.getValidation().getCriteria()) {
+                this.validation.getCriterionByName(criterionDto.getDisplayName()).setEnabled(criterionDto.isEnabled());
+                this.validation.getCriterionByName(criterionDto.getDisplayName()).setValue(criterionDto.getValue().toString());
             }
         }
 

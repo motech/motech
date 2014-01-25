@@ -20,7 +20,7 @@ public class ValidationCriterionDto {
     }
 
     public ValidationCriterionDto(String displayName, TypeDto type) {
-        this(displayName, type, null, false);
+        this(displayName, type, "", false);
     }
 
     public ValidationCriterionDto(String displayName, TypeDto type, Object value, boolean enabled) {

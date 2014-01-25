@@ -41,11 +41,12 @@ public class FieldDto {
                 : settings;
     }
 
-    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic) {
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, FieldValidationDto validation) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
         this.basic = basic;
+        this.validation = validation;
     }
 
     public Long getId() {
