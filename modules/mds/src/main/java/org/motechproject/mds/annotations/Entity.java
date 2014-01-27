@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * mapped as Motech Dataservices Entities. The discovery logic for this annotation is done in
  * <code>SeussAnnotationProcessor</code>
  *
- * @see org.motechproject.mds.annotations.SeussAnnotationProcessor
+ * @see org.motechproject.mds.annotations.internal.SeussAnnotationProcessor
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

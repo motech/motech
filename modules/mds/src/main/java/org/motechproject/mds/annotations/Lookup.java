@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
  * MotechDataService, that should be mapped as Motech Dataservices Lookups.
  * The discovery logic for this annotation is done in <code>SeussAnnotationProcessor</code>
  *
- * @see org.motechproject.mds.annotations.SeussAnnotationProcessor
+ * @see org.motechproject.mds.annotations.internal.SeussAnnotationProcessor
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Lookup {
