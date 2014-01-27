@@ -20,7 +20,7 @@
 
         <jasmine.server.port>8234</jasmine.server.port>
 
-        <external.dependency.release.tag>r024</external.dependency.release.tag>
+        <external.dependency.release.tag>r026</external.dependency.release.tag>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <modules.root.dir>${basedir}</modules.root.dir>
         <jdk.version>1.7</jdk.version>
@@ -702,6 +702,11 @@
                 <version>0.16-${external.dependency.release.tag}</version>
             </dependency>
             <!-- Others -->
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>org.motechproject.reflections</artifactId>
+                <version>0.9.5-${external.dependency.release.tag}</version>
+            </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>

@@ -3,6 +3,8 @@ package org.motechproject.mds.web;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -26,6 +28,7 @@ import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -444,7 +447,7 @@ public class ExampleData {
             }
             data.setType(DraftData.ADVANCED);
             start = advancedHistory.get(entityId);
-        } else if(editSecurity) {
+        } else if (editSecurity) {
             if (!securityHistory.containsKey(entityId)) {
                 securityHistory.put(
                         entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
@@ -556,6 +559,37 @@ public class ExampleData {
         return current;
     }
 
+    private void setField(Object current, String property, List value) {
+        Class clazz = current.getClass();
+
+        try {
+            if (property.startsWith("$")) {
+                String methodName = property.substring(1);
+                Class[] parameterTypes = new Class[null == value ? 0 : value.size()];
+                Object[] args = null != value
+                        ? value.toArray(new Object[value.size()])
+                        : new Object[0];
+
+                for (int i = 0; i < args.length; ++i) {
+                    Object item = args[i];
+                    parameterTypes[i] = item instanceof List ? List.class : item.getClass();
+                }
+
+                MethodUtils.invokeMethod(current, methodName, args, parameterTypes);
+            } else {
+                Field field = FieldUtils.getDeclaredField(clazz, property, true);
+
+                if (field.isEnumConstant()) {
+                    Enum enumValue = Enum.valueOf(clazz, (String) value.get(0));
+                    PropertyUtils.setProperty(current, property, enumValue);
+                } else {
+                    PropertyUtils.setProperty(current, property, value.get(0));
+                }
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public void commitChanges(Long entityId) {
         if (fieldsHistory.containsKey(entityId)) {

@@ -5,7 +5,7 @@
 
     var widgetModule = angular.module('motech-admin');
 
-     widgetModule.directive('innerlayout', function() {
+    widgetModule.directive('innerlayout', function() {
          return {
              link: function(scope, elm, attrs) {
                  var eastSelector;
@@ -21,7 +21,6 @@
                          center__paneSelector: "#inner-center",
                          east__spacing_open: 6,
                          spacing_closed: 30,
-                         center__showOverflowOnHover: true,
                          east__size: 300,
                          east__minSize: 200,
                          east__maxSize: 350,
@@ -49,7 +48,7 @@
 
              }
          };
-     });
+    });
 
     widgetModule.directive('sidebar', function () {
        return function (scope, element, attrs) {
