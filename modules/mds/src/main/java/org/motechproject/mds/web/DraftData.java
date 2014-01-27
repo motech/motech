@@ -23,7 +23,6 @@ public class DraftData {
     private boolean create;
     private boolean edit;
     private boolean remove;
-    private String type;
     private Map<String, Object> values;
 
     public boolean isCreate() {
@@ -54,19 +53,19 @@ public class DraftData {
         return values.get(key);
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public Map<String, Object> getValues() {
         return values;
     }
 
     public void setValues(Map<String, Object> values) {
         this.values = values;
+    }
+
+    public boolean isForField() {
+        return getValue(FIELD_ID) != null;
+    }
+
+    public boolean isForAdvanced() {
+        return getValue(ADVANCED) != null;
     }
 }

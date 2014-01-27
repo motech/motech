@@ -1,20 +1,27 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 
-import java.lang.reflect.Field;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class handling dynamic setting of field values
  */
 public final class FieldHelper {
 
-    public static void setField(Object current, String property, List value) {
-        Class clazz = current.getClass();
+    public static void setField(Object current, String path, List value) {
+        String[] splitPath = path.split("\\.");
+
+        Object target = findTargetForField(current, splitPath);
+        setFieldOnTarget(target, splitPath[splitPath.length - 1], value);
+    }
+
+    private static void setFieldOnTarget(Object target, String property, List value) {
+        Class clazz = target.getClass();
 
         try {
             if (property.startsWith("$")) {
@@ -29,20 +36,48 @@ public final class FieldHelper {
                     parameterTypes[i] = item instanceof List ? List.class : item.getClass();
                 }
 
-                MethodUtils.invokeMethod(current, methodName, args, parameterTypes);
+                MethodUtils.invokeMethod(target, methodName, args, parameterTypes);
             } else {
-                Field field = FieldUtils.getDeclaredField(clazz, property, true);
+                PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(target, property);
 
-                if (field.isEnumConstant()) {
+                if (descriptor == null) {
+                    throw new IllegalStateException("Property [" + property + "] not available on class: "
+                            + target.getClass().getName());
+                } else if (descriptor.getPropertyType().isEnum()) {
                     Enum enumValue = Enum.valueOf(clazz, (String) value.get(0));
-                    PropertyUtils.setProperty(current, property, enumValue);
+                    PropertyUtils.setProperty(target, property, enumValue);
                 } else {
-                    PropertyUtils.setProperty(current, property, value.get(0));
+                    PropertyUtils.setProperty(target, property, value.get(0));
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static Object findTargetForField(Object start, String[] path) {
+        Object current = start;
+
+        for (int i = 0; i < path.length - 1; ++i) {
+            String property = path[i];
+
+            if (current == null) {
+                throw new IllegalStateException("Field on path is null");
+            } else if (current instanceof List) {
+                int idx = Integer.parseInt(property);
+                current = ((List) current).get(idx);
+            } else if (current instanceof Map) {
+                current = ((Map) current).get(property);
+            } else {
+                try {
+                    current = PropertyUtils.getProperty(current, property);
+                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        return current;
     }
 
     private FieldHelper() {

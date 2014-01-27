@@ -3,8 +3,6 @@ package org.motechproject.mds.web;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -28,7 +26,6 @@ import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -425,8 +422,6 @@ public class ExampleData {
         field.setValidation(fieldValidation);
         field.setSettings(fieldSettings);
 
-        data.setType(DraftData.FIELD);
-
         map.put(fieldId, field);
     }
 
@@ -445,7 +440,6 @@ public class ExampleData {
                         entityId, clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId))
                 );
             }
-            data.setType(DraftData.ADVANCED);
             start = advancedHistory.get(entityId);
         } else if (editSecurity) {
             if (!securityHistory.containsKey(entityId)) {
@@ -453,7 +447,6 @@ public class ExampleData {
                         entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
                 );
             }
-            data.setType(DraftData.SECURITY);
             start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
@@ -475,7 +468,6 @@ public class ExampleData {
                 map.put(fieldId, clone(FieldDto.class, field));
             }
 
-            data.setType(DraftData.FIELD);
             start = map.get(fieldId);
         }
 

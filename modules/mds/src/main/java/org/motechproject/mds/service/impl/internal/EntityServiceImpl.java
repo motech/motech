@@ -81,7 +81,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public boolean saveDraftEntityChanges(Long entityId, DraftData draftData) {
-        exampleData.draft(entityId, draftData);
         EntityDraft draft = getEntityDraft(entityId);
 
         if (draftData.isCreate()) {
@@ -95,6 +94,15 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         return draft.getChangesMade();
     }
 
+
+    private void draftEdit(EntityDraft draft, DraftData draftData) {
+        if (draftData.isForAdvanced()) {
+            createAdvancedForDraft(draft, draftData);
+        } else if (draftData.isForField()) {
+            editFieldForDraft(draft, draftData);
+        }
+    }
+
     private void editFieldForDraft(EntityDraft draft, DraftData draftData) {
         String fieldIdStr = draftData.getValue(DraftData.FIELD_ID).toString();
 
@@ -103,12 +111,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             FieldMapping field = draft.getField(fieldId);
 
             if (field != null) {
-                String[] path = draftData.getValue(DraftData.PATH).toString().split("\\.");
+                String path = draftData.getValue(DraftData.PATH).toString();
                 List value = (List) draftData.getValue(DraftData.VALUE);
 
                 // Convert to dto for UI updates
                 FieldDto dto = field.toDto();
-                FieldHelper.setField(dto, path[path.length - 1], value);
+                FieldHelper.setField(dto, path, value);
 
                 // Perform update
                 field.update(dto);
@@ -119,7 +127,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     private void createAdvancedForDraft(EntityDraft draft, DraftData draftData) {
         if (draftData.getValue(DraftData.PATH).equals(DraftData.ADD_NEW_INDEX)) {
-            LookupMapping lookupMapping = new LookupMapping("New lookup name", true, draft);
+            LookupMapping lookupMapping = new LookupMapping("", true, draft);
             draft.addLookup(lookupMapping);
         } else if (draftData.getValue(DraftData.PATH).equals(DraftData.REMOVE_INDEX)) {
             StringBuilder sb = new StringBuilder(draftData.getValue(DraftData.VALUE).toString());
@@ -164,13 +172,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         allEntityDrafts.save(draft);
     }
 
-    private void draftEdit(EntityDraft draft, DraftData draftData) {
-        if (draftData.getType().equals(DraftData.ADVANCED)) {
-            createAdvancedForDraft(draft, draftData);
-        } else if (draftData.getType().equals(DraftData.FIELD)) {
-            editFieldForDraft(draft, draftData);
-        }
-    }
 
     private void draftRemove(EntityDraft draft, DraftData draftData) {
         Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());
