@@ -24,13 +24,13 @@
                     </div>
                 </div>
 
-                <h5>{{msg('email.settings.log.title1')}}</h5>
+                <h5 class="margin-before2">{{msg('email.settings.log.title1')}}</h5>
 
                 <div class="form-group">
                     <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
                         <div class="checkbox">
                             <label for="settingsLogAddress">
-                                <input class="form-control input-auto" ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
+                                <input ng-model="settings.logAddress" type="checkbox" id="settingsLogAddress"
                                        ng-true-value="true" ng-false-value="false" />
                                 {{msg('email.settings.log.address')}}
                             </label>
@@ -38,40 +38,49 @@
                     </div>
 
                     <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                        <label class="checkbox" for="settingsLogSubject">
-                            <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
-                                   ng-true-value="true" ng-false-value="false" />
-                            {{msg('email.settings.log.subject')}}
-                        </label>
+                        <div class="checkbox">
+                            <label for="settingsLogSubject">
+                                <input ng-model="settings.logSubject" type="checkbox" id="settingsLogSubject"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.subject')}}
+                            </label>
+                        </div>
                     </div>
 
                     <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                        <label class="checkbox" for="settingsLogBody">
-                            <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
-                                   ng-true-value="true" ng-false-value="false" />
-                            {{msg('email.settings.log.body')}}
-                        </label>
+                        <div class="checkbox">
+                            <label for="settingsLogBody">
+                                <input ng-model="settings.logBody" type="checkbox" id="settingsLogBody"
+                                       ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.body')}}
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <h5>{{msg('email.settings.log.title2')}}</h5>
+                <h5 class="margin-before2">{{msg('email.settings.log.title2')}}</h5>
 
-                <div class="form-group">
+                <div class="form-group form-inline">
                     <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                        <label class="checkbox inline">
-                            <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
-                               ng-true-value="true" ng-false-value="false" />
-                            {{msg('email.settings.log.purge')}}
-                        </label>
-                        <div class="form-inline margin-before">
+                        <div class="checkbox">
+                            <label>
+                                <input ng-model="settings.logPurgeEnable" type="checkbox" id="settingsLogPurgeEnable"
+                                   ng-true-value="true" ng-false-value="false" />
+                                {{msg('email.settings.log.purge')}}
+                            </label>
+                        </div>
+                        <div class="checkbox">
                             <input class="form-control input-auto" purgeTime="purgeTime" ng-disabled="purgeTimeControlsDisabled()" ng-model="settings.logPurgeTime" type="text" id="settingsLogPurgeTime" />
                             <select class="form-control input-auto" ng-disabled="purgeTimeControlsDisabled()"  ng-model="settings.logPurgeTimeMultiplier" ng-options="k as v for (k , v) in timeMultipliers" ></select>
                         </div>
-                    </div>
-                    </div>
 
-                <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
-                    <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-sm-offset-4 col-md-9 col-sm-8">
+                        <input ng-disabled="emailSettingsForm.$invalid" ng-click="submit()" type="button" value="{{msg('email.settings.submit')}}" class="btn btn-primary"/>
+                    </div>
                 </div>
 
             </form>
