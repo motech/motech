@@ -29,9 +29,6 @@
         "path": "bootstrap-theme.min.css",
         "after": "bootstrap.min.css"
     }, {
-        "path": "bootstrap-fileupload.min.css",
-        "after": "bootstrap-theme.min.css"
-    }, {
         "path": "index.css",
         "order": "last"
     }]

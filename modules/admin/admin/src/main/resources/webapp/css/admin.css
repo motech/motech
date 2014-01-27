@@ -137,9 +137,6 @@ h4.settings-section {
 .table-content {
     border-radius:4px;
     padding: 0;
-    -webkit-box-shadow: 0 0 6px #bec9de;
-       -moz-box-shadow: 0 0 6px #bec9de;
-            box-shadow: 0 0 6px #bec9de;
 }
 
 .table-bundles {
