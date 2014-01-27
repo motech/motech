@@ -1,14 +1,16 @@
 package org.motechproject.mds.domain;
 
+import org.motechproject.mds.dto.FieldBasicDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import org.motechproject.mds.dto.FieldBasicDto;
-import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.dto.TypeDto;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>FieldMapping</code> class contains information about a single field
@@ -41,6 +43,9 @@ public class FieldMapping {
     @Persistent
     private AvailableFieldTypeMapping type;
 
+    @Persistent(mappedBy = "field")
+    private List<FieldMetadataMapping> metadata;
+
     public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type) {
         this.entity = entity;
         this.type = type;
@@ -48,16 +53,31 @@ public class FieldMapping {
         this.name = field.getBasic().getName();
         this.required = field.getBasic().isRequired();
         this.tooltip = field.getBasic().getTooltip();
+
         if (field.getBasic().getDefaultValue() != null) {
             this.defaultValue = field.getBasic().getDefaultValue().toString();
+        }
+
+        metadata = new ArrayList<>();
+
+        if (null != field.getMetadata()) {
+            for (MetadataDto meta : field.getMetadata()) {
+                metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
+            }
         }
     }
 
     public FieldDto toDto() {
-
         FieldBasicDto fieldBasic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
-        TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
-        return new FieldDto(id, entity.getId(), basicType, fieldBasic);
+        List<MetadataDto> metadataDto = new ArrayList<>();
+
+        if (null != metadata) {
+            for (FieldMetadataMapping meta : metadata) {
+                metadataDto.add(meta.toDto());
+            }
+        }
+
+        return new FieldDto(id, entity.getId(), type.toDto().getType(), fieldBasic, metadataDto, null, null);
     }
 
     public String getDisplayName() {
@@ -129,9 +149,19 @@ public class FieldMapping {
         this.setName(field.getBasic().getName());
         this.setRequired(field.getBasic().isRequired());
         this.setTooltip(field.getBasic().getTooltip());
+
         if (field.getBasic().getDefaultValue() != null) {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
         }
+
+        metadata = new ArrayList<>();
+
+        if (null != field.getMetadata()) {
+            for (MetadataDto meta : field.getMetadata()) {
+                metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
+            }
+        }
+
         return this;
     }
 }
