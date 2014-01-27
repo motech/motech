@@ -1,14 +1,11 @@
 package org.motechproject.mds.service;
 
-import org.junit.Before;
 import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
-import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -16,9 +13,15 @@ import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +48,7 @@ public class EntityServiceIT extends BaseIT {
     @Before
     public void setUp() throws Exception {
         getPersistenceManager().deletePersistentAll(getEntityMappings());
+        setUpSecurityContext();
     }
 
     @After
@@ -128,6 +132,17 @@ public class EntityServiceIT extends BaseIT {
         entityDto.setName("entity");
 
         entityDto = entityService.createEntity(entityDto);
+
+        Map<String, Object> values = new HashMap<>();
+        values.put(DraftData.PATH, DraftData.ADD_NEW_INDEX);
+        values.put(DraftData.ADVANCED, true);
+
+        DraftData dd = new DraftData();
+        dd.setEdit(true);
+        dd.setType(DraftData.ADVANCED);
+        dd.setValues(values);
+
+        entityService.saveDraftEntityChanges(entityDto.getId(), dd);
         //List<LookupDto> savedLookups = entityService.saveEntityLookups(entityDto.getId(), lookups);
         //entityService.saveEntityLookups(entityDto.getId(), savedLookups);
 
@@ -177,5 +192,13 @@ public class EntityServiceIT extends BaseIT {
         List<EntityDto> result = entityService.listEntities();
 
         assertEquals(asList(SIMPLE_NAME_2, SIMPLE_NAME_3), extract(result, on(EntityDto.class).getName()));
+    }
+
+    private void setUpSecurityContext() {
+        SecurityContext securityContext = new SecurityContextImpl();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(new User("motech", "motech", asList(new SimpleGrantedAuthority("seussSchemaAccess"))), null);
+        securityContext.setAuthentication(authentication);
+        authentication.setAuthenticated(false);
+        SecurityContextHolder.setContext(securityContext);
     }
 }
