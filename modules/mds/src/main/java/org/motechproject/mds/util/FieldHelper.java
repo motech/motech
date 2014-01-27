@@ -1,9 +1,11 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -12,39 +14,34 @@ import java.util.List;
 public final class FieldHelper {
 
     public static void setField(Object current, String property, List value) {
-        if (property.startsWith("$")) {
-            String methodName = property.substring(1);
+        Class clazz = current.getClass();
 
-            try {
-                Class<?> clazz = current.getClass();
+        try {
+            if (property.startsWith("$")) {
+                String methodName = property.substring(1);
+                Class[] parameterTypes = new Class[null == value ? 0 : value.size()];
+                Object[] args = null != value
+                        ? value.toArray(new Object[value.size()])
+                        : new Object[0];
 
-                if (value == null) {
-                    Method method = clazz.getMethod(methodName);
-                    method.invoke(current);
-                } else {
-                    Class[] classes = new Class[value.size()];
-                    for (int i = 0; i < value.size(); ++i) {
-                        Object item = value.get(i);
-                        classes[i] = item instanceof List ? List.class : item.getClass();
-                    }
-
-                    Method method = clazz.getMethod(methodName, classes);
-                    method.invoke(current, value.toArray(new Object[value.size()]));
+                for (int i = 0; i < args.length; ++i) {
+                    Object item = args[i];
+                    parameterTypes[i] = item instanceof List ? List.class : item.getClass();
                 }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new IllegalStateException(e);
-            }
-        } else {
-            try {
-                Class clazz = PropertyUtils.getProperty(current, property).getClass();
-                if (clazz.isEnum()) {
-                    PropertyUtils.setProperty(current, property, Enum.valueOf(clazz, (String)value.get(0)));
+
+                MethodUtils.invokeMethod(current, methodName, args, parameterTypes);
+            } else {
+                Field field = FieldUtils.getDeclaredField(clazz, property, true);
+
+                if (field.isEnumConstant()) {
+                    Enum enumValue = Enum.valueOf(clazz, (String) value.get(0));
+                    PropertyUtils.setProperty(current, property, enumValue);
                 } else {
                     PropertyUtils.setProperty(current, property, value.get(0));
                 }
-            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new IllegalStateException(e);
             }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
         }
     }
 
