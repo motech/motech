@@ -7,17 +7,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
-import org.motechproject.mds.repository.AllLookupMappings;
+import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.io.IOException;
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -34,12 +39,8 @@ public class EntityServiceIT extends BaseIT {
     private static final String SIMPLE_NAME_2 = "Test2";
     private static final String SIMPLE_NAME_3 = "Test3";
 
-
     @Autowired
     private EntityService entityService;
-
-    @Autowired
-    private AllLookupMappings allLookupMappings;
 
     @Before
     public void setUp() throws Exception {
@@ -80,17 +81,44 @@ public class EntityServiceIT extends BaseIT {
         assertFalse("The instance of entity should be saved in database", list.isEmpty());
     }
 
+    @Test(expected = AccessDeniedException.class)
+    public void shouldNotSaveDraftWhenUsernameIsUnavailable() throws IOException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("nousernameEntity");
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("path", DraftData.ADD_NEW_INDEX);
+        values.put("advanced", true);
+
+        DraftData draftData = new DraftData();
+        draftData.setType(DraftData.ADVANCED);
+        draftData.setEdit(true);
+        draftData.setValues(values);
+        entityDto = entityService.createEntity(entityDto);
+
+        entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
+        entityService.commitChanges(entityDto.getId());
+    }
+
     @Test
     public void shouldSaveEntityWithGivenLookups() throws IOException {
-        List<LookupDto> lookups = asList(new LookupDto("lookup1", true), new LookupDto("lookup2", true));
         EntityDto entityDto = new EntityDto();
         entityDto.setName("myEntity");
 
-        entityDto = entityService.createEntity(entityDto);
-        //entityService.saveEntityLookups(entityDto.getId(), lookups);
+        Map<String, Object> values = new HashMap<>();
+        values.put("path", DraftData.ADD_NEW_INDEX);
+        values.put("advanced", true);
 
-        assertTrue(containsLookup("lookup1"));
-        assertTrue(containsLookup("lookup2"));
+        DraftData draftData = new DraftData();
+        draftData.setType(DraftData.ADVANCED);
+        draftData.setEdit(true);
+        draftData.setValues(values);
+        entityDto = entityService.createEntity(entityDto);
+
+        entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
+        entityService.commitChanges(entityDto.getId());
+
+        assertTrue(containsLookup("New lookup name"));
     }
 
     @Test
@@ -122,6 +150,7 @@ public class EntityServiceIT extends BaseIT {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionWhenAddingLookupToNonExistingEntity() throws Exception {
+        //entityService.
         //entityService.saveEntityLookups(9999L, asList(new LookupDto()));
     }
 

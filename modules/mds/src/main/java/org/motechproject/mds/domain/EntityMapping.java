@@ -122,6 +122,9 @@ public class EntityMapping {
     }
 
     public List<LookupMapping> getLookups() {
+        if (lookups == null) {
+            lookups = new ArrayList<>();
+        }
         return lookups;
     }
 
@@ -200,8 +203,14 @@ public class EntityMapping {
         getLookups().add(lookup);
     }
 
-    public void removeLookup(LookupMapping lookup) {
-        getLookups().remove(lookup);
+    public void removeLookup(Long lookupId) {
+        for (Iterator<LookupMapping> it = getLookups().iterator(); it.hasNext(); ) {
+            LookupMapping lookup = it.next();
+            if (Objects.equals(lookup.getId(), lookupId)) {
+                it.remove();
+                break;
+            }
+        }
     }
 
     public void updateFromDraft(EntityDraft draft) {

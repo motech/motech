@@ -422,6 +422,8 @@ public class ExampleData {
         field.setValidation(fieldValidation);
         field.setSettings(fieldSettings);
 
+        data.setType(DraftData.FIELD);
+
         map.put(fieldId, field);
     }
 
@@ -432,7 +434,7 @@ public class ExampleData {
         boolean editSecurity = null != securityValue && parseBoolean(securityValue.toString());
         String[] path = data.getValue(DraftData.PATH).toString().split("\\.");
         List value = (List) data.getValue(DraftData.VALUE);
-        Object start;
+        Object start = null;
 
         if (editAdvanced) {
             if (!advancedHistory.containsKey(entityId)) {
@@ -440,7 +442,7 @@ public class ExampleData {
                         entityId, clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId))
                 );
             }
-
+            data.setType(DraftData.ADVANCED);
             start = advancedHistory.get(entityId);
         } else if(editSecurity) {
             if (!securityHistory.containsKey(entityId)) {
@@ -448,7 +450,7 @@ public class ExampleData {
                         entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
                 );
             }
-
+            data.setType(DraftData.SECURITY);
             start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
@@ -458,11 +460,19 @@ public class ExampleData {
             Map<Long, FieldDto> map = fieldsHistory.get(entityId);
             Long fieldId = Long.valueOf(data.getValue(DraftData.FIELD_ID).toString());
 
-            if (!map.containsKey(fieldId)) {
+            for (FieldDto fieldDto : map.values()) {
+                if (fieldDto.getId().equals(fieldId)) {
+                    start = fieldDto;
+                    break;
+                }
+            }
+
+            if (start == null) {
                 FieldDto field = getField(fieldId);
                 map.put(fieldId, clone(FieldDto.class, field));
             }
 
+            data.setType(DraftData.FIELD);
             start = map.get(fieldId);
         }
 

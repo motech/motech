@@ -15,10 +15,15 @@ public class DraftData {
     public static final String NAME = "name";
     public static final String ADVANCED = "advanced";
     public static final String SECURITY = "security";
+    public static final String FIELD = "field";
+
+    public static final String ADD_NEW_INDEX = "$addNewIndex";
+    public static final String REMOVE_INDEX = "$removeIndex";
 
     private boolean create;
     private boolean edit;
     private boolean remove;
+    private String type;
     private Map<String, Object> values;
 
     public boolean isCreate() {
@@ -47,6 +52,14 @@ public class DraftData {
 
     public Object getValue(String key) {
         return values.get(key);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Map<String, Object> getValues() {

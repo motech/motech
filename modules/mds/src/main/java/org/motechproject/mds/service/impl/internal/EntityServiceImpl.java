@@ -5,6 +5,7 @@ import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -94,6 +95,40 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         return draft.getChangesMade();
     }
 
+    private void editFieldForDraft(EntityDraft draft, DraftData draftData) {
+        String fieldIdStr = draftData.getValue(DraftData.FIELD_ID).toString();
+
+        if (StringUtils.isNotBlank(fieldIdStr)) {
+            Long fieldId = Long.valueOf(fieldIdStr);
+            FieldMapping field = draft.getField(fieldId);
+
+            if (field != null) {
+                String[] path = draftData.getValue(DraftData.PATH).toString().split("\\.");
+                List value = (List) draftData.getValue(DraftData.VALUE);
+
+                // Convert to dto for UI updates
+                FieldDto dto = field.toDto();
+                FieldHelper.setField(dto, path[path.length - 1], value);
+
+                // Perform update
+                field.update(dto);
+                allEntityDrafts.save(draft);
+            }
+        }
+    }
+
+    private void createAdvancedForDraft(EntityDraft draft, DraftData draftData) {
+        if (draftData.getValue(DraftData.PATH).equals(DraftData.ADD_NEW_INDEX)) {
+            LookupMapping lookupMapping = new LookupMapping("New lookup name", true, draft);
+            draft.addLookup(lookupMapping);
+        } else if (draftData.getValue(DraftData.PATH).equals(DraftData.REMOVE_INDEX)) {
+            StringBuilder sb = new StringBuilder(draftData.getValue(DraftData.VALUE).toString());
+            LookupMapping lookup = draft.getLookups().get(Integer.valueOf(sb.substring(1, sb.length() - 1)));
+            draft.removeLookup(lookup.getId());
+        }
+        allEntityDrafts.save(draft);
+    }
+
     private void createFieldForDraft(EntityDraft draft, DraftData draftData) {
         String typeClass = draftData.getValue(DraftData.TYPE_CLASS).toString();
         String displayName = draftData.getValue(DraftData.DISPLAY_NAME).toString();
@@ -120,6 +155,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         field.setType(fieldType);
         field.setValidation(fieldValidation);
         field.setSettings(fieldSettings);
+        field.setSettings(fieldSettings);
 
         FieldMapping fieldMapping = new FieldMapping(field, draft, availableType);
 
@@ -129,24 +165,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     private void draftEdit(EntityDraft draft, DraftData draftData) {
-        String fieldIdStr = draftData.getValue(DraftData.FIELD_ID).toString();
-
-        if (StringUtils.isNotBlank(fieldIdStr)) {
-            Long fieldId = Long.valueOf(fieldIdStr);
-            FieldMapping field = draft.getField(fieldId);
-
-            if (field != null) {
-                String[] path = draftData.getValue(DraftData.PATH).toString().split("\\.");
-                List value = (List) draftData.getValue(DraftData.VALUE);
-
-                // Convert to dto for UI updates
-                FieldDto dto = field.toDto();
-                FieldHelper.setField(dto, path[path.length - 1], value);
-
-                // Perform update
-                field.update(dto);
-                allEntityDrafts.save(draft);
-            }
+        if (draftData.getType().equals(DraftData.ADVANCED)) {
+            createAdvancedForDraft(draft, draftData);
+        } else if (draftData.getType().equals(DraftData.FIELD)) {
+            editFieldForDraft(draft, draftData);
         }
     }
 
@@ -206,7 +228,15 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
-        return exampleData.getAdvanced(entityId);
+        EntityMapping entity = getEntityDraft(entityId);
+        List<LookupMapping> lookups = entity.getLookups();
+        AdvancedSettingsDto advancedSettings = exampleData.getAdvanced(entityId);
+        advancedSettings.getIndexes().clear();
+        for (LookupMapping lookup : lookups) {
+            advancedSettings.getIndexes().add(lookup.toDto());
+        }
+
+        return advancedSettings;
     }
 
     @Override
