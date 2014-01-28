@@ -1,12 +1,10 @@
 package org.motechproject.mds.dto;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,8 +51,10 @@ public class FieldValidationDto {
     public FieldValidationDto(ValidationCriterionDto... criteria) {
         this.criteria = new LinkedList<>();
 
-        if (!ArrayUtils.isEmpty(criteria)) {
-            Collections.addAll(this.criteria, criteria);
+        if (criteria != null) {
+            for (ValidationCriterionDto criterion : criteria) {
+                this.criteria.add(new ValidationCriterionDto(criterion.getDisplayName(), criterion.getType()));
+            }
         }
     }
 

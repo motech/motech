@@ -35,6 +35,9 @@ public class TypeValidationMapping {
     @Element(dependent = "true")
     private Set<ValidationCriterionMapping> criteria;
 
+    public TypeValidationMapping() {
+    }
+
     public TypeValidationMapping(AvailableFieldTypeMapping type) {
         this.name = type.getDefaultName();
         this.type = type;
@@ -54,6 +57,18 @@ public class TypeValidationMapping {
         }
 
         return new FieldValidationDto(validationCriteriaDto.toArray(new ValidationCriterionDto[validationCriteriaDto.size()]));
+    }
+
+    public ValidationCriterionMapping getCriterionByName(String name) {
+        if (criteria != null) {
+            for (ValidationCriterionMapping criterionMapping : criteria) {
+                if (criterionMapping.getDisplayName().equalsIgnoreCase(name)) {
+                    return criterionMapping;
+                }
+            }
+        }
+
+        return null;
     }
 
     public Long getId() {

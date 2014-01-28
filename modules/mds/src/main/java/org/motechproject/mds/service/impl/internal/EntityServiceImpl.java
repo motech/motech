@@ -3,18 +3,21 @@ package org.motechproject.mds.service.impl.internal;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.AllFieldTypes;
 import org.motechproject.mds.repository.AllLookupMappings;
+import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSConstructor;
@@ -42,6 +45,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private MDSConstructor constructor;
     private AllLookupMappings allLookupMappings;
     private AllFieldTypes allFieldTypes;
+    private AllTypeValidationMappings allTypeValidationMappings;
 
     // TODO remove this once everything is in db
     private ExampleData exampleData = new ExampleData();
@@ -80,7 +84,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public void commitChanges(Long entityId, List<FieldDto> fields) {
-
         EntityMapping entity = allEntityMappings.getEntityById(entityId);
 
         if (entity == null) {
@@ -94,8 +97,14 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         for (FieldDto field : fields) {
             if (field.getId() == null || entity.getField(field.getId()) == null) {
                 AvailableFieldTypeMapping type = allFieldTypes.getByName(field.getType().getDisplayName());
-                entity.getFields().add( new FieldMapping(field, entity, type));
-
+                TypeValidationMapping validationMapping = allTypeValidationMappings.getEmptyValidationForType(type);
+                if (validationMapping != null) {
+                    for (ValidationCriterionDto criterionDto : field.getValidation().getCriteria()) {
+                        validationMapping.getCriterionByName(criterionDto.getDisplayName()).setEnabled(criterionDto.isEnabled());
+                        validationMapping.getCriterionByName(criterionDto.getDisplayName()).setValue(criterionDto.getValue().toString());
+                    }
+                }
+                entity.getFields().add(new FieldMapping(field, entity, type, validationMapping));
             } else {
                 entity.getField(field.getId()).update(field);
             }
@@ -228,5 +237,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllFieldTypes(AllFieldTypes allFieldTypes) {
         this.allFieldTypes = allFieldTypes;
+    }
+
+    @Autowired
+    public void setAllTypeValidationMappings(AllTypeValidationMappings allTypeValidationMappings) {
+        this.allTypeValidationMappings = allTypeValidationMappings;
     }
 }

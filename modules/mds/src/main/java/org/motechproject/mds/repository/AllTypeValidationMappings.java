@@ -3,9 +3,12 @@ package org.motechproject.mds.repository;
 
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
+import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The <code>AllTypeValidationMappings</code> class is a repository class that operates on instances of
@@ -27,6 +30,24 @@ public class AllTypeValidationMappings extends BaseMdsRepository {
         query.setUnique(true);
 
         return (TypeValidationMapping) query.execute(type.getId());
+    }
+
+    public TypeValidationMapping getEmptyValidationForType(AvailableFieldTypeMapping type) {
+        TypeValidationMapping emptyValidation = null;
+        TypeValidationMapping typeValidationMapping = getValidationForType(type);
+
+        if (typeValidationMapping != null) {
+            emptyValidation = new TypeValidationMapping();
+            emptyValidation.setName(type.getDefaultName());
+            Set<ValidationCriterionMapping> emptyCriteria = new HashSet<>();
+            for (ValidationCriterionMapping criterionMapping : typeValidationMapping.getCriteria()) {
+                emptyCriteria.add(new ValidationCriterionMapping(criterionMapping.getDisplayName(), emptyValidation, criterionMapping.getType()));
+            }
+
+            emptyValidation.setCriteria(emptyCriteria);
+        }
+
+        return emptyValidation;
     }
 
     public void delete(Long id) {

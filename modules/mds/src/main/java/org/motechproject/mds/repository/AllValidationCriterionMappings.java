@@ -20,7 +20,7 @@ public class AllValidationCriterionMappings extends BaseMdsRepository {
         if (criterion.getValue() != null) {
             validationCriterionMapping = new ValidationCriterionMapping(criterion.getDisplayName(), criterion.getValue().toString(), criterion.isEnabled(), validation, type);
         } else {
-            validationCriterionMapping = new ValidationCriterionMapping(criterion.getDisplayName(), null, criterion.isEnabled(), validation, type);
+            validationCriterionMapping = new ValidationCriterionMapping(criterion.getDisplayName(), validation, type);
         }
 
         return getPersistenceManager().makePersistent(validationCriterionMapping);

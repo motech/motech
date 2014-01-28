@@ -36,6 +36,10 @@ public class ValidationCriterionMapping {
     @Persistent
     private boolean enabled;
 
+    public ValidationCriterionMapping(String displayName, TypeValidationMapping validation, AvailableFieldTypeMapping type) {
+        this(displayName, "", false, validation, type);
+    }
+
     public ValidationCriterionMapping(String displayName, String value, boolean enabled, TypeValidationMapping validation, AvailableFieldTypeMapping type) {
         this.displayName = displayName;
         this.value = value;

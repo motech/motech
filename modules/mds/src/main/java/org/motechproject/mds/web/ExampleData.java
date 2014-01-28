@@ -21,6 +21,7 @@ import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -414,7 +415,10 @@ public class ExampleData {
         AvailableTypeDto availableType = getAvailableType(typeClass);
         TypeDto fieldType = availableType.getType();
         List<SettingDto> fieldSettings = typeSettings.get(fieldType);
-        FieldValidationDto fieldValidation = typeValidation.get(fieldType);
+        FieldValidationDto fieldValidation = null;
+        if (typeValidation.get(fieldType) != null) {
+            fieldValidation = new FieldValidationDto(typeValidation.get(fieldType).getCriteria().toArray(new ValidationCriterionDto[typeValidation.get(fieldType).getCriteria().size()]));
+        }
 
         FieldDto field = new FieldDto();
         field.setId(fieldId);
