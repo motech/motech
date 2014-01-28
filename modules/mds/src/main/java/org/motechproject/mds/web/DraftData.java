@@ -68,4 +68,9 @@ public class DraftData {
     public boolean isForAdvanced() {
         return getValue(ADVANCED) != null;
     }
+
+    public String getPath() {
+        Object path = getValue(PATH);
+        return (path == null) ? null : path.toString();
+    }
 }

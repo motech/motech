@@ -5,7 +5,6 @@ import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
-import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -97,7 +96,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     private void draftEdit(EntityDraft draft, DraftData draftData) {
         if (draftData.isForAdvanced()) {
-            createAdvancedForDraft(draft, draftData);
+            editAdvacedForDraft(draft, draftData);
         } else if (draftData.isForField()) {
             editFieldForDraft(draft, draftData);
         }
@@ -111,7 +110,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             FieldMapping field = draft.getField(fieldId);
 
             if (field != null) {
-                String path = draftData.getValue(DraftData.PATH).toString();
+                String path = draftData.getPath();
                 List value = (List) draftData.getValue(DraftData.VALUE);
 
                 // Convert to dto for UI updates
@@ -125,15 +124,15 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
     }
 
-    private void createAdvancedForDraft(EntityDraft draft, DraftData draftData) {
-        if (draftData.getValue(DraftData.PATH).equals(DraftData.ADD_NEW_INDEX)) {
-            LookupMapping lookupMapping = new LookupMapping("", true, draft);
-            draft.addLookup(lookupMapping);
-        } else if (draftData.getValue(DraftData.PATH).equals(DraftData.REMOVE_INDEX)) {
-            StringBuilder sb = new StringBuilder(draftData.getValue(DraftData.VALUE).toString());
-            LookupMapping lookup = draft.getLookups().get(Integer.valueOf(sb.substring(1, sb.length() - 1)));
-            draft.removeLookup(lookup.getId());
-        }
+    private void editAdvacedForDraft(EntityDraft draft, DraftData draftData) {
+        AdvancedSettingsDto advancedDto = draft.advancedSettingsDto();
+        String path = draftData.getPath();
+        List value = (List) draftData.getValue(DraftData.VALUE);
+
+        FieldHelper.setField(advancedDto, path, value);
+
+        draft.updateAdvancedSetting(advancedDto);
+
         allEntityDrafts.save(draft);
     }
 
@@ -230,14 +229,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
         EntityMapping entity = getEntityDraft(entityId);
-        List<LookupMapping> lookups = entity.getLookups();
-        AdvancedSettingsDto advancedSettings = exampleData.getAdvanced(entityId);
-        advancedSettings.getIndexes().clear();
-        for (LookupMapping lookup : lookups) {
-            advancedSettings.getIndexes().add(lookup.toDto());
-        }
-
-        return advancedSettings;
+        return entity.advancedSettingsDto();
     }
 
     @Override

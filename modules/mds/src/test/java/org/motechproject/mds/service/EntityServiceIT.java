@@ -88,7 +88,6 @@ public class EntityServiceIT extends BaseIT {
         values.put("advanced", true);
 
         DraftData draftData = new DraftData();
-        draftData.setType(DraftData.ADVANCED);
         draftData.setEdit(true);
         draftData.setValues(values);
 
@@ -105,7 +104,6 @@ public class EntityServiceIT extends BaseIT {
         values.put("advanced", true);
 
         DraftData draftData = new DraftData();
-        draftData.setType(DraftData.ADVANCED);
         draftData.setEdit(true);
         draftData.setValues(values);
         entityDto = entityService.createEntity(entityDto);
@@ -127,7 +125,6 @@ public class EntityServiceIT extends BaseIT {
         values.put("advanced", true);
 
         DraftData draftData = new DraftData();
-        draftData.setType(DraftData.ADVANCED);
         draftData.setEdit(true);
         draftData.setValues(values);
         entityDto = entityService.createEntity(entityDto);

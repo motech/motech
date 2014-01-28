@@ -11,7 +11,7 @@ import javax.jdo.annotations.PrimaryKey;
 /**
  * The <code>LookupMapping</code> class contains information about single lookup
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class LookupMapping {
 
     @PrimaryKey
@@ -32,9 +32,8 @@ public class LookupMapping {
         this.singleObjectReturn = singleObjectReturn;
     }
 
-    public LookupMapping(String lookupName, boolean singleObjectReturn, EntityMapping entity) {
-        this(lookupName, singleObjectReturn);
-        this.entity = entity;
+    public LookupMapping(LookupDto lookupDto) {
+        update(lookupDto);
     }
 
     public LookupDto toDto() {
@@ -74,6 +73,11 @@ public class LookupMapping {
     }
 
     public LookupMapping copy() {
-        return new LookupMapping(getLookupName(), isSingleObjectReturn());
+        return new LookupMapping(lookupName, singleObjectReturn);
+    }
+
+    public void update(LookupDto lookupDto) {
+        singleObjectReturn = lookupDto.isSingleObjectReturn();
+        lookupName = lookupDto.getLookupName();
     }
 }

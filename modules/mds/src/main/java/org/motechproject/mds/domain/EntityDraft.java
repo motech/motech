@@ -74,6 +74,7 @@ public class EntityDraft extends EntityMapping {
     public EntityDto toDto() {
         EntityDto dto = super.toDto();
         dto.setDraft(true);
+        dto.setId(getParentEntity().getId());
         return dto;
     }
 

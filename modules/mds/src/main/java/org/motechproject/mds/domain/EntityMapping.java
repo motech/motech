@@ -1,6 +1,7 @@
 package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.util.ClassName;
@@ -213,6 +214,15 @@ public class EntityMapping {
         }
     }
 
+    public LookupMapping getLookupById(Long lookupId) {
+        for (LookupMapping lookup : getLookups()) {
+            if (Objects.equals(lookupId, lookup.getId())) {
+                return lookup;
+            }
+        }
+        return null;
+    }
+
     public void updateFromDraft(EntityDraft draft) {
         getFields().clear();
         for (FieldMapping field : draft.getFields()) {
@@ -221,12 +231,58 @@ public class EntityMapping {
 
         getLookups().clear();
         for (LookupMapping lookup : draft.getLookups()) {
-            addLookup(lookup.copy());
+            LookupMapping copy = lookup.copy();
+            copy.setEntity(this);
+            addLookup(copy);
         }
     }
 
     @NotPersistent
     public boolean isDraft() {
         return false;
+    }
+
+    @NotPersistent
+    public AdvancedSettingsDto advancedSettingsDto() {
+        AdvancedSettingsDto advancedSettingsDto = new AdvancedSettingsDto();
+
+        List<LookupDto> indexes = new ArrayList<>();
+        for (LookupMapping lookup : getLookups()) {
+            indexes.add(lookup.toDto());
+        }
+
+        advancedSettingsDto.setIndexes(indexes);
+        advancedSettingsDto.setEntityId(getId());
+
+        return advancedSettingsDto;
+    }
+
+    public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
+        // deletion
+        for (Iterator<LookupMapping> it = getLookups().iterator(); it.hasNext(); ) {
+            LookupMapping lookup = it.next();
+
+            boolean inNewList = false;
+            for (LookupDto lookupDto : advancedSettings.getIndexes()) {
+                if (Objects.equals(lookup.getId(), lookupDto.getId())) {
+                    inNewList = true;
+                    break;
+                }
+            }
+
+            if (!inNewList) {
+                it.remove();
+            }
+        }
+
+        for (LookupDto lookupDto : advancedSettings.getIndexes()) {
+            LookupMapping lookup = getLookupById(lookupDto.getId());
+            if (lookup == null) {
+                LookupMapping newLookup = new LookupMapping(lookupDto);
+                addLookup(newLookup);
+            } else {
+                lookup.update(lookupDto);
+            }
+        }
     }
 }

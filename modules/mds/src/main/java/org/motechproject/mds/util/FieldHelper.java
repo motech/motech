@@ -51,7 +51,7 @@ public final class FieldHelper {
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -62,7 +62,7 @@ public final class FieldHelper {
             String property = path[i];
 
             if (current == null) {
-                throw new IllegalStateException("Field on path is null");
+                throw new IllegalArgumentException("Field on path is null");
             } else if (current instanceof List) {
                 int idx = Integer.parseInt(property);
                 current = ((List) current).get(idx);
@@ -72,7 +72,7 @@ public final class FieldHelper {
                 try {
                     current = PropertyUtils.getProperty(current, property);
                 } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    throw new IllegalStateException(e);
+                    throw new IllegalArgumentException(e);
                 }
             }
         }
