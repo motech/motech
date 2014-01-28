@@ -165,6 +165,14 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <!-- override the default dependency -->
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-core</artifactId>
+                        <version>3.2.11</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
