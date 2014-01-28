@@ -88,6 +88,7 @@
                 <property name="password" value="${javax.jdo.option.ConnectionPassword}"/>
             </bean>
         </property>
+        <property name="initOnMigrate" value="true"/>
     </bean>
 
     <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway">

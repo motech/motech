@@ -101,14 +101,14 @@ public class EntityControllerTest {
     @Test
     public void shouldReturnRecordsSortedByName() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto(9005L, "Appointments", "Appointments"));
-        expected.add(new EntityDto(9006L, "Call Log Item", "IVR"));
-        expected.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
-        expected.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
-        expected.add(new EntityDto(9007L, "Voucher"));
+        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API"));
+        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API"));
+        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign"));
+        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio"));
+        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra"));
+        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio"));
+        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra"));
+        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher"));
 
         SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
 
@@ -118,7 +118,7 @@ public class EntityControllerTest {
 
     @Test
     public void shouldReturnEntityById() throws Exception {
-        assertEquals(new EntityDto(9007L, "Voucher"), controller.getEntity(9007L));
+        assertEquals(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher"), controller.getEntity(9007L));
     }
 
     @Test(expected = EntityNotFoundException.class)

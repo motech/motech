@@ -17,26 +17,26 @@ public class SelectResultTest {
     @Test
     public void shouldReturnCorrectNumberOfRecords() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto(9001L, "Patient", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9002L, "Person", "OpenMRS", "navio"));
-        expected.add(new EntityDto(9003L, "Patient", "OpenMRS", "accra"));
-        expected.add(new EntityDto(9004L, "Person", "OpenMRS", "accra"));
+        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio"));
+        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio"));
+        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra"));
+        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra"));
 
         SelectResult<EntityDto> result = new SelectResult<>(new SelectData(null, 1, 4), ENTITIES);
         assertEquals(expected, result.getResults());
         assertTrue(result.isMore());
 
         expected.clear();
-        expected.add(new EntityDto(9005L, "Appointments", "Appointments"));
-        expected.add(new EntityDto(9006L, "Call Log Item", "IVR"));
+        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API"));
+        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API"));
 
         result = new SelectResult<>(new SelectData(null, 3, 2), ENTITIES);
         assertEquals(expected, result.getResults());
         assertTrue(result.isMore());
 
         expected.clear();
-        expected.add(new EntityDto(9007L, "Voucher"));
-        expected.add(new EntityDto(9008L, "Campaign", "Message Campaign"));
+        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher"));
+        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign"));
 
         result = new SelectResult<>(new SelectData(null, 4, 3), ENTITIES);
         assertEquals(expected, result.getResults());

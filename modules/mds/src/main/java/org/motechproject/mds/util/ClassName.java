@@ -1,5 +1,7 @@
 package org.motechproject.mds.util;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.motechproject.mds.constants.Constants.Packages;
 
 /**
@@ -14,13 +16,17 @@ public final class ClassName {
     }
 
     public static String getSimpleName(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? className : className.substring(idx + 1);
+        String str = defaultIfBlank(className, EMPTY);
+        int idx = str.lastIndexOf('.');
+
+        return idx < 0 ? str : str.substring(idx + 1);
     }
 
     public static String getPackage(String className) {
-        int idx = className.lastIndexOf('.');
-        return idx < 0 ? className : className.substring(0, idx);
+        String str = defaultIfBlank(className, EMPTY);
+        int idx = str.lastIndexOf('.');
+
+        return idx < 0 ? EMPTY : str.substring(0, idx);
     }
 
     public static String getRepositoryName(String className) {
@@ -34,4 +40,5 @@ public final class ClassName {
     public static String getServiceName(String className) {
         return String.format("%s.%sServiceImpl", Packages.SERVICE_IMPL, getSimpleName(className));
     }
+
 }

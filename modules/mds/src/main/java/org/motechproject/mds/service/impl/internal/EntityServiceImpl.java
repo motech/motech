@@ -30,6 +30,7 @@ import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSConstructor;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.ExampleData;
@@ -68,17 +69,24 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public EntityDto createEntity(EntityDto entity) throws IOException {
-        if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
+        String packageName = ClassName.getPackage(entity.getClassName());
+        boolean fromUI = StringUtils.isEmpty(packageName);
+
+        if (fromUI) {
+            // in this situation entity.getName() returns a simple name of class
+            String className = String.format("%s.%s", Packages.ENTITY, entity.getName());
+            entity.setClassName(className);
         }
 
-        if (allEntityMappings.containsEntity(entity.getName())) {
+        if (allEntityMappings.containsEntity(entity.getClassName())) {
             throw new EntityAlreadyExistException();
         }
 
-        String className = String.format("%s.%s", Packages.ENTITY, entity.getName());
-        EntityMapping entityMapping = allEntityMappings.save(className);
-        constructor.constructEntity(entityMapping);
+        EntityMapping entityMapping = allEntityMappings.save(entity);
+
+        if (fromUI) {
+            constructor.constructEntity(entityMapping);
+        }
 
         return entityMapping.toDto();
     }
@@ -329,7 +337,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         FieldMapping field = entity.getField(name);
 
-        if (field  == null) {
+        if (field == null) {
             throw new FieldNotFoundException();
         }
 

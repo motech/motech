@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.motechproject.mds.constants.Constants.Util.TRUE;
 
@@ -44,6 +45,9 @@ public class EntityMapping {
 
     @Persistent
     private String className;
+
+    @Persistent
+    private String name;
 
     @Persistent
     private String module;
@@ -74,13 +78,18 @@ public class EntityMapping {
     }
 
     public EntityMapping(String className, String module, String namespace) {
+        this(className, ClassName.getSimpleName(className), module, namespace);
+    }
+
+    public EntityMapping(String className, String name, String module, String namespace) {
         this.className = className;
+        this.name = name;
         this.module = module;
         this.namespace = namespace;
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, ClassName.getSimpleName(className), module, namespace);
+        return new EntityDto(id, className, getName(), module, namespace);
     }
 
     public Long getId() {
@@ -97,6 +106,14 @@ public class EntityMapping {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getName() {
+        return defaultIfBlank(name, ClassName.getSimpleName(className));
+    }
+
+    public void setName(String name) {
+        this.name = defaultIfBlank(name, ClassName.getSimpleName(className));
     }
 
     public String getModule() {
@@ -186,6 +203,7 @@ public class EntityMapping {
                 return field;
             }
         }
+
         return null;
     }
 

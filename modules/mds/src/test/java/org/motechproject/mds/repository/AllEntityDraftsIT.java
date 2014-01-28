@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.dto.EntityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jdo.JDOException;
@@ -32,7 +33,10 @@ public class AllEntityDraftsIT extends BaseIT {
 
     @Test
     public void shouldCreateAndDeleteDrafts() {
-        EntityMapping entity = allEntityMappings.save("DraftCls");
+        EntityDto dto = new EntityDto();
+        dto.setClassName("DraftCls");
+
+        EntityMapping entity = allEntityMappings.save(dto);
 
         allEntityDrafts.createDraft(entity, USERNAME);
         allEntityDrafts.createDraft(entity, USERNAME_2);
@@ -60,7 +64,10 @@ public class AllEntityDraftsIT extends BaseIT {
 
     @Test(expected = JDOException.class)
     public void shouldNotAllowTwoDraftsOfTheSameEntityForOneUser() {
-        EntityMapping entity = allEntityMappings.save("DraftCls2");
+        EntityDto dto = new EntityDto();
+        dto.setClassName("DraftCls2");
+
+        EntityMapping entity = allEntityMappings.save(dto);
 
         allEntityDrafts.createDraft(entity, USERNAME);
         allEntityDrafts.createDraft(entity, USERNAME);

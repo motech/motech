@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.LookupMapping;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -64,7 +65,10 @@ public class AllEntityMappingsIT extends BaseIT {
                 containsEntity(BAR_CLASS)
         );
 
-        allEntityMappings.save(BAR_CLASS);
+        EntityDto entity = new EntityDto();
+        entity.setClassName(BAR_CLASS);
+
+        allEntityMappings.save(entity);
 
         assertTrue(
                 String.format("Not found %s in database", BAR_CLASS),
@@ -75,33 +79,31 @@ public class AllEntityMappingsIT extends BaseIT {
     @Test
     public void shouldFindExistingEntity() throws Exception {
         for (String className : Arrays.asList(SAMPLE_CLASS, EXAMPLE_CLASS, FOO_CLASS)) {
-            String simpleName = className.substring(className.lastIndexOf('.') + 1);
-
             assertTrue(
                     String.format("Not found %s in database", className),
-                    allEntityMappings.containsEntity(simpleName)
+                    allEntityMappings.containsEntity(className)
             );
         }
     }
 
     @Test
     public void shouldNotFindExistingEntity() throws Exception {
-        String simpleName = BAR_CLASS.substring(BAR_CLASS.lastIndexOf('.') + 1);
-
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(simpleName)
+                allEntityMappings.containsEntity(BAR_CLASS)
         );
     }
 
     @Test
     public void shouldDeleteEntity() throws Exception {
-        allEntityMappings.save(BAR_CLASS);
-        String simpleName = BAR_CLASS.substring(BAR_CLASS.lastIndexOf('.') + 1);
+        EntityDto entity = new EntityDto();
+        entity.setClassName(BAR_CLASS);
+
+        allEntityMappings.save(entity);
 
         assertTrue(
                 String.format("Not found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(simpleName)
+                allEntityMappings.containsEntity(BAR_CLASS)
         );
 
         Query query = getPersistenceManager().newQuery(EntityMapping.class);
@@ -115,7 +117,7 @@ public class AllEntityMappingsIT extends BaseIT {
 
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(simpleName)
+                allEntityMappings.containsEntity(BAR_CLASS)
         );
     }
 

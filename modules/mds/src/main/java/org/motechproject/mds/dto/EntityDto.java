@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.util.ClassName;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -13,6 +14,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 public class EntityDto {
     private Long id;
+    private String className;
     private String name;
     private String module;
     private String namespace;
@@ -20,19 +22,32 @@ public class EntityDto {
     private boolean modified;
 
     public EntityDto() {
-        this(null, null);
+        this(null, null, null, null, null);
     }
 
-    public EntityDto(Long id, String name) {
-        this(id, name, null);
+    public EntityDto(String className) {
+        this(className, ClassName.getSimpleName(className), null, null);
     }
 
-    public EntityDto(Long id, String name, String module) {
-        this(id, name, module, null);
+    public EntityDto(Long id, String className) {
+        this(id, className, ClassName.getSimpleName(className), null, null);
     }
 
-    public EntityDto(Long id, String name, String module, String namespace) {
+    public EntityDto(Long id, String className, String module) {
+        this(id, className, ClassName.getSimpleName(className), module, null);
+    }
+
+    public EntityDto(Long id, String className, String module, String namespace) {
+        this(id, className, ClassName.getSimpleName(className), module, namespace);
+    }
+
+    public EntityDto(String className, String name, String module, String namespace) {
+        this(null, className, name, module, namespace);
+    }
+
+    public EntityDto(Long id, String className, String name, String module, String namespace) {
         this.id = id;
+        this.className = className;
         this.name = name;
         this.module = module;
         this.namespace = namespace;
@@ -45,6 +60,14 @@ public class EntityDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String getName() {

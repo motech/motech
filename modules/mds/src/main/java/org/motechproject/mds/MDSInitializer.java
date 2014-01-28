@@ -42,7 +42,7 @@ public class MDSInitializer {
 
             for (EntityMapping mapping : mappings) {
                 try {
-                    if (!(mapping instanceof EntityDraft)) {
+                    if (!(mapping instanceof EntityDraft) && !mapping.isReadOnly()) {
                         constructor.constructEntity(mapping);
                     }
                 } catch (IOException e) {

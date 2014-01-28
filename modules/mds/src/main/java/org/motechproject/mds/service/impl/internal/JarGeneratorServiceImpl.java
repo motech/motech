@@ -51,17 +51,19 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
 
         List<EntityMapping> mappings = entityMappings.getAllEntities();
         for (EntityMapping mapping : mappings) {
-            String[] classes = new String[]{
-                    mapping.getClassName(), getInterfaceName(mapping.getClassName())
-            };
+            if (!mapping.isReadOnly()) {
+                String[] classes = new String[]{
+                        mapping.getClassName(), getInterfaceName(mapping.getClassName())
+                };
 
-            for (String c : classes) {
-                CtClass clazz = MotechClassPool.getDefault().get(c);
+                for (String c : classes) {
+                    CtClass clazz = MotechClassPool.getDefault().get(c);
 
-                JarEntry entry = new JarEntry(createClassPath(c));
-                output.putNextEntry(entry);
-                output.write(clazz.toBytecode());
-                output.closeEntry();
+                    JarEntry entry = new JarEntry(createClassPath(c));
+                    output.putNextEntry(entry);
+                    output.write(clazz.toBytecode());
+                    output.closeEntry();
+                }
             }
         }
 

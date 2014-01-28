@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 
@@ -28,8 +29,7 @@ import static org.motechproject.mds.constants.Constants.Packages;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllEntityMappingsTest {
-    private static final String SIMPLE_NAME = "Sample";
-    private static final String CLASS_NAME = String.format("%s.%s", Packages.ENTITY, SIMPLE_NAME);
+    private static final String CLASS_NAME = String.format("%s.%s", Packages.ENTITY, "Sample");
 
     @Mock
     private PersistenceManagerFactory pmf;
@@ -55,7 +55,10 @@ public class AllEntityMappingsTest {
 
     @Test
     public void shouldSaveEntity() throws Exception {
-        allEntityMappings.save(CLASS_NAME);
+        EntityDto entity = new EntityDto();
+        entity.setClassName(CLASS_NAME);
+
+        allEntityMappings.save(entity);
 
         verify(pm).makePersistent(entityMappingArgumentCaptor.capture());
 
@@ -78,7 +81,7 @@ public class AllEntityMappingsTest {
         when(pm.newQuery(EntityMapping.class)).thenReturn(query);
         when(query.execute(CLASS_NAME)).thenReturn(mappings);
 
-        assertTrue(allEntityMappings.containsEntity(SIMPLE_NAME));
+        assertTrue(allEntityMappings.containsEntity(CLASS_NAME));
 
         verify(query).setFilter("className == name");
         verify(query).declareParameters("java.lang.String name");
@@ -90,7 +93,7 @@ public class AllEntityMappingsTest {
         when(pm.newQuery(EntityMapping.class)).thenReturn(query);
         when(query.execute(CLASS_NAME)).thenReturn(new ArrayList<EntityMapping>());
 
-        assertFalse(allEntityMappings.containsEntity(SIMPLE_NAME));
+        assertFalse(allEntityMappings.containsEntity(CLASS_NAME));
 
         verify(query).setFilter("className == name");
         verify(query).declareParameters("java.lang.String name");

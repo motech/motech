@@ -1,5 +1,7 @@
 package org.motechproject.mds.annotations;
 
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.PersistenceCapable;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,6 +18,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public @interface Entity {
+
+    String name() default "";
+
+    String module() default "";
+
+    String namespace() default "";
 
 }

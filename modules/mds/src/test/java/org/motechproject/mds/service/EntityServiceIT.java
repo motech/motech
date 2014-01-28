@@ -123,34 +123,10 @@ public class EntityServiceIT extends BaseIT {
         assertTrue(containsLookup("New lookup"));
     }
 
-    @Test(expected = EntityReadOnlyException.class)
-    public void shouldThrowExceptionWhenAddingLookupToReadOnlyEntity() throws Exception {
-        EntityDto entityDto = new EntityDto();
-        entityDto.setReadOnly(true);
-        entityDto.setName("readOnlyEntity");
-
-        Map<String, Object> values = new HashMap<>();
-        values.put("path", DraftData.ADD_NEW_INDEX);
-        values.put("advanced", true);
-
-        DraftData draftData = new DraftData();
-        draftData.setEdit(true);
-        draftData.setValues(values);
-        entityDto = entityService.createEntity(entityDto);
-
-        entityService.saveDraftEntityChanges(entityDto.getId(), draftData);
-        entityService.commitChanges(entityDto.getId());
-    }
-
     @Test
     public void shouldRetrieveAllEntities() throws IOException {
-        EntityDto entityDto = new EntityDto();
-
-        entityDto.setName(SIMPLE_NAME_2);
-        entityService.createEntity(entityDto);
-
-        entityDto.setName(SIMPLE_NAME_3);
-        entityService.createEntity(entityDto);
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null));
 
         List<EntityDto> result = entityService.listEntities();
 
@@ -173,6 +149,7 @@ public class EntityServiceIT extends BaseIT {
         entityDto.setName("WIP1");
         EntityDto result1 = entityService.createEntity(entityDto);
 
+        entityDto.setClassName(null);
         entityDto.setName("WIP2");
         EntityDto result2 = entityService.createEntity(entityDto);
 

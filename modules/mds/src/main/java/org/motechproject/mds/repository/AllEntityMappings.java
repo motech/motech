@@ -1,6 +1,7 @@
 package org.motechproject.mds.repository;
 
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
@@ -9,8 +10,6 @@ import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
 
-import static org.motechproject.mds.constants.Constants.Packages;
-
 /**
  * The <code>AllEntityMappings</code> class is a repository class that operates on instances of
  * {@link org.motechproject.mds.domain.EntityMapping}.
@@ -18,19 +17,21 @@ import static org.motechproject.mds.constants.Constants.Packages;
 @Repository
 public class AllEntityMappings extends BaseMdsRepository {
 
-    public EntityMapping save(String className) {
+    public EntityMapping save(EntityDto entity) {
         EntityMapping mapping = new EntityMapping();
-        mapping.setClassName(className);
+        mapping.setClassName(entity.getClassName());
+        mapping.setName(entity.getName());
+        mapping.setModule(entity.getModule());
+        mapping.setNamespace(entity.getNamespace());
 
         return getPersistenceManager().makePersistent(mapping);
     }
 
-    public boolean containsEntity(String simpleName) {
+    public boolean containsEntity(String className) {
         Query query = getPersistenceManager().newQuery(EntityMapping.class);
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
 
-        String className = String.format("%s.%s", Packages.ENTITY, simpleName);
         Collection collection = (Collection) query.execute(className);
         List<EntityMapping> mappings = cast(EntityMapping.class, collection);
 

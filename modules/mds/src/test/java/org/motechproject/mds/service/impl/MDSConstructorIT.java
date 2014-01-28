@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.jdo.PersistenceManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,39 +18,43 @@ import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.constants.Constants.Packages;
 
 public class MDSConstructorIT extends BaseIT {
-    private static final String VOUCHER_CLASS = String.format("%s.Voucher", Packages.ENTITY);
-    private static final String VOUCHER_REPOSITORY = String.format("%s.AllVouchers", Packages.REPOSITORY);
-    private static final String VOUCHER_INTERFACE = String.format("%s.VoucherService", Packages.SERVICE);
-    private static final String VOUCHER_SERVICE = String.format("%s.VoucherServiceImpl", Packages.SERVICE_IMPL);
+    private static final String SIMPLE_NAME = "Constructor";
+    private static final String CLASS_NAME = String.format("%s.%s", Packages.ENTITY, SIMPLE_NAME);
+    private static final String REPOSITORY_NAME = String.format("%s.All%ss", Packages.REPOSITORY, SIMPLE_NAME);
+    private static final String INTERFACE_NAME = String.format("%s.%sService", Packages.SERVICE, SIMPLE_NAME);
+    private static final String SERVICE_NAME = String.format("%s.%sServiceImpl", Packages.SERVICE_IMPL, SIMPLE_NAME);
 
     @Autowired
     private MDSConstructor constructor;
 
+    @Autowired
+    private AllEntityMappings allEntityMappings;
+
+    private EntityMapping entity;
+
     @Before
     public void setUp() throws Exception {
-        getPersistenceManager().deletePersistentAll(getEntityMappings());
-        PersistenceManager persistenceManager = getPersistenceManager();
-        persistenceManager.makePersistent(new EntityMapping(VOUCHER_CLASS));
+        entity = allEntityMappings.save(new EntityDto(CLASS_NAME));
     }
 
     @After
     public void tearDown() throws Exception {
-        getPersistenceManager().newQuery(EntityMapping.class).deletePersistentAll();
+        allEntityMappings.delete(entity.getId());
     }
 
     @Test
     public void testConstructEntity() throws Exception {
         EntityMapping mapping = new EntityMapping();
-        mapping.setClassName(VOUCHER_CLASS);
+        mapping.setClassName(CLASS_NAME);
 
         constructor.constructEntity(mapping);
 
         MDSClassLoader classLoader = MDSClassLoader.PERSISTANCE;
 
-        Class<?> entityClass = classLoader.loadClass(VOUCHER_CLASS);
-        Class<?> repositoryClass = classLoader.loadClass(VOUCHER_REPOSITORY);
-        Class<?> interfaceClass = classLoader.loadClass(VOUCHER_INTERFACE);
-        Class<?> serviceClass = classLoader.loadClass(VOUCHER_SERVICE);
+        Class<?> entityClass = classLoader.loadClass(CLASS_NAME);
+        Class<?> repositoryClass = classLoader.loadClass(REPOSITORY_NAME);
+        Class<?> interfaceClass = classLoader.loadClass(INTERFACE_NAME);
+        Class<?> serviceClass = classLoader.loadClass(SERVICE_NAME);
 
         assertNotNull(entityClass);
         assertNotNull(repositoryClass);

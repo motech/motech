@@ -340,11 +340,14 @@
                                 entity.namespace
                             ))
                         : undefined,
-                    info = (module || namespace)
-                        ? angular.element('<div>').append(module).append(namespace)
+                    info1 = module
+                        ? angular.element('<div>').append(module)
                         : undefined,
-                    parent = (name || info)
-                        ? angular.element('<div>').append(name).append(info)
+                    info2 = namespace
+                        ? angular.element('<div>').append(namespace)
+                        : undefined,
+                    parent = (name || info1 || info2)
+                        ? angular.element('<div>').append(name).append(info1).append(info2)
                         : undefined;
 
                 return parent || $scope.msg('mds.error');
