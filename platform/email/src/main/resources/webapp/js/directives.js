@@ -64,8 +64,8 @@
                         "image": false,
                         "color": false,
                         "link": false,
-                        events: {
-                            change: function() {
+                        'events': {
+                            'change': function() {
                                 scope.$apply(function() {
                                     ctrl.$setViewValue(editor.getValue());
                                 });
@@ -74,6 +74,12 @@
                     });
 
                     editor = $(this).data('wysihtml5').editor;
+
+                    $('.wysihtml5-sandbox').contents().find('body').bind("keyup", function() {
+                        scope.$apply(function() {
+                            ctrl.$setViewValue(editor.getValue());
+                        });
+                    });
 
                     // model -> view
                     ctrl.$render = function() {
