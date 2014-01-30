@@ -47,19 +47,23 @@ public class MotechUserServiceImpl implements MotechUserService {
     private UserContextService userContextsService;
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale) {
+    public void register(String username, String password, String email, String externalId, List<String> roles,
+                         Locale locale) {
         this.register(username, password, email, externalId, roles, locale, true, "");
     }
 
     @Override
-    public void register(String username, String password, String email, String externalId, List<String> roles, Locale locale, boolean isActive, String openId) {
+    public void register(String username, String password, // NO CHECKSTYLE More than 7 parameters (found 8).
+                         String email, String externalId, List<String> roles, Locale locale, boolean isActive,
+                         String openId) {
         LOGGER.info("Registering new user: {}", username);
         if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
 
         String encodePassword = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles, openId, locale);
+        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, email, externalId, roles,
+                openId, locale);
         user.setActive(isActive);
         allMotechUsers.add(user);
         LOGGER.info("Registered new user: {}", username);

@@ -148,7 +148,7 @@ if (compressDir.exists()) {
         log.info('APPLY ORDER FROM: ' + orderFile)
         order = JSON.parse(new FileReader(orderFile))
     } else {
-        log.warn('ORDER FILE NOT FOUND. USE ALPHABETICAL ORDER.')
+        log.info('ORDER FILE NOT FOUND. USE ALPHABETICAL ORDER.')
     }
 
     process(compressDir, order, 'css', 'css')
@@ -157,5 +157,5 @@ if (compressDir.exists()) {
 
     generateMin(compressDir)
 } else {
-    log.warn('YUI COMPRESS DIR NOT EXISTS. NOTHING TO DO.')
+    log.info('YUI COMPRESS DIR NOT EXISTS. NOTHING TO DO.')
 }

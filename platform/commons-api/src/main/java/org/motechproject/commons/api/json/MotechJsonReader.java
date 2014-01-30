@@ -96,14 +96,14 @@ public class MotechJsonReader {
 
     private static class LocalDateDeserializer implements JsonDeserializer<LocalDate> {
         @Override
-        public LocalDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public LocalDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
             return new LocalDate(jsonElement.getAsJsonPrimitive().getAsString());
         }
     }
 
     private static class MotechPropertiesDeserializer implements JsonDeserializer<MotechProperties> {
         @Override
-        public MotechProperties deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public MotechProperties deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             MotechProperties motechProperties = new MotechProperties();
             for (Map.Entry<String, JsonElement> property : jsonObject.entrySet()) {

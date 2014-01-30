@@ -8,6 +8,8 @@ import java.io.Serializable;
 
 public class Time implements Comparable<Time>, Serializable {
     private static final long serialVersionUID = -6049964979382913093L;
+    private static final int TIME_TOKEN_MIN_LENGTH = 2;
+    private static final int TIME_TOKEN_MAX_LENGTH = 3;
     private Integer hour;
     private Integer minute;
 
@@ -31,7 +33,7 @@ public class Time implements Comparable<Time>, Serializable {
     public Time(String timeStr) {
         String[] tokens = timeStr.split(":");
 
-        if (tokens.length < 2 || tokens.length > 3) {
+        if (tokens.length < TIME_TOKEN_MIN_LENGTH || tokens.length > TIME_TOKEN_MAX_LENGTH) {
             throw new IllegalArgumentException("Invalid time string: " + timeStr);
         }
 

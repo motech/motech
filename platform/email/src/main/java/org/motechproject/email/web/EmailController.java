@@ -45,22 +45,20 @@ public class EmailController {
 
     private EmailRecords previousEmailRecords;
 
-    @RequestMapping(value = "/emails", method= RequestMethod.GET)
+    @RequestMapping(value = "/emails", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords getEmails(GridSettings filter) {
         List<EmailRecord> filtered = auditService.findEmailRecords(prepareCriteria(filter));
 
+        boolean sortAscending = null == filter.getSortDirection() ? true : "asc".equals(filter.getSortDirection());
 
-        boolean sortAscending = filter.getSortDirection() == null ? true : filter.getSortDirection().equals("asc");
-
-        if (filter.getSubject()!=null) {
+        if (filter.getSubject() != null) {
             filtered = filterByPartialString(filtered, filter.getSubject());
         }
 
-        if (filter.getSortColumn()!=null && (!filtered.isEmpty())) {
-            Collections.sort(
-                    filtered, new EmailRecordComparator(sortAscending, filter.getSortColumn())
+        if (filter.getSortColumn() != null && (!filtered.isEmpty())) {
+            Collections.sort(filtered, new EmailRecordComparator(sortAscending, filter.getSortColumn())
             );
         }
 
@@ -79,8 +77,8 @@ public class EmailController {
             String month = record.getDeliveryTime().monthOfYear().getAsText();
             String year = record.getDeliveryTime().year().getAsText();
 
-            if (!availableMonths.contains(month+" "+year)) {
-                availableMonths.add(month+" "+year);
+            if (!availableMonths.contains(month + " " + year)) {
+                availableMonths.add(month + " " + year);
             }
         }
 
@@ -93,38 +91,37 @@ public class EmailController {
                                @RequestParam(value = "month", required = false) String month,
                                HttpServletResponse response) throws IOException {
         DateTime now = new DateTime();
-        String fileName = "motech_email_logs_"+now.toString("yyyy-MM-dd_HH-kk-mm");
+        String fileName = "motech_email_logs_" + now.toString("yyyy-MM-dd_HH-kk-mm");
         response.setContentType("text/csv;charset=utf-8");
         response.setCharacterEncoding(UTF_8);
         response.setHeader(
                 "Content-Disposition",
-                "attachment; filename="+fileName+".csv");
+                "attachment; filename=" + fileName + ".csv");
 
         EmailRecords toSave = new EmailRecords();
 
-        if (range.equals("all")) {
+        if ("all".equals(range)) {
             GridSettings allEmailsFilter = new GridSettings();
             List<EmailRecord> allEmails = auditService.findAllEmailRecords();
             allEmailsFilter.setPage(1);
             allEmailsFilter.setRows(allEmails.size());
             toSave = hideColumns(allEmails, allEmailsFilter);
-        } else if (range.equals("table")) {
+        } else if ("table".equals(range)) {
             toSave = previousEmailRecords;
-        } else if (range.equals("month") && (!month.isEmpty())) {
+        } else if ("month".equals(range) && (!month.isEmpty())) {
             int moved = 0;
             String fixedMonth = "0";
-            if (month.charAt(0)=='0') {
+            if (month.charAt(0) == '0') {
                 fixedMonth = month.substring(1);
                 moved++;
             } else {
                 fixedMonth = month;
             }
             GridSettings oneMonthFilter = new GridSettings();
-            DateTime monthBegin = new DateTime(Integer.parseInt(fixedMonth.substring(3-moved,7-moved)),
-                    Integer.parseInt(fixedMonth.substring(0,2-moved)),
-                    1, 0, 0);
-            DateTime monthFall = new DateTime().withYear(Integer.parseInt(fixedMonth.substring(3-moved,7-moved))).
-                    withMonthOfYear(Integer.parseInt(fixedMonth.substring(0,2-moved))).
+            DateTime monthBegin = new DateTime(Integer.parseInt(fixedMonth.substring(3 - moved, 7 - moved)), // NO CHECKSTYLE MagicNumber
+                    Integer.parseInt(fixedMonth.substring(0, 2 - moved)), 1, 0, 0);
+            DateTime monthFall = new DateTime().withYear(Integer.parseInt(fixedMonth.substring( 3 - moved, 7 - moved))).  // NO CHECKSTYLE MagicNumber
+                    withMonthOfYear(Integer.parseInt(fixedMonth.substring(0, 2 - moved))).
                     dayOfMonth().withMaximumValue().
                     hourOfDay().withMaximumValue().
                     minuteOfHour().withMaximumValue().
@@ -149,7 +146,7 @@ public class EmailController {
 
         List<String> availableAddress = new ArrayList<>();
 
-        if (autoComplete.equals("subject") && emailCredentials(EmailRolesConstants.DETAILED_EMAIL_LOGS)) {
+        if ("subject".equals(autoComplete) && emailCredentials(EmailRolesConstants.DETAILED_EMAIL_LOGS)) {
             availableAddress = getAllFromAddressContaining(partialAddress);
             List<String> availableAddress2 = getAllToAddressContaining(partialAddress);
 
@@ -163,7 +160,7 @@ public class EmailController {
         return availableAddress;
     }
 
-    @RequestMapping(value = "/emails/{mailid}", method= RequestMethod.GET)
+    @RequestMapping(value = "/emails/{mailid}", method = RequestMethod.GET)
     @PreAuthorize(EmailRolesConstants.HAS_ANY_EMAIL_ROLE)
     @ResponseBody
     public EmailRecords getEmail(@PathVariable int mailid) {
@@ -176,12 +173,12 @@ public class EmailController {
 
     private EmailRecordSearchCriteria prepareCriteria(GridSettings filter) {
         EmailRecordSearchCriteria criteria = new EmailRecordSearchCriteria();
-        criteria.withMessageTimeRange(new Range<>(( (filter.getTimeFrom() == null || filter.getTimeFrom().isEmpty()) ? getMinDateTime() :
+        criteria.withMessageTimeRange(new Range<>(((filter.getTimeFrom() == null || filter.getTimeFrom().isEmpty()) ? getMinDateTime() :
                 DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeFrom())),
-                ( (filter.getTimeTo() == null || filter.getTimeTo().isEmpty()) ? getMaxDateTime() :
+                ((filter.getTimeTo() == null || filter.getTimeTo().isEmpty()) ? getMaxDateTime() :
                         DateTimeFormat.forPattern("Y-MM-dd HH:mm:ss").parseDateTime(filter.getTimeTo()))));
 
-        if (filter.getDeliveryStatusFromSettings()==null ? false : (!filter.getDeliveryStatusFromSettings().isEmpty())) {
+        if (filter.getDeliveryStatusFromSettings() == null ? false : (!filter.getDeliveryStatusFromSettings().isEmpty())) {
             criteria = criteria.withDeliveryStatuses(filter.getDeliveryStatusFromSettings());
         }
 
@@ -252,17 +249,17 @@ public class EmailController {
             for (EmailRecord record : records) {
                 recordsDto.add(new EmailRecordDto(record));
             }
-            mailRecords = new EmailRecords<>(filter.getPage()==null ? 1 : filter.getPage(),
+            mailRecords = new EmailRecords<>(filter.getPage() == null ? 1 : filter.getPage(),
                     filter.getRows(), recordsDto);
-        } else if (emailCredentials(EmailRolesConstants.BASIC_EMAIL_LOGS) && (filter.getSubject()==null ? true : filter.getSubject().isEmpty()) ) {
+        } else if (emailCredentials(EmailRolesConstants.BASIC_EMAIL_LOGS) && (filter.getSubject() == null ? true : filter.getSubject().isEmpty())) {
             List<BasicEmailRecordDto> basicList = new ArrayList<>();
             for (EmailRecord rec : records) {
                 basicList.add(new BasicEmailRecordDto(rec));
             }
-            mailRecords = new EmailRecords<>(filter.getPage()==null ? 1 : filter.getPage(),
+            mailRecords = new EmailRecords<>(filter.getPage() == null ? 1 : filter.getPage(),
                     filter.getRows(), basicList);
         } else {
-            mailRecords = new EmailRecords<>(0,0,new ArrayList());
+            mailRecords = new EmailRecords<>(0, 0, new ArrayList());
         }
         return mailRecords;
     }
@@ -274,7 +271,7 @@ public class EmailController {
         } else if (records.getRows().size() > 0 && records.getRows().get(0) instanceof  BasicEmailRecordDto) {
             list.add(asList("Status", "Delivery time"));
         }
-        for(Object record : records.getRows()) {
+        for (Object record : records.getRows()) {
             if (record instanceof EmailRecordDto) {
                 List<String> innerList = asList(((EmailRecordDto) record).getDeliveryStatus(),
                         ((EmailRecordDto) record).getDeliveryTime(),

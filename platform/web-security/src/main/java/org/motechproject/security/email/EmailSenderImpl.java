@@ -98,7 +98,7 @@ public class EmailSenderImpl implements EmailSender {
 
         String path = "/module";
 
-        if (flag.equals("reset")) {
+        if ("reset".equals(flag)) {
             path += "/server/";
         } else {
             path += "/websecurity/api/";

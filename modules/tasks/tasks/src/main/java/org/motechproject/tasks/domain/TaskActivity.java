@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @TypeDiscriminator("doc.type == 'TaskActivity'")
-public class TaskActivity extends MotechBaseDataObject implements Comparable<TaskActivity>{
+public class TaskActivity extends MotechBaseDataObject implements Comparable<TaskActivity> {
     private static final long serialVersionUID = 4700697701096557098L;
 
     private String message;

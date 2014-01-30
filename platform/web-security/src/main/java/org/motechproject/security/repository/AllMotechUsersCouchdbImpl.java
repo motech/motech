@@ -98,7 +98,7 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     @Override
     public List<MotechUser> getUsers() {
         List<MotechUser> users = new ArrayList<MotechUser>(getAll());
-        List<MotechUser> noOpenIdUsers =new ArrayList<MotechUser>();
+        List<MotechUser> noOpenIdUsers = new ArrayList<MotechUser>();
         for (MotechUser user : users) {
              if (user.getOpenId().isEmpty()) {
                  noOpenIdUsers.add(user);
@@ -116,7 +116,7 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     @Override
     public List<MotechUser> getOpenIdUsers() {
         List<MotechUser> users = new ArrayList<MotechUser>(getAll());
-        List<MotechUser> openIdUsers =new ArrayList<MotechUser>();
+        List<MotechUser> openIdUsers = new ArrayList<MotechUser>();
         for (MotechUser user : users) {
             if (!user.getOpenId().isEmpty()) {
                 openIdUsers.add(user);

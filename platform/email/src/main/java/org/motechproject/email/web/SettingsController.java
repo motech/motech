@@ -101,7 +101,7 @@ public class SettingsController {
 
         settingsFacade.saveConfigProperties(EMAIL_PROPERTIES_FILE_NAME, settings.toProperties());
 
-        if (initializeSettings!=null) {
+        if (initializeSettings != null) {
             initializeSettings.handleSettingsChange();
         }
 

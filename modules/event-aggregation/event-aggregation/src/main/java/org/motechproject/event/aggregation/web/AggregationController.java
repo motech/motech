@@ -24,9 +24,9 @@ public class AggregationController {
     @RequestMapping(value = "{ruleName}/{eventStatus}", method = RequestMethod.GET)
     @ResponseBody
     public List<? extends Aggregation> getAggregations(@PathVariable String ruleName, @PathVariable String eventStatus) throws ServletRequestBindingException {
-        if (eventStatus.equals("valid")) {
+        if ("valid".equals(eventStatus)) {
             return allAggregatedEvents.findAllAggregations(ruleName);
-        } else if (eventStatus.equals("invalid")) {
+        } else if ("invalid".equals(eventStatus)) {
             return allAggregatedEvents.findAllErrorEventsForAggregations(ruleName);
         } else {
             throw new ServletRequestBindingException(format("[%s] is not a valid event status", eventStatus));

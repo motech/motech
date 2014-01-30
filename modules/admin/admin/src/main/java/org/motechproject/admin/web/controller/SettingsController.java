@@ -92,7 +92,7 @@ public class SettingsController {
     @RequestMapping(value = "/settings/platform/export", method = RequestMethod.GET)
     public void exportConfig(HttpServletResponse response) throws IOException {
         Date dateNow = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat ("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final String fileName = "config_" + dateFormat.format(dateNow) + ".zip";
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
         response.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");

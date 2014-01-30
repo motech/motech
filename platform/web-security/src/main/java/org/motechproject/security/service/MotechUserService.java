@@ -15,7 +15,8 @@ public interface MotechUserService {
     void register(String username, String password, String email, String externalId, List<String> roles, Locale locale);
 
     @PreAuthorize("hasRole('addUser')")
-    void register(String username, String password, String email, String externalId, List<String> roles, Locale locale, boolean isActive, String openId);
+    void register(String username, String password, String email, // NO CHECKSTYLE More than 7 parameters (found 8).
+                  String externalId, List<String> roles, Locale locale, boolean isActive, String openId);
 
     @PreAuthorize("hasRole('activateUser')")
     void activateUser(String username);

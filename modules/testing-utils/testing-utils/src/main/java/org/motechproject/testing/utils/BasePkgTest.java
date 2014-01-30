@@ -63,7 +63,7 @@ public abstract class BasePkgTest {
 
     @After
     public void cleanUp() {
-        if (script != null && (script.isEmpty()) ) {
+        if (script != null && (script.isEmpty())) {
             FileUtils.deleteQuietly(new File(script));
         }
     }
@@ -86,7 +86,7 @@ public abstract class BasePkgTest {
     protected int runScript(String scriptName, boolean passPorts, String... attrs) throws IOException, InterruptedException {
         installScript(scriptName);
 
-        String[] arguments = (String[]) ArrayUtils.addAll(new String[] { script, "-d", chrootDir, "-b", buildDir,
+        String[] arguments = (String[]) ArrayUtils.addAll(new String[] {script, "-d", chrootDir, "-b", buildDir,
                 "-e", errorFile }, attrs);
 
         if (passPorts) {

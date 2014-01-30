@@ -17,7 +17,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import java.util.Map;
 
 public class HttpServiceTracker extends ServiceTracker {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ServiceTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTracker.class);
     private String contextPath;
     private Map<String, String> resourceMapping;
     private BundleContextWrapper bundleContextWrapper;

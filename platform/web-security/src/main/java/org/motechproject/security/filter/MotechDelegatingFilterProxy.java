@@ -38,7 +38,7 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
     private static final String ADMIN_MODE_FILE = "admin-mode.conf";
 
     private Filter anonymousFilter;
-    private boolean isAdminMode = false;
+    private boolean isAdminMode;
 
     public MotechDelegatingFilterProxy(String targetBeanName, WebApplicationContext wac) {
         super(targetBeanName, wac);
@@ -102,7 +102,7 @@ public class MotechDelegatingFilterProxy extends DelegatingFilterProxy {
         public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
             List<GrantedAuthority> permissions = createPermissionList();
 
-            if(permissions.size() > getAuthorities().size()) {
+            if (permissions.size() > getAuthorities().size()) {
                 this.getAuthorities().clear();
                 this.getAuthorities().addAll(permissions);
 

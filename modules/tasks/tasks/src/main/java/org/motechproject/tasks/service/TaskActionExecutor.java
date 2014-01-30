@@ -115,9 +115,9 @@ class TaskActionExecutor {
                         TRIGGER, "task.error.taskActionNotContainsField",
                         action.getDisplayName(), key
                     );
-                } else if(actionParameter.getType() == MAP) {
+                } else if (actionParameter.getType() == MAP) {
                     parameters.put(key, new HashMap<>());
-                } else if(actionParameter.getType() == LIST) {
+                } else if (actionParameter.getType() == LIST) {
                     parameters.put(key, new ArrayList<>());
                 } else {
                     parameters.put(key, null);

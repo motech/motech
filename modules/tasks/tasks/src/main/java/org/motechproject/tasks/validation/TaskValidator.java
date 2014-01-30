@@ -362,7 +362,7 @@ public final class TaskValidator extends GeneralValidator {
                         foundAt
                 );
             }
-        } else if ( fieldType.equals(ParameterType.DATE) && !type.allowResultType(ManipulationTarget.DATE)) {
+        } else if (fieldType.equals(ParameterType.DATE) && !type.allowResultType(ManipulationTarget.DATE)) {
             error = new TaskError(
                     "task.validation.error.wrongDateManipulationTarget",
                     manipulation,

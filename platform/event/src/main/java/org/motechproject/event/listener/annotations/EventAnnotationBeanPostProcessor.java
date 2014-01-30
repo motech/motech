@@ -86,7 +86,9 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
                             default:
                         }
 
-                        logger.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: %s", annotation.type().toString()+":"+beanName, bean.getClass().getName(), method.toGenericString(), subjects));
+                        logger.info(String.format("Registering listener type(%20s) bean: %s, method: %s, for subjects: "
+                                + "%s", annotation.type().toString() + ":" + beanName, bean.getClass().getName(),
+                                method.toGenericString(), subjects));
 
                         if (eventListenerRegistry != null) {
                             eventListenerRegistry.registerListener(proxy, subjects);
@@ -134,6 +136,6 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     }
 
     private String getFullyQualifiedBeanName(Class<?> beanClass, String beanName) {
-        return beanClass.getName()+":"+beanName;
+        return beanClass.getName() + ":" + beanName;
     }
 }

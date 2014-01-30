@@ -22,9 +22,9 @@ public class EmailRecords<T> {
     public EmailRecords(Integer page, Integer rows, List<T> allRecords) {
         this.page = page;
         this.records = allRecords.size();
-        this.total = (this.records <= rows || rows==0) ? 1 : ((this.records - 1) / rows) + 1;
+        this.total = (this.records <= rows || rows == 0) ? 1 : ((this.records - 1) / rows) + 1;
 
-        this.rows = new ArrayList<>(allRecords.subList((page-1)*rows, (page*rows>this.records ? this.records : page*rows)));
+        this.rows = new ArrayList<>(allRecords.subList((page - 1) * rows, (page * rows > this.records ? this.records : page * rows)));
     }
 
     public Integer getTotal() {

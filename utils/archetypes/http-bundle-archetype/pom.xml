@@ -9,6 +9,10 @@
 
     <name>http-bundle-archetype</name>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <distributionManagement>
         <repository>
             <id>motech.nexus</id>

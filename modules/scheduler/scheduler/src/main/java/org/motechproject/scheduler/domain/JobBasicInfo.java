@@ -29,7 +29,8 @@ public class JobBasicInfo {
 
     }
 
-    public JobBasicInfo(String activity, String status, String name, String startDate, String nextFireDate, String endDate, String jobType, String info) {
+    public JobBasicInfo(String activity, String status, String name, // NO CHECKSTYLE More than 7 parameters (found 8).
+                        String startDate, String nextFireDate, String endDate, String jobType, String info) {
         this.activity = activity;
         this.status = status;
         this.name = name;
