@@ -1,13 +1,14 @@
 package org.motechproject.mds.osgi;
 
 import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
-import org.motechproject.mds.annotations.SeussAnnotationProcessor;
+import org.motechproject.mds.annotations.internal.SeussAnnotationProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +23,11 @@ import java.util.List;
  */
 @Component
 public class SeussApplicationContextTracker {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SeussApplicationContextTracker.class);
 
     private SeussServiceTracker applicationContextTracker;
+
+    private SeussAnnotationProcessor processor;
 
     @PostConstruct
     public void startTracker() {
@@ -36,12 +38,15 @@ public class SeussApplicationContextTracker {
         }
     }
 
+    @Autowired
+    public void setProcessor(SeussAnnotationProcessor processor) {
+        this.processor = processor;
+    }
+
 
     private class SeussServiceTracker extends ServiceTracker {
 
         private List<String> contextsProcessed = Collections.synchronizedList(new ArrayList<String>());
-
-        private SeussAnnotationProcessor seussAnnotationProcessor = new SeussAnnotationProcessor();
 
         public SeussServiceTracker(BundleContext bundleContext) {
             super(bundleContext, ApplicationContext.class.getName(), null);
@@ -61,7 +66,7 @@ public class SeussApplicationContextTracker {
             }
 
             contextsProcessed.add(applicationContext.getId());
-            seussAnnotationProcessor.findAnnotations(serviceReference.getBundle().getBundleContext());
+            processor.processAnnotations(serviceReference.getBundle());
 
             LOGGER.debug("Processed " + applicationContext.getDisplayName());
 
