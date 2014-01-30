@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Class representing rest options of given entity.
  */
-public class RestOptions implements Serializable {
+public class RestOptionsDto implements Serializable {
 
     private static final long serialVersionUID = 2788308149813128670L;
 

@@ -16,7 +16,7 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
-import org.motechproject.mds.dto.RestOptions;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
@@ -166,7 +166,7 @@ public class ExampleData {
         );
 
         AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
-        RestOptions exampleRestOptions = new RestOptions();
+        RestOptionsDto exampleRestOptions = new RestOptionsDto();
         List<String> fields = new LinkedList<>();
         fields.add("2");
         fields.add("5");
@@ -617,7 +617,7 @@ public class ExampleData {
             current.setEntityId(temporary.getEntityId());
             current.setTracking(clone(TrackingDto.class, temporary.getTracking()));
             current.setIndexes(temporary.getIndexes());
-            current.setRestOptions(clone(RestOptions.class, temporary.getRestOptions()));
+            current.setRestOptions(clone(RestOptionsDto.class, temporary.getRestOptions()));
             current.setBrowsing(clone(BrowsingSettingsDto.class, temporary.getBrowsing()));
         }
 

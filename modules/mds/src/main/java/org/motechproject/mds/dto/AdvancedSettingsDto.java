@@ -16,7 +16,7 @@ public class AdvancedSettingsDto {
     private Long entityId;
     private TrackingDto tracking = new TrackingDto();
     private List<LookupDto> indexes = new ArrayList<>();
-    private RestOptions restOptions = new RestOptions();
+    private RestOptionsDto restOptions = new RestOptionsDto();
     private BrowsingSettingsDto browsing = new BrowsingSettingsDto();
 
     public Long getId() {
@@ -61,11 +61,11 @@ public class AdvancedSettingsDto {
         this.indexes = null != indexes ? indexes : new ArrayList<LookupDto>();
     }
 
-    public RestOptions getRestOptions() {
+    public RestOptionsDto getRestOptions() {
         return restOptions;
     }
 
-    public void setRestOptions(RestOptions restOptions) {
+    public void setRestOptions(RestOptionsDto restOptions) {
         this.restOptions = restOptions;
     }
 

@@ -4,7 +4,6 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
-import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -22,8 +21,6 @@ public interface EntityService {
     EntityDto createEntity(EntityDto entity) throws IOException;
     void deleteEntity(EntityDto entity);
 
-    List<LookupDto> saveEntityLookups(Long entityId, List<LookupDto> lookups);
-
     List<EntityDto> listEntities();
     EntityDto getEntity(Long entityId);
 
@@ -34,7 +31,7 @@ public interface EntityService {
 
     boolean saveDraftEntityChanges(Long entityId, DraftData draftData);
     void abandonChanges(Long entityId);
-    void commitChanges(Long entityId, List <FieldDto> fields);
+    void commitChanges(Long entityId);
 
     List<EntityRecord> getEntityRecords(Long entityId);
 
