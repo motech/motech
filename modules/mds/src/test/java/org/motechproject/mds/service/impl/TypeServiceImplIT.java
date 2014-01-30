@@ -121,9 +121,8 @@ public class TypeServiceImplIT extends BaseIT {
     @Test
     public void shouldDeleteFieldType() {
         assertFalse(allFieldTypes.typeExists(getListOfNewTypes().get(0)));
-        FieldValidationDto validation = new FieldValidationDto(new ValidationCriterionDto("myCriterion", getListOfNewTypes().get(0).getType()));
         SettingDto settingDto = new SettingDto("mySetting", "mySetting", getListOfNewTypes().get(0).getType());
-        typeService.createFieldType(getListOfNewTypes().get(0), validation, settingDto);
+        typeService.createFieldType(getListOfNewTypes().get(0), null, settingDto);
         assertTrue(allFieldTypes.typeExists(getListOfNewTypes().get(0)));
 
         typeService.deleteFieldType(getListOfNewTypes().get(0).getType().getDisplayName());

@@ -1,38 +1,49 @@
 package org.motechproject.mds.service.impl.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
-import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
-import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
-import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
+import org.motechproject.mds.ex.FieldNotFoundException;
+import org.motechproject.mds.ex.NoSuchTypeException;
+import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.AllFieldTypes;
 import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.MDSConstructor;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.constants.Constants.Packages;
@@ -46,6 +57,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private MDSConstructor constructor;
     private AllFieldTypes allFieldTypes;
     private AllTypeValidationMappings allTypeValidationMappings;
+    private AllEntityDrafts allEntityDrafts;
 
     // TODO remove this once everything is in db
     private ExampleData exampleData = new ExampleData();
@@ -71,43 +83,146 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public boolean saveDraftEntityChanges(Long entityId, DraftData draftData) {
-        exampleData.draft(entityId, draftData);
-        return exampleData.isAnyChangeInFields(entityId);
+        EntityDraft draft = getEntityDraft(entityId);
+
+        if (draftData.isCreate()) {
+            createFieldForDraft(draft, draftData);
+        } else if (draftData.isEdit()) {
+            draftEdit(draft, draftData);
+        } else if (draftData.isRemove()) {
+            draftRemove(draft, draftData);
+        }
+
+        return draft.getChangesMade() != null && draft.getChangesMade();
     }
+
+
+    private void draftEdit(EntityDraft draft, DraftData draftData) {
+        if (draftData.isForAdvanced()) {
+            editAdvancedForDraft(draft, draftData);
+        } else if (draftData.isForField()) {
+            editFieldForDraft(draft, draftData);
+        }
+    }
+
+    private void editFieldForDraft(EntityDraft draft, DraftData draftData) {
+        String fieldIdStr = draftData.getValue(DraftData.FIELD_ID).toString();
+
+        if (StringUtils.isNotBlank(fieldIdStr)) {
+            Long fieldId = Long.valueOf(fieldIdStr);
+            FieldMapping field = draft.getField(fieldId);
+
+            if (field != null) {
+                String path = draftData.getPath();
+                List value = (List) draftData.getValue(DraftData.VALUE);
+
+                // Convert to dto for UI updates
+                FieldDto dto = field.toDto();
+                FieldHelper.setField(dto, path, value);
+
+                // Perform update
+                field.update(dto);
+                allEntityDrafts.save(draft);
+            }
+        }
+    }
+
+    private void editAdvancedForDraft(EntityDraft draft, DraftData draftData) {
+        AdvancedSettingsDto advancedDto = draft.advancedSettingsDto();
+        String path = draftData.getPath();
+        List value = (List) draftData.getValue(DraftData.VALUE);
+
+        FieldHelper.setField(advancedDto, path, value);
+
+        draft.updateAdvancedSetting(advancedDto);
+
+        allEntityDrafts.save(draft);
+    }
+
+    private void createFieldForDraft(EntityDraft draft, DraftData draftData) {
+        String typeClass = draftData.getValue(DraftData.TYPE_CLASS).toString();
+        String displayName = draftData.getValue(DraftData.DISPLAY_NAME).toString();
+        String name = draftData.getValue(DraftData.NAME).toString();
+
+        FieldBasicDto basic = new FieldBasicDto();
+        basic.setName(name);
+        basic.setDisplayName(displayName);
+
+        AvailableFieldTypeMapping availableType = allFieldTypes.getByClassName(typeClass);
+        if (availableType == null) {
+            throw new NoSuchTypeException();
+        }
+        AvailableTypeDto availableTypeDto = availableType.toDto();
+        TypeDto fieldType = availableTypeDto.getType();
+
+        TypeValidationMapping fieldValidation = allTypeValidationMappings.createValidationInstance(availableType);
+        FieldValidationDto validationDto = (fieldValidation == null) ? null : fieldValidation.toDto();
+
+        // TODO move to db
+        List<SettingDto> fieldSettings = exampleData.getTypeSettings(fieldType);
+
+        FieldDto field = new FieldDto();
+        field.setBasic(basic);
+        field.setType(fieldType);
+        field.setValidation(validationDto);
+        field.setSettings(fieldSettings);
+        field.setSettings(fieldSettings);
+
+        FieldMapping fieldMapping = new FieldMapping(field, draft, availableType, fieldValidation);
+
+        draft.addField(fieldMapping);
+
+        allEntityDrafts.save(draft);
+    }
+
+
+    private void draftRemove(EntityDraft draft, DraftData draftData) {
+        Long fieldId = Long.valueOf(draftData.getValue(DraftData.FIELD_ID).toString());
+        draft.removeField(fieldId);
+        allEntityDrafts.save(draft);
+    }
+
 
     @Override
     @Transactional
     public void abandonChanges(Long entityId) {
-        exampleData.abandonChanges(entityId);
+        EntityDraft draft = getEntityDraft(entityId);
+        if (draft != null) {
+            allEntityDrafts.delete(draft);
+        }
     }
 
     @Override
     @Transactional
     public void commitChanges(Long entityId) {
-        EntityMapping entity = getSecureEntity(entityId);
+        EntityDraft draft = getEntityDraft(entityId);
+        EntityMapping parent = draft.getParentEntity();
 
-        for (FieldDto field : getFields(entityId)) {
-            if (field.getId() == null || entity.getField(field.getId()) == null) {
-                AvailableFieldTypeMapping type = allFieldTypes.getByName(field.getType().getDisplayName());
-                TypeValidationMapping validationMapping = allTypeValidationMappings.getEmptyValidationForType(type);
-                if (validationMapping != null) {
-                    for (ValidationCriterionDto criterionDto : field.getValidation().getCriteria()) {
-                        validationMapping.getCriterionByName(criterionDto.getDisplayName()).setEnabled(criterionDto.isEnabled());
-                        validationMapping.getCriterionByName(criterionDto.getDisplayName()).setValue(criterionDto.getValue().toString());
-                    }
-                }
-                entity.getFields().add(new FieldMapping(field, entity, type, validationMapping));
-            } else {
-                entity.getField(field.getId()).update(field);
+        parent.updateFromDraft(draft);
+
+        allEntityDrafts.delete(draft);
+    }
+
+
+    @Override
+    @Transactional
+    public List<EntityDto> listWorkInProgress() {
+        String username = getUsername();
+
+        if (username == null) {
+            throw new AccessDeniedException("Cannot retrieve work in progress - no user");
+        }
+
+        List<EntityDraft> drafts = allEntityDrafts.getAllUserDrafts(username);
+
+        List<EntityDto> entityDtoList = new ArrayList<>();
+        for (EntityDraft draft : drafts) {
+            if (draft.getChangesMade() != null && draft.getChangesMade()) {
+                entityDtoList.add(draft.toDto());
             }
         }
 
-        // TODO: get data from draft, not example data
-        saveLookups(entity,
-                exampleData.getAdvanced(entityId).getIndexes(),
-                exampleData.getAdvanced(entityId).getRestOptions().getLookupIds());
-
-        exampleData.commitChanges(entityId);
+        return entityDtoList;
     }
 
     @Override
@@ -119,23 +234,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
-        EntityMapping entity = getSecureEntity(entityId);
-
-        AdvancedSettingsDto advancedSettings = new AdvancedSettingsDto();
-
-        List<LookupDto> lookups = new ArrayList<>();
-        List<String> restExposedLookups  = new ArrayList<>();
-        for (LookupMapping lookup : entity.getLookups()) {
-            lookups.add(lookup.toDto());
-            if (lookup.isExposedViaRest()) {
-                restExposedLookups.add(lookup.getLookupName());
-            }
-        }
-
-        advancedSettings.setIndexes(lookups);
-        advancedSettings.getRestOptions().setLookupIds(restExposedLookups);
-
-        return advancedSettings;
+        EntityMapping entity = getEntityDraft(entityId);
+        return entity.advancedSettingsDto();
     }
 
     @Override
@@ -164,8 +264,20 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void deleteEntity(EntityDto entity) {
-        allEntityMappings.delete(entity.getId());
+    public void deleteEntity(Long entityId) {
+        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        } else if (entity.isReadOnly()) {
+            throw new EntityReadOnlyException();
+        }
+
+        if (entity.isDraft()) {
+            entity = ((EntityDraft) entity).getParentEntity();
+        }
+
+        allEntityMappings.delete(entity);
     }
 
     @Override
@@ -174,7 +286,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         List<EntityDto> entityDtos = new ArrayList<>();
 
         for (EntityMapping entity : allEntityMappings.getAllEntities()) {
-            entityDtos.add(entity.toDto());
+            if (!entity.isDraft()) {
+                entityDtos.add(entity.toDto());
+            }
         }
 
         return entityDtos;
@@ -188,13 +302,81 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     @Override
+    @Transactional
     public List<FieldDto> getFields(Long entityId) {
-        return exampleData.getFields(entityId);
+        EntityMapping entity = getEntityDraft(entityId);
+
+        List<FieldMapping> fields = entity.getFields();
+
+        List<FieldDto> fieldDtos = new ArrayList<>();
+        for (FieldMapping field : fields) {
+            fieldDtos.add(field.toDto());
+        }
+
+        return fieldDtos;
     }
 
     @Override
+    @Transactional
     public FieldDto findFieldByName(Long entityId, String name) {
-        return exampleData.findFieldByName(entityId, name);
+        EntityMapping entity = getEntityDraft(entityId);
+
+        FieldMapping field = entity.getField(name);
+
+        if (field  == null) {
+            throw new FieldNotFoundException();
+        }
+
+        return field.toDto();
+    }
+
+    @Override
+    @Transactional
+    public EntityDto getEntityForEdit(Long entityId) {
+        EntityMapping draft = getEntityDraft(entityId);
+        return draft.toDto();
+    }
+
+    private String getUsername() {
+        String username = null;
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            User user = (User) auth.getPrincipal();
+            if (user != null) {
+                username = user.getUsername();
+            }
+        }
+
+        return username;
+    }
+
+    public EntityDraft getEntityDraft(Long entityId) {
+        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        if (entity instanceof EntityDraft) {
+            return (EntityDraft) entity;
+        }
+
+        // get the user
+        String username = getUsername();
+
+        if (username == null) {
+            throw new AccessDeniedException("Cannot save draft - no user");
+        }
+
+        // get the draft
+        EntityDraft draft = allEntityDrafts.getDraft(entity, username);
+
+        if (draft == null) {
+            draft = allEntityDrafts.createDraft(entity, username);
+        }
+
+        return draft;
     }
 
     @Autowired
@@ -207,44 +389,14 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         this.constructor = constructor;
     }
 
-    private EntityMapping getSecureEntity(Long entityId) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
-
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        }
-
-        if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        }
-
-        return entity;
-    }
-
-    private void saveLookups(EntityMapping entity, List<LookupDto> lookups, List<String> restExposedLookupNames) {
-        List<LookupMapping> updatedLookups = new LinkedList<>();
-
-        for (LookupDto lookup : lookups) {
-            if (lookup.getId() == null || entity.getLookup(lookup.getId()) == null) {
-                updatedLookups.add(new LookupMapping(
-                        lookup.getLookupName(),
-                        lookup.isSingleObjectReturn(),
-                        restExposedLookupNames.contains(lookup.getLookupName()),
-                        entity));
-            } else {
-                LookupMapping mapping = entity.getLookup(lookup.getId());
-                mapping.setLookupName(lookup.getLookupName());
-                mapping.setSingleObjectReturn(lookup.isSingleObjectReturn());
-                mapping.setExposedViaRest(lookups.contains(lookup.getLookupName()));
-            }
-        }
-
-        entity.setLookups(updatedLookups);
-    }
-
     @Autowired
     public void setAllFieldTypes(AllFieldTypes allFieldTypes) {
         this.allFieldTypes = allFieldTypes;
+    }
+
+    @Autowired
+    public void setAllEntityDrafts(AllEntityDrafts allEntityDrafts) {
+        this.allEntityDrafts = allEntityDrafts;
     }
 
     @Autowired

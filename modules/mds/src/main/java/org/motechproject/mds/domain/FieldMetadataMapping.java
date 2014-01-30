@@ -4,6 +4,7 @@ import org.motechproject.mds.dto.MetadataDto;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -32,6 +33,10 @@ public class FieldMetadataMapping {
         this(field, key, null);
     }
 
+    public FieldMetadataMapping(MetadataDto metadata) {
+        update(metadata);
+    }
+
     public FieldMetadataMapping(FieldMapping field, String key, String value) {
         this.field = field;
         this.key = key;
@@ -39,7 +44,7 @@ public class FieldMetadataMapping {
     }
 
     public MetadataDto toDto() {
-        return new MetadataDto(key, value);
+        return new MetadataDto(id, key, value);
     }
 
     public Long getId() {
@@ -72,5 +77,20 @@ public class FieldMetadataMapping {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public final void update(MetadataDto metadata) {
+        key = metadata.getKey();
+        value = metadata.getValue();
+    }
+
+    @NotPersistent
+    public FieldMetadataMapping copy() {
+        FieldMetadataMapping copy = new FieldMetadataMapping();
+
+        copy.setKey(key);
+        copy.setValue(value);
+
+        return copy;
     }
 }

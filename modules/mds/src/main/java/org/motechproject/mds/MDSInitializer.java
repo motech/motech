@@ -1,5 +1,6 @@
 package org.motechproject.mds;
 
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,9 @@ public class MDSInitializer {
 
             for (EntityMapping mapping : mappings) {
                 try {
-                    constructor.constructEntity(mapping);
+                    if (!(mapping instanceof EntityDraft)) {
+                        constructor.constructEntity(mapping);
+                    }
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }

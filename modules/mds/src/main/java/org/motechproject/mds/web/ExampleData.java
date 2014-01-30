@@ -3,8 +3,6 @@ package org.motechproject.mds.web;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -22,13 +20,13 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -438,7 +436,7 @@ public class ExampleData {
         boolean editSecurity = null != securityValue && parseBoolean(securityValue.toString());
         String[] path = data.getValue(DraftData.PATH).toString().split("\\.");
         List value = (List) data.getValue(DraftData.VALUE);
-        Object start;
+        Object start = null;
 
         if (editAdvanced) {
             if (!advancedHistory.containsKey(entityId)) {
@@ -446,7 +444,6 @@ public class ExampleData {
                         entityId, clone(AdvancedSettingsDto.class, getPurgeAdvanced(entityId))
                 );
             }
-
             start = advancedHistory.get(entityId);
         } else if (editSecurity) {
             if (!securityHistory.containsKey(entityId)) {
@@ -454,7 +451,6 @@ public class ExampleData {
                         entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
                 );
             }
-
             start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
@@ -464,7 +460,14 @@ public class ExampleData {
             Map<Long, FieldDto> map = fieldsHistory.get(entityId);
             Long fieldId = Long.valueOf(data.getValue(DraftData.FIELD_ID).toString());
 
-            if (!map.containsKey(fieldId)) {
+            for (FieldDto fieldDto : map.values()) {
+                if (fieldDto.getId().equals(fieldId)) {
+                    start = fieldDto;
+                    break;
+                }
+            }
+
+            if (start == null) {
                 FieldDto field = getField(fieldId);
                 map.put(fieldId, clone(FieldDto.class, field));
             }
@@ -473,7 +476,7 @@ public class ExampleData {
         }
 
         Object field = findField(path, start);
-        setField(field, path[path.length - 1], value);
+        FieldHelper.setField(field, path[path.length - 1], value);
     }
 
     private void draftRemove(Long entityId, DraftData data) {
@@ -550,38 +553,6 @@ public class ExampleData {
         }
 
         return current;
-    }
-
-    private void setField(Object current, String property, List value) {
-        Class clazz = current.getClass();
-
-        try {
-            if (property.startsWith("$")) {
-                String methodName = property.substring(1);
-                Class[] parameterTypes = new Class[null == value ? 0 : value.size()];
-                Object[] args = null != value
-                        ? value.toArray(new Object[value.size()])
-                        : new Object[0];
-
-                for (int i = 0; i < args.length; ++i) {
-                    Object item = args[i];
-                    parameterTypes[i] = item instanceof List ? List.class : item.getClass();
-                }
-
-                MethodUtils.invokeMethod(current, methodName, args, parameterTypes);
-            } else {
-                Field field = FieldUtils.getDeclaredField(clazz, property, true);
-
-                if (field.isEnumConstant()) {
-                    Enum enumValue = Enum.valueOf(clazz, (String) value.get(0));
-                    PropertyUtils.setProperty(current, property, enumValue);
-                } else {
-                    PropertyUtils.setProperty(current, property, value.get(0));
-                }
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     public void commitChanges(Long entityId) {
@@ -795,5 +766,12 @@ public class ExampleData {
         return previousRecordList;
     }
 
+    public List<SettingDto> getTypeSettings(TypeDto typeDto) {
+        return typeSettings.get(typeDto);
+    }
+
+    public FieldValidationDto getFieldValidationForType(TypeDto typeDto) {
+        return typeValidation.get(typeDto);
+    }
 }
 //CHECKSTYLE:ON

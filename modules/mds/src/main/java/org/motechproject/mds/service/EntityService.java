@@ -19,10 +19,13 @@ import java.util.List;
 public interface EntityService {
 
     EntityDto createEntity(EntityDto entity) throws IOException;
-    void deleteEntity(EntityDto entity);
 
     List<EntityDto> listEntities();
     EntityDto getEntity(Long entityId);
+    void deleteEntity(Long entityId);
+
+    List<EntityDto> listWorkInProgress();
+    EntityDto getEntityForEdit(Long entityId);
 
     // TODO: replace with entity.getFields
     List<FieldDto> getFields(Long entityId);

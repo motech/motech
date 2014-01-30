@@ -28,26 +28,6 @@ CREATE TABLE IF NOT EXISTS motech_data_services.SettingOptionsMapping(
     FOREIGN KEY (settingId) REFERENCES motech_data_services.TypeSettingsMapping(id)
 )ENGINE = INNODB;
 
-CREATE TABLE IF NOT EXISTS motech_data_services.TypeValidationMapping(
-    id bigint NOT NULL,
-    name varchar(255),
-    type bigint,
-    PRIMARY KEY (id),
-    FOREIGN KEY (type) REFERENCES motech_data_services.AvailableFieldTypeMapping (id)
-)ENGINE = INNODB;
-
-CREATE TABLE IF NOT EXISTS motech_data_services.ValidationCriterionMapping(
-    id bigint NOT NULL,
-    displayName varchar(255),
-    value varchar(255),
-    enabled bool,
-    validation bigint,
-    valueType bigint,
-    PRIMARY KEY (id),
-    FOREIGN KEY (validation) REFERENCES motech_data_services.TypeValidationMapping (id),
-    FOREIGN KEY (valueType) REFERENCES motech_data_services.AvailableFieldTypeMapping (id)
-)ENGINE = INNODB;
-
 INSERT IGNORE INTO motech_data_services.AvailableFieldTypeMapping
     (id, defaultName, description, displayName, typeClass)
 VALUES
@@ -77,30 +57,3 @@ VALUES
     (3, 'REQUIRE', 2),
     (4, 'POSITIVE', 2),
     (5, 'REQUIRE', 3);
-
-INSERT IGNORE INTO motech_data_services.TypeValidationMapping
-    (id, name, type)
-VALUES
-    (1, 'int', 1),
-    (2, 'double', 7),
-    (3, 'string', 2);
-
-INSERT IGNORE INTO motech_data_services.ValidationCriterionMapping
-    (id, displayName, value, enabled, validation, valueType)
-VALUES
-    (1, 'mds.field.validation.minValue', NULL, FALSE, 1, 1),
-    (2, 'mds.field.validation.maxValue', NULL, FALSE, 1, 1),
-    (3, 'mds.field.validation.mustBeInSet', NULL, FALSE, 1, 2),
-    (4, 'mds.field.validation.cannotBeInSet', NULL, FALSE, 1, 2),
-    (5, 'mds.field.validation.minValue', NULL, FALSE, 2, 7),
-    (6, 'mds.field.validation.maxValue', NULL, FALSE, 2, 7),
-    (7, 'mds.field.validation.mustBeInSet', NULL, FALSE, 2, 2),
-    (8, 'mds.field.validation.cannotBeInSet', NULL, FALSE, 2, 2),
-    (9, 'mds.field.validation.regex', NULL, FALSE, 3, 2),
-    (10, 'mds.field.validation.minLength', NULL, FALSE, 3, 1),
-    (11, 'mds.field.validation.maxLength', NULL, FALSE, 3, 1);
-
-
-
-
-

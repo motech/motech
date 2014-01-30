@@ -2,20 +2,24 @@ package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.TypeSettingsMapping;
+import org.motechproject.mds.domain.TypeValidationMapping;
+import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.TypeAlreadyExistsException;
 import org.motechproject.mds.ex.TypeNotFoundException;
 import org.motechproject.mds.repository.AllFieldTypes;
 import org.motechproject.mds.repository.AllTypeSettingsMappings;
+import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.TypeService;
-import org.motechproject.mds.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +30,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
 
     private AllFieldTypes allFieldTypes;
     private AllTypeSettingsMappings allTypeSettingsMappings;
-
-    private ValidationService validationService;
+    private AllTypeValidationMappings allTypeValidationMappings;
 
     @Override
     @Transactional
@@ -37,14 +40,20 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         } else {
             AvailableFieldTypeMapping typeMapping = allFieldTypes.save(type);
 
-            if (validation != null) {
-                validationService.saveValidationForType(typeMapping, validation);
-            }
-
             if (settings != null) {
                 for (SettingDto settingDto : settings) {
                     allTypeSettingsMappings.save(settingDto, allFieldTypes.getByName(type.getType().getDisplayName()), typeMapping);
                 }
+            }
+
+            if (validation != null) {
+
+                List<ValidationCriterionMapping> criterions = new ArrayList<>();
+                for (ValidationCriterionDto criterionDto : validation.getCriteria()) {
+                    criterions.add(new ValidationCriterionMapping(criterionDto.getDisplayName(), null, typeMapping));
+                }
+
+                allTypeValidationMappings.save(new TypeValidationMapping(typeMapping, criterions));
             }
         }
     }
@@ -71,8 +80,6 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
             }
         }
 
-        validationService.deleteValidationForType(toDelete);
-
         allFieldTypes.delete(toDelete.getId());
     }
 
@@ -87,7 +94,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     }
 
     @Autowired
-    public void setEntityService(ValidationService validationService) {
-        this.validationService = validationService;
+    public void setAllTypeValidationMappings(AllTypeValidationMappings allTypeValidationMappings) {
+        this.allTypeValidationMappings = allTypeValidationMappings;
     }
 }

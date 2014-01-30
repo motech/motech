@@ -17,7 +17,7 @@ public class EntityDto {
     private String module;
     private String namespace;
     private boolean readOnly;
-    private boolean draft;
+    private boolean modified;
 
     public EntityDto() {
         this(null, null);
@@ -79,12 +79,12 @@ public class EntityDto {
         this.readOnly = readOnly;
     }
 
-    public boolean isDraft() {
-        return draft;
+    public boolean isModified() {
+        return modified;
     }
 
-    public void setDraft(boolean draft) {
-        this.draft = draft;
+    public void setModified(boolean modified) {
+        this.modified = modified;
     }
 
     /**

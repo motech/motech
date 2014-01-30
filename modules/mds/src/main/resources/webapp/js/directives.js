@@ -523,7 +523,7 @@
                                     value: [array]
                                 }
                             }, function (data) {
-                                 scope.selectedEntity.draft = data.draft;
+                                 scope.selectedEntity.modified = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -646,7 +646,7 @@
                                     value: [array]
                                 }
                             }, function (data) {
-                                 scope.selectedEntity.draft = data.draft;
+                                 scope.selectedEntity.modified = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -708,7 +708,7 @@
                                 value: [array]
                             }
                         }, function (data) {
-                             scope.selectedEntity.draft = data.draft;
+                             scope.selectedEntity.modified = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -751,7 +751,7 @@
                                 value: [array]
                             }
                         }, function (data) {
-                             scope.selectedEntity.draft = data.draft;
+                             scope.selectedEntity.modified = data.draft;
 
                              scope.safeApply(function () {
                                 angular.forEach(source, function(item) {
@@ -819,7 +819,7 @@
                                 value: [array]
                             }
                         }, function (data) {
-                             scope.selectedEntity.draft = data.draft;
+                             scope.selectedEntity.modified = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -855,7 +855,7 @@
                                 value: [[]]
                             }
                         }, function (data) {
-                             scope.selectedEntity.draft = data.draft;
+                             scope.selectedEntity.modified = data.draft;
 
                              scope.safeApply(function () {
                                 angular.forEach(target, function(item) {
@@ -1218,7 +1218,7 @@
                             value: [value]
                         }
                     }, function (data) {
-                        entity.draft = data.draft;
+                        entity.modified  = data.draft;
                     });
                 });
             }
@@ -1266,7 +1266,7 @@
                             value: [value]
                         }
                     }, function (data) {
-                        entity.draft = data.draft;
+                        entity.modified =  data.draft;
                     });
                 });
             }
@@ -1315,7 +1315,7 @@
                             value: [value]
                         }
                     }, function (data) {
-                        entity.draft = data.draft;
+                        entity.modified = data.draft;
                         scope.$eval(callback);
                     });
                 });

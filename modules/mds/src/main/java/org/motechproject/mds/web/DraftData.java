@@ -15,6 +15,10 @@ public class DraftData {
     public static final String NAME = "name";
     public static final String ADVANCED = "advanced";
     public static final String SECURITY = "security";
+    public static final String FIELD = "field";
+
+    public static final String ADD_NEW_INDEX = "$addNewIndex";
+    public static final String REMOVE_INDEX = "$removeIndex";
 
     private boolean create;
     private boolean edit;
@@ -55,5 +59,18 @@ public class DraftData {
 
     public void setValues(Map<String, Object> values) {
         this.values = values;
+    }
+
+    public boolean isForField() {
+        return getValue(FIELD_ID) != null;
+    }
+
+    public boolean isForAdvanced() {
+        return getValue(ADVANCED) != null;
+    }
+
+    public String getPath() {
+        Object path = getValue(PATH);
+        return (path == null) ? null : path.toString();
     }
 }

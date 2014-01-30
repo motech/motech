@@ -11,7 +11,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
@@ -23,7 +22,6 @@ import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.GridSettings;
 import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.matcher.EntityMatcher;
-import org.motechproject.mds.web.matcher.WIPEntityMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -91,11 +89,7 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_ANY_SEUSS_ROLE)
     @ResponseBody
     public List<EntityDto> getWorkInProgressEntities() {
-        List<EntityDto> list = entityService.listEntities();
-
-        CollectionUtils.filter(list, new WIPEntityMatcher());
-
-        return list;
+        return entityService.listWorkInProgress();
     }
 
     @RequestMapping(value = "/selectEntities", method = RequestMethod.GET)
@@ -139,53 +133,32 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public EntityDto getEntity(@PathVariable Long entityId) {
-        EntityDto entity = entityService.getEntity(entityId);
-
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        }
-
-        return entity;
+        return entityService.getEntityForEdit(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}", method = RequestMethod.DELETE)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseBody
     public void deleteEntity(@PathVariable final Long entityId) {
-        EntityDto entity = entityService.getEntity(entityId);
-
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        } else if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        } else {
-            entityService.deleteEntity(entity);
-        }
+        entityService.deleteEntity(entityId);
     }
 
     @RequestMapping(value = "/entities", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseBody
     public EntityDto saveEntity(@RequestBody EntityDto entity) throws IOException {
-        return entityService.createEntity(entity);
+        EntityDto created = entityService.createEntity(entity);
+        return entityService.getEntityForEdit(created.getId());
     }
 
     @RequestMapping(value = "/entities/{entityId}/draft", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseBody
     public Map<String, Boolean> draft(@PathVariable Long entityId, @RequestBody DraftData data) {
-        EntityDto entity = entityService.getEntity(entityId);
+        boolean stateChanged = entityService.saveDraftEntityChanges(entityId, data);
 
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        } else if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        } else {
-            boolean stateChanged = entityService.saveDraftEntityChanges(entityId, data);
-            entity.setDraft(stateChanged);
-        }
         Map<String, Boolean> map = new HashMap<>();
-        map.put("draft", entity.isDraft());
+        map.put("draft", stateChanged);
         return map;
     }
 
@@ -193,31 +166,20 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void abandonChanges(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        } else {
-            entityService.abandonChanges(entityId);
-        }
+        entityService.abandonChanges(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/commit", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        } else {
-            entityService.commitChanges(entityId);
-        }
+        entityService.commitChanges(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/fields", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public List<FieldDto> getFields(@PathVariable Long entityId) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
         return entityService.getFields(entityId);
     }
 
@@ -225,10 +187,6 @@ public class EntityController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
     public FieldDto getFieldByName(@PathVariable Long entityId, @PathVariable String name) {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
-
         return entityService.findFieldByName(entityId, name);
     }
 

@@ -53,7 +53,8 @@ public class FieldValidationDto {
 
         if (criteria != null) {
             for (ValidationCriterionDto criterion : criteria) {
-                this.criteria.add(new ValidationCriterionDto(criterion.getDisplayName(), criterion.getType()));
+                this.criteria.add(new ValidationCriterionDto(criterion.getDisplayName(), criterion.getType(),
+                        criterion.getValue(), criterion.isEnabled()));
             }
         }
     }

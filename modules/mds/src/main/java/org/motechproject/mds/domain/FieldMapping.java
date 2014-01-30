@@ -2,17 +2,22 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The <code>FieldMapping</code> class contains information about a single field
@@ -46,10 +51,14 @@ public class FieldMapping {
     private AvailableFieldTypeMapping type;
 
     @Persistent(mappedBy = "field")
+    @Element(dependent = "TRUE")
     private List<FieldMetadataMapping> metadata;
 
-    @Persistent(dependent = "true")
+    @Persistent(dependent = "TRUE")
     private TypeValidationMapping validation;
+
+    public FieldMapping() {
+    }
 
     public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type, TypeValidationMapping validation) {
         this.entity = entity;
@@ -63,8 +72,6 @@ public class FieldMapping {
         if (field.getBasic().getDefaultValue() != null) {
             this.defaultValue = field.getBasic().getDefaultValue().toString();
         }
-
-        metadata = new ArrayList<>();
 
         if (null != field.getMetadata()) {
             for (MetadataDto meta : field.getMetadata()) {
@@ -84,7 +91,9 @@ public class FieldMapping {
         }
 
         TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
-        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validation.toDto(), null);
+        FieldValidationDto validationDto = (validation == null) ? null : validation.toDto();
+
+        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validationDto, null);
     }
 
     public String getDisplayName() {
@@ -151,6 +160,29 @@ public class FieldMapping {
         this.type = type;
     }
 
+    public TypeValidationMapping getValidation() {
+        return validation;
+    }
+
+    public void setValidation(TypeValidationMapping validation) {
+        this.validation = validation;
+    }
+
+    public List<FieldMetadataMapping> getMetadata() {
+        if (metadata == null) {
+            metadata = new ArrayList<>();
+        }
+        return metadata;
+    }
+
+    public void setMetadata(List<FieldMetadataMapping> metadata) {
+        this.metadata = metadata;
+    }
+
+    public void addMetadata(FieldMetadataMapping metadata) {
+        getMetadata().add(metadata);
+    }
+
     public FieldMapping update(FieldDto field) {
         this.setDisplayName(field.getBasic().getDisplayName());
         this.setName(field.getBasic().getName());
@@ -161,21 +193,74 @@ public class FieldMapping {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
         }
 
-        metadata = new ArrayList<>();
+        for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext();) {
+            FieldMetadataMapping metadataMapping = it.next();
 
-        if (null != field.getMetadata()) {
-            for (MetadataDto meta : field.getMetadata()) {
-                metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
+            boolean inNewList = false;
+            for (MetadataDto metadataDto : field.getMetadata()) {
+                if (Objects.equals(metadataMapping.getId(), metadataDto.getId())) {
+                    inNewList = true;
+                    break;
+                }
+            }
+
+            if (!inNewList) {
+                it.remove();
             }
         }
 
+
+        for (MetadataDto metadataDto : field.getMetadata()) {
+            FieldMetadataMapping metadataMapping = getMetadataById(metadataDto.getId());
+            if (metadataMapping == null) {
+                FieldMetadataMapping newMetadata = new FieldMetadataMapping(metadataDto);
+                addMetadata(newMetadata);
+            } else {
+                metadataMapping.update(metadataDto);
+            }
+        }
+
+
         if (field.getValidation() != null) {
             for (ValidationCriterionDto criterionDto : field.getValidation().getCriteria()) {
-                this.validation.getCriterionByName(criterionDto.getDisplayName()).setEnabled(criterionDto.isEnabled());
-                this.validation.getCriterionByName(criterionDto.getDisplayName()).setValue(criterionDto.getValue().toString());
+                ValidationCriterionMapping criterion = validation.getCriterionByName(criterionDto.getDisplayName());
+
+                criterion.setEnabled(criterionDto.isEnabled());
+                criterion.setValue(criterionDto.valueAsString());
             }
         }
 
         return this;
+    }
+
+    public FieldMetadataMapping getMetadataById(Long metadataId) {
+        for (FieldMetadataMapping metadataMapping : getMetadata()) {
+            if (Objects.equals(metadataId, metadataMapping.getId())) {
+                return metadataMapping;
+            }
+        }
+        return null;
+    }
+
+    @NotPersistent
+    public FieldMapping copy() {
+        FieldMapping copy = new FieldMapping();
+
+        copy.setName(name);
+        copy.setDefaultValue(defaultValue);
+        copy.setDisplayName(displayName);
+        copy.setRequired(required);
+        copy.setTooltip(tooltip);
+        copy.setType(type);
+        copy.setValidation((validation == null) ? null : validation.copy());
+        List<FieldMetadataMapping> copyMetadata = new ArrayList<>();
+
+        for (FieldMetadataMapping metadataMapping : metadata) {
+            copyMetadata.add(metadataMapping.copy());
+        }
+
+        copy.setMetadata(copyMetadata);
+
+        return copy;
     }
 }

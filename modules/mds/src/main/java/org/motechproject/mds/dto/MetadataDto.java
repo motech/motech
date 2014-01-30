@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * The <code>MetadataDto</code> contains key and value of a single field metadata.
  */
 public class MetadataDto {
+    private Long id;
     private String key;
     private String value;
 
@@ -19,6 +20,11 @@ public class MetadataDto {
     public MetadataDto(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    public MetadataDto(Long id, String key, String value) {
+        this(key, value);
+        this.id = id;
     }
 
     public String getKey() {
@@ -35,6 +41,14 @@ public class MetadataDto {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**

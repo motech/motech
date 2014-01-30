@@ -12,7 +12,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The <code>TypeValidationMapping</code> class contains information about type validation. This class is
@@ -33,21 +32,20 @@ public class TypeValidationMapping {
 
     @Persistent(mappedBy = "validation")
     @Element(dependent = "true")
-    private Set<ValidationCriterionMapping> criteria;
+    private List<ValidationCriterionMapping> criteria;
 
     public TypeValidationMapping() {
     }
 
     public TypeValidationMapping(AvailableFieldTypeMapping type) {
-        this.name = type.getDefaultName();
+        this.name = (type == null) ? null : type.getDefaultName();
         this.type = type;
     }
 
-    public TypeValidationMapping(AvailableFieldTypeMapping type, Set<ValidationCriterionMapping> criteria) {
+    public TypeValidationMapping(AvailableFieldTypeMapping type, List<ValidationCriterionMapping> criteria) {
         this(type);
         this.criteria = criteria;
     }
-
     public FieldValidationDto toDto() {
         List<ValidationCriterionDto> validationCriteriaDto = new ArrayList<>();
         if (criteria != null) {
@@ -95,11 +93,24 @@ public class TypeValidationMapping {
         this.type = type;
     }
 
-    public Set<ValidationCriterionMapping> getCriteria() {
+    public List<ValidationCriterionMapping> getCriteria() {
+        if (criteria == null) {
+            criteria = new ArrayList<>();
+        }
         return criteria;
     }
 
-    public void setCriteria(Set<ValidationCriterionMapping> criteria) {
+    public void setCriteria(List<ValidationCriterionMapping> criteria) {
         this.criteria = criteria;
+    }
+
+    public TypeValidationMapping copy() {
+        List<ValidationCriterionMapping> criterionCopies = new ArrayList<>();
+
+        for (ValidationCriterionMapping criterion : getCriteria()) {
+            criterionCopies.add(criterion.copy());
+        }
+
+        return new TypeValidationMapping(type, criterionCopies);
     }
 }

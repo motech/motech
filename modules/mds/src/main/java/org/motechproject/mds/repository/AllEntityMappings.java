@@ -45,10 +45,14 @@ public class AllEntityMappings extends BaseMdsRepository {
                 throw new EntityReadOnlyException();
             }
 
-            getPersistenceManager().deletePersistent(entityMapping);
+            delete(entityMapping);
         } else {
             throw new EntityNotFoundException();
         }
+    }
+
+    public void delete(EntityMapping entity) {
+        getPersistenceManager().deletePersistent(entity);
     }
 
     public EntityMapping getEntityById(Long id) {

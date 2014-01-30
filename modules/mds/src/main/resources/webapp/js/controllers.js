@@ -186,7 +186,7 @@
         draft = function (data, callback) {
             var pre = { id: $scope.selectedEntity.id },
                 func = function (data) {
-                        $scope.selectedEntity.draft = data.draft;
+                    $scope.selectedEntity.modified = data.draft;
 
                     if (_.isFunction(callback)) {
                         callback();
@@ -667,7 +667,7 @@
             blockUI();
 
             Entities.abandon({id: $scope.selectedEntity.id}, function () {
-                $scope.selectedEntity.draft = false;
+                $scope.selectedEntity.modified = false;
 
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
                         setSecuritySettings();
@@ -797,12 +797,12 @@
             blockUI();
 
             Entities.commit({id: $scope.selectedEntity.id}, {}, function () {
+                $scope.selectedEntity.modified = false;
                 $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
-                    setSecuritySettings();
-                    setAdvancedSettings();
-                });
-                $scope.selectedEntity.draft = false;
-                unblockUI();
+                            setSecuritySettings();
+                            setAdvancedSettings();
+                            unblockUI();
+                        });
             });
         };
 

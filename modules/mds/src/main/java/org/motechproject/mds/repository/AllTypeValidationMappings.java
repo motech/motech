@@ -7,8 +7,8 @@ import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>AllTypeValidationMappings</code> class is a repository class that operates on instances of
@@ -18,9 +18,12 @@ import java.util.Set;
 public class AllTypeValidationMappings extends BaseMdsRepository {
 
     public TypeValidationMapping save(AvailableFieldTypeMapping type) {
-        TypeValidationMapping typeValidationMapping = new TypeValidationMapping(type);
+        TypeValidationMapping typeValidation = new TypeValidationMapping(type);
+        return save(typeValidation);
+    }
 
-        return getPersistenceManager().makePersistent(typeValidationMapping);
+    public TypeValidationMapping save(TypeValidationMapping typeValidation) {
+        return getPersistenceManager().makePersistent(typeValidation);
     }
 
     public TypeValidationMapping getValidationForType(AvailableFieldTypeMapping type) {
@@ -32,14 +35,14 @@ public class AllTypeValidationMappings extends BaseMdsRepository {
         return (TypeValidationMapping) query.execute(type.getId());
     }
 
-    public TypeValidationMapping getEmptyValidationForType(AvailableFieldTypeMapping type) {
+    public TypeValidationMapping createValidationInstance(AvailableFieldTypeMapping type) {
         TypeValidationMapping emptyValidation = null;
         TypeValidationMapping typeValidationMapping = getValidationForType(type);
 
         if (typeValidationMapping != null) {
             emptyValidation = new TypeValidationMapping();
             emptyValidation.setName(type.getDefaultName());
-            Set<ValidationCriterionMapping> emptyCriteria = new HashSet<>();
+            List<ValidationCriterionMapping> emptyCriteria = new ArrayList<>();
             for (ValidationCriterionMapping criterionMapping : typeValidationMapping.getCriteria()) {
                 emptyCriteria.add(new ValidationCriterionMapping(criterionMapping.getDisplayName(), emptyValidation, criterionMapping.getType()));
             }
