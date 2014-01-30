@@ -39,21 +39,3 @@ VALUES
     (6, 'dateTime', 'mds.field.description.datetime', 'mds.field.datetime', 'org.joda.time.DateTime'),
     (7, 'double', 'mds.field.description.decimal', 'mds.field.decimal', 'java.lang.Double'),
     (8, 'list', 'mds.field.description.combobox', 'mds.field.combobox', 'java.util.List');
-
-INSERT IGNORE INTO motech_data_services.TypeSettingsMapping
-    (id, name, value, valueType, type)
-VALUES
-    (1, 'mds.form.label.precision', '9', 1, 7),
-    (2, 'mds.form.label.scale', '2', 1, 7),
-    (3, 'mds.form.label.values', NULL, 3, 8),
-    (4, 'mds.form.label.allowUserSupplied', 'false', 3, 8),
-    (5, 'mds.form.label.allowMultipleSelections', 'false', 3, 8);
-
-INSERT IGNORE INTO motech_data_services.SettingOptionsMapping
-    (id, name, settingId)
-VALUES
-    (1, 'REQUIRE', 1),
-    (2, 'POSITIVE', 1),
-    (3, 'REQUIRE', 2),
-    (4, 'POSITIVE', 2),
-    (5, 'REQUIRE', 3);

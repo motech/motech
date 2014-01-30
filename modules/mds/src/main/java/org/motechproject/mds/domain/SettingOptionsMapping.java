@@ -12,7 +12,7 @@ import javax.jdo.annotations.PrimaryKey;
  * The <code>SettingOptionsMapping</code> contains single setting option for given {@link org.motechproject.mds.domain.TypeSettingsMapping}. This class is
  * related with table in database with the same name.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class SettingOptionsMapping {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -22,8 +22,15 @@ public class SettingOptionsMapping {
     @Persistent
     private String name;
 
+    @Persistent
+    private TypeSettingsMapping typeSettings;
+
     public SettingOptionsMapping(SettingOptions option) {
-        this.name = option.name();
+        this(option.name());
+    }
+
+    public SettingOptionsMapping(String name) {
+        this.name = name;
     }
 
     public SettingOptions toDto() {
@@ -44,5 +51,17 @@ public class SettingOptionsMapping {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TypeSettingsMapping getTypeSettings() {
+        return typeSettings;
+    }
+
+    public void setTypeSettings(TypeSettingsMapping typeSettings) {
+        this.typeSettings = typeSettings;
+    }
+
+    public SettingOptionsMapping copy() {
+        return new SettingOptionsMapping(name);
     }
 }

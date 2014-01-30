@@ -4,7 +4,6 @@ import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.SettingOptions;
 import org.motechproject.mds.dto.TypeDto;
 
-import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -12,15 +11,14 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The <code>TypeSettingsMapping</code> contains settings for given {@link org.motechproject.mds.domain.AvailableFieldTypeMapping}. This class is
  * related with table in database with the same name.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class TypeSettingsMapping {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -33,14 +31,18 @@ public class TypeSettingsMapping {
     @Persistent
     private String value;
 
-    @Column(name = "valueType")
+    @Persistent
     private AvailableFieldTypeMapping valueType;
 
-    @Element(column = "settingId", dependent = "true")
-    private Set<SettingOptionsMapping> settingOptions;
+    @Persistent(mappedBy = "typeSettings")
+    @Element(dependent = "true")
+    private List<SettingOptionsMapping> settingOptions;
 
-    @Column(name = "type")
+    @Persistent
     private AvailableFieldTypeMapping type;
+
+    @Persistent
+    private FieldMapping field;
 
     public TypeSettingsMapping(String name, String value, AvailableFieldTypeMapping valueType, AvailableFieldTypeMapping type, SettingOptionsMapping... options) {
         this.name = name;
@@ -48,10 +50,8 @@ public class TypeSettingsMapping {
         this.valueType = valueType;
         this.type = type;
         if (options != null) {
-            settingOptions = new HashSet<>();
-            for (SettingOptionsMapping settingOption : options) {
-                settingOptions.add(settingOption);
-            }
+            settingOptions = new ArrayList<>();
+            Collections.addAll(settingOptions, options);
         }
     }
 
@@ -60,7 +60,8 @@ public class TypeSettingsMapping {
         for (SettingOptionsMapping settingOption : settingOptions) {
             options.add(settingOption.toDto());
         }
-        return new SettingDto(name, value, new TypeDto(valueType.getDisplayName(), valueType.getDescription(), valueType.getTypeClass()), options.toArray(new SettingOptions[options.size()]));
+        return new SettingDto(name, valueType.parse(value), new TypeDto(valueType.getDisplayName(), valueType.getDescription(), valueType.getTypeClass()),
+                options.toArray(new SettingOptions[options.size()]));
     }
 
     public Long getId() {
@@ -103,11 +104,33 @@ public class TypeSettingsMapping {
         this.valueType = valueType;
     }
 
-    public Set<SettingOptionsMapping> getSettingOptions() {
+    public FieldMapping getField() {
+        return field;
+    }
+
+    public void setField(FieldMapping field) {
+        this.field = field;
+    }
+
+    public List<SettingOptionsMapping> getSettingOptions() {
+        if (settingOptions == null) {
+            settingOptions = new ArrayList<>();
+        }
         return settingOptions;
     }
 
-    public void setSettingOptions(Set<SettingOptionsMapping> settingOptions) {
+    public void setSettingOptions(List<SettingOptionsMapping> settingOptions) {
         this.settingOptions = settingOptions;
+    }
+
+    public TypeSettingsMapping copy() {
+        List<SettingOptionsMapping> settingsOptionsCopy = new ArrayList<>();
+
+        for (SettingOptionsMapping settingOption : getSettingOptions()) {
+            settingsOptionsCopy.add(settingOption.copy());
+        }
+
+        return new TypeSettingsMapping(name, value, valueType, type,
+                settingsOptionsCopy.toArray(new SettingOptionsMapping[settingsOptionsCopy.size()]));
     }
 }

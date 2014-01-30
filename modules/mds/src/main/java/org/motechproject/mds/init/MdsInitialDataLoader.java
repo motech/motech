@@ -1,9 +1,12 @@
 package org.motechproject.mds.init;
 
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.SettingOptionsMapping;
+import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.motechproject.mds.repository.AllFieldTypes;
+import org.motechproject.mds.repository.AllTypeSettingsMappings;
 import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,20 +20,24 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class is responsible for inserting initial validation data into the database
  */
 @Component
-public class ValidationInitializer extends TransactionCallbackWithoutResult {
+public class MdsInitialDataLoader extends TransactionCallbackWithoutResult {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ValidationInitializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MdsInitialDataLoader.class);
 
     @Autowired
     private AllTypeValidationMappings allTypeValidationMappings;
 
     @Autowired
     private AllFieldTypes allFieldTypes;
+
+    @Autowired
+    private AllTypeSettingsMappings allTypeSettingsMappings;
 
     @Autowired
     private JdoTransactionManager transactionManager;
@@ -44,6 +51,7 @@ public class ValidationInitializer extends TransactionCallbackWithoutResult {
     @Override
     protected void doInTransactionWithoutResult(TransactionStatus status) {
         initValidations();
+        initTypeSettings();
     }
 
     public void initValidations() {
@@ -79,8 +87,55 @@ public class ValidationInitializer extends TransactionCallbackWithoutResult {
         }
     }
 
+    private void initTypeSettings() {
+        initTypeSettings(List.class.getName(), List.class.getName(), "mds.form.label.values", "", "REQUIRE");
+        initTypeSettings(List.class.getName(), "java.lang.Boolean", "mds.form.label.allowUserSupplied", "false");
+        initTypeSettings(List.class.getName(), "java.lang.Boolean", "mds.form.label.allowMultipleSelections", "false");
+        initTypeSettings("java.lang.Double", "java.lang.Integer", "mds.form.label.precision", "9",
+                "REQUIRE", "POSITIVE");
+        initTypeSettings("java.lang.Double", "java.lang.Integer", "mds.form.label.scale", "2",
+                "REQUIRE", "POSITIVE");
+    }
+
+    private void initTypeSettings(String typeClass, String valueTypeClass, String name,
+                                  String value, String... settingsOptionsNames) {
+        AvailableFieldTypeMapping type = allFieldTypes.getByClassName(typeClass);
+        AvailableFieldTypeMapping valueType = allFieldTypes.getByClassName(valueTypeClass);
+
+        List<SettingOptionsMapping> settingsOptions = settingsOptions(settingsOptionsNames);
+
+        TypeSettingsMapping typeSettingsFromDb = getExistingSettingForType(type, name);
+
+        if (typeSettingsFromDb == null) {
+            TypeSettingsMapping typeSettings = new TypeSettingsMapping(name, value, valueType, type,
+                   settingsOptions.toArray(new SettingOptionsMapping[settingsOptions.size()]));
+
+            allTypeSettingsMappings.save(typeSettings);
+        }
+    }
+
+    private List<SettingOptionsMapping> settingsOptions(String... names) {
+        List<SettingOptionsMapping> settingsOptions = new ArrayList<>();
+        if (names != null) {
+            for (String name : names) {
+                settingsOptions.add(new SettingOptionsMapping(name));
+            }
+        }
+        return settingsOptions;
+    }
+
     private ValidationCriterionMapping criterion(String displayName, Class<?> clazz) {
         AvailableFieldTypeMapping type = allFieldTypes.getByClassName(clazz.getName());
         return new ValidationCriterionMapping(displayName, "", false, null, type);
+    }
+
+    private TypeSettingsMapping getExistingSettingForType(AvailableFieldTypeMapping type, String name) {
+        List<TypeSettingsMapping> typeSettingsList = allTypeSettingsMappings.getSettingsForType(type);
+        for (TypeSettingsMapping typeSettings : typeSettingsList) {
+            if (name.equals(typeSettings.getName())) {
+                return typeSettings;
+            }
+        }
+        return null;
     }
 }

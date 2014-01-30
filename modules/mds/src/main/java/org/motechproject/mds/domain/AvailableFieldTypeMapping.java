@@ -1,14 +1,20 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.TypeDto;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The <code>FieldTypeMapping</code> class is a representation of database records
@@ -88,4 +94,37 @@ public class AvailableFieldTypeMapping {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @NotPersistent
+    public Object parse(String str) {
+        if (StringUtils.isBlank(str)) {
+            return (String.class.getName().equals(typeClass)) ? "" : null;
+        }
+
+        try {
+            Class<?> clazz = getClass().getClassLoader().loadClass(typeClass);
+
+            if (clazz.isAssignableFrom(List.class)) {
+                List list = new ArrayList();
+
+                list.addAll(Arrays.asList(StringUtils.split(str, '\n')));
+
+                return list;
+            } else {
+                return MethodUtils.invokeStaticMethod(clazz, "valueOf", str);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to parse value", e);
+        }
+    }
+
+    @NotPersistent
+    public String format(Object obj) {
+        if (obj instanceof List) {
+            return StringUtils.join((List) obj, '\n');
+        }
+
+        return (obj == null) ? "" : obj.toString();
+    }
+
 }
