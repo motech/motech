@@ -89,7 +89,7 @@ public class MotechProxyManager {
     }
 
     private void updateSecurityChain(List<MotechURLSecurityRule> securityRules) {
-            LOGGER.debug("Updating security chain");
+        LOGGER.debug("Updating security chain");
 
         // sort rules by priority descending
         TreeSet<MotechURLSecurityRule> sortedRules = new TreeSet<>(new Comparator<MotechURLSecurityRule>() {

@@ -24,7 +24,7 @@ import java.util.List;
 
 @Component
 public class SecurityRuleLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRoleLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityRuleLoader.class);
 
     private static final String CONFIG_LOCATION = "securityRules.json";
 
@@ -58,15 +58,16 @@ public class SecurityRuleLoader {
                 }
 
             } catch (IOException e) {
-                LOGGER.error("Unable to security rules in " + applicationContext.getDisplayName(), e);
+                LOGGER.error("Unable to load security rules from " + applicationContext.getDisplayName(), e);
             }
         }
 
-        LOGGER.debug("Loaded rules from {}", applicationContext.getDisplayName());
+        LOGGER.debug("Rules loaded from {}", applicationContext.getDisplayName());
     }
 
     private void updateSecurityConfig(List<MotechURLSecurityRule> newRules) {
-        //Assume all rules are of the same origin
+        LOGGER.debug("Updating security config");
+
         String origin = newRules.get(0).getOrigin();
         LOGGER.debug("Rules origin: {}", origin);
 
@@ -86,6 +87,8 @@ public class SecurityRuleLoader {
 
         securityConfig.setSecurityRules(newRules);
         allSecurityRules.addOrUpdate(securityConfig);
+
+        LOGGER.debug("Initializing chain after security config update");
         proxyManager.initializeProxyChain();
     }
 }
