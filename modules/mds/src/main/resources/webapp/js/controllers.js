@@ -797,6 +797,10 @@
             blockUI();
 
             Entities.commit({id: $scope.selectedEntity.id}, {}, function () {
+                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+                    setSecuritySettings();
+                    setAdvancedSettings();
+                });
                 $scope.selectedEntity.draft = false;
                 unblockUI();
             });

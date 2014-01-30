@@ -15,7 +15,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
-import org.motechproject.mds.dto.RestOptions;
+import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
@@ -291,7 +291,7 @@ public class EntityControllerTest {
     @Test
     public void shouldGetAdvancedSettingsForEntity() throws Exception {
         AdvancedSettingsDto expected = new AdvancedSettingsDto();
-        RestOptions restOptions = new RestOptions();
+        RestOptionsDto restOptions = new RestOptionsDto();
         List<String> fields = new LinkedList<>();
         fields.add("2");
         fields.add("5");

@@ -25,15 +25,19 @@ public class LookupMapping {
     private boolean singleObjectReturn;
 
     @Persistent
+    private boolean exposedViaRest;
+
+    @Persistent
     private EntityMapping entity;
 
-    public LookupMapping(String lookupName, boolean singleObjectReturn) {
+    public LookupMapping(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
+        this.exposedViaRest = exposedViaRest;
     }
 
-    public LookupMapping(String lookupName, boolean singleObjectReturn, EntityMapping entity) {
-        this(lookupName, singleObjectReturn);
+    public LookupMapping(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, EntityMapping entity) {
+        this(lookupName, singleObjectReturn, exposedViaRest);
         this.entity = entity;
     }
 
@@ -63,6 +67,14 @@ public class LookupMapping {
 
     public void setSingleObjectReturn(boolean singleObjectReturn) {
         this.singleObjectReturn = singleObjectReturn;
+    }
+
+    public boolean isExposedViaRest() {
+        return exposedViaRest;
+    }
+
+    public void setExposedViaRest(boolean exposedViaRest) {
+        this.exposedViaRest = exposedViaRest;
     }
 
     public EntityMapping getEntity() {

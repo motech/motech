@@ -3,6 +3,7 @@ package org.motechproject.mds.service.impl.internal;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -16,7 +17,6 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.AllFieldTypes;
-import org.motechproject.mds.repository.AllLookupMappings;
 import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.constants.Constants.Packages;
@@ -43,7 +44,6 @@ import static org.motechproject.mds.constants.Constants.Packages;
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityMappings allEntityMappings;
     private MDSConstructor constructor;
-    private AllLookupMappings allLookupMappings;
     private AllFieldTypes allFieldTypes;
     private AllTypeValidationMappings allTypeValidationMappings;
 
@@ -83,18 +83,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void commitChanges(Long entityId, List<FieldDto> fields) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+    public void commitChanges(Long entityId) {
+        EntityMapping entity = getSecureEntity(entityId);
 
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        }
-
-        if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        }
-
-        for (FieldDto field : fields) {
+        for (FieldDto field : getFields(entityId)) {
             if (field.getId() == null || entity.getField(field.getId()) == null) {
                 AvailableFieldTypeMapping type = allFieldTypes.getByName(field.getType().getDisplayName());
                 TypeValidationMapping validationMapping = allTypeValidationMappings.getEmptyValidationForType(type);
@@ -109,6 +101,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
                 entity.getField(field.getId()).update(field);
             }
         }
+
+        // TODO: get data from draft, not example data
+        saveLookups(entity,
+                exampleData.getAdvanced(entityId).getIndexes(),
+                exampleData.getAdvanced(entityId).getRestOptions().getLookupIds());
+
         exampleData.commitChanges(entityId);
     }
 
@@ -121,7 +119,23 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
-        return exampleData.getAdvanced(entityId);
+        EntityMapping entity = getSecureEntity(entityId);
+
+        AdvancedSettingsDto advancedSettings = new AdvancedSettingsDto();
+
+        List<LookupDto> lookups = new ArrayList<>();
+        List<String> restExposedLookups  = new ArrayList<>();
+        for (LookupMapping lookup : entity.getLookups()) {
+            lookups.add(lookup.toDto());
+            if (lookup.isExposedViaRest()) {
+                restExposedLookups.add(lookup.getLookupName());
+            }
+        }
+
+        advancedSettings.setIndexes(lookups);
+        advancedSettings.getRestOptions().setLookupIds(restExposedLookups);
+
+        return advancedSettings;
     }
 
     @Override
@@ -183,42 +197,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         return exampleData.findFieldByName(entityId, name);
     }
 
-    @Override
-    @Transactional
-    public List<LookupDto> saveEntityLookups(Long entityId, List<LookupDto> lookups) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
-
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        }
-
-        if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        }
-
-        // updated lookups contain generated ids from db
-        List<LookupDto> updatedLookups = new ArrayList<>();
-
-        for (LookupDto lookup : lookups) {
-            if (lookup.getId() == null || allLookupMappings.getLookupById(lookup.getId()) == null) {
-                updatedLookups.add(allLookupMappings.save(lookup, entity).toDto());
-            } else {
-                updatedLookups.add(allLookupMappings.update(lookup).toDto());
-            }
-        }
-
-        for (LookupDto lookup : allEntityMappings.getEntityById(entityId).getLookupsDtos()) {
-            if (lookup.getId() != null && !updatedLookups.contains(lookup)) {
-                allLookupMappings.remove(lookup);
-            }
-        }
-
-        // TODO: remove
-        exampleData.getPurgeAdvanced(entityId).setIndexes(updatedLookups);
-
-        return updatedLookups;
-    }
-
     @Autowired
     public void setAllEntityMappings(AllEntityMappings allEntityMappings) {
         this.allEntityMappings = allEntityMappings;
@@ -229,9 +207,39 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         this.constructor = constructor;
     }
 
-    @Autowired
-    public void setAllLookupMappings(AllLookupMappings allLookupMappings) {
-        this.allLookupMappings = allLookupMappings;
+    private EntityMapping getSecureEntity(Long entityId) {
+        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+
+        if (entity.isReadOnly()) {
+            throw new EntityReadOnlyException();
+        }
+
+        return entity;
+    }
+
+    private void saveLookups(EntityMapping entity, List<LookupDto> lookups, List<String> restExposedLookupNames) {
+        List<LookupMapping> updatedLookups = new LinkedList<>();
+
+        for (LookupDto lookup : lookups) {
+            if (lookup.getId() == null || entity.getLookup(lookup.getId()) == null) {
+                updatedLookups.add(new LookupMapping(
+                        lookup.getLookupName(),
+                        lookup.isSingleObjectReturn(),
+                        restExposedLookupNames.contains(lookup.getLookupName()),
+                        entity));
+            } else {
+                LookupMapping mapping = entity.getLookup(lookup.getId());
+                mapping.setLookupName(lookup.getLookupName());
+                mapping.setSingleObjectReturn(lookup.isSingleObjectReturn());
+                mapping.setExposedViaRest(lookups.contains(lookup.getLookupName()));
+            }
+        }
+
+        entity.setLookups(updatedLookups);
     }
 
     @Autowired

@@ -111,6 +111,15 @@ public class EntityMapping {
         this.lookups = lookups;
     }
 
+    public LookupMapping getLookup(Long lookupId) {
+        for (LookupMapping lookup : lookups) {
+            if (lookup.getId() == lookupId) {
+                return lookup;
+            }
+        }
+        return null;
+    }
+
     @NotPersistent
     public boolean isReadOnly() {
         return isNotBlank(module) || isNotBlank(namespace);

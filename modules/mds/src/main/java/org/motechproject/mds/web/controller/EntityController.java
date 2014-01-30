@@ -207,8 +207,7 @@ public class EntityController extends MdsController {
         if (null == entityService.getEntity(entityId)) {
             throw new EntityNotFoundException();
         } else {
-            entityService.commitChanges(entityId, getFields(entityId));
-            entityService.saveEntityLookups(entityId, getAdvanced(entityId).getIndexes());
+            entityService.commitChanges(entityId);
         }
     }
 
