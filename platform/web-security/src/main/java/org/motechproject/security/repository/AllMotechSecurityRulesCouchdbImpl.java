@@ -1,9 +1,5 @@
 package org.motechproject.security.repository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -11,9 +7,15 @@ import org.ektorp.support.View;
 import org.motechproject.commons.couchdb.dao.MotechBaseRepository;
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of DAO interface that utilizes
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Component;
 @View(name = "all", map = "function(doc) { emit(doc._id, doc); }")
 public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<MotechSecurityConfiguration> implements AllMotechSecurityRules {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AllMotechSecurityRulesCouchdbImpl.class);
+
     @Autowired
     protected AllMotechSecurityRulesCouchdbImpl(@Qualifier("webSecurityDbConnector") CouchDbConnector db) {
         super(MotechSecurityConfiguration.class, db);
@@ -37,10 +41,15 @@ public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<Mote
 
     @Override
     public void addOrUpdate(MotechSecurityConfiguration config) {
+        LOG.debug("Updating security configuration");
+
         List<MotechSecurityConfiguration> oldConfigList = this.getAll();
+
         if (oldConfigList.size() == 0) {
+            LOG.debug("Updating old configuration");
             super.add(config);
         } else {
+            LOG.debug("Creating new security configuration");
             MotechSecurityConfiguration oldConfig = oldConfigList.get(0);
             config.setRevision(oldConfig.getRevision());
             config.setId(oldConfig.getId());
