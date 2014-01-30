@@ -499,8 +499,10 @@
         };
 
         $scope.save = function () {
-            $scope.config.$save(
-                angularHandler('security.success', 'security.success.save'),
+            $scope.config.$save(function () {
+                angularHandler('security.success', 'security.success.save');
+                $scope.config = Dynamic.get();
+                },
                 angularHandler('security.error', 'security.error.save')
             );
         };

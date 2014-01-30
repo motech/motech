@@ -117,13 +117,13 @@
                     angular.element(this).on({
                         'show.bs.collapse': function () {
                             elem.find('i')
-                                .removeClass('icon-chevron-right')
-                                .addClass('icon-chevron-down');
+                                .removeClass('icon-caret-right')
+                                .addClass('icon-caret-down');
                         },
                         'hide.bs.collapse': function () {
                             elem.find('i')
-                                .removeClass('icon-chevron-down')
-                                .addClass('icon-chevron-right');
+                                .removeClass('icon-caret-down')
+                                .addClass('icon-caret-right');
                         }
                     });
 

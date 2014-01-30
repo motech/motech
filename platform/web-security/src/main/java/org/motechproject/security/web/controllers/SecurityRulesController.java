@@ -1,6 +1,7 @@
 package org.motechproject.security.web.controllers;
 
 import org.motechproject.security.domain.MotechSecurityConfiguration;
+import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.model.SecurityConfigDto;
 import org.motechproject.security.service.MotechURLSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Class for CRUD operations on security rule configuration.
@@ -36,7 +41,19 @@ public class SecurityRulesController {
     @ResponseBody
     public SecurityConfigDto getSecurityRules() {
         SecurityConfigDto security = new SecurityConfigDto();
-        security.setSecurityRules(urlSecurityService.findAllSecurityRules());
+
+        List<MotechURLSecurityRule> rules = urlSecurityService.findAllSecurityRules();
+
+            Collections.sort(rules, new Comparator<MotechURLSecurityRule>() {
+                @Override
+                public int compare(MotechURLSecurityRule o1, MotechURLSecurityRule o2) {
+                    int priority1 = o1.getPriority();
+                    int priority2 = o2.getPriority();
+
+                    return (priority1 < priority2) ? 1 : -1;
+                }
+            });
+            security.setSecurityRules(rules);
 
         return security;
     }
