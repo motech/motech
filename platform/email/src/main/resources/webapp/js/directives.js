@@ -69,17 +69,18 @@
                                 scope.$apply(function() {
                                     ctrl.$setViewValue(editor.getValue());
                                 });
+                            },
+                            'focus': function() {
+                                $('.wysihtml5-sandbox').contents().on("keyup", "body", function() {
+                                    scope.$apply(function() {
+                                        ctrl.$setViewValue(editor.getValue());
+                                    });
+                                });
                             }
                         }
                     });
 
                     editor = $(this).data('wysihtml5').editor;
-
-                    $('.wysihtml5-sandbox').contents().find('body').bind("keyup", function() {
-                        scope.$apply(function() {
-                            ctrl.$setViewValue(editor.getValue());
-                        });
-                    });
 
                     // model -> view
                     ctrl.$render = function() {
