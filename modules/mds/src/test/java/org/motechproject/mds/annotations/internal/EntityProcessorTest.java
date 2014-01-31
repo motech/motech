@@ -22,8 +22,11 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityProcessorTest {
@@ -34,6 +37,9 @@ public class EntityProcessorTest {
     @Mock
     private EntityService entityService;
 
+    @Mock
+    private FieldProcessor fieldProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -43,6 +49,7 @@ public class EntityProcessorTest {
     public void setUp() throws Exception {
         processor = new EntityProcessor();
         processor.setEntityService(entityService);
+        processor.setFieldProcessor(fieldProcessor);
         processor.setBundle(bundle);
     }
 
@@ -72,6 +79,9 @@ public class EntityProcessorTest {
         processor.process(Sample.class);
 
         verify(entityService).createEntity(captor.capture());
+        verify(fieldProcessor).setClazz(Sample.class);
+        verify(fieldProcessor).setEntity(any(EntityDto.class));
+        verify(fieldProcessor).execute();
 
         EntityDto value = captor.getValue();
 
@@ -79,6 +89,13 @@ public class EntityProcessorTest {
         assertEquals(Sample.class.getSimpleName(), value.getName());
         assertEquals(bundle.getSymbolicName(), value.getModule());
         assertNull(value.getNamespace());
+    }
+
+    @Test
+    public void shouldNotProcessClassWithoutAnnotation() throws Exception {
+        processor.process(Object.class);
+
+        verifyZeroInteractions(entityService, fieldProcessor);
     }
 
     private File computeTestDataRoot(Class anyTestClass) {

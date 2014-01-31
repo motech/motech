@@ -52,4 +52,6 @@ public interface EntityService {
     List<FieldInstanceDto> getInstanceFields(Long instanceId);
     List<HistoryRecord> getInstanceHistory(Long instanceId);
     List<PreviousRecord> getPreviousRecords(Long instanceId);
+
+    void addFields(EntityDto entity, List<FieldDto> fields);
 }

@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.ValidationCriterionMapping;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.TypeAlreadyExistsException;
 import org.motechproject.mds.ex.TypeNotFoundException;
@@ -81,6 +82,18 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         }
 
         allFieldTypes.delete(toDelete.getId());
+    }
+
+    @Override
+    @Transactional
+    public TypeDto findType(Class<?> type) {
+        AvailableFieldTypeMapping mapping = allFieldTypes.getByClassName(type.getName());
+
+        if (null != mapping) {
+            return mapping.toDto().getType();
+        } else {
+            throw new TypeNotFoundException();
+        }
     }
 
     @Autowired

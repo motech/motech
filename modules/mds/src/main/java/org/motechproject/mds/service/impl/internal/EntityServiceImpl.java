@@ -338,8 +338,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public EntityDto getEntityByClassName(String className) {
-         EntityMapping entity = allEntityMappings.getEntityByClassName(className);
-         return (entity == null) ? null : entity.toDto();
+        EntityMapping entity = allEntityMappings.getEntityByClassName(className);
+        return (entity == null) ? null : entity.toDto();
     }
 
     @Override
@@ -417,6 +417,24 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
 
         return draft;
+    }
+
+    @Override
+    @Transactional
+    public void addFields(EntityDto entityDto, List<FieldDto> fields) {
+        EntityMapping entity = allEntityMappings.getEntityById(entityDto.getId());
+
+        if (null == entity) {
+            throw new EntityNotFoundException();
+        }
+
+        for (FieldDto fieldDto : fields) {
+            String typeClass = fieldDto.getType().getTypeClass();
+            AvailableFieldTypeMapping type = allFieldTypes.getByClassName(typeClass);
+            FieldMapping field = new FieldMapping(fieldDto, entity, type, null, null);
+
+            entity.addField(field);
+        }
     }
 
     @Autowired

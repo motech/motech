@@ -22,6 +22,7 @@ class EntityProcessor extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityProcessor.class);
 
     private EntityService entityService;
+    private FieldProcessor fieldProcessor;
 
     @Override
     protected Class<? extends Annotation> getAnnotation() {
@@ -44,7 +45,10 @@ class EntityProcessor extends AbstractProcessor {
             String namespace = getNamespace(annotation);
 
             try {
-                entityService.createEntity(new EntityDto(clazz.getName(), name, module, namespace));
+                EntityDto entity = new EntityDto(clazz.getName(), name, module, namespace);
+                EntityDto db = entityService.createEntity(entity);
+
+                findFields(clazz, db);
             } catch (Exception e) {
                 LOGGER.error(
                         "Failed to create an entity for class {} from bundle {}",
@@ -57,9 +61,22 @@ class EntityProcessor extends AbstractProcessor {
         }
     }
 
+    private void findFields(Class clazz, EntityDto entity) {
+        fieldProcessor.setClazz(clazz);
+        fieldProcessor.setEntity(entity);
+        fieldProcessor.execute();
+
+        entityService.addFields(entity, fieldProcessor.getFields());
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setFieldProcessor(FieldProcessor fieldProcessor) {
+        this.fieldProcessor = fieldProcessor;
     }
 
     private String getName(Entity annotation, Class clazz) {

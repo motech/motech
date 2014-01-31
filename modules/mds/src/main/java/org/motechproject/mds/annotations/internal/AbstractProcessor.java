@@ -29,6 +29,10 @@ abstract class AbstractProcessor {
 
     protected abstract void process(AnnotatedElement element);
 
+    public void execute() {
+        execute(null);
+    }
+
     public void execute(Bundle bundle) {
         this.bundle = bundle;
         Class<? extends Annotation> annotation = getAnnotation();
