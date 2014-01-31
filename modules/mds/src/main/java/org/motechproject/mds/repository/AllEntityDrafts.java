@@ -62,6 +62,20 @@ public class AllEntityDrafts extends BaseMdsRepository {
         return cast(EntityDraft.class, collection);
     }
 
+    public List<EntityDraft> getAllEntityDrafts(EntityMapping entity) {
+        Query query = getPersistenceManager().newQuery(EntityDraft.class);
+        query.setFilter("paramEntity == parentEntity");
+        query.declareParameters(EntityMapping.class.getName() + " paramEntity");
+
+        Collection collection = (Collection) query.execute(entity);
+        return cast(EntityDraft.class, collection);
+    }
+
+    public void deleteAllDraftsForEntity(EntityMapping entity) {
+        List<EntityDraft> drafts = getAllEntityDrafts(entity);
+        getPersistenceManager().deletePersistentAll(drafts);
+    }
+
     public void save(EntityDraft draft) {
         draft.setLastModificationDate(DateUtil.nowUTC());
         draft.setChangesMade(true);
