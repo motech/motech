@@ -58,6 +58,7 @@ CREATE TABLE "EntityMapping" (
   "parentEntity_id_OID" bigint(20) DEFAULT NULL,
   "parentVersion" bigint(20) DEFAULT NULL,
   "drafts_INTEGER_IDX" int(11) DEFAULT NULL,
+  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "DRAFT_USER_IDX" ("parentEntity_id_OID","draftOwnerUsername"),
   KEY "EntityMapping_N49" ("parentEntity_id_OID"),
@@ -92,6 +93,7 @@ CREATE TABLE "FieldMapping" (
   "type_id_OID" bigint(20) DEFAULT NULL,
   "validation_id_OID" bigint(20) DEFAULT NULL,
   "fields_INTEGER_IDX" int(11) DEFAULT NULL,
+  "tracking" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   KEY "FieldMapping_N49" ("type_id_OID"),
   KEY "FieldMapping_N50" ("entity_id_OID"),
@@ -203,8 +205,12 @@ CREATE TABLE "SettingOptionsMapping" (
   "id" bigint(20) NOT NULL,
   "name" varchar(255) DEFAULT NULL,
   "settingId" bigint(20) DEFAULT NULL,
+  "settingOptions_INTEGER_IDX" int(11) DEFAULT NULL,
+  "typeSettings_id_OID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
   KEY "settingId" ("settingId"),
+  KEY "SettingOptionsMapping_N49" ("typeSettings_id_OID"),
+  CONSTRAINT "SettingOptionsMapping_FK1" FOREIGN KEY ("typeSettings_id_OID") REFERENCES "TypeSettingsMapping" ("id"),
   CONSTRAINT "SettingOptionsMapping_ibfk_1" FOREIGN KEY ("settingId") REFERENCES "TypeSettingsMapping" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -215,8 +221,37 @@ CREATE TABLE "SettingOptionsMapping" (
 
 LOCK TABLES "SettingOptionsMapping" WRITE;
 /*!40000 ALTER TABLE "SettingOptionsMapping" DISABLE KEYS */;
-INSERT INTO "SettingOptionsMapping" VALUES (1,'REQUIRE',1),(2,'POSITIVE',1),(3,'REQUIRE',2),(4,'POSITIVE',2),(5,'REQUIRE',3);
+INSERT INTO "SettingOptionsMapping" VALUES (1,'REQUIRE',1,NULL,NULL),(2,'POSITIVE',1,NULL,NULL),(3,'REQUIRE',2,NULL,NULL),(4,'POSITIVE',2,NULL,NULL),(5,'REQUIRE',3,NULL,NULL);
 /*!40000 ALTER TABLE "SettingOptionsMapping" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "TrackingMapping"
+--
+
+DROP TABLE IF EXISTS "TrackingMapping";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TrackingMapping" (
+  "id" bigint(20) NOT NULL,
+  "allowCreate" bit(1) NOT NULL,
+  "allowDelete" bit(1) NOT NULL,
+  "allowRead" bit(1) NOT NULL,
+  "allowUpdate" bit(1) NOT NULL,
+  "entity_id_OID" bigint(20) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "TrackingMapping_N49" ("entity_id_OID"),
+  CONSTRAINT "TrackingMapping_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TrackingMapping"
+--
+
+LOCK TABLES "TrackingMapping" WRITE;
+/*!40000 ALTER TABLE "TrackingMapping" DISABLE KEYS */;
+/*!40000 ALTER TABLE "TrackingMapping" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -232,9 +267,19 @@ CREATE TABLE "TypeSettingsMapping" (
   "value" varchar(255) DEFAULT NULL,
   "valueType" bigint(20) DEFAULT NULL,
   "type" bigint(20) DEFAULT NULL,
+  "typeSettings_INTEGER_IDX" int(11) DEFAULT NULL,
+  "valueType_id_OID" bigint(20) DEFAULT NULL,
+  "field_id_OID" bigint(20) DEFAULT NULL,
+  "type_id_OID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
   KEY "valueType" ("valueType"),
   KEY "type" ("type"),
+  KEY "TypeSettingsMapping_N51" ("field_id_OID"),
+  KEY "TypeSettingsMapping_N50" ("type_id_OID"),
+  KEY "TypeSettingsMapping_N49" ("valueType_id_OID"),
+  CONSTRAINT "TypeSettingsMapping_FK3" FOREIGN KEY ("valueType_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
+  CONSTRAINT "TypeSettingsMapping_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
+  CONSTRAINT "TypeSettingsMapping_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "FieldMapping" ("id"),
   CONSTRAINT "TypeSettingsMapping_ibfk_1" FOREIGN KEY ("valueType") REFERENCES "AvailableFieldTypeMapping" ("id"),
   CONSTRAINT "TypeSettingsMapping_ibfk_2" FOREIGN KEY ("type") REFERENCES "AvailableFieldTypeMapping" ("id")
 );
@@ -246,7 +291,7 @@ CREATE TABLE "TypeSettingsMapping" (
 
 LOCK TABLES "TypeSettingsMapping" WRITE;
 /*!40000 ALTER TABLE "TypeSettingsMapping" DISABLE KEYS */;
-INSERT INTO "TypeSettingsMapping" VALUES (1,'mds.form.label.precision','9',1,7),(2,'mds.form.label.scale','2',1,7),(3,'mds.form.label.values',NULL,3,8),(4,'mds.form.label.allowUserSupplied','false',3,8),(5,'mds.form.label.allowMultipleSelections','false',3,8);
+INSERT INTO "TypeSettingsMapping" VALUES (1,'mds.form.label.precision','9',1,7,NULL,NULL,NULL,NULL),(2,'mds.form.label.scale','2',1,7,NULL,NULL,NULL,NULL),(3,'mds.form.label.values',NULL,3,8,NULL,NULL,NULL,NULL),(4,'mds.form.label.allowUserSupplied','false',3,8,NULL,NULL,NULL,NULL),(5,'mds.form.label.allowMultipleSelections','false',3,8,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE "TypeSettingsMapping" ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,4 +362,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-31 11:34:36
+-- Dump completed on 2014-02-05  9:43:10

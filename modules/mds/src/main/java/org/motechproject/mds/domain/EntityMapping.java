@@ -5,6 +5,7 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
+import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
 
 import javax.jdo.annotations.Discriminator;
@@ -63,6 +64,10 @@ public class EntityMapping {
     @Persistent(mappedBy = "entity")
     @Element(dependent = TRUE)
     private List<FieldMapping> fields;
+
+    @Persistent(mappedBy = "entity")
+    @Element(dependent = TRUE)
+    private TrackingMapping tracking;
 
     @Persistent(mappedBy = "parentEntity")
     @Element(dependent = TRUE)
@@ -294,6 +299,12 @@ public class EntityMapping {
     }
 
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
+        updateIndexes(advancedSettings);
+        updateRestOptions(advancedSettings);
+        updateTracking(advancedSettings);
+    }
+
+    private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
         RestOptionsMapping restOptionsMapping = getRestOptions();
 
         if (restOptionsMapping == null) {
@@ -302,7 +313,9 @@ public class EntityMapping {
         } else {
             restOptionsMapping.update(advancedSettings.getRestOptions());
         }
+    }
 
+    private void updateIndexes(AdvancedSettingsDto advancedSettings) {
         // deletion
         for (Iterator<LookupMapping> it = getLookups().iterator(); it.hasNext(); ) {
             LookupMapping lookup = it.next();
@@ -343,5 +356,38 @@ public class EntityMapping {
 
     public void setRestOptions(RestOptionsMapping restOptions) {
         this.restOptions = restOptions;
+    }
+
+    private void updateTracking(AdvancedSettingsDto advancedSettings) {
+        TrackingDto trackingDto = advancedSettings.getTracking();
+
+        if (null != trackingDto) {
+            if (null == tracking) {
+                tracking = new TrackingMapping();
+            }
+
+            tracking.removeActions();
+
+            // remove fields from tracking
+            for (FieldMapping field : getFields()) {
+                field.setTracking(false);
+            }
+
+            for (String action : trackingDto.getActions()) {
+                tracking.addAction(action);
+            }
+
+            for (Long fieldId : trackingDto.getFields()) {
+                getField(fieldId).setTracking(true);
+            }
+        }
+    }
+
+    public TrackingMapping getTracking() {
+        return tracking;
+    }
+
+    public void setTracking(TrackingMapping tracking) {
+        this.tracking = tracking;
     }
 }

@@ -231,12 +231,20 @@ public final class Constants {
     }
 
     /**
-     * Utility constants to help avoid string literal repetition
+     * The <code>Util</code> contains constant values to help avoid string literal repetition.
+     *
+     * @see <a href="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals">pmd</a>
      */
     public static final class Util {
 
+        /**
+         * Constant <code>TRUE</code> corresponding to the primitive value {@code true}
+         */
         public static final String TRUE = "true";
 
+        /**
+         * Constant <code>FALSE</code> corresponding to the primitive value {@code false}
+         */
         public static final String FALSE = "false";
     }
 

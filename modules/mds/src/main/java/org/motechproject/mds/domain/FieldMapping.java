@@ -50,6 +50,9 @@ public class FieldMapping {
     private String tooltip;
 
     @Persistent
+    private boolean tracking;
+
+    @Persistent
     private AvailableFieldTypeMapping type;
 
     @Persistent(mappedBy = "field")
@@ -64,6 +67,8 @@ public class FieldMapping {
     private List<TypeSettingsMapping> typeSettings;
 
     public FieldMapping() {
+        metadata = new ArrayList<>();
+        typeSettings = new ArrayList<>();
     }
 
     public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type, TypeValidationMapping validation,
@@ -80,11 +85,15 @@ public class FieldMapping {
             this.defaultValue = field.getBasic().getDefaultValue().toString();
         }
 
+        metadata = new ArrayList<>();
+
         for (MetadataDto meta : field.getMetadata()) {
             metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
         }
 
-        this.typeSettings = typeSettings;
+        this.typeSettings = null != typeSettings
+                ? typeSettings
+                : new ArrayList<TypeSettingsMapping>();
     }
 
     public FieldDto toDto() {
@@ -181,14 +190,13 @@ public class FieldMapping {
     }
 
     public List<FieldMetadataMapping> getMetadata() {
-        if (metadata == null) {
-            metadata = new ArrayList<>();
-        }
         return metadata;
     }
 
     public void setMetadata(List<FieldMetadataMapping> metadata) {
-        this.metadata = metadata;
+        this.metadata = null != metadata
+                ? metadata
+                : new ArrayList<FieldMetadataMapping>();
     }
 
     public void addMetadata(FieldMetadataMapping metadata) {
@@ -196,14 +204,13 @@ public class FieldMapping {
     }
 
     public List<TypeSettingsMapping> getTypeSettings() {
-        if (typeSettings == null) {
-            typeSettings = new ArrayList<>();
-        }
         return typeSettings;
     }
 
     public void setTypeSettings(List<TypeSettingsMapping> typeSettings) {
-        this.typeSettings = typeSettings;
+        this.typeSettings = null != typeSettings
+                ? typeSettings
+                : new ArrayList<TypeSettingsMapping>();
     }
 
     public FieldMapping update(FieldDto field) {
@@ -224,7 +231,7 @@ public class FieldMapping {
     }
 
     public void updateMetadata(List<MetadataDto> metadataList) {
-        for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext();) {
+        for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext(); ) {
             FieldMetadataMapping metadataMapping = it.next();
 
             boolean inNewList = false;
@@ -315,5 +322,13 @@ public class FieldMapping {
             }
         }
         return null;
+    }
+
+    public boolean isTracking() {
+        return tracking;
+    }
+
+    public void setTracking(boolean tracking) {
+        this.tracking = tracking;
     }
 }
