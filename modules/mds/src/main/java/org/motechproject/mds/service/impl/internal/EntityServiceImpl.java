@@ -5,6 +5,7 @@ import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
@@ -14,6 +15,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -247,8 +249,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId) {
-        EntityMapping entity = getEntityDraft(entityId);
-        return entity.advancedSettingsDto();
+        return getAdvancedSettings(entityId, false);
+    }
+
+    @Override
+    @Transactional
+    public AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed) {
+        if (committed) {
+            EntityMapping entity = allEntityMappings.getEntityById(entityId);
+            return entity.advancedSettingsDto();
+        } else {
+            EntityMapping entity = getEntityDraft(entityId);
+            return entity.advancedSettingsDto();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void addLookupToEntity(Long entityId, LookupDto lookup) {
+        EntityMapping entityMapping = allEntityMappings.getEntityById(entityId);
+        entityMapping.addLookup(new LookupMapping(lookup));
     }
 
     @Override
@@ -317,6 +337,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
+    public EntityDto getEntityByClassName(String className) {
+         EntityMapping entity = allEntityMappings.getEntityByClassName(className);
+         return (entity == null) ? null : entity.toDto();
+    }
+
+    @Override
     public List<FieldDto> getFields(Long entityId) {
         EntityMapping entity = getEntityDraft(entityId);
 

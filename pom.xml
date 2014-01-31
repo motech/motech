@@ -764,6 +764,11 @@
                 <version>0.8.0-${external.dependency.release.tag}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.paranamer</artifactId>
+                <version>2.6_1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>3.18.1-GA</version>

@@ -17,5 +17,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Lookup {
+    String name() default "";
 
 }

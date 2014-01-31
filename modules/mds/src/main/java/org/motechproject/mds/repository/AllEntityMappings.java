@@ -6,6 +6,7 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
 
+import javax.jdo.Extent;
 import javax.jdo.Query;
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +64,16 @@ public class AllEntityMappings extends BaseMdsRepository {
         query.setUnique(true);
 
         return (EntityMapping) query.execute(id);
+    }
+
+    public EntityMapping getEntityByClassName(String name) {
+        Extent extent = getPersistenceManager().getExtent(EntityMapping.class, false);
+        Query query = getPersistenceManager().newQuery(extent);
+        query.setFilter("name == className");
+        query.declareParameters("java.lang.String name");
+        query.setUnique(true);
+
+        return (EntityMapping) query.execute(name);
     }
 
     public List<EntityMapping> getAllEntities() {

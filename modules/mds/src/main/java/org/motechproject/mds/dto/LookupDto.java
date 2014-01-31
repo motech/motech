@@ -1,7 +1,6 @@
 package org.motechproject.mds.dto;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -101,8 +100,27 @@ public class LookupDto {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof LookupDto)) {
+            return false;
+        }
+
+        LookupDto lookupDto = (LookupDto) o;
+
+        if (singleObjectReturn != lookupDto.singleObjectReturn) {
+            return false;
+        }
+        if (!fieldList.equals(lookupDto.fieldList)) {
+            return false;
+        }
+        if (!lookupName.equals(lookupDto.lookupName)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
