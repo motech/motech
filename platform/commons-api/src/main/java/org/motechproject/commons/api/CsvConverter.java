@@ -18,12 +18,13 @@ public final class CsvConverter {
     public static String convertToCSV(List<List<String>> list) {
         csvString = "";
         for (List<String> line : list) {
-            for (String csvObject : line) {
+            for (String word : line) {
+                String csvObject = word;
                 if (csvObject.contains(SEPARATOR) || csvObject.contains("\"") || csvObject.contains(END_OF_LINE)) {
                     csvObject = csvObject.replace("\"", "\"\"");
-                    csvObject = "\""+csvObject+"\"";
+                    csvObject = "\"" + csvObject + "\"";
                 }
-                csvString = csvString.concat(csvObject+SEPARATOR);
+                csvString = csvString.concat(csvObject + SEPARATOR);
             }
 
             //removing last, unnecessary separator

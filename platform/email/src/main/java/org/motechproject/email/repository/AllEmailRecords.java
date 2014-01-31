@@ -59,7 +59,7 @@ public final class AllEmailRecords extends CouchDbRepositorySupportWithLucene<Em
                     "result.add(doc.deliveryStatus, {'field':'deliveryStatus'}); " +
                     "return result " +
                     "}"
-    )})
+    ) })
     public List<EmailRecord> findAllBy(EmailRecordSearchCriteria criteria) {
         StringBuilder query = new CouchDbLuceneQuery()
                 .with("fromAddress", criteria.getFromAddress())

@@ -21,14 +21,14 @@ public final class MotechMapUtils {
      * @param baseMap The base map
      * @return merged map
      */
-    public static Map<Object, Object> mergeMaps(Map<Object,Object> overridingMap, Map<Object, Object> baseMap) {
-        Map<Object,Object> mergedMap = new LinkedHashMap<>();
+    public static Map<Object, Object> mergeMaps(Map<Object, Object> overridingMap, Map<Object, Object> baseMap) {
+        Map<Object, Object> mergedMap = new LinkedHashMap<>();
 
-        if (baseMap==null && overridingMap!=null) {
+        if (baseMap == null && overridingMap != null) {
             mergedMap.putAll(overridingMap);
-        } else if (overridingMap==null && baseMap!=null) {
+        } else if (overridingMap == null && baseMap != null) {
             mergedMap.putAll(baseMap);
-        } else if (overridingMap!=null && baseMap!=null) {
+        } else if (overridingMap != null && baseMap != null) {
             mergedMap.putAll(baseMap);
             mergedMap.putAll(overridingMap);
         }

@@ -14,7 +14,7 @@ import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolic
 
 public class HttpServiceTrackers {
 
-    final private Map<String, HttpServiceTracker> trackers = new HashMap<>();
+    private final Map<String, HttpServiceTracker> trackers = new HashMap<>();
 
 
     public HttpServiceTracker addTrackerFor(Bundle bundle) {

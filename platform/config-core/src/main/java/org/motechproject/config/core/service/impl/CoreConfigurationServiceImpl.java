@@ -54,7 +54,7 @@ public class CoreConfigurationServiceImpl implements CoreConfigurationService {
      * @throws MotechConfigurationException if there is no bootstrap.properties file found.
      */
     @Override
-    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName")})
+    @Caching(cacheable = {@Cacheable(value = CORE_SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public BootstrapConfig loadBootstrapConfig() {
         return bootstrapManager.loadBootstrapConfig();
     }

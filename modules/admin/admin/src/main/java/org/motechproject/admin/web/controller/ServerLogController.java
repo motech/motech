@@ -26,6 +26,8 @@ import java.util.List;
 public class ServerLogController {
     private ServerLogService logService;
 
+    private static final int TWENTY_FIVE_MB = (int) FileUtils.ONE_MB * 25;
+
     @Autowired
     public ServerLogController(ServerLogService logService) {
         this.logService = logService;
@@ -52,7 +54,7 @@ public class ServerLogController {
                     in.skip(fileSize - readSize);
 
                     while (in.available() > 0) {
-                        if(in.read() == '\n'){
+                        if (in.read() == '\n') {
                             break;
                         }
                     }
@@ -75,11 +77,15 @@ public class ServerLogController {
         if (!logFile.exists()) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
-            int length = (int) logFile.length();
-            response.setContentLength(length);
+            long length = logFile.length();
+            // TODO: What to do when the logfile is more than 2GB?
+            if (length > Integer.MAX_VALUE) {
+                throw new IllegalStateException("The log file is too large to be exported.");
+            }
+            response.setContentLength((int) length);
 
             // If the file is too big browsers hang trying to render the large plaintext file. In this case force download.
-            if (length > FileUtils.ONE_MB * 25) {
+            if (length > TWENTY_FIVE_MB) {
                 response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());
             }
 

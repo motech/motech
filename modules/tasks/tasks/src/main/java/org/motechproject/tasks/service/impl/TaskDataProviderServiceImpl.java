@@ -56,7 +56,7 @@ public class TaskDataProviderServiceImpl implements TaskDataProviderService {
     @Override
     public TaskDataProvider registerProvider(final InputStream stream) {
         Type type = new TypeToken<TaskDataProvider>() {
-        }.getType();
+        } .getType();
         TaskDataProvider provider = (TaskDataProvider) motechJsonReader.readFromStream(stream, type);
 
         Set<TaskError> errors = TaskDataProviderValidator.validate(provider);

@@ -8,7 +8,7 @@ public class StartupListener implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-        if (method.getName().equals("handleEvent")) {
+        if ("handleEvent".equals(method.getName())) {
             OsgiListener.getOsgiService().allowStartup();
             return null;
         } else {

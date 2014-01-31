@@ -16,6 +16,7 @@ import java.io.IOException;
 public class PollingHttpClient {
     private static final Logger LOG = LoggerFactory.getLogger(PollingHttpClient.class);
     private static final int MILLIS_PER_SEC = 1000;
+    private static final int HTTP_BAD_REQUEST = 400;
 
     private DefaultHttpClient httpClient;
     private int maxWaitPeriodInMilliSeconds;
@@ -97,7 +98,7 @@ public class PollingHttpClient {
 
         int statusCode = response.getStatusLine().getStatusCode();
 
-        return statusCode > 400 && statusCode != exptectedErrorCode;
+        return statusCode > HTTP_BAD_REQUEST && statusCode != exptectedErrorCode;
     }
 
     private class DefaultResponseHandler implements ResponseHandler<HttpResponse> {

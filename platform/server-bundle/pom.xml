@@ -44,11 +44,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-osgi-web-util</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -167,7 +162,6 @@
                             org.motechproject.server.startup;version=${project.version},
                             org.motechproject.server.ui;version=${project.version},
                             org.motechproject.server.ui.ex;version=${project.version},
-                            org.motechproject.server.web;version=${project.version},
                             org.motechproject.server.web.controller;version=${project.version},
                             org.motechproject.server.web.form;version=${project.version},
                             org.motechproject.server.web.validator;version=${project.version}
@@ -206,8 +200,8 @@
                 <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
                 <executions>
                     <execution>
                         <id>copy-bundles</id>

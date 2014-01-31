@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 
@@ -34,7 +33,7 @@ public class MotechOpenIdUserDetailsService implements AuthenticationUserDetails
     private AuthoritiesService authoritiesService;
 
     @Override
-    public UserDetails loadUserDetails(OpenIDAuthenticationToken token) throws UsernameNotFoundException {
+    public UserDetails loadUserDetails(OpenIDAuthenticationToken token) {
         MotechUser user = allMotechUsers.findUserByOpenId(token.getName());
         if (user == null) {
             List<String> roles = new ArrayList<String>();

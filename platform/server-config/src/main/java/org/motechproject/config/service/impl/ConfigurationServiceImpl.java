@@ -126,7 +126,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")})
+    @Caching(cacheable = {@Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName") })
     public MotechSettings getPlatformSettings() {
         if (allSettings == null) {
             return null;
@@ -195,7 +195,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             .append("\n");
 
                     if (defaultConfig.containsKey(configProperty.getKey())
-                            && !defaultConfig.getProperty(configProperty.getKey().toString()).equals("")) {
+                            && !"".equals(defaultConfig.getProperty(configProperty.getKey().toString()))) {
                         stringBuilder.append("#Default value:\n" + "#")
                                 .append(configProperty.getKey())
                                 .append("=")

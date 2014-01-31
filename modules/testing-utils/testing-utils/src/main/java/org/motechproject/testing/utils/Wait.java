@@ -42,6 +42,6 @@ public class Wait {
     }
 
     private int getWaitDurationBetweenChecks(int maxWaitTime) {
-        return maxWaitTime < DEFAULT_WAIT_DURATION ? maxWaitTime : 100;
+        return maxWaitTime < DEFAULT_WAIT_DURATION ? maxWaitTime : DEFAULT_WAIT_DURATION;
     }
 }

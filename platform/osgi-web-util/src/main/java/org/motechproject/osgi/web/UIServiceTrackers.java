@@ -17,7 +17,7 @@ public class UIServiceTrackers {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIServiceTracker.class);
     private static final String MODULE_REGISTRATION_DATA = "moduleRegistrationData";
 
-    final private Map<String, UIServiceTracker> trackers = new HashMap<>();
+    private final Map<String, UIServiceTracker> trackers = new HashMap<>();
 
     public UIServiceTracker addTrackerFor(Bundle bundle, ApplicationContext applicationContext) {
 

@@ -67,7 +67,9 @@ public class SettingsDto {
         this.logPurgeTimeMultiplier = "0";
     }
 
-    public SettingsDto(String host, String port, String logAddress, String logSubject, String logBody, String logPurgeEnable, String logPurgeTime, String logPurgeTimeMultiplier) {
+    public SettingsDto(String host, String port, String logAddress, // NO CHECKSTYLE More than 7 parameters (found 8).
+                       String logSubject, String logBody, String logPurgeEnable, String logPurgeTime,
+                       String logPurgeTimeMultiplier) {
         this.host = host;
         this.port = port;
         this.logAddress = logAddress;

@@ -58,7 +58,7 @@ public final class DateUtil {
                 .withMillisOfSecond(0);
 
         if (zone.isLocalDateTimeGap(localDateTime)) {
-            localDateTime = localDateTime.withHourOfDay(hour+1);
+            localDateTime = localDateTime.withHourOfDay(hour + 1);
         }
 
         return localDateTime.toDateTime();
@@ -185,7 +185,7 @@ public final class DateUtil {
         return fromDate.dayOfMonth().addToCopy(noOfDaysToNearestCycleDate);
     }
 
-    public static List<DateTime> greaterThanOrEqualTo(final DateTime date, final List<DateTime> dates){
+    public static List<DateTime> greaterThanOrEqualTo(final DateTime date, final List<DateTime> dates) {
         List<DateTime> list = new ArrayList<>(dates.size());
 
         for (DateTime dt : dates) {

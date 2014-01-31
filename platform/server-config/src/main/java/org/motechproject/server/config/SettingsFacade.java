@@ -160,7 +160,8 @@ public class SettingsFacade {
         if (propsRegistered) {
             try {
                 if (configurationService != null) {
-                    configurationService.addOrUpdateProperties(getSymbolicName(),version, bundleSymbolicName, filename, properties, defaultConfig.get(filename));
+                    configurationService.addOrUpdateProperties(getSymbolicName(), version, bundleSymbolicName, filename,
+                            properties, defaultConfig.get(filename));
                 }
             } catch (IOException e) {
                 throw new MotechException("Can't save settings " + filename, e);

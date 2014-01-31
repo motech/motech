@@ -27,9 +27,9 @@ public class DefaultCouchToLogConverter implements EventToLogConverter<CouchEven
         return couchEventLog;
     }
 
-    public CouchEventLog configuredConvertEventToCouchLog(MotechEvent eventToLog, LoggableEvent loggableEvent){
+    public CouchEventLog configuredConvertEventToCouchLog(MotechEvent eventToLog, LoggableEvent loggableEvent) {
         if (!(loggableEvent instanceof CouchLoggableEvent)) {
-            throw new MotechException("Error: unexpected loggable event type "+loggableEvent.getClass().getName());
+            throw new MotechException("Error: unexpected loggable event type " + loggableEvent.getClass().getName());
         }
         CouchLoggableEvent couchLoggableEvent = (CouchLoggableEvent) loggableEvent;
 

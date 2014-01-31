@@ -4,7 +4,9 @@ import org.osgi.framework.Bundle;
 
 public final class WebBundleUtil {
 
-    private WebBundleUtil(){}
+    private WebBundleUtil() {
+
+    }
 
     public static String getContextLocation(Bundle bundle) {
         final String contextLocation = getHeaderValue("Context-File", bundle);

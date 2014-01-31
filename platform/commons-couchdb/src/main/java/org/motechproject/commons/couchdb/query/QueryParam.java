@@ -6,10 +6,11 @@ public class QueryParam {
     private int recordsPerPage;
     private String sortBy;
     private boolean reverse;
+    private static final int DEFAULT_RECORDS_PER_PAGE = 100;
 
     public QueryParam() {
         this.pageNumber = 0;
-        this.recordsPerPage = 100;
+        this.recordsPerPage = DEFAULT_RECORDS_PER_PAGE;
         this.sortBy = null;
         this.reverse = false;
     }

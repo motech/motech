@@ -73,10 +73,10 @@ public enum ManipulationType {
     public boolean allowResultType(ManipulationTarget resultType) {
         if (ArrayUtils.contains(forbiddenResultTypes, ManipulationTarget.ALL)) {
             return false;
-        } else if (ArrayUtils.contains(forbiddenResultTypes, resultType)) {
-            return false;
-        } else {
-            return true;
         }
+        if (ArrayUtils.contains(forbiddenResultTypes, resultType)) {
+            return false;
+        }
+        return true;
     }
 }

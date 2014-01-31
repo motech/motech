@@ -22,7 +22,7 @@ public class PurgeEmailEventHandlerImpl {
     @Autowired
     private EmailAuditServiceImpl auditService;
 
-    @MotechListener (subjects = { PURGE_EMAIL_SUBJECT } )
+    @MotechListener (subjects = { PURGE_EMAIL_SUBJECT })
     public void handle(MotechEvent event) {
         String purgeTime = (String) event.getParameters().get("purgeTime");
         String purgeMultiplier = (String) event.getParameters().get("purgeMultiplier");

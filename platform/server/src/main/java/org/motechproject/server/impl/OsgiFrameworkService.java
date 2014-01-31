@@ -90,10 +90,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private static final int THREADS_NUMBER = 1;
 
-    private boolean httpServiceRegistered = false;
-    private boolean startupEventReceived = false;
+    private boolean httpServiceRegistered;
+    private boolean startupEventReceived;
 
     private final Object lock = new Object();
+
+    private static final long MILLIS_PER_SEC = 1000L;
 
     public void init() {
         try {
@@ -308,14 +310,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 }
                 return super.addingBundle(bundle, event);
             }
-        }.open();
+        } .open();
     }
 
     private void waitForBundles(ExecutorService bundleLoader) {
         bundleLoader.shutdown();
         while (!bundleLoader.isTerminated()) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1 * MILLIS_PER_SEC);
             } catch (InterruptedException e) {
                 logger.warn("InterruptedException when waiting for bundle loader to finish...");
             }

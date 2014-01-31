@@ -49,7 +49,7 @@ public class DashboardController {
     @Qualifier("mainHeaderStr")
     private String mainHeader;
 
-    @RequestMapping({"/index", "/", "/home"})
+    @RequestMapping({"/index", "/", "/home" })
     public ModelAndView index(@RequestParam(required = false) String moduleName, final HttpServletRequest request) {
         ModelAndView mav;
 

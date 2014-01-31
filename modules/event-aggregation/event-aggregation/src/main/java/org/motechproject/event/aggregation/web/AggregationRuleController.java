@@ -55,7 +55,7 @@ public class AggregationRuleController {
         return new AggregationRuleMapper().toRequest(allAggregationRules.findByName(ruleName));
     }
 
-    @ExceptionHandler({BadRequestException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({BadRequestException.class, HttpMessageNotReadableException.class })
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String handleMethodArgumentNotValidException(Exception exception) throws IOException {

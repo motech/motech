@@ -46,7 +46,7 @@ public class JobsController {
         DateTime dateTo;
 
         if (jobsGridSettings.getSortDirection() != null) {
-            sortAscending = jobsGridSettings.getSortDirection().equals("asc");
+            sortAscending = "asc".equals(jobsGridSettings.getSortDirection());
         }
 
         if (!jobsGridSettings.getTimeFrom().isEmpty()) {
@@ -91,7 +91,7 @@ public class JobsController {
     @ResponseBody
     public JobDetailedInfo retrieveJobDetailedInfo(@PathVariable int jobid) {
         if (previousJobsRecords != null) {
-            return motechSchedulerService.getScheduledJobDetailedInfo(previousJobsRecords.getRows().get(jobid-1));
+            return motechSchedulerService.getScheduledJobDetailedInfo(previousJobsRecords.getRows().get(jobid - 1));
         } else {
             return null;
         }

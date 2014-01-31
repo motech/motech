@@ -87,7 +87,7 @@ public class GridSettings {
 
     public Set<DeliveryStatus> getDeliveryStatusFromSettings() {
         Set<DeliveryStatus> statusList = new HashSet<>();
-        if (deliveryStatus!=null) {
+        if (deliveryStatus != null) {
             String[] statuses = deliveryStatus.split(",");
             for (String status : statuses) {
                 if (!status.isEmpty()) {

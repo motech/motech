@@ -29,7 +29,7 @@ public class AllEventMappings {
 
     public List<MappingsJson> getAllMappings() {
         Type type = new TypeToken<List<MappingsJson>>() {
-        }.getType();
+        } .getType();
 
         InputStream is = settings.getRawConfig(MAPPING_FILE_NAME);
 

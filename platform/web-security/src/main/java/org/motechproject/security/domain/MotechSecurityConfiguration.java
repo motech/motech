@@ -1,10 +1,10 @@
 package org.motechproject.security.domain;
 
-import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
+
+import java.util.List;
 
 /**
  * The MotechSecurityConfiguration is a single document
@@ -21,7 +21,9 @@ public class MotechSecurityConfiguration extends MotechBaseDataObject {
     @JsonProperty
     private List<MotechURLSecurityRule> securityRules;
 
-    public MotechSecurityConfiguration() {}
+    public MotechSecurityConfiguration() {
+
+    }
 
     public MotechSecurityConfiguration(List<MotechURLSecurityRule> securityRules) {
         this.securityRules = securityRules;

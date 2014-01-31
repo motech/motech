@@ -5,7 +5,6 @@ import org.motechproject.security.service.MotechPermissionService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.expression.ExpressionParser;
@@ -23,8 +22,8 @@ import static org.apache.commons.lang.StringUtils.remove;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
-import static org.springframework.util.ReflectionUtils.MethodCallback;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
+import static org.springframework.util.ReflectionUtils.MethodCallback;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 /**
@@ -60,17 +59,17 @@ public class SecurityAnnotationBeanPostProcessor implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(final Object bean, final String beanName) {
         LOGGER.info("Searching for security annotations in: {}", beanName);
 
         doWithMethods(bean.getClass(), new MethodCallback() {
             @Override
-            public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Method method) throws IllegalAccessException {
                 Method methodOfOriginalClassIfProxied = findMethod(getTargetClass(bean), method.getName(), method.getParameterTypes());
 
                 if (methodOfOriginalClassIfProxied != null) {

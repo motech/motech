@@ -82,7 +82,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public void registerChannel(final InputStream stream, String moduleName, String moduleVersion) {
         Type type = new TypeToken<ChannelRequest>() {
-        }.getType();
+        } .getType();
         StringWriter writer = new StringWriter();
 
         try {

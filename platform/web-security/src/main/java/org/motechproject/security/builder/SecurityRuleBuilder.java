@@ -110,7 +110,7 @@ public class SecurityRuleBuilder {
 
         String pattern = securityRule.getPattern();
 
-        if (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || pattern.equals("/**") || pattern.equals("**")) {
+        if (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern) || "**".equals(pattern)) {
             matcher = new AnyRequestMatcher();
         } else {
             if (SecurityConfigConstants.ANY_PATTERN.equals(method)) {
@@ -252,13 +252,15 @@ public class SecurityRuleBuilder {
     }
 
 
-    private void buildRequestMap(Map<RequestMatcher, Collection<ConfigAttribute>> requestMap, Collection<ConfigAttribute> configAtts, MotechURLSecurityRule securityRule) {
+    private void buildRequestMap(Map<RequestMatcher, Collection<ConfigAttribute>> requestMap,
+                                 Collection<ConfigAttribute> configAtts, MotechURLSecurityRule securityRule) {
         String pattern = securityRule.getPattern();
 
         for (String method : securityRule.getMethodsRequired()) {
             RequestMatcher matcher;
 
-            if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD) && (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || pattern.equals("/**"))) {
+            if (securityRule.getMethodsRequired().contains(SecurityConfigConstants.ANY_METHOD) &&
+                    (pattern.equals(SecurityConfigConstants.ANY_PATTERN) || "/**".equals(pattern))) {
                 matcher = new AnyRequestMatcher();
                 requestMap.put(matcher, configAtts);
                 return;

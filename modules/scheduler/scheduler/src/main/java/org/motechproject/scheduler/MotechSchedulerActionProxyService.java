@@ -9,7 +9,10 @@ public interface MotechSchedulerActionProxyService {
 
     void scheduleCronJob(String subject, Map<Object, Object> parameters, String cronExpression, DateTime startTime, DateTime endTime, Boolean ignorePastFiresAtStart);
 
-    void scheduleRepeatingJob(String subject, Map<Object, Object> parameters, DateTime startTime, DateTime endTime, Integer repeatCount, Long repeatIntervalInMilliSeconds, Boolean ignorePastFiresAtStart, Boolean useOriginalFireTimeAfterMisfire);
+    void scheduleRepeatingJob(String subject, // NO CHECKSTYLE More than 7 parameters (found 8).
+                              Map<Object, Object> parameters, DateTime startTime, DateTime endTime, Integer repeatCount,
+                              Long repeatIntervalInMilliSeconds, Boolean ignorePastFiresAtStart,
+                              Boolean useOriginalFireTimeAfterMisfire);
 
     void scheduleRunOnceJob(String subject, Map<Object, Object> parameters, DateTime startDate);
 

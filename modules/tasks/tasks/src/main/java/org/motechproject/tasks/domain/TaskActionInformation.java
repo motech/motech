@@ -35,9 +35,9 @@ public class TaskActionInformation extends TaskEventInformation {
         this(displayName, channelName, moduleName, moduleVersion, null, serviceInterface, serviceMethod, null);
     }
 
-    public TaskActionInformation(String displayName, String channelName, String moduleName, String moduleVersion,
-                                 String subject, String serviceInterface, String serviceMethod,
-                                 Map<String, String> values) {
+    public TaskActionInformation(String displayName, // NO CHECKSTYLE More than 7 parameters (found 8).
+                                 String channelName, String moduleName, String moduleVersion, String subject,
+                                 String serviceInterface, String serviceMethod, Map<String, String> values) {
         super(displayName, channelName, moduleName, moduleVersion, subject);
 
         this.serviceInterface = serviceInterface;

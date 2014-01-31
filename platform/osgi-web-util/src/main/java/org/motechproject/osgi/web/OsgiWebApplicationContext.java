@@ -1,13 +1,10 @@
 package org.motechproject.osgi.web;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -58,7 +55,7 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
     }
 
     @Override
-    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
+    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() {
         return applicationContext.getAutowireCapableBeanFactory();
     }
 
@@ -103,17 +100,17 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
     }
 
     @Override
-    public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
+    public <T> Map<String, T> getBeansOfType(Class<T> type) {
         return applicationContext.getBeansOfType(type);
     }
 
     @Override
-    public <T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) throws BeansException {
+    public <T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) {
         return applicationContext.getBeansOfType(type, includeNonSingletons, allowEagerInit);
     }
 
     @Override
-    public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) throws BeansException {
+    public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) {
         return applicationContext.getBeansWithAnnotation(annotationType);
     }
 
@@ -123,22 +120,22 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
     }
 
     @Override
-    public Object getBean(String name) throws BeansException {
+    public Object getBean(String name) {
         return applicationContext.getBean(name);
     }
 
     @Override
-    public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+    public <T> T getBean(String name, Class<T> requiredType) {
         return applicationContext.getBean(name, requiredType);
     }
 
     @Override
-    public <T> T getBean(Class<T> requiredType) throws BeansException {
+    public <T> T getBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
     }
 
     @Override
-    public Object getBean(String name, Object... args) throws BeansException {
+    public Object getBean(String name, Object... args) {
         return applicationContext.getBean(name, args);
     }
 
@@ -148,22 +145,22 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
     }
 
     @Override
-    public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+    public boolean isSingleton(String name) {
         return applicationContext.isSingleton(name);
     }
 
     @Override
-    public boolean isPrototype(String name) throws NoSuchBeanDefinitionException {
+    public boolean isPrototype(String name) {
         return applicationContext.isPrototype(name);
     }
 
     @Override
-    public boolean isTypeMatch(String name, Class<?> targetType) throws NoSuchBeanDefinitionException {
+    public boolean isTypeMatch(String name, Class<?> targetType) {
         return applicationContext.isTypeMatch(name, targetType);
     }
 
     @Override
-    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+    public Class<?> getType(String name) {
         return applicationContext.getType(name);
     }
 
@@ -185,12 +182,12 @@ public class OsgiWebApplicationContext implements WebApplicationContext {
     }
 
     @Override
-    public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+    public String getMessage(String code, Object[] args, Locale locale) {
         return applicationContext.getMessage(code, args, locale);
     }
 
     @Override
-    public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
+    public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
         return applicationContext.getMessage(resolvable, locale);
     }
 

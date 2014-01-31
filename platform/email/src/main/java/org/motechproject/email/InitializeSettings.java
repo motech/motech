@@ -43,7 +43,7 @@ public class InitializeSettings {
 
     private void scheduleMailPurging(String time, String multiplier) {
         unscheduleMailPurging();
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("purgeTime", time);
         params.put("purgeMultiplier", multiplier);
         motechSchedulerService.safeScheduleJob(new CronSchedulableJob(
