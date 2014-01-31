@@ -1,0 +1,106 @@
+Migrations
+----------
+
+Flyway updates the database from one version to the next using migrations.
+
+Each migration must have a unique version and a description.
+
+Not all migrations are equally complex, therefore Flyway support both Sql and Java migrations.
+
+Sql Migrations are the most common and should fit the vast majority of the cases.
+
+Java Migrations are for advanced changes that are difficult or impossible to accomplish using Sql.
+This includes dealing with LOBs and advanced bulk data loads and transformations.
+
+Flyway sorts all migrations by version and executes them in order.
+
+Versions
+========
+
+A version must have the following structure:
+
+* One or more numeric parts
+* Separated by a dot (.) or an underscore (_)
+* Underscores are replaced by dots at runtime
+* Leading zeroes are ignored in each part
+
+
+Examples of valid versions:
+
+* 1
+* 001
+* 5.2
+* 5_2 (5.2 at runtime)
+* 1.2.3.4.5.6.7.8.9
+* 205.68
+* 20130115113556
+* 2013.1.15.11.35.56
+* 2013.01.15.11.35.56
+
+Sql-based migrations
+--------------------
+
+Typical usage
+=============
+
+* DDL changes (CREATE/ALTER/DROP statements for TABLES,VIEWS,TRIGGERS,SEQUENCES,...)
+* Simple reference data changes (CRUD in reference data tables)
+* Simple bulk data changes (CRUD in regular data tables)
+
+Location and discovery
+======================
+
+Sql migrations reside on the classpath in one or more directories referenced by the locations
+property (default: db/migration).
+
+New sql migrations are discovered automatically through classpath scanning at runtime. This scanning
+is recursive. All migrations in directories below the specified ones are also picked up.
+
+Naming
+======
+
+In order to be picked by the classpath scanner, the sql migrations must follow a naming pattern:
+
+{prefix}{version}{separator}{description}{suffix}
+
+The file name consists of:
+
+* prefix (Configurable, default: V)
+* version (Dots or underscores separate the parts, you can use as many parts as you like)
+* separator (Two underscores)
+* description (Underscores or spaces separate the words)
+* suffix (Configurable, default: .sql)
+
+For example
+V2__Add_new_table.sql
+
+Sql Script syntax
+=================
+
+* Single- or multi-line statements
+* Flexible placeholder replacement
+* Single- (--) or Multi-line (/* */) comments spanning complete lines
+* Database-specific SQL syntax extensions (PL/SQL, T-SQL, ...)
+
+Sample Script
+=============
+
+/* Single line comment */
+CREATE TABLE test_user (
+  name VARCHAR(25) NOT NULL,
+  PRIMARY KEY(name)
+);
+
+/*
+Multi-line
+comment
+*/
+
+-- Placeholder
+INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+
+Source
+======
+
+* http://flywaydb.org/documentation/migration/
+* http://flywaydb.org/documentation/migration/sql.html

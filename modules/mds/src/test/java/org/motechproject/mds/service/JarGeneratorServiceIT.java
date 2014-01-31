@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -94,6 +95,9 @@ public class JarGeneratorServiceIT extends BaseIT {
             actual.add(entry.getName());
             entry = input.getNextJarEntry();
         }
+
+        Collections.sort(expected);
+        Collections.sort(actual);
 
         assertEquals(expected, actual);
     }

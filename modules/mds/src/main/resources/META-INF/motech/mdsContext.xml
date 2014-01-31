@@ -70,16 +70,36 @@
         </property>
     </bean>
 
-    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <bean factory-bean="mdsSettings" factory-method="asProperties"/>
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
+    </bean>
+
+    <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
+        <property name="dataSource">
+            <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">
+                <property name="driverClassName" value="${javax.jdo.option.ConnectionDriverName}"/>
+                <property name="url" value="${javax.jdo.option.ConnectionURL}"/>
+                <property name="username" value="${javax.jdo.option.ConnectionUserName}"/>
+                <property name="password" value="${javax.jdo.option.ConnectionPassword}"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway">
         <property name="configLocation" value="classpath:datanucleus.properties"/>
     </bean>
 
-    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+    <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy" depends-on="flyway">
         <property name="targetPersistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
         <property name="allowCreate" value="false"/>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager" depends-on="flyway">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 

@@ -31,6 +31,8 @@
 
         <activemq.version>5.4.2-${external.dependency.release.tag}</activemq.version>
 
+        <flyway.version>2.3.1</flyway.version>
+
         <check.code.skip>${maven.test.skip}</check.code.skip>
         <pmd.skip>${check.code.skip}</pmd.skip>
         <checkstyle.skip>${check.code.skip}</checkstyle.skip>
@@ -695,6 +697,12 @@
                 <artifactId>datanucleus-jodatime</artifactId>
                 <version>3.2.1</version>
             </dependency>
+            <!-- flywaydb -->
+            <dependency>
+                <groupId>com.googlecode.flyway</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
             <!-- Fragment -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -1105,6 +1113,7 @@
         <module>modules/event-logging/event-logging</module>
         <module>modules/scheduler/scheduler</module>
         <module>modules/mds</module>
+        <module>modules/mds-migration</module>
         <module>utils/http-agent/http-agent-bundle</module>
         <module>modules/osgi-integration-tests/osgi-integration-tests</module>
         <module>modules/metrics/metrics</module>

@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
@@ -57,6 +59,10 @@
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-jodatime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.flyway</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -203,6 +209,7 @@
                             org.motechproject.mds.service;version=${project.version}
                         </Export-Package>
                         <Import-Package>
+                            com.googlecode.flyway.core,
                             javax.jdo.spi,
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
@@ -211,6 +218,7 @@
                             org.datanucleus,
                             org.datanucleus.api.jdo,
                             org.datanucleus.state,
+                            org.datanucleus.store.rdbms.datasource.dbcp,
                             org.eclipse.gemini.blueprint.config,
                             org.motechproject.config.service,
                             org.motechproject.osgi.web,
@@ -237,6 +245,17 @@
                             org.springframework.web.servlet.view,
                             *
                         </Import-Package>
+                        <!--
+                            flyway-core does not see sql files from the related directory when
+                            it is run inside Felix framework. Probably the problem is with classpath
+                            when flyway-core tries to find the correct sql file it searchs inside
+                            motech-dataservices classpath instead of its classpath. Embedding sql
+                            files inside motech-dataservices resolves the problem. This instruction
+                            should be removed when problem will be solved inside flyway-core.
+                        -->
+                        <Embed-Dependency>
+                            flyway-core;inline=com/googlecode/flyway/core/dbsupport/**/*.sql
+                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -428,9 +447,9 @@
                                 </goals>
                                 <configuration>
                                     <autocommit>true</autocommit>
-                                    <srcFiles>
-                                        <srcFile>src/main/resources/sql/schema.sql</srcFile>
-                                    </srcFiles>
+                                    <sqlCommand>
+                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
+                                    </sqlCommand>
                                 </configuration>
                             </execution>
                         </executions>
@@ -471,9 +490,9 @@
                                 </goals>
                                 <configuration>
                                     <autocommit>true</autocommit>
-                                    <srcFiles>
-                                        <srcFile>src/main/resources/sql/schema.sql</srcFile>
-                                    </srcFiles>
+                                    <sqlCommand>
+                                        CREATE DATABASE IF NOT EXISTS motech_data_services;
+                                    </sqlCommand>
                                 </configuration>
                             </execution>
                         </executions>
