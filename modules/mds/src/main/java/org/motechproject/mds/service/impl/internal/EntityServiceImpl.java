@@ -282,6 +282,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             entity = ((EntityDraft) entity).getParentEntity();
         }
 
+        allEntityDrafts.deleteAllDraftsForEntity(entity);
         allEntityMappings.delete(entity);
     }
 

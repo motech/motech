@@ -2,9 +2,11 @@ package org.motechproject.mds;
 
 import org.junit.runner.RunWith;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
 import org.motechproject.mds.domain.LookupMapping;
+import org.motechproject.mds.domain.SettingOptionsMapping;
 import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.domain.ValidationCriterionMapping;
@@ -67,63 +69,51 @@ public abstract class BaseIT {
     }
 
     protected List<EntityMapping> getEntityMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(EntityMapping.class);
+        return getAll(EntityMapping.class);
+    }
 
-        return cast(EntityMapping.class, (Collection) query.execute());
+    protected List<EntityDraft> getEntityDrafts() {
+        return getAll(EntityDraft.class);
     }
 
     protected List<FieldMapping> getFieldMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(FieldMapping.class);
-
-        return cast(FieldMapping.class, (Collection) query.execute());
+        return getAll(FieldMapping.class);
     }
 
     protected List<LookupMapping> getLookupMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(LookupMapping.class);
-
-        return cast(LookupMapping.class, (Collection) query.execute());
+        return getAll(LookupMapping.class);
     }
 
     protected List<TypeSettingsMapping> getTypeSettingsMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(TypeSettingsMapping.class);
-
-        return cast(TypeSettingsMapping.class, (Collection) query.execute());
+        return getAll(TypeSettingsMapping.class);
     }
 
     protected List<TypeValidationMapping> getTypeValidationMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(TypeValidationMapping.class);
-
-        return cast(TypeValidationMapping.class, (Collection) query.execute());
+        return getAll(TypeValidationMapping.class);
     }
 
     protected List<ValidationCriterionMapping> getValidationCriterionMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(ValidationCriterionMapping.class);
-
-        return cast(ValidationCriterionMapping.class, (Collection) query.execute());
+        return getAll(ValidationCriterionMapping.class);
     }
 
     protected List<AvailableFieldTypeMapping> getAvailableFieldTypeMappings() {
-        PersistenceManager persistenceManager = getPersistenceManager();
-        Query query = persistenceManager.newQuery(AvailableFieldTypeMapping.class);
+        return getAll(AvailableFieldTypeMapping.class);
+    }
 
-        return cast(AvailableFieldTypeMapping.class, (Collection) query.execute());
+    protected List<SettingOptionsMapping> getSettingsOptionMappings() {
+        return getAll(SettingOptionsMapping.class);
     }
 
     protected void clearDB() {
         getPersistenceManager().deletePersistentAll(getValidationCriterionMappings());
-        getPersistenceManager().deletePersistentAll((getFieldMappings()));
+        getPersistenceManager().deletePersistentAll(getFieldMappings());
         getPersistenceManager().deletePersistentAll(getTypeValidationMappings());
+        getPersistenceManager().deletePersistentAll(getSettingsOptionMappings());
         getPersistenceManager().deletePersistentAll(getTypeSettingsMappings());
-        getPersistenceManager().deletePersistentAll((getAvailableFieldTypeMappings()));
-        getPersistenceManager().deletePersistentAll((getLookupMappings()));
-        getPersistenceManager().deletePersistentAll((getEntityMappings()));
-
+        getPersistenceManager().deletePersistentAll(getAvailableFieldTypeMappings());
+        getPersistenceManager().deletePersistentAll(getLookupMappings());
+        getPersistenceManager().deletePersistentAll(getEntityDrafts());
+        getPersistenceManager().deletePersistentAll(getEntityMappings());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
@@ -136,5 +126,12 @@ public abstract class BaseIT {
         }
 
         return list;
+    }
+
+    private <T> List<T> getAll(Class<T> clazz) {
+        PersistenceManager persistenceManager = getPersistenceManager();
+        Query query = persistenceManager.newQuery(clazz);
+
+        return cast(clazz, (Collection) query.execute());
     }
 }
