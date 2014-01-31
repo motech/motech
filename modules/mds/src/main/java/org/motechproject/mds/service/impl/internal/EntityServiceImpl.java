@@ -5,6 +5,7 @@ import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
@@ -24,6 +25,7 @@ import org.motechproject.mds.ex.NoSuchTypeException;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.AllFieldTypes;
+import org.motechproject.mds.repository.AllTypeSettingsMappings;
 import org.motechproject.mds.repository.AllTypeValidationMappings;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
@@ -58,6 +60,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllFieldTypes allFieldTypes;
     private AllTypeValidationMappings allTypeValidationMappings;
     private AllEntityDrafts allEntityDrafts;
+    private AllTypeSettingsMappings allTypeSettingsMappings;
 
     // TODO remove this once everything is in db
     private ExampleData exampleData = new ExampleData();
@@ -158,17 +161,19 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         TypeValidationMapping fieldValidation = allTypeValidationMappings.createValidationInstance(availableType);
         FieldValidationDto validationDto = (fieldValidation == null) ? null : fieldValidation.toDto();
 
-        // TODO move to db
-        List<SettingDto> fieldSettings = exampleData.getTypeSettings(fieldType);
+        List<TypeSettingsMapping> fieldSettings = allTypeSettingsMappings.createEmptySettingsInstance(availableType);
+        List<SettingDto> settingDtos = new ArrayList<>();
+        for (TypeSettingsMapping typeSettings : fieldSettings) {
+            settingDtos.add(typeSettings.toDto());
+        }
 
         FieldDto field = new FieldDto();
         field.setBasic(basic);
         field.setType(fieldType);
         field.setValidation(validationDto);
-        field.setSettings(fieldSettings);
-        field.setSettings(fieldSettings);
+        field.setSettings(settingDtos);
 
-        FieldMapping fieldMapping = new FieldMapping(field, draft, availableType, fieldValidation);
+        FieldMapping fieldMapping = new FieldMapping(field, draft, availableType, fieldValidation, fieldSettings);
 
         draft.addField(fieldMapping);
 
@@ -402,5 +407,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllTypeValidationMappings(AllTypeValidationMappings allTypeValidationMappings) {
         this.allTypeValidationMappings = allTypeValidationMappings;
+    }
+
+    @Autowired
+    public void setAllTypeSettingsMappings(AllTypeSettingsMappings allTypeSettingsMappings) {
+        this.allTypeSettingsMappings = allTypeSettingsMappings;
     }
 }

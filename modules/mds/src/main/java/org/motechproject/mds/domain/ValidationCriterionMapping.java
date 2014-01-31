@@ -1,6 +1,5 @@
 package org.motechproject.mds.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 
@@ -50,7 +49,7 @@ public class ValidationCriterionMapping {
 
     public ValidationCriterionDto toDto() {
         return new ValidationCriterionDto(displayName, new TypeDto(type.getDisplayName(), type.getDescription(), type.getTypeClass()),
-                parseValue(), enabled);
+                type.parse(value), enabled);
     }
 
     public Long getId() {
@@ -103,22 +102,5 @@ public class ValidationCriterionMapping {
 
     public ValidationCriterionMapping copy() {
         return new ValidationCriterionMapping(displayName, value, enabled, null, type);
-    }
-
-    private Object parseValue() {
-        if (StringUtils.isBlank(value)) {
-            return null;
-        }
-
-        String typeClass = type.getTypeClass();
-
-        switch (typeClass) {
-            case "java.lang.Integer":
-                return Integer.valueOf(value);
-            case "java.lang.Double":
-                return Double.parseDouble(value);
-            default:
-                return value;
-        }
     }
 }

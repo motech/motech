@@ -1,9 +1,11 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 
@@ -51,16 +53,21 @@ public class FieldMapping {
     private AvailableFieldTypeMapping type;
 
     @Persistent(mappedBy = "field")
-    @Element(dependent = "TRUE")
+    @Element(dependent = "true")
     private List<FieldMetadataMapping> metadata;
 
     @Persistent(dependent = "TRUE")
     private TypeValidationMapping validation;
 
+    @Persistent(mappedBy = "field")
+    @Element(dependent = "TRUE")
+    private List<TypeSettingsMapping> typeSettings;
+
     public FieldMapping() {
     }
 
-    public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type, TypeValidationMapping validation) {
+    public FieldMapping(FieldDto field, EntityMapping entity, AvailableFieldTypeMapping type, TypeValidationMapping validation,
+                        List<TypeSettingsMapping> typeSettings) {
         this.entity = entity;
         this.type = type;
         this.validation = validation;
@@ -73,11 +80,11 @@ public class FieldMapping {
             this.defaultValue = field.getBasic().getDefaultValue().toString();
         }
 
-        if (null != field.getMetadata()) {
-            for (MetadataDto meta : field.getMetadata()) {
-                metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
-            }
+        for (MetadataDto meta : field.getMetadata()) {
+            metadata.add(new FieldMetadataMapping(this, meta.getKey(), meta.getValue()));
         }
+
+        this.typeSettings = typeSettings;
     }
 
     public FieldDto toDto() {
@@ -93,7 +100,12 @@ public class FieldMapping {
         TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
         FieldValidationDto validationDto = (validation == null) ? null : validation.toDto();
 
-        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validationDto, null);
+        List<SettingDto> settingDtos = new ArrayList<>();
+        for (TypeSettingsMapping settings : getTypeSettings()) {
+            settingDtos.add(settings.toDto());
+        }
+
+        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validationDto, settingDtos);
     }
 
     public String getDisplayName() {
@@ -183,6 +195,17 @@ public class FieldMapping {
         getMetadata().add(metadata);
     }
 
+    public List<TypeSettingsMapping> getTypeSettings() {
+        if (typeSettings == null) {
+            typeSettings = new ArrayList<>();
+        }
+        return typeSettings;
+    }
+
+    public void setTypeSettings(List<TypeSettingsMapping> typeSettings) {
+        this.typeSettings = typeSettings;
+    }
+
     public FieldMapping update(FieldDto field) {
         this.setDisplayName(field.getBasic().getDisplayName());
         this.setName(field.getBasic().getName());
@@ -193,11 +216,19 @@ public class FieldMapping {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
         }
 
+        updateMetadata(field.getMetadata());
+        updateValidation(field.getValidation());
+        updateSettings(field.getSettings());
+
+        return this;
+    }
+
+    public void updateMetadata(List<MetadataDto> metadataList) {
         for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext();) {
             FieldMetadataMapping metadataMapping = it.next();
 
             boolean inNewList = false;
-            for (MetadataDto metadataDto : field.getMetadata()) {
+            for (MetadataDto metadataDto : metadataList) {
                 if (Objects.equals(metadataMapping.getId(), metadataDto.getId())) {
                     inNewList = true;
                     break;
@@ -209,8 +240,7 @@ public class FieldMapping {
             }
         }
 
-
-        for (MetadataDto metadataDto : field.getMetadata()) {
+        for (MetadataDto metadataDto : metadataList) {
             FieldMetadataMapping metadataMapping = getMetadataById(metadataDto.getId());
             if (metadataMapping == null) {
                 FieldMetadataMapping newMetadata = new FieldMetadataMapping(metadataDto);
@@ -219,18 +249,26 @@ public class FieldMapping {
                 metadataMapping.update(metadataDto);
             }
         }
+    }
 
+    public void updateSettings(List<SettingDto> settingsList) {
+        for (SettingDto settingDto : settingsList) {
+            TypeSettingsMapping settings = getTypeSettingsByName(settingDto.getName());
+            if (settings != null) {
+                settings.setValue(settings.getValueType().format(settingDto.getValue()));
+            }
+        }
+    }
 
-        if (field.getValidation() != null) {
-            for (ValidationCriterionDto criterionDto : field.getValidation().getCriteria()) {
+    public void updateValidation(FieldValidationDto validationDto) {
+        if (validationDto != null) {
+            for (ValidationCriterionDto criterionDto : validationDto.getCriteria()) {
                 ValidationCriterionMapping criterion = validation.getCriterionByName(criterionDto.getDisplayName());
 
                 criterion.setEnabled(criterionDto.isEnabled());
                 criterion.setValue(criterionDto.valueAsString());
             }
         }
-
-        return this;
     }
 
     public FieldMetadataMapping getMetadataById(Long metadataId) {
@@ -252,15 +290,30 @@ public class FieldMapping {
         copy.setRequired(required);
         copy.setTooltip(tooltip);
         copy.setType(type);
-        copy.setValidation((validation == null) ? null : validation.copy());
-        List<FieldMetadataMapping> copyMetadata = new ArrayList<>();
 
+        copy.setValidation((validation == null) ? null : validation.copy());
+
+        List<FieldMetadataMapping> copyMetadata = new ArrayList<>();
         for (FieldMetadataMapping metadataMapping : metadata) {
             copyMetadata.add(metadataMapping.copy());
         }
-
         copy.setMetadata(copyMetadata);
 
+        List<TypeSettingsMapping> typeSettingsCopy = new ArrayList<>();
+        for (TypeSettingsMapping typeSettingsInstance : getTypeSettings()) {
+            typeSettingsCopy.add(typeSettingsInstance.copy());
+        }
+        copy.setTypeSettings(typeSettingsCopy);
+
         return copy;
+    }
+
+    public TypeSettingsMapping getTypeSettingsByName(String name) {
+        for (TypeSettingsMapping settings : getTypeSettings()) {
+            if (StringUtils.equals(name, settings.getName())) {
+                return settings;
+            }
+        }
+        return null;
     }
 }

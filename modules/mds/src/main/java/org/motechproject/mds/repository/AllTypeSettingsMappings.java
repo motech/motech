@@ -34,12 +34,27 @@ public class AllTypeSettingsMappings extends BaseMdsRepository {
             typeSettingsMapping = new TypeSettingsMapping(setting.getName(), setting.getValue().toString(), valueType, type);
         }
 
-        return getPersistenceManager().makePersistent(typeSettingsMapping);
+        return save(typeSettingsMapping);
+    }
+
+    public TypeSettingsMapping save(TypeSettingsMapping typeSettings) {
+        return getPersistenceManager().makePersistent(typeSettings);
+    }
+
+    public List<TypeSettingsMapping> createEmptySettingsInstance(AvailableFieldTypeMapping type) {
+        List<TypeSettingsMapping> settingsForType = getSettingsForType(type);
+
+        List<TypeSettingsMapping> newInstance = new ArrayList<>();
+        for (TypeSettingsMapping typeSettings : settingsForType) {
+            newInstance.add(typeSettings.copy());
+        }
+
+        return newInstance;
     }
 
     public List<TypeSettingsMapping> getSettingsForType(AvailableFieldTypeMapping type) {
         Query query = getPersistenceManager().newQuery(TypeSettingsMapping.class);
-        query.setFilter("typeId == type");
+        query.setFilter("typeId == type && field == null");
         query.declareParameters("java.lang.Long typeId");
 
         Collection collection = (Collection) query.execute(type.getId());
