@@ -58,6 +58,7 @@ import static org.motechproject.mds.constants.Constants.Packages;
  */
 @Service
 public class EntityServiceImpl extends BaseMdsService implements EntityService {
+
     private AllEntityMappings allEntityMappings;
     private MDSConstructor constructor;
     private AllFieldTypes allFieldTypes;
@@ -300,11 +301,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public void deleteEntity(Long entityId) {
         EntityMapping entity = allEntityMappings.getEntityById(entityId);
 
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        } else if (entity.isReadOnly()) {
-            throw new EntityReadOnlyException();
-        }
+        assertWritableEntity(entity);
 
         if (entity.isDraft()) {
             entity = ((EntityDraft) entity).getParentEntity();
@@ -395,9 +392,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public EntityDraft getEntityDraft(Long entityId) {
         EntityMapping entity = allEntityMappings.getEntityById(entityId);
 
-        if (entity == null) {
-            throw new EntityNotFoundException();
-        }
+        assertEntityExists(entity);
 
         if (entity instanceof EntityDraft) {
             return (EntityDraft) entity;
@@ -425,9 +420,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public void addFields(EntityDto entityDto, List<FieldDto> fields) {
         EntityMapping entity = allEntityMappings.getEntityById(entityDto.getId());
 
-        if (null == entity) {
-            throw new EntityNotFoundException();
-        }
+        assertEntityExists(entity);
 
         for (FieldDto fieldDto : fields) {
             String typeClass = fieldDto.getType().getTypeClass();
@@ -435,6 +428,20 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             FieldMapping field = new FieldMapping(fieldDto, entity, type, null, null);
 
             entity.addField(field);
+        }
+    }
+
+    private void assertEntityExists(EntityMapping entity) {
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    private void assertWritableEntity(EntityMapping entity) {
+        assertEntityExists(entity);
+
+        if (entity.isReadOnly()) {
+            throw new EntityReadOnlyException();
         }
     }
 

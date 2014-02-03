@@ -46,7 +46,7 @@ public class LookupMapping {
     }
 
     public LookupDto toDto() {
-        return new LookupDto(id, lookupName, singleObjectReturn);
+        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest);
     }
 
     public Long getId() {
@@ -95,6 +95,7 @@ public class LookupMapping {
 
     public final void update(LookupDto lookupDto) {
         singleObjectReturn = lookupDto.isSingleObjectReturn();
+        exposedViaRest = lookupDto.isExposedViaRest();
         lookupName = lookupDto.getLookupName();
     }
 }

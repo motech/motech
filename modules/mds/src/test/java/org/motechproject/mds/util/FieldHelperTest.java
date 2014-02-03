@@ -71,8 +71,8 @@ public class FieldHelperTest {
         AdvancedSettingsDto advancedSettings = new AdvancedSettingsDto();
         advancedSettings.setEntityId(100L);
 
-        LookupDto lookup = new LookupDto(1L, "look1Name", true);
-        LookupDto lookup2 = new LookupDto(2L, "look2Name", false);
+        LookupDto lookup = new LookupDto(1L, "look1Name", true, true);
+        LookupDto lookup2 = new LookupDto(2L, "look2Name", false, false);
         advancedSettings.setIndexes(new ArrayList<>((asList(lookup, lookup2))));
 
         return advancedSettings;

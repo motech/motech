@@ -5,55 +5,89 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class representing rest options of given entity.
  */
-public class RestOptionsDto implements Serializable {
+public class RestOptionsDto {
+    private Long id;
 
-    private static final long serialVersionUID = 2788308149813128670L;
-
-    private List<String> fieldIds = new ArrayList<>();
-    private List<String> lookupIds = new ArrayList<>();
+    private List<Long> fieldIds = new ArrayList<>();
+    private List<Long> lookupIds = new ArrayList<>();
 
     private boolean create;
     private boolean read;
     private boolean update;
     private boolean delete;
 
-    public void addField(String value) {
-        this.fieldIds.add(value);
+    public RestOptionsDto() {
+        this(false, false, false, false);
     }
 
-    public void removeField(String value) {
-        this.fieldIds.remove(value);
+    public RestOptionsDto(boolean create, boolean read, boolean update, boolean delete) {
+        this.create = create;
+        this.read = read;
+        this.update = update;
+        this.delete = delete;
     }
 
-    public List<String> getFieldIds() {
+    public RestOptionsDto(Long id, boolean create, boolean read, boolean update, boolean delete) {
+        this(create, read, update, delete);
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void addField(Long id) {
+        this.fieldIds.add(id);
+    }
+
+    public void removeField(Long id) {
+        this.fieldIds.remove(id);
+    }
+
+    public List<Long> getFieldIds() {
         return fieldIds;
     }
 
-    public void setFieldIds(List<String> fieldIds) {
-        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<String>();
+    public void setFieldIds(List<Long> fieldIds) {
+        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<Long>();
     }
 
-    public void addLookup(String value) {
-        this.lookupIds.add(value);
+    public void addLookup(Integer id) {
+        addLookup((long)id);
     }
 
-    public void removeLookup(String value) {
-        this.lookupIds.remove(value);
+    public void addLookup(Long id) {
+        this.lookupIds.add(id);
     }
 
-    public List<String> getLookupIds() {
+    public void removeLookup(Integer id) {
+        removeLookup((long)id);
+    }
+
+    public void removeLookup(Long id) {
+        this.lookupIds.remove(id);
+    }
+
+    public List<Long> getLookupIds() {
         return lookupIds;
     }
 
-    public void setLookupIds(List<String> lookupIds) {
-        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<String>();
+    public void setLookupIds(List<Long> lookupIds) {
+        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<Long>();
+    }
+
+    public boolean isLookupExposedViaRest (Long id) {
+        return (lookupIds != null) ? lookupIds.contains(id) : false;
     }
 
     public boolean isCreate() {

@@ -63,7 +63,7 @@ public class LookupProcessorTest {
 
         verify(entityService).getEntityByClassName(String.class.getName());
         verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 1", true,
+        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 1", true, false,
                 Arrays.asList("arg1", "Second argument")));
     }
 
@@ -76,7 +76,7 @@ public class LookupProcessorTest {
 
         verify(entityService).getEntityByClassName(TestClass.class.getName());
         verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 2", false,
+        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 2", false, false,
                 Arrays.asList(argNames)));
     }
 
@@ -89,7 +89,7 @@ public class LookupProcessorTest {
 
         verify(entityService).getEntityByClassName(TestClass.class.getName());
         verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("My new custom lookup", false,
+        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("My new custom lookup", false, false,
                 Arrays.asList(argNames)));
     }
 

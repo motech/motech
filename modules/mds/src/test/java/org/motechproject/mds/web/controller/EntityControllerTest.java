@@ -303,9 +303,9 @@ public class EntityControllerTest {
     public void shouldGetAdvancedSettingsForEntity() throws Exception {
         AdvancedSettingsDto expected = new AdvancedSettingsDto();
         RestOptionsDto restOptions = new RestOptionsDto();
-        List<String> fields = new LinkedList<>();
-        fields.add("2");
-        fields.add("5");
+        List<Long> fields = new LinkedList<>();
+        fields.add(2L);
+        fields.add(5L);
         restOptions.setCreate(true);
         restOptions.setFieldIds(fields);
         expected.setId(1L);

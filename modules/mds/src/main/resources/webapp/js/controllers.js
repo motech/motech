@@ -104,7 +104,7 @@
 
             if ($scope.advancedSettings.indexes) {
                 angular.forEach($scope.advancedSettings.indexes, function (lookup, index) {
-                    if ($.inArray(lookup.lookupName, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
+                    if ($.inArray(lookup.id, $scope.advancedSettings.restOptions.lookupIds) !== -1) {
                         $scope.selectedEntityRestLookups[index] = true;
                     } else {
                         $scope.selectedEntityRestLookups[index] = false;
@@ -540,17 +540,17 @@
                 values: {
                     path: 'restOptions.${0}'.format(value ? 'addLookup' : 'removeLookup'),
                     advanced: true,
-                    value: [lookup.lookupName]
+                    value: [lookup.id]
                 }
             }, function () {
                 $scope.safeApply(function () {
                     if (value) {
                         $scope.advancedSettings.restOptions.lookupIds.push(
-                            lookup.lookupName
+                            lookup.id
                         );
                     } else {
                         $scope.advancedSettings.restOptions.lookupIds.removeObject(
-                            lookup.lookupName
+                            lookup.id
                         );
                     }
                 });

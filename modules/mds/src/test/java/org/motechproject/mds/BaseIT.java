@@ -4,9 +4,10 @@ import org.junit.runner.RunWith;
 import org.motechproject.mds.domain.AvailableFieldTypeMapping;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.RestOptionsMapping;
 import org.motechproject.mds.domain.LookupMapping;
 import org.motechproject.mds.domain.SettingOptionsMapping;
+import org.motechproject.mds.domain.FieldMapping;
 import org.motechproject.mds.domain.TypeSettingsMapping;
 import org.motechproject.mds.domain.TypeValidationMapping;
 import org.motechproject.mds.domain.ValidationCriterionMapping;
@@ -102,6 +103,11 @@ public abstract class BaseIT {
 
     protected List<SettingOptionsMapping> getSettingsOptionMappings() {
         return getAll(SettingOptionsMapping.class);
+    }
+
+
+    protected List<RestOptionsMapping> getEntityRestOptionsMappings() {
+        return getAll(RestOptionsMapping.class);
     }
 
     protected void clearDB() {
