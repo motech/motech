@@ -381,7 +381,7 @@
              $scope.startupViewData.startupSettings.loginMode = $scope.securityMode;
              $http({
                 method: "POST",
-                url: "../server/startup",
+                url: "../server/startup/",
                 data: $scope.startupViewData.startupSettings
              })
              .success(function(data) {
