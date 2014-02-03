@@ -32,7 +32,7 @@ import static org.motechproject.security.constants.PermissionNames.VIEW_DETAILED
 public class Initialize {
 
     private static final String WEB_SECURITY = "org.motechproject.motech-platform-web-security";
-    private static final String EMAIL = "org.motechproject.motech-email-bundle";
+    private static final String EMAIL = "org.motechproject.motech-platform-email";
     private static final String USER_ADMIN = "User Admin";
     private static final String ROLES_ADMIN = "Roles Admin";
     private static final String ADMIN_USER = "Admin User";

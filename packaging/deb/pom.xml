@@ -86,7 +86,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-email-bundle</artifactId>
+            <artifactId>motech-platform-email</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

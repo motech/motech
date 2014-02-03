@@ -10,13 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
     <version>0.23-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <description>MOTECH Email bundle</description>
+    <description>MOTECH Platform Email</description>
     <groupId>org.motechproject</groupId>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
 
-    <artifactId>motech-email-bundle</artifactId>
+    <artifactId>motech-platform-email</artifactId>
     <name>MOTECH Email</name>
     <dependencies>
         <dependency>
@@ -129,7 +129,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${user.home}/.motech/config/org.motechproject.motech-email-bundle</directory>
+                                    <directory>${user.home}/.motech/config/org.motechproject.motech-platform-email</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
