@@ -101,8 +101,6 @@ cp -R $ARTIFACT_DIR/motech-platform-*.jar ./motech-base/var/lib/motech/motech-de
 cp -R $ARTIFACT_DIR/motech-admin*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 # Include scheduler
 cp -R $ARTIFACT_DIR/motech-scheduler*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
-# Include email
-cp -R $ARTIFACT_DIR/motech-email*.jar ./motech-base/var/lib/motech/motech-default/data/bundles
 
 # Include dependencies
 cp -R $DEPENDENCY_DIR/* ./motech-base/var/lib/motech/motech-default/data/bundles
