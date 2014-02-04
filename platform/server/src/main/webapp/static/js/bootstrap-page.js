@@ -50,13 +50,13 @@ const TIMEOUT = 5000;
 var redirectCount = 0;
 
 function redirect() {
-    $(location).attr('href', "../module/server");
+    $(location).attr('href', "../module/server/");
 }
 
 function attemptRedirect() {
     if (redirectCount < 5) {
         $.ajax({
-            url: "../module/server",
+            url: "../module/server/",
             success: function() {
                 redirect();
             },
