@@ -20,14 +20,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.test</artifactId>
-            <version>${spring.version}</version>
             <!-- Override parent scope -->
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit</groupId>
             <artifactId>org.motechproject.org.junit</artifactId>
-            <version>4.9.0</version>
             <!-- Override parent scope -->
             <scope>compile</scope>
         </dependency>
