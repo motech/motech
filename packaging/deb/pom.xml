@@ -97,17 +97,6 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.osgi.compendium</artifactId>
-                    <groupId>org.apache.felix</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org.osgi.core</artifactId>
-                    <groupId>org.apache.felix</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -117,29 +106,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-c3p0-fragment-bundle</artifactId>
-            <version>0.16-${external.dependency.release.tag}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.shell</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.osgi.core</artifactId>
-                    <groupId>org.apache.felix</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.webconsole</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.osgi.core</artifactId>
-                    <groupId>org.apache.felix</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
