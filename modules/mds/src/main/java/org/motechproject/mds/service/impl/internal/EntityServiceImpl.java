@@ -343,6 +343,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     @Override
+    @Transactional
     public List<FieldDto> getFields(Long entityId) {
         EntityMapping entity = getEntityDraft(entityId);
 
