@@ -124,7 +124,7 @@ public class FieldMapping {
         this.name = name;
     }
 
-    public Object getDefaultValue() {
+    public String getDefaultValue() {
         return defaultValue;
     }
 

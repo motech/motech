@@ -1,9 +1,8 @@
 package org.motechproject.mds.enhancer;
 
 import org.datanucleus.api.jdo.JDOEnhancer;
-import org.motechproject.mds.builder.EntityBuilder;
+import org.motechproject.mds.builder.EnhancedClassData;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
-import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,27 +22,27 @@ import static org.motechproject.mds.constants.Constants.Config;
 public class MdsJDOEnhancer extends JDOEnhancer {
 
     @Autowired
+    private EntityMetadataBuilder metadataBuilder;
+
+    @Autowired
     public MdsJDOEnhancer(SettingsFacade settingsFacade) {
         super(settingsFacade.getProperties(Config.DATANUCLEUS_FILE));
 
         setVerbose(true);
     }
 
-    public byte[] enhance(EntityMapping mapping) throws IOException {
-        EntityBuilder builder = new EntityBuilder()
-                .withClassName(mapping.getClassName())
-                .withClassLoader(MDSClassLoader.PERSISTANCE);
+    public EnhancedClassData enhance(EntityMapping mapping, byte[] originalBytes, ClassLoader tmpClassLoader)
+            throws IOException {
+        String className = mapping.getClassName();
 
-        builder.build();
+        setClassLoader(tmpClassLoader);
 
-        setClassLoader(builder.getClassLoader());
-
-        JDOMetadata metadata = EntityMetadataBuilder.createBaseEntity(newMetadata(), mapping);
+        JDOMetadata metadata = metadataBuilder.createBaseEntity(newMetadata(), mapping);
 
         registerMetadata(metadata);
-        addClass(builder.getClassName(), builder.getClassBytes());
+        addClass(className, originalBytes);
         enhance();
 
-        return getEnhancedBytes(builder.getClassName());
+        return new EnhancedClassData(className, getEnhancedBytes(className), metadata);
     }
 }

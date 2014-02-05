@@ -25,7 +25,7 @@ public class ServiceAspect {
         ClassLoader webAppClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-            Thread.currentThread().setContextClassLoader(MDSClassLoader.PERSISTANCE);
+            Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
 
             return joinPoint.proceed();
         } finally {

@@ -2,6 +2,7 @@ package org.motechproject.mds.builder;
 
 import org.datanucleus.api.jdo.metadata.JDOMetadataImpl;
 import org.junit.Test;
+import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.EntityMapping;
 
 import javax.jdo.metadata.ClassMetadata;
@@ -24,13 +25,15 @@ public class EntityMetadataBuilderTest {
     private static final String TABLE_NAME_2 = String.format("%s_%s", MODULE, ENTITY_NAME).toUpperCase();
     private static final String TABLE_NAME_3 = String.format("%s_%s_%s", MODULE, NAMESPACE, ENTITY_NAME).toUpperCase();
 
+    private EntityMetadataBuilder entityMetadataBuilder = new EntityMetadataBuilderImpl();
+
     @Test
     public void shouldCreateBaseEntity() throws Exception {
         JDOMetadata mainMetadata = new JDOMetadataImpl();
         EntityMapping mapping = new EntityMapping();
         mapping.setClassName(CLASS_NAME);
 
-        EntityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
+        entityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
 
         assertEquals(1, mainMetadata.getNumberOfPackages());
 
@@ -62,7 +65,7 @@ public class EntityMetadataBuilderTest {
         mapping.setModule(module);
         mapping.setNamespace(namespace);
 
-        EntityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
+        entityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
         return mainMetadata.getPackages()[0].getClasses()[0];
     }
 }

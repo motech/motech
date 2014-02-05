@@ -1,7 +1,5 @@
 package org.motechproject.mds;
 
-import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,12 +12,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.PostConstruct;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
 import java.io.IOException;
-import java.util.List;
 
 /**
- * The purpose of this class is to create classes for all entities that are in MDS database.
+ * The purpose of this class is to build classes for all entities that are in MDS database at startup.
+ * It uses the {@link org.motechproject.mds.service.MDSConstructor} for generation. Since @PostConstruct does
+ * not work with @Transactional, we use a {@link org.springframework.transaction.support.TransactionCallbackWithoutResult}
+ * implementation.
  */
 @Component
 public class MDSInitializer {
@@ -37,18 +36,7 @@ public class MDSInitializer {
 
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus status) {
-            Query query = getPersistenceManager().newQuery(EntityMapping.class);
-            List<EntityMapping> mappings = (List<EntityMapping>) query.execute();
-
-            for (EntityMapping mapping : mappings) {
-                try {
-                    if (!(mapping instanceof EntityDraft) && !mapping.isReadOnly()) {
-                        constructor.constructEntity(mapping);
-                    }
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
+            constructor.generateAllEntities();
         }
 
     }

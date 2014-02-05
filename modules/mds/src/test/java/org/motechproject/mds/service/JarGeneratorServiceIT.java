@@ -75,18 +75,12 @@ public class JarGeneratorServiceIT extends BaseIT {
     }
 
     private void assertJarEntries(JarInputStream input) throws IOException {
-        List<String> expected = new ArrayList<>(8);
-        expected.add(createClassPath(SAMPLE_CLASS));
-        expected.add(createClassPath(ClassName.getInterfaceName(SAMPLE_CLASS)));
+        List<String> expected = new ArrayList<>();
 
-        expected.add(createClassPath(EXAMPLE_CLASS));
-        expected.add(createClassPath(ClassName.getInterfaceName(EXAMPLE_CLASS)));
-
-        expected.add(createClassPath(FOO_CLASS));
-        expected.add(createClassPath(ClassName.getInterfaceName(FOO_CLASS)));
-
-        expected.add(createClassPath(BAR_CLASS));
-        expected.add(createClassPath(ClassName.getInterfaceName(BAR_CLASS)));
+        expected.addAll(createClassPathEntries(SAMPLE_CLASS));
+        expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
+        expected.addAll(createClassPathEntries(FOO_CLASS));
+        expected.addAll(createClassPathEntries(BAR_CLASS));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);
@@ -150,5 +144,16 @@ public class JarGeneratorServiceIT extends BaseIT {
 
     private String createClassPath(String className) {
         return className.replace('.', '/') + ".class";
+    }
+
+    private List<String> createClassPathEntries(String className) {
+        List<String> classes = new ArrayList<>();
+
+        classes.add(createClassPath(className));
+        classes.add(createClassPath(ClassName.getInterfaceName(className)));
+        classes.add(createClassPath(ClassName.getServiceName(className)));
+        classes.add(createClassPath(ClassName.getRepositoryName(className)));
+
+        return classes;
     }
 }

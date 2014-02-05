@@ -7,10 +7,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This interface provides method to create a bundle jar with all entities defined in MDS module.
+ * This interface provides methods to create a bundle jar with all entities defined in MDS module.
  */
 public interface JarGeneratorService {
 
     File generate() throws IOException, NotFoundException, CannotCompileException;
 
+    void regenerateMdsDataBundle();
 }

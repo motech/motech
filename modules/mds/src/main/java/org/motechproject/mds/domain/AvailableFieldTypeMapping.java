@@ -2,6 +2,8 @@ package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.joda.time.DateTime;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.TypeDto;
 
@@ -14,6 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -101,6 +104,12 @@ public class AvailableFieldTypeMapping {
             return (String.class.getName().equals(typeClass)) ? "" : null;
         }
 
+        if (DateTime.class.getName().equals(typeClass)) {
+            return new DateTime(str);
+        } else if (Date.class.getName().equals(typeClass)) {
+            return new DateTime(str).toDate();
+        }
+
         try {
             Class<?> clazz = getClass().getClassLoader().loadClass(typeClass);
 
@@ -122,9 +131,13 @@ public class AvailableFieldTypeMapping {
     public String format(Object obj) {
         if (obj instanceof List) {
             return StringUtils.join((List) obj, '\n');
+        } else if (obj instanceof Time) {
+            return ((Time) obj).timeStr();
+        } else if (obj instanceof Date) {
+            return new DateTime(((Date) obj).getTime()).toString();
+        } else {
+            return (obj == null) ? "" : obj.toString();
         }
-
-        return (obj == null) ? "" : obj.toString();
     }
 
 }

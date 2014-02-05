@@ -45,6 +45,10 @@ public class Time implements Comparable<Time>, Serializable {
         }
     }
 
+    public String timeStr() {
+        return hour + ":" + minute;
+    }
+
     public Integer getHour() {
         return hour;
     }
@@ -137,5 +141,9 @@ public class Time implements Comparable<Time>, Serializable {
 
     public boolean isBefore(Time other) {
         return compareTo(other) < 0;
+    }
+
+    public static Time valueOf(String str) {
+        return new Time(str);
     }
 }

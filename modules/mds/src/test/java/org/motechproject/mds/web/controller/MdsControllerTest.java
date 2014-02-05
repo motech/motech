@@ -3,7 +3,7 @@ package org.motechproject.mds.web.controller;
 import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
-import org.motechproject.mds.ex.EntityBuilderException;
+import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -23,7 +23,7 @@ public class MdsControllerTest {
             new EntityAlreadyExistException(),
             new EntityNotFoundException(),
             new EntityReadOnlyException(),
-            new EntityBuilderException(new RuntimeException()),
+            new EntityCreationException(new RuntimeException()),
             new EntityInfrastructureException(new RuntimeException()),
             new MdsException("test.key")
     };
