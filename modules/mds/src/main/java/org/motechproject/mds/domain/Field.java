@@ -58,6 +58,15 @@ public class Field {
     @Persistent
     private AvailableFieldType type;
 
+    @Persistent
+    private boolean uiDisplayable;
+
+    @Persistent
+    private Long uiDisplayPosition;
+
+    @Persistent
+    private boolean uiFilterable;
+
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata;
@@ -302,6 +311,9 @@ public class Field {
         copy.setType(type);
         copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
+        copy.setUIDisplayable(uiDisplayable);
+        copy.setUIDisplayPosition(uiDisplayPosition);
+        copy.setUIFilterable(uiFilterable);
 
         copy.setValidation((validation == null) ? null : validation.copy());
 
@@ -327,6 +339,30 @@ public class Field {
             }
         }
         return null;
+    }
+
+    public boolean isUIDisplayable() {
+        return uiDisplayable;
+    }
+
+    public void setUIDisplayable(boolean uiDisplayable) {
+        this.uiDisplayable = uiDisplayable;
+    }
+
+    public Long getUIDisplayPosition() {
+        return uiDisplayPosition;
+    }
+
+    public void setUIDisplayPosition(Long uiDisplayPosition) {
+        this.uiDisplayPosition = uiDisplayPosition;
+    }
+
+    public boolean isUIFilterable() {
+        return uiFilterable;
+    }
+
+    public void setUIFilterable(boolean uiFilterable) {
+        this.uiFilterable = uiFilterable;
     }
 
     public boolean isTracked() {

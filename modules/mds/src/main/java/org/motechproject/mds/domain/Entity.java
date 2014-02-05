@@ -2,6 +2,7 @@ package org.motechproject.mds.domain;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
@@ -295,13 +296,15 @@ public class Entity {
             indexes.add(lookup.toDto());
         }
 
+        Tracking trackingMapping = getTracking();
+        TrackingDto trackingDto = (trackingMapping == null)
+                ? new TrackingDto()
+                : trackingMapping.toDto();
+
         advancedSettingsDto.setIndexes(indexes);
         advancedSettingsDto.setEntityId(getId());
+        advancedSettingsDto.setBrowsing(getBrowsingSettings().toDto());
         advancedSettingsDto.setRestOptions(restDto);
-
-        TrackingDto trackingDto = (tracking == null)
-                ? new TrackingDto()
-                : tracking.toDto();
         advancedSettingsDto.setTracking(trackingDto);
 
         return advancedSettingsDto;
@@ -309,6 +312,7 @@ public class Entity {
 
     public void updateAdvancedSetting(AdvancedSettingsDto advancedSettings) {
         updateIndexes(advancedSettings);
+        updateBrowsingSettings(advancedSettings);
         updateRestOptions(advancedSettings);
         updateTracking(advancedSettings);
     }
@@ -372,6 +376,28 @@ public class Entity {
         this.restOptions = restOptions;
     }
 
+    private void updateBrowsingSettings(AdvancedSettingsDto advancedSettings) {
+        BrowsingSettingsDto dto = advancedSettings.getBrowsing();
+
+        if (null == dto) {
+            dto = new BrowsingSettingsDto();
+        }
+
+        for (Field field : getFields()) {
+            Long fieldId = field.getId();
+            boolean isDisplayed = dto.containsDisplayedField(fieldId);
+            boolean isFilterable = dto.containsFilterableField(fieldId);
+
+            field.setUIDisplayable(isDisplayed);
+            field.setUIFilterable(isFilterable);
+
+            if (isDisplayed) {
+                long position = dto.indexOfDisplayedField(fieldId);
+                field.setUIDisplayPosition(position);
+            }
+        }
+    }
+
     private void updateTracking(AdvancedSettingsDto advancedSettings) {
         TrackingDto trackingDto = advancedSettings.getTracking();
 
@@ -390,6 +416,11 @@ public class Entity {
                 field.setTracked(isTracked);
             }
         }
+    }
+
+    @NotPersistent
+    public BrowsingSettings getBrowsingSettings() {
+        return new BrowsingSettings(this);
     }
 
     public Tracking getTracking() {

@@ -95,6 +95,8 @@ CREATE TABLE "Field" (
   "fields_INTEGER_IDX" int(11) DEFAULT NULL,
   "tracked" bit(1) NOT NULL,
   "exposedViaRest" bit(1) NOT NULL,
+  "uiDisplayable" bit(1) NOT NULL,
+  "uiFilterable" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   KEY "Field_N49" ("type_id_OID"),
   KEY "Field_N50" ("entity_id_OID"),
@@ -392,4 +394,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-07 15:03:16
+-- Dump completed on 2014-02-08  8:01:00

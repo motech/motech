@@ -1,9 +1,11 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.util.NumberPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,31 +15,60 @@ import java.util.List;
  */
 public class BrowsingSettingsDto {
 
-    private List<String> filterableFields = new ArrayList<>();
-    private List<String> displayedFields = new ArrayList<>();
+    private List<Number> filterableFields = new ArrayList<>();
+    private List<Number> displayedFields = new ArrayList<>();
 
-    public void addFilterableField(String id) {
+    public void addFilterableField(Number id) {
         this.filterableFields.add(id);
     }
 
-    public void removeFilterableField(String id) {
+    public void removeFilterableField(Number id) {
         this.filterableFields.remove(id);
     }
 
-    public List<String> getFilterableFields() {
+    public boolean containsFilterableField(Number number) {
+        return CollectionUtils.exists(filterableFields, new NumberPredicate(number));
+    }
+
+    public List<Number> getFilterableFields() {
         return filterableFields;
     }
 
-    public void setFilterableFields(List<String> filterableFields) {
-        this.filterableFields = null != filterableFields ? filterableFields : new ArrayList<String>();
+    public void setFilterableFields(List<Number> filterableFields) {
+        this.filterableFields = null != filterableFields
+                ? filterableFields
+                : new ArrayList<Number>();
     }
 
-    public List<String> getDisplayedFields() {
+    public void addDisplayedField(Number id) {
+        this.displayedFields.add(id);
+    }
+
+    public boolean containsDisplayedField(Long number) {
+        return CollectionUtils.exists(displayedFields, new NumberPredicate(number));
+    }
+
+    public long indexOfDisplayedField(Long id) {
+        NumberPredicate predicate = new NumberPredicate(id);
+        Long idx;
+
+        for (idx = 0L; idx < displayedFields.size(); idx++) {
+            if (predicate.evaluate(displayedFields.get(idx.intValue()))) {
+                break;
+            }
+        }
+
+        return idx;
+    }
+
+    public List<Number> getDisplayedFields() {
         return displayedFields;
     }
 
-    public void setDisplayedFields(List<String> displayedFields) {
-        this.displayedFields = null != displayedFields ? displayedFields : new ArrayList<String>();
+    public void setDisplayedFields(List<Number> displayedFields) {
+        this.displayedFields = null != displayedFields
+                ? displayedFields
+                : new ArrayList<Number>();
     }
 
     /**
@@ -63,4 +94,5 @@ public class BrowsingSettingsDto {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
 }
