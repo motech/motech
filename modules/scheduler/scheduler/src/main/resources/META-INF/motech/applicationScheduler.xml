@@ -9,10 +9,6 @@
            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <context:annotation-config />
-    <context:component-scan base-package="org.motechproject.scheduler"/>
-    <mvc:annotation-driven/>
-
     <bean id="schedulerSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="scheduler"/>
         <property name="configFiles">
@@ -21,5 +17,17 @@
             </list>
         </property>
     </bean>
+
+    <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="schedulerSettings" factory-method="getProperties">
+                <constructor-arg value="quartz.properties" />
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <context:annotation-config />
+    <context:component-scan base-package="org.motechproject.scheduler"/>
+    <mvc:annotation-driven/>
 
 </beans>

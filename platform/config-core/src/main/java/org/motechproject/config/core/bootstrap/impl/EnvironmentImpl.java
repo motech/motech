@@ -11,18 +11,33 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public String getDBUrl() {
-        return getValue(MOTECH_DB_URL);
+    public String getCouchDBUrl() {
+        return getValue(MOTECH_COUCHDB_URL);
     }
 
     @Override
-    public String getDBUsername() {
-        return getValue(MOTECH_DB_USERNAME);
+    public String getCouchDBUsername() {
+        return getValue(MOTECH_COUCHDB_USERNAME);
     }
 
     @Override
-    public String getDBPassword() {
-        return getValue(MOTECH_DB_PASSWORD);
+    public String getCouchDBPassword() {
+        return getValue(MOTECH_COUCHDB_PASSWORD);
+    }
+
+    @Override
+    public String getSqlUrl() {
+        return getValue(MOTECH_SQL_URL);
+    }
+
+    @Override
+    public String getSqlUsername() {
+        return getValue(MOTECH_SQL_USERNAME);
+    }
+
+    @Override
+    public String getSqlPassword() {
+        return getValue(MOTECH_SQL_PASSWORD);
     }
 
     @Override

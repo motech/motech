@@ -5,34 +5,61 @@ package org.motechproject.server.web;
  */
 
 public class BootstrapConfigForm {
-    private String dbUrl;
-    private String dbUsername;
-    private String dbPassword;
+    private String couchDbUrl;
+    private String couchDbUsername;
+    private String couchDbPassword;
+    private String sqlUrl;
+    private String sqlUsername;
+    private String sqlPassword;
     private String tenantId;
     private String configSource;
 
-    public String getDbUrl() {
-        return dbUrl;
+    public String getCouchDbUrl() {
+        return couchDbUrl;
     }
 
-    public void setDbUrl(String dbUrl) {
-        this.dbUrl = dbUrl;
+    public void setCouchDbUrl(String couchDbUrl) {
+        this.couchDbUrl = couchDbUrl;
     }
 
-    public String getDbUsername() {
-        return dbUsername;
+    public String getCouchDbUsername() {
+        return couchDbUsername;
     }
 
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
+    public void setCouchDbUsername(String couchDbUsername) {
+        this.couchDbUsername = couchDbUsername;
     }
 
-    public String getDbPassword() {
-        return dbPassword;
+    public String getCouchDbPassword() {
+        return couchDbPassword;
     }
 
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
+    public void setCouchDbPassword(String couchDbPassword) {
+        this.couchDbPassword = couchDbPassword;
+    }
+
+    public String getSqlUrl() {
+        return sqlUrl;
+    }
+
+    public void setSqlUrl(String sqlUrl) {
+        this.sqlUrl = sqlUrl;
+    }
+
+    public String getSqlUsername() {
+        return sqlUsername;
+    }
+
+    public void setSqlUsername(String sqlUsername) {
+        this.sqlUsername = sqlUsername;
+    }
+
+    public String getSqlPassword() {
+        return sqlPassword;
+    }
+
+    public void setSqlPassword(String sqlPassword) {
+        this.sqlPassword = sqlPassword;
     }
 
     public String getTenantId() {

@@ -8,6 +8,7 @@ import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.filestore.ConfigLocationFileStore;
 import org.motechproject.config.core.filestore.PropertiesReader;
 import org.motechproject.config.core.service.impl.mapper.BootstrapConfigPropertyMapper;
@@ -109,13 +110,16 @@ public class BootstrapManagerImpl implements BootstrapManager {
     }
 
     private BootstrapConfig readBootstrapConfigFromEnvironment() {
-        String dbUrl = environment.getDBUrl();
-        String username = environment.getDBUsername();
-        String password = environment.getDBPassword();
+        String couchDbUrl = environment.getCouchDBUrl();
+        String couchDbUsername = environment.getCouchDBUsername();
+        String couchDbPassword = environment.getCouchDBPassword();
+        String sqlUrl = environment.getSqlUrl();
+        String sqlUsername = environment.getSqlUsername();
+        String sqlPassword = environment.getSqlPassword();
         String tenantId = environment.getTenantId();
         String configSource = environment.getConfigSource();
 
-        return new BootstrapConfig(new DBConfig(dbUrl, username, password), tenantId, ConfigSource.valueOf(configSource));
+        return new BootstrapConfig(new DBConfig(couchDbUrl, couchDbUsername, couchDbPassword), new SQLDBConfig(sqlUrl, sqlUsername, sqlPassword), tenantId, ConfigSource.valueOf(configSource));
     }
 
     private BootstrapConfig readBootstrapConfigFromFile(File configFile, String errorMessage) {

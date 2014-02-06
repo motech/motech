@@ -9,6 +9,7 @@ import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.server.impl.OsgiListener;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -82,15 +83,18 @@ public class BootstrapControllerTest {
     @Test
     public void shouldSaveBootstrapConfig() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/")
-                .param("dbUrl", "http://www.someurl.com")
-                .param("dbUsername", "some_username")
-                .param("dbPassword", "some_password")
+                .param("couchDbUrl", "http://www.someurl.com")
+                .param("couchDbUsername", "some_username")
+                .param("couchDbPassword", "some_password")
+                .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
+                .param("sqlUsername", "some_username")
+                .param("sqlPassword", "some_password")
                 .param("tenantId", "some_tenantId")
                 .param("configSource", "UI"))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.view().name("bootstrapconfig"))
                 .andExpect(MockMvcResultMatchers.model().attribute("redirect", true));
 
-        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new DBConfig("http://www.someurl.com", "some_username", "some_password"), "some_tenantId", ConfigSource.valueOf("UI"));
+        BootstrapConfig expectedConfigToSave = new BootstrapConfig(new DBConfig("http://www.someurl.com", "some_username", "some_password"), new SQLDBConfig("jdbc:mysql://www.someurl.com:3306/", "some_username", "some_password"), "some_tenantId", ConfigSource.valueOf("UI"));
 
         PowerMockito.verifyStatic(times(1));
         OsgiListener.saveBootstrapConfig(expectedConfigToSave);
@@ -104,9 +108,12 @@ public class BootstrapControllerTest {
         OsgiListener.saveBootstrapConfig(any(BootstrapConfig.class));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/")
-                .param("dbUrl", "http://www.someurl.com")
-                .param("dbUsername", "some_username")
-                .param("dbPassword", "some_password")
+                .param("couchDbUrl", "http://www.someurl.com")
+                .param("couchDbUsername", "some_username")
+                .param("couchDbPassword", "some_password")
+                .param("sqlUrl", "jdbc:mysql://www.someurl.com:3306/")
+                .param("sqlUsername", "some_username")
+                .param("sqlPassword", "some_password")
                 .param("tenantId", "some_tenantId")
                 .param("configSource", "UI"))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
@@ -120,10 +127,10 @@ public class BootstrapControllerTest {
     public void shouldAddErrorsOnValidationFailure() throws Exception {
         BindingResult bindingResult = mock(BindingResult.class);
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(new ObjectError("dbUrl", new String[]{"server.dbUrl.error"}, null, null)));
+        when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(new ObjectError("couchDbUrl", new String[]{"server.dbUrl.error"}, null, null)));
 
         BootstrapConfigForm bootstrapConfigForm = new BootstrapConfigForm();
-        bootstrapConfigForm.setDbUrl("http://www.dburl.com");
+        bootstrapConfigForm.setCouchDbUrl("http://www.dburl.com");
 
         ModelAndView actualView = bootstrapController.submitForm(bootstrapConfigForm, bindingResult, request);
 

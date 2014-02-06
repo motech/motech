@@ -25,4 +25,6 @@
             </bean>
         </property>
     </bean>
+
+    <util:properties id="sqlProperties" location="classpath:/datanucleus.properties" />
 </beans>

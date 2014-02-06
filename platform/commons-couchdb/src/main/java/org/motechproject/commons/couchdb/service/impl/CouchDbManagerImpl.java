@@ -69,7 +69,7 @@ public class CouchDbManagerImpl implements CouchDbManager {
     }
 
     private Properties getCouchdbProperties() {
-        DBConfig dbConfig = coreConfigurationService.loadBootstrapConfig().getDbConfig();
+        DBConfig dbConfig = coreConfigurationService.loadBootstrapConfig().getCouchDbConfig();
         Properties mergedProps = new Properties();
         mergedProps.putAll(couchdbProperties);
         mergedProps.setProperty(DB_URL, dbConfig.getUrl());

@@ -18,7 +18,8 @@ public class CoreConfigurationBundleIT extends BaseOsgiIT {
 
         BootstrapConfig bootstrapConfig = service.loadBootstrapConfig();
         assertNotNull(bootstrapConfig);
-        assertNotNull(bootstrapConfig.getDbConfig());
+        assertNotNull(bootstrapConfig.getCouchDbConfig());
+        assertNotNull(bootstrapConfig.getSqlConfig());
         assertNotNull(bootstrapConfig.getConfigSource());
     }
 

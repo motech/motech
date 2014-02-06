@@ -13,29 +13,35 @@ import org.motechproject.config.core.MotechConfigurationException;
  * </p>
  */
 public class BootstrapConfig {
-    public static final String DB_URL = "db.url";
-    public static final String DB_USERNAME = "db.username";
-    public static final String DB_PASSWORD = "db.password";
+    public static final String COUCHDB_URL = "couchDb.url";
+    public static final String COUCHDB_USERNAME = "couchDb.username";
+    public static final String COUCHDB_PASSWORD = "couchDb.password";
+    public static final String SQL_URL = "sql.url";
+    public static final String SQL_USER = "sql.user";
+    public static final String SQL_PASSWORD = "sql.password";
     public static final String TENANT_ID = "tenant.id";
     public static final String CONFIG_SOURCE = "config.source";
 
     public static final String DEFAULT_TENANT_ID = "DEFAULT";
-    private DBConfig dbConfig;
+    private DBConfig couchDbConfig;
     private String tenantId;
+    private SQLDBConfig sqlConfig;
 
     private ConfigSource configSource;
 
     /**
-     * @param dbConfig
+     * @param couchDbConfig
+     * @param sqlConfig
      * @param tenantId
      * @param configSource
      * @throws org.motechproject.config.core.MotechConfigurationException if dbConfig is null.
      */
-    public BootstrapConfig(DBConfig dbConfig, String tenantId, ConfigSource configSource) {
-        if (dbConfig == null) {
+    public BootstrapConfig(DBConfig couchDbConfig, SQLDBConfig sqlConfig, String tenantId, ConfigSource configSource) {
+        if (couchDbConfig == null || sqlConfig == null) {
             throw new MotechConfigurationException("DB configuration cannot be null.");
         }
-        this.dbConfig = dbConfig;
+        this.couchDbConfig = couchDbConfig;
+        this.sqlConfig = sqlConfig;
         this.tenantId = (StringUtils.isNotBlank(tenantId)) ? tenantId : DEFAULT_TENANT_ID;
         this.configSource = (configSource != null) ? configSource : ConfigSource.UI;
     }
@@ -55,9 +61,14 @@ public class BootstrapConfig {
             return false;
         }
 
-        if (!dbConfig.equals(that.dbConfig)) {
+        if (!couchDbConfig.equals(that.couchDbConfig)) {
             return false;
         }
+
+        if (!sqlConfig.equals(that.sqlConfig)) {
+            return false;
+        }
+
         if (!tenantId.equals(that.tenantId)) {
             return false;
         }
@@ -67,7 +78,8 @@ public class BootstrapConfig {
 
     @Override
     public int hashCode() {
-        int result = dbConfig.hashCode();
+        int result = couchDbConfig.hashCode();
+        result = 31 * result + sqlConfig.hashCode();
         result = 31 * result + tenantId.hashCode();
         result = 31 * result + configSource.hashCode();
         return result;
@@ -76,15 +88,16 @@ public class BootstrapConfig {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BootstrapConfig{");
-        sb.append("dbConfig=").append(dbConfig);
+        sb.append("couchDbConfig=").append(couchDbConfig);
+        sb.append(", sqlConfig=").append(sqlConfig);
         sb.append(", tenantId='").append(tenantId).append('\'');
         sb.append(", configSource=").append(configSource);
         sb.append('}');
         return sb.toString();
     }
 
-    public DBConfig getDbConfig() {
-        return dbConfig;
+    public DBConfig getCouchDbConfig() {
+        return couchDbConfig;
     }
 
     public String getTenantId() {
@@ -93,5 +106,9 @@ public class BootstrapConfig {
 
     public ConfigSource getConfigSource() {
         return configSource;
+    }
+
+    public SQLDBConfig getSqlConfig() {
+        return sqlConfig;
     }
 }
