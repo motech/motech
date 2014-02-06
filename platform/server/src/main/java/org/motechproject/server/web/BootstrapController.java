@@ -9,6 +9,7 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.server.impl.OsgiListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -40,7 +41,8 @@ import java.util.Map;
 public class BootstrapController {
 
     public static final String BOOTSTRAP_CONFIG_VIEW = "bootstrapconfig";
-    private static final String DB_URL_SUGGESTION = "http://localhost:5984/";
+    private static final String COUCHDB_URL_SUGGESTION = "http://localhost:5984/";
+    private static final String SQL_URL_SUGGESTION = "jdbc:mysql://localhost:3306/";
     private static final String TENANT_ID_DEFAULT = "DEFAULT";
     private static final String ERRORS = "errors";
     private static final String WARNINGS = "warnings";
@@ -70,7 +72,8 @@ public class BootstrapController {
         ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
         bootstrapView.addObject("bootstrapConfig", new BootstrapConfigForm());
         bootstrapView.addObject("username", System.getProperty("user.name"));
-        bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+        bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
+        bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
         bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
         return bootstrapView;
     }
@@ -86,13 +89,15 @@ public class BootstrapController {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", getErrors(result));
             bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+            bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
+            bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             return bootstrapView;
         }
 
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getDbUrl(), form.getDbUsername(),
-                form.getDbPassword()), form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig(form.getCouchDbUrl(), form.getCouchDbUsername(),
+                form.getCouchDbPassword()), new SQLDBConfig(form.getSqlUrl(), form.getSqlUsername(), form.getSqlPassword()),
+                form.getTenantId(), ConfigSource.valueOf(form.getConfigSource()));
 
         try {
             OsgiListener.saveBootstrapConfig(bootstrapConfig);
@@ -100,7 +105,8 @@ public class BootstrapController {
             ModelAndView bootstrapView = new ModelAndView(BOOTSTRAP_CONFIG_VIEW);
             bootstrapView.addObject("errors", Arrays.asList(getMessage("server.error.bootstrap.save", request)));
             bootstrapView.addObject("username", System.getProperty("user.name"));
-            bootstrapView.addObject("dbUrlSuggestion", DB_URL_SUGGESTION);
+            bootstrapView.addObject("couchDbUrlSuggestion", COUCHDB_URL_SUGGESTION);
+            bootstrapView.addObject("sqlUrlSuggestion", SQL_URL_SUGGESTION);
             bootstrapView.addObject("tenantIdDefault", TENANT_ID_DEFAULT);
             return bootstrapView;
         }
@@ -122,15 +128,15 @@ public class BootstrapController {
         } else {
             try {
                 StdHttpClient.Builder builder = new StdHttpClient.Builder()
-                        .url(form.getDbUrl())
+                        .url(form.getCouchDbUrl())
                         .caching(false)
                         .connectionTimeout(CONNECTION_TIMEOUT);
 
-                if (StringUtils.isNotBlank(form.getDbUsername())) {
-                    builder.username(form.getDbUsername());
+                if (StringUtils.isNotBlank(form.getCouchDbUsername())) {
+                    builder.username(form.getCouchDbUsername());
                 }
-                if (StringUtils.isNotBlank(form.getDbPassword())) {
-                    builder.password(form.getDbPassword());
+                if (StringUtils.isNotBlank(form.getCouchDbPassword())) {
+                    builder.password(form.getCouchDbPassword());
                 }
 
                 HttpClient httpClient = builder.build();

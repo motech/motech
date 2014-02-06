@@ -70,7 +70,8 @@ public class EmailChannelBundleIT extends BaseOsgiIT implements SimpleMessageLis
         return asList(
                 "org.springframework.mail.javamail",
                 "org.motechproject.email.service",
-                "org.motechproject.security.model"
+                "org.motechproject.security.model",
+                "org.motechproject.commons.sql.service"
         );
     }
 

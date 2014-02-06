@@ -176,6 +176,7 @@
                             org.motechproject.commons.couchdb.service,
                             org.apache.velocity.exception,
                             org.motechproject.config.service,
+                            org.motechproject.commons.sql.service,
                             org.motechproject.security.model,
                             org.motechproject.security.service,
                             org.motechproject.security.annotations,

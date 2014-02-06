@@ -30,6 +30,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-commons-sql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -194,6 +199,7 @@
                             org.motechproject.server.config.service,
                             org.motechproject.config.service,
                             org.motechproject.commons.couchdb.service,
+                            org.motechproject.commons.sql.service,
                             org.motechproject.quartz,
                             *
                         </Import-Package>

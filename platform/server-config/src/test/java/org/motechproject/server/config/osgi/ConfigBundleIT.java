@@ -9,7 +9,7 @@ public class ConfigBundleIT extends BaseOsgiIT {
     @Test
     public void testConfigBundle() throws Exception {
         ConfigurationService configurationService = (ConfigurationService) getApplicationContext().getBean("configurationService");
-        assertNotNull(configurationService.loadBootstrapConfig().getDbConfig().getUrl());
+        assertNotNull(configurationService.loadBootstrapConfig().getCouchDbConfig().getUrl());
     }
 
     @Override

@@ -20,7 +20,7 @@ public class BootstrapConfigFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        String dbUrlField = "dbUrl";
+        String dbUrlField = "couchDbUrl";
         validateEmptyOrWhitespace(errors, ERROR_REQUIRED, dbUrlField);
 
         if (!errors.hasFieldErrors(dbUrlField)) {

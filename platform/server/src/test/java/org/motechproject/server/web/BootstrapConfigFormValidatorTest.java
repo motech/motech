@@ -33,29 +33,29 @@ public class BootstrapConfigFormValidatorTest {
 
     @Test
     public void shouldValidateOnlyForEmptyFields() {
-        when(errors.hasFieldErrors("dbUrl")).thenReturn(true);
+        when(errors.hasFieldErrors("couchDbUrl")).thenReturn(true);
 
         bootstrapConfigFormValidator.validate(new BootstrapConfigForm(), errors);
 
         verifyStatic();
-        ValidationUtils.validateEmptyOrWhitespace(errors, ERROR_REQUIRED, "dbUrl");
+        ValidationUtils.validateEmptyOrWhitespace(errors, ERROR_REQUIRED, "couchDbUrl");
     }
 
     @Test
     public void shouldValidateForDbUrlFormatIfNotEmpty() {
-        when(errors.hasFieldErrors("dbUrl")).thenReturn(false);
-        when(errors.getFieldValue("dbUrl")).thenReturn("someFieldValue");
+        when(errors.hasFieldErrors("couchDbUrl")).thenReturn(false);
+        when(errors.getFieldValue("couchDbUrl")).thenReturn("someFieldValue");
 
         bootstrapConfigFormValidator.validate(new BootstrapConfigForm(), errors);
 
         verifyStatic();
-        ValidationUtils.validateUrl(errors, "dbUrl");
+        ValidationUtils.validateUrl(errors, "couchDbUrl");
     }
 
     @Test
     public void shouldValidateForConfigSource(){
-        when(errors.hasFieldErrors("dbUrl")).thenReturn(false);
-        when(errors.getFieldValue("dbUrl")).thenReturn("http://www.validurl.com");
+        when(errors.hasFieldErrors("couchDbUrl")).thenReturn(false);
+        when(errors.getFieldValue("couchDbUrl")).thenReturn("http://www.validurl.com");
 
         BootstrapConfigForm bootstrapConfigForm = new BootstrapConfigForm();
         bootstrapConfigForm.setConfigSource("invalid");

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.monitor.ConfigFileMonitor;
 import org.motechproject.config.service.ConfigurationService;
@@ -36,7 +37,7 @@ public class ConfigFileMonitorCnfTest {
     @Test
     public void shouldCreateConfigFileMonitorBean_WhenConfigSourceIsFile() throws FileSystemException {
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://some_url", "some_username", "some_password"),
-                "tenantId", ConfigSource.FILE);
+                new SQLDBConfig("jdbc:mysql://localhost:3306/", "some_username", "some_password"), "tenantId", ConfigSource.FILE);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
         ConfigFileMonitor configFileMonitor = cnf.configFileMonitor(configLoader, configurationService, coreConfigurationService);
         assertNotNull(configFileMonitor);
@@ -45,7 +46,7 @@ public class ConfigFileMonitorCnfTest {
     @Test
     public void shouldNotCreateConfigFileMonitorBean_WhenConfigSourceIsUI() throws FileSystemException {
         BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://some_url", "some_username", "some_password"),
-                "tenantId", ConfigSource.UI);
+                new SQLDBConfig("jdbc:mysql://localhost:3306/", "some_username", "some_password"), "tenantId", ConfigSource.UI);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
         ConfigFileMonitor configFileMonitor = cnf.configFileMonitor(configLoader, configurationService, coreConfigurationService);
         assertNull(configFileMonitor);

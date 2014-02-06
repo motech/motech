@@ -29,18 +29,18 @@ public class ValidationUtilsTest {
 
     @Test
     public void shouldValidateForUrl() throws Exception {
-        when(errors.getFieldValue("dbUrl")).thenReturn("invalidurl");
+        when(errors.getFieldValue("couchDbUrl")).thenReturn("invalidurl");
 
-        ValidationUtils.validateUrl(errors, "dbUrl");
+        ValidationUtils.validateUrl(errors, "couchDbUrl");
 
-        verify(errors).rejectValue("dbUrl", "server.error.invalid.dbUrl");
+        verify(errors).rejectValue("couchDbUrl", "server.error.invalid.couchDbUrl");
     }
 
     @Test
     public void shouldValidateForLocalhostUrl() throws Exception {
-        when(errors.getFieldValue("dbUrl")).thenReturn("http://localhost");
+        when(errors.getFieldValue("couchDbUrl")).thenReturn("http://localhost");
 
-        ValidationUtils.validateUrl(errors, "dbUrl");
+        ValidationUtils.validateUrl(errors, "couchDbUrl");
 
         verify(errors, never()).rejectValue(anyString(), anyString());
     }

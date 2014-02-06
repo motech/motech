@@ -79,20 +79,45 @@
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
     </bean>
 
+    <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
+        <constructor-arg>
+            <bean factory-bean="mdsSettings" factory-method="getProperties">
+                <constructor-arg value="datanucleus.properties" />
+            </bean>
+        </constructor-arg>
+    </bean>
+
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
         <property name="dataSource">
             <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">
-                <property name="driverClassName" value="${javax.jdo.option.ConnectionDriverName}"/>
-                <property name="url" value="${javax.jdo.option.ConnectionURL}"/>
-                <property name="username" value="${javax.jdo.option.ConnectionUserName}"/>
-                <property name="password" value="${javax.jdo.option.ConnectionPassword}"/>
+                <property name="driverClassName">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="javax.jdo.option.ConnectionDriverName" />
+                    </bean>
+                </property>
+                <property name="url">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="javax.jdo.option.ConnectionURL" />
+                    </bean>
+                </property>
+                <property name="username">
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="javax.jdo.option.ConnectionUserName" />
+                    </bean>
+                </property>
+                <property name="password">
+                <bean factory-bean="sqlProperties" factory-method="getProperty">
+                    <constructor-arg value="javax.jdo.option.ConnectionPassword" />
+                </bean>
+                </property>
             </bean>
         </property>
         <property name="initOnMigrate" value="true"/>
     </bean>
 
+
     <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway">
-        <property name="configLocation" value="classpath:datanucleus.properties"/>
+        <property name="jdoPropertyMap" ref="sqlProperties"/>
     </bean>
 
     <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy" depends-on="flyway">
@@ -103,5 +128,7 @@
     <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager" depends-on="flyway">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
+
+
 
 </beans>

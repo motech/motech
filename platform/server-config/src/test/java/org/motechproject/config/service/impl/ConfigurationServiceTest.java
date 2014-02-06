@@ -5,12 +5,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.domain.DBConfig;
+import org.motechproject.config.core.domain.SQLDBConfig;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.domain.ModulePropertiesRecord;
 import org.motechproject.config.repository.AllModuleProperties;
@@ -77,7 +77,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldLoadBootstrapDBConfiguration() {
-        BootstrapConfig expectedConfig = new BootstrapConfig(new DBConfig("http://localhost", null, null), null, null);
+        BootstrapConfig expectedConfig = new BootstrapConfig(new DBConfig("http://localhost", null, null), new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null), null, null);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(expectedConfig);
 
         BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
@@ -88,7 +88,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldSaveBootstrapConfig() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://some_url", null, null), "tenentId", ConfigSource.FILE);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://some_url", null, null), new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null), "tenentId", ConfigSource.FILE);
 
         configurationService.save(bootstrapConfig);
 
@@ -228,7 +228,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenConfigSourceIsUI() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.UI);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null), "motech", ConfigSource.UI);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         assertFalse(configurationService.requiresConfigurationFiles());
@@ -237,7 +237,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreNotRequiredWhenPlatformConfigurationFileIsPresent() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.FILE);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null), "motech", ConfigSource.FILE);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);
@@ -250,7 +250,7 @@ public class ConfigurationServiceTest {
 
     @Test
     public void shouldIndicateThatConfigFilesAreRequiredWhenPlatformConfigurationFileIsMissing() throws IOException {
-        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), "motech", ConfigSource.FILE);
+        BootstrapConfig bootstrapConfig = new BootstrapConfig(new DBConfig("http://foo", null, null), new SQLDBConfig("jdbc:mysql://localhost:3306/", null, null), "motech", ConfigSource.FILE);
         when(coreConfigurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
 
         ConfigLocation configLocation = mock(ConfigLocation.class);

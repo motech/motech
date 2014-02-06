@@ -31,17 +31,23 @@ public interface ConfigurationService {
      * directory specified by the environment variable <code>MOTECH_CONFIG_DIR</code>.
      * <code>bootstrap.properties</code> contains the following properties:
      * <pre>
-     *                 db.url (Mandatory)
-     *                 db.username (If required)
-     *                 db.password (If required)
+     *                 couchDb.url (Mandatory)
+     *                 couchDb.username (If required)
+     *                 couchDb.password (If required)
+     *                 sql.url (Mandatory)
+     *                 sql.username (If required)
+     *                 sql.password (If required)
      *                 tenant.id (Optional. Defaults to 'DEFAULT')
      *                 config.source (Optional. Defaults to 'UI')
      *             </pre>
      * An example <code>bootstrap.properties</code> is given below:
      * <pre>
-     *                 db.url=http://localhost:5984
-     *                 db.username=motech
-     *                 db.password=motech
+     *                 couchDb.url=http://localhost:5984
+     *                 couchDb.username=motech
+     *                 couchDb.password=motech
+     *                 sql.url=jdbc:mysql://localhost:3306/
+     *                 sql.username=motech
+     *                 sql.password=motech
      *                 tenant.id=MotherChildCare
      *                 config.source=FILE
      *             </pre>
@@ -50,9 +56,12 @@ public interface ConfigurationService {
      * If <code>MOTECH_CONFIG_DIR</code> environment variable is <b>not</b> set, load the specific
      * configuration values from the following environment variables:
      * <pre>
-     *                  MOTECH_DB_URL (Mandatory)
-     *                  MOTECH_DB_USERNAME (If required)
-     *                  MOTECH_DB_PASSWORD (If required)
+     *                  MOTECH_COUCHDB_URL (Mandatory)
+     *                  MOTECH_COUCHDB_USERNAME (If required)
+     *                  MOTECH_COUCHDB_PASSWORD (If required)
+     *                  MOTECH_SQL_URL (Mandatory)
+     *                  MOTECH_SQL_USERNAME (If required)
+     *                  MOTECH_SQL_PASSWORD (If required)
      *                  MOTECH_TENANT_ID (Optional. Defaults to 'DEFAULT')
      *                  MOTECH_CONFIG_SOURCE (Optional. Defaults to 'UI')
      *             </pre>

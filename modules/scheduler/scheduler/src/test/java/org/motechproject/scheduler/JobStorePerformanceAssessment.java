@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
@@ -60,8 +61,8 @@ public class JobStorePerformanceAssessment {
     public void setup() throws IOException, CouchDbJobStoreException {
         couchdbStore = new CouchDbStore();
         couchdbStore.setProperties("/couchdb.properties");
-        couchSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, couchdbSettingsFacade);
-        jdbcSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, jdbcSettingsFacade);
+        couchSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, new Properties());
+        jdbcSchedulerFactoryBean = new MotechSchedulerFactoryBean(applicationContext, new Properties());
     }
 
     @After

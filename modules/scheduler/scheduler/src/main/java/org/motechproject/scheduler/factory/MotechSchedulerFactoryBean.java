@@ -2,11 +2,11 @@ package org.motechproject.scheduler.factory;
 
 import org.motechproject.scheduler.exception.SchedulerInstantiationException;
 import org.motechproject.scheduler.exception.SchedulerShutdownException;
-import org.motechproject.server.config.SettingsFacade;
 import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
@@ -24,21 +24,21 @@ import static java.lang.Boolean.getBoolean;
 public class MotechSchedulerFactoryBean {
 
     private ApplicationContext applicationContext;
-    private SettingsFacade schedulerSettings;
 
     private SchedulerFactoryBean schedulerFactoryBean;
+
+    private Properties schedulerProperties;
 
     private Logger log = LoggerFactory.getLogger(MotechSchedulerFactoryBean.class);
 
     @Autowired
-    public MotechSchedulerFactoryBean(ApplicationContext applicationContext, SettingsFacade schedulerSettings) {
+    public MotechSchedulerFactoryBean(ApplicationContext applicationContext, @Qualifier("sqlProperties") Properties schedulerProperties) {
         this.applicationContext = applicationContext;
-        this.schedulerSettings = schedulerSettings;
+        this.schedulerProperties = schedulerProperties;
     }
 
     @PostConstruct
     public void init() {
-        Properties schedulerProperties = schedulerSettings.getProperties("quartz.properties");
         schedulerFactoryBean = new SchedulerFactoryBean();
         schedulerFactoryBean.setQuartzProperties(schedulerProperties);
         schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(getBooleanWithDefault(schedulerProperties.getProperty("scheduler.waitForJobsToCompleteOnShutdown"), true));

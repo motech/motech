@@ -1167,6 +1167,7 @@
         <!-- OSGI modules -->
         <module>platform/commons-api</module>
         <module>platform/commons-couchdb</module>
+        <module>platform/commons-sql</module>
         <module>platform/commons-date</module>
         <module>platform/event</module>
         <module>platform/osgi-extender-fragment</module>
