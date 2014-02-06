@@ -268,6 +268,11 @@ public class EntityMapping {
         if (draft.getRestOptions() != null) {
             restOptions = draft.getRestOptions().copy();
         }
+
+        if (draft.getTracking() != null) {
+            tracking = draft.getTracking().copy();
+            tracking.setEntity(this);
+        }
     }
 
     @NotPersistent
@@ -280,7 +285,9 @@ public class EntityMapping {
         AdvancedSettingsDto advancedSettingsDto = new AdvancedSettingsDto();
 
         RestOptionsMapping restOptionsMapping = getRestOptions();
-        RestOptionsDto restDto = (restOptionsMapping != null) ? restOptionsMapping.toDto() : new RestOptionsDto();
+        RestOptionsDto restDto = (restOptionsMapping == null)
+                ? new RestOptionsDto()
+                : restOptionsMapping.toDto();
 
         List<LookupDto> indexes = new ArrayList<>();
         for (LookupMapping lookup : getLookups()) {
@@ -294,6 +301,12 @@ public class EntityMapping {
         advancedSettingsDto.setEntityId(getId());
 
         advancedSettingsDto.setRestOptions(restDto);
+
+        TrackingMapping trackingMapping = getTracking();
+        TrackingDto trackingDto = (trackingMapping == null)
+                ? new TrackingDto()
+                : trackingMapping.toDto();
+        advancedSettingsDto.setTracking(trackingDto);
 
         return advancedSettingsDto;
     }
@@ -363,22 +376,17 @@ public class EntityMapping {
 
         if (null != trackingDto) {
             if (null == tracking) {
-                tracking = new TrackingMapping();
+                tracking = new TrackingMapping(this);
             }
 
-            tracking.removeActions();
+            tracking.setAllowCreate(trackingDto.isAllowCreate());
+            tracking.setAllowRead(trackingDto.isAllowRead());
+            tracking.setAllowUpdate(trackingDto.isAllowUpdate());
+            tracking.setAllowDelete(trackingDto.isAllowDelete());
 
-            // remove fields from tracking
             for (FieldMapping field : getFields()) {
-                field.setTracking(false);
-            }
-
-            for (String action : trackingDto.getActions()) {
-                tracking.addAction(action);
-            }
-
-            for (Long fieldId : trackingDto.getFields()) {
-                getField(fieldId).setTracking(true);
+                boolean isTracked = trackingDto.getFields().contains(field.getId());
+                field.setTracked(isTracked);
             }
         }
     }

@@ -50,7 +50,7 @@ public class FieldMapping {
     private String tooltip;
 
     @Persistent
-    private boolean tracking;
+    private boolean tracked;
 
     @Persistent
     private AvailableFieldTypeMapping type;
@@ -231,7 +231,7 @@ public class FieldMapping {
     }
 
     public void updateMetadata(List<MetadataDto> metadataList) {
-        for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext(); ) {
+        for (Iterator<FieldMetadataMapping> it = getMetadata().iterator(); it.hasNext();) {
             FieldMetadataMapping metadataMapping = it.next();
 
             boolean inNewList = false;
@@ -297,6 +297,7 @@ public class FieldMapping {
         copy.setRequired(required);
         copy.setTooltip(tooltip);
         copy.setType(type);
+        copy.setTracked(tracked);
 
         copy.setValidation((validation == null) ? null : validation.copy());
 
@@ -324,11 +325,11 @@ public class FieldMapping {
         return null;
     }
 
-    public boolean isTracking() {
-        return tracking;
+    public boolean isTracked() {
+        return tracked;
     }
 
-    public void setTracking(boolean tracking) {
-        this.tracking = tracking;
+    public void setTracked(boolean tracked) {
+        this.tracked = tracked;
     }
 }

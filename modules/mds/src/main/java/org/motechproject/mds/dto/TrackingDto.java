@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.util.CollectionUtils;
 
 import java.util.LinkedList;
@@ -53,6 +54,26 @@ public class TrackingDto {
                 : actions;
     }
 
+    @JsonIgnore
+    public boolean isAllowCreate() {
+        return actions.contains("CREATE");
+    }
+
+    @JsonIgnore
+    public boolean isAllowRead() {
+        return actions.contains("READ");
+    }
+
+    @JsonIgnore
+    public boolean isAllowUpdate() {
+        return actions.contains("UPDATE");
+    }
+
+    @JsonIgnore
+    public boolean isAllowDelete() {
+        return actions.contains("DELETE");
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -76,4 +97,5 @@ public class TrackingDto {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
 }

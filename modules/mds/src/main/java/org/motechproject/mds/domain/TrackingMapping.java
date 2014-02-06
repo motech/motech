@@ -40,13 +40,23 @@ public class TrackingMapping {
     @Persistent
     private boolean allowDelete;
 
+    public TrackingMapping() {
+        this(null);
+    }
+
+    public TrackingMapping(EntityMapping entity) {
+        this.entity = entity;
+    }
+
     public TrackingDto toDto() {
         TrackingDto dto = new TrackingDto();
 
+        // add tracked fields to dto
         for (FieldMapping field : getFields()) {
             dto.addField(field.getId());
         }
 
+        // set correct actions
         if (allowCreate) {
             dto.addAction("CREATE");
         }
@@ -121,37 +131,22 @@ public class TrackingMapping {
         this.allowDelete = allowDelete;
     }
 
-    public void addAction(String action) {
-        switch (action.toUpperCase()) {
-            case "CREATE":
-                allowCreate = true;
-                break;
-            case "READ":
-                allowRead = true;
-                break;
-            case "UPDATE":
-                allowUpdate = true;
-                break;
-            case "DELETE":
-                allowDelete = true;
-                break;
-            default:
-                // never happen
-        }
-    }
+    public TrackingMapping copy() {
+        TrackingMapping copy = new TrackingMapping();
 
-    public void removeActions() {
-        allowCreate = false;
-        allowRead = false;
-        allowUpdate = false;
-        allowDelete = false;
+        copy.setAllowCreate(allowCreate);
+        copy.setAllowRead(allowRead);
+        copy.setAllowUpdate(allowUpdate);
+        copy.setAllowDelete(allowDelete);
+
+        return copy;
     }
 
     private static class TrackingPredicate implements Predicate {
 
         @Override
         public boolean evaluate(Object object) {
-            return object instanceof FieldMapping && ((FieldMapping) object).isTracking();
+            return object instanceof FieldMapping && ((FieldMapping) object).isTracked();
         }
 
     }

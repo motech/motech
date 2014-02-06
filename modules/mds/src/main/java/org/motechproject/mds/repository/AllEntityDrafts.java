@@ -43,6 +43,10 @@ public class AllEntityDrafts extends BaseMdsRepository {
             draft.setRestOptions(entity.getRestOptions().copy());
         }
 
+        if (entity.getTracking() != null) {
+            draft.setTracking(entity.getTracking().copy());
+        }
+
         return getPersistenceManager().makePersistent(draft);
     }
 

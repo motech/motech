@@ -93,7 +93,7 @@ CREATE TABLE "FieldMapping" (
   "type_id_OID" bigint(20) DEFAULT NULL,
   "validation_id_OID" bigint(20) DEFAULT NULL,
   "fields_INTEGER_IDX" int(11) DEFAULT NULL,
-  "tracking" bit(1) NOT NULL,
+  "tracked" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   KEY "FieldMapping_N49" ("type_id_OID"),
   KEY "FieldMapping_N50" ("entity_id_OID"),
