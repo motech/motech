@@ -3,6 +3,7 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.Lookup;
 
 import java.util.Date;
@@ -15,6 +16,11 @@ public class Sample {
     private Boolean world;
 
     public Integer pi;
+
+    @Ignore
+    public String ignored;
+
+    private String ignoredPrivate;
 
     private Date serverDate;
 
@@ -49,5 +55,15 @@ public class Sample {
     @Field(required = true)
     public void setLocalTime(Time localTime) {
         this.localTime = localTime;
+    }
+
+    @Ignore
+    public void setIgnoredPrivate(String ignoredPrivate) {
+        this.ignoredPrivate = ignoredPrivate;
+    }
+
+    @Ignore
+    public String getIgnoredPrivate() {
+        return ignoredPrivate;
     }
 }

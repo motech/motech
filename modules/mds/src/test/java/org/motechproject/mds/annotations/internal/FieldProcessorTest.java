@@ -31,6 +31,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -111,6 +112,23 @@ public class FieldProcessorTest {
     }
 
     @Test
+    public void shouldNotProcessPublicFieldWithIgnoreAnnotation() {
+        AnnotatedElement ignored = getDeclaredField(Sample.class, "ignored", true);
+        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+
+        processor.process(ignored);
+
+        List<FieldDto> fields = processor.getFields();
+        assertEquals(1, fields.size());
+
+        List<AnnotatedElement> actual = new ArrayList<>();
+        actual.addAll(processor.getElements());
+
+        assertEquals(4, actual.size());
+        assertFalse(actual.contains(ignored));
+    }
+
+    @Test
     public void shouldProcessSetter() throws Exception {
         Method setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
 
@@ -160,6 +178,28 @@ public class FieldProcessorTest {
 
         assertEquals(entity.getId(), field.getEntityId());
         assertEquals(TypeDto.DATE, field.getType());
+    }
+
+    @Test
+    public void shouldNotProcessIgnoredSettersAndGetters() {
+        Method setIgnoredField = getAccessibleMethod(Sample.class, "setIgnoredPrivate", String.class);
+        Method getIgnoredField = getAccessibleMethod(Sample.class, "getIgnoredPrivate", new Class[0]);
+
+        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+
+        processor.process(setIgnoredField);
+        processor.process(getIgnoredField);
+        verify(typeService, times(2)).findType(String.class);
+
+        List<FieldDto> setterFields = processor.getFields();
+        assertEquals(2, setterFields.size());
+
+        List<AnnotatedElement> actual = new ArrayList<>();
+        actual.addAll(processor.getElements());
+
+        assertEquals(4, actual.size());
+        assertFalse(actual.contains(getIgnoredField));
+        assertFalse(actual.contains(setIgnoredField));
     }
 
 }
