@@ -53,6 +53,9 @@ public class FieldMapping {
     private boolean tracked;
 
     @Persistent
+    private boolean exposedViaRest;
+
+    @Persistent
     private AvailableFieldTypeMapping type;
 
     @Persistent(mappedBy = "field")
@@ -298,6 +301,7 @@ public class FieldMapping {
         copy.setTooltip(tooltip);
         copy.setType(type);
         copy.setTracked(tracked);
+        copy.setExposedViaRest(exposedViaRest);
 
         copy.setValidation((validation == null) ? null : validation.copy());
 
@@ -332,4 +336,13 @@ public class FieldMapping {
     public void setTracked(boolean tracked) {
         this.tracked = tracked;
     }
+
+    public boolean isExposedViaRest() {
+        return exposedViaRest;
+    }
+
+    public void setExposedViaRest(boolean exposedViaRest) {
+        this.exposedViaRest = exposedViaRest;
+    }
+
 }

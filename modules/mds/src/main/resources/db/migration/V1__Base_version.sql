@@ -94,6 +94,7 @@ CREATE TABLE "FieldMapping" (
   "validation_id_OID" bigint(20) DEFAULT NULL,
   "fields_INTEGER_IDX" int(11) DEFAULT NULL,
   "tracked" bit(1) NOT NULL,
+  "exposedViaRest" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   KEY "FieldMapping_N49" ("type_id_OID"),
   KEY "FieldMapping_N50" ("entity_id_OID"),
@@ -168,6 +169,35 @@ CREATE TABLE "LookupMapping" (
 LOCK TABLES "LookupMapping" WRITE;
 /*!40000 ALTER TABLE "LookupMapping" DISABLE KEYS */;
 /*!40000 ALTER TABLE "LookupMapping" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "RestOptionsMapping"
+--
+
+DROP TABLE IF EXISTS "RestOptionsMapping";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "RestOptionsMapping" (
+  "id" bigint(20) NOT NULL,
+  "allowCreate" bit(1) NOT NULL,
+  "allowDelete" bit(1) NOT NULL,
+  "allowRead" bit(1) NOT NULL,
+  "allowUpdate" bit(1) NOT NULL,
+  "entity_id_OID" bigint(20) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "RestOptionsMapping_N49" ("entity_id_OID"),
+  CONSTRAINT "RestOptionsMapping_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "RestOptionsMapping"
+--
+
+LOCK TABLES "RestOptionsMapping" WRITE;
+/*!40000 ALTER TABLE "RestOptionsMapping" DISABLE KEYS */;
+/*!40000 ALTER TABLE "RestOptionsMapping" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -362,4 +392,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-05  9:43:10
+-- Dump completed on 2014-02-07 15:03:16

@@ -28,6 +28,7 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.motechproject.mds.constants.Constants.Util.ENTITY;
 import static org.motechproject.mds.constants.Constants.Util.TRUE;
 
 /**
@@ -57,15 +58,15 @@ public class EntityMapping {
     @Persistent
     private String namespace;
 
-    @Persistent(mappedBy = "entity")
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<LookupMapping> lookups;
 
-    @Persistent(mappedBy = "entity")
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<FieldMapping> fields;
 
-    @Persistent(mappedBy = "entity")
+    @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private TrackingMapping tracking;
 
@@ -75,7 +76,7 @@ public class EntityMapping {
 
     private Long entityVersion;
 
-    @Persistent(dependent = TRUE)
+    @Persistent(mappedBy = ENTITY, dependent = TRUE)
     private RestOptionsMapping restOptions;
 
     public EntityMapping() {
@@ -141,6 +142,13 @@ public class EntityMapping {
         this.namespace = namespace;
     }
 
+    public List<LookupMapping> getLookups() {
+        if (lookups == null) {
+            lookups = new ArrayList<>();
+        }
+        return lookups;
+    }
+
     public List<LookupDto> getLookupsDtos() {
         List<LookupDto> dtos = new ArrayList<>();
 
@@ -148,13 +156,6 @@ public class EntityMapping {
             dtos.add(mapping.toDto());
         }
         return dtos;
-    }
-
-    public List<LookupMapping> getLookups() {
-        if (lookups == null) {
-            lookups = new ArrayList<>();
-        }
-        return lookups;
     }
 
     public void setLookups(List<LookupMapping> lookups) {
@@ -267,6 +268,7 @@ public class EntityMapping {
 
         if (draft.getRestOptions() != null) {
             restOptions = draft.getRestOptions().copy();
+            restOptions.setEntity(this);
         }
 
         if (draft.getTracking() != null) {
@@ -292,14 +294,10 @@ public class EntityMapping {
         List<LookupDto> indexes = new ArrayList<>();
         for (LookupMapping lookup : getLookups()) {
             indexes.add(lookup.toDto());
-            if (restDto != null && lookup.isExposedViaRest()) {
-                restDto.addLookup(lookup.getId());
-            }
         }
 
         advancedSettingsDto.setIndexes(indexes);
         advancedSettingsDto.setEntityId(getId());
-
         advancedSettingsDto.setRestOptions(restDto);
 
         TrackingMapping trackingMapping = getTracking();
@@ -318,13 +316,24 @@ public class EntityMapping {
     }
 
     private void updateRestOptions(AdvancedSettingsDto advancedSettings) {
-        RestOptionsMapping restOptionsMapping = getRestOptions();
+        RestOptionsDto dto = advancedSettings.getRestOptions();
 
-        if (restOptionsMapping == null) {
-            restOptionsMapping = new RestOptionsMapping(advancedSettings.getRestOptions());
-            setRestOptions(restOptionsMapping);
-        } else {
-            restOptionsMapping.update(advancedSettings.getRestOptions());
+        if (null != dto) {
+            if (null == restOptions) {
+                restOptions = new RestOptionsMapping(this);
+            }
+
+            restOptions.update(dto);
+
+            for (LookupMapping lookup : getLookups()) {
+                boolean isExposedViaRest = dto.containsLookupId(lookup.getId());
+                lookup.setExposedViaRest(isExposedViaRest);
+            }
+
+            for (FieldMapping field : getFields()) {
+                boolean isExposedViaRest = dto.containsFieldId(field.getId());
+                field.setExposedViaRest(isExposedViaRest);
+            }
         }
     }
 
@@ -354,12 +363,6 @@ public class EntityMapping {
             } else {
                 lookup.update(lookupDto);
             }
-        }
-
-        // update exposed via REST for lookups
-        for (LookupMapping lookup : getLookups()) {
-            boolean exposedViaRest = advancedSettings.getRestOptions().getLookupIds().contains(lookup.getId());
-            lookup.setExposedViaRest(exposedViaRest);
         }
     }
 

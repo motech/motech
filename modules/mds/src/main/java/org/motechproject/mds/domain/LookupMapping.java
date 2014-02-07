@@ -30,6 +30,10 @@ public class LookupMapping {
     @Persistent
     private EntityMapping entity;
 
+    public LookupMapping() {
+        this(null, false, false);
+    }
+
     public LookupMapping(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;

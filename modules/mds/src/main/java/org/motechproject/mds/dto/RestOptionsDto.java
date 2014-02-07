@@ -1,9 +1,11 @@
 package org.motechproject.mds.dto;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.util.NumberPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,8 @@ import java.util.List;
 public class RestOptionsDto {
     private Long id;
 
-    private List<Long> fieldIds = new ArrayList<>();
-    private List<Long> lookupIds = new ArrayList<>();
+    private List<Number> fieldIds = new ArrayList<>();
+    private List<Number> lookupIds = new ArrayList<>();
 
     private boolean create;
     private boolean read;
@@ -33,11 +35,6 @@ public class RestOptionsDto {
         this.delete = delete;
     }
 
-    public RestOptionsDto(Long id, boolean create, boolean read, boolean update, boolean delete) {
-        this(create, read, update, delete);
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
     }
@@ -46,48 +43,44 @@ public class RestOptionsDto {
         this.id = id;
     }
 
-    public void addField(Long id) {
+    public void addField(Number id) {
         this.fieldIds.add(id);
     }
 
-    public void removeField(Long id) {
+    public void removeField(Number id) {
         this.fieldIds.remove(id);
     }
 
-    public List<Long> getFieldIds() {
+    public boolean containsFieldId(Number id) {
+        return CollectionUtils.exists(fieldIds, new NumberPredicate(id));
+    }
+
+    public List<Number> getFieldIds() {
         return fieldIds;
     }
 
-    public void setFieldIds(List<Long> fieldIds) {
-        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<Long>();
+    public void setFieldIds(List<Number> fieldIds) {
+        this.fieldIds = null != fieldIds ? fieldIds : new ArrayList<Number>();
     }
 
-    public void addLookup(Integer id) {
-        addLookup((long)id);
-    }
-
-    public void addLookup(Long id) {
+    public void addLookup(Number id) {
         this.lookupIds.add(id);
     }
 
-    public void removeLookup(Integer id) {
-        removeLookup((long)id);
-    }
-
-    public void removeLookup(Long id) {
+    public void removeLookup(Number id) {
         this.lookupIds.remove(id);
     }
 
-    public List<Long> getLookupIds() {
+    public boolean containsLookupId(Number id) {
+        return CollectionUtils.exists(lookupIds, new NumberPredicate(id));
+    }
+
+    public List<Number> getLookupIds() {
         return lookupIds;
     }
 
-    public void setLookupIds(List<Long> lookupIds) {
-        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<Long>();
-    }
-
-    public boolean isLookupExposedViaRest (Long id) {
-        return (lookupIds != null) ? lookupIds.contains(id) : false;
+    public void setLookupIds(List<Number> lookupIds) {
+        this.lookupIds = null != lookupIds ? lookupIds : new ArrayList<Number>();
     }
 
     public boolean isCreate() {
@@ -145,4 +138,5 @@ public class RestOptionsDto {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
 }

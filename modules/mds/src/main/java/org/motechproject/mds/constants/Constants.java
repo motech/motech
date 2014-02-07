@@ -246,6 +246,13 @@ public final class Constants {
          * Constant <code>FALSE</code> corresponding to the primitive value {@code false}
          */
         public static final String FALSE = "false";
+
+        /**
+         * Constant <code>ENTITY</code> corresponding to the field name of the class that want to
+         * create a bidirectional connection with instane of
+         * {@link org.motechproject.mds.domain.EntityMapping}
+         */
+        public static final String ENTITY = "entity";
     }
 
     private Constants() {

@@ -166,7 +166,7 @@ public class ExampleData {
         AdvancedSettingsDto exampleAdvancedSetting = new AdvancedSettingsDto();
         RestOptionsDto exampleRestOptions = new RestOptionsDto();
 
-        List<Long> fields = new LinkedList<>();
+        List<Number> fields = new LinkedList<>();
         fields.add(2L);
         fields.add(5L);
         exampleRestOptions.setCreate(true);
