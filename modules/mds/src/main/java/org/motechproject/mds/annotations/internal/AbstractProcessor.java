@@ -18,6 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The <code>AbstractProcessor</code> is a base class for every processor that would like to perform
+ * some actions on objects with the given annotation. The name of a processor should start with
+ * the name of an annotation. For example if there is an annotation 'A', the processor name should
+ * be equal to 'AProcessor' and the {@link #getAnnotation()} method should return class definition
+ * of the 'A' annotation.
+ */
 abstract class AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessor.class);
 

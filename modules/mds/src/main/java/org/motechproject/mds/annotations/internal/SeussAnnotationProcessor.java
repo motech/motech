@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
  * The <code>SeussAnnotationProcessor</code> class is responsible for scanning bundle contexts and
  * looking for classes, fields and methods containing Seuss annotations, as well as processing them.
  *
- * @see org.motechproject.mds.annotations.Lookup
- * @see org.motechproject.mds.annotations.Entity
+ * @see org.motechproject.mds.annotations.internal.LookupProcessor
+ * @see org.motechproject.mds.annotations.internal.EntityProcessor
  */
 @Component
 public class SeussAnnotationProcessor {

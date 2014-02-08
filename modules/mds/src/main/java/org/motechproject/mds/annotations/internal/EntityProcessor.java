@@ -17,6 +17,14 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 
+/**
+ * The <code>EntityProcessor</code> provides a mechanism to adding public classes from other
+ * modules as entities in the MDS module. When the entity is successfully added into MDS database,
+ * related processors are starting to process the class definitions in order to add other
+ * information into MDS database.
+ *
+ * @see org.motechproject.mds.annotations.Entity
+ */
 @Component
 class EntityProcessor extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityProcessor.class);
