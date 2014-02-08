@@ -1,7 +1,13 @@
 [
     {
         "roleName":"MDS Admin",
-        "permissionNames": ["seussSchemaAccess", "seussSettingsAccess", "seussDataAccess", "viewUser", "viewRole"],
+        "permissionNames": [
+            "mdsSchemaAccess",
+            "mdsSettingsAccess",
+            "mdsDataAccess",
+            "viewUser",
+            "viewRole"
+        ],
         "deletable": false
     }
 ]

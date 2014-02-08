@@ -53,9 +53,9 @@
         </constructor-arg>
         <property name="roleForAccess">
             <list>
-                <value>seussSchemaAccess</value>
-                <value>seussDataAccess</value>
-                <value>seussSettingsAccess</value>
+                <value>mdsSchemaAccess</value>
+                <value>mdsDataAccess</value>
+                <value>mdsSettingsAccess</value>
             </list>
         </property>
     </bean>

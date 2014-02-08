@@ -16,20 +16,20 @@ public final class Constants {
          * Then can add new objects, delete existing objects and modify the fields on existing
          * objects.
          */
-        public static final String SCHEMA_ACCESS = "seussSchemaAccess";
+        public static final String SCHEMA_ACCESS = "mdsSchemaAccess";
 
         /**
          * Users with ‘Settings Access’ have the ability to view the Settings tab. From that tab
          * then can modify data retention policies as well as import and export schema and data.
          */
-        public static final String SETTINGS_ACCESS = "seussSettingsAccess";
+        public static final String SETTINGS_ACCESS = "mdsSettingsAccess";
 
         /**
          * Users with ‘Data Access’ have the ability to view the Data Browser tab. From that tab
          * then can search for objects within the system, view and modify the data stored in the
          * system.
          */
-        public static final String DATA_ACCESS = "seussDataAccess";
+        public static final String DATA_ACCESS = "mdsDataAccess";
 
         /**
          * Spring security el expression to check if the given user has the 'Schema Access' role.
@@ -62,13 +62,13 @@ public final class Constants {
         public static final String HAS_DATA_OR_SCHEMA_ACCESS = "hasAnyRole('" + SCHEMA_ACCESS + "', '" + DATA_ACCESS + "')";
 
         /**
-         * Spring security el expression to check if the given user has any of the seuss roles.
+         * Spring security el expression to check if the given user has any of the MDS roles.
          *
          * @see {@link #SCHEMA_ACCESS}
          * @see {@link #SETTINGS_ACCESS}
          * @see {@link #DATA_ACCESS}
          */
-        public static final String HAS_ANY_SEUSS_ROLE = "hasAnyRole('" + SCHEMA_ACCESS + "', '" + DATA_ACCESS + "', '" + SETTINGS_ACCESS + "')";
+        public static final String HAS_ANY_MDS_ROLE = "hasAnyRole('" + SCHEMA_ACCESS + "', '" + DATA_ACCESS + "', '" + SETTINGS_ACCESS + "')";
 
         private Roles() {
         }
