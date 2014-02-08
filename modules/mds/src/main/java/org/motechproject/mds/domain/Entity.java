@@ -29,8 +29,8 @@ import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.motechproject.mds.constants.Constants.Util.ENTITY;
-import static org.motechproject.mds.constants.Constants.Util.TRUE;
+import static org.motechproject.mds.util.Constants.Util.ENTITY;
+import static org.motechproject.mds.util.Constants.Util.TRUE;
 
 /**
  * The <code>Entity</code> class contains information about an entity. Also it contains

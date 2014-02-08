@@ -24,8 +24,8 @@ import java.util.jar.JarInputStream;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.mds.constants.Constants.Manifest;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Manifest;
+import static org.motechproject.mds.util.Constants.Packages;
 
 public class JarGeneratorServiceIT extends BaseIT {
     private static final String SAMPLE = "Sample";

@@ -14,7 +14,7 @@ import org.motechproject.mds.repository.AllEntityDrafts;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityServiceImplTest {

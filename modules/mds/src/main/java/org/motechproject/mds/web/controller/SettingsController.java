@@ -1,6 +1,6 @@
 package org.motechproject.mds.web.controller;
 
-import org.motechproject.mds.constants.Constants;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.dto.MdsSettingsDto;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static org.motechproject.mds.constants.Constants.Roles;
+import static org.motechproject.mds.util.Constants.Roles;
 
 /**
  * The <code>SettingsController</code> is the Spring Framework Controller used by view layer for

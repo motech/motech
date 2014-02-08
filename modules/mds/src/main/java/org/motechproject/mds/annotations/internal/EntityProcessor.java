@@ -3,6 +3,7 @@ package org.motechproject.mds.annotations.internal;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.BundleHeaders;
 import org.slf4j.Logger;
@@ -15,7 +16,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.motechproject.mds.util.Constants.AnnotationFields.MODULE;
+import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
+import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
 
 /**
  * The <code>EntityProcessor</code> provides a mechanism to adding public classes from other
@@ -32,6 +35,8 @@ class EntityProcessor extends AbstractProcessor {
     private EntityService entityService;
     private FieldProcessor fieldProcessor;
 
+    private BundleHeaders bundleHeaders;
+
     @Override
     protected Class<? extends Annotation> getAnnotation() {
         return Entity.class;
@@ -39,18 +44,26 @@ class EntityProcessor extends AbstractProcessor {
 
     @Override
     protected List<? extends AnnotatedElement> getElements() {
-        return getClasses(getAnnotation());
+        return AnnotationsUtil.getClasses(getAnnotation(), getBundle());
     }
 
     @Override
     protected void process(AnnotatedElement element) {
+        if (null == bundleHeaders) {
+            bundleHeaders = new BundleHeaders(getBundle());
+        }
+
         Class clazz = (Class) element;
         Entity annotation = AnnotationUtils.findAnnotation(clazz, Entity.class);
 
         if (null != annotation) {
-            String name = getName(annotation, clazz);
-            String module = getModule(annotation);
-            String namespace = getNamespace(annotation);
+            String name = AnnotationsUtil.getAnnotationValue(
+                    annotation, NAME, ClassName.getSimpleName(clazz.getName())
+            );
+            String module = AnnotationsUtil.getAnnotationValue(
+                    annotation, MODULE, bundleHeaders.getName(), bundleHeaders.getSymbolicName()
+            );
+            String namespace = AnnotationsUtil.getAnnotationValue(annotation, NAMESPACE);
 
             try {
                 EntityDto entity = new EntityDto(clazz.getName(), name, module, namespace);
@@ -87,21 +100,4 @@ class EntityProcessor extends AbstractProcessor {
         this.fieldProcessor = fieldProcessor;
     }
 
-    private String getName(Entity annotation, Class clazz) {
-        return defaultIfBlank(annotation.name(), ClassName.getSimpleName(clazz.getName()));
-    }
-
-    private String getModule(Entity annotation) {
-        BundleHeaders headers = new BundleHeaders(getBundle());
-
-        String module = defaultIfBlank(annotation.module(), headers.getName());
-        module = defaultIfBlank(module, headers.getSymbolicName());
-        module = defaultIfBlank(module, null);
-
-        return module;
-    }
-
-    private String getNamespace(Entity annotation) {
-        return defaultIfBlank(annotation.namespace(), null);
-    }
 }

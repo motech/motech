@@ -3,7 +3,7 @@ package org.motechproject.mds.dto;
 import java.util.Objects;
 import java.util.Properties;
 
-import static org.motechproject.mds.constants.Constants.Config;
+import static org.motechproject.mds.util.Constants.Config;
 
 /**
  * The <code>MdsSettingDto</code> contains module settings.

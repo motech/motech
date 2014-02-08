@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Collections;
 import java.util.List;
 
-import static org.motechproject.mds.constants.Constants.Roles;
+import static org.motechproject.mds.util.Constants.Roles;
 
 /**
  * The <code>FieldController</code> is the Spring Framework Controller used by view layer for

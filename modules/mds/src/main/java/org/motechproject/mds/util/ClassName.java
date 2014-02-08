@@ -2,7 +2,7 @@ package org.motechproject.mds.util;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * The <code>ClassName</code> util provides several methods which should help for example with

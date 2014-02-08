@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
-import static org.motechproject.mds.constants.Constants.Roles;
+import static org.motechproject.mds.util.Constants.Roles;
 
 /**
  * The <code>EntityController</code> is the Spring Framework Controller used by view layer for

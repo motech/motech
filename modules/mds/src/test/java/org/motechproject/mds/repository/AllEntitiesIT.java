@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 
 public class AllEntitiesIT extends BaseIT {
     private static final String SAMPLE_CLASS = String.format("%s.Sample", Packages.ENTITY);

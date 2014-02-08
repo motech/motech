@@ -12,7 +12,7 @@ import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.mds.constants.Constants.Util;
+import static org.motechproject.mds.util.Constants.Util;
 
 /**
  * The <code>Tracking</code> contains information about which fields and what kind of actions

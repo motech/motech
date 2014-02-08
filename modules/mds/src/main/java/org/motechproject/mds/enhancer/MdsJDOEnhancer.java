@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.jdo.metadata.JDOMetadata;
 import java.io.IOException;
 
-import static org.motechproject.mds.constants.Constants.Config;
+import static org.motechproject.mds.util.Constants.Config;
 
 /**
  * The <code>MdsJDOEnhancer</code> class is a wrapper for

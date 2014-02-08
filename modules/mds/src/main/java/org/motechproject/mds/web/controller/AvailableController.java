@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.motechproject.mds.constants.Constants.Roles;
+import static org.motechproject.mds.util.Constants.Roles;
 
 
 /**

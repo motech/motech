@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.EntityService} interface.

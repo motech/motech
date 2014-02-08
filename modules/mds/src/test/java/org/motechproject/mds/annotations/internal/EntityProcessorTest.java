@@ -88,7 +88,7 @@ public class EntityProcessorTest {
         assertEquals(Sample.class.getName(), value.getClassName());
         assertEquals(Sample.class.getSimpleName(), value.getName());
         assertEquals(bundle.getSymbolicName(), value.getModule());
-        assertNull(value.getNamespace());
+        assertEquals("", value.getNamespace());
     }
 
     @Test

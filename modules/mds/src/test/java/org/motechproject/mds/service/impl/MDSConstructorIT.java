@@ -24,7 +24,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 import static org.motechproject.mds.testutil.FieldTestHelper.field;
 
 public class MDSConstructorIT extends BaseIT {

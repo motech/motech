@@ -8,10 +8,10 @@ import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.util.AnnotationsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -22,24 +22,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like lookups.
- * The Entity looked for, is resolved based on the return type of the lookup method. The lookup fields are determined
- * either basing on the LookupField annotations, or if no such annotation is found in method parameters, on all
- * method parameter names.
+ * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like
+ * lookups. The Entity looked for, is resolved based on the return type of the lookup method. The
+ * lookup fields are determined either basing on the LookupField annotations, or if no such
+ * annotation is found in method parameters, on all method parameter names.
  *
  * @see org.motechproject.mds.annotations.Lookup
  * @see org.motechproject.mds.annotations.LookupField
  */
 @Component
-public class LookupProcessor extends AbstractProcessor {
-
-    private EntityService entityService;
-    private Paranamer paranamer;
+class LookupProcessor extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupProcessor.class);
 
-    public LookupProcessor() {
-        this.paranamer = new BytecodeReadingParanamer();
-    }
+    private Paranamer paranamer = new BytecodeReadingParanamer();
+    private EntityService entityService;
 
     @Override
     protected Class<? extends Annotation> getAnnotation() {
@@ -48,7 +44,7 @@ public class LookupProcessor extends AbstractProcessor {
 
     @Override
     protected List<? extends AnnotatedElement> getElements() {
-        return getMethods(getAnnotation());
+        return AnnotationsUtil.getMethods(getAnnotation(), getBundle());
     }
 
     @Override
@@ -60,7 +56,8 @@ public class LookupProcessor extends AbstractProcessor {
 
         boolean singleObjectReturn = true;
 
-        //Our entity will never be an interface, therefore we can assume the return type is a collection if that's the case
+        //Our entity will never be an interface, therefore we can assume the return type is
+        // a collection if that's the case
         if (returnType.isArray() || returnType.isInterface()) {
             singleObjectReturn = false;
             returnClassName = determineGenericClass(method.getGenericReturnType().toString());
@@ -69,20 +66,25 @@ public class LookupProcessor extends AbstractProcessor {
         EntityDto entity = entityService.getEntityByClassName(returnClassName);
 
         if (entity == null) {
-            LOGGER.error("There's no matching entity for the resolved return type of the lookup method: " +
-                    method.getName() + "; Resolved return type: " + returnClassName);
+            LOGGER.error("There's no matching entity for the resolved return type of the lookup" +
+                    "method: {}; Resolved return type: {}", method.getName(), returnClassName);
             return;
         }
+
         LOGGER.debug("Found entity class by the return type of lookup method: " + entity.getName());
 
+        Lookup annotation = AnnotationsUtil.findAnnotation(method, Lookup.class);
+        String lookupName = generateLookupName(annotation.name(), method.getName());
+        List<String> lookupFields = findLookupFields(method);
+
         LookupDto lookup = new LookupDto();
-
         lookup.setSingleObjectReturn(singleObjectReturn);
-        lookup.setLookupName(generateLookupName(
-                AnnotationUtils.findAnnotation(method, Lookup.class).name(), method.getName()));
-        lookup.setFieldList(findLookupFields(method));
+        lookup.setLookupName(lookupName);
+        lookup.setFieldList(lookupFields);
 
-        List<LookupDto> entityLookups = entityService.getAdvancedSettings(entity.getId(), true).getIndexes();
+        List<LookupDto> entityLookups = entityService
+                .getAdvancedSettings(entity.getId(), true)
+                .getIndexes();
 
         if (!entityLookups.contains(lookup)) {
             LOGGER.debug("Attempting to add lookup to the entity " + lookup.getLookupName());
@@ -91,18 +93,28 @@ public class LookupProcessor extends AbstractProcessor {
     }
 
     private String generateLookupName(String lookupDisplayName, String methodName) {
-        if (!"".equals(lookupDisplayName)) {
-            return lookupDisplayName;
+        String lookupName;
+
+        if (StringUtils.isNotBlank(lookupDisplayName)) {
+            lookupName = lookupDisplayName;
         } else {
             String[] splitName = StringUtils.splitByCharacterTypeCamelCase(methodName);
             StringBuilder stringBuilder = new StringBuilder();
+            String prefix = "";
+
             for (String word : splitName) {
                 String capitalize = StringUtils.capitalize(word);
-                stringBuilder.append(capitalize).append(" ");
+                stringBuilder.append(prefix).append(capitalize);
+
+                if (StringUtils.isEmpty(prefix)) {
+                    prefix = " ";
+                }
             }
-            stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(" "));
-            return stringBuilder.toString();
+
+            lookupName = stringBuilder.toString();
         }
+
+        return lookupName;
     }
 
     private List<String> findLookupFields(Method method) {
@@ -117,13 +129,14 @@ public class LookupProcessor extends AbstractProcessor {
                 if (annotation.annotationType().equals(LookupField.class)) {
                     LookupField fieldAnnotation = (LookupField) annotation;
 
-                    if ("".equals(fieldAnnotation.name())) {
+                    if (StringUtils.isBlank(fieldAnnotation.name())) {
                         //no name defined in annotation - get lookup field name from parameter name
                         lookupFields.add(methodParameterNames.get(i));
                     } else {
                         //name defined in annotation - get lookup field name from annotation
                         lookupFields.add(fieldAnnotation.name());
                     }
+
                     break;
                 }
             }
@@ -138,7 +151,7 @@ public class LookupProcessor extends AbstractProcessor {
     }
 
     private String determineGenericClass(String clazz) {
-        return clazz.substring(clazz.toString().indexOf("<") + 1, clazz.toString().lastIndexOf(">"));
+        return clazz.substring(clazz.indexOf('<') + 1, clazz.lastIndexOf('>'));
     }
 
     @Autowired

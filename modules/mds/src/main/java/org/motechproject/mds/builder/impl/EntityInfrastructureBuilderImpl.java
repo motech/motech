@@ -21,7 +21,7 @@ import java.util.List;
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
 import static javassist.bytecode.SignatureAttribute.ClassType;
 import static javassist.bytecode.SignatureAttribute.TypeParameter;
-import static org.motechproject.mds.constants.Constants.Packages;
+import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * The <code>EntityInfrastructureBuilder</code> class is responsible for building infrastructure for a given entity:

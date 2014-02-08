@@ -1,4 +1,4 @@
-package org.motechproject.mds.constants;
+package org.motechproject.mds.util;
 
 /**
  * The <code>Constants</code> contains constant values used in MDS module. They are grouped by
@@ -231,6 +231,43 @@ public final class Constants {
     }
 
     /**
+     * The <code>AnnotationFields</code> contains constant values related with attributes names
+     * in mds annotations.
+     *
+     * @see org.motechproject.mds.annotations.Entity
+     * @see org.motechproject.mds.annotations.Field
+     * @see org.motechproject.mds.annotations.Ignore
+     * @see org.motechproject.mds.annotations.Lookup
+     * @see org.motechproject.mds.annotations.LookupField
+     */
+    public static final class AnnotationFields {
+
+        /**
+         * Constant <code>NAME</code> corresponding to the attribute name {@code name}
+         */
+        public static final String NAME = "name";
+
+        /**
+         * Constant <code>MODULE</code> corresponding to the attribute name {@code module}
+         */
+        public static final String MODULE = "module";
+
+        /**
+         * Constant <code>NAMESPACE</code> corresponding to the attribute name {@code namespace}
+         */
+        public static final String NAMESPACE = "namespace";
+
+        /**
+         * Constant <code>DISPLAY_NAME</code> corresponding to the primitive value
+         * {@code displayName}
+         */
+        public static final String DISPLAY_NAME = "displayName";
+
+        private AnnotationFields() {
+        }
+    }
+
+    /**
      * The <code>Util</code> contains constant values to help avoid string literal repetition.
      *
      * @see <a href="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals">pmd</a>
@@ -253,6 +290,9 @@ public final class Constants {
          * {@link org.motechproject.mds.domain.Entity}
          */
         public static final String ENTITY = "entity";
+
+        private Util() {
+        }
     }
 
     private Constants() {
