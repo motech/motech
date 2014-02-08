@@ -106,7 +106,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     }
 
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
-                                         Class<?> type) {
+                                  Class<?> type) {
         try {
             CtClass superClass = classPool.getCtClass(SERVICE_IMPL_BASE_CLASS);
             superClass.setGenericSignature(getGenericSignature(type));

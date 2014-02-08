@@ -250,7 +250,7 @@ public final class Constants {
         /**
          * Constant <code>ENTITY</code> corresponding to the field name of the class that want to
          * create a bidirectional connection with instane of
-         * {@link org.motechproject.mds.domain.EntityMapping}
+         * {@link org.motechproject.mds.domain.Entity}
          */
         public static final String ENTITY = "entity";
     }

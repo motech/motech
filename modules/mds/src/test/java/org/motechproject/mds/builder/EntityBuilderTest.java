@@ -10,7 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.impl.EntityBuilderImpl;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ public class EntityBuilderTest {
     private MDSClassLoader mdsClassLoader;
 
     @Mock
-    private EntityMapping entity;
+    private Entity entity;
 
     @Before
     public void setUp() {

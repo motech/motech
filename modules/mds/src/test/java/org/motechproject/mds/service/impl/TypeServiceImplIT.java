@@ -5,9 +5,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
-import org.motechproject.mds.domain.TypeSettingsMapping;
-import org.motechproject.mds.domain.TypeValidationMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.TypeSettings;
+import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SettingDto;
@@ -93,9 +93,9 @@ public class TypeServiceImplIT extends BaseIT {
         FieldValidationDto validation = new FieldValidationDto(new ValidationCriterionDto("myCriterion", getListOfNewTypes().get(0).getType()));
         typeService.createFieldType(getListOfNewTypes().get(1), validation, null);
 
-        AvailableFieldTypeMapping typeMapping = allFieldTypes.getByName(getListOfNewTypes().get(1).getType().getDisplayName());
+        AvailableFieldType typeMapping = allFieldTypes.getByName(getListOfNewTypes().get(1).getType().getDisplayName());
         assertNotNull(typeMapping);
-        TypeValidationMapping validationMapping = allTypeValidationMappings.getValidationForType(typeMapping);
+        TypeValidation validationMapping = allTypeValidationMappings.getValidationForType(typeMapping);
         assertNotNull(validationMapping);
         assertThat(validationMapping.getCriteria().size(), Is.is(1));
     }
@@ -110,12 +110,12 @@ public class TypeServiceImplIT extends BaseIT {
         SettingDto settingDto = new SettingDto("mySetting", "mySetting", getListOfNewTypes().get(0).getType());
         typeService.createFieldType(getListOfNewTypes().get(1), null, settingDto);
 
-        AvailableFieldTypeMapping typeMapping = allFieldTypes.getByName(getListOfNewTypes().get(1).getType().getDisplayName());
+        AvailableFieldType typeMapping = allFieldTypes.getByName(getListOfNewTypes().get(1).getType().getDisplayName());
         assertNotNull(typeMapping);
-        List<TypeSettingsMapping> typeSettingsMappings = allTypeSettingsMappings.getSettingsForType(typeMapping);
-        assertNotNull(typeSettingsMappings);
-        assertThat(typeSettingsMappings.size(), Is.is(1));
-        assertTrue(typeSettingsMappings.get(0).getName().equals("mySetting"));
+        List<TypeSettings> typeSettingses = allTypeSettingsMappings.getSettingsForType(typeMapping);
+        assertNotNull(typeSettingses);
+        assertThat(typeSettingses.size(), Is.is(1));
+        assertTrue(typeSettingses.get(0).getName().equals("mySetting"));
     }
 
     @Test

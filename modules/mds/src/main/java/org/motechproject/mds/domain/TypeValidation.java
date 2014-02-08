@@ -18,7 +18,7 @@ import java.util.List;
  * related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
-public class TypeValidationMapping {
+public class TypeValidation {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
@@ -28,28 +28,29 @@ public class TypeValidationMapping {
     private String name;
 
     @Column(name = "type")
-    private AvailableFieldTypeMapping type;
+    private AvailableFieldType type;
 
     @Persistent(mappedBy = "validation")
     @Element(dependent = "true")
-    private List<ValidationCriterionMapping> criteria;
+    private List<ValidationCriterion> criteria;
 
-    public TypeValidationMapping() {
+    public TypeValidation() {
     }
 
-    public TypeValidationMapping(AvailableFieldTypeMapping type) {
+    public TypeValidation(AvailableFieldType type) {
         this.name = (type == null) ? null : type.getDefaultName();
         this.type = type;
     }
 
-    public TypeValidationMapping(AvailableFieldTypeMapping type, List<ValidationCriterionMapping> criteria) {
+    public TypeValidation(AvailableFieldType type, List<ValidationCriterion> criteria) {
         this(type);
         this.criteria = criteria;
     }
+
     public FieldValidationDto toDto() {
         List<ValidationCriterionDto> validationCriteriaDto = new ArrayList<>();
         if (criteria != null) {
-            for (ValidationCriterionMapping criterion : criteria) {
+            for (ValidationCriterion criterion : criteria) {
                 validationCriteriaDto.add(criterion.toDto());
             }
         }
@@ -57,9 +58,9 @@ public class TypeValidationMapping {
         return new FieldValidationDto(validationCriteriaDto.toArray(new ValidationCriterionDto[validationCriteriaDto.size()]));
     }
 
-    public ValidationCriterionMapping getCriterionByName(String name) {
+    public ValidationCriterion getCriterionByName(String name) {
         if (criteria != null) {
-            for (ValidationCriterionMapping criterionMapping : criteria) {
+            for (ValidationCriterion criterionMapping : criteria) {
                 if (criterionMapping.getDisplayName().equalsIgnoreCase(name)) {
                     return criterionMapping;
                 }
@@ -85,32 +86,32 @@ public class TypeValidationMapping {
         this.name = name;
     }
 
-    public AvailableFieldTypeMapping getType() {
+    public AvailableFieldType getType() {
         return type;
     }
 
-    public void setType(AvailableFieldTypeMapping type) {
+    public void setType(AvailableFieldType type) {
         this.type = type;
     }
 
-    public List<ValidationCriterionMapping> getCriteria() {
+    public List<ValidationCriterion> getCriteria() {
         if (criteria == null) {
             criteria = new ArrayList<>();
         }
         return criteria;
     }
 
-    public void setCriteria(List<ValidationCriterionMapping> criteria) {
+    public void setCriteria(List<ValidationCriterion> criteria) {
         this.criteria = criteria;
     }
 
-    public TypeValidationMapping copy() {
-        List<ValidationCriterionMapping> criterionCopies = new ArrayList<>();
+    public TypeValidation copy() {
+        List<ValidationCriterion> criterionCopies = new ArrayList<>();
 
-        for (ValidationCriterionMapping criterion : getCriteria()) {
+        for (ValidationCriterion criterion : getCriteria()) {
             criterionCopies.add(criterion.copy());
         }
 
-        return new TypeValidationMapping(type, criterionCopies);
+        return new TypeValidation(type, criterionCopies);
     }
 }

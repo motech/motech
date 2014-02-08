@@ -3,7 +3,7 @@ package org.motechproject.mds.builder;
 import org.datanucleus.api.jdo.metadata.JDOMetadataImpl;
 import org.junit.Test;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.JDOMetadata;
@@ -30,7 +30,7 @@ public class EntityMetadataBuilderTest {
     @Test
     public void shouldCreateBaseEntity() throws Exception {
         JDOMetadata mainMetadata = new JDOMetadataImpl();
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         mapping.setClassName(CLASS_NAME);
 
         entityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
@@ -60,7 +60,7 @@ public class EntityMetadataBuilderTest {
 
     private ClassMetadata getClassMetadata(String module, String namespace) {
         JDOMetadata mainMetadata = new JDOMetadataImpl();
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         mapping.setClassName(CLASS_NAME);
         mapping.setModule(module);
         mapping.setNamespace(namespace);

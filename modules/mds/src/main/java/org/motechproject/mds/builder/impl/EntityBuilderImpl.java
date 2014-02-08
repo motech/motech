@@ -13,9 +13,9 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityBuilder;
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
-import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -35,9 +35,9 @@ public class EntityBuilderImpl implements EntityBuilder {
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
-    public ClassData build(EntityMapping entityMapping) {
+    public ClassData build(Entity entity) {
         try {
-            String className = entityMapping.getClassName();
+            String className = entity.getClassName();
 
             CtClass ctClass = classPool.getOrNull(className);
 
@@ -48,7 +48,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             ctClass = classPool.makeClass(className);
 
-            addFields(ctClass, entityMapping.getFields());
+            addFields(ctClass, entity.getFields());
 
             return new ClassData(className, ctClass.toBytecode());
         } catch (Exception e) {
@@ -56,8 +56,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addFields(CtClass ctClass, List<FieldMapping> fields) throws NotFoundException, CannotCompileException {
-        for (FieldMapping field : fields) {
+    private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
+        for (Field field : fields) {
             String fieldName = field.getName();
             String typeClass = field.getType().getTypeClass();
 
@@ -84,8 +84,8 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private CtField.Initializer initializerForField(FieldMapping field) throws NotFoundException {
-        AvailableFieldTypeMapping fieldType = field.getType();
+    private CtField.Initializer initializerForField(Field field) throws NotFoundException {
+        AvailableFieldType fieldType = field.getType();
         String typeClass = fieldType.getTypeClass();
 
         Object defaultValue = fieldType.parse(field.getDefaultValue());
@@ -96,15 +96,15 @@ public class EntityBuilderImpl implements EntityBuilder {
             case "java.lang.Integer":
             case "java.lang.Double":
             case "java.lang.Boolean":
-                 return newInitializer(typeClass, defaultValue);
+                return newInitializer(typeClass, defaultValue);
             case "java.lang.String":
                 return CtField.Initializer.constant((String) defaultValue);
             case "org.motechproject.commons.date.model.Time":
-                Time time  = (Time) defaultValue;
+                Time time = (Time) defaultValue;
                 return newInitializer(typeClass, '"' + time.timeStr() + '"');
             case "org.joda.time.DateTime":
                 DateTime dateTime = (DateTime) defaultValue;
-                return newInitializer(typeClass, dateTime.getMillis()  + "l"); // explicit long
+                return newInitializer(typeClass, dateTime.getMillis() + "l"); // explicit long
             case "java.util.Date":
                 Date date = (Date) defaultValue;
                 return newInitializer(typeClass, date.getTime() + "l"); // explicit long

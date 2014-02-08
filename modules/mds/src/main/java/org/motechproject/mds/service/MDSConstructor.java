@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 
 /**
  * This interface provide method to build a class for a given entity. The implementation of this
@@ -9,7 +9,7 @@ import org.motechproject.mds.domain.EntityMapping;
  */
 public interface MDSConstructor {
 
-    void constructEntity(EntityMapping mapping);
+    void constructEntity(Entity mapping);
 
     void generateAllEntities();
 }

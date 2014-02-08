@@ -1,7 +1,7 @@
 package org.motechproject.mds.javassist;
 
 import org.junit.Test;
-import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.Field;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ public class JavassistHelperTest {
 
     @Test
     public void shouldCreateProperGenericSignatures() {
-        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/FieldMapping;>;",
-                JavassistHelper.genericFieldSignature(List.class, FieldMapping.class));
-        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/FieldMapping;>;",
-                JavassistHelper.genericFieldSignature(List.class.getName(), FieldMapping.class.getName()));
+        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
+                JavassistHelper.genericFieldSignature(List.class, Field.class));
+        assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
+                JavassistHelper.genericFieldSignature(List.class.getName(), Field.class.getName()));
     }
 }

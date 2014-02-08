@@ -23,7 +23,7 @@ import java.util.List;
  * The <code>FieldTypeMapping</code> class is a representation of database records
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
-public class AvailableFieldTypeMapping {
+public class AvailableFieldType {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
@@ -42,11 +42,11 @@ public class AvailableFieldTypeMapping {
     @Persistent
     private String typeClass;
 
-    public AvailableFieldTypeMapping() {
+    public AvailableFieldType() {
         this(null, null, null);
     }
 
-    public AvailableFieldTypeMapping(Long id, String defaultName, TypeDto type) {
+    public AvailableFieldType(Long id, String defaultName, TypeDto type) {
         this.id = id;
         this.defaultName = defaultName;
         this.displayName = type == null ? null : type.getDisplayName();

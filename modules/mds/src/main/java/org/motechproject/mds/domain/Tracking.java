@@ -19,14 +19,14 @@ import static org.motechproject.mds.constants.Constants.Util;
  * should be logged. This class is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = Util.TRUE)
-public class TrackingMapping {
+public class Tracking {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
     @Persistent
-    private EntityMapping entity;
+    private Entity entity;
 
     @Persistent
     private boolean allowCreate;
@@ -40,11 +40,11 @@ public class TrackingMapping {
     @Persistent
     private boolean allowDelete;
 
-    public TrackingMapping() {
+    public Tracking() {
         this(null);
     }
 
-    public TrackingMapping(EntityMapping entity) {
+    public Tracking(Entity entity) {
         this.entity = entity;
     }
 
@@ -52,7 +52,7 @@ public class TrackingMapping {
         TrackingDto dto = new TrackingDto();
 
         // add tracked fields to dto
-        for (FieldMapping field : getFields()) {
+        for (Field field : getFields()) {
             dto.addField(field.getId());
         }
 
@@ -84,16 +84,16 @@ public class TrackingMapping {
         this.id = id;
     }
 
-    public EntityMapping getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(EntityMapping entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 
-    public List<FieldMapping> getFields() {
-        List<FieldMapping> fields = new ArrayList<>(getEntity().getFields());
+    public List<Field> getFields() {
+        List<Field> fields = new ArrayList<>(getEntity().getFields());
         CollectionUtils.filter(fields, new TrackingPredicate());
 
         return fields;
@@ -131,8 +131,8 @@ public class TrackingMapping {
         this.allowDelete = allowDelete;
     }
 
-    public TrackingMapping copy() {
-        TrackingMapping copy = new TrackingMapping();
+    public Tracking copy() {
+        Tracking copy = new Tracking();
 
         copy.setAllowCreate(allowCreate);
         copy.setAllowRead(allowRead);
@@ -146,7 +146,7 @@ public class TrackingMapping {
 
         @Override
         public boolean evaluate(Object object) {
-            return object instanceof FieldMapping && ((FieldMapping) object).isTracked();
+            return object instanceof Field && ((Field) object).isTracked();
         }
 
     }

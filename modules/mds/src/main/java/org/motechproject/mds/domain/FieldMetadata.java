@@ -10,14 +10,14 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class FieldMetadataMapping {
+public class FieldMetadata {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
     @Persistent
-    private FieldMapping field;
+    private Field field;
 
     @Persistent
     private String key;
@@ -25,19 +25,19 @@ public class FieldMetadataMapping {
     @Persistent
     private String value;
 
-    public FieldMetadataMapping() {
+    public FieldMetadata() {
         this(null, null);
     }
 
-    public FieldMetadataMapping(FieldMapping field, String key) {
+    public FieldMetadata(Field field, String key) {
         this(field, key, null);
     }
 
-    public FieldMetadataMapping(MetadataDto metadata) {
+    public FieldMetadata(MetadataDto metadata) {
         update(metadata);
     }
 
-    public FieldMetadataMapping(FieldMapping field, String key, String value) {
+    public FieldMetadata(Field field, String key, String value) {
         this.field = field;
         this.key = key;
         this.value = value;
@@ -55,11 +55,11 @@ public class FieldMetadataMapping {
         this.id = id;
     }
 
-    public FieldMapping getField() {
+    public Field getField() {
         return field;
     }
 
-    public void setField(FieldMapping field) {
+    public void setField(Field field) {
         this.field = field;
     }
 
@@ -85,8 +85,8 @@ public class FieldMetadataMapping {
     }
 
     @NotPersistent
-    public FieldMetadataMapping copy() {
-        FieldMetadataMapping copy = new FieldMetadataMapping();
+    public FieldMetadata copy() {
+        FieldMetadata copy = new FieldMetadata();
 
         copy.setKey(key);
         copy.setValue(value);

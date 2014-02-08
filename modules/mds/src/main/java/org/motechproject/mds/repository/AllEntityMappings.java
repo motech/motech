@@ -1,6 +1,6 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -13,13 +13,13 @@ import java.util.List;
 
 /**
  * The <code>AllEntityMappings</code> class is a repository class that operates on instances of
- * {@link org.motechproject.mds.domain.EntityMapping}.
+ * {@link org.motechproject.mds.domain.Entity}.
  */
 @Repository
 public class AllEntityMappings extends BaseMdsRepository {
 
-    public EntityMapping save(EntityDto entity) {
-        EntityMapping mapping = new EntityMapping();
+    public Entity save(EntityDto entity) {
+        Entity mapping = new Entity();
         mapping.setClassName(entity.getClassName());
         mapping.setName(entity.getName());
         mapping.setModule(entity.getModule());
@@ -29,56 +29,56 @@ public class AllEntityMappings extends BaseMdsRepository {
     }
 
     public boolean containsEntity(String className) {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        Query query = getPersistenceManager().newQuery(Entity.class);
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
 
         Collection collection = (Collection) query.execute(className);
-        List<EntityMapping> mappings = cast(EntityMapping.class, collection);
+        List<Entity> mappings = cast(Entity.class, collection);
 
         return !mappings.isEmpty();
     }
 
     public void delete(Long id) {
-        EntityMapping entityMapping = getEntityById(id);
+        Entity entity = getEntityById(id);
 
-        if (entityMapping != null) {
-            if (entityMapping.isReadOnly()) {
+        if (entity != null) {
+            if (entity.isReadOnly()) {
                 throw new EntityReadOnlyException();
             }
 
-            delete(entityMapping);
+            delete(entity);
         } else {
             throw new EntityNotFoundException();
         }
     }
 
-    public void delete(EntityMapping entity) {
+    public void delete(Entity entity) {
         getPersistenceManager().deletePersistent(entity);
     }
 
-    public EntityMapping getEntityById(Long id) {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+    public Entity getEntityById(Long id) {
+        Query query = getPersistenceManager().newQuery(Entity.class);
         query.setFilter("entityId == id");
         query.declareParameters("java.lang.Long entityId");
         query.setUnique(true);
 
-        return (EntityMapping) query.execute(id);
+        return (Entity) query.execute(id);
     }
 
-    public EntityMapping getEntityByClassName(String name) {
-        Extent extent = getPersistenceManager().getExtent(EntityMapping.class, false);
+    public Entity getEntityByClassName(String name) {
+        Extent extent = getPersistenceManager().getExtent(Entity.class, false);
         Query query = getPersistenceManager().newQuery(extent);
         query.setFilter("name == className");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        return (EntityMapping) query.execute(name);
+        return (Entity) query.execute(name);
     }
 
-    public List<EntityMapping> getAllEntities() {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+    public List<Entity> getAllEntities() {
+        Query query = getPersistenceManager().newQuery(Entity.class);
         Collection collection = (Collection) query.execute("*");
-        return cast(EntityMapping.class, collection);
+        return cast(Entity.class, collection);
     }
 }

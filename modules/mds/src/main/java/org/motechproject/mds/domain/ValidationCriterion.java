@@ -14,7 +14,7 @@ import javax.jdo.annotations.PrimaryKey;
  * related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
-public class ValidationCriterionMapping {
+public class ValidationCriterion {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
@@ -24,10 +24,10 @@ public class ValidationCriterionMapping {
     private String displayName;
 
     @Persistent
-    private TypeValidationMapping validation;
+    private TypeValidation validation;
 
     @Persistent
-    private AvailableFieldTypeMapping type;
+    private AvailableFieldType type;
 
     @Persistent
     private String value;
@@ -35,11 +35,11 @@ public class ValidationCriterionMapping {
     @Persistent
     private boolean enabled;
 
-    public ValidationCriterionMapping(String displayName, TypeValidationMapping validation, AvailableFieldTypeMapping type) {
+    public ValidationCriterion(String displayName, TypeValidation validation, AvailableFieldType type) {
         this(displayName, "", false, validation, type);
     }
 
-    public ValidationCriterionMapping(String displayName, String value, boolean enabled, TypeValidationMapping validation, AvailableFieldTypeMapping type) {
+    public ValidationCriterion(String displayName, String value, boolean enabled, TypeValidation validation, AvailableFieldType type) {
         this.displayName = displayName;
         this.value = value;
         this.enabled = enabled;
@@ -68,11 +68,11 @@ public class ValidationCriterionMapping {
         this.displayName = displayName;
     }
 
-    public AvailableFieldTypeMapping getType() {
+    public AvailableFieldType getType() {
         return type;
     }
 
-    public void setType(AvailableFieldTypeMapping type) {
+    public void setType(AvailableFieldType type) {
         this.type = type;
     }
 
@@ -92,15 +92,15 @@ public class ValidationCriterionMapping {
         this.enabled = enabled;
     }
 
-    public TypeValidationMapping getValidation() {
+    public TypeValidation getValidation() {
         return validation;
     }
 
-    public void setValidation(TypeValidationMapping validation) {
+    public void setValidation(TypeValidation validation) {
         this.validation = validation;
     }
 
-    public ValidationCriterionMapping copy() {
-        return new ValidationCriterionMapping(displayName, value, enabled, null, type);
+    public ValidationCriterion copy() {
+        return new ValidationCriterion(displayName, value, enabled, null, type);
     }
 }

@@ -3,8 +3,8 @@ package org.motechproject.mds.repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.domain.EntityMapping;
 import org.motechproject.mds.dto.EntityDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +36,7 @@ public class AllEntityDraftsIT extends BaseIT {
         EntityDto dto = new EntityDto();
         dto.setClassName("DraftCls");
 
-        EntityMapping entity = allEntityMappings.save(dto);
+        Entity entity = allEntityMappings.save(dto);
 
         allEntityDrafts.createDraft(entity, USERNAME);
         allEntityDrafts.createDraft(entity, USERNAME_2);
@@ -67,7 +67,7 @@ public class AllEntityDraftsIT extends BaseIT {
         EntityDto dto = new EntityDto();
         dto.setClassName("DraftCls2");
 
-        EntityMapping entity = allEntityMappings.save(dto);
+        Entity entity = allEntityMappings.save(dto);
 
         allEntityDrafts.createDraft(entity, USERNAME);
         allEntityDrafts.createDraft(entity, USERNAME);

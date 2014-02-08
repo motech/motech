@@ -11,41 +11,41 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table "AvailableFieldTypeMapping"
+-- Table structure for table "AvailableFieldType"
 --
 
-DROP TABLE IF EXISTS "AvailableFieldTypeMapping";
+DROP TABLE IF EXISTS "AvailableFieldType";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "AvailableFieldTypeMapping" (
+CREATE TABLE "AvailableFieldType" (
   "id" bigint(20) NOT NULL,
   "defaultName" varchar(255) DEFAULT NULL,
   "description" varchar(255) DEFAULT NULL,
   "displayName" varchar(255) DEFAULT NULL,
   "typeClass" varchar(255) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  UNIQUE KEY "AvailableFieldTypeMapping_U1" ("displayName")
+  UNIQUE KEY "AvailableFieldType_U1" ("displayName")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "AvailableFieldTypeMapping"
+-- Dumping data for table "AvailableFieldType"
 --
 
-LOCK TABLES "AvailableFieldTypeMapping" WRITE;
-/*!40000 ALTER TABLE "AvailableFieldTypeMapping" DISABLE KEYS */;
-INSERT INTO "AvailableFieldTypeMapping" VALUES (1,'int','mds.field.description.integer','mds.field.integer','java.lang.Integer'),(2,'string','mds.field.description.string','mds.field.string','java.lang.String'),(3,'bool','mds.field.description.boolean','mds.field.boolean','java.lang.Boolean'),(4,'date','mds.field.description.date','mds.field.date','java.util.Date'),(5,'time','mds.field.description.time','mds.field.time','org.motechproject.commons.date.model.Time'),(6,'dateTime','mds.field.description.datetime','mds.field.datetime','org.joda.time.DateTime'),(7,'double','mds.field.description.decimal','mds.field.decimal','java.lang.Double'),(8,'list','mds.field.description.combobox','mds.field.combobox','java.util.List');
-/*!40000 ALTER TABLE "AvailableFieldTypeMapping" ENABLE KEYS */;
+LOCK TABLES "AvailableFieldType" WRITE;
+/*!40000 ALTER TABLE "AvailableFieldType" DISABLE KEYS */;
+INSERT INTO "AvailableFieldType" VALUES (1,'int','mds.field.description.integer','mds.field.integer','java.lang.Integer'),(2,'string','mds.field.description.string','mds.field.string','java.lang.String'),(3,'bool','mds.field.description.boolean','mds.field.boolean','java.lang.Boolean'),(4,'date','mds.field.description.date','mds.field.date','java.util.Date'),(5,'time','mds.field.description.time','mds.field.time','org.motechproject.commons.date.model.Time'),(6,'dateTime','mds.field.description.datetime','mds.field.datetime','org.joda.time.DateTime'),(7,'double','mds.field.description.decimal','mds.field.decimal','java.lang.Double'),(8,'list','mds.field.description.combobox','mds.field.combobox','java.util.List');
+/*!40000 ALTER TABLE "AvailableFieldType" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "EntityMapping"
+-- Table structure for table "Entity"
 --
 
-DROP TABLE IF EXISTS "EntityMapping";
+DROP TABLE IF EXISTS "Entity";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "EntityMapping" (
+CREATE TABLE "Entity" (
   "id" bigint(20) NOT NULL,
   "className" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "entityVersion" bigint(20) DEFAULT NULL,
@@ -61,28 +61,28 @@ CREATE TABLE "EntityMapping" (
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "DRAFT_USER_IDX" ("parentEntity_id_OID","draftOwnerUsername"),
-  KEY "EntityMapping_N49" ("parentEntity_id_OID"),
-  CONSTRAINT "EntityMapping_FK1" FOREIGN KEY ("parentEntity_id_OID") REFERENCES "EntityMapping" ("id")
+  KEY "Entity_N49" ("parentEntity_id_OID"),
+  CONSTRAINT "Entity_FK1" FOREIGN KEY ("parentEntity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "EntityMapping"
+-- Dumping data for table "Entity"
 --
 
-LOCK TABLES "EntityMapping" WRITE;
-/*!40000 ALTER TABLE "EntityMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "EntityMapping" ENABLE KEYS */;
+LOCK TABLES "Entity" WRITE;
+/*!40000 ALTER TABLE "Entity" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Entity" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "FieldMapping"
+-- Table structure for table "Field"
 --
 
-DROP TABLE IF EXISTS "FieldMapping";
+DROP TABLE IF EXISTS "Field";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "FieldMapping" (
+CREATE TABLE "Field" (
   "id" bigint(20) NOT NULL,
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
@@ -96,60 +96,60 @@ CREATE TABLE "FieldMapping" (
   "tracked" bit(1) NOT NULL,
   "exposedViaRest" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
-  KEY "FieldMapping_N49" ("type_id_OID"),
-  KEY "FieldMapping_N50" ("entity_id_OID"),
-  KEY "FieldMapping_N51" ("validation_id_OID"),
-  CONSTRAINT "FieldMapping_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
-  CONSTRAINT "FieldMapping_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id"),
-  CONSTRAINT "FieldMapping_FK3" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidationMapping" ("id")
+  KEY "Field_N49" ("type_id_OID"),
+  KEY "Field_N50" ("entity_id_OID"),
+  KEY "Field_N51" ("validation_id_OID"),
+  CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
+  CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id"),
+  CONSTRAINT "Field_FK3" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidation" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "FieldMapping"
+-- Dumping data for table "Field"
 --
 
-LOCK TABLES "FieldMapping" WRITE;
-/*!40000 ALTER TABLE "FieldMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "FieldMapping" ENABLE KEYS */;
+LOCK TABLES "Field" WRITE;
+/*!40000 ALTER TABLE "Field" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Field" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "FieldMetadataMapping"
+-- Table structure for table "FieldMetadata"
 --
 
-DROP TABLE IF EXISTS "FieldMetadataMapping";
+DROP TABLE IF EXISTS "FieldMetadata";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "FieldMetadataMapping" (
+CREATE TABLE "FieldMetadata" (
   "id" bigint(20) NOT NULL,
   "field_id_OID" bigint(20) DEFAULT NULL,
   "key" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "metadata_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "FieldMetadataMapping_N49" ("field_id_OID"),
-  CONSTRAINT "FieldMetadataMapping_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "FieldMapping" ("id")
+  KEY "FieldMetadata_N49" ("field_id_OID"),
+  CONSTRAINT "FieldMetadata_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "FieldMetadataMapping"
+-- Dumping data for table "FieldMetadata"
 --
 
-LOCK TABLES "FieldMetadataMapping" WRITE;
-/*!40000 ALTER TABLE "FieldMetadataMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "FieldMetadataMapping" ENABLE KEYS */;
+LOCK TABLES "FieldMetadata" WRITE;
+/*!40000 ALTER TABLE "FieldMetadata" DISABLE KEYS */;
+/*!40000 ALTER TABLE "FieldMetadata" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "LookupMapping"
+-- Table structure for table "Lookup"
 --
 
-DROP TABLE IF EXISTS "LookupMapping";
+DROP TABLE IF EXISTS "Lookup";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "LookupMapping" (
+CREATE TABLE "Lookup" (
   "id" bigint(20) NOT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
   "exposedViaRest" bit(1) NOT NULL,
@@ -157,28 +157,28 @@ CREATE TABLE "LookupMapping" (
   "singleObjectReturn" bit(1) NOT NULL,
   "lookups_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "LookupMapping_N49" ("entity_id_OID"),
-  CONSTRAINT "LookupMapping_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id")
+  KEY "Lookup_N49" ("entity_id_OID"),
+  CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "LookupMapping"
+-- Dumping data for table "Lookup"
 --
 
-LOCK TABLES "LookupMapping" WRITE;
-/*!40000 ALTER TABLE "LookupMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "LookupMapping" ENABLE KEYS */;
+LOCK TABLES "Lookup" WRITE;
+/*!40000 ALTER TABLE "Lookup" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Lookup" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "RestOptionsMapping"
+-- Table structure for table "RestOptions"
 --
 
-DROP TABLE IF EXISTS "RestOptionsMapping";
+DROP TABLE IF EXISTS "RestOptions";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "RestOptionsMapping" (
+CREATE TABLE "RestOptions" (
   "id" bigint(20) NOT NULL,
   "allowCreate" bit(1) NOT NULL,
   "allowDelete" bit(1) NOT NULL,
@@ -186,18 +186,18 @@ CREATE TABLE "RestOptionsMapping" (
   "allowUpdate" bit(1) NOT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "RestOptionsMapping_N49" ("entity_id_OID"),
-  CONSTRAINT "RestOptionsMapping_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id")
+  KEY "RestOptions_N49" ("entity_id_OID"),
+  CONSTRAINT "RestOptions_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "RestOptionsMapping"
+-- Dumping data for table "RestOptions"
 --
 
-LOCK TABLES "RestOptionsMapping" WRITE;
-/*!40000 ALTER TABLE "RestOptionsMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "RestOptionsMapping" ENABLE KEYS */;
+LOCK TABLES "RestOptions" WRITE;
+/*!40000 ALTER TABLE "RestOptions" DISABLE KEYS */;
+/*!40000 ALTER TABLE "RestOptions" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -220,18 +220,18 @@ CREATE TABLE "SEQUENCE_TABLE" (
 
 LOCK TABLES "SEQUENCE_TABLE" WRITE;
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" DISABLE KEYS */;
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeValidationMapping',11),('org.motechproject.mds.domain.ValidationCriterionMapping',21);
+INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeValidation',11),('org.motechproject.mds.domain.ValidationCriterion',21);
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "SettingOptionsMapping"
+-- Table structure for table "SettingOptions"
 --
 
-DROP TABLE IF EXISTS "SettingOptionsMapping";
+DROP TABLE IF EXISTS "SettingOptions";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "SettingOptionsMapping" (
+CREATE TABLE "SettingOptions" (
   "id" bigint(20) NOT NULL,
   "name" varchar(255) DEFAULT NULL,
   "settingId" bigint(20) DEFAULT NULL,
@@ -239,30 +239,30 @@ CREATE TABLE "SettingOptionsMapping" (
   "typeSettings_id_OID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
   KEY "settingId" ("settingId"),
-  KEY "SettingOptionsMapping_N49" ("typeSettings_id_OID"),
-  CONSTRAINT "SettingOptionsMapping_FK1" FOREIGN KEY ("typeSettings_id_OID") REFERENCES "TypeSettingsMapping" ("id"),
-  CONSTRAINT "SettingOptionsMapping_ibfk_1" FOREIGN KEY ("settingId") REFERENCES "TypeSettingsMapping" ("id")
+  KEY "SettingOptions_N49" ("typeSettings_id_OID"),
+  CONSTRAINT "SettingOptions_FK1" FOREIGN KEY ("typeSettings_id_OID") REFERENCES "TypeSettings" ("id"),
+  CONSTRAINT "SettingOptions_ibfk_1" FOREIGN KEY ("settingId") REFERENCES "TypeSettings" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "SettingOptionsMapping"
+-- Dumping data for table "SettingOptions"
 --
 
-LOCK TABLES "SettingOptionsMapping" WRITE;
-/*!40000 ALTER TABLE "SettingOptionsMapping" DISABLE KEYS */;
-INSERT INTO "SettingOptionsMapping" VALUES (1,'REQUIRE',1,NULL,NULL),(2,'POSITIVE',1,NULL,NULL),(3,'REQUIRE',2,NULL,NULL),(4,'POSITIVE',2,NULL,NULL),(5,'REQUIRE',3,NULL,NULL);
-/*!40000 ALTER TABLE "SettingOptionsMapping" ENABLE KEYS */;
+LOCK TABLES "SettingOptions" WRITE;
+/*!40000 ALTER TABLE "SettingOptions" DISABLE KEYS */;
+INSERT INTO "SettingOptions" VALUES (1,'REQUIRE',1,NULL,NULL),(2,'POSITIVE',1,NULL,NULL),(3,'REQUIRE',2,NULL,NULL),(4,'POSITIVE',2,NULL,NULL),(5,'REQUIRE',3,NULL,NULL);
+/*!40000 ALTER TABLE "SettingOptions" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "TrackingMapping"
+-- Table structure for table "Tracking"
 --
 
-DROP TABLE IF EXISTS "TrackingMapping";
+DROP TABLE IF EXISTS "Tracking";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "TrackingMapping" (
+CREATE TABLE "Tracking" (
   "id" bigint(20) NOT NULL,
   "allowCreate" bit(1) NOT NULL,
   "allowDelete" bit(1) NOT NULL,
@@ -270,28 +270,28 @@ CREATE TABLE "TrackingMapping" (
   "allowUpdate" bit(1) NOT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "TrackingMapping_N49" ("entity_id_OID"),
-  CONSTRAINT "TrackingMapping_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "EntityMapping" ("id")
+  KEY "Tracking_N49" ("entity_id_OID"),
+  CONSTRAINT "Tracking_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "TrackingMapping"
+-- Dumping data for table "Tracking"
 --
 
-LOCK TABLES "TrackingMapping" WRITE;
-/*!40000 ALTER TABLE "TrackingMapping" DISABLE KEYS */;
-/*!40000 ALTER TABLE "TrackingMapping" ENABLE KEYS */;
+LOCK TABLES "Tracking" WRITE;
+/*!40000 ALTER TABLE "Tracking" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Tracking" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "TypeSettingsMapping"
+-- Table structure for table "TypeSettings"
 --
 
-DROP TABLE IF EXISTS "TypeSettingsMapping";
+DROP TABLE IF EXISTS "TypeSettings";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "TypeSettingsMapping" (
+CREATE TABLE "TypeSettings" (
   "id" bigint(20) NOT NULL,
   "name" varchar(255) DEFAULT NULL,
   "value" varchar(255) DEFAULT NULL,
@@ -304,62 +304,62 @@ CREATE TABLE "TypeSettingsMapping" (
   PRIMARY KEY ("id"),
   KEY "valueType" ("valueType"),
   KEY "type" ("type"),
-  KEY "TypeSettingsMapping_N51" ("field_id_OID"),
-  KEY "TypeSettingsMapping_N50" ("type_id_OID"),
-  KEY "TypeSettingsMapping_N49" ("valueType_id_OID"),
-  CONSTRAINT "TypeSettingsMapping_FK3" FOREIGN KEY ("valueType_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
-  CONSTRAINT "TypeSettingsMapping_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
-  CONSTRAINT "TypeSettingsMapping_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "FieldMapping" ("id"),
-  CONSTRAINT "TypeSettingsMapping_ibfk_1" FOREIGN KEY ("valueType") REFERENCES "AvailableFieldTypeMapping" ("id"),
-  CONSTRAINT "TypeSettingsMapping_ibfk_2" FOREIGN KEY ("type") REFERENCES "AvailableFieldTypeMapping" ("id")
+  KEY "TypeSettings_N51" ("field_id_OID"),
+  KEY "TypeSettings_N50" ("type_id_OID"),
+  KEY "TypeSettings_N49" ("valueType_id_OID"),
+  CONSTRAINT "TypeSettings_FK3" FOREIGN KEY ("valueType_id_OID") REFERENCES "AvailableFieldType" ("id"),
+  CONSTRAINT "TypeSettings_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
+  CONSTRAINT "TypeSettings_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id"),
+  CONSTRAINT "TypeSettings_ibfk_1" FOREIGN KEY ("valueType") REFERENCES "AvailableFieldType" ("id"),
+  CONSTRAINT "TypeSettings_ibfk_2" FOREIGN KEY ("type") REFERENCES "AvailableFieldType" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "TypeSettingsMapping"
+-- Dumping data for table "TypeSettings"
 --
 
-LOCK TABLES "TypeSettingsMapping" WRITE;
-/*!40000 ALTER TABLE "TypeSettingsMapping" DISABLE KEYS */;
-INSERT INTO "TypeSettingsMapping" VALUES (1,'mds.form.label.precision','9',1,7,NULL,NULL,NULL,NULL),(2,'mds.form.label.scale','2',1,7,NULL,NULL,NULL,NULL),(3,'mds.form.label.values',NULL,3,8,NULL,NULL,NULL,NULL),(4,'mds.form.label.allowUserSupplied','false',3,8,NULL,NULL,NULL,NULL),(5,'mds.form.label.allowMultipleSelections','false',3,8,NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE "TypeSettingsMapping" ENABLE KEYS */;
+LOCK TABLES "TypeSettings" WRITE;
+/*!40000 ALTER TABLE "TypeSettings" DISABLE KEYS */;
+INSERT INTO "TypeSettings" VALUES (1,'mds.form.label.precision','9',1,7,NULL,NULL,NULL,NULL),(2,'mds.form.label.scale','2',1,7,NULL,NULL,NULL,NULL),(3,'mds.form.label.values',NULL,3,8,NULL,NULL,NULL,NULL),(4,'mds.form.label.allowUserSupplied','false',3,8,NULL,NULL,NULL,NULL),(5,'mds.form.label.allowMultipleSelections','false',3,8,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE "TypeSettings" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "TypeValidationMapping"
+-- Table structure for table "TypeValidation"
 --
 
-DROP TABLE IF EXISTS "TypeValidationMapping";
+DROP TABLE IF EXISTS "TypeValidation";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "TypeValidationMapping" (
+CREATE TABLE "TypeValidation" (
   "id" bigint(20) NOT NULL,
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "type" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "TypeValidationMapping_N49" ("type"),
-  CONSTRAINT "TypeValidationMapping_FK1" FOREIGN KEY ("type") REFERENCES "AvailableFieldTypeMapping" ("id")
+  KEY "TypeValidation_N49" ("type"),
+  CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("type") REFERENCES "AvailableFieldType" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "TypeValidationMapping"
+-- Dumping data for table "TypeValidation"
 --
 
-LOCK TABLES "TypeValidationMapping" WRITE;
-/*!40000 ALTER TABLE "TypeValidationMapping" DISABLE KEYS */;
-INSERT INTO "TypeValidationMapping" VALUES (1,'int',1),(2,'double',7),(3,'string',2);
-/*!40000 ALTER TABLE "TypeValidationMapping" ENABLE KEYS */;
+LOCK TABLES "TypeValidation" WRITE;
+/*!40000 ALTER TABLE "TypeValidation" DISABLE KEYS */;
+INSERT INTO "TypeValidation" VALUES (1,'int',1),(2,'double',7),(3,'string',2);
+/*!40000 ALTER TABLE "TypeValidation" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "ValidationCriterionMapping"
+-- Table structure for table "ValidationCriterion"
 --
 
-DROP TABLE IF EXISTS "ValidationCriterionMapping";
+DROP TABLE IF EXISTS "ValidationCriterion";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "ValidationCriterionMapping" (
+CREATE TABLE "ValidationCriterion" (
   "id" bigint(20) NOT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "enabled" bit(1) NOT NULL,
@@ -368,21 +368,21 @@ CREATE TABLE "ValidationCriterionMapping" (
   "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "criteria_INTEGER_IDX" int(11) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "ValidationCriterionMapping_N49" ("validation_id_OID"),
-  KEY "ValidationCriterionMapping_N50" ("type_id_OID"),
-  CONSTRAINT "ValidationCriterionMapping_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldTypeMapping" ("id"),
-  CONSTRAINT "ValidationCriterionMapping_FK2" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidationMapping" ("id")
+  KEY "ValidationCriterion_N49" ("validation_id_OID"),
+  KEY "ValidationCriterion_N50" ("type_id_OID"),
+  CONSTRAINT "ValidationCriterion_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
+  CONSTRAINT "ValidationCriterion_FK2" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidation" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "ValidationCriterionMapping"
+-- Dumping data for table "ValidationCriterion"
 --
 
-LOCK TABLES "ValidationCriterionMapping" WRITE;
-/*!40000 ALTER TABLE "ValidationCriterionMapping" DISABLE KEYS */;
-INSERT INTO "ValidationCriterionMapping" VALUES (1,'mds.field.validation.minValue','\0',1,1,'',0),(2,'mds.field.validation.maxValue','\0',1,1,'',1),(3,'mds.field.validation.mustBeInSet','\0',2,1,'',2),(4,'mds.field.validation.cannotBeInSet','\0',2,1,'',3),(5,'mds.field.validation.minValue','\0',1,2,'',0),(6,'mds.field.validation.maxValue','\0',1,2,'',1),(7,'mds.field.validation.mustBeInSet','\0',2,2,'',2),(8,'mds.field.validation.cannotBeInSet','\0',2,2,'',3),(9,'mds.field.validation.regex','\0',2,3,'',0),(10,'mds.field.validation.minLength','\0',1,3,'',1),(11,'mds.field.validation.maxLength','\0',1,3,'',2);
-/*!40000 ALTER TABLE "ValidationCriterionMapping" ENABLE KEYS */;
+LOCK TABLES "ValidationCriterion" WRITE;
+/*!40000 ALTER TABLE "ValidationCriterion" DISABLE KEYS */;
+INSERT INTO "ValidationCriterion" VALUES (1,'mds.field.validation.minValue','\0',1,1,'',0),(2,'mds.field.validation.maxValue','\0',1,1,'',1),(3,'mds.field.validation.mustBeInSet','\0',2,1,'',2),(4,'mds.field.validation.cannotBeInSet','\0',2,1,'',3),(5,'mds.field.validation.minValue','\0',1,2,'',0),(6,'mds.field.validation.maxValue','\0',1,2,'',1),(7,'mds.field.validation.mustBeInSet','\0',2,2,'',2),(8,'mds.field.validation.cannotBeInSet','\0',2,2,'',3),(9,'mds.field.validation.regex','\0',2,3,'',0),(10,'mds.field.validation.minLength','\0',1,3,'',1),(11,'mds.field.validation.maxLength','\0',1,3,'',2);
+/*!40000 ALTER TABLE "ValidationCriterion" ENABLE KEYS */;
 UNLOCK TABLES;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

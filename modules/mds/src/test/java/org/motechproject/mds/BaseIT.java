@@ -1,16 +1,16 @@
 package org.motechproject.mds;
 
 import org.junit.runner.RunWith;
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.RestOptionsMapping;
-import org.motechproject.mds.domain.LookupMapping;
-import org.motechproject.mds.domain.SettingOptionsMapping;
-import org.motechproject.mds.domain.FieldMapping;
-import org.motechproject.mds.domain.TypeSettingsMapping;
-import org.motechproject.mds.domain.TypeValidationMapping;
-import org.motechproject.mds.domain.ValidationCriterionMapping;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.RestOptions;
+import org.motechproject.mds.domain.SettingOptions;
+import org.motechproject.mds.domain.TypeSettings;
+import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.ValidationCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,7 +50,7 @@ public abstract class BaseIT {
     }
 
     protected boolean containsEntity(String className) {
-        for (EntityMapping mapping : getEntityMappings()) {
+        for (Entity mapping : getEntityMappings()) {
             if (className.equalsIgnoreCase(mapping.getClassName())) {
                 return true;
             }
@@ -60,7 +60,7 @@ public abstract class BaseIT {
     }
 
     protected boolean containsLookup(String lookupName) {
-        for (LookupMapping mapping : getLookupMappings()) {
+        for (Lookup mapping : getLookupMappings()) {
             if (lookupName.equalsIgnoreCase(mapping.getLookupName())) {
                 return true;
             }
@@ -69,45 +69,45 @@ public abstract class BaseIT {
         return false;
     }
 
-    protected List<EntityMapping> getEntityMappings() {
-        return getAll(EntityMapping.class);
+    protected List<Entity> getEntityMappings() {
+        return getAll(Entity.class);
     }
 
     protected List<EntityDraft> getEntityDrafts() {
         return getAll(EntityDraft.class);
     }
 
-    protected List<FieldMapping> getFieldMappings() {
-        return getAll(FieldMapping.class);
+    protected List<Field> getFieldMappings() {
+        return getAll(Field.class);
     }
 
-    protected List<LookupMapping> getLookupMappings() {
-        return getAll(LookupMapping.class);
+    protected List<Lookup> getLookupMappings() {
+        return getAll(Lookup.class);
     }
 
-    protected List<TypeSettingsMapping> getTypeSettingsMappings() {
-        return getAll(TypeSettingsMapping.class);
+    protected List<TypeSettings> getTypeSettingsMappings() {
+        return getAll(TypeSettings.class);
     }
 
-    protected List<TypeValidationMapping> getTypeValidationMappings() {
-        return getAll(TypeValidationMapping.class);
+    protected List<TypeValidation> getTypeValidationMappings() {
+        return getAll(TypeValidation.class);
     }
 
-    protected List<ValidationCriterionMapping> getValidationCriterionMappings() {
-        return getAll(ValidationCriterionMapping.class);
+    protected List<ValidationCriterion> getValidationCriterionMappings() {
+        return getAll(ValidationCriterion.class);
     }
 
-    protected List<AvailableFieldTypeMapping> getAvailableFieldTypeMappings() {
-        return getAll(AvailableFieldTypeMapping.class);
+    protected List<AvailableFieldType> getAvailableFieldTypeMappings() {
+        return getAll(AvailableFieldType.class);
     }
 
-    protected List<SettingOptionsMapping> getSettingsOptionMappings() {
-        return getAll(SettingOptionsMapping.class);
+    protected List<SettingOptions> getSettingsOptionMappings() {
+        return getAll(SettingOptions.class);
     }
 
 
-    protected List<RestOptionsMapping> getEntityRestOptionsMappings() {
-        return getAll(RestOptionsMapping.class);
+    protected List<RestOptions> getEntityRestOptionsMappings() {
+        return getAll(RestOptions.class);
     }
 
     protected void clearDB() {

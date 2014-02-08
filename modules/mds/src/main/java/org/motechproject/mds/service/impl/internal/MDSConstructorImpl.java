@@ -8,7 +8,7 @@ import org.motechproject.mds.builder.EntityBuilder;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.builder.MDSClassLoader;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -37,7 +37,7 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
 
     @Override
     @Transactional
-    public void constructEntity(EntityMapping mapping) {
+    public void constructEntity(Entity mapping) {
         CtClass existingClass = MotechClassPool.getDefault().getOrNull(mapping.getClassName());
 
         if (existingClass == null) {
@@ -50,7 +50,7 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
         }
     }
 
-    private void constructEntity(EntityMapping mapping, MDSClassLoader tmpClassLoader) {
+    private void constructEntity(Entity mapping, MDSClassLoader tmpClassLoader) {
         try {
             ClassData classData = entityBuilder.build(mapping);
 
@@ -76,9 +76,9 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     public void generateAllEntities() {
         MDSClassLoader tmpClassLoader = new MDSClassLoader();
 
-        List<EntityMapping> mappings = allEntityMappings.getAllEntities();
+        List<Entity> mappings = allEntityMappings.getAllEntities();
 
-        for (EntityMapping mapping : mappings) {
+        for (Entity mapping : mappings) {
             if (!mapping.isDraft() && !mapping.isReadOnly()) {
                 constructEntity(mapping, tmpClassLoader);
             }
@@ -94,7 +94,6 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
             }
         }
     }
-
 
 
     @Autowired

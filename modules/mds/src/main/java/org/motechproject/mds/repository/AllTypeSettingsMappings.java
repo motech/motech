@@ -1,10 +1,9 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
-import org.motechproject.mds.domain.SettingOptionsMapping;
-import org.motechproject.mds.domain.TypeSettingsMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.SettingOptions;
+import org.motechproject.mds.domain.TypeSettings;
 import org.motechproject.mds.dto.SettingDto;
-import org.motechproject.mds.dto.SettingOptions;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
@@ -14,60 +13,60 @@ import java.util.List;
 
 /**
  * The <code>AllTypeSettingsMappings</code> class is a repository class that operates on instances of
- * {@link org.motechproject.mds.domain.TypeSettingsMapping}.
+ * {@link org.motechproject.mds.domain.TypeSettings}.
  */
 @Repository
 public class AllTypeSettingsMappings extends BaseMdsRepository {
 
-    public TypeSettingsMapping save(SettingDto setting, AvailableFieldTypeMapping valueType, AvailableFieldTypeMapping type) {
-        TypeSettingsMapping typeSettingsMapping;
-        List<SettingOptions> options = setting.getOptions();
+    public TypeSettings save(SettingDto setting, AvailableFieldType valueType, AvailableFieldType type) {
+        TypeSettings typeSettings;
+        List<org.motechproject.mds.dto.SettingOptions> options = setting.getOptions();
         if (options != null) {
-            List<SettingOptionsMapping>settingOptionsMappings = new ArrayList<>();
-            for (SettingOptions option : options) {
-                settingOptionsMappings.add(new SettingOptionsMapping(option));
+            List<SettingOptions> settingOptionses = new ArrayList<>();
+            for (org.motechproject.mds.dto.SettingOptions option : options) {
+                settingOptionses.add(new SettingOptions(option));
             }
 
-            typeSettingsMapping = new TypeSettingsMapping(setting.getName(), setting.getValue().toString(),
-                    valueType, type, settingOptionsMappings.toArray(new SettingOptionsMapping[options.size()]));
+            typeSettings = new TypeSettings(setting.getName(), setting.getValue().toString(),
+                    valueType, type, settingOptionses.toArray(new SettingOptions[options.size()]));
         } else {
-            typeSettingsMapping = new TypeSettingsMapping(setting.getName(), setting.getValue().toString(), valueType, type);
+            typeSettings = new TypeSettings(setting.getName(), setting.getValue().toString(), valueType, type);
         }
 
-        return save(typeSettingsMapping);
+        return save(typeSettings);
     }
 
-    public TypeSettingsMapping save(TypeSettingsMapping typeSettings) {
+    public TypeSettings save(TypeSettings typeSettings) {
         return getPersistenceManager().makePersistent(typeSettings);
     }
 
-    public List<TypeSettingsMapping> createEmptySettingsInstance(AvailableFieldTypeMapping type) {
-        List<TypeSettingsMapping> settingsForType = getSettingsForType(type);
+    public List<TypeSettings> createEmptySettingsInstance(AvailableFieldType type) {
+        List<TypeSettings> settingsForType = getSettingsForType(type);
 
-        List<TypeSettingsMapping> newInstance = new ArrayList<>();
-        for (TypeSettingsMapping typeSettings : settingsForType) {
+        List<TypeSettings> newInstance = new ArrayList<>();
+        for (TypeSettings typeSettings : settingsForType) {
             newInstance.add(typeSettings.copy());
         }
 
         return newInstance;
     }
 
-    public List<TypeSettingsMapping> getSettingsForType(AvailableFieldTypeMapping type) {
-        Query query = getPersistenceManager().newQuery(TypeSettingsMapping.class);
+    public List<TypeSettings> getSettingsForType(AvailableFieldType type) {
+        Query query = getPersistenceManager().newQuery(TypeSettings.class);
         query.setFilter("typeId == type && field == null");
         query.declareParameters("java.lang.Long typeId");
 
         Collection collection = (Collection) query.execute(type.getId());
-        return cast(TypeSettingsMapping.class, collection);
+        return cast(TypeSettings.class, collection);
     }
 
     public void delete(Long id) {
-        Query query = getPersistenceManager().newQuery(TypeSettingsMapping.class);
+        Query query = getPersistenceManager().newQuery(TypeSettings.class);
         query.setFilter("typeSettingId == id");
         query.declareParameters("java.lang.Long typeSettingId");
         query.setUnique(true);
 
-        TypeSettingsMapping result = (TypeSettingsMapping) query.execute(id);
+        TypeSettings result = (TypeSettings) query.execute(id);
 
         if (result != null) {
             getPersistenceManager().deletePersistent(result);

@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.LookupMapping;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +41,14 @@ public class AllEntityMappingsIT extends BaseIT {
     public void setUp() throws Exception {
         clearDB();
         PersistenceManager persistenceManager = getPersistenceManager();
-        persistenceManager.makePersistent(new EntityMapping(SAMPLE_CLASS));
-        persistenceManager.makePersistent(new EntityMapping(EXAMPLE_CLASS));
-        persistenceManager.makePersistent(new EntityMapping(FOO_CLASS));
+        persistenceManager.makePersistent(new Entity(SAMPLE_CLASS));
+        persistenceManager.makePersistent(new Entity(EXAMPLE_CLASS));
+        persistenceManager.makePersistent(new Entity(FOO_CLASS));
 
-        EntityMapping entityWithLookups = new EntityMapping(EXAMPLE_CLASS_WITH_LOOKUPS);
-        List<LookupMapping> lookups = new LinkedList<>();
-        lookups.add(new LookupMapping(EXAMPLE_LOOKUP_1, true, false, entityWithLookups));
-        lookups.add(new LookupMapping(EXAMPLE_LOOKUP_2, true, false, entityWithLookups));
+        Entity entityWithLookups = new Entity(EXAMPLE_CLASS_WITH_LOOKUPS);
+        List<Lookup> lookups = new LinkedList<>();
+        lookups.add(new Lookup(EXAMPLE_LOOKUP_1, true, false, entityWithLookups));
+        lookups.add(new Lookup(EXAMPLE_LOOKUP_2, true, false, entityWithLookups));
         entityWithLookups.setLookups(lookups);
         persistenceManager.makePersistent(entityWithLookups);
     }
@@ -106,12 +106,12 @@ public class AllEntityMappingsIT extends BaseIT {
                 allEntityMappings.containsEntity(BAR_CLASS)
         );
 
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        Query query = getPersistenceManager().newQuery(Entity.class);
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        EntityMapping found = (EntityMapping) query.execute(BAR_CLASS);
+        Entity found = (Entity) query.execute(BAR_CLASS);
 
         allEntityMappings.delete(found.getId());
 
@@ -128,28 +128,28 @@ public class AllEntityMappingsIT extends BaseIT {
 
     @Test
     public void shouldCascadeSaveLookup() throws Exception {
-        LookupMapping lookupMapping = new LookupMapping(SAMPLE_LOOKUP, true, false);
-        EntityMapping entityMapping = getEntityMappings().get(0);
-        List<LookupMapping> lookupMappingSet = new LinkedList<>();
-        lookupMappingSet.add(lookupMapping);
-        entityMapping.setLookups(lookupMappingSet);
+        Lookup lookup = new Lookup(SAMPLE_LOOKUP, true, false);
+        Entity entity = getEntityMappings().get(0);
+        List<Lookup> lookupSet = new LinkedList<>();
+        lookupSet.add(lookup);
+        entity.setLookups(lookupSet);
 
-        int indexOfLookup = getLookupMappings().indexOf(lookupMapping);
+        int indexOfLookup = getLookupMappings().indexOf(lookup);
         assertTrue(String.format("'%s' not found in database", SAMPLE_LOOKUP), indexOfLookup >= 0);
         assertEquals("Lookup was not associated with an entity",
-                entityMapping,
+                entity,
                 getLookupMappings().get(indexOfLookup).getEntity());
     }
 
     @Test
     public void shouldCascadeDeleteLookups() {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        Query query = getPersistenceManager().newQuery(Entity.class);
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        EntityMapping found = (EntityMapping) query.execute(EXAMPLE_CLASS_WITH_LOOKUPS);
-        List<LookupMapping> lookups = new ArrayList<>(found.getLookups());
+        Entity found = (Entity) query.execute(EXAMPLE_CLASS_WITH_LOOKUPS);
+        List<Lookup> lookups = new ArrayList<>(found.getLookups());
 
         allEntityMappings.delete(found.getId());
 
@@ -159,28 +159,28 @@ public class AllEntityMappingsIT extends BaseIT {
 
     @Test
     public void shouldUpdateLookup() throws Exception {
-        Query query = getPersistenceManager().newQuery(EntityMapping.class);
+        Query query = getPersistenceManager().newQuery(Entity.class);
         query.setFilter("className == name");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        EntityMapping entityMapping = (EntityMapping) query.execute(EXAMPLE_CLASS_WITH_LOOKUPS);
+        Entity entity = (Entity) query.execute(EXAMPLE_CLASS_WITH_LOOKUPS);
 
-        for (LookupMapping lookupMapping : entityMapping.getLookups()) {
-            if (EXAMPLE_LOOKUP_1.equals(lookupMapping.getLookupName())) {
-                lookupMapping.setSingleObjectReturn(false);
-            } else if (EXAMPLE_LOOKUP_2.equals(lookupMapping.getLookupName())) {
-                lookupMapping.setExposedViaRest(true);
+        for (Lookup lookup : entity.getLookups()) {
+            if (EXAMPLE_LOOKUP_1.equals(lookup.getLookupName())) {
+                lookup.setSingleObjectReturn(false);
+            } else if (EXAMPLE_LOOKUP_2.equals(lookup.getLookupName())) {
+                lookup.setExposedViaRest(true);
             }
         }
 
-        for (LookupMapping lookupMapping : getLookupMappings()) {
-            if (EXAMPLE_LOOKUP_1.equals(lookupMapping.getLookupName())) {
-                assertEquals("Lookup was not updated properly", false, lookupMapping.isSingleObjectReturn());
-                assertEquals("Lookup was not updated properly", false, lookupMapping.isExposedViaRest());
-            } else if (EXAMPLE_LOOKUP_2.equals(lookupMapping.getLookupName())) {
-                assertEquals("Lookup was not updated properly", true, lookupMapping.isSingleObjectReturn());
-                assertEquals("Lookup was not updated properly", true, lookupMapping.isExposedViaRest());
+        for (Lookup lookup : getLookupMappings()) {
+            if (EXAMPLE_LOOKUP_1.equals(lookup.getLookupName())) {
+                assertEquals("Lookup was not updated properly", false, lookup.isSingleObjectReturn());
+                assertEquals("Lookup was not updated properly", false, lookup.isExposedViaRest());
+            } else if (EXAMPLE_LOOKUP_2.equals(lookup.getLookupName())) {
+                assertEquals("Lookup was not updated properly", true, lookup.isSingleObjectReturn());
+                assertEquals("Lookup was not updated properly", true, lookup.isExposedViaRest());
             }
         }
     }

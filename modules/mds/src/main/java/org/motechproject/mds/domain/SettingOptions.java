@@ -1,7 +1,5 @@
 package org.motechproject.mds.domain;
 
-import org.motechproject.mds.dto.SettingOptions;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -9,11 +7,11 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 /**
- * The <code>SettingOptionsMapping</code> contains single setting option for given {@link org.motechproject.mds.domain.TypeSettingsMapping}. This class is
+ * The <code>SettingOptionsMapping</code> contains single setting option for given {@link TypeSettings}. This class is
  * related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class SettingOptionsMapping {
+public class SettingOptions {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
@@ -23,18 +21,18 @@ public class SettingOptionsMapping {
     private String name;
 
     @Persistent
-    private TypeSettingsMapping typeSettings;
+    private TypeSettings typeSettings;
 
-    public SettingOptionsMapping(SettingOptions option) {
+    public SettingOptions(org.motechproject.mds.dto.SettingOptions option) {
         this(option.name());
     }
 
-    public SettingOptionsMapping(String name) {
+    public SettingOptions(String name) {
         this.name = name;
     }
 
-    public SettingOptions toDto() {
-        return SettingOptions.valueOf(name);
+    public org.motechproject.mds.dto.SettingOptions toDto() {
+        return org.motechproject.mds.dto.SettingOptions.valueOf(name);
     }
 
     public Long getId() {
@@ -53,15 +51,15 @@ public class SettingOptionsMapping {
         this.name = name;
     }
 
-    public TypeSettingsMapping getTypeSettings() {
+    public TypeSettings getTypeSettings() {
         return typeSettings;
     }
 
-    public void setTypeSettings(TypeSettingsMapping typeSettings) {
+    public void setTypeSettings(TypeSettings typeSettings) {
         this.typeSettings = typeSettings;
     }
 
-    public SettingOptionsMapping copy() {
-        return new SettingOptionsMapping(name);
+    public SettingOptions copy() {
+        return new SettingOptions(name);
     }
 }

@@ -22,35 +22,46 @@ public interface EntityService {
     EntityDto createEntity(EntityDto entity) throws IOException;
 
     List<EntityDto> listEntities();
+
     EntityDto getEntity(Long entityId);
+
     void deleteEntity(Long entityId);
 
     List<EntityDto> listWorkInProgress();
+
     EntityDto getEntityForEdit(Long entityId);
+
     EntityDto getEntityByClassName(String className);
 
     void addLookupToEntity(Long entityId, LookupDto lookup);
 
     // TODO: replace with entity.getFields
     List<FieldDto> getFields(Long entityId);
+
     // TODO: replace with entity.findField
     FieldDto findFieldByName(Long entityId, String name);
 
     boolean saveDraftEntityChanges(Long entityId, DraftData draftData);
+
     void abandonChanges(Long entityId);
+
     void commitChanges(Long entityId);
 
     List<EntityRecord> getEntityRecords(Long entityId);
 
     // TODO: replace with entity.getAdvancedSettings
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
+
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
+
     // TODO: replace with entity.getSecuritySettings
     SecuritySettingsDto getSecuritySettings(Long entityId);
 
     // TODO: move to InstanceService/HistoryService after we get rid of example data
     List<FieldInstanceDto> getInstanceFields(Long instanceId);
+
     List<HistoryRecord> getInstanceHistory(Long instanceId);
+
     List<PreviousRecord> getPreviousRecords(Long instanceId);
 
     void addFields(EntityDto entity, List<FieldDto> fields);

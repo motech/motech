@@ -1,9 +1,9 @@
 package org.motechproject.mds.repository;
 
 
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
-import org.motechproject.mds.domain.TypeValidationMapping;
-import org.motechproject.mds.domain.ValidationCriterionMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.ValidationCriterion;
 import org.springframework.stereotype.Repository;
 
 import javax.jdo.Query;
@@ -12,39 +12,39 @@ import java.util.List;
 
 /**
  * The <code>AllTypeValidationMappings</code> class is a repository class that operates on instances of
- * {@link org.motechproject.mds.domain.TypeValidationMapping}.
+ * {@link org.motechproject.mds.domain.TypeValidation}.
  */
 @Repository
 public class AllTypeValidationMappings extends BaseMdsRepository {
 
-    public TypeValidationMapping save(AvailableFieldTypeMapping type) {
-        TypeValidationMapping typeValidation = new TypeValidationMapping(type);
+    public TypeValidation save(AvailableFieldType type) {
+        TypeValidation typeValidation = new TypeValidation(type);
         return save(typeValidation);
     }
 
-    public TypeValidationMapping save(TypeValidationMapping typeValidation) {
+    public TypeValidation save(TypeValidation typeValidation) {
         return getPersistenceManager().makePersistent(typeValidation);
     }
 
-    public TypeValidationMapping getValidationForType(AvailableFieldTypeMapping type) {
-        Query query = getPersistenceManager().newQuery(TypeValidationMapping.class);
+    public TypeValidation getValidationForType(AvailableFieldType type) {
+        Query query = getPersistenceManager().newQuery(TypeValidation.class);
         query.setFilter("typeId == type");
         query.declareParameters("java.lang.Long typeId");
         query.setUnique(true);
 
-        return (TypeValidationMapping) query.execute(type.getId());
+        return (TypeValidation) query.execute(type.getId());
     }
 
-    public TypeValidationMapping createValidationInstance(AvailableFieldTypeMapping type) {
-        TypeValidationMapping emptyValidation = null;
-        TypeValidationMapping typeValidationMapping = getValidationForType(type);
+    public TypeValidation createValidationInstance(AvailableFieldType type) {
+        TypeValidation emptyValidation = null;
+        TypeValidation typeValidation = getValidationForType(type);
 
-        if (typeValidationMapping != null) {
-            emptyValidation = new TypeValidationMapping();
+        if (typeValidation != null) {
+            emptyValidation = new TypeValidation();
             emptyValidation.setName(type.getDefaultName());
-            List<ValidationCriterionMapping> emptyCriteria = new ArrayList<>();
-            for (ValidationCriterionMapping criterionMapping : typeValidationMapping.getCriteria()) {
-                emptyCriteria.add(new ValidationCriterionMapping(criterionMapping.getDisplayName(), emptyValidation, criterionMapping.getType()));
+            List<ValidationCriterion> emptyCriteria = new ArrayList<>();
+            for (ValidationCriterion criterionMapping : typeValidation.getCriteria()) {
+                emptyCriteria.add(new ValidationCriterion(criterionMapping.getDisplayName(), emptyValidation, criterionMapping.getType()));
             }
 
             emptyValidation.setCriteria(emptyCriteria);
@@ -54,12 +54,12 @@ public class AllTypeValidationMappings extends BaseMdsRepository {
     }
 
     public void delete(Long id) {
-        Query query = getPersistenceManager().newQuery(TypeValidationMapping.class);
+        Query query = getPersistenceManager().newQuery(TypeValidation.class);
         query.setFilter("typeValidationId == id");
         query.declareParameters("java.lang.Long typeValidationId");
         query.setUnique(true);
 
-        TypeValidationMapping result = (TypeValidationMapping) query.execute(id);
+        TypeValidation result = (TypeValidation) query.execute(id);
 
         if (result != null) {
             getPersistenceManager().deletePersistent(result);

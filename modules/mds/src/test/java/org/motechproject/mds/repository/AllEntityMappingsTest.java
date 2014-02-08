@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -41,7 +41,7 @@ public class AllEntityMappingsTest {
     private Query query;
 
     @Captor
-    private ArgumentCaptor<EntityMapping> entityMappingArgumentCaptor;
+    private ArgumentCaptor<Entity> entityMappingArgumentCaptor;
 
     private AllEntityMappings allEntityMappings;
 
@@ -62,7 +62,7 @@ public class AllEntityMappingsTest {
 
         verify(pm).makePersistent(entityMappingArgumentCaptor.capture());
 
-        EntityMapping entityMapping = entityMappingArgumentCaptor.getValue();
+        Entity entityMapping = entityMappingArgumentCaptor.getValue();
 
         assertNotNull(entityMapping);
         assertEquals(CLASS_NAME, entityMapping.getClassName());
@@ -72,13 +72,13 @@ public class AllEntityMappingsTest {
 
     @Test
     public void shouldFindExistingEntity() throws Exception {
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         mapping.setClassName(CLASS_NAME);
 
-        List<EntityMapping> mappings = new ArrayList<>();
+        List<Entity> mappings = new ArrayList<>();
         mappings.add(mapping);
 
-        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(pm.newQuery(Entity.class)).thenReturn(query);
         when(query.execute(CLASS_NAME)).thenReturn(mappings);
 
         assertTrue(allEntityMappings.containsEntity(CLASS_NAME));
@@ -90,8 +90,8 @@ public class AllEntityMappingsTest {
 
     @Test
     public void shouldNotFindExistingEntity() throws Exception {
-        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
-        when(query.execute(CLASS_NAME)).thenReturn(new ArrayList<EntityMapping>());
+        when(pm.newQuery(Entity.class)).thenReturn(query);
+        when(query.execute(CLASS_NAME)).thenReturn(new ArrayList<Entity>());
 
         assertFalse(allEntityMappings.containsEntity(CLASS_NAME));
 
@@ -102,10 +102,10 @@ public class AllEntityMappingsTest {
 
     @Test
     public void shouldRemoveEntityById() throws Exception {
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         Long entityId = 1L;
 
-        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(pm.newQuery(Entity.class)).thenReturn(query);
         when(query.execute(entityId)).thenReturn(mapping);
 
         allEntityMappings.delete(entityId);
@@ -120,7 +120,7 @@ public class AllEntityMappingsTest {
     public void shouldNotRemoveEntityIfNotExists() throws Exception {
         Long entityId = 1L;
 
-        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(pm.newQuery(Entity.class)).thenReturn(query);
         when(query.execute(entityId)).thenReturn(null);
 
         allEntityMappings.delete(entityId);
@@ -128,11 +128,11 @@ public class AllEntityMappingsTest {
 
     @Test(expected = EntityReadOnlyException.class)
     public void shouldNotRemoveEntityIfReadOnly() throws Exception {
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         mapping.setModule("TestModule");
         Long entityId = 1L;
 
-        when(pm.newQuery(EntityMapping.class)).thenReturn(query);
+        when(pm.newQuery(Entity.class)).thenReturn(query);
         when(query.execute(entityId)).thenReturn(mapping);
 
         allEntityMappings.delete(entityId);

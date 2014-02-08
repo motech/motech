@@ -91,7 +91,7 @@ public class LookupProcessor extends AbstractProcessor {
     }
 
     private String generateLookupName(String lookupDisplayName, String methodName) {
-        if (! "".equals(lookupDisplayName)) {
+        if (!"".equals(lookupDisplayName)) {
             return lookupDisplayName;
         } else {
             String[] splitName = StringUtils.splitByCharacterTypeCamelCase(methodName);

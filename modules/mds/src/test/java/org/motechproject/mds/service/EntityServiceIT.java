@@ -5,14 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
-import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.FieldMapping;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
-import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,10 +214,10 @@ public class EntityServiceIT extends BaseIT {
         entityService.commitChanges(entityId);
 
         // check if changes were persisted in db
-        EntityMapping entityFromDb = getEntityMappings().get(0);
+        Entity entityFromDb = getEntityMappings().get(0);
         assertEquals(1, entityFromDb.getFields().size());
 
-        FieldMapping fieldFromDb = entityFromDb.getField("f1name");
+        Field fieldFromDb = entityFromDb.getField("f1name");
         assertNotNull(fieldFromDb);
         assertEquals("newDisp", fieldFromDb.getDisplayName());
 

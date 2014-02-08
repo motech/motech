@@ -18,14 +18,14 @@ import java.util.List;
  * is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class RestOptionsMapping {
+public class RestOptions {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     private Long id;
 
     @Persistent
-    private EntityMapping entity;
+    private Entity entity;
 
     @Persistent
     private boolean allowCreate;
@@ -39,11 +39,11 @@ public class RestOptionsMapping {
     @Persistent
     private boolean allowDelete;
 
-    public RestOptionsMapping() {
+    public RestOptions() {
         this(null);
     }
 
-    public RestOptionsMapping(EntityMapping entity) {
+    public RestOptions(Entity entity) {
         this.entity = entity;
     }
 
@@ -56,11 +56,11 @@ public class RestOptionsMapping {
         dto.setUpdate(allowUpdate);
         dto.setDelete(allowDelete);
 
-        for (LookupMapping lookup : getLookups()) {
+        for (Lookup lookup : getLookups()) {
             dto.addLookup(lookup.getId());
         }
 
-        for (FieldMapping field : getFields()) {
+        for (Field field : getFields()) {
             dto.addField(field.getId());
         }
 
@@ -75,11 +75,11 @@ public class RestOptionsMapping {
         this.id = id;
     }
 
-    public EntityMapping getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(EntityMapping entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 
@@ -115,15 +115,15 @@ public class RestOptionsMapping {
         this.allowDelete = allowDelete;
     }
 
-    public List<LookupMapping> getLookups() {
-        List<LookupMapping> lookups = new ArrayList<>(getEntity().getLookups());
+    public List<Lookup> getLookups() {
+        List<Lookup> lookups = new ArrayList<>(getEntity().getLookups());
         CollectionUtils.filter(lookups, new RestPredicate());
 
         return lookups;
     }
 
-    public List<FieldMapping> getFields() {
-        List<FieldMapping> fields = new ArrayList<>(getEntity().getFields());
+    public List<Field> getFields() {
+        List<Field> fields = new ArrayList<>(getEntity().getFields());
         CollectionUtils.filter(fields, new RestPredicate());
 
         return fields;
@@ -136,8 +136,8 @@ public class RestOptionsMapping {
         allowDelete = restOptionsDto.isDelete();
     }
 
-    public RestOptionsMapping copy() {
-        RestOptionsMapping copy = new RestOptionsMapping();
+    public RestOptions copy() {
+        RestOptions copy = new RestOptions();
 
         copy.setAllowCreate(this.allowCreate);
         copy.setAllowRead(this.allowRead);

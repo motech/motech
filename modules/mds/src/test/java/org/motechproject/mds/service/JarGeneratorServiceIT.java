@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.BundleHeaders;
@@ -61,7 +61,7 @@ public class JarGeneratorServiceIT extends BaseIT {
 
     @After
     public void tearDown() throws Exception {
-        getPersistenceManager().newQuery(EntityMapping.class).deletePersistentAll();
+        getPersistenceManager().newQuery(Entity.class).deletePersistentAll();
     }
 
     @Test

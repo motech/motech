@@ -9,34 +9,34 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class RestOptionsMappingTest {
-    private static List<LookupMapping> expectedLookups;
-    private static List<FieldMapping> expectedFields;
-    private static RestOptionsMapping restOptions;
+public class RestOptionsTest {
+    private static List<Lookup> expectedLookups;
+    private static List<Field> expectedFields;
+    private static RestOptions restOptions;
 
     @BeforeClass
     public static void classSetUp() throws Exception {
-        FieldMapping field1 = createField(true);
-        FieldMapping field2 = createField(false);
-        FieldMapping field3 = createField(true);
-        FieldMapping field4 = createField(false);
+        Field field1 = createField(true);
+        Field field2 = createField(false);
+        Field field3 = createField(true);
+        Field field4 = createField(false);
 
         expectedFields = new ArrayList<>();
         Collections.addAll(expectedFields, field1, field3);
 
-        LookupMapping lookup1 = createLookup(true);
-        LookupMapping lookup2 = createLookup(false);
-        LookupMapping lookup3 = createLookup(true);
-        LookupMapping lookup4 = createLookup(false);
+        Lookup lookup1 = createLookup(true);
+        Lookup lookup2 = createLookup(false);
+        Lookup lookup3 = createLookup(true);
+        Lookup lookup4 = createLookup(false);
 
         expectedLookups = new ArrayList<>();
         Collections.addAll(expectedLookups, lookup1, lookup3);
 
-        EntityMapping entity = new EntityMapping();
+        Entity entity = new Entity();
         Collections.addAll(entity.getFields(), field1, field2, field3, field4);
         Collections.addAll(entity.getLookups(), lookup1, lookup2, lookup3, lookup4);
 
-        restOptions = new RestOptionsMapping(entity);
+        restOptions = new RestOptions(entity);
     }
 
     @Test
@@ -49,15 +49,15 @@ public class RestOptionsMappingTest {
         assertEquals(expectedLookups, restOptions.getLookups());
     }
 
-    private static FieldMapping createField(boolean exposedViaRest) {
-        FieldMapping mapping = new FieldMapping();
+    private static Field createField(boolean exposedViaRest) {
+        Field mapping = new Field();
         mapping.setExposedViaRest(exposedViaRest);
 
         return mapping;
     }
 
-    private static LookupMapping createLookup(boolean exposedViaRest) {
-        LookupMapping mapping = new LookupMapping();
+    private static Lookup createLookup(boolean exposedViaRest) {
+        Lookup mapping = new Lookup();
         mapping.setExposedViaRest(exposedViaRest);
 
         return mapping;

@@ -1,6 +1,6 @@
 package org.motechproject.mds.repository;
 
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.springframework.stereotype.Repository;
 
@@ -16,30 +16,30 @@ import java.util.List;
 @Repository
 public class AllFieldTypes extends BaseMdsRepository {
 
-    public AvailableFieldTypeMapping save(AvailableTypeDto type) {
-        AvailableFieldTypeMapping fieldTypeMapping = new AvailableFieldTypeMapping(type.getId(), type.getDefaultName(), type.getType());
+    public AvailableFieldType save(AvailableTypeDto type) {
+        AvailableFieldType fieldTypeMapping = new AvailableFieldType(type.getId(), type.getDefaultName(), type.getType());
 
         return getPersistenceManager().makePersistent(fieldTypeMapping);
     }
 
     public List<AvailableTypeDto> getAll() {
         List<AvailableTypeDto> allTypes = new ArrayList<>();
-        Extent extent = getPersistenceManager().getExtent(AvailableFieldTypeMapping.class);
+        Extent extent = getPersistenceManager().getExtent(AvailableFieldType.class);
 
         for (Object anExtent : extent) {
-            allTypes.add(((AvailableFieldTypeMapping) anExtent).toDto());
+            allTypes.add(((AvailableFieldType) anExtent).toDto());
         }
 
         return allTypes;
     }
 
-    public AvailableFieldTypeMapping getByName(String name) {
-        Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
+    public AvailableFieldType getByName(String name) {
+        Query query = getPersistenceManager().newQuery(AvailableFieldType.class);
         query.setFilter("displayName == name");
         query.declareParameters("java.lang.String name");
         query.setUnique(true);
 
-        return (AvailableFieldTypeMapping) query.execute(name);
+        return (AvailableFieldType) query.execute(name);
     }
 
     public boolean typeExists(AvailableTypeDto type) {
@@ -47,24 +47,24 @@ public class AllFieldTypes extends BaseMdsRepository {
     }
 
     public void delete(Long id) {
-        Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
+        Query query = getPersistenceManager().newQuery(AvailableFieldType.class);
         query.setFilter("typeId == id");
         query.declareParameters("java.lang.Long typeId");
         query.setUnique(true);
 
-        AvailableFieldTypeMapping result = (AvailableFieldTypeMapping) query.execute(id);
+        AvailableFieldType result = (AvailableFieldType) query.execute(id);
 
         if (result != null) {
             getPersistenceManager().deletePersistent(result);
         }
     }
 
-    public AvailableFieldTypeMapping getByClassName(String className) {
-        Query query = getPersistenceManager().newQuery(AvailableFieldTypeMapping.class);
+    public AvailableFieldType getByClassName(String className) {
+        Query query = getPersistenceManager().newQuery(AvailableFieldType.class);
         query.setFilter("paramTypeClass == typeClass");
         query.declareParameters("java.lang.String paramTypeClass");
         query.setUnique(true);
 
-        return (AvailableFieldTypeMapping) query.execute(className);
+        return (AvailableFieldType) query.execute(className);
     }
 }

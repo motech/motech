@@ -1,13 +1,13 @@
 package org.motechproject.mds.service.impl.internal;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
-import org.motechproject.mds.domain.EntityMapping;
-import org.motechproject.mds.domain.FieldMapping;
-import org.motechproject.mds.domain.LookupMapping;
-import org.motechproject.mds.domain.TypeSettingsMapping;
-import org.motechproject.mds.domain.TypeValidationMapping;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
+import org.motechproject.mds.domain.TypeSettings;
+import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -85,7 +85,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             throw new EntityAlreadyExistException();
         }
 
-        EntityMapping entityMapping = allEntityMappings.save(entity);
+        Entity entityMapping = allEntityMappings.save(entity);
 
         if (fromUI) {
             constructor.constructEntity(entityMapping);
@@ -124,7 +124,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         if (StringUtils.isNotBlank(fieldIdStr)) {
             Long fieldId = Long.valueOf(fieldIdStr);
-            FieldMapping field = draft.getField(fieldId);
+            Field field = draft.getField(fieldId);
 
             if (field != null) {
                 String path = draftData.getPath();
@@ -162,19 +162,19 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         basic.setName(name);
         basic.setDisplayName(displayName);
 
-        AvailableFieldTypeMapping availableType = allFieldTypes.getByClassName(typeClass);
+        AvailableFieldType availableType = allFieldTypes.getByClassName(typeClass);
         if (availableType == null) {
             throw new NoSuchTypeException();
         }
         AvailableTypeDto availableTypeDto = availableType.toDto();
         TypeDto fieldType = availableTypeDto.getType();
 
-        TypeValidationMapping fieldValidation = allTypeValidationMappings.createValidationInstance(availableType);
+        TypeValidation fieldValidation = allTypeValidationMappings.createValidationInstance(availableType);
         FieldValidationDto validationDto = (fieldValidation == null) ? null : fieldValidation.toDto();
 
-        List<TypeSettingsMapping> fieldSettings = allTypeSettingsMappings.createEmptySettingsInstance(availableType);
+        List<TypeSettings> fieldSettings = allTypeSettingsMappings.createEmptySettingsInstance(availableType);
         List<SettingDto> settingDtos = new ArrayList<>();
-        for (TypeSettingsMapping typeSettings : fieldSettings) {
+        for (TypeSettings typeSettings : fieldSettings) {
             settingDtos.add(typeSettings.toDto());
         }
 
@@ -184,7 +184,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         field.setValidation(validationDto);
         field.setSettings(settingDtos);
 
-        FieldMapping fieldMapping = new FieldMapping(field, draft, availableType, fieldValidation, fieldSettings);
+        Field fieldMapping = new Field(field, draft, availableType, fieldValidation, fieldSettings);
 
         draft.addField(fieldMapping);
 
@@ -212,7 +212,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public void commitChanges(Long entityId) {
         EntityDraft draft = getEntityDraft(entityId);
-        EntityMapping parent = draft.getParentEntity();
+        Entity parent = draft.getParentEntity();
 
         parent.updateFromDraft(draft);
 
@@ -257,10 +257,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed) {
         if (committed) {
-            EntityMapping entity = allEntityMappings.getEntityById(entityId);
+            Entity entity = allEntityMappings.getEntityById(entityId);
             return entity.advancedSettingsDto();
         } else {
-            EntityMapping entity = getEntityDraft(entityId);
+            Entity entity = getEntityDraft(entityId);
             return entity.advancedSettingsDto();
         }
     }
@@ -268,8 +268,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public void addLookupToEntity(Long entityId, LookupDto lookup) {
-        EntityMapping entityMapping = allEntityMappings.getEntityById(entityId);
-        entityMapping.addLookup(new LookupMapping(lookup));
+        Entity entity = allEntityMappings.getEntityById(entityId);
+        entity.addLookup(new Lookup(lookup));
     }
 
     @Override
@@ -299,7 +299,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public void deleteEntity(Long entityId) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+        Entity entity = allEntityMappings.getEntityById(entityId);
 
         assertWritableEntity(entity);
 
@@ -316,7 +316,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public List<EntityDto> listEntities() {
         List<EntityDto> entityDtos = new ArrayList<>();
 
-        for (EntityMapping entity : allEntityMappings.getAllEntities()) {
+        for (Entity entity : allEntityMappings.getAllEntities()) {
             if (!entity.isDraft()) {
                 entityDtos.add(entity.toDto());
             }
@@ -328,26 +328,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public EntityDto getEntity(Long entityId) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+        Entity entity = allEntityMappings.getEntityById(entityId);
         return (entity == null) ? null : entity.toDto();
     }
 
     @Override
     @Transactional
     public EntityDto getEntityByClassName(String className) {
-        EntityMapping entity = allEntityMappings.getEntityByClassName(className);
+        Entity entity = allEntityMappings.getEntityByClassName(className);
         return (entity == null) ? null : entity.toDto();
     }
 
     @Override
     @Transactional
     public List<FieldDto> getFields(Long entityId) {
-        EntityMapping entity = getEntityDraft(entityId);
+        Entity entity = getEntityDraft(entityId);
 
-        List<FieldMapping> fields = entity.getFields();
+        List<Field> fields = entity.getFields();
 
         List<FieldDto> fieldDtos = new ArrayList<>();
-        for (FieldMapping field : fields) {
+        for (Field field : fields) {
             fieldDtos.add(field.toDto());
         }
 
@@ -357,9 +357,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public FieldDto findFieldByName(Long entityId, String name) {
-        EntityMapping entity = getEntityDraft(entityId);
+        Entity entity = getEntityDraft(entityId);
 
-        FieldMapping field = entity.getField(name);
+        Field field = entity.getField(name);
 
         if (field == null) {
             throw new FieldNotFoundException();
@@ -371,7 +371,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public EntityDto getEntityForEdit(Long entityId) {
-        EntityMapping draft = getEntityDraft(entityId);
+        Entity draft = getEntityDraft(entityId);
         return draft.toDto();
     }
 
@@ -390,7 +390,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     public EntityDraft getEntityDraft(Long entityId) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityId);
+        Entity entity = allEntityMappings.getEntityById(entityId);
 
         assertEntityExists(entity);
 
@@ -418,26 +418,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public void addFields(EntityDto entityDto, List<FieldDto> fields) {
-        EntityMapping entity = allEntityMappings.getEntityById(entityDto.getId());
+        Entity entity = allEntityMappings.getEntityById(entityDto.getId());
 
         assertEntityExists(entity);
 
         for (FieldDto fieldDto : fields) {
             String typeClass = fieldDto.getType().getTypeClass();
-            AvailableFieldTypeMapping type = allFieldTypes.getByClassName(typeClass);
-            FieldMapping field = new FieldMapping(fieldDto, entity, type, null, null);
+            AvailableFieldType type = allFieldTypes.getByClassName(typeClass);
+            Field field = new Field(fieldDto, entity, type, null, null);
 
             entity.addField(field);
         }
     }
 
-    private void assertEntityExists(EntityMapping entity) {
+    private void assertEntityExists(Entity entity) {
         if (entity == null) {
             throw new EntityNotFoundException();
         }
     }
 
-    private void assertWritableEntity(EntityMapping entity) {
+    private void assertWritableEntity(Entity entity) {
         assertEntityExists(entity);
 
         if (entity.isReadOnly()) {

@@ -1,6 +1,6 @@
 package org.motechproject.mds.builder;
 
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 
 import javax.jdo.metadata.JDOMetadata;
 
@@ -15,9 +15,9 @@ public interface EntityMetadataBuilder {
      * class name.
      *
      * @param md      a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
-     * @param mapping a instance of {@link org.motechproject.mds.domain.EntityMapping}
+     * @param mapping a instance of {@link org.motechproject.mds.domain.Entity}
      * @return an instance of {@link javax.jdo.metadata.JDOMetadata} with information about package
      * and class name.
      */
-    JDOMetadata createBaseEntity(JDOMetadata md, EntityMapping mapping);
+    JDOMetadata createBaseEntity(JDOMetadata md, Entity mapping);
 }

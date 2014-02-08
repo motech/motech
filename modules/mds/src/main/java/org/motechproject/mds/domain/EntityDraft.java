@@ -12,11 +12,11 @@ import javax.jdo.annotations.Persistent;
 
 /**
  * This class represents a users draft of an Entity. A draft is a users work in progress from the UI. This shares
- * the table with its superclass, {@link EntityMapping}.
+ * the table with its superclass, {@link Entity}.
  */
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
-public class EntityDraft extends EntityMapping {
+public class EntityDraft extends Entity {
 
     @Persistent
     @Column(allowsNull = "false")
@@ -26,7 +26,7 @@ public class EntityDraft extends EntityMapping {
     private DateTime lastModificationDate;
 
     @Persistent
-    private EntityMapping parentEntity;
+    private Entity parentEntity;
 
     @Persistent
     private Long parentVersion;
@@ -50,11 +50,11 @@ public class EntityDraft extends EntityMapping {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public EntityMapping getParentEntity() {
+    public Entity getParentEntity() {
         return parentEntity;
     }
 
-    public void setParentEntity(EntityMapping parentEntity) {
+    public void setParentEntity(Entity parentEntity) {
         this.parentEntity = parentEntity;
     }
 

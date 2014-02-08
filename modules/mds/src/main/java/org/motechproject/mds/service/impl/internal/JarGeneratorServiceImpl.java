@@ -4,7 +4,7 @@ import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -88,8 +88,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
-            List<EntityMapping> mappings = entityMappings.getAllEntities();
-            for (EntityMapping mapping : mappings) {
+            List<Entity> mappings = entityMappings.getAllEntities();
+            for (Entity mapping : mappings) {
                 if (!mapping.isDraft() && !mapping.isReadOnly()) {
                     String className = mapping.getClassName();
 

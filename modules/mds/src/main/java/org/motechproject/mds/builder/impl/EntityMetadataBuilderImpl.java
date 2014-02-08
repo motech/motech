@@ -1,7 +1,7 @@
 package org.motechproject.mds.builder.impl;
 
 import org.motechproject.mds.builder.EntityMetadataBuilder;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.util.ClassName;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     @Override
-    public JDOMetadata createBaseEntity(JDOMetadata md, EntityMapping mapping) {
+    public JDOMetadata createBaseEntity(JDOMetadata md, Entity mapping) {
         PackageMetadata pmd = md.newPackageMetadata(ClassName.getPackage(mapping.getClassName()));
         ClassMetadata cmd = pmd.newClassMetadata(ClassName.getSimpleName(mapping.getClassName()));
 
@@ -33,7 +33,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return md;
     }
 
-    private static String getTableName(EntityMapping mapping) {
+    private static String getTableName(Entity mapping) {
         String simpleName = ClassName.getSimpleName(mapping.getClassName());
         String module = mapping.getModule();
         String namespace = mapping.getNamespace();

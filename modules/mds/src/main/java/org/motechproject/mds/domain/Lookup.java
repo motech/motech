@@ -12,7 +12,7 @@ import javax.jdo.annotations.PrimaryKey;
  * The <code>LookupMapping</code> class contains information about single lookup
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class LookupMapping {
+public class Lookup {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -28,24 +28,24 @@ public class LookupMapping {
     private boolean exposedViaRest;
 
     @Persistent
-    private EntityMapping entity;
+    private Entity entity;
 
-    public LookupMapping() {
+    public Lookup() {
         this(null, false, false);
     }
 
-    public LookupMapping(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
     }
 
-    public LookupMapping(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, EntityMapping entity) {
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, Entity entity) {
         this(lookupName, singleObjectReturn, exposedViaRest);
         this.entity = entity;
     }
 
-    public LookupMapping(LookupDto lookupDto) {
+    public Lookup(LookupDto lookupDto) {
         update(lookupDto);
     }
 
@@ -85,16 +85,16 @@ public class LookupMapping {
         this.exposedViaRest = exposedViaRest;
     }
 
-    public EntityMapping getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(EntityMapping entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 
-    public LookupMapping copy() {
-        return new LookupMapping(lookupName, singleObjectReturn, exposedViaRest);
+    public Lookup copy() {
+        return new Lookup(lookupName, singleObjectReturn, exposedViaRest);
     }
 
     public final void update(LookupDto lookupDto) {

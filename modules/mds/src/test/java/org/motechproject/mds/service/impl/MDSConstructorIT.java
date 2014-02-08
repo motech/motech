@@ -9,7 +9,7 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.repository.AllEntityMappings;
 import org.motechproject.mds.repository.MotechDataRepository;
@@ -41,7 +41,7 @@ public class MDSConstructorIT extends BaseIT {
     @Autowired
     private AllEntityMappings allEntityMappings;
 
-    private EntityMapping entity;
+    private Entity entity;
 
     @Before
     public void setUp() throws Exception {
@@ -55,7 +55,7 @@ public class MDSConstructorIT extends BaseIT {
 
     @Test
     public void testConstructEntity() throws Exception {
-        EntityMapping mapping = new EntityMapping();
+        Entity mapping = new Entity();
         mapping.setClassName(CLASS_NAME);
 
         constructor.constructEntity(mapping);
@@ -87,7 +87,7 @@ public class MDSConstructorIT extends BaseIT {
 
     @Test
     public void shouldConstructEntityWithFields() throws Exception {
-        EntityMapping entity = new EntityMapping(ENTITY_WITH_FIELDS);
+        Entity entity = new Entity(ENTITY_WITH_FIELDS);
         entity.setFields(asList(field("fieldInt", Integer.class), field("fieldStr", String.class),
                 field("fieldDouble", Double.class), field("fieldBool", Boolean.class),
                 field("fieldDate", Date.class), field("fieldDateTime", DateTime.class),

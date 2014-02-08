@@ -13,4 +13,5 @@ public class NoSuchTypeException extends MdsException {
      */
     public NoSuchTypeException() {
         super("mds.error.noSuchType");
-    }}
+    }
+}

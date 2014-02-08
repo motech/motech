@@ -1,7 +1,6 @@
 package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.SettingDto;
-import org.motechproject.mds.dto.SettingOptions;
 import org.motechproject.mds.dto.TypeDto;
 
 import javax.jdo.annotations.Element;
@@ -15,11 +14,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The <code>TypeSettingsMapping</code> contains settings for given {@link org.motechproject.mds.domain.AvailableFieldTypeMapping}. This class is
+ * The <code>TypeSettingsMapping</code> contains settings for given {@link AvailableFieldType}. This class is
  * related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
-public class TypeSettingsMapping {
+public class TypeSettings {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
     @PrimaryKey
@@ -32,19 +31,19 @@ public class TypeSettingsMapping {
     private String value;
 
     @Persistent
-    private AvailableFieldTypeMapping valueType;
+    private AvailableFieldType valueType;
 
     @Persistent(mappedBy = "typeSettings")
     @Element(dependent = "true")
-    private List<SettingOptionsMapping> settingOptions;
+    private List<SettingOptions> settingOptions;
 
     @Persistent
-    private AvailableFieldTypeMapping type;
+    private AvailableFieldType type;
 
     @Persistent
-    private FieldMapping field;
+    private Field field;
 
-    public TypeSettingsMapping(String name, String value, AvailableFieldTypeMapping valueType, AvailableFieldTypeMapping type, SettingOptionsMapping... options) {
+    public TypeSettings(String name, String value, AvailableFieldType valueType, AvailableFieldType type, SettingOptions... options) {
         this.name = name;
         this.value = value;
         this.valueType = valueType;
@@ -56,12 +55,12 @@ public class TypeSettingsMapping {
     }
 
     public SettingDto toDto() {
-        List<SettingOptions> options = new ArrayList<>();
-        for (SettingOptionsMapping settingOption : settingOptions) {
+        List<org.motechproject.mds.dto.SettingOptions> options = new ArrayList<>();
+        for (SettingOptions settingOption : settingOptions) {
             options.add(settingOption.toDto());
         }
         return new SettingDto(name, valueType.parse(value), new TypeDto(valueType.getDisplayName(), valueType.getDescription(), valueType.getTypeClass()),
-                options.toArray(new SettingOptions[options.size()]));
+                options.toArray(new org.motechproject.mds.dto.SettingOptions[options.size()]));
     }
 
     public Long getId() {
@@ -88,49 +87,49 @@ public class TypeSettingsMapping {
         this.value = value;
     }
 
-    public AvailableFieldTypeMapping getType() {
+    public AvailableFieldType getType() {
         return type;
     }
 
-    public void setType(AvailableFieldTypeMapping type) {
+    public void setType(AvailableFieldType type) {
         this.type = type;
     }
 
-    public AvailableFieldTypeMapping getValueType() {
+    public AvailableFieldType getValueType() {
         return valueType;
     }
 
-    public void setValueType(AvailableFieldTypeMapping valueType) {
+    public void setValueType(AvailableFieldType valueType) {
         this.valueType = valueType;
     }
 
-    public FieldMapping getField() {
+    public Field getField() {
         return field;
     }
 
-    public void setField(FieldMapping field) {
+    public void setField(Field field) {
         this.field = field;
     }
 
-    public List<SettingOptionsMapping> getSettingOptions() {
+    public List<SettingOptions> getSettingOptions() {
         if (settingOptions == null) {
             settingOptions = new ArrayList<>();
         }
         return settingOptions;
     }
 
-    public void setSettingOptions(List<SettingOptionsMapping> settingOptions) {
+    public void setSettingOptions(List<SettingOptions> settingOptions) {
         this.settingOptions = settingOptions;
     }
 
-    public TypeSettingsMapping copy() {
-        List<SettingOptionsMapping> settingsOptionsCopy = new ArrayList<>();
+    public TypeSettings copy() {
+        List<SettingOptions> settingsOptionsCopy = new ArrayList<>();
 
-        for (SettingOptionsMapping settingOption : getSettingOptions()) {
+        for (SettingOptions settingOption : getSettingOptions()) {
             settingsOptionsCopy.add(settingOption.copy());
         }
 
-        return new TypeSettingsMapping(name, value, valueType, type,
-                settingsOptionsCopy.toArray(new SettingOptionsMapping[settingsOptionsCopy.size()]));
+        return new TypeSettings(name, value, valueType, type,
+                settingsOptionsCopy.toArray(new SettingOptions[settingsOptionsCopy.size()]));
     }
 }

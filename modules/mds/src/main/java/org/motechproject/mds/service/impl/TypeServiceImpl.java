@@ -1,9 +1,9 @@
 package org.motechproject.mds.service.impl;
 
-import org.motechproject.mds.domain.AvailableFieldTypeMapping;
-import org.motechproject.mds.domain.TypeSettingsMapping;
-import org.motechproject.mds.domain.TypeValidationMapping;
-import org.motechproject.mds.domain.ValidationCriterionMapping;
+import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.TypeSettings;
+import org.motechproject.mds.domain.TypeValidation;
+import org.motechproject.mds.domain.ValidationCriterion;
 import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.SettingDto;
@@ -39,7 +39,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         if (allFieldTypes.typeExists(type)) {
             throw new TypeAlreadyExistsException();
         } else {
-            AvailableFieldTypeMapping typeMapping = allFieldTypes.save(type);
+            AvailableFieldType typeMapping = allFieldTypes.save(type);
 
             if (settings != null) {
                 for (SettingDto settingDto : settings) {
@@ -49,12 +49,12 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
 
             if (validation != null) {
 
-                List<ValidationCriterionMapping> criterions = new ArrayList<>();
+                List<ValidationCriterion> criterions = new ArrayList<>();
                 for (ValidationCriterionDto criterionDto : validation.getCriteria()) {
-                    criterions.add(new ValidationCriterionMapping(criterionDto.getDisplayName(), null, typeMapping));
+                    criterions.add(new ValidationCriterion(criterionDto.getDisplayName(), null, typeMapping));
                 }
 
-                allTypeValidationMappings.save(new TypeValidationMapping(typeMapping, criterions));
+                allTypeValidationMappings.save(new TypeValidation(typeMapping, criterions));
             }
         }
     }
@@ -68,15 +68,15 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     @Override
     @Transactional
     public void deleteFieldType(String name) {
-        AvailableFieldTypeMapping toDelete = allFieldTypes.getByName(name);
+        AvailableFieldType toDelete = allFieldTypes.getByName(name);
 
         if (toDelete == null) {
             throw new TypeNotFoundException();
         }
 
-        List<TypeSettingsMapping> settingsMappings = allTypeSettingsMappings.getSettingsForType(toDelete);
+        List<TypeSettings> settingsMappings = allTypeSettingsMappings.getSettingsForType(toDelete);
         if (settingsMappings != null) {
-            for (TypeSettingsMapping settingsMapping : settingsMappings) {
+            for (TypeSettings settingsMapping : settingsMappings) {
                 allTypeSettingsMappings.delete(settingsMapping.getId());
             }
         }
@@ -87,7 +87,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     @Override
     @Transactional
     public TypeDto findType(Class<?> type) {
-        AvailableFieldTypeMapping mapping = allFieldTypes.getByClassName(type.getName());
+        AvailableFieldType mapping = allFieldTypes.getByClassName(type.getName());
 
         if (null != mapping) {
             return mapping.toDto().getType();

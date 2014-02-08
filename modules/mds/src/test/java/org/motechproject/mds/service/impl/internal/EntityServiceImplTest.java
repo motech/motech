@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.domain.EntityMapping;
+import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
@@ -33,7 +33,7 @@ public class EntityServiceImplTest {
     private EntityDto entityDto;
 
     @Mock
-    private EntityMapping entityMapping;
+    private Entity entity;
 
     @InjectMocks
     private EntityServiceImpl entityService = new EntityServiceImpl();
@@ -48,11 +48,11 @@ public class EntityServiceImplTest {
 
     @Test
     public void shouldDeleteDraftsAndEntities() {
-        when(allEntityMappings.getEntityById(1L)).thenReturn(entityMapping);
+        when(allEntityMappings.getEntityById(1L)).thenReturn(entity);
 
         entityService.deleteEntity(1L);
 
-        verify(allEntityDrafts).deleteAllDraftsForEntity(entityMapping);
-        verify(allEntityMappings).delete(entityMapping);
+        verify(allEntityDrafts).deleteAllDraftsForEntity(entity);
+        verify(allEntityMappings).delete(entity);
     }
 }

@@ -43,7 +43,7 @@ import static org.springframework.util.ReflectionUtils.MethodFilter;
  * called 'getter and 'setter') will be added in the MDS definition of the entity. The field type
  * will be mapped on the appropriate type in the MDS system. If the appropriate mapping does not
  * exist an {@link org.motechproject.mds.ex.TypeNotFoundException} exception will be raised.
- *
+ * <p/>
  * Fields or acceptable methods with the {@link org.motechproject.mds.annotations.Ignore}
  * annotation are ignored by the processor and they are not added into entity definition.
  *

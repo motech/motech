@@ -40,7 +40,7 @@ import static org.motechproject.mds.constants.Constants.Util.TRUE;
 @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "VERSION",
         extensions = {@Extension(vendorName = "datanucleus", key = "field-name", value = "entityVersion")})
 @Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
-public class EntityMapping {
+public class Entity {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)
@@ -60,15 +60,15 @@ public class EntityMapping {
 
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
-    private List<LookupMapping> lookups;
+    private List<Lookup> lookups;
 
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
-    private List<FieldMapping> fields;
+    private List<Field> fields;
 
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
-    private TrackingMapping tracking;
+    private Tracking tracking;
 
     @Persistent(mappedBy = "parentEntity")
     @Element(dependent = TRUE)
@@ -77,21 +77,21 @@ public class EntityMapping {
     private Long entityVersion;
 
     @Persistent(mappedBy = ENTITY, dependent = TRUE)
-    private RestOptionsMapping restOptions;
+    private RestOptions restOptions;
 
-    public EntityMapping() {
+    public Entity() {
         this(null);
     }
 
-    public EntityMapping(String className) {
+    public Entity(String className) {
         this(className, null, null);
     }
 
-    public EntityMapping(String className, String module, String namespace) {
+    public Entity(String className, String module, String namespace) {
         this(className, ClassName.getSimpleName(className), module, namespace);
     }
 
-    public EntityMapping(String className, String name, String module, String namespace) {
+    public Entity(String className, String name, String module, String namespace) {
         this.className = className;
         this.name = name;
         this.module = module;
@@ -142,7 +142,7 @@ public class EntityMapping {
         this.namespace = namespace;
     }
 
-    public List<LookupMapping> getLookups() {
+    public List<Lookup> getLookups() {
         if (lookups == null) {
             lookups = new ArrayList<>();
         }
@@ -152,13 +152,13 @@ public class EntityMapping {
     public List<LookupDto> getLookupsDtos() {
         List<LookupDto> dtos = new ArrayList<>();
 
-        for (LookupMapping mapping : lookups) {
+        for (Lookup mapping : lookups) {
             dtos.add(mapping.toDto());
         }
         return dtos;
     }
 
-    public void setLookups(List<LookupMapping> lookups) {
+    public void setLookups(List<Lookup> lookups) {
         this.lookups = lookups;
     }
 
@@ -186,19 +186,19 @@ public class EntityMapping {
         return isNotBlank(module) || isNotBlank(namespace);
     }
 
-    public List<FieldMapping> getFields() {
+    public List<Field> getFields() {
         if (fields == null) {
             fields = new ArrayList<>();
         }
         return fields;
     }
 
-    public void setFields(List<FieldMapping> fields) {
+    public void setFields(List<Field> fields) {
         this.fields = fields;
     }
 
-    public FieldMapping getField(Long id) {
-        for (FieldMapping field : getFields()) {
+    public Field getField(Long id) {
+        for (Field field : getFields()) {
             if (field.getId().equals(id)) {
                 return field;
             }
@@ -207,8 +207,8 @@ public class EntityMapping {
         return null;
     }
 
-    public FieldMapping getField(String name) {
-        for (FieldMapping field : getFields()) {
+    public Field getField(String name) {
+        for (Field field : getFields()) {
             if (StringUtils.equals(name, field.getName())) {
                 return field;
             }
@@ -217,8 +217,8 @@ public class EntityMapping {
     }
 
     public void removeField(Long fieldId) {
-        for (Iterator<FieldMapping> it = getFields().iterator(); it.hasNext(); ) {
-            FieldMapping field = it.next();
+        for (Iterator<Field> it = getFields().iterator(); it.hasNext(); ) {
+            Field field = it.next();
             if (Objects.equals(field.getId(), fieldId)) {
                 it.remove();
                 break;
@@ -226,17 +226,17 @@ public class EntityMapping {
         }
     }
 
-    public void addField(FieldMapping field) {
+    public void addField(Field field) {
         getFields().add(field);
     }
 
-    public void addLookup(LookupMapping lookup) {
+    public void addLookup(Lookup lookup) {
         getLookups().add(lookup);
     }
 
     public void removeLookup(Long lookupId) {
-        for (Iterator<LookupMapping> it = getLookups().iterator(); it.hasNext(); ) {
-            LookupMapping lookup = it.next();
+        for (Iterator<Lookup> it = getLookups().iterator(); it.hasNext(); ) {
+            Lookup lookup = it.next();
             if (Objects.equals(lookup.getId(), lookupId)) {
                 it.remove();
                 break;
@@ -244,8 +244,8 @@ public class EntityMapping {
         }
     }
 
-    public LookupMapping getLookupById(Long lookupId) {
-        for (LookupMapping lookup : getLookups()) {
+    public Lookup getLookupById(Long lookupId) {
+        for (Lookup lookup : getLookups()) {
             if (Objects.equals(lookupId, lookup.getId())) {
                 return lookup;
             }
@@ -255,13 +255,13 @@ public class EntityMapping {
 
     public void updateFromDraft(EntityDraft draft) {
         getFields().clear();
-        for (FieldMapping field : draft.getFields()) {
+        for (Field field : draft.getFields()) {
             addField(field.copy());
         }
 
         getLookups().clear();
-        for (LookupMapping lookup : draft.getLookups()) {
-            LookupMapping copy = lookup.copy();
+        for (Lookup lookup : draft.getLookups()) {
+            Lookup copy = lookup.copy();
             copy.setEntity(this);
             addLookup(copy);
         }
@@ -286,13 +286,12 @@ public class EntityMapping {
     public AdvancedSettingsDto advancedSettingsDto() {
         AdvancedSettingsDto advancedSettingsDto = new AdvancedSettingsDto();
 
-        RestOptionsMapping restOptionsMapping = getRestOptions();
-        RestOptionsDto restDto = (restOptionsMapping == null)
+        RestOptionsDto restDto = (restOptions == null)
                 ? new RestOptionsDto()
-                : restOptionsMapping.toDto();
+                : restOptions.toDto();
 
         List<LookupDto> indexes = new ArrayList<>();
-        for (LookupMapping lookup : getLookups()) {
+        for (Lookup lookup : getLookups()) {
             indexes.add(lookup.toDto());
         }
 
@@ -300,10 +299,9 @@ public class EntityMapping {
         advancedSettingsDto.setEntityId(getId());
         advancedSettingsDto.setRestOptions(restDto);
 
-        TrackingMapping trackingMapping = getTracking();
-        TrackingDto trackingDto = (trackingMapping == null)
+        TrackingDto trackingDto = (tracking == null)
                 ? new TrackingDto()
-                : trackingMapping.toDto();
+                : tracking.toDto();
         advancedSettingsDto.setTracking(trackingDto);
 
         return advancedSettingsDto;
@@ -320,17 +318,17 @@ public class EntityMapping {
 
         if (null != dto) {
             if (null == restOptions) {
-                restOptions = new RestOptionsMapping(this);
+                restOptions = new RestOptions(this);
             }
 
             restOptions.update(dto);
 
-            for (LookupMapping lookup : getLookups()) {
+            for (Lookup lookup : getLookups()) {
                 boolean isExposedViaRest = dto.containsLookupId(lookup.getId());
                 lookup.setExposedViaRest(isExposedViaRest);
             }
 
-            for (FieldMapping field : getFields()) {
+            for (Field field : getFields()) {
                 boolean isExposedViaRest = dto.containsFieldId(field.getId());
                 field.setExposedViaRest(isExposedViaRest);
             }
@@ -339,8 +337,8 @@ public class EntityMapping {
 
     private void updateIndexes(AdvancedSettingsDto advancedSettings) {
         // deletion
-        for (Iterator<LookupMapping> it = getLookups().iterator(); it.hasNext(); ) {
-            LookupMapping lookup = it.next();
+        for (Iterator<Lookup> it = getLookups().iterator(); it.hasNext(); ) {
+            Lookup lookup = it.next();
 
             boolean inNewList = false;
             for (LookupDto lookupDto : advancedSettings.getIndexes()) {
@@ -356,9 +354,9 @@ public class EntityMapping {
         }
 
         for (LookupDto lookupDto : advancedSettings.getIndexes()) {
-            LookupMapping lookup = getLookupById(lookupDto.getId());
+            Lookup lookup = getLookupById(lookupDto.getId());
             if (lookup == null) {
-                LookupMapping newLookup = new LookupMapping(lookupDto);
+                Lookup newLookup = new Lookup(lookupDto);
                 addLookup(newLookup);
             } else {
                 lookup.update(lookupDto);
@@ -366,11 +364,11 @@ public class EntityMapping {
         }
     }
 
-    public RestOptionsMapping getRestOptions() {
+    public RestOptions getRestOptions() {
         return restOptions;
     }
 
-    public void setRestOptions(RestOptionsMapping restOptions) {
+    public void setRestOptions(RestOptions restOptions) {
         this.restOptions = restOptions;
     }
 
@@ -379,7 +377,7 @@ public class EntityMapping {
 
         if (null != trackingDto) {
             if (null == tracking) {
-                tracking = new TrackingMapping(this);
+                tracking = new Tracking(this);
             }
 
             tracking.setAllowCreate(trackingDto.isAllowCreate());
@@ -387,18 +385,18 @@ public class EntityMapping {
             tracking.setAllowUpdate(trackingDto.isAllowUpdate());
             tracking.setAllowDelete(trackingDto.isAllowDelete());
 
-            for (FieldMapping field : getFields()) {
+            for (Field field : getFields()) {
                 boolean isTracked = trackingDto.getFields().contains(field.getId());
                 field.setTracked(isTracked);
             }
         }
     }
 
-    public TrackingMapping getTracking() {
+    public Tracking getTracking() {
         return tracking;
     }
 
-    public void setTracking(TrackingMapping tracking) {
+    public void setTracking(Tracking tracking) {
         this.tracking = tracking;
     }
 }
