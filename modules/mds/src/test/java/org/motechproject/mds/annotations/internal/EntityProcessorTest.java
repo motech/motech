@@ -12,7 +12,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
-import org.osgi.framework.Bundle;
 
 import java.io.File;
 import java.lang.reflect.AnnotatedElement;
@@ -24,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -40,6 +38,9 @@ public class EntityProcessorTest {
     @Mock
     private FieldProcessor fieldProcessor;
 
+    @Mock
+    private UIFilterableProcessor uiFilterableProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -50,6 +51,7 @@ public class EntityProcessorTest {
         processor = new EntityProcessor();
         processor.setEntityService(entityService);
         processor.setFieldProcessor(fieldProcessor);
+        processor.setUIFilterableProcessor(uiFilterableProcessor);
         processor.setBundle(bundle);
     }
 
@@ -79,9 +81,13 @@ public class EntityProcessorTest {
         processor.process(Sample.class);
 
         verify(entityService).createEntity(captor.capture());
+
         verify(fieldProcessor).setClazz(Sample.class);
         verify(fieldProcessor).setEntity(any(EntityDto.class));
         verify(fieldProcessor).execute();
+
+        verify(uiFilterableProcessor).setClazz(Sample.class);
+        verify(uiFilterableProcessor).execute();
 
         EntityDto value = captor.getValue();
 

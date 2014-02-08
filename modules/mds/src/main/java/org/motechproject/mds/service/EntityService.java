@@ -65,4 +65,6 @@ public interface EntityService {
     List<PreviousRecord> getPreviousRecords(Long instanceId);
 
     void addFields(EntityDto entity, List<FieldDto> fields);
+
+    void addFilterableFields(EntityDto entityDto, List<String> fieldNames);
 }

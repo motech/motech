@@ -425,6 +425,19 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
     }
 
+    @Override
+    @Transactional
+    public void addFilterableFields(EntityDto entityDto, List<String> fieldNames) {
+        Entity entity = allEntities.retrieveById(entityDto.getId());
+
+        assertEntityExists(entity);
+
+        for (String fieldName : fieldNames) {
+            Field field = entity.getField(fieldName);
+            field.setUIFilterable(true);
+        }
+    }
+
     private void assertEntityExists(Entity entity) {
         if (entity == null) {
             throw new EntityNotFoundException();

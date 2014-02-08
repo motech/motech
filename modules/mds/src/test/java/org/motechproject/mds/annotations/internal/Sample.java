@@ -5,6 +5,7 @@ import org.motechproject.mds.annotations.Entity;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.annotations.Lookup;
+import org.motechproject.mds.annotations.UIFilterable;
 
 import java.util.Date;
 
@@ -13,8 +14,10 @@ public class Sample {
     // test class
 
     @Field
+    @UIFilterable
     private Boolean world;
 
+    @UIFilterable
     public Integer pi;
 
     @Ignore
@@ -40,6 +43,7 @@ public class Sample {
     }
 
     @Field(displayName = "Server Date")
+    @UIFilterable
     public Date getServerDate() {
         return serverDate;
     }
