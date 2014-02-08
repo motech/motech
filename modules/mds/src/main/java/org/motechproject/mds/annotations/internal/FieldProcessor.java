@@ -2,6 +2,7 @@ package org.motechproject.mds.annotations.internal;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -223,20 +224,22 @@ class FieldProcessor extends AbstractProcessor {
             boolean isNotFromObject = method.getDeclaringClass() != Object.class;
             boolean isGetter = startsWithIgnoreCase(method.getName(), GETTER_PREFIX);
             boolean isSetter = startsWithIgnoreCase(method.getName(), SETTER_PREFIX);
+            boolean hasIgnoreAnnotation = hasAnnotation(method, Ignore.class);
 
-            return isNotFromObject && (isGetter || isSetter);
+            return (isNotFromObject && (isGetter || isSetter)) && !hasIgnoreAnnotation;
         }
 
         @Override
         public boolean matches(java.lang.reflect.Field field) {
-            boolean hasAnnotation = hasAnnotation(field);
+            boolean hasFieldAnnotation = hasAnnotation(field, Field.class);
+            boolean hasIgnoreAnnotation = hasAnnotation(field, Ignore.class);
             boolean isPublic = Modifier.isPublic(field.getModifiers());
 
-            return hasAnnotation || isPublic;
+            return (hasFieldAnnotation || isPublic) && !hasIgnoreAnnotation;
         }
 
-        private boolean hasAnnotation(AccessibleObject obj) {
-            return AnnotationUtils.getAnnotation(obj, Field.class) != null;
+        private boolean hasAnnotation(AccessibleObject obj, Class annotationClass) {
+            return AnnotationUtils.getAnnotation(obj, annotationClass) != null;
         }
 
     }
