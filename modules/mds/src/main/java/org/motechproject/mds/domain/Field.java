@@ -1,5 +1,6 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
@@ -103,17 +104,27 @@ public class Field {
             metaDto.add(meta.toDto());
         }
 
-        FieldValidationDto valiDto = new FieldValidationDto();
-        for (FieldValidation validation : validations) {
-            valiDto.addCriterion(validation.toDto());
+        FieldValidationDto validationDto = null;
+
+        if (CollectionUtils.isNotEmpty(validations)) {
+            validationDto = new FieldValidationDto();
+            for (FieldValidation validation : validations) {
+                validationDto.addCriterion(validation.toDto());
+            }
         }
 
-        List<SettingDto> settingDto = new ArrayList<>();
-        for (FieldSetting setting : settings) {
-            settingDto.add(setting.toDto());
+        List<SettingDto> settingsDto = null;
+
+        if (CollectionUtils.isNotEmpty(settings)) {
+            settingsDto = new ArrayList<>();
+            for (FieldSetting setting : settings) {
+                settingsDto.add(setting.toDto());
+            }
         }
 
-        return new FieldDto(id, entity.getId(), type.toDto(), basic, metaDto, valiDto, settingDto);
+        return new FieldDto(
+                id, entity.getId(), type.toDto(), basic, metaDto, validationDto, settingsDto
+        );
     }
 
     public String getDisplayName() {
