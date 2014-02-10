@@ -7,6 +7,7 @@ import org.motechproject.mds.service.AvailableTypeService;
 import org.motechproject.mds.service.BaseMdsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class AvailableTypeServiceImpl extends BaseMdsService implements Availabl
     private AllAvailableTypes allAvailableTypes;
 
     @Override
+    @Transactional
     public List<AvailableTypeDto> getAll() {
         List<AvailableType> availableTypes = allAvailableTypes.retrieveAll();
         List<AvailableTypeDto> list = new ArrayList<>();
