@@ -9,6 +9,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+/**
+ * The <code>FieldMetadata</code> class contains information about a single metadata added into
+ * a field.
+ */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class FieldMetadata {
 

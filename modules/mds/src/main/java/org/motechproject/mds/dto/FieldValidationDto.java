@@ -44,10 +44,6 @@ public class FieldValidationDto {
             new ValidationCriterionDto("mds.field.validation.maxLength", TypeDto.INTEGER)
     );
 
-    public FieldValidationDto() {
-        this(null);
-    }
-
     public FieldValidationDto(ValidationCriterionDto... criteria) {
         this.criteria = new LinkedList<>();
 
@@ -57,6 +53,10 @@ public class FieldValidationDto {
                         criterion.getValue(), criterion.isEnabled()));
             }
         }
+    }
+
+    public void addCriterion(ValidationCriterionDto criterion) {
+        criteria.add(criterion);
     }
 
     public List<ValidationCriterionDto> getCriteria() {

@@ -97,8 +97,8 @@ public class LookupProcessor extends AbstractProcessor {
             String[] splitName = StringUtils.splitByCharacterTypeCamelCase(methodName);
             StringBuilder stringBuilder = new StringBuilder();
             for (String word : splitName) {
-                word = StringUtils.capitalize(word);
-                stringBuilder.append(word + " ");
+                String capitalize = StringUtils.capitalize(word);
+                stringBuilder.append(capitalize).append(" ");
             }
             stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(" "));
             return stringBuilder.toString();

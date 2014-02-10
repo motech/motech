@@ -30,10 +30,10 @@ public class EntityMetadataBuilderTest {
     @Test
     public void shouldCreateBaseEntity() throws Exception {
         JDOMetadata mainMetadata = new JDOMetadataImpl();
-        Entity mapping = new Entity();
-        mapping.setClassName(CLASS_NAME);
+        Entity entity = new Entity();
+        entity.setClassName(CLASS_NAME);
 
-        entityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
+        entityMetadataBuilder.createBaseEntity(mainMetadata, entity);
 
         assertEquals(1, mainMetadata.getNumberOfPackages());
 
@@ -60,12 +60,12 @@ public class EntityMetadataBuilderTest {
 
     private ClassMetadata getClassMetadata(String module, String namespace) {
         JDOMetadata mainMetadata = new JDOMetadataImpl();
-        Entity mapping = new Entity();
-        mapping.setClassName(CLASS_NAME);
-        mapping.setModule(module);
-        mapping.setNamespace(namespace);
+        Entity entity = new Entity();
+        entity.setClassName(CLASS_NAME);
+        entity.setModule(module);
+        entity.setNamespace(namespace);
 
-        entityMetadataBuilder.createBaseEntity(mainMetadata, mapping);
+        entityMetadataBuilder.createBaseEntity(mainMetadata, entity);
         return mainMetadata.getPackages()[0].getClasses()[0];
     }
 }

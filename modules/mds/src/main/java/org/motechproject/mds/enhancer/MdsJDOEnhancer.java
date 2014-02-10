@@ -31,13 +31,14 @@ public class MdsJDOEnhancer extends JDOEnhancer {
         setVerbose(true);
     }
 
-    public EnhancedClassData enhance(Entity mapping, byte[] originalBytes, ClassLoader tmpClassLoader)
+    public EnhancedClassData enhance(Entity entity, byte[] originalBytes,
+                                     ClassLoader tmpClassLoader)
             throws IOException {
-        String className = mapping.getClassName();
+        String className = entity.getClassName();
 
         setClassLoader(tmpClassLoader);
 
-        JDOMetadata metadata = metadataBuilder.createBaseEntity(newMetadata(), mapping);
+        JDOMetadata metadata = metadataBuilder.createBaseEntity(newMetadata(), entity);
 
         registerMetadata(metadata);
         addClass(className, originalBytes);

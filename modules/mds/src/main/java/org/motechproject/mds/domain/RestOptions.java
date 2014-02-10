@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code>RestOptionsMapping</code> class representing rest options of given entity. This class
+ * The <code>RestOptions</code> class representing rest options of given entity. This class
  * is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")

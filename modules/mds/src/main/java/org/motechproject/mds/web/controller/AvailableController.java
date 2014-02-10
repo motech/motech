@@ -2,7 +2,7 @@ package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.AvailableTypeDto;
-import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.service.AvailableTypeService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.AvailableTypeDisplayNameComparator;
@@ -33,12 +33,12 @@ import static org.motechproject.mds.constants.Constants.Roles;
 @Controller
 public class AvailableController extends MdsController {
     private MessageSource messageSource;
-    private TypeService typeService;
+    private AvailableTypeService availableTypeService;
 
     @RequestMapping(value = "/available/types", method = RequestMethod.GET)
     @ResponseBody
     public SelectResult<AvailableTypeDto> getTypes(SelectData data) {
-        List<AvailableTypeDto> list = typeService.getAllFieldTypes();
+        List<AvailableTypeDto> list = availableTypeService.getAll();
 
         CollectionUtils.filter(list, new AvailableTypeMatcher(data.getTerm(), messageSource));
         Collections.sort(list, new AvailableTypeDisplayNameComparator(messageSource));
@@ -68,8 +68,9 @@ public class AvailableController extends MdsController {
     }
 
     @Autowired
-    public AvailableController(MessageSource messageSource, TypeService typeService) {
+    public AvailableController(MessageSource messageSource,
+                               AvailableTypeService availableTypeService) {
         this.messageSource = messageSource;
-        this.typeService = typeService;
+        this.availableTypeService = availableTypeService;
     }
 }

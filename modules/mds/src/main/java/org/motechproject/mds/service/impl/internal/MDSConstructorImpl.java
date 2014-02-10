@@ -12,7 +12,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntityMappings;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +33,16 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
-    private AllEntityMappings allEntityMappings;
+    private AllEntities allEntities;
 
     @Override
     @Transactional
-    public void constructEntity(Entity mapping) {
-        CtClass existingClass = MotechClassPool.getDefault().getOrNull(mapping.getClassName());
+    public void constructEntity(Entity entity) {
+        CtClass existingClass = MotechClassPool.getDefault().getOrNull(entity.getClassName());
 
         if (existingClass == null) {
             // just add a class
-            constructEntity(mapping, new MDSClassLoader());
+            constructEntity(entity, new MDSClassLoader());
         } else {
             // editing a class requires reloading the classLoader and regenerating the entities
             MDSClassLoader.reloadClassLoader();
@@ -50,19 +50,19 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
         }
     }
 
-    private void constructEntity(Entity mapping, MDSClassLoader tmpClassLoader) {
+    private void constructEntity(Entity entity, MDSClassLoader tmpClassLoader) {
         try {
-            ClassData classData = entityBuilder.build(mapping);
+            ClassData classData = entityBuilder.build(entity);
 
             // we need a temporary classloader to define initial classes before enhancement
             tmpClassLoader.defineClass(classData);
 
-            EnhancedClassData enhancedClassData = enhancer.enhance(mapping, classData.getBytecode(), tmpClassLoader);
+            EnhancedClassData enhancedClassData = enhancer.enhance(entity, classData.getBytecode(), tmpClassLoader);
 
             Class<?> clazz = MDSClassLoader.getInstance().defineClass(enhancedClassData);
 
             JDOMetadata jdoMetadata = metadataBuilder.createBaseEntity(
-                    getPersistenceManagerFactory().newMetadata(), mapping);
+                    getPersistenceManagerFactory().newMetadata(), entity);
 
             getPersistenceManagerFactory().registerMetadata(jdoMetadata);
 
@@ -76,9 +76,9 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     public void generateAllEntities() {
         MDSClassLoader tmpClassLoader = new MDSClassLoader();
 
-        List<Entity> mappings = allEntityMappings.getAllEntities();
+        List<Entity> entities = allEntities.retrieveAll();
 
-        for (Entity mapping : mappings) {
+        for (Entity mapping : entities) {
             if (!mapping.isDraft() && !mapping.isReadOnly()) {
                 constructEntity(mapping, tmpClassLoader);
             }
@@ -117,7 +117,7 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     }
 
     @Autowired
-    public void setAllEntityMappings(AllEntityMappings allEntityMappings) {
-        this.allEntityMappings = allEntityMappings;
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
     }
 }

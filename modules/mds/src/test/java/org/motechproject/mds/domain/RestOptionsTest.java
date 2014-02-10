@@ -50,16 +50,16 @@ public class RestOptionsTest {
     }
 
     private static Field createField(boolean exposedViaRest) {
-        Field mapping = new Field();
-        mapping.setExposedViaRest(exposedViaRest);
+        Field field = new Field();
+        field.setExposedViaRest(exposedViaRest);
 
-        return mapping;
+        return field;
     }
 
     private static Lookup createLookup(boolean exposedViaRest) {
-        Lookup mapping = new Lookup();
-        mapping.setExposedViaRest(exposedViaRest);
+        Lookup lookup = new Lookup();
+        lookup.setExposedViaRest(exposedViaRest);
 
-        return mapping;
+        return lookup;
     }
 }

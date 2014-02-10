@@ -9,7 +9,7 @@ import org.motechproject.mds.domain.Entity;
  */
 public interface MDSConstructor {
 
-    void constructEntity(Entity mapping);
+    void constructEntity(Entity entity);
 
     void generateAllEntities();
 }

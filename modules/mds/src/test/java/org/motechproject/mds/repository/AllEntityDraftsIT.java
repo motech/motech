@@ -21,7 +21,7 @@ public class AllEntityDraftsIT extends BaseIT {
     private static final String USERNAME_2 = USERNAME + "2";
 
     @Autowired
-    private AllEntityMappings allEntityMappings;
+    private AllEntities allEntities;
 
     @Autowired
     private AllEntityDrafts allEntityDrafts;
@@ -36,30 +36,30 @@ public class AllEntityDraftsIT extends BaseIT {
         EntityDto dto = new EntityDto();
         dto.setClassName("DraftCls");
 
-        Entity entity = allEntityMappings.save(dto);
+        Entity entity = allEntities.create(dto);
 
-        allEntityDrafts.createDraft(entity, USERNAME);
-        allEntityDrafts.createDraft(entity, USERNAME_2);
+        allEntityDrafts.create(entity, USERNAME);
+        allEntityDrafts.create(entity, USERNAME_2);
 
-        EntityDraft draft = allEntityDrafts.getDraft(entity, USERNAME);
+        EntityDraft draft = allEntityDrafts.retrieve(entity, USERNAME);
 
         assertNotNull(draft);
         assertEquals("DraftCls", draft.getClassName());
         assertEquals(USERNAME, draft.getDraftOwnerUsername());
 
-        draft = allEntityDrafts.getDraft(entity, USERNAME_2);
+        draft = allEntityDrafts.retrieve(entity, USERNAME_2);
 
         assertNotNull(draft);
         assertEquals("DraftCls", draft.getClassName());
         assertEquals(USERNAME_2, draft.getDraftOwnerUsername());
 
-        assertNull(allEntityDrafts.getDraft(entity, "otherUser"));
+        assertNull(allEntityDrafts.retrieve(entity, "otherUser"));
 
-        allEntityDrafts.deleteAllDraftsForEntity(entity);
+        allEntityDrafts.deleteAll(entity);
 
-        assertTrue(allEntityDrafts.getAllEntityDrafts(entity).isEmpty());
-        assertNull(allEntityDrafts.getDraft(entity, USERNAME));
-        assertNull(allEntityDrafts.getDraft(entity, USERNAME_2));
+        assertTrue(allEntityDrafts.retrieveAll(entity).isEmpty());
+        assertNull(allEntityDrafts.retrieve(entity, USERNAME));
+        assertNull(allEntityDrafts.retrieve(entity, USERNAME_2));
     }
 
     @Test(expected = JDOException.class)
@@ -67,9 +67,9 @@ public class AllEntityDraftsIT extends BaseIT {
         EntityDto dto = new EntityDto();
         dto.setClassName("DraftCls2");
 
-        Entity entity = allEntityMappings.save(dto);
+        Entity entity = allEntities.create(dto);
 
-        allEntityDrafts.createDraft(entity, USERNAME);
-        allEntityDrafts.createDraft(entity, USERNAME);
+        allEntityDrafts.create(entity, USERNAME);
+        allEntityDrafts.create(entity, USERNAME);
     }
 }

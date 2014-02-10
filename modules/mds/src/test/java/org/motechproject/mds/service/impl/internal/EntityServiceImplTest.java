@@ -9,8 +9,8 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
-import org.motechproject.mds.repository.AllEntityMappings;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,7 +21,7 @@ public class EntityServiceImplTest {
     private static final String CLASS_NAME = String.format("%s.Sample", Packages.ENTITY);
 
     @Mock
-    private AllEntityMappings allEntityMappings;
+    private AllEntities allEntities;
 
     @Mock
     private AllEntityDrafts allEntityDrafts;
@@ -41,18 +41,18 @@ public class EntityServiceImplTest {
     @Test(expected = EntityAlreadyExistException.class)
     public void shouldNotCreateTwiceSameEntity() throws Exception {
         when(entityDto.getClassName()).thenReturn(CLASS_NAME);
-        when(allEntityMappings.containsEntity(CLASS_NAME)).thenReturn(true);
+        when(allEntities.contains(CLASS_NAME)).thenReturn(true);
 
         entityService.createEntity(entityDto);
     }
 
     @Test
     public void shouldDeleteDraftsAndEntities() {
-        when(allEntityMappings.getEntityById(1L)).thenReturn(entity);
+        when(allEntities.retrieveById(1L)).thenReturn(entity);
 
         entityService.deleteEntity(1L);
 
-        verify(allEntityDrafts).deleteAllDraftsForEntity(entity);
-        verify(allEntityMappings).delete(entity);
+        verify(allEntityDrafts).deleteAll(entity);
+        verify(allEntities).delete(entity);
     }
 }

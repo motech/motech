@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface EntityService {
 
-    EntityDto createEntity(EntityDto entity) throws IOException;
+    EntityDto createEntity(EntityDto entityDto) throws IOException;
 
     List<EntityDto> listEntities();
 

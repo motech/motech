@@ -7,10 +7,8 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
-import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.testutil.DraftBuilder;
 import org.motechproject.mds.web.DraftData;
@@ -140,9 +138,6 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void shouldRetrieveAllWorkInProgress() throws IOException {
-        typeService.createFieldType(new AvailableTypeDto("defName",
-                new TypeDto("disp", "desc", Integer.class.getName())), null);
-
         EntityDto entityDto = new EntityDto();
 
         entityDto.setName("WIP1");
@@ -168,9 +163,6 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void testDraftWorkflow() throws IOException {
-        typeService.createFieldType(new AvailableTypeDto("defName",
-                new TypeDto("disp", "desc", Integer.class.getName())), null);
-
         EntityDto entityDto = new EntityDto();
         entityDto.setName("DraftTest");
         entityDto = entityService.createEntity(entityDto);
@@ -214,7 +206,7 @@ public class EntityServiceIT extends BaseIT {
         entityService.commitChanges(entityId);
 
         // check if changes were persisted in db
-        Entity entityFromDb = getEntityMappings().get(0);
+        Entity entityFromDb = getEntities().get(0);
         assertEquals(1, entityFromDb.getFields().size());
 
         Field fieldFromDb = entityFromDb.getField("f1name");

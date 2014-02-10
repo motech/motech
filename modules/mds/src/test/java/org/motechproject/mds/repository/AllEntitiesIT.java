@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.mds.constants.Constants.Packages;
 
-public class AllEntityMappingsIT extends BaseIT {
+public class AllEntitiesIT extends BaseIT {
     private static final String SAMPLE_CLASS = String.format("%s.Sample", Packages.ENTITY);
     private static final String EXAMPLE_CLASS = String.format("%s.Example", Packages.ENTITY);
     private static final String FOO_CLASS = String.format("%s.Foo", Packages.ENTITY);
@@ -35,7 +35,7 @@ public class AllEntityMappingsIT extends BaseIT {
     private static final String EXAMPLE_LOOKUP_2 = "ExampleLookup2";
 
     @Autowired
-    private AllEntityMappings allEntityMappings;
+    private AllEntities allEntities;
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +68,7 @@ public class AllEntityMappingsIT extends BaseIT {
         EntityDto entity = new EntityDto();
         entity.setClassName(BAR_CLASS);
 
-        allEntityMappings.save(entity);
+        allEntities.create(entity);
 
         assertTrue(
                 String.format("Not found %s in database", BAR_CLASS),
@@ -81,7 +81,7 @@ public class AllEntityMappingsIT extends BaseIT {
         for (String className : Arrays.asList(SAMPLE_CLASS, EXAMPLE_CLASS, FOO_CLASS)) {
             assertTrue(
                     String.format("Not found %s in database", className),
-                    allEntityMappings.containsEntity(className)
+                    allEntities.contains(className)
             );
         }
     }
@@ -90,7 +90,7 @@ public class AllEntityMappingsIT extends BaseIT {
     public void shouldNotFindExistingEntity() throws Exception {
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(BAR_CLASS)
+                allEntities.contains(BAR_CLASS)
         );
     }
 
@@ -99,11 +99,11 @@ public class AllEntityMappingsIT extends BaseIT {
         EntityDto entity = new EntityDto();
         entity.setClassName(BAR_CLASS);
 
-        allEntityMappings.save(entity);
+        allEntities.create(entity);
 
         assertTrue(
                 String.format("Not found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(BAR_CLASS)
+                allEntities.contains(BAR_CLASS)
         );
 
         Query query = getPersistenceManager().newQuery(Entity.class);
@@ -113,32 +113,32 @@ public class AllEntityMappingsIT extends BaseIT {
 
         Entity found = (Entity) query.execute(BAR_CLASS);
 
-        allEntityMappings.delete(found.getId());
+        allEntities.delete(found.getId());
 
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
-                allEntityMappings.containsEntity(BAR_CLASS)
+                allEntities.contains(BAR_CLASS)
         );
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldThrowExceptionWhenDeletingNotExistingEntity() throws Exception {
-        allEntityMappings.delete(1000L);
+        allEntities.delete(1000L);
     }
 
     @Test
     public void shouldCascadeSaveLookup() throws Exception {
         Lookup lookup = new Lookup(SAMPLE_LOOKUP, true, false);
-        Entity entity = getEntityMappings().get(0);
+        Entity entity = getEntities().get(0);
         List<Lookup> lookupSet = new LinkedList<>();
         lookupSet.add(lookup);
         entity.setLookups(lookupSet);
 
-        int indexOfLookup = getLookupMappings().indexOf(lookup);
+        int indexOfLookup = getLookups().indexOf(lookup);
         assertTrue(String.format("'%s' not found in database", SAMPLE_LOOKUP), indexOfLookup >= 0);
         assertEquals("Lookup was not associated with an entity",
                 entity,
-                getLookupMappings().get(indexOfLookup).getEntity());
+                getLookups().get(indexOfLookup).getEntity());
     }
 
     @Test
@@ -151,10 +151,10 @@ public class AllEntityMappingsIT extends BaseIT {
         Entity found = (Entity) query.execute(EXAMPLE_CLASS_WITH_LOOKUPS);
         List<Lookup> lookups = new ArrayList<>(found.getLookups());
 
-        allEntityMappings.delete(found.getId());
+        allEntities.delete(found.getId());
 
-        assertFalse("Lookup was not deleted", getLookupMappings().contains(lookups.get(0)));
-        assertFalse("Lookup was not deleted", getLookupMappings().contains(lookups.get(1)));
+        assertFalse("Lookup was not deleted", getLookups().contains(lookups.get(0)));
+        assertFalse("Lookup was not deleted", getLookups().contains(lookups.get(1)));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class AllEntityMappingsIT extends BaseIT {
             }
         }
 
-        for (Lookup lookup : getLookupMappings()) {
+        for (Lookup lookup : getLookups()) {
             if (EXAMPLE_LOOKUP_1.equals(lookup.getLookupName())) {
                 assertEquals("Lookup was not updated properly", false, lookup.isSingleObjectReturn());
                 assertEquals("Lookup was not updated properly", false, lookup.isExposedViaRest());

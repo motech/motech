@@ -1,8 +1,5 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.dto.AvailableTypeDto;
-import org.motechproject.mds.dto.FieldValidationDto;
-import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 
 import java.util.List;
@@ -13,11 +10,7 @@ import java.util.List;
  */
 public interface TypeService {
 
-    void createFieldType(AvailableTypeDto type, FieldValidationDto validation, SettingDto... settings);
+    List<TypeDto> getAllTypes();
 
-    List<AvailableTypeDto> getAllFieldTypes();
-
-    void deleteFieldType(String name);
-
-    TypeDto findType(Class<?> classType);
+    TypeDto findType(Class<?> clazz);
 }

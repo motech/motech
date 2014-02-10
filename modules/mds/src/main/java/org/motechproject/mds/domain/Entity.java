@@ -33,8 +33,8 @@ import static org.motechproject.mds.constants.Constants.Util.ENTITY;
 import static org.motechproject.mds.constants.Constants.Util.TRUE;
 
 /**
- * The <code>EntityMapping</code> class contains basic information about an entity. This class is
- * related with table in database with the same name.
+ * The <code>Entity</code> class contains information about an entity. Also it contains
+ * information about advanced settings related with the entity.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
@@ -153,8 +153,8 @@ public class Entity {
     public List<LookupDto> getLookupsDtos() {
         List<LookupDto> dtos = new ArrayList<>();
 
-        for (Lookup mapping : lookups) {
-            dtos.add(mapping.toDto());
+        for (Lookup lookup : lookups) {
+            dtos.add(lookup.toDto());
         }
         return dtos;
     }
@@ -218,7 +218,9 @@ public class Entity {
     }
 
     public void removeField(Long fieldId) {
-        for (Iterator<Field> it = getFields().iterator(); it.hasNext(); ) {
+        Iterator<Field> it = getFields().iterator();
+
+        while (it.hasNext()) {
             Field field = it.next();
             if (Objects.equals(field.getId(), fieldId)) {
                 it.remove();
@@ -236,7 +238,9 @@ public class Entity {
     }
 
     public void removeLookup(Long lookupId) {
-        for (Iterator<Lookup> it = getLookups().iterator(); it.hasNext(); ) {
+        Iterator<Lookup> it = getLookups().iterator();
+
+        while (it.hasNext()) {
             Lookup lookup = it.next();
             if (Objects.equals(lookup.getId(), lookupId)) {
                 it.remove();
@@ -341,7 +345,9 @@ public class Entity {
 
     private void updateIndexes(AdvancedSettingsDto advancedSettings) {
         // deletion
-        for (Iterator<Lookup> it = getLookups().iterator(); it.hasNext(); ) {
+        Iterator<Lookup> it = getLookups().iterator();
+
+        while (it.hasNext()) {
             Lookup lookup = it.next();
 
             boolean inNewList = false;

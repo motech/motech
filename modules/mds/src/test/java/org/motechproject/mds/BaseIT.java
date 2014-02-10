@@ -1,16 +1,11 @@
 package org.motechproject.mds;
 
 import org.junit.runner.RunWith;
-import org.motechproject.mds.domain.AvailableFieldType;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.domain.RestOptions;
-import org.motechproject.mds.domain.SettingOptions;
-import org.motechproject.mds.domain.TypeSettings;
-import org.motechproject.mds.domain.TypeValidation;
-import org.motechproject.mds.domain.ValidationCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,8 +45,8 @@ public abstract class BaseIT {
     }
 
     protected boolean containsEntity(String className) {
-        for (Entity mapping : getEntityMappings()) {
-            if (className.equalsIgnoreCase(mapping.getClassName())) {
+        for (Entity entity : getEntities()) {
+            if (className.equalsIgnoreCase(entity.getClassName())) {
                 return true;
             }
         }
@@ -60,8 +55,8 @@ public abstract class BaseIT {
     }
 
     protected boolean containsLookup(String lookupName) {
-        for (Lookup mapping : getLookupMappings()) {
-            if (lookupName.equalsIgnoreCase(mapping.getLookupName())) {
+        for (Lookup lookup : getLookups()) {
+            if (lookupName.equalsIgnoreCase(lookup.getLookupName())) {
                 return true;
             }
         }
@@ -69,7 +64,7 @@ public abstract class BaseIT {
         return false;
     }
 
-    protected List<Entity> getEntityMappings() {
+    protected List<Entity> getEntities() {
         return getAll(Entity.class);
     }
 
@@ -77,49 +72,19 @@ public abstract class BaseIT {
         return getAll(EntityDraft.class);
     }
 
-    protected List<Field> getFieldMappings() {
+    protected List<Field> getFields() {
         return getAll(Field.class);
     }
 
-    protected List<Lookup> getLookupMappings() {
+    protected List<Lookup> getLookups() {
         return getAll(Lookup.class);
     }
 
-    protected List<TypeSettings> getTypeSettingsMappings() {
-        return getAll(TypeSettings.class);
-    }
-
-    protected List<TypeValidation> getTypeValidationMappings() {
-        return getAll(TypeValidation.class);
-    }
-
-    protected List<ValidationCriterion> getValidationCriterionMappings() {
-        return getAll(ValidationCriterion.class);
-    }
-
-    protected List<AvailableFieldType> getAvailableFieldTypeMappings() {
-        return getAll(AvailableFieldType.class);
-    }
-
-    protected List<SettingOptions> getSettingsOptionMappings() {
-        return getAll(SettingOptions.class);
-    }
-
-
-    protected List<RestOptions> getEntityRestOptionsMappings() {
-        return getAll(RestOptions.class);
-    }
-
     protected void clearDB() {
-        getPersistenceManager().deletePersistentAll(getValidationCriterionMappings());
-        getPersistenceManager().deletePersistentAll(getFieldMappings());
-        getPersistenceManager().deletePersistentAll(getTypeValidationMappings());
-        getPersistenceManager().deletePersistentAll(getSettingsOptionMappings());
-        getPersistenceManager().deletePersistentAll(getTypeSettingsMappings());
-        getPersistenceManager().deletePersistentAll(getAvailableFieldTypeMappings());
-        getPersistenceManager().deletePersistentAll(getLookupMappings());
+        getPersistenceManager().deletePersistentAll(getFields());
+        getPersistenceManager().deletePersistentAll(getLookups());
         getPersistenceManager().deletePersistentAll(getEntityDrafts());
-        getPersistenceManager().deletePersistentAll(getEntityMappings());
+        getPersistenceManager().deletePersistentAll(getEntities());
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {

@@ -1,12 +1,10 @@
 package org.motechproject.mds.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
-import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 
 import javax.jdo.annotations.Element;
@@ -22,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The <code>FieldMapping</code> class contains information about a single field
+ * The <code>Field</code> class contains information about a single field.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
 public class Field {
@@ -56,7 +54,7 @@ public class Field {
     private boolean exposedViaRest;
 
     @Persistent
-    private AvailableFieldType type;
+    private Type type;
 
     @Persistent
     private boolean uiDisplayable;
@@ -69,64 +67,53 @@ public class Field {
 
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
-    private List<FieldMetadata> metadata;
+    private List<FieldMetadata> metadata = new ArrayList<>();
 
-    @Persistent(dependent = "TRUE")
-    private TypeValidation validation;
+    @Persistent(mappedBy = "field")
+    @Element(dependent = "true")
+    private List<FieldValidation> validations = new ArrayList<>();
 
     @Persistent(mappedBy = "field")
     @Element(dependent = "TRUE")
-    private List<TypeSettings> typeSettings;
+    private List<FieldSetting> settings = new ArrayList<>();
 
     public Field() {
-        metadata = new ArrayList<>();
-        typeSettings = new ArrayList<>();
+        this(null, null, null);
     }
 
-    public Field(FieldDto field, Entity entity, AvailableFieldType type, TypeValidation validation,
-                 List<TypeSettings> typeSettings) {
+    public Field(Entity entity, String displayName, String name) {
+        this(entity, displayName, name, false, null, null);
+    }
+
+    public Field(Entity entity, String displayName, String name, boolean required,
+                 String defaultValue, String tooltip) {
         this.entity = entity;
-        this.type = type;
-        this.validation = validation;
-        this.displayName = field.getBasic().getDisplayName();
-        this.name = field.getBasic().getName();
-        this.required = field.getBasic().isRequired();
-        this.tooltip = field.getBasic().getTooltip();
-
-        if (field.getBasic().getDefaultValue() != null) {
-            this.defaultValue = field.getBasic().getDefaultValue().toString();
-        }
-
-        metadata = new ArrayList<>();
-
-        for (MetadataDto meta : field.getMetadata()) {
-            metadata.add(new FieldMetadata(this, meta.getKey(), meta.getValue()));
-        }
-
-        this.typeSettings = null != typeSettings
-                ? typeSettings
-                : new ArrayList<TypeSettings>();
+        this.displayName = displayName;
+        this.name = name;
+        this.required = required;
+        this.defaultValue = defaultValue;
+        this.tooltip = tooltip;
     }
 
     public FieldDto toDto() {
-        FieldBasicDto fieldBasic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
-        List<MetadataDto> metadataDto = new ArrayList<>();
+        FieldBasicDto basic = new FieldBasicDto(displayName, name, required, defaultValue, tooltip);
 
-        if (null != metadata) {
-            for (FieldMetadata meta : metadata) {
-                metadataDto.add(meta.toDto());
-            }
+        List<MetadataDto> metaDto = new ArrayList<>();
+        for (FieldMetadata meta : metadata) {
+            metaDto.add(meta.toDto());
         }
 
-        TypeDto basicType = new TypeDto(type.toDto().getType().getDisplayName(), type.toDto().getType().getDisplayName(), type.toDto().getType().getTypeClass());
-        FieldValidationDto validationDto = (validation == null) ? null : validation.toDto();
-
-        List<SettingDto> settingDtos = new ArrayList<>();
-        for (TypeSettings settings : getTypeSettings()) {
-            settingDtos.add(settings.toDto());
+        FieldValidationDto valiDto = new FieldValidationDto();
+        for (FieldValidation validation : validations) {
+            valiDto.addCriterion(validation.toDto());
         }
 
-        return new FieldDto(id, entity.getId(), basicType, fieldBasic, metadataDto, validationDto, settingDtos);
+        List<SettingDto> settingDto = new ArrayList<>();
+        for (FieldSetting setting : settings) {
+            settingDto.add(setting.toDto());
+        }
+
+        return new FieldDto(id, entity.getId(), type.toDto(), basic, metaDto, valiDto, settingDto);
     }
 
     public String getDisplayName() {
@@ -185,20 +172,37 @@ public class Field {
         return id;
     }
 
-    public AvailableFieldType getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(AvailableFieldType type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public TypeValidation getValidation() {
-        return validation;
+    public List<FieldValidation> getValidations() {
+        return validations;
     }
 
-    public void setValidation(TypeValidation validation) {
-        this.validation = validation;
+    public void setValidations(List<FieldValidation> validations) {
+        this.validations = validations;
+    }
+
+    public void addValidation(FieldValidation validation) {
+        this.validations.add(validation);
+    }
+
+    public FieldValidation getValidationByName(String name) {
+        FieldValidation found = null;
+
+        for (FieldValidation validation : validations) {
+            if (validation.getDetails().getDisplayName().equalsIgnoreCase(name)) {
+                found = validation;
+                break;
+            }
+        }
+
+        return found;
     }
 
     public List<FieldMetadata> getMetadata() {
@@ -206,102 +210,75 @@ public class Field {
     }
 
     public void setMetadata(List<FieldMetadata> metadata) {
-        this.metadata = null != metadata
-                ? metadata
-                : new ArrayList<FieldMetadata>();
+        this.metadata = metadata;
     }
 
     public void addMetadata(FieldMetadata metadata) {
-        getMetadata().add(metadata);
+        this.metadata.add(metadata);
     }
 
-    public List<TypeSettings> getTypeSettings() {
-        return typeSettings;
-    }
+    public FieldMetadata getMetadataById(Long id) {
+        FieldMetadata found = null;
 
-    public void setTypeSettings(List<TypeSettings> typeSettings) {
-        this.typeSettings = null != typeSettings
-                ? typeSettings
-                : new ArrayList<TypeSettings>();
-    }
-
-    public Field update(FieldDto field) {
-        this.setDisplayName(field.getBasic().getDisplayName());
-        this.setName(field.getBasic().getName());
-        this.setRequired(field.getBasic().isRequired());
-        this.setTooltip(field.getBasic().getTooltip());
-
-        if (field.getBasic().getDefaultValue() != null) {
-            this.setDefaultValue(field.getBasic().getDefaultValue().toString());
-        }
-
-        updateMetadata(field.getMetadata());
-        updateValidation(field.getValidation());
-        updateSettings(field.getSettings());
-
-        return this;
-    }
-
-    public void updateMetadata(List<MetadataDto> metadataList) {
-        for (Iterator<FieldMetadata> it = getMetadata().iterator(); it.hasNext(); ) {
-            FieldMetadata metadataMapping = it.next();
-
-            boolean inNewList = false;
-            for (MetadataDto metadataDto : metadataList) {
-                if (Objects.equals(metadataMapping.getId(), metadataDto.getId())) {
-                    inNewList = true;
-                    break;
-                }
-            }
-
-            if (!inNewList) {
-                it.remove();
+        for (FieldMetadata meta : metadata) {
+            if (meta.getId().equals(id)) {
+                found = meta;
+                break;
             }
         }
 
-        for (MetadataDto metadataDto : metadataList) {
-            FieldMetadata metadataMapping = getMetadataById(metadataDto.getId());
-            if (metadataMapping == null) {
-                FieldMetadata newMetadata = new FieldMetadata(metadataDto);
-                addMetadata(newMetadata);
-            } else {
-                metadataMapping.update(metadataDto);
-            }
-        }
+        return found;
     }
 
-    public void updateSettings(List<SettingDto> settingsList) {
-        for (SettingDto settingDto : settingsList) {
-            TypeSettings settings = getTypeSettingsByName(settingDto.getName());
-            if (settings != null) {
-                settings.setValue(settings.getValueType().format(settingDto.getValue()));
-            }
-        }
+    public List<FieldSetting> getSettings() {
+        return settings;
     }
 
-    public void updateValidation(FieldValidationDto validationDto) {
-        if (validationDto != null) {
-            for (ValidationCriterionDto criterionDto : validationDto.getCriteria()) {
-                ValidationCriterion criterion = validation.getCriterionByName(criterionDto.getDisplayName());
-
-                criterion.setEnabled(criterionDto.isEnabled());
-                criterion.setValue(criterionDto.valueAsString());
-            }
-        }
+    public void setSettings(List<FieldSetting> settings) {
+        this.settings = settings;
     }
 
-    public FieldMetadata getMetadataById(Long metadataId) {
-        for (FieldMetadata metadataMapping : getMetadata()) {
-            if (Objects.equals(metadataId, metadataMapping.getId())) {
-                return metadataMapping;
+    public void addSetting(FieldSetting setting) {
+        this.settings.add(setting);
+    }
+
+    public FieldSetting getSettingByName(String name) {
+        FieldSetting found = null;
+
+        for (FieldSetting setting : settings) {
+            if (setting.getDetails().getName().equalsIgnoreCase(name)) {
+                found = setting;
+                break;
             }
         }
-        return null;
+
+        return found;
     }
 
     @NotPersistent
     public Field copy() {
         Field copy = new Field();
+
+        List<FieldMetadata> metadataCopy = new ArrayList<>();
+        for (FieldMetadata meta : metadata) {
+            metadataCopy.add(meta.copy());
+        }
+
+        List<FieldSetting> settingsCopy = new ArrayList<>();
+        for (FieldSetting setting : settings) {
+            FieldSetting settingCopy = setting.copy();
+            settingCopy.setField(copy);
+
+            settingsCopy.add(settingCopy);
+        }
+
+        List<FieldValidation> validationsCopy = new ArrayList<>();
+        for (FieldValidation validation : validations) {
+            FieldValidation validationCopy = validation.copy();
+            validationCopy.setField(copy);
+
+            validationsCopy.add(validationCopy);
+        }
 
         copy.setName(name);
         copy.setDefaultValue(defaultValue);
@@ -311,34 +288,27 @@ public class Field {
         copy.setType(type);
         copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
-        copy.setUIDisplayable(uiDisplayable);
-        copy.setUIDisplayPosition(uiDisplayPosition);
-        copy.setUIFilterable(uiFilterable);
-
-        copy.setValidation((validation == null) ? null : validation.copy());
-
-        List<FieldMetadata> copyMetadata = new ArrayList<>();
-        for (FieldMetadata metadataMapping : metadata) {
-            copyMetadata.add(metadataMapping.copy());
-        }
-        copy.setMetadata(copyMetadata);
-
-        List<TypeSettings> typeSettingsCopy = new ArrayList<>();
-        for (TypeSettings typeSettingsInstance : getTypeSettings()) {
-            typeSettingsCopy.add(typeSettingsInstance.copy());
-        }
-        copy.setTypeSettings(typeSettingsCopy);
+        copy.setValidations(validationsCopy);
+        copy.setMetadata(metadataCopy);
+        copy.setSettings(settingsCopy);
 
         return copy;
     }
 
-    public TypeSettings getTypeSettingsByName(String name) {
-        for (TypeSettings settings : getTypeSettings()) {
-            if (StringUtils.equals(name, settings.getName())) {
-                return settings;
-            }
-        }
-        return null;
+    public boolean isTracked() {
+        return tracked;
+    }
+
+    public void setTracked(boolean tracked) {
+        this.tracked = tracked;
+    }
+
+    public boolean isExposedViaRest() {
+        return exposedViaRest;
+    }
+
+    public void setExposedViaRest(boolean exposedViaRest) {
+        this.exposedViaRest = exposedViaRest;
     }
 
     public boolean isUIDisplayable() {
@@ -365,20 +335,74 @@ public class Field {
         this.uiFilterable = uiFilterable;
     }
 
-    public boolean isTracked() {
-        return tracked;
+    public Field update(FieldDto field) {
+        setDisplayName(field.getBasic().getDisplayName());
+        setName(field.getBasic().getName());
+        setRequired(field.getBasic().isRequired());
+        setTooltip(field.getBasic().getTooltip());
+
+        if (field.getBasic().getDefaultValue() != null) {
+            this.setDefaultValue(field.getBasic().getDefaultValue().toString());
+        }
+
+        updateMetadata(field.getMetadata());
+        updateValidation(field.getValidation());
+        updateSettings(field.getSettings());
+
+        return this;
     }
 
-    public void setTracked(boolean tracked) {
-        this.tracked = tracked;
+    private void updateMetadata(List<MetadataDto> metadataList) {
+        Iterator<FieldMetadata> it = getMetadata().iterator();
+
+        while (it.hasNext()) {
+            FieldMetadata meta = it.next();
+            boolean inNewList = false;
+
+            for (MetadataDto metadataDto : metadataList) {
+                if (Objects.equals(meta.getId(), metadataDto.getId())) {
+                    inNewList = true;
+                    break;
+                }
+            }
+
+            if (!inNewList) {
+                it.remove();
+            }
+        }
+
+        for (MetadataDto metadataDto : metadataList) {
+            FieldMetadata meta = getMetadataById(metadataDto.getId());
+
+            if (null == meta) {
+                FieldMetadata newMetadata = new FieldMetadata(metadataDto);
+                addMetadata(newMetadata);
+            } else {
+                meta.update(metadataDto);
+            }
+        }
     }
 
-    public boolean isExposedViaRest() {
-        return exposedViaRest;
+    private void updateSettings(List<SettingDto> settingsList) {
+        for (SettingDto settingDto : settingsList) {
+            FieldSetting setting = getSettingByName(settingDto.getName());
+
+            if (setting != null) {
+                Type valueType = setting.getDetails().getValueType();
+                Object value = settingDto.getValue();
+                setting.setValue(valueType.format(value));
+            }
+        }
     }
 
-    public void setExposedViaRest(boolean exposedViaRest) {
-        this.exposedViaRest = exposedViaRest;
-    }
+    private void updateValidation(FieldValidationDto validationDto) {
+        if (validationDto != null) {
+            for (ValidationCriterionDto criterionDto : validationDto.getCriteria()) {
+                FieldValidation validation = getValidationByName(criterionDto.getDisplayName());
 
+                validation.setEnabled(criterionDto.isEnabled());
+                validation.setValue(criterionDto.valueAsString());
+            }
+        }
+    }
 }

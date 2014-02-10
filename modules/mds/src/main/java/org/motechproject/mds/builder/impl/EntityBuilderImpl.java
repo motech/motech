@@ -13,9 +13,9 @@ import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityBuilder;
-import org.motechproject.mds.domain.AvailableFieldType;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -59,7 +59,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
         for (Field field : fields) {
             String fieldName = field.getName();
-            String typeClass = field.getType().getTypeClass();
+            String typeClass = field.getType().getTypeClassName();
 
             CtClass type = MotechClassPool.getDefault().get(typeClass);
 
@@ -85,8 +85,8 @@ public class EntityBuilderImpl implements EntityBuilder {
     }
 
     private CtField.Initializer initializerForField(Field field) throws NotFoundException {
-        AvailableFieldType fieldType = field.getType();
-        String typeClass = fieldType.getTypeClass();
+        Type fieldType = field.getType();
+        String typeClass = fieldType.getTypeClassName();
 
         Object defaultValue = fieldType.parse(field.getDefaultValue());
 

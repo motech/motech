@@ -1,8 +1,9 @@
 package org.motechproject.mds.testutil;
 
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.domain.AvailableFieldType;
+import org.motechproject.mds.domain.AvailableType;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 
 import java.util.List;
 
@@ -18,9 +19,9 @@ public final class FieldTestHelper {
     }
 
     public static Field field(String name, Class<?> typeClass, Object defaultVal) {
-        AvailableFieldType type = new AvailableFieldType();
+        Type type = new Type();
         // we only need the type
-        type.setTypeClass(typeClass.getName());
+        type.setTypeClass(typeClass);
 
         Field field = new Field();
         // we only need the name, type and default value

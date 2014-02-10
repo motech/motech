@@ -8,7 +8,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
-import org.motechproject.mds.repository.AllEntityMappings;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.osgi.web.BundleHeaders;
@@ -46,7 +46,7 @@ import static org.motechproject.mds.util.ClassName.getServiceName;
  */
 @Service
 public class JarGeneratorServiceImpl extends BaseMdsService implements JarGeneratorService {
-    private AllEntityMappings entityMappings;
+    private AllEntities allEntities;
     private BundleHeaders bundleHeaders;
     private BundleContext bundleContext;
 
@@ -88,13 +88,13 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
-            List<Entity> mappings = entityMappings.getAllEntities();
-            for (Entity mapping : mappings) {
-                if (!mapping.isDraft() && !mapping.isReadOnly()) {
-                    String className = mapping.getClassName();
+            List<Entity> entities = allEntities.retrieveAll();
+            for (Entity entity : entities) {
+                if (!entity.isDraft() && !entity.isReadOnly()) {
+                    String className = entity.getClassName();
 
                     String[] classes = new String[]{
-                            mapping.getClassName(), getInterfaceName(className),
+                            entity.getClassName(), getInterfaceName(className),
                             getServiceName(className), getRepositoryName(className)
                     };
 
@@ -171,8 +171,8 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     }
 
     @Autowired
-    public void setEntityMappings(AllEntityMappings entityMappings) {
-        this.entityMappings = entityMappings;
+    public void setAllEntities(AllEntities allEntities) {
+        this.allEntities = allEntities;
     }
 
     @Autowired

@@ -45,13 +45,13 @@ public class EntityInfrastructureBuilderTest {
     public void shouldCreateCodeIfClassNotExistsInClassPath() throws Exception {
         doThrow(new ClassNotFoundException()).when(classLoader).loadClass(SAMPLE_SERVICE);
 
-        List<ClassData> mappings = entityInfrastructureBuilder.buildInfrastructure(Sample.class);
+        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(Sample.class);
 
-        assertNotNull(mappings);
-        assertFalse(mappings.isEmpty());
-        assertThat(mappings, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_REPOSITORY))));
-        assertThat(mappings, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_INTERFACE))));
-        assertThat(mappings, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_SERVICE))));
+        assertNotNull(data);
+        assertFalse(data.isEmpty());
+        assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_REPOSITORY))));
+        assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_INTERFACE))));
+        assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_SERVICE))));
     }
 
     @Test

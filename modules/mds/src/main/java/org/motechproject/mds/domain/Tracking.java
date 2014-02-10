@@ -15,7 +15,7 @@ import java.util.List;
 import static org.motechproject.mds.constants.Constants.Util;
 
 /**
- * The <code>TrackingMapping</code> contains information about which fields and what kind of actions
+ * The <code>Tracking</code> contains information about which fields and what kind of actions
  * should be logged. This class is related with table in database with the same name.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = Util.TRUE)

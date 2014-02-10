@@ -11,8 +11,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 /**
- * This class represents a users draft of an Entity. A draft is a users work in progress from the UI. This shares
- * the table with its superclass, {@link Entity}.
+ * This class represents a users draft of an Entity. A draft is a users work in progress from the
+ * UI. This shares the table with its superclass, {@link Entity}.
  */
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)

@@ -7,18 +7,20 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.springframework.stereotype.Repository;
 
-import javax.jdo.Query;
-import java.util.Collection;
 import java.util.List;
 
 /**
- * This a repository for persisting entity drafts. It provides methods which created drafts, by cloning the giving
- * entity.
+ * This a repository for persisting entity drafts. It provides methods which created drafts, by
+ * cloning the giving entity.
  */
 @Repository
-public class AllEntityDrafts extends BaseMdsRepository {
+public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
 
-    public EntityDraft createDraft(Entity entity, String username) {
+    public AllEntityDrafts() {
+        super(EntityDraft.class);
+    }
+
+    public EntityDraft create(Entity entity, String username) {
         EntityDraft draft = new EntityDraft();
 
         draft.setParentEntity(entity);
@@ -47,49 +49,34 @@ public class AllEntityDrafts extends BaseMdsRepository {
             draft.setTracking(entity.getTracking().copy());
         }
 
-        return getPersistenceManager().makePersistent(draft);
+        return create(draft);
     }
 
-    public EntityDraft getDraft(Entity entity, String username) {
-        Query query = getPersistenceManager().newQuery(EntityDraft.class);
-
-        query.setFilter("paramUsername == draftOwnerUsername && paramEntity == parentEntity");
-        query.declareParameters("java.lang.String paramUsername, org.motechproject.mds.domain.Entity paramEntity");
-
-        query.setUnique(true);
-
-        return (EntityDraft) query.execute(username, entity);
+    public EntityDraft retrieve(Entity entity, String username) {
+        return retrieve(
+                new String[]{"parentEntity", "draftOwnerUsername"},
+                new Object[]{entity, username}
+        );
     }
 
-    public List<EntityDraft> getAllUserDrafts(String username) {
-        Query query = getPersistenceManager().newQuery(EntityDraft.class);
-        query.setFilter("paramUsername == draftOwnerUsername");
-        query.declareParameters("java.lang.String paramUsername");
-
-        Collection collection = (Collection) query.execute(username);
-        return cast(EntityDraft.class, collection);
+    public List<EntityDraft> retrieveAll(String username) {
+        return retrieveAll("draftOwnerUsername", username);
     }
 
-    public List<EntityDraft> getAllEntityDrafts(Entity entity) {
-        Query query = getPersistenceManager().newQuery(EntityDraft.class);
-        query.setFilter("paramEntity == parentEntity");
-        query.declareParameters(Entity.class.getName() + " paramEntity");
-
-        Collection collection = (Collection) query.execute(entity);
-        return cast(EntityDraft.class, collection);
+    public List<EntityDraft> retrieveAll(Entity entity) {
+        return retrieveAll("parentEntity", entity);
     }
 
-    public void deleteAllDraftsForEntity(Entity entity) {
-        List<EntityDraft> drafts = getAllEntityDrafts(entity);
-        getPersistenceManager().deletePersistentAll(drafts);
+    public void deleteAll(Entity entity) {
+        deleteAll("parentEntity", entity);
     }
 
-    public void save(EntityDraft draft) {
+    @Override
+    public EntityDraft update(EntityDraft draft) {
         draft.setLastModificationDate(DateUtil.nowUTC());
         draft.setChangesMade(true);
+
+        return draft;
     }
 
-    public void delete(EntityDraft draft) {
-        getPersistenceManager().deletePersistent(draft);
-    }
 }

@@ -11,7 +11,7 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
-import org.motechproject.mds.repository.AllEntityMappings;
+import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +39,13 @@ public class MDSConstructorIT extends BaseIT {
     private MDSConstructor constructor;
 
     @Autowired
-    private AllEntityMappings allEntityMappings;
+    private AllEntities allEntities;
 
     private Entity entity;
 
     @Before
     public void setUp() throws Exception {
-        entity = allEntityMappings.save(new EntityDto(CLASS_NAME));
+        entity = allEntities.create(new EntityDto(CLASS_NAME));
     }
 
     @After
@@ -55,10 +55,10 @@ public class MDSConstructorIT extends BaseIT {
 
     @Test
     public void testConstructEntity() throws Exception {
-        Entity mapping = new Entity();
-        mapping.setClassName(CLASS_NAME);
+        Entity temp = new Entity();
+        temp.setClassName(CLASS_NAME);
 
-        constructor.constructEntity(mapping);
+        constructor.constructEntity(temp);
 
         MDSClassLoader classLoader = MDSClassLoader.getInstance();
 

@@ -11,31 +11,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table "AvailableFieldType"
+-- Table structure for table "AvailableType"
 --
 
-DROP TABLE IF EXISTS "AvailableFieldType";
+DROP TABLE IF EXISTS "AvailableType";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "AvailableFieldType" (
+CREATE TABLE "AvailableType" (
   "id" bigint(20) NOT NULL,
-  "defaultName" varchar(255) DEFAULT NULL,
-  "description" varchar(255) DEFAULT NULL,
-  "displayName" varchar(255) DEFAULT NULL,
-  "typeClass" varchar(255) DEFAULT NULL,
+  "defaultName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "TYPE_ID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  UNIQUE KEY "AvailableFieldType_U1" ("displayName")
+  KEY "AvailableType_N49" ("TYPE_ID"),
+  CONSTRAINT "AvailableType_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "AvailableFieldType"
+-- Dumping data for table "AvailableType"
 --
 
-LOCK TABLES "AvailableFieldType" WRITE;
-/*!40000 ALTER TABLE "AvailableFieldType" DISABLE KEYS */;
-INSERT INTO "AvailableFieldType" VALUES (1,'int','mds.field.description.integer','mds.field.integer','java.lang.Integer'),(2,'string','mds.field.description.string','mds.field.string','java.lang.String'),(3,'bool','mds.field.description.boolean','mds.field.boolean','java.lang.Boolean'),(4,'date','mds.field.description.date','mds.field.date','java.util.Date'),(5,'time','mds.field.description.time','mds.field.time','org.motechproject.commons.date.model.Time'),(6,'dateTime','mds.field.description.datetime','mds.field.datetime','org.joda.time.DateTime'),(7,'double','mds.field.description.decimal','mds.field.decimal','java.lang.Double'),(8,'list','mds.field.description.combobox','mds.field.combobox','java.util.List');
-/*!40000 ALTER TABLE "AvailableFieldType" ENABLE KEYS */;
+LOCK TABLES "AvailableType" WRITE;
+/*!40000 ALTER TABLE "AvailableType" DISABLE KEYS */;
+INSERT INTO "AvailableType" VALUES (1,'int',1),(2,'str',2),(3,'bool',3),(4,'date',4),(5,'time',5),(6,'datetime',6),(7,'decimal',7),(8,'list',8);
+/*!40000 ALTER TABLE "AvailableType" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -50,6 +49,7 @@ CREATE TABLE "Entity" (
   "className" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "entityVersion" bigint(20) DEFAULT NULL,
   "module" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "namespace" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "DISCRIMINATOR" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   "changesMade" bit(1) DEFAULT NULL,
@@ -58,7 +58,6 @@ CREATE TABLE "Entity" (
   "parentEntity_id_OID" bigint(20) DEFAULT NULL,
   "parentVersion" bigint(20) DEFAULT NULL,
   "drafts_INTEGER_IDX" int(11) DEFAULT NULL,
-  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "DRAFT_USER_IDX" ("parentEntity_id_OID","draftOwnerUsername"),
   KEY "Entity_N49" ("parentEntity_id_OID"),
@@ -87,23 +86,20 @@ CREATE TABLE "Field" (
   "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "entity_id_OID" bigint(20) DEFAULT NULL,
+  "exposedViaRest" bit(1) NOT NULL,
   "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "required" bit(1) NOT NULL,
   "tooltip" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
-  "type_id_OID" bigint(20) DEFAULT NULL,
-  "validation_id_OID" bigint(20) DEFAULT NULL,
-  "fields_INTEGER_IDX" int(11) DEFAULT NULL,
   "tracked" bit(1) NOT NULL,
-  "exposedViaRest" bit(1) NOT NULL,
+  "type_id_OID" bigint(20) DEFAULT NULL,
+  "fields_INTEGER_IDX" int(11) DEFAULT NULL,
   "uiDisplayable" bit(1) NOT NULL,
   "uiFilterable" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
-  KEY "Field_N49" ("type_id_OID"),
   KEY "Field_N50" ("entity_id_OID"),
-  KEY "Field_N51" ("validation_id_OID"),
-  CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
-  CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id"),
-  CONSTRAINT "Field_FK3" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidation" ("id")
+  KEY "Field_N49" ("type_id_OID"),
+  CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "Type" ("id"),
+  CONSTRAINT "Field_FK2" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -142,6 +138,67 @@ CREATE TABLE "FieldMetadata" (
 LOCK TABLES "FieldMetadata" WRITE;
 /*!40000 ALTER TABLE "FieldMetadata" DISABLE KEYS */;
 /*!40000 ALTER TABLE "FieldMetadata" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "FieldSetting"
+--
+
+DROP TABLE IF EXISTS "FieldSetting";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "FieldSetting" (
+  "id" bigint(20) NOT NULL,
+  "DETAILS_ID" bigint(20) DEFAULT NULL,
+  "field_id_OID" bigint(20) DEFAULT NULL,
+  "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "settings_INTEGER_IDX" int(11) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "FieldSetting_N50" ("field_id_OID"),
+  KEY "FieldSetting_N49" ("DETAILS_ID"),
+  CONSTRAINT "FieldSetting_FK2" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeSetting" ("id"),
+  CONSTRAINT "FieldSetting_FK1" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "FieldSetting"
+--
+
+LOCK TABLES "FieldSetting" WRITE;
+/*!40000 ALTER TABLE "FieldSetting" DISABLE KEYS */;
+/*!40000 ALTER TABLE "FieldSetting" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "FieldValidation"
+--
+
+DROP TABLE IF EXISTS "FieldValidation";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "FieldValidation" (
+  "id" bigint(20) NOT NULL,
+  "DETAILS_ID" bigint(20) DEFAULT NULL,
+  "enabled" bit(1) NOT NULL,
+  "field_id_OID" bigint(20) DEFAULT NULL,
+  "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "validations_INTEGER_IDX" int(11) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "FieldValidation_N49" ("field_id_OID"),
+  KEY "FieldValidation_N50" ("DETAILS_ID"),
+  CONSTRAINT "FieldValidation_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id"),
+  CONSTRAINT "FieldValidation_FK1" FOREIGN KEY ("DETAILS_ID") REFERENCES "TypeValidation" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "FieldValidation"
+--
+
+LOCK TABLES "FieldValidation" WRITE;
+/*!40000 ALTER TABLE "FieldValidation" DISABLE KEYS */;
+/*!40000 ALTER TABLE "FieldValidation" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -222,39 +279,95 @@ CREATE TABLE "SEQUENCE_TABLE" (
 
 LOCK TABLES "SEQUENCE_TABLE" WRITE;
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" DISABLE KEYS */;
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.TypeValidation',11),('org.motechproject.mds.domain.ValidationCriterion',21);
+INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.AvailableType',11),('org.motechproject.mds.domain.Type',11),('org.motechproject.mds.domain.TypeSetting',11),('org.motechproject.mds.domain.TypeSettingOption',11),('org.motechproject.mds.domain.TypeValidation',21);
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table "SettingOptions"
+-- Table structure for table "TYPE_SETTING_SETTING_OPTION"
 --
 
-DROP TABLE IF EXISTS "SettingOptions";
+DROP TABLE IF EXISTS "TYPE_SETTING_SETTING_OPTION";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "SettingOptions" (
-  "id" bigint(20) NOT NULL,
-  "name" varchar(255) DEFAULT NULL,
-  "settingId" bigint(20) DEFAULT NULL,
-  "settingOptions_INTEGER_IDX" int(11) DEFAULT NULL,
-  "typeSettings_id_OID" bigint(20) DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  KEY "settingId" ("settingId"),
-  KEY "SettingOptions_N49" ("typeSettings_id_OID"),
-  CONSTRAINT "SettingOptions_FK1" FOREIGN KEY ("typeSettings_id_OID") REFERENCES "TypeSettings" ("id"),
-  CONSTRAINT "SettingOptions_ibfk_1" FOREIGN KEY ("settingId") REFERENCES "TypeSettings" ("id")
+CREATE TABLE "TYPE_SETTING_SETTING_OPTION" (
+  "TYPE_SETTING_ID_OID" bigint(20) NOT NULL,
+  "SETTING_OPTION_ID_EID" bigint(20) DEFAULT NULL,
+  "IDX" int(11) NOT NULL,
+  PRIMARY KEY ("TYPE_SETTING_ID_OID","IDX"),
+  KEY "TYPE_SETTING_SETTING_OPTION_N49" ("TYPE_SETTING_ID_OID"),
+  KEY "TYPE_SETTING_SETTING_OPTION_N50" ("SETTING_OPTION_ID_EID"),
+  CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK2" FOREIGN KEY ("SETTING_OPTION_ID_EID") REFERENCES "TypeSettingOption" ("id"),
+  CONSTRAINT "TYPE_SETTING_SETTING_OPTION_FK1" FOREIGN KEY ("TYPE_SETTING_ID_OID") REFERENCES "TypeSetting" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "SettingOptions"
+-- Dumping data for table "TYPE_SETTING_SETTING_OPTION"
 --
 
-LOCK TABLES "SettingOptions" WRITE;
-/*!40000 ALTER TABLE "SettingOptions" DISABLE KEYS */;
-INSERT INTO "SettingOptions" VALUES (1,'REQUIRE',1,NULL,NULL),(2,'POSITIVE',1,NULL,NULL),(3,'REQUIRE',2,NULL,NULL),(4,'POSITIVE',2,NULL,NULL),(5,'REQUIRE',3,NULL,NULL);
-/*!40000 ALTER TABLE "SettingOptions" ENABLE KEYS */;
+LOCK TABLES "TYPE_SETTING_SETTING_OPTION" WRITE;
+/*!40000 ALTER TABLE "TYPE_SETTING_SETTING_OPTION" DISABLE KEYS */;
+INSERT INTO "TYPE_SETTING_SETTING_OPTION" VALUES (1,1,0),(2,1,0),(3,1,0),(1,2,1),(2,2,1);
+/*!40000 ALTER TABLE "TYPE_SETTING_SETTING_OPTION" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "TYPE_TYPE_SETTING"
+--
+
+DROP TABLE IF EXISTS "TYPE_TYPE_SETTING";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TYPE_TYPE_SETTING" (
+  "TYPE_ID_OID" bigint(20) NOT NULL,
+  "TYPE_SETTING_ID_EID" bigint(20) DEFAULT NULL,
+  "IDX" int(11) NOT NULL,
+  PRIMARY KEY ("TYPE_ID_OID","IDX"),
+  KEY "TYPE_TYPE_SETTING_N49" ("TYPE_SETTING_ID_EID"),
+  KEY "TYPE_TYPE_SETTING_N50" ("TYPE_ID_OID"),
+  CONSTRAINT "TYPE_TYPE_SETTING_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id"),
+  CONSTRAINT "TYPE_TYPE_SETTING_FK2" FOREIGN KEY ("TYPE_SETTING_ID_EID") REFERENCES "TypeSetting" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TYPE_TYPE_SETTING"
+--
+
+LOCK TABLES "TYPE_TYPE_SETTING" WRITE;
+/*!40000 ALTER TABLE "TYPE_TYPE_SETTING" DISABLE KEYS */;
+INSERT INTO "TYPE_TYPE_SETTING" VALUES (7,1,0),(7,2,1),(8,3,0),(8,4,1),(8,5,2);
+/*!40000 ALTER TABLE "TYPE_TYPE_SETTING" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "TYPE_TYPE_VALIDATION"
+--
+
+DROP TABLE IF EXISTS "TYPE_TYPE_VALIDATION";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TYPE_TYPE_VALIDATION" (
+  "TYPE_ID_OID" bigint(20) NOT NULL,
+  "TYPE_VALIDATION_ID_EID" bigint(20) DEFAULT NULL,
+  "IDX" int(11) NOT NULL,
+  PRIMARY KEY ("TYPE_ID_OID","IDX"),
+  KEY "TYPE_TYPE_VALIDATION_N50" ("TYPE_VALIDATION_ID_EID"),
+  KEY "TYPE_TYPE_VALIDATION_N49" ("TYPE_ID_OID"),
+  CONSTRAINT "TYPE_TYPE_VALIDATION_FK2" FOREIGN KEY ("TYPE_VALIDATION_ID_EID") REFERENCES "TypeValidation" ("id"),
+  CONSTRAINT "TYPE_TYPE_VALIDATION_FK1" FOREIGN KEY ("TYPE_ID_OID") REFERENCES "Type" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TYPE_TYPE_VALIDATION"
+--
+
+LOCK TABLES "TYPE_TYPE_VALIDATION" WRITE;
+/*!40000 ALTER TABLE "TYPE_TYPE_VALIDATION" DISABLE KEYS */;
+INSERT INTO "TYPE_TYPE_VALIDATION" VALUES (1,1,0),(1,2,1),(1,3,2),(1,4,3),(2,5,0),(2,6,1),(2,7,2),(7,8,0),(7,9,1),(7,10,2),(7,11,3);
+/*!40000 ALTER TABLE "TYPE_TYPE_VALIDATION" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -287,44 +400,81 @@ LOCK TABLES "Tracking" WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table "TypeSettings"
+-- Table structure for table "Type"
 --
 
-DROP TABLE IF EXISTS "TypeSettings";
+DROP TABLE IF EXISTS "Type";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "TypeSettings" (
+CREATE TABLE "Type" (
   "id" bigint(20) NOT NULL,
-  "name" varchar(255) DEFAULT NULL,
-  "value" varchar(255) DEFAULT NULL,
-  "valueType" bigint(20) DEFAULT NULL,
-  "type" bigint(20) DEFAULT NULL,
-  "typeSettings_INTEGER_IDX" int(11) DEFAULT NULL,
-  "valueType_id_OID" bigint(20) DEFAULT NULL,
-  "field_id_OID" bigint(20) DEFAULT NULL,
-  "type_id_OID" bigint(20) DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  KEY "valueType" ("valueType"),
-  KEY "type" ("type"),
-  KEY "TypeSettings_N51" ("field_id_OID"),
-  KEY "TypeSettings_N50" ("type_id_OID"),
-  KEY "TypeSettings_N49" ("valueType_id_OID"),
-  CONSTRAINT "TypeSettings_FK3" FOREIGN KEY ("valueType_id_OID") REFERENCES "AvailableFieldType" ("id"),
-  CONSTRAINT "TypeSettings_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
-  CONSTRAINT "TypeSettings_FK2" FOREIGN KEY ("field_id_OID") REFERENCES "Field" ("id"),
-  CONSTRAINT "TypeSettings_ibfk_1" FOREIGN KEY ("valueType") REFERENCES "AvailableFieldType" ("id"),
-  CONSTRAINT "TypeSettings_ibfk_2" FOREIGN KEY ("type") REFERENCES "AvailableFieldType" ("id")
+  "description" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "typeClass" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  PRIMARY KEY ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "TypeSettings"
+-- Dumping data for table "Type"
 --
 
-LOCK TABLES "TypeSettings" WRITE;
-/*!40000 ALTER TABLE "TypeSettings" DISABLE KEYS */;
-INSERT INTO "TypeSettings" VALUES (1,'mds.form.label.precision','9',1,7,NULL,NULL,NULL,NULL),(2,'mds.form.label.scale','2',1,7,NULL,NULL,NULL,NULL),(3,'mds.form.label.values',NULL,3,8,NULL,NULL,NULL,NULL),(4,'mds.form.label.allowUserSupplied','false',3,8,NULL,NULL,NULL,NULL),(5,'mds.form.label.allowMultipleSelections','false',3,8,NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE "TypeSettings" ENABLE KEYS */;
+LOCK TABLES "Type" WRITE;
+/*!40000 ALTER TABLE "Type" DISABLE KEYS */;
+INSERT INTO "Type" VALUES (1,'mds.field.description.integer','mds.field.integer','java.lang.Integer'),(2,'mds.field.description.string','mds.field.string','java.lang.String'),(3,'mds.field.description.boolean','mds.field.boolean','java.lang.Boolean'),(4,'mds.field.description.date','mds.field.date','java.util.Date'),(5,'mds.field.description.time','mds.field.time','org.motechproject.commons.date.model.Time'),(6,'mds.field.description.datetime','mds.field.datetime','org.joda.time.DateTime'),(7,'mds.field.description.decimal','mds.field.decimal','java.lang.Double'),(8,'mds.field.description.combobox','mds.field.combobox','java.util.List');
+/*!40000 ALTER TABLE "Type" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "TypeSetting"
+--
+
+DROP TABLE IF EXISTS "TypeSetting";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TypeSetting" (
+  "id" bigint(20) NOT NULL,
+  "defaultValue" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "TYPE_ID" bigint(20) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "TypeSetting_N49" ("TYPE_ID"),
+  CONSTRAINT "TypeSetting_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TypeSetting"
+--
+
+LOCK TABLES "TypeSetting" WRITE;
+/*!40000 ALTER TABLE "TypeSetting" DISABLE KEYS */;
+INSERT INTO "TypeSetting" VALUES (1,'9','mds.form.label.precision',1),(2,'2','mds.form.label.scale',1),(3,'[]','mds.form.label.values',8),(4,'false','mds.form.label.allowUserSupplied',3),(5,'false','mds.form.label.allowMultipleSelections',3);
+/*!40000 ALTER TABLE "TypeSetting" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "TypeSettingOption"
+--
+
+DROP TABLE IF EXISTS "TypeSettingOption";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TypeSettingOption" (
+  "id" bigint(20) NOT NULL,
+  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TypeSettingOption"
+--
+
+LOCK TABLES "TypeSettingOption" WRITE;
+/*!40000 ALTER TABLE "TypeSettingOption" DISABLE KEYS */;
+INSERT INTO "TypeSettingOption" VALUES (1,'REQUIRE'),(2,'POSITIVE');
+/*!40000 ALTER TABLE "TypeSettingOption" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -336,11 +486,11 @@ DROP TABLE IF EXISTS "TypeValidation";
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE "TypeValidation" (
   "id" bigint(20) NOT NULL,
-  "name" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
-  "type" bigint(20) DEFAULT NULL,
+  "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "TYPE_ID" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
-  KEY "TypeValidation_N49" ("type"),
-  CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("type") REFERENCES "AvailableFieldType" ("id")
+  KEY "TypeValidation_N49" ("TYPE_ID"),
+  CONSTRAINT "TypeValidation_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -350,41 +500,8 @@ CREATE TABLE "TypeValidation" (
 
 LOCK TABLES "TypeValidation" WRITE;
 /*!40000 ALTER TABLE "TypeValidation" DISABLE KEYS */;
-INSERT INTO "TypeValidation" VALUES (1,'int',1),(2,'double',7),(3,'string',2);
+INSERT INTO "TypeValidation" VALUES (1,'mds.field.validation.minValue',1),(2,'mds.field.validation.maxValue',1),(3,'mds.field.validation.mustBeInSet',1),(4,'mds.field.validation.cannotBeInSet',1),(5,'mds.field.validation.regex',2),(6,'mds.field.validation.minLength',1),(7,'mds.field.validation.maxLength',1),(8,'mds.field.validation.minValue',7),(9,'mds.field.validation.maxValue',7),(10,'mds.field.validation.mustBeInSet',7),(11,'mds.field.validation.cannotBeInSet',7);
 /*!40000 ALTER TABLE "TypeValidation" ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table "ValidationCriterion"
---
-
-DROP TABLE IF EXISTS "ValidationCriterion";
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "ValidationCriterion" (
-  "id" bigint(20) NOT NULL,
-  "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
-  "enabled" bit(1) NOT NULL,
-  "type_id_OID" bigint(20) DEFAULT NULL,
-  "validation_id_OID" bigint(20) DEFAULT NULL,
-  "value" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
-  "criteria_INTEGER_IDX" int(11) DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  KEY "ValidationCriterion_N49" ("validation_id_OID"),
-  KEY "ValidationCriterion_N50" ("type_id_OID"),
-  CONSTRAINT "ValidationCriterion_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "AvailableFieldType" ("id"),
-  CONSTRAINT "ValidationCriterion_FK2" FOREIGN KEY ("validation_id_OID") REFERENCES "TypeValidation" ("id")
-);
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table "ValidationCriterion"
---
-
-LOCK TABLES "ValidationCriterion" WRITE;
-/*!40000 ALTER TABLE "ValidationCriterion" DISABLE KEYS */;
-INSERT INTO "ValidationCriterion" VALUES (1,'mds.field.validation.minValue','\0',1,1,'',0),(2,'mds.field.validation.maxValue','\0',1,1,'',1),(3,'mds.field.validation.mustBeInSet','\0',2,1,'',2),(4,'mds.field.validation.cannotBeInSet','\0',2,1,'',3),(5,'mds.field.validation.minValue','\0',1,2,'',0),(6,'mds.field.validation.maxValue','\0',1,2,'',1),(7,'mds.field.validation.mustBeInSet','\0',2,2,'',2),(8,'mds.field.validation.cannotBeInSet','\0',2,2,'',3),(9,'mds.field.validation.regex','\0',2,3,'',0),(10,'mds.field.validation.minLength','\0',1,3,'',1),(11,'mds.field.validation.maxLength','\0',1,3,'',2);
-/*!40000 ALTER TABLE "ValidationCriterion" ENABLE KEYS */;
 UNLOCK TABLES;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -394,4 +511,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-08  8:01:00
+-- Dump completed on 2014-02-10 11:03:05

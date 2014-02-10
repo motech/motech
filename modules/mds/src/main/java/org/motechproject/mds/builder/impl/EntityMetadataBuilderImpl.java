@@ -21,11 +21,11 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     @Override
-    public JDOMetadata createBaseEntity(JDOMetadata md, Entity mapping) {
-        PackageMetadata pmd = md.newPackageMetadata(ClassName.getPackage(mapping.getClassName()));
-        ClassMetadata cmd = pmd.newClassMetadata(ClassName.getSimpleName(mapping.getClassName()));
+    public JDOMetadata createBaseEntity(JDOMetadata md, Entity entity) {
+        PackageMetadata pmd = md.newPackageMetadata(ClassName.getPackage(entity.getClassName()));
+        ClassMetadata cmd = pmd.newClassMetadata(ClassName.getSimpleName(entity.getClassName()));
 
-        cmd.setTable(getTableName(mapping));
+        cmd.setTable(getTableName(entity));
         cmd.setDetachable(true);
         cmd.setIdentityType(IdentityType.DATASTORE);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
@@ -33,10 +33,10 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         return md;
     }
 
-    private static String getTableName(Entity mapping) {
-        String simpleName = ClassName.getSimpleName(mapping.getClassName());
-        String module = mapping.getModule();
-        String namespace = mapping.getNamespace();
+    private static String getTableName(Entity entity) {
+        String simpleName = ClassName.getSimpleName(entity.getClassName());
+        String module = entity.getModule();
+        String namespace = entity.getNamespace();
 
         StringBuilder builder = new StringBuilder();
         if (isNotBlank(module)) {

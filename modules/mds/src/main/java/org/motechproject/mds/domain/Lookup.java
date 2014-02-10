@@ -9,7 +9,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 /**
- * The <code>LookupMapping</code> class contains information about single lookup
+ * The <code>Lookup</code> class contains information about single lookup
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class Lookup {
