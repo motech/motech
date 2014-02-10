@@ -5,6 +5,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.domain.ConfigLocation;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
 import org.motechproject.server.config.service.ConfigLoader;
@@ -42,18 +44,24 @@ public class ConfigFileMonitorTest {
     @Mock
     private DefaultFileMonitor fileMonitor;
     @Mock
-    ConfigLoader configLoader;
+    private ConfigLoader configLoader;
     @Mock
-    CoreConfigurationService coreConfigurationService;
+    private CoreConfigurationService coreConfigurationService;
 
     @InjectMocks
     private ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
+
+    @Before
+    public void setUp() {
+        configFileMonitor.setFileMonitor(fileMonitor);
+    }
 
     @Test
     public void shouldProcessExistingFilesAndStartFileMonitorWhileInitializing() throws IOException {
         final Path tempDirectory = Files.createTempDirectory("motech-config-");
         String configLocation = tempDirectory.toString();
         when(coreConfigurationService.getConfigLocation()).thenReturn(new ConfigLocation(configLocation));
+        when(configurationService.getConfigSource()).thenReturn(ConfigSource.FILE);
 
         configFileMonitor.init();
 
@@ -133,6 +141,13 @@ public class ConfigFileMonitorTest {
         configFileMonitor.init();
         verify(configurationService, never()).processExistingConfigs(anyList());
         verify(fileMonitor, never()).run();
+    }
 
+    @Test
+    public void shouldNotStartWhenFileSourceIsUI() throws IOException {
+        when(configurationService.getConfigSource()).thenReturn(ConfigSource.UI);
+        configFileMonitor.init();
+        verify(configurationService, never()).processExistingConfigs(anyList());
+        verify(fileMonitor, never()).run();
     }
 }

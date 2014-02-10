@@ -9,6 +9,7 @@ import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
 import org.motechproject.config.core.domain.ConfigLocation;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.filters.ConfigFileFilter;
 import org.motechproject.config.core.service.CoreConfigurationService;
 import org.motechproject.config.service.ConfigurationService;
@@ -18,6 +19,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,42 +37,51 @@ import java.util.Map;
  * appropriate events.
  */
 
+@Component
 public class ConfigFileMonitor implements FileListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
     private static final Long DELAY = 3000L;
 
+    @Autowired
     private ConfigLoader configLoader;
+    @Autowired
     private ConfigurationService configurationService;
+    @Autowired
     private CoreConfigurationService coreConfigurationService;
-    private DefaultFileMonitor fileMonitor;
-    private FileObject monitoredDir;
 
     @Autowired(required = false)
     private BundleContext bundleContext;
 
-    ConfigFileMonitor() {
-    }
+    private DefaultFileMonitor fileMonitor;
+    private FileObject monitoredDir;
 
-    public ConfigFileMonitor(ConfigLoader configLoader, ConfigurationService configurationService, CoreConfigurationService coreConfigurationService)
-            throws FileSystemException {
-        this.configLoader = configLoader;
-        this.configurationService = configurationService;
-        this.coreConfigurationService = coreConfigurationService;
-        this.fileMonitor = new DefaultFileMonitor(this);
-        this.fileMonitor.setDelay(DELAY);
+    public void setFileMonitor(DefaultFileMonitor fileMonitor) {
+        this.fileMonitor = fileMonitor;
     }
 
     @PostConstruct
     public void init() throws IOException {
-        final List<File> files = new ArrayList<>();
-        try {
-            files.addAll(configLoader.findExistingConfigs());
-        } catch (MotechConfigurationException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return;
+        if (configurationService.getConfigSource() == ConfigSource.FILE) {
+            // allow custom monitors to be injected
+            if (fileMonitor == null) {
+                fileMonitor = new DefaultFileMonitor(this);
+            }
+
+            fileMonitor.setDelay(DELAY);
+
+            final List<File> files = new ArrayList<>();
+
+            try {
+                files.addAll(configLoader.findExistingConfigs());
+            } catch (MotechConfigurationException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                return;
+            }
+
+            configurationService.processExistingConfigs(files);
+
+            startFileMonitor();
         }
-        configurationService.processExistingConfigs(files);
-        startFileMonitor();
     }
 
 
@@ -124,14 +135,20 @@ public class ConfigFileMonitor implements FileListener {
 
     @PreDestroy
     public void stop() throws FileSystemException {
-        this.fileMonitor.stop();
+        if (fileMonitor != null) {
+            fileMonitor.stop();
+        }
     }
 
     public void updateFileMonitor() throws FileSystemException {
-        fileMonitor.stop();
-        fileMonitor.removeFile(monitoredDir);
-        LOGGER.info(String.format("Stopped Monitoring location %s", monitoredDir));
-        startFileMonitor();
+        if (fileMonitor == null) {
+            LOGGER.debug("File monitor updated in UI mode, ignoring");
+        } else {
+            fileMonitor.stop();
+            fileMonitor.removeFile(monitoredDir);
+            LOGGER.info(String.format("Stopped Monitoring location %s", monitoredDir));
+            startFileMonitor();
+        }
     }
 
 
