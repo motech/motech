@@ -59,7 +59,7 @@ public class AllEntitiesIT extends BaseIT {
     }
 
     @Test
-    public void shouldSaveEntity() throws Exception {
+    public void shouldCreateEntity() throws Exception {
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
                 containsEntity(BAR_CLASS)
@@ -87,7 +87,7 @@ public class AllEntitiesIT extends BaseIT {
     }
 
     @Test
-    public void shouldNotFindExistingEntity() throws Exception {
+    public void shouldNotFindNoExistingEntity() throws Exception {
         assertFalse(
                 String.format("Found %s in database", BAR_CLASS),
                 allEntities.contains(BAR_CLASS)
