@@ -226,10 +226,17 @@ public class EntityServiceIT extends BaseIT {
     }
 
     private void setUpSecurityContext() {
-        SecurityContext securityContext = new SecurityContextImpl();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(new User("motech", "motech", asList(new SimpleGrantedAuthority("seussSchemaAccess"))), null);
-        securityContext.setAuthentication(authentication);
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
+        List<SimpleGrantedAuthority> authorities = asList(authority);
+
+        User principal = new User("motech", "motech", authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
         authentication.setAuthenticated(false);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
         SecurityContextHolder.setContext(securityContext);
     }
 }

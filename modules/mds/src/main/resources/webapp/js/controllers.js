@@ -1809,7 +1809,7 @@
         $scope.hidden = [];
 
         /**
-        * A map containing names of all entities in Seuss, indexed by module names
+        * A map containing names of all entities in MDS, indexed by module names
         */
         $scope.modules = undefined;
 
@@ -1854,7 +1854,7 @@
         $scope.loadedFields = [];
 
         /**
-        * Initializes a map of all entities in Seuss indexed by module name
+        * Initializes a map of all entities in MDS indexed by module name
         */
         $scope.setEntities = function () {
             blockUI();
@@ -2221,7 +2221,7 @@
         $scope.getEntities = function () {
             if (result.length === 0) {
                 angular.forEach($scope.entities, function (entity) {
-                    var module = entity.module === null ? "Seuss" : entity.module.replace(/ /g, ''),
+                    var module = entity.module === null ? "MDS" : entity.module.replace(/ /g, ''),
                         found = false;
                     angular.forEach(result, function (mod) {
                         if (module === mod.name) {
