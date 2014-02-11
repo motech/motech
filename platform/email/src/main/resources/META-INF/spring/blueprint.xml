@@ -15,12 +15,7 @@
     <context:annotation-config/>
     <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
 
-
     <context:component-scan base-package="org.motechproject.email"/>
-
-    <bean id="updateMailPurgeJob" class="org.motechproject.email.UpdateMailPurgeJob" />
-
-    <bean id="initializeSettings" class="org.motechproject.email.InitializeSettings" />
 
     <bean id="emailSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="motech-email"/>

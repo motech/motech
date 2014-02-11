@@ -8,15 +8,17 @@ import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The <code>InitializeSettings</code> class is responsible for handling changes in mail purging settings and
- * adjusting/deleting the scheduler job responsible for it, in case the settings were changed
+ * adjusting/deleting the scheduler job responsible for it, in case the settings were changed.
  */
-
+@Component
 public class InitializeSettings {
 
     private MotechSchedulerService motechSchedulerService;
@@ -28,10 +30,7 @@ public class InitializeSettings {
         this.motechSchedulerService = motechSchedulerService;
     }
 
-    public InitializeSettings() {
-        this(null, null);
-    }
-
+    @PostConstruct
     public void handleSettingsChange() {
         SettingsDto settings = new SettingsDto(settingsFacade);
         if ("true".equals(settings.getLogPurgeEnable())) {

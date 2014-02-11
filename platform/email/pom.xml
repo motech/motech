@@ -160,7 +160,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-File>META-INF/motech/applicationEmail.xml</Context-File>
                         <Context-Path>email</Context-Path>
                         <Resource-Path>email/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
