@@ -89,7 +89,9 @@ public class Log4JBundleLoader {
             } catch (Exception e) {
                 throw new BundleLoadingException(e);
             } finally {
-                log4jStream.close();
+                if (log4jStream != null) {
+                    log4jStream.close();
+                }
             }
         }
     }

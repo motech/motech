@@ -16,7 +16,6 @@ import java.util.Locale;
  * {@link HistoryRecord}  by value of their field property.
  */
 public class HistoryRecordComparator implements Comparator<HistoryRecord>, Serializable {
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d, yyyy hh:mm aaa", Locale.ENGLISH);
     private static final long serialVersionUID = -6246986278201461196L;
 
     private boolean sortAscending;
@@ -34,8 +33,9 @@ public class HistoryRecordComparator implements Comparator<HistoryRecord>, Seria
         int ret;
 
         try {
-            Date dateOne = DATE_FORMAT.parse(fieldFromOne.getValue().toString());
-            Date dateTwo = DATE_FORMAT.parse(fieldFromTwo.getValue().toString());
+            DateFormat dateFormat = new SimpleDateFormat("MMMM d, yyyy hh:mm aaa", Locale.ENGLISH);
+            Date dateOne = dateFormat.parse(fieldFromOne.getValue().toString());
+            Date dateTwo = dateFormat.parse(fieldFromTwo.getValue().toString());
 
             ret = dateOne.compareTo(dateTwo);
         } catch (ParseException e) {

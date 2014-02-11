@@ -16,10 +16,10 @@ public class IndividualsComparator implements Comparator<String> {
 
     @Override
     public int compare(String module1, String module2) {
-        Integer index1 = getIndex(module1);
-        Integer index2 = getIndex(module2);
+        Integer index1 = Integer.valueOf(getIndex(module1));
+        Integer index2 = Integer.valueOf(getIndex(module2));
 
-        if (index1 == index2) { // both are 0
+        if (index1.compareTo(index2) == 0) { // both are 0
             return module1.compareTo(module2);
         } else {
             return index1.compareTo(index2);

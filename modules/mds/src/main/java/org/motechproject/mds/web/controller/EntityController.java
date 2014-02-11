@@ -248,7 +248,7 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldRecord> getInstance(@PathVariable Long entityId, @PathVariable String instanceId) {
+    public List<FieldRecord> getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
         List<EntityRecord> entityList = entityService.getEntityRecords(entityId);
         for (EntityRecord record : entityList) {
             if (record.getId().equals(instanceId)) {

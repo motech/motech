@@ -36,15 +36,19 @@ public class OsgiListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        OsgiListener.servletContextEvent = servletContextEvent;
+        setServletContextEvent(servletContextEvent);
         OsgiListener.getOsgiService().init();
         start();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        OsgiListener.servletContextEvent = servletContextEvent;
+        setServletContextEvent(servletContextEvent);
         getOsgiService().stop();
+    }
+
+    private static void setServletContextEvent(ServletContextEvent servletContextEvent){
+        OsgiListener.servletContextEvent = servletContextEvent;
     }
 
     public static void saveBootstrapConfig(BootstrapConfig bootstrapConfig) {

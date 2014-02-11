@@ -53,10 +53,10 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         httpServiceTrackers.addTrackerFor(bundle);
         uiServiceTrackers.addTrackerFor(bundle, applicationContext);
 
-        if (OSGI_WEB_UTIL.equals(symbolicName)) {
-            logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);
-        }
         synchronized (this) {
+            if (OSGI_WEB_UTIL.equals(symbolicName)) {
+                logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);
+            }
             try {
                 bundleRegister = BundleRegister.getInstance();
                 bundleRegister.addBundle(bundle);

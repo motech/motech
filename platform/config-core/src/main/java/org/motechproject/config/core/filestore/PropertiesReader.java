@@ -12,7 +12,9 @@ public final class PropertiesReader {
 
     public static Properties getProperties(File file) throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            properties.load(fileInputStream);
+        }
         return properties;
     }
 

@@ -243,9 +243,11 @@ public class SettingsFacade {
                         filename, defaultConfig.get(filename), properties);
             }
 
-            Properties registeredProps = configurationService.getModuleProperties(
-                    moduleName, filename, defaultConfig.get(filename));
-            config.put(filename, registeredProps);
+            if (configurationService != null) {
+                Properties registeredProps = configurationService.getModuleProperties(
+                        moduleName, filename, defaultConfig.get(filename));
+                config.put(filename, registeredProps);
+            }
         } catch (IOException e) {
             throw new MotechException("Cant register settings", e);
         }
