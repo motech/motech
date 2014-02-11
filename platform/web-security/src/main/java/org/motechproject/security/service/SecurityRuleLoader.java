@@ -79,11 +79,19 @@ public class SecurityRuleLoader {
             return;
         }
 
+        LOGGER.debug("Updating config with rules from origin: {}", origin);
+
         MotechSecurityConfiguration securityConfig = allSecurityRules.getMotechSecurityConfiguration();
+
+        if (securityConfig == null) {
+            throw new IllegalStateException("No security config found in the database");
+        }
 
         List<MotechURLSecurityRule> oldRules = securityConfig.getSecurityRules();
 
         newRules.addAll(oldRules);
+
+        LOGGER.debug("Saving rules from origin {} in the database", origin);
 
         securityConfig.setSecurityRules(newRules);
         allSecurityRules.addOrUpdate(securityConfig);
