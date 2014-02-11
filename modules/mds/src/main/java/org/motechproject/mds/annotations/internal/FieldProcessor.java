@@ -1,8 +1,6 @@
 package org.motechproject.mds.annotations.internal;
 
-import org.apache.commons.collections.Predicate;
 import org.motechproject.mds.annotations.Field;
-import org.motechproject.mds.annotations.Ignore;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -19,12 +17,9 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.motechproject.mds.util.Constants.AnnotationFields.DISPLAY_NAME;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
 
@@ -120,54 +115,6 @@ class FieldProcessor extends AbstractProcessor {
 
     public List<FieldDto> getFields() {
         return fields;
-    }
-
-    private static final class MethodPredicate extends GenericPrecidate<Method> {
-
-        protected MethodPredicate() {
-            super(Method.class);
-        }
-
-        @Override
-        protected boolean match(Method object) {
-            boolean isNotFromObject = object.getDeclaringClass() != Object.class;
-            boolean isGetter = startsWithIgnoreCase(object.getName(), MemberUtil.GETTER_PREFIX);
-            boolean isSetter = startsWithIgnoreCase(object.getName(), MemberUtil.SETTER_PREFIX);
-            boolean hasIgnoreAnnotation = AnnotationsUtil.hasAnnotation(object, Ignore.class);
-
-            return (isNotFromObject && (isGetter || isSetter)) && !hasIgnoreAnnotation;
-        }
-    }
-
-    private static final class FieldPredicate extends GenericPrecidate<java.lang.reflect.Field> {
-
-        protected FieldPredicate() {
-            super(java.lang.reflect.Field.class);
-        }
-
-        @Override
-        public boolean match(java.lang.reflect.Field object) {
-            boolean hasFieldAnnotation = AnnotationsUtil.hasAnnotation(object, Field.class);
-            boolean hasIgnoreAnnotation = AnnotationsUtil.hasAnnotation(object, Ignore.class);
-            boolean isPublic = Modifier.isPublic(object.getModifiers());
-
-            return (hasFieldAnnotation || isPublic) && !hasIgnoreAnnotation;
-        }
-    }
-
-    private abstract static class GenericPrecidate<T> implements Predicate {
-        private Class<T> clazz;
-
-        protected GenericPrecidate(Class<T> clazz) {
-            this.clazz = clazz;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            return clazz.isInstance(object) && match(clazz.cast(object));
-        }
-
-        protected abstract boolean match(T object);
     }
 
 }
