@@ -230,7 +230,12 @@ public class Entity {
     }
 
     public void addField(Field field) {
-        getFields().add(field);
+        Field existing = getField(field.getName());
+        if (existing == null) {
+            getFields().add(field);
+        } else {
+            existing.update(field.toDto());
+        }
     }
 
     public void addLookup(Lookup lookup) {
