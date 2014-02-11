@@ -148,7 +148,7 @@ public class Type {
     }
 
     public boolean hasValidation() {
-        return CollectionUtils.isNotEmpty(settings);
+        return CollectionUtils.isNotEmpty(validations);
     }
 
     public List<TypeValidation> getValidations() {
