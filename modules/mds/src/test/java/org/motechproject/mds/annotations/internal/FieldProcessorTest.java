@@ -77,7 +77,7 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(4, actual.size());
+        assertEquals(5, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
         assertThat(actual, hasItem(equalTo(pi)));
         assertThat(actual, hasItem(equalTo(getServerDate)));
@@ -124,7 +124,7 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(4, actual.size());
+        assertEquals(5, actual.size());
         assertFalse(actual.contains(ignored));
     }
 
@@ -197,7 +197,7 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(4, actual.size());
+        assertEquals(5, actual.size());
         assertFalse(actual.contains(getIgnoredField));
         assertFalse(actual.contains(setIgnoredField));
     }

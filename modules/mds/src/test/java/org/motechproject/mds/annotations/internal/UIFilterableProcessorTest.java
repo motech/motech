@@ -63,7 +63,7 @@ public class UIFilterableProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(4, actual.size());
+        assertEquals(5, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
         assertThat(actual, hasItem(equalTo(getServerDate)));
     }

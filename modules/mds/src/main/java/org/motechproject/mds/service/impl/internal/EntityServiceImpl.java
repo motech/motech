@@ -1,5 +1,6 @@
 package org.motechproject.mds.service.impl.internal;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Packages;
@@ -438,6 +440,35 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         for (String fieldName : fieldNames) {
             Field field = entity.getField(fieldName);
             field.setUIFilterable(true);
+        }
+    }
+
+    @Override
+    public void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions) {
+        Entity entity = allEntities.retrieveById(entityDto.getId());
+
+        assertEntityExists(entity);
+
+        List<Field> fields = entity.getFields();
+
+        if (MapUtils.isEmpty(positions)) {
+            // all fields will be added
+
+            for (long i = 0; i < fields.size(); ++i) {
+                Field field = fields.get((int) i);
+
+                field.setUIDisplayable(true);
+                field.setUIDisplayPosition(i);
+            }
+        } else {
+            // only fields in map should be added
+
+            for (Field field : fields) {
+                String fieldName = field.getName();
+
+                field.setUIDisplayable(positions.containsKey(fieldName));
+                field.setUIDisplayPosition(positions.get(fieldName));
+            }
         }
     }
 

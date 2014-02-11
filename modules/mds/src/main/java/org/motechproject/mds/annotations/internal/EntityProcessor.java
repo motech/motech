@@ -35,6 +35,7 @@ class EntityProcessor extends AbstractProcessor {
     private EntityService entityService;
     private FieldProcessor fieldProcessor;
     private UIFilterableProcessor uiFilterableProcessor;
+    private UIDisplayableProcessor uiDisplayableProcessor;
 
     private BundleHeaders bundleHeaders;
 
@@ -71,7 +72,8 @@ class EntityProcessor extends AbstractProcessor {
                 EntityDto db = entityService.createEntity(entity);
 
                 findFields(clazz, db);
-                findFilterableFields(clazz, entity);
+                findFilterableFields(clazz, db);
+                findDisplayedFields(clazz, db);
             } catch (Exception e) {
                 LOGGER.error(
                         "Failed to create an entity for class {} from bundle {}",
@@ -99,6 +101,13 @@ class EntityProcessor extends AbstractProcessor {
         entityService.addFilterableFields(entity, uiFilterableProcessor.getFields());
     }
 
+    private void findDisplayedFields(Class clazz, EntityDto entity) {
+        uiDisplayableProcessor.setClazz(clazz);
+        uiDisplayableProcessor.execute();
+
+        entityService.addDisplayedFields(entity, uiDisplayableProcessor.getPositions());
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;
@@ -112,5 +121,10 @@ class EntityProcessor extends AbstractProcessor {
     @Autowired
     public void setUIFilterableProcessor(UIFilterableProcessor uiFilterableProcessor) {
         this.uiFilterableProcessor = uiFilterableProcessor;
+    }
+
+    @Autowired
+    public void setUIDisplayableProcessor(UIDisplayableProcessor uiDisplayableProcessor) {
+        this.uiDisplayableProcessor = uiDisplayableProcessor;
     }
 }
