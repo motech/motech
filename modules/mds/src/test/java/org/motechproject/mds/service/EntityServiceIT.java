@@ -8,6 +8,7 @@ import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.testutil.DraftBuilder;
@@ -215,6 +216,28 @@ public class EntityServiceIT extends BaseIT {
 
         // no drafts in db
         assertTrue(entityService.listWorkInProgress().isEmpty());
+    }
+
+    @Test
+    public void shouldNotAddFieldsWithTheSameNameToAnEntity() throws IOException {
+        EntityDto entityDto = new EntityDto();
+        entityDto.setName("SameFieldTest");
+        entityDto = entityService.createEntity(entityDto);
+
+        FieldDto field1 = new FieldDto();
+        field1.setBasic(new FieldBasicDto("disp", "name"));
+        field1.setType(typeService.findType(Boolean.class));
+        FieldDto field2 = new FieldDto();
+        field2.setBasic(new FieldBasicDto("dispName2", "name"));
+        field2.setType(typeService.findType(Integer.class));
+
+        entityService.addFields(entityDto, asList(field1, field2));
+
+        List<FieldDto> fieldsFromDb = entityService.getFields(entityDto.getId());
+
+        assertNotNull(fieldsFromDb);
+        assertEquals(1, fieldsFromDb.size());
+        assertEquals(asList("dispName2"), extract(fieldsFromDb, on(FieldDto.class).getBasic().getDisplayName()));
     }
 
     private void setUpSecurityContext() {

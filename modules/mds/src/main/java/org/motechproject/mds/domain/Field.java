@@ -15,6 +15,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Objects;
  * The <code>Field</code> class contains information about a single field.
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
+@Unique(name = "ENTITY_FIELDNAME_IDX", members = {"entity", "name"})
 public class Field {
 
     @PrimaryKey
