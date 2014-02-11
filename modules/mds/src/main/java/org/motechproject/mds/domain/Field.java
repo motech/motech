@@ -288,6 +288,10 @@ public class Field {
         copy.setType(type);
         copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
+        copy.setUIDisplayable(uiDisplayable);
+        copy.setUIDisplayPosition(uiDisplayPosition);
+        copy.setUIFilterable(uiFilterable);
+
         copy.setValidations(validationsCopy);
         copy.setMetadata(metadataCopy);
         copy.setSettings(settingsCopy);
