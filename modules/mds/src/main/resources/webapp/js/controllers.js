@@ -71,7 +71,7 @@
     * The SchemaEditorCtrl controller is used on the 'Schema Editor' view.
     */
     mds.controller('SchemaEditorCtrl', function ($scope, $timeout, Entities, Users, Roles) {
-        var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab, draft;
+        var setAdvancedSettings, setRest, setBrowsing, setSecuritySettings, setIndexesLookupsTab;
 
         workInProgress.setList(Entities);
 
@@ -183,19 +183,6 @@
                 });
         };
 
-        draft = function (data, callback) {
-            var pre = { id: $scope.selectedEntity.id },
-                func = function (data) {
-                    $scope.selectedEntity.modified = data.draft;
-
-                    if (_.isFunction(callback)) {
-                        callback();
-                    }
-                };
-
-            Entities.draft(pre, data, func);
-        };
-
         /**
         * The $scope.selectedEntityAdvancedAvailableFields contains fields available for use in REST.
         */
@@ -281,6 +268,44 @@
 
         $scope.availableUsers = Users.query();
         $scope.availableRoles = Roles.query();
+
+        $scope.currentErrorCode = undefined;
+
+        $scope.setError = function(error) {
+            var errorCode;
+
+            if (error) {
+                if (error.data) {
+                    errorCode = error.data;
+
+                    if (errorCode.startsWith('key:')) {
+                        errorCode = errorCode.split(':')[1];
+                    }
+                } else if ($.type(error) === 'string') {
+                    errorCode = error;
+                }
+            }
+
+            $scope.currentErrorCode = errorCode;
+        };
+
+        $scope.unsetError = function() {
+            $scope.currentErrorCode = undefined;
+        };
+
+        $scope.draft = function (data, callback) {
+            var pre = { id: $scope.selectedEntity.id },
+            func = function (data) {
+                $scope.selectedEntity.modified = data.changesMade;
+                $scope.selectedEntity.outdated = data.outdated;
+
+                if (_.isFunction(callback)) {
+                    callback();
+                }
+            };
+
+            Entities.draft(pre, data, func);
+        };
 
         /**
         * The $scope.SELECT_ENTITY_CONFIG contains configuration for selecting entity tag on UI.
@@ -496,7 +521,7 @@
         * Adds new metadata with empty key/value to field.
         */
         $scope.addMetadata = function (field) {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$addEmptyMetadata',
@@ -517,7 +542,7 @@
         * Removes selected metadata entry from field.
         */
         $scope.removeMetadata = function (field, idx) {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$removeMetadata',
@@ -535,7 +560,7 @@
             var value = $scope.selectedEntityRestLookups[index],
                 lookup = $scope.advancedSettings.indexes[index];
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'restOptions.${0}'.format(value ? 'addLookup' : 'removeLookup'),
@@ -568,7 +593,7 @@
                 $scope.advancedSettings.restOptions.fieldIds.push(field.id);
             });
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'restOptions.$setFieldIds',
@@ -595,7 +620,7 @@
                 && $scope.findFieldsByName($scope.newField.name).length === 0;
 
             if (validate) {
-                draft({
+                $scope.draft({
                     create: true,
                     values: {
                         typeClass: $scope.newField.type.type.typeClass,
@@ -652,7 +677,7 @@
                             $scope.advancedSettings.browsing.filterableFields.splice(filterableIndex, 1);
                         }
 
-                        draft({
+                        $scope.draft({
                             remove: true,
                             values: {
                                 fieldId: field.id
@@ -667,17 +692,34 @@
         * Abandon all changes made on an entity schema.
         */
         $scope.abandonChanges = function () {
+            $scope.unsetError();
+
             blockUI();
 
+            $scope.selectedEntity.outdated = false;
+
             Entities.abandon({id: $scope.selectedEntity.id}, function () {
-                $scope.selectedEntity.modified = false;
+                var entity;
 
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
-                        setSecuritySettings();
-                        setAdvancedSettings();
-                    });
+                entity = Entities.get({id: $scope.selectedEntity.id },  function () {
+                    $scope.selectedEntity = entity;
+                });
+            });
+        };
 
-                unblockUI();
+        /**
+        * Update the draft.
+        */
+        $scope.updateDraft = function () {
+            var entity;
+
+            blockUI();
+
+            $scope.unsetError();
+            $scope.selectedEntity.outdated = false;
+
+            entity = Entities.update({id: $scope.selectedEntity.id}, function () {
+                $scope.selectedEntity = entity;
             });
         };
 
@@ -797,16 +839,27 @@
         * database one by one. Next the method tries to delete existing fields from database.
         */
         $scope.saveChanges = function () {
-            blockUI();
-
-            Entities.commit({id: $scope.selectedEntity.id}, {}, function () {
-                $scope.selectedEntity.modified = false;
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id}, function () {
+            var pre = { id: $scope.selectedEntity.id },
+                data = {},
+                successCallback = function (data) {
+                    var pre = {id: $scope.selectedEntity.id},
+                        successCallback = function () {
                             setSecuritySettings();
                             setAdvancedSettings();
                             unblockUI();
-                        });
-            });
+                        };
+
+                    $scope.selectedEntity.modified = false;
+                    $scope.selectedEntity.outdated = false;
+                    $scope.fields = Entities.getFields(pre, successCallback);
+                },
+                errorCallback = function (data) {
+                    $scope.setError(data);
+                    unblockUI();
+                };
+
+            blockUI();
+            Entities.commit(pre, data, successCallback, errorCallback);
         };
 
         /* ~~~~~ ADVANCED FUNCTIONS ~~~~~ */
@@ -823,7 +876,7 @@
             if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
                 idx = $scope.advancedSettings.tracking.fields.indexOf(field.id);
 
-                draft({
+                $scope.draft({
                     edit: true,
                     values: {
                         path: idx > -1 ? 'tracking.$removeField' : 'tracking.$addField',
@@ -852,7 +905,7 @@
             if (!_.isNull($scope.advancedSettings) && !_.isUndefined($scope.advancedSettings)) {
                 idx = $scope.advancedSettings.tracking.actions.indexOf(action);
 
-                draft({
+                $scope.draft({
                     edit: true,
                     values: {
                         path: idx > -1 ? 'tracking.$removeAction' : 'tracking.$addAction',
@@ -879,7 +932,7 @@
                 fieldList: []
             };
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$addNewIndex',
@@ -949,7 +1002,7 @@
         * Removes currently active index
         */
         $scope.deleteLookup = function () {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$removeIndex',
@@ -969,7 +1022,7 @@
         $scope.addLookupField = function () {
             var value = $scope.availableFields[0] && $scope.availableFields[0].id;
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'indexes.{0}.$addField'.format($scope.activeIndex),
@@ -993,7 +1046,7 @@
         $scope.selectField = function (oldField, newField) {
             var selectedIndex = $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.indexOf(oldField);
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'indexes.{0}.$insertField'.format($scope.activeIndex),
@@ -1033,7 +1086,7 @@
         * @param field A field object to remove
         */
         $scope.removeLookupField = function (field) {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'indexes.{0}.$removeField'.format($scope.activeIndex),
@@ -1170,7 +1223,7 @@
         $scope.onFilterableChange = function(field) {
             var selected = $scope.advancedSettings.browsing.filterableFields.indexOf(field.id);
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'browsing.${0}'.format(selected ? 'addFilterableField' : 'removeFilterableField'),
@@ -1197,7 +1250,7 @@
                 $scope.advancedSettings.browsing.displayedFields.push(field.id);
             });
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'browsing.$setDisplayedFields',
@@ -1259,7 +1312,7 @@
                 array.push(item.id);
             });
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'browsing.$setDisplayedFields',
@@ -1306,7 +1359,7 @@
                 array.push(item.id);
             });
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: 'browsing.$setDisplayedFields',
@@ -1716,7 +1769,7 @@
         * Clears user list in 'Security' view
         */
         $scope.clearUsers = function() {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$removeAllUsers',
@@ -1734,7 +1787,7 @@
         * Clears roles list in 'Security' view
         */
         $scope.clearRoles = function() {
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: '$removeAllRoles',
@@ -1764,7 +1817,7 @@
                 return;
             }
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: path,
@@ -1798,7 +1851,7 @@
                 return;
             }
 
-            draft({
+            $scope.draft({
                 edit: true,
                 values: {
                     path: path,
@@ -1815,6 +1868,16 @@
                 });
             });
         };
+
+        // check every 5 seconds if the entity is outdated
+        setInterval(function () {
+            var entity;
+
+            entity = Entities.get({id: $scope.selectedEntity.id },  function () {
+                $scope.selectedEntity.modified = entity.modified;
+                $scope.selectedEntity.outdated = entity.outdated;
+            });
+        }, 5 * 1000);
     });
 
     /**

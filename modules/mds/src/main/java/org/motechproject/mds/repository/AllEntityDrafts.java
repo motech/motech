@@ -22,32 +22,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
 
     public EntityDraft create(Entity entity, String username) {
         EntityDraft draft = new EntityDraft();
-
-        draft.setParentEntity(entity);
-        draft.setParentVersion(entity.getEntityVersion());
-
-        draft.setDraftOwnerUsername(username);
-        draft.setLastModificationDate(DateUtil.nowUTC());
-
-        draft.setClassName(entity.getClassName());
-        draft.setNamespace(entity.getNamespace());
-        draft.setModule(entity.getModule());
-
-        for (Field field : entity.getFields()) {
-            draft.addField(field.copy());
-        }
-
-        for (Lookup lookup : entity.getLookups()) {
-            draft.addLookup(lookup.copy(draft.getFields()));
-        }
-
-        if (entity.getRestOptions() != null) {
-            draft.setRestOptions(entity.getRestOptions().copy());
-        }
-
-        if (entity.getTracking() != null) {
-            draft.setTracking(entity.getTracking().copy());
-        }
+        setProperties(draft, entity, username);
 
         return create(draft);
     }
@@ -77,6 +52,38 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         draft.setChangesMade(true);
 
         return draft;
+    }
+
+    public void setProperties(EntityDraft draft, Entity entity) {
+        setProperties(draft, entity, draft.getDraftOwnerUsername());
+    }
+
+    public void setProperties(EntityDraft draft, Entity entity, String username) {
+        draft.setParentEntity(entity);
+        draft.setParentVersion(entity.getEntityVersion());
+
+        draft.setDraftOwnerUsername(username);
+        draft.setLastModificationDate(DateUtil.nowUTC());
+
+        draft.setClassName(entity.getClassName());
+        draft.setNamespace(entity.getNamespace());
+        draft.setModule(entity.getModule());
+
+        for (Field field : entity.getFields()) {
+            draft.addField(field.copy());
+        }
+
+        for (Lookup lookup : entity.getLookups()) {
+            draft.addLookup(lookup.copy(draft.getFields()));
+        }
+
+        if (draft.getRestOptions() == null && entity.getRestOptions() != null) {
+            draft.setRestOptions(entity.getRestOptions().copy());
+        }
+
+        if (draft.getTracking() == null && entity.getTracking() != null) {
+            draft.setTracking(entity.getTracking().copy());
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,12 +139,8 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/draft", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseBody
-    public Map<String, Boolean> draft(@PathVariable Long entityId, @RequestBody DraftData data) {
-        boolean stateChanged = entityService.saveDraftEntityChanges(entityId, data);
-
-        Map<String, Boolean> map = new HashMap<>();
-        map.put("draft", stateChanged);
-        return map;
+    public DraftResult draft(@PathVariable Long entityId, @RequestBody DraftData data) {
+        return entityService.saveDraftEntityChanges(entityId, data);
     }
 
     @RequestMapping(value = "/entities/{entityId}/abandon", method = RequestMethod.POST)
@@ -159,6 +155,13 @@ public class EntityController extends MdsController {
     @ResponseStatus(HttpStatus.OK)
     public void commitChanges(@PathVariable Long entityId) {
         entityService.commitChanges(entityId);
+    }
+
+    @RequestMapping(value = "/entities/{entityId}/update", method = RequestMethod.POST)
+    @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
+    @ResponseBody
+    public EntityDto updateDraft(@PathVariable Long entityId) {
+        return entityService.updateDraft(entityId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/fields", method = RequestMethod.GET)

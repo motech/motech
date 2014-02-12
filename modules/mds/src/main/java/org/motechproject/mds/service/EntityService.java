@@ -1,6 +1,7 @@
 package org.motechproject.mds.service;
 
 import org.motechproject.mds.dto.AdvancedSettingsDto;
+import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -42,7 +43,7 @@ public interface EntityService {
     // TODO: replace with entity.findField
     FieldDto findFieldByName(Long entityId, String name);
 
-    boolean saveDraftEntityChanges(Long entityId, DraftData draftData);
+    DraftResult saveDraftEntityChanges(Long entityId, DraftData draftData);
 
     void abandonChanges(Long entityId);
 
@@ -71,4 +72,6 @@ public interface EntityService {
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
 
     void generateDde(Long entityId);
+
+    EntityDto updateDraft(Long entityId);
 }

@@ -12,7 +12,6 @@ import org.motechproject.mds.util.ClassName;
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Element;
-import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
@@ -20,8 +19,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
-import javax.jdo.annotations.Version;
-import javax.jdo.annotations.VersionStrategy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,8 +37,6 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-@Version(strategy = VersionStrategy.VERSION_NUMBER, column = "VERSION",
-        extensions = {@Extension(vendorName = "datanucleus", key = "field-name", value = "entityVersion")})
 @Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
 public class Entity {
 
@@ -77,7 +72,7 @@ public class Entity {
     @Element(dependent = TRUE)
     private List<EntityDraft> drafts;
 
-    private Long entityVersion;
+    private Long entityVersion = 1L;
 
     @Persistent(mappedBy = ENTITY, dependent = TRUE)
     private RestOptions restOptions;
@@ -233,6 +228,7 @@ public class Entity {
 
     public void addField(Field field) {
         Field existing = getField(field.getName());
+
         if (existing == null) {
             getFields().add(field);
         } else {
@@ -241,7 +237,20 @@ public class Entity {
     }
 
     public void addLookup(Lookup lookup) {
-        getLookups().add(lookup);
+        Lookup existing = getLookupById(lookup.getId());
+
+        if (existing == null) {
+            getLookups().add(lookup);
+        } else {
+            LookupDto lookupDto = lookup.toDto();
+            Set<Field> lookupFields = new HashSet<>();
+
+            for (String fieldId : lookupDto.getFieldList()) {
+                lookupFields.add(getField(Long.parseLong(fieldId)));
+            }
+
+            existing.update(lookupDto, lookupFields);
+        }
     }
 
     public void removeLookup(Long lookupId) {
@@ -287,6 +296,8 @@ public class Entity {
             tracking = draft.getTracking().copy();
             tracking.setEntity(this);
         }
+
+        entityVersion += 1;
     }
 
     @NotPersistent

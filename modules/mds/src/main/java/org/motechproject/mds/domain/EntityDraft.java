@@ -9,6 +9,7 @@ import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import java.util.Objects;
 
 /**
  * This class represents a users draft of an Entity. A draft is a users work in progress from the
@@ -32,7 +33,7 @@ public class EntityDraft extends Entity {
     private Long parentVersion;
 
     @Persistent
-    private Boolean changesMade;
+    private boolean changesMade;
 
     public String getDraftOwnerUsername() {
         return draftOwnerUsername;
@@ -66,18 +67,19 @@ public class EntityDraft extends Entity {
         this.parentVersion = parentVersion;
     }
 
-    public Boolean getChangesMade() {
+    public boolean isChangesMade() {
         return changesMade;
     }
 
-    public void setChangesMade(Boolean changesMade) {
+    public void setChangesMade(boolean changesMade) {
         this.changesMade = changesMade;
     }
 
     @Override
     public EntityDto toDto() {
         EntityDto dto = super.toDto();
-        dto.setModified(getChangesMade() != null && getChangesMade());
+        dto.setModified(isChangesMade());
+        dto.setOutdated(isOutdated());
         dto.setId(getParentEntity().getId());
         return dto;
     }
@@ -86,5 +88,10 @@ public class EntityDraft extends Entity {
     @NotPersistent
     public boolean isDraft() {
         return true;
+    }
+
+    @NotPersistent
+    public boolean isOutdated() {
+        return !Objects.equals(getParentVersion(), getParentEntity().getEntityVersion());
     }
 }

@@ -4,6 +4,16 @@
 
     var mds = angular.module('mds');
 
+    function findCorrentScope(startScope, functionName) {
+        var parent = startScope;
+
+        while (!parent[functionName]) {
+            parent = parent.$parent;
+        }
+
+        return parent;
+    }
+
     /**
     * Show/hide details about a field by clicking on chevron icon in the first column in
     * the field table.
@@ -501,6 +511,8 @@
                         });
 
                         scope.safeApply(function () {
+                            var viewScope = findCorrentScope(scope, 'draft');
+
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                  source.splice(itemIndex, 1);
                             });
@@ -513,17 +525,13 @@
                                 array.push(item.id);
                             });
 
-                            Entities.draft({
-                                id: scope.selectedEntity.id
-                            }, {
+                            viewScope.draft({
                                 edit: true,
                                 values: {
                                     path: attr.mdsPath,
                                     advanced: true,
                                     value: [array]
                                 }
-                            }, function (data) {
-                                 scope.selectedEntity.modified = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -624,6 +632,8 @@
                         });
 
                         scope.safeApply(function () {
+                            var viewScope = findCorrentScope(scope, 'draft');
+
                             angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                                 target.splice(itemIndex, 1);
                             });
@@ -636,17 +646,13 @@
                                 array.push(item.id);
                             });
 
-                            Entities.draft({
-                                id: scope.selectedEntity.id
-                            }, {
+                            viewScope.draft({
                                 edit: true,
                                 values: {
                                     path: attr.mdsPath,
                                     advanced: true,
                                     value: [array]
                                 }
-                            }, function (data) {
-                                 scope.selectedEntity.modified = data.draft;
                             });
 
                             sourceContainer.trigger('contentChange', [source]);
@@ -686,6 +692,8 @@
                     });
 
                     scope.safeApply(function () {
+                        var viewScope = findCorrentScope(scope, 'draft');
+
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                              source.splice(itemIndex, 1);
                         });
@@ -698,17 +706,13 @@
                             array.push(item.id);
                         });
 
-                        Entities.draft({
-                            id: scope.selectedEntity.id
-                        }, {
+                        viewScope.draft({
                             edit: true,
                             values: {
                                 path: attr.mdsPath,
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function (data) {
-                             scope.selectedEntity.modified = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -735,24 +739,21 @@
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
                         selectedItems = sourceContainer.children(),
+                        viewScope = findCorrentScope(scope, 'draft'),
                         array = [];
 
                         angular.forEach(source, function (item) {
                             array.push(item.id);
                         });
 
-                        Entities.draft({
-                            id: scope.selectedEntity.id
-                        }, {
+                        viewScope.draft({
                             edit: true,
                             values: {
                                 path: attr.mdsPath,
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function (data) {
-                             scope.selectedEntity.modified = data.draft;
-
+                        }, function () {
                              scope.safeApply(function () {
                                 angular.forEach(source, function(item) {
                                     target.push(item);
@@ -797,6 +798,8 @@
                     });
 
                     scope.safeApply(function () {
+                        var viewScope = findCorrentScope(scope, 'draft');
+
                         angular.forEach(selectedIndices.reverse(), function(itemIndex) {
                             target.splice(itemIndex, 1);
                         });
@@ -809,17 +812,13 @@
                             array.push(item.id);
                         });
 
-                        Entities.draft({
-                            id: scope.selectedEntity.id
-                        }, {
+                        viewScope.draft({
                             edit: true,
                             values: {
                                 path: attr.mdsPath,
                                 advanced: true,
                                 value: [array]
                             }
-                        }, function (data) {
-                             scope.selectedEntity.modified = data.draft;
                         });
 
                         sourceContainer.trigger('contentChange', [source]);
@@ -843,20 +842,17 @@
                         targetContainer = $('.connected-list-target.' + attr.connectWith),
                         source = scope[sourceContainer.attr('connected-list-source')],
                         target = scope[targetContainer.attr('connected-list-target')],
+                        viewScope = findCorrentScope(scope, 'draft'),
                         selectedItems = targetContainer.children();
 
-                        Entities.draft({
-                            id: scope.selectedEntity.id
-                        }, {
+                        viewScope.draft({
                             edit: true,
                             values: {
                                 path: attr.mdsPath,
                                 advanced: true,
                                 value: [[]]
                             }
-                        }, function (data) {
-                             scope.selectedEntity.modified = data.draft;
-
+                        }, function () {
                              scope.safeApply(function () {
                                 angular.forEach(target, function(item) {
                                     source.push(item);
@@ -1187,17 +1183,11 @@
                 var func = attr.mdsAutoSaveFieldChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var fieldPath = attr.mdsPath,
+                    var viewScope = findCorrentScope(scope, 'draft'),
+                        fieldPath = attr.mdsPath,
                         fieldId = attr.mdsFieldId,
-                        parent = scope,
                         entity,
                         value;
-
-                    while (parent.selectedEntity === undefined) {
-                        parent = parent.$parent;
-                    }
-
-                    entity = parent.selectedEntity;
 
                     if (fieldPath === undefined) {
                         fieldPath = attr.ngModel;
@@ -1208,17 +1198,13 @@
                         ? !ngModel.$modelValue
                         : ngModel.$modelValue;
 
-                    Entities.draft({
-                        id: entity.id
-                    }, {
+                    viewScope.draft({
                         edit: true,
                         values: {
                             path: fieldPath,
                             fieldId: fieldId,
                             value: [value]
                         }
-                    }, function (data) {
-                        entity.modified  = data.draft;
                     });
                 });
             }
@@ -1236,16 +1222,10 @@
                 var func = attr.mdsAutoSaveAdvancedChange || 'focusout';
 
                 angular.element(element).on(func, function () {
-                    var advancedPath = attr.mdsPath,
-                        parent = scope,
+                    var viewScope = findCorrentScope(scope, 'draft'),
+                        advancedPath = attr.mdsPath,
                         entity,
                         value;
-
-                    while (parent.selectedEntity === undefined) {
-                        parent = parent.$parent;
-                    }
-
-                    entity = parent.selectedEntity;
 
                     if (advancedPath === undefined) {
                         advancedPath = attr.ngModel;
@@ -1256,17 +1236,13 @@
                         ? !ngModel.$modelValue
                         : ngModel.$modelValue;
 
-                    Entities.draft({
-                        id: entity.id
-                    }, {
+                    viewScope.draft({
                         edit: true,
                         values: {
                             path: advancedPath,
                             advanced: true,
                             value: [value]
                         }
-                    }, function (data) {
-                        entity.modified =  data.draft;
                     });
                 });
             }
@@ -1285,16 +1261,10 @@
                     callback = attr.mdsCallback;
 
                 angular.element(element).on(func, function () {
-                    var securityPath = attr.mdsPath,
-                        parent = scope,
+                    var viewScope = findCorrentScope(scope, 'draft'),
+                        securityPath = attr.mdsPath,
                         entity,
                         value;
-
-                    while (parent.selectedEntity === undefined) {
-                        parent = parent.$parent;
-                    }
-
-                    entity = parent.selectedEntity;
 
                     if (securityPath === undefined) {
                         securityPath = attr.ngModel;
@@ -1305,17 +1275,14 @@
                         ? !ngModel.$modelValue
                         : ngModel.$modelValue;
 
-                    Entities.draft({
-                        id: entity.id
-                    }, {
+                    viewScope.draft({
                         edit: true,
                         values: {
                             path: securityPath,
                             security: true,
                             value: [value]
                         }
-                    }, function (data) {
-                        entity.modified = data.draft;
+                    }, function () {
                         scope.$eval(callback);
                     });
                 });

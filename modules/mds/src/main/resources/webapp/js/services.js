@@ -20,7 +20,8 @@
                 selectInstance: { method: 'GET', params: {action: 'instance'}, isArray: true  },
                 draft: { method: 'POST', params: {action: 'draft' } },
                 abandon: { method: 'POST', params: {action: 'abandon' } },
-                commit: { method: 'POST', params: {action: 'commit' } }
+                commit: { method: 'POST', params: {action: 'commit' } },
+                update: { method: 'POST', params: {action: 'update' } }
             }
         );
     });

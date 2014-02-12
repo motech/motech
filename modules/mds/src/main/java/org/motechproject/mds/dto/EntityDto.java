@@ -20,6 +20,7 @@ public class EntityDto {
     private String namespace;
     private boolean readOnly;
     private boolean modified;
+    private boolean outdated;
 
     public EntityDto() {
         this(null, null, null, null, null);
@@ -108,6 +109,14 @@ public class EntityDto {
 
     public void setModified(boolean modified) {
         this.modified = modified;
+    }
+
+    public boolean isOutdated() {
+        return outdated;
+    }
+
+    public void setOutdated(boolean outdated) {
+        this.outdated = outdated;
     }
 
     /**
