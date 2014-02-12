@@ -84,10 +84,13 @@ public class SecurityRuleLoader {
         MotechSecurityConfiguration securityConfig = allSecurityRules.getMotechSecurityConfiguration();
 
         if (securityConfig == null) {
+            LOGGER.error("No security config found in the database");
             throw new IllegalStateException("No security config found in the database");
         }
 
         List<MotechURLSecurityRule> oldRules = securityConfig.getSecurityRules();
+
+        LOGGER.debug("Found " + oldRules.size() + " old rules in the database");
 
         newRules.addAll(oldRules);
 
