@@ -951,7 +951,7 @@
                                 $('#entityInstancesTable').children('div').width('100%');
                                 $('.ui-jqgrid-htable').addClass('table-lightblue');
                                 $('.ui-jqgrid-btable').addClass("table-lightblue");
-                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-htable').width('100%');
                                 $('.ui-jqgrid-bdiv').width('100%');
                                 $('.ui-jqgrid-hdiv').width('100%');
                                 $('.ui-jqgrid-hbox').width('100%');
@@ -1109,7 +1109,7 @@
                                 $('#instanceHistoryTable').children('div').width('100%');
                                 $('.ui-jqgrid-htable').addClass('table-lightblue');
                                 $('.ui-jqgrid-btable').addClass("table-lightblue");
-                                $('.ui-jqgrid-htable').addClass('table-lightblue');
+                                $('.ui-jqgrid-htable').width('100%');
                                 $('.ui-jqgrid-bdiv').width('100%');
                                 $('.ui-jqgrid-hdiv').width('100%');
                                 $('.ui-jqgrid-hbox').width('100%');

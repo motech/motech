@@ -13,19 +13,7 @@
     <div class="ui-layout-content">
         <div class="tab-content" id="tab-content">
             <div id="main-content" class="tab-pane active">
-                <div class="row">
-                    <div id="operations-scheduler" class="inside">
-                        <button type="button" class="btn btn-info" id="scheduler-filters">
-                            <i class="icon-filter icon-white"></i>&nbsp;{{msg('scheduler.filters')}}
-                        </button>
-                    </div>
-
-                    <div id="outsideSchedulerTable" class="overrideJqgridTable">
-                        <table id="schedulerTable" scheduler-grid="pageResourceTable"></table>
-                        <div id="pageResourceTable"></div>
-                    </div>
-                </div>
-
+                <div ng-view></div>
             </div>
         </div>
     </div>

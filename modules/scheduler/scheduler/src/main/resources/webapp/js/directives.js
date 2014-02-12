@@ -48,7 +48,6 @@
 
                 // BIND events to hard-coded buttons
                 scope.innerLayout.addCloseBtn( "#tbarCloseEast", "east" );
-                scope.innerLayout.addToggleBtn("#scheduler-filters", "east");
             }
         };
     });
@@ -126,7 +125,7 @@
                         var field = elem.data('search-field'),
                             value = elem.data('search-value'),
                             type = elem.data('field-type') || 'string',
-                            url = parseUri(table.jqGrid('getGridParam', 'url')),
+                            url = parseUri(jQuery('#' + attrs.jqgridSearch).jqGrid('getGridParam', 'url')),
                             query = {},
                             params = '?',
                             array = [],
@@ -216,18 +215,18 @@
                         sort: 'sortColumn',
                         order: 'sortDirection'
                     },
-                    shrinkToFit: true,
+                    shrinkToFit: false,
                     autowidth: true,
                     rowNum: 10,
                     rowList: [10, 20, 50],
                     colModel:[
-                        {name:'activity',index:'activity', width:70, align:"center"},
-                        {name:'status',index:'status', width:30, align:"center"},
-                        {name:'name',index:'name', width:200, align:"left"},
-                        {name:'startDate',index:'startDate', width:90, align:"center", sorttype:"date"},
-                        {name:'endDate',index:'endDate', width:90, algign:"center", sorttype:"date"},
-                        {name:'jobType',index:'jobType', width:50,align:"center"},
-                        {name:'info',index:'info', width:70,align:"left"}
+                        {name:'activity',index:'activity', width: 100, align:"center"},
+                        {name:'status',index:'status', width: 90, align:"center"},
+                        {name:'name',index:'name', width: 400, align:"left"},
+                        {name:'startDate',index:'startDate', width: 180, align:"center", sorttype:"date"},
+                        {name:'endDate',index:'endDate', width: 160, algign:"center", sorttype:"date"},
+                        {name:'jobType',index:'jobType', width: 100, align:"center"},
+                        {name:'info',index:'info', width: 130, align:"left"}
                     ],
                     pager: '#' + attrs.schedulerGrid,
                     width: '100%',
@@ -258,9 +257,9 @@
                                 root: 'eventInfoList',
                                 records: function (obj) { return obj.length; }
                             },
-                            colNames: ['Subject', 'Key', 'Value'],
+                            colNames: [scope.msg('scheduler.subject'), scope.msg('scheduler.key'), scope.msg('scheduler.value')],
                             colModel: [
-                                {name:"subject",index:"subject", align:"center"},
+                                {name:scope.msg('.subject'),index:"subject", align:"center"},
                                 {name:"parameters",index:"parameters", width:80, align:"center",
                                     formatter: function (array, options, data) {
                                         var div = $('<div>');
@@ -301,7 +300,13 @@
 
                     },
 
-                    gridComplete: function (data) {
+                    gridComplete: function () {
+                        $.ajax({
+                            url: '../server/lang/locate',
+                            success:  function() {},
+                            async: false
+                        });
+
                         angular.forEach(['activity', 'status', 'name', 'startDate', 'endDate', 'jobType', 'info'], function (value) {
                             elem.jqGrid('setLabel', value, scope.msg('scheduler.' + value));
                         });
@@ -309,16 +314,15 @@
                         $('#outsideSchedulerTable').children('div').width('100%');
                         $('.ui-jqgrid-htable').addClass('table-lightblue');
                         $('.ui-jqgrid-btable').addClass("table-lightblue");
-                        $('.ui-jqgrid-htable').addClass('table-lightblue');
+                        $('.ui-jqgrid-htable').width('100%');
                         $('.ui-jqgrid-bdiv').width('100%');
                         $('.ui-jqgrid-hdiv').width('100%');
+                        $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
                         $('.ui-jqgrid-hbox').width('100%');
                         $('.ui-jqgrid-view').width('100%');
                         $('#t_resourceTable').width('auto');
                         $('.ui-jqgrid-pager').width('100%');
                         $('#outsideSchedulerTable').children('div').each(function() {
-                            $('table', this).width('100%');
-                            $(this).find('#schedulerTable').width('100%');
                             $(this).find('table').width('100%');
                         });
                         rows = $("#schedulerTable").getDataIDs();

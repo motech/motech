@@ -8,7 +8,7 @@
 
 
     schedulerModule.controller('SchedulerCtrl', function($scope, $http, $routeParams, MotechScheduler) {
-
+        $scope.innerLayout.addToggleBtn("#scheduler-filters", "east");
     });
 
 }());
