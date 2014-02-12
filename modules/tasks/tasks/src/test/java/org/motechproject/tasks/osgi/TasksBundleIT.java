@@ -94,7 +94,7 @@ public class TasksBundleIT extends BaseOsgiIT {
         assertEquals(fromDB, fromFile);
     }
 
-    public void testChannelRegistration() throws BundleException, InterruptedException {
+    public void ignoredTestChannelRegistration() throws BundleException, InterruptedException {
         String moduleName = "motech-tasks-test-bundle";
 
         ChannelService channelService = getService(ChannelService.class);
