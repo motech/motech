@@ -37,8 +37,8 @@ public class LookupDto {
                 : fieldList;
     }
 
-    public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
-        this(lookupName, singleObjectReturn, exposedViaRest);
+    public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<String> fieldList) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList);
         this.id = id;
     }
 
@@ -66,24 +66,25 @@ public class LookupDto {
         this.exposedViaRest = isExposedViaRest;
     }
 
-    public void addField(String field) {
-        this.fieldList.add(field);
+    public void addField(Integer field) {
+        this.fieldList.add(field.toString());
     }
 
-    public void insertField(Integer idx, String fieldId) {
+    public void insertField(Integer idx, Integer fieldId) {
         if (idx != null && idx < fieldList.size()) {
             this.fieldList.remove(idx.intValue());
-            this.fieldList.add(idx, fieldId);
+            this.fieldList.add(idx, fieldId.toString());
         }
     }
 
-    public void removeField(String fieldId) {
-        this.fieldList.remove(fieldId);
+    public void removeField(Integer fieldId) {
+        this.fieldList.remove(fieldId.toString());
     }
 
     public List<String> getFieldList() {
         return fieldList;
     }
+
 
     public void setFieldList(List<String> fieldList) {
         this.fieldList = CollectionUtils.isEmpty(fieldList)

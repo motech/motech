@@ -47,8 +47,8 @@ public class AllEntitiesIT extends BaseIT {
 
         Entity entityWithLookups = new Entity(EXAMPLE_CLASS_WITH_LOOKUPS);
         List<Lookup> lookups = new LinkedList<>();
-        lookups.add(new Lookup(EXAMPLE_LOOKUP_1, true, false, entityWithLookups));
-        lookups.add(new Lookup(EXAMPLE_LOOKUP_2, true, false, entityWithLookups));
+        lookups.add(new Lookup(EXAMPLE_LOOKUP_1, true, false, null, entityWithLookups));
+        lookups.add(new Lookup(EXAMPLE_LOOKUP_2, true, false, null, entityWithLookups));
         entityWithLookups.setLookups(lookups);
         persistenceManager.makePersistent(entityWithLookups);
     }
@@ -128,7 +128,7 @@ public class AllEntitiesIT extends BaseIT {
 
     @Test
     public void shouldCascadeSaveLookup() throws Exception {
-        Lookup lookup = new Lookup(SAMPLE_LOOKUP, true, false);
+        Lookup lookup = new Lookup(SAMPLE_LOOKUP, true, false, null);
         Entity entity = getEntities().get(0);
         List<Lookup> lookupSet = new LinkedList<>();
         lookupSet.add(lookup);

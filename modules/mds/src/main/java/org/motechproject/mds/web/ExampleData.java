@@ -108,7 +108,7 @@ public class ExampleData {
                 new FieldDto(
                         1L, 9005L, STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
-                        exampleMetadata1, FieldValidationDto.STRING, null
+                        exampleMetadata1, FieldValidationDto.STRING, null, null
                 )
         );
 
@@ -117,7 +117,7 @@ public class ExampleData {
                         2L, 9007L, STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
                         null,
-                        FieldValidationDto.STRING, null
+                        FieldValidationDto.STRING, null, null
                 )
         );
         fields.add(
@@ -127,7 +127,7 @@ public class ExampleData {
                         null, null,
                         Arrays.asList(new SettingDto("mds.form.label.values", Arrays.asList("Peldi", "Golden", "Patata"),
                                 LIST, REQUIRE), new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
-                                new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN))
+                                new SettingDto("mds.form.label.allowMultipleSelections", false, BOOLEAN)), null
                 )
         );
 
@@ -139,7 +139,7 @@ public class ExampleData {
                         4L, 9007L, INTEGER,
                         new FieldBasicDto("Voucher Number", "voucherNumber"),
                         exampleMetadata2,
-                        FieldValidationDto.INTEGER, null
+                        FieldValidationDto.INTEGER, null, null
                 )
         );
 
@@ -150,7 +150,7 @@ public class ExampleData {
                         5L, 9007L, STRING,
                         new FieldBasicDto("Redeemed By", "redeemedBy"),
                         exampleMetadata3,
-                        FieldValidationDto.STRING, null
+                        FieldValidationDto.STRING, null, null
                 )
         );
 
@@ -159,7 +159,7 @@ public class ExampleData {
                         6L, 9007L, BOOLEAN,
                         new FieldBasicDto("Active", "active"),
                         exampleMetadata3,
-                        null, null
+                        null, null, null
                 )
         );
 
