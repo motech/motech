@@ -5,7 +5,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.osgi.web.BundleHeaders;
+import org.motechproject.osgi.web.util.BundleHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +59,10 @@ class EntityProcessor extends AbstractProcessor {
         Entity annotation = AnnotationUtils.findAnnotation(clazz, Entity.class);
 
         if (null != annotation) {
+            String className = clazz.getName();
+
             String name = AnnotationsUtil.getAnnotationValue(
-                    annotation, NAME, ClassName.getSimpleName(clazz.getName())
+                    annotation, NAME, ClassName.getSimpleName(className)
             );
             String module = AnnotationsUtil.getAnnotationValue(
                     annotation, MODULE, bundleHeaders.getName(), bundleHeaders.getSymbolicName()
@@ -68,12 +70,22 @@ class EntityProcessor extends AbstractProcessor {
             String namespace = AnnotationsUtil.getAnnotationValue(annotation, NAMESPACE);
 
             try {
-                EntityDto entity = new EntityDto(clazz.getName(), name, module, namespace);
-                EntityDto db = entityService.createEntity(entity);
+                EntityDto entity = entityService.getEntityByClassName(className);
 
-                findFields(clazz, db);
-                findFilterableFields(clazz, db);
-                findDisplayedFields(clazz, db);
+                if (entity == null) {
+                    LOGGER.debug("Creating DDE for {}", className);
+
+                    EntityDto entityDto = new EntityDto(className, name, module, namespace);
+                    entity = entityService.createEntity(entityDto);
+                } else {
+                    LOGGER.debug("DDE for {} already exists, updating if necessary", className);
+                }
+
+                findFields(clazz, entity);
+                findFilterableFields(clazz, entity);
+                findDisplayedFields(clazz, entity);
+
+                entityService.generateDde(entity.getId());
             } catch (Exception e) {
                 LOGGER.error(
                         "Failed to create an entity for class {} from bundle {}",

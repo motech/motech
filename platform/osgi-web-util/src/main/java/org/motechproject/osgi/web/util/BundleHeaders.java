@@ -1,4 +1,4 @@
-package org.motechproject.osgi.web;
+package org.motechproject.osgi.web.util;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

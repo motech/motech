@@ -19,8 +19,10 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.osgi.framework.Bundle;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -56,9 +58,33 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
+    @Override
+    public ClassData buildDDE(Entity entity, Bundle bundle) {
+        String className = entity.getClassName();
+
+        try {
+            CtClass ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
+
+            ddeClass.defrost();
+
+            addFields(ddeClass, entity.getFields());
+
+            return new ClassData(className, ddeClass.toBytecode());
+        } catch (IOException | CannotCompileException | NotFoundException e) {
+            throw new EntityCreationException(e);
+        }
+    }
+
+
     private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
         for (Field field : fields) {
             String fieldName = field.getName();
+
+            // do not recreate fields from the loaded class
+            if (JavassistHelper.containsDelcaredField(ctClass, fieldName)) {
+                continue;
+            }
+
             String typeClass = field.getType().getTypeClassName();
 
             CtClass type = MotechClassPool.getDefault().get(typeClass);

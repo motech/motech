@@ -6,6 +6,8 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * The <code>AllEntities</code> class is a repository class that operates on instances of
  * {@link org.motechproject.mds.domain.Entity}.
@@ -35,7 +37,7 @@ public class AllEntities extends MotechDataRepository<Entity> {
         Entity entity = retrieveById(id);
 
         if (entity != null) {
-            if (entity.isReadOnly()) {
+            if (entity.isDDE()) {
                 throw new EntityReadOnlyException();
             }
 
@@ -50,7 +52,13 @@ public class AllEntities extends MotechDataRepository<Entity> {
     }
 
     public Entity retrieveByClassName(String className) {
-        return retrieve("className", className);
+        List<Entity> entities = retrieveAll("className", className);
+        for (Entity entity : entities) {
+            if (!entity.isDraft()) {
+                return entity;
+            }
+        }
+        return null;
     }
 
 }

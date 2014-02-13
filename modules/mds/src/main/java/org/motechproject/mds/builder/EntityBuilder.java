@@ -1,6 +1,6 @@
 package org.motechproject.mds.builder;
 
-
+import org.osgi.framework.Bundle;
 import org.motechproject.mds.domain.Entity;
 
 /**
@@ -10,9 +10,10 @@ public interface EntityBuilder {
 
     /**
      * Builds a class definition for a given entity. The class is not registered with any classloader.
-     *
      * @param entity the entity schema
-     * @return bytes of the newly constructured class
+     * @return bytes of the newly constructed class
      */
     ClassData build(Entity entity);
+
+    ClassData buildDDE(Entity entity, Bundle bundle);
 }

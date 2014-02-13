@@ -185,7 +185,7 @@ public class Entity {
     }
 
     @NotPersistent
-    public boolean isReadOnly() {
+    public boolean isDDE() {
         return isNotBlank(module) || isNotBlank(namespace);
     }
 

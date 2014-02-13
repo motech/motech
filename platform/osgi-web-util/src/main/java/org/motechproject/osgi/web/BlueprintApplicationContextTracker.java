@@ -1,10 +1,10 @@
 package org.motechproject.osgi.web;
 
+import org.motechproject.osgi.web.util.BundleHeaders;
 import org.motechproject.server.api.BundleLoadingException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -18,19 +18,18 @@ import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolic
  * The <code>BlueprintApplicationContextTracker</code> class tracks application contexts, which are registered as services.
  */
 
-public class BlueprintApplicationContextTracker extends ServiceTracker {
+public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
 
     private static final String APPLICATION_CONTEXT_SERVICE_NAME = "org.springframework.context.service.name";
     private static final String OSGI_WEB_UTIL = "org.motechproject.motech-platform-osgi-web-util";
     private Log4JBundleLoader logBundleLoader;
-    private BundleRegister bundleRegister;
     private HttpServiceTrackers httpServiceTrackers;
     private final UIServiceTrackers uiServiceTrackers;
 
     public BlueprintApplicationContextTracker(BundleContext context) {
-        super(context, ApplicationContext.class.getName(), null);
+        super(context);
         this.httpServiceTrackers = new HttpServiceTrackers();
         this.uiServiceTrackers = new UIServiceTrackers();
         registerServiceTrackersAsService(context);
@@ -58,7 +57,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
                 logBundleLoader = applicationContext.getBean(Log4JBundleLoader.class);
             }
             try {
-                bundleRegister = BundleRegister.getInstance();
+                BundleRegister bundleRegister = BundleRegister.getInstance();
                 bundleRegister.addBundle(bundle);
 
                 if (logBundleLoader != null) {
@@ -102,7 +101,7 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
 
 
     private boolean isBlueprintEnabledBundle(Bundle bundle) {
-        return new BundleHeaders(bundle).isBluePrintEnabled();
+        return bundle != null && new BundleHeaders(bundle).isBluePrintEnabled();
     }
 
     private String getServiceName(ServiceReference serviceReference) {

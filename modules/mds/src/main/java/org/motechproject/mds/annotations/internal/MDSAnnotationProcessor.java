@@ -20,14 +20,20 @@ public class MDSAnnotationProcessor {
     private EntityProcessor entityProcessor;
     private LookupProcessor lookupProcessor;
 
-    public void processAnnotations(Bundle bundle) {
-        LOGGER.debug("Starting scanning bundle {} for MDS annotations.", bundle.getSymbolicName());
+    public boolean processAnnotations(Bundle bundle) {
+        String symbolicName = bundle.getSymbolicName();
 
-        entityProcessor.execute(bundle);
-        lookupProcessor.execute(bundle);
+        LOGGER.debug("Starting scanning bundle {} for MDS annotations.", symbolicName);
 
-        LOGGER.debug("Finished scanning bundle {} for MDS annotations.", bundle.getSymbolicName());
+        boolean annotationsFound = entityProcessor.execute(bundle);
+        annotationsFound |= lookupProcessor.execute(bundle);
+
+        LOGGER.debug("Finished scanning bundle {} for MDS annotations.", symbolicName);
+
+        return annotationsFound;
     }
+
+
 
     @Autowired
     public void setLookupProcessor(LookupProcessor lookupProcessor) {
@@ -38,5 +44,4 @@ public class MDSAnnotationProcessor {
     public void setEntityProcessor(EntityProcessor entityProcessor) {
         this.entityProcessor = entityProcessor;
     }
-
 }

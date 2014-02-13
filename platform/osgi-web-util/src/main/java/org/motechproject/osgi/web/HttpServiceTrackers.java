@@ -1,5 +1,6 @@
 package org.motechproject.osgi.web;
 
+import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;

@@ -14,4 +14,8 @@ public class TypeNotFoundException extends MdsException {
     public TypeNotFoundException() {
         super("mds.error.typeNotFound");
     }
+
+    public TypeNotFoundException(String msg) {
+        super(msg);
+    }
 }

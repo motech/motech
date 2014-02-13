@@ -15,12 +15,16 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.MDSConstructor;
+import org.motechproject.osgi.web.util.WebBundleUtil;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.metadata.JDOMetadata;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,11 +32,14 @@ import java.util.List;
  */
 @Service
 public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor {
+    private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
+
     private MdsJDOEnhancer enhancer;
 
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
+    private BundleContext bundleContext;
     private AllEntities allEntities;
 
     @Override
@@ -52,12 +59,25 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
 
     private void constructEntity(Entity entity, MDSClassLoader tmpClassLoader) {
         try {
-            ClassData classData = entityBuilder.build(entity);
+            ClassData classData;
+
+            if (entity.isDDE()) {
+                Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+
+                if (declaringBundle == null) {
+                    throw new EntityCreationException("Declaring bundle unavailable for entity" + entity.getClassName());
+                } else {
+                    classData = entityBuilder.buildDDE(entity, declaringBundle);
+                }
+            } else {
+                classData = entityBuilder.build(entity);
+            }
 
             // we need a temporary classloader to define initial classes before enhancement
             tmpClassLoader.defineClass(classData);
 
             EnhancedClassData enhancedClassData = enhancer.enhance(entity, classData.getBytecode(), tmpClassLoader);
+            MotechClassPool.registerEnhancedData(enhancedClassData);
 
             Class<?> clazz = MDSClassLoader.getInstance().defineClass(enhancedClassData);
 
@@ -67,7 +87,7 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
             getPersistenceManagerFactory().registerMetadata(jdoMetadata);
 
             buildInfrastructure(clazz);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new EntityCreationException(e);
         }
     }
@@ -78,9 +98,14 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
 
         List<Entity> entities = allEntities.retrieveAll();
 
-        for (Entity mapping : entities) {
-            if (!mapping.isDraft() && !mapping.isReadOnly()) {
-                constructEntity(mapping, tmpClassLoader);
+        for (Entity entity : entities) {
+            // we create DDE only after the declaring bundle becomes available
+            if (!entity.isDraft() && !entity.isDDE()) {
+                try {
+                    constructEntity(entity, tmpClassLoader);
+                } catch (Exception e) {
+                    LOG.error("Unable to process entity " + entity.getClassName(), e);
+                }
             }
         }
     }
@@ -119,5 +144,10 @@ public class MDSConstructorImpl extends BaseMdsService implements MDSConstructor
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }

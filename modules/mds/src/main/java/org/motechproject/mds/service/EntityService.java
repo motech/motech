@@ -70,4 +70,6 @@ public interface EntityService {
     void addFilterableFields(EntityDto entityDto, List<String> fieldNames);
 
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
+
+    void generateDde(Long entityId);
 }

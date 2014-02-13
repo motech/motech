@@ -208,7 +208,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         Entity parent = draft.getParentEntity();
 
         parent.updateFromDraft(draft);
-
         allEntityDrafts.delete(draft);
     }
 
@@ -472,6 +471,13 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
     }
 
+    @Transactional
+    public void generateDde(Long entityId) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+        constructor.constructEntity(entity);
+    }
+
     private void assertEntityExists(Entity entity) {
         if (entity == null) {
             throw new EntityNotFoundException();
@@ -481,7 +487,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private void assertWritableEntity(Entity entity) {
         assertEntityExists(entity);
 
-        if (entity.isReadOnly()) {
+        if (entity.isDDE()) {
             throw new EntityReadOnlyException();
         }
     }
@@ -505,5 +511,4 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public void setAllEntityDrafts(AllEntityDrafts allEntityDrafts) {
         this.allEntityDrafts = allEntityDrafts;
     }
-
 }

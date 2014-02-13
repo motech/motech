@@ -7,7 +7,7 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.osgi.web.BundleHeaders;
+import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -36,6 +36,7 @@ public final class AnnotationsUtil extends AnnotationUtils {
     }
 
     public static List<Class> getClasses(Class<? extends Annotation> annotation, Bundle bundle) {
+        LOGGER.debug("Scanning bundle: {}", bundle.getSymbolicName());
         LOGGER.debug("Searching for classes with annotations: {}", annotation.getName());
 
         Reflections reflections = configureReflection(bundle, new TypeAnnotationsScanner());

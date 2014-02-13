@@ -86,7 +86,8 @@
                             org.motechproject.osgi.web.ext;version=${project.version},
                             org.motechproject.osgi.web.domain;version=${project.version},
                             org.motechproject.osgi.web.service;version=${project.version},
-                            org.motechproject.osgi.web.settings;version=${project.version}
+                            org.motechproject.osgi.web.settings;version=${project.version},
+                            org.motechproject.osgi.web.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.osgi.util.tracker;version="0.0.0",

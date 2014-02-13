@@ -13,7 +13,6 @@ import org.motechproject.mds.builder.impl.EntityBuilderImpl;
 import org.motechproject.mds.domain.Entity;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -89,7 +88,7 @@ public class EntityBuilderTest {
         assertField(clazz, "dt", DateTime.class, dateTime);
         assertField(clazz, "list", List.class, asList("1", "2", "3"));
 
-        Field listField = clazz.getDeclaredField("list");
+        java.lang.reflect.Field listField = clazz.getDeclaredField("list");
         // no exception = proper signature
         listField.getGenericType();
     }
@@ -132,7 +131,7 @@ public class EntityBuilderTest {
 
     private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal)
             throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        Field field = clazz.getDeclaredField(name);
+        java.lang.reflect.Field field = clazz.getDeclaredField(name);
 
         assertNotNull(field);
         assertEquals(Modifier.PRIVATE, field.getModifiers());

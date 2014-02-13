@@ -41,7 +41,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         if (null != type) {
             return type.toDto();
         } else {
-            throw new TypeNotFoundException();
+            throw new TypeNotFoundException("Type unavailable: " + clazz.getName());
         }
     }
 

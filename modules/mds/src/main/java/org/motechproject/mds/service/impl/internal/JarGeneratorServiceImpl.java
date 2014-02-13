@@ -11,7 +11,7 @@ import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.JarGeneratorService;
-import org.motechproject.osgi.web.BundleHeaders;
+import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -88,9 +88,9 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
-            List<Entity> entities = allEntities.retrieveAll();
-            for (Entity entity : entities) {
-                if (!entity.isDraft() && !entity.isReadOnly()) {
+            List<Entity> mappings = allEntities.retrieveAll();
+            for (Entity entity : mappings) {
+                if (!entity.isDraft() && !entity.isDDE()) {
                     String className = entity.getClassName();
 
                     String[] classes = new String[]{
@@ -167,7 +167,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     }
 
     private String createClassPath(String className) {
-        return JavassistHelper.toClassPath(className) + ".class";
+        return JavassistHelper.toClassPath(className);
     }
 
     @Autowired

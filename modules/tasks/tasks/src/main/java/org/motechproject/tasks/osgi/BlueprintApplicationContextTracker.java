@@ -1,38 +1,32 @@
 package org.motechproject.tasks.osgi;
 
-import org.motechproject.commons.api.ApplicationContextServiceReferenceUtils;
+import org.motechproject.osgi.web.ApplicationContextTracker;
 import org.motechproject.tasks.annotations.TaskAnnotationBeanPostProcessor;
 import org.motechproject.tasks.ex.ValidationException;
 import org.motechproject.tasks.service.ChannelService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static java.lang.String.format;
-import static org.eclipse.gemini.blueprint.util.OsgiStringUtils.nullSafeSymbolicName;
 
 /**
  * This is effectively a bundle start/stop listener that registers/deregisters a bundle's task channel when a bundle is started/stopped respectively.
  */
-public class BlueprintApplicationContextTracker extends ServiceTracker {
+public class BlueprintApplicationContextTracker extends ApplicationContextTracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintApplicationContextTracker.class);
 
-    private final List<String> contextsProcessed = Collections.synchronizedList(new ArrayList<String>());
     private ChannelService channelService;
     private TaskAnnotationBeanPostProcessor taskAnnotationBeanPostProcessor;
 
     public BlueprintApplicationContextTracker(BundleContext bundleContext, ChannelService channelService) {
-        super(bundleContext, ApplicationContext.class.getName(), null);
+        super(bundleContext);
         this.channelService = channelService;
         this.taskAnnotationBeanPostProcessor = new TaskAnnotationBeanPostProcessor(bundleContext, channelService);
     }
@@ -42,16 +36,11 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
         ApplicationContext applicationContext = (ApplicationContext) super.addingService(serviceReference);
         LOGGER.debug("Staring to process " + applicationContext.getDisplayName());
 
-        if (ApplicationContextServiceReferenceUtils.isNotValid(serviceReference)) {
-            return applicationContext;
-        }
-
-        synchronized (contextsProcessed) {
-            String bundleSymbolicName = nullSafeSymbolicName(serviceReference.getBundle());
-            if (contextsProcessed.contains(bundleSymbolicName)) {
+        synchronized (getLock()) {
+            if (contextInvalidOrProcessed(serviceReference)) {
                 return applicationContext;
             }
-            contextsProcessed.add(bundleSymbolicName);
+            markAsProcessed(serviceReference);
         }
 
         try {
@@ -87,6 +76,8 @@ public class BlueprintApplicationContextTracker extends ServiceTracker {
             LOGGER.info(format("Deregistered channel for %s.", module.getSymbolicName()));
         }
 
-        contextsProcessed.remove(nullSafeSymbolicName(module));
+        synchronized (getLock()) {
+            removeFromProcessed(reference);
+        }
     }
 }

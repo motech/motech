@@ -16,4 +16,8 @@ public class EntityCreationException extends MdsException {
     public EntityCreationException(Throwable cause) {
         super("mds.error.entityBuilderFailure", cause);
     }
+
+    public EntityCreationException(String messageKey) {
+        super(messageKey);
+    }
 }
