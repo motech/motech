@@ -133,7 +133,7 @@ public class SchedulingWithoutPreferredTimeIT {
             String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("abcde").setScheduleName("schedule").setPreferredAlertTime(null).setReferenceDate(newDate(2050, 5, 10)).setReferenceTime(new Time(11, 0)).setEnrollmentDate(newDate(2050, 5, 10)).setEnrollmentTime(new Time(11, 0)).setStartingMilestoneName("milestone1").setMetadata(null));
             scheduleTrackingService.fulfillCurrentMilestone("abcde", "schedule", newDate(2050, 5, 17), new Time(9, 0));
 
-            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.1-repeat", enrollmentId)) ;
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.1-runonce", enrollmentId)) ;
             assertEquals(asList(
                     newDateTime(2050, 5, 19, 9, 0, 0)),
                     fireTimes);
