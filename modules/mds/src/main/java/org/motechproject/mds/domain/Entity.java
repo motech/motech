@@ -23,9 +23,11 @@ import javax.jdo.annotations.Unique;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -271,7 +273,7 @@ public class Entity {
 
         getLookups().clear();
         for (Lookup lookup : draft.getLookups()) {
-            Lookup copy = lookup.copy();
+            Lookup copy = lookup.copy(getFields());
             copy.setEntity(this);
             addLookup(copy);
         }
@@ -370,11 +372,16 @@ public class Entity {
 
         for (LookupDto lookupDto : advancedSettings.getIndexes()) {
             Lookup lookup = getLookupById(lookupDto.getId());
+            Set<Field> lookupFields = new HashSet<>();
+            for (String fieldId : lookupDto.getFieldList()) {
+                lookupFields.add(getField(Long.parseLong(fieldId)));
+            }
+
             if (lookup == null) {
-                Lookup newLookup = new Lookup(lookupDto);
+                Lookup newLookup = new Lookup(lookupDto, lookupFields);
                 addLookup(newLookup);
             } else {
-                lookup.update(lookupDto);
+                lookup.update(lookupDto, lookupFields);
             }
         }
     }

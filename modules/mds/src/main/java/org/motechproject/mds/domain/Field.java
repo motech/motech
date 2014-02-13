@@ -4,6 +4,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
@@ -17,9 +18,11 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The <code>Field</code> class contains information about a single field.
@@ -80,22 +83,28 @@ public class Field {
     @Element(dependent = "TRUE")
     private List<FieldSetting> settings = new ArrayList<>();
 
+    @Persistent(mappedBy = "fields")
+    private Set<Lookup> lookups = new HashSet<>();
+
     public Field() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public Field(Entity entity, String displayName, String name) {
-        this(entity, displayName, name, false, null, null);
+    public Field(Entity entity, String displayName, String name, Set<Lookup> lookups) {
+        this(entity, displayName, name, false, null, null, lookups);
     }
 
     public Field(Entity entity, String displayName, String name, boolean required,
-                 String defaultValue, String tooltip) {
+                 String defaultValue, String tooltip, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         this.name = name;
         this.required = required;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
+        this.lookups = null !=  lookups
+                ? lookups
+                : new HashSet<Lookup>();
     }
 
     public FieldDto toDto() {
@@ -124,9 +133,12 @@ public class Field {
             }
         }
 
-        return new FieldDto(
-                id, entity.getId(), type.toDto(), basic, metaDto, validationDto, settingsDto
-        );
+        List<LookupDto> lookupDtos = new ArrayList<>();
+        for (Lookup lookup : getLookups()) {
+            lookupDtos.add(lookup.toDto());
+        }
+
+        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto() , basic, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     public String getDisplayName() {
@@ -222,9 +234,19 @@ public class Field {
         return metadata;
     }
 
+
     public void setMetadata(List<FieldMetadata> metadata) {
         this.metadata = metadata;
     }
+
+    public Set<Lookup> getLookups() {
+        return lookups;
+    }
+
+    public void setLookups(Set<Lookup> lookups) {
+        this.lookups = lookups;
+    }
+
 
     public void addMetadata(FieldMetadata metadata) {
         this.metadata.add(metadata);

@@ -42,7 +42,7 @@
                         <div class="col-sm-4 control-label">{{msg('mds.form.label.field')}}</div>
                         <div class="col-sm-8 form-inline">
                             <button class="btn btn-default dropdown-toggle input-large" data-toggle="dropdown" href="#">
-                               {{findFieldById(lookupField).basic.displayName || msg('mds.form.selectField')}}
+                               {{getFieldDisplayNameByFieldId(lookupField) || msg('mds.form.selectField')}}
                                <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu input-large">

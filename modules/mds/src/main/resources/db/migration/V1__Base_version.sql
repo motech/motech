@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (i686)
+-- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: motech_data_services
 -- ------------------------------------------------------
--- Server version	5.5.35-0ubuntu0.12.04.2
+-- Server version	5.5.35-0ubuntu0.12.10.2
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -58,6 +58,7 @@ CREATE TABLE "Entity" (
   "parentEntity_id_OID" bigint(20) DEFAULT NULL,
   "parentVersion" bigint(20) DEFAULT NULL,
   "drafts_INTEGER_IDX" int(11) DEFAULT NULL,
+  "securityMode" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "DRAFT_USER_IDX" ("parentEntity_id_OID","draftOwnerUsername"),
   KEY "Entity_N49" ("parentEntity_id_OID"),
@@ -95,7 +96,9 @@ CREATE TABLE "Field" (
   "fields_INTEGER_IDX" int(11) DEFAULT NULL,
   "uiDisplayable" bit(1) NOT NULL,
   "uiFilterable" bit(1) NOT NULL,
+  "uiDisplayPosition" bigint(20) DEFAULT NULL,
   PRIMARY KEY ("id"),
+  UNIQUE KEY "ENTITY_FIELDNAME_IDX" ("entity_id_OID","name"),
   KEY "Field_N50" ("entity_id_OID"),
   KEY "Field_N49" ("type_id_OID"),
   CONSTRAINT "Field_FK1" FOREIGN KEY ("type_id_OID") REFERENCES "Type" ("id"),
@@ -228,6 +231,33 @@ CREATE TABLE "Lookup" (
 LOCK TABLES "Lookup" WRITE;
 /*!40000 ALTER TABLE "Lookup" DISABLE KEYS */;
 /*!40000 ALTER TABLE "Lookup" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table "LookupFields"
+--
+
+DROP TABLE IF EXISTS "LookupFields";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "LookupFields" (
+  "Lookup_OID" bigint(20) NOT NULL,
+  "Field_OID" bigint(20) NOT NULL,
+  PRIMARY KEY ("Lookup_OID","Field_OID"),
+  KEY "LookupFields_N49" ("Field_OID"),
+  KEY "LookupFields_N50" ("Lookup_OID"),
+  CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("Lookup_OID") REFERENCES "Lookup" ("id"),
+  CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("Field_OID") REFERENCES "Field" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "LookupFields"
+--
+
+LOCK TABLES "LookupFields" WRITE;
+/*!40000 ALTER TABLE "LookupFields" DISABLE KEYS */;
+/*!40000 ALTER TABLE "LookupFields" ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -511,4 +541,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-10 11:03:05
+-- Dump completed on 2014-02-12  9:15:30

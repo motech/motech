@@ -1038,7 +1038,7 @@
                 values: {
                     path: 'indexes.{0}.$removeField'.format($scope.activeIndex),
                     advanced: true,
-                    value: [field]
+                    value: [parseInt(field, 10)]
                 }
             }, function () {
                 $scope.advancedSettings.indexes[$scope.activeIndex].fieldList.removeObject(field);
@@ -1432,6 +1432,26 @@
         */
         $scope.findFieldById = function (id) {
             return find($scope.fields, [{ field: 'id', value: id}], true);
+        };
+
+        /**
+        * Find display name of the unique field with given id.
+        *
+        * @param {string} id This value will be used to find fields.
+        * @return {object} display name of the unique field with the given id.
+        */
+        $scope.getFieldDisplayNameByFieldId = function (id) {
+            var fields = $scope.fields.valueOf(), result, i;
+
+            for (i = 0; i < fields.length; i += 1) {
+                //toString() method is called because sometimes id has a numeric type
+                if (id.toString() === fields[i].id.toString()) {
+                    result = fields[i].basic.displayName;
+                    break;
+                }
+            }
+
+            return result;
         };
 
         /**

@@ -45,7 +45,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.motechproject.mds.util.Constants.Packages;
 
@@ -158,8 +160,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             throw new NoSuchTypeException();
         }
 
+        Set<Lookup> fieldLookups = new HashSet<>();
 
-        Field field = new Field(draft, displayName, name);
+        Field field = new Field(draft, displayName, name, fieldLookups);
         field.setType(type);
 
         if (type.hasSettings()) {
@@ -257,7 +260,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public void addLookupToEntity(Long entityId, LookupDto lookup) {
         Entity entity = allEntities.retrieveById(entityId);
-        entity.addLookup(new Lookup(lookup));
+        entity.addLookup(new Lookup(lookup, new HashSet<Field>()));
     }
 
     @Override
@@ -417,7 +420,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             Type type = allTypes.retrieveByClassName(typeClass);
             Field field = new Field(
                     entity, basic.getDisplayName(), basic.getName(), basic.isRequired(),
-                    (String) basic.getDefaultValue(), basic.getTooltip()
+                    (String) basic.getDefaultValue(), basic.getTooltip(), null
             );
             field.setType(type);
 

@@ -20,14 +20,15 @@ public class FieldDto {
     private List<MetadataDto> metadata;
     private FieldValidationDto validation;
     private List<SettingDto> settings;
+    private List<LookupDto> lookups;
 
     public FieldDto() {
-        this(null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null);
     }
 
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic,
                     List<MetadataDto> metadata, FieldValidationDto validation,
-                    List<SettingDto> settings) {
+                    List<SettingDto> settings, List<LookupDto> lookups) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
@@ -39,6 +40,9 @@ public class FieldDto {
         this.settings = CollectionUtils.isEmpty(settings)
                 ? new LinkedList<SettingDto>()
                 : settings;
+        this.lookups = CollectionUtils.isEmpty(lookups)
+                ? new LinkedList<LookupDto>()
+                : lookups;
     }
 
     public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, FieldValidationDto validation) {
@@ -115,6 +119,14 @@ public class FieldDto {
 
     public void setSettings(List<SettingDto> settings) {
         this.settings = settings;
+    }
+
+    public List<LookupDto> getLookups() {
+        return lookups;
+    }
+
+    public void setLookups(List<LookupDto> lookups) {
+        this.lookups = lookups;
     }
 
     /**
