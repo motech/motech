@@ -6,6 +6,7 @@ import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.AlertWindow;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -83,23 +84,43 @@ public class EnrollmentAlertService {
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * MILLIS_IN_A_SEC;
 
         AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
-        if (alertWindow.numberOfAlertsToSchedule() > 0) {
-            int numberOfAlertsToFire = alertWindow.numberOfAlertsToSchedule() - 1;
+        int numberOfAlertsToSchedule = alertWindow.numberOfAlertsToSchedule();
+
+        if (numberOfAlertsToSchedule == 1) {
+            // if there is only one alert to schedule, a run once job will be scheduled.
             DateTime alertsStartTime = alertWindow.scheduledAlertStartDate();
 
             if (alertsStartTime.isBefore(now())) {
+                outboundEventGateway.sendEventMessage(event);
+            } else {
+                RunOnceSchedulableJob job = new RunOnceSchedulableJob(event, alertsStartTime.toDate());
+
+                schedulerService.safeScheduleRunOnceJob(job);
+            }
+        } else if (numberOfAlertsToSchedule > 0) {
+            // We take one away from the number to schedule since one is
+            // always fired from a RepeatingSchedulableJob
+            int numberOfAlertsToFire = numberOfAlertsToSchedule - 1;
+            DateTime alertsStartTime = alertWindow.scheduledAlertStartDate();
+
+            // If the first alert should have gone out already, go ahead and raise
+            // the event for it and decrease the numberOfAlertsToFire since we've
+            // already fired one
+            if (alertsStartTime.isBefore(now())) {
                 alertsStartTime = alertsStartTime.plus(repeatIntervalInMillis);
                 numberOfAlertsToFire = numberOfAlertsToFire - 1;
-
                 outboundEventGateway.sendEventMessage(event);
             }
+
+            // Schedule the repeating job with the scheduler.
             RepeatingSchedulableJob job = new RepeatingSchedulableJob()
-                .setMotechEvent(event)
-                .setStartTime(alertsStartTime.toDate())
-                .setEndTime(null)
-                .setRepeatCount(numberOfAlertsToFire)
-                .setRepeatIntervalInMilliSeconds(repeatIntervalInMillis)
-                .setIgnorePastFiresAtStart(false);
+                    .setMotechEvent(event)
+                    .setStartTime(alertsStartTime.toDate())
+                    .setEndTime(null)
+                    .setRepeatCount(numberOfAlertsToFire)
+                    .setRepeatIntervalInMilliSeconds(repeatIntervalInMillis)
+                    .setIgnorePastFiresAtStart(false);
+
             schedulerService.safeScheduleRepeatingJob(job);
         }
     }

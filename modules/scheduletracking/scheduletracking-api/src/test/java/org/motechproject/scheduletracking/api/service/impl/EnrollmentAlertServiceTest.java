@@ -14,6 +14,14 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
@@ -162,11 +170,8 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment().setExternalId("entity_1").setSchedule(schedule).setCurrentMilestoneName("milestone").setStartOfSchedule(daysAgo(4)).setEnrolledOn(daysAgo(0)).setPreferredAlertTime(new Time(8, 20)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
-        assertEquals(newDateTime(daysAfter(2).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
-
-        assertRepeatIntervalValue(MILLIS_PER_DAY * 3, job.getRepeatIntervalInMilliSeconds());
-        assertEquals(0, job.getRepeatCount().intValue());
+        RunOnceSchedulableJob job = expectAndCaptureRunOneJob();
+        assertEquals(newDateTime(daysAfter(2).toLocalDate(), new Time(8, 20)).toDate(), job.getStartDate());
     }
 
     @Test
@@ -240,8 +245,8 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollmentIntoSecondMilestone = new Enrollment().setExternalId("some_id").setSchedule(schedule).setCurrentMilestoneName("milestone_2").setStartOfSchedule(weeksAgo(0)).setEnrolledOn(weeksAgo(0)).setPreferredAlertTime(new Time(0, 0)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
 
-        RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
-        assertEquals(newDateTime(weeksAfter(5).toLocalDate(), new Time(0, 0)).toDate(), job.getStartTime());
+        RunOnceSchedulableJob job = expectAndCaptureRunOneJob();
+        assertEquals(newDateTime(weeksAfter(5).toLocalDate(), new Time(0, 0)).toDate(), job.getStartDate());
     }
 
     @Test
@@ -275,13 +280,11 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment().setExternalId("some_id").setSchedule(schedule).setCurrentMilestoneName("milestone_1").setStartOfSchedule(daysAgo(12)).setEnrolledOn(DateUtil.now()).setPreferredAlertTime(new Time(6, 15)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+        ArgumentCaptor<RunOnceSchedulableJob> runOneJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRunOnceJob(runOneJobCaptor.capture());
 
-        assertEquals(newDateTime(DateUtil.now().plusDays(1).toLocalDate(), new Time(6, 15)).toDate(), repeatJobCaptor.getValue().getStartTime());
-        assertEquals(0, repeatJobCaptor.getValue().getRepeatCount().intValue());
+        assertEquals(newDateTime(DateUtil.now().plusDays(1).toLocalDate(), new Time(6, 15)).toDate(), runOneJobCaptor.getValue().getStartDate());
     }
-
 
     @Test
     public void shouldConsiderZeroOffsetForBackDatedFloatingAlerts() {
@@ -314,11 +317,10 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment().setExternalId("some_id").setSchedule(schedule).setCurrentMilestoneName("milestone_1").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(1)).setPreferredAlertTime(new Time(8, 15)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+        ArgumentCaptor<RunOnceSchedulableJob> runOneJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRunOnceJob(runOneJobCaptor.capture());
 
-        assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
-        assertEquals(0, repeatJobCaptor.getValue().getRepeatCount().intValue());
+        assertEquals(DateUtil.now().toDate(), runOneJobCaptor.getValue().getStartDate());
     }
 
     @Test
@@ -514,5 +516,12 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         return repeatJobCaptor.getValue();
+    }
+
+    private RunOnceSchedulableJob expectAndCaptureRunOneJob() {
+        ArgumentCaptor<RunOnceSchedulableJob> runOneJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(schedulerService).safeScheduleRunOnceJob(runOneJobCaptor.capture());
+
+        return runOneJobCaptor.getValue();
     }
 }
