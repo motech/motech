@@ -1,5 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
+import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.gemini.blueprint.mock.MockBundle;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,23 +13,36 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.annotations.InSet;
+import org.motechproject.mds.annotations.NotInSet;
+import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.service.TypeService;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang.reflect.MethodUtils.getAccessibleMethod;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -77,7 +92,7 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(5, actual.size());
+        assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
         assertThat(actual, hasItem(equalTo(pi)));
         assertThat(actual, hasItem(equalTo(getServerDate)));
@@ -124,7 +139,7 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(5, actual.size());
+        assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(ignored));
     }
 
@@ -197,9 +212,99 @@ public class FieldProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(5, actual.size());
+        assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(getIgnoredField));
         assertFalse(actual.contains(setIgnoredField));
+    }
+
+    @Test
+    public void shouldAssignFieldValidation() throws Exception {
+        Type integer = new Type(Integer.class);
+        Type decimal = new Type(Double.class);
+        Type string = new Type(String.class);
+
+        TypeValidation intMinValue = new TypeValidation("mds.field.validation.minValue", integer);
+        TypeValidation intMaxValue = new TypeValidation("mds.field.validation.maxValue", integer);
+        TypeValidation intMustBeInSet = new TypeValidation("mds.field.validation.mustBeInSet", string);
+        TypeValidation intCannotBeInSet = new TypeValidation("mds.field.validation.cannotBeInSet", string);
+
+        TypeValidation decMinValue = new TypeValidation("mds.field.validation.minValue", decimal);
+        TypeValidation decMaxValue = new TypeValidation("mds.field.validation.maxValue", decimal);
+        TypeValidation decMustBeInSet = new TypeValidation("mds.field.validation.mustBeInSet", string);
+        TypeValidation decCannotBeInSet = new TypeValidation("mds.field.validation.cannotBeInSet", string);
+
+        TypeValidation regex = new TypeValidation("mds.field.validation.regex", string);
+        TypeValidation minLength = new TypeValidation("mds.field.validation.minLength", integer);
+        TypeValidation maxLength = new TypeValidation("mds.field.validation.maxLength", integer);
+
+        doReturn(TypeDto.INTEGER).when(typeService).findType(Integer.class);
+        doReturn(TypeDto.DOUBLE).when(typeService).findType(Double.class);
+        doReturn(TypeDto.STRING).when(typeService).findType(String.class);
+
+        doReturn(asList(intMinValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMin.class);
+        doReturn(asList(intMaxValue)).when(typeService).findValidations(TypeDto.INTEGER, DecimalMax.class);
+        doReturn(asList(intMustBeInSet)).when(typeService).findValidations(TypeDto.INTEGER, InSet.class);
+        doReturn(asList(intCannotBeInSet)).when(typeService).findValidations(TypeDto.INTEGER, NotInSet.class);
+        doReturn(asList(intMinValue)).when(typeService).findValidations(TypeDto.INTEGER, Min.class);
+        doReturn(asList(intMaxValue)).when(typeService).findValidations(TypeDto.INTEGER, Max.class);
+
+        doReturn(asList(decMinValue)).when(typeService).findValidations(TypeDto.DOUBLE, DecimalMin.class);
+        doReturn(asList(decMaxValue)).when(typeService).findValidations(TypeDto.DOUBLE, DecimalMax.class);
+        doReturn(asList(decMustBeInSet)).when(typeService).findValidations(TypeDto.DOUBLE, InSet.class);
+        doReturn(asList(decCannotBeInSet)).when(typeService).findValidations(TypeDto.DOUBLE, NotInSet.class);
+        doReturn(asList(decMinValue)).when(typeService).findValidations(TypeDto.DOUBLE, Min.class);
+        doReturn(asList(decMaxValue)).when(typeService).findValidations(TypeDto.DOUBLE, Max.class);
+
+        doReturn(asList(regex)).when(typeService).findValidations(TypeDto.STRING, Pattern.class);
+        doReturn(asList(minLength, maxLength)).when(typeService).findValidations(TypeDto.STRING, Size.class);
+        doReturn(asList(minLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMin.class);
+        doReturn(asList(maxLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMax.class);
+
+        processor.execute();
+        List<FieldDto> fields = processor.getFields();
+
+        FieldDto pi = findFieldWithName(fields, "pi");
+        assertCriterion(pi, "mds.field.validation.minValue", "3");
+        assertCriterion(pi, "mds.field.validation.maxValue", "4");
+        assertCriterion(pi, "mds.field.validation.mustBeInSet", "{3,3.14,4}");
+        assertCriterion(pi, "mds.field.validation.cannotBeInSet", "{1,2,5}");
+
+        FieldDto epsilon = findFieldWithName(fields, "epsilon");
+        assertCriterion(epsilon, "mds.field.validation.minValue", "0.0");
+        assertCriterion(epsilon, "mds.field.validation.maxValue", "1.0");
+        assertCriterion(epsilon, "mds.field.validation.mustBeInSet", "{1,0.75,0.5,0.25,0}");
+        assertCriterion(epsilon, "mds.field.validation.cannotBeInSet", "{-1,2,3}");
+
+        FieldDto random = findFieldWithName(fields, "random");
+        assertCriterion(random, "mds.field.validation.minValue", "0");
+        assertCriterion(random, "mds.field.validation.maxValue", "10");
+
+        FieldDto gaussian = findFieldWithName(fields, "gaussian");
+        assertCriterion(gaussian, "mds.field.validation.minValue", "0.0");
+        assertCriterion(gaussian, "mds.field.validation.maxValue", "1.0");
+
+        FieldDto poem = findFieldWithName(fields, "poem");
+        assertCriterion(poem, "mds.field.validation.regex", "[A-Z][a-z]{9}");
+        assertCriterion(poem, "mds.field.validation.minLength", "10");
+        assertCriterion(poem, "mds.field.validation.maxLength", "20");
+
+        FieldDto article = findFieldWithName(fields, "article");
+        assertCriterion(article, "mds.field.validation.minLength", "100");
+        assertCriterion(article, "mds.field.validation.maxLength", "500");
+    }
+
+    private FieldDto findFieldWithName(List<FieldDto> fields, String name) {
+        return (FieldDto) CollectionUtils.find(
+                fields, new BeanPropertyValueEqualsPredicate("basic.name", name)
+        );
+    }
+
+    private void assertCriterion(FieldDto field, String displayName, String value) {
+        ValidationCriterionDto dto = field.getValidation().getCriterion(displayName);
+
+        assertNotNull("Criterion " + displayName + " should exists", dto);
+        assertEquals(value, String.valueOf(dto.getValue()));
+        assertTrue("The validation criterion should be enabled", dto.isEnabled());
     }
 
 }

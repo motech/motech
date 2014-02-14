@@ -1,6 +1,8 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.osgi.framework.Bundle;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -92,7 +94,8 @@ public final class AnnotationsUtil extends AnnotationUtils {
         String valueAsString = null;
 
         if (null != value) {
-            valueAsString = String.valueOf(value);
+            valueAsString = new ToStringBuilder(value, ToStringStyle.SIMPLE_STYLE)
+                    .append(value).toString();
         }
 
         for (String defaultValue : defaultValues) {
@@ -105,6 +108,19 @@ public final class AnnotationsUtil extends AnnotationUtils {
     public static boolean hasAnnotation(AnnotatedElement element,
                                         Class<? extends Annotation> annotation) {
         return getAnnotation(element, annotation) != null;
+    }
+
+    public static boolean hasProperty(Annotation annotation, String property) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        Method method;
+
+        try {
+            method = annotationType.getDeclaredMethod(property, new Class[0]);
+        } catch (NoSuchMethodException e) {
+            method = null;
+        }
+
+        return method != null;
     }
 
     private static Reflections configureReflection(Bundle bundle, Scanner... scanners) {

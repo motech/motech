@@ -263,6 +263,36 @@ public final class Constants {
          */
         public static final String DISPLAY_NAME = "displayName";
 
+        /**
+         * Constant <code>VALUE</code> corresponding to the primitive value {@code value}
+         */
+        public static final String VALUE = "value";
+
+        /**
+         * Constant <code>REGEXP</code> corresponding to the primitive value {@code regexp}
+         */
+        public static final String REGEXP = "regexp";
+
+        /**
+         * Constant <code>MIN</code> corresponding to the primitive value {@code min}
+         */
+        public static final String MIN = "min";
+
+        /**
+         * Constant <code>MAX</code> corresponding to the primitive value {@code max}
+         */
+        public static final String MAX = "max";
+
+        /**
+         * Constant <code>INTEGER</code> corresponding to the primitive value {@code integer}
+         */
+        public static final String INTEGER = "integer";
+
+        /**
+         * Constant <code>FRACTION</code> corresponding to the primitive value {@code fraction}
+         */
+        public static final String FRACTION = "fraction";
+
         private AnnotationFields() {
         }
     }

@@ -534,6 +534,33 @@ INSERT INTO "TypeValidation" VALUES (1,'mds.field.validation.minValue',1),(2,'md
 /*!40000 ALTER TABLE "TypeValidation" ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table "TypeValidation_annotations"
+--
+
+DROP TABLE IF EXISTS "TypeValidation_annotations";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "TypeValidation_annotations" (
+  "id_OID" bigint(20) NOT NULL,
+  "ANNOTATION" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "IDX" int(11) NOT NULL,
+  PRIMARY KEY ("id_OID","IDX"),
+  KEY "TypeValidation_annotations_N49" ("id_OID"),
+  CONSTRAINT "TypeValidation_annotations_FK1" FOREIGN KEY ("id_OID") REFERENCES "TypeValidation" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "TypeValidation_annotations"
+--
+
+LOCK TABLES "TypeValidation_annotations" WRITE;
+/*!40000 ALTER TABLE "TypeValidation_annotations" DISABLE KEYS */;
+INSERT INTO "TypeValidation_annotations" VALUES (1,'javax.validation.constraints.DecimalMin',0),(1,'javax.validation.constraints.Min',1),(2,'javax.validation.constraints.DecimalMax',0),(2,'javax.validation.constraints.Max',1),(3,'org.motechproject.mds.annotations.InSet',0),(4,'org.motechproject.mds.annotations.NotInSet',0),(5,'javax.validation.constraints.Pattern',0),(6,'javax.validation.constraints.DecimalMin',0),(6,'javax.validation.constraints.Size',1),(7,'javax.validation.constraints.DecimalMax',0),(7,'javax.validation.constraints.Size',1),(8,'javax.validation.constraints.DecimalMin',0),(8,'javax.validation.constraints.Min',1),(9,'javax.validation.constraints.DecimalMax',0),(9,'javax.validation.constraints.Max',1),(10,'org.motechproject.mds.annotations.InSet',0),(11,'org.motechproject.mds.annotations.NotInSet',0);
+/*!40000 ALTER TABLE "TypeValidation_annotations" ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -35,11 +35,11 @@ import java.util.jar.JarOutputStream;
 
 import static java.util.jar.Attributes.Name;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.motechproject.mds.util.Constants.Manifest;
-import static org.motechproject.mds.util.Constants.Packages;
 import static org.motechproject.mds.util.ClassName.getInterfaceName;
 import static org.motechproject.mds.util.ClassName.getRepositoryName;
 import static org.motechproject.mds.util.ClassName.getServiceName;
+import static org.motechproject.mds.util.Constants.Manifest;
+import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.

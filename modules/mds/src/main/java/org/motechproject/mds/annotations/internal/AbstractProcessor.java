@@ -91,8 +91,9 @@ abstract class AbstractProcessor {
             boolean hasAnnotation = AnnotationsUtil.hasAnnotation(object, getAnnotation());
             boolean hasIgnoreAnnotation = AnnotationsUtil.hasAnnotation(object, Ignore.class);
             boolean isPublic = Modifier.isPublic(object.getModifiers());
+            boolean isStatic = Modifier.isStatic(object.getModifiers());
 
-            return (hasAnnotation || isPublic) && !hasIgnoreAnnotation;
+            return (hasAnnotation || isPublic) && !hasIgnoreAnnotation && !isStatic;
         }
     }
 

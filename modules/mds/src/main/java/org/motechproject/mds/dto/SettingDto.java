@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -42,6 +43,11 @@ public class SettingDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonIgnore
+    public String getValueAsString() {
+        return value == null ? "" : value.toString();
     }
 
     public Object getValue() {

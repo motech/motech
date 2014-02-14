@@ -50,6 +50,20 @@ public class Type {
     @Element(column = "TYPE_VALIDATION_ID_EID")
     private List<TypeValidation> validations;
 
+    public Type() {
+        this(null);
+    }
+
+    public Type(Class<?> typeClass) {
+        this(null, null, typeClass);
+    }
+
+    public Type(String displayName, String description, Class<?> typeClass) {
+        this.displayName = displayName;
+        this.description = description;
+        this.typeClass = typeClass;
+    }
+
     public TypeDto toDto() {
         return new TypeDto(displayName, description, typeClass.getName());
     }

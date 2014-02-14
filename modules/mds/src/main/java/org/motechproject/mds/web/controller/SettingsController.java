@@ -1,7 +1,7 @@
 package org.motechproject.mds.web.controller;
 
-import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.dto.MdsSettingsDto;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

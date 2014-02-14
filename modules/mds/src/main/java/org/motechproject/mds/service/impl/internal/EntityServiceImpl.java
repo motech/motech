@@ -16,8 +16,11 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
+import org.motechproject.mds.dto.SettingDto;
+import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -424,6 +427,38 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
                     (String) basic.getDefaultValue(), basic.getTooltip(), null
             );
             field.setType(type);
+
+            if (type.hasSettings()) {
+                for (TypeSetting setting : type.getSettings()) {
+                    SettingDto settingDto = fieldDto.getSetting(setting.getName());
+                    FieldSetting fieldSetting = new FieldSetting(field, setting);
+
+                    if (null != settingDto) {
+                        fieldSetting.setValue(settingDto.getValueAsString());
+                    }
+
+                    field.addSetting(fieldSetting);
+                }
+            }
+
+            if (type.hasValidation()) {
+                for (TypeValidation validation : type.getValidations()) {
+                    FieldValidation fieldValidation = new FieldValidation(field, validation);
+
+                    FieldValidationDto validationDto = fieldDto.getValidation();
+                    if (null != validationDto) {
+                        ValidationCriterionDto criterion = validationDto
+                                .getCriterion(validation.getDisplayName());
+
+                        if (null != criterion) {
+                            fieldValidation.setValue(criterion.valueAsString());
+                            fieldValidation.setEnabled(criterion.isEnabled());
+                        }
+                    }
+
+                    field.addValidation(fieldValidation);
+                }
+            }
 
             entity.addField(field);
         }

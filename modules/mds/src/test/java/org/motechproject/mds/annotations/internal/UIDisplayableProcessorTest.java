@@ -49,7 +49,7 @@ public class UIDisplayableProcessorTest {
         List<AnnotatedElement> actual = new ArrayList<>();
         actual.addAll(processor.getElements());
 
-        assertEquals(5, actual.size());
+        assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(money)));
     }
 

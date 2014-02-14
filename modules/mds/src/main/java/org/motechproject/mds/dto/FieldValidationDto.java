@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +60,20 @@ public class FieldValidationDto {
         criteria.add(criterion);
     }
 
+    @JsonIgnore
+    public ValidationCriterionDto getCriterion(String displayName) {
+        ValidationCriterionDto found = null;
+
+        for (ValidationCriterionDto criterion : criteria) {
+            if (criterion.getDisplayName().equalsIgnoreCase(displayName)) {
+                found = criterion;
+                break;
+            }
+        }
+
+        return found;
+    }
+
     public List<ValidationCriterionDto> getCriteria() {
         return criteria;
     }
@@ -90,4 +105,5 @@ public class FieldValidationDto {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
 }

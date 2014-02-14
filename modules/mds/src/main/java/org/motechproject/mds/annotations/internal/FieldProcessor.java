@@ -1,9 +1,12 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Field;
+import org.motechproject.mds.domain.FieldValidation;
+import org.motechproject.mds.domain.TypeValidation;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.AnnotationsUtil;
@@ -14,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
@@ -21,7 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.DISPLAY_NAME;
+import static org.motechproject.mds.util.Constants.AnnotationFields.MAX;
+import static org.motechproject.mds.util.Constants.AnnotationFields.MIN;
 import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
+import static org.motechproject.mds.util.Constants.AnnotationFields.REGEXP;
+import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
 
 /**
  * The <code>FieldProcessor</code> provides a mechanism to finding fields or methods with the
@@ -93,6 +102,7 @@ class FieldProcessor extends AbstractProcessor {
             field.setEntityId(entity.getId());
             field.setType(type);
             field.setBasic(basic);
+            field.setValidation(createValidation(ac, type));
 
             fields.add(field);
         } else {
@@ -115,6 +125,60 @@ class FieldProcessor extends AbstractProcessor {
 
     public List<FieldDto> getFields() {
         return fields;
+    }
+
+    private FieldValidationDto createValidation(AccessibleObject ac, TypeDto type) {
+        FieldValidationDto validationDto = null;
+
+        for (Annotation annotation : ac.getAnnotations()) {
+            List<TypeValidation> validations = typeService.findValidations(
+                    type, annotation.annotationType()
+            );
+
+            if (null != validations) {
+                for (TypeValidation v : validations) {
+                    // we don't need information about field in here
+                    // the field validation value will be set below
+                    FieldValidation fieldValidation = new FieldValidation(null, v, null, true);
+                    assignValidationValue(fieldValidation, annotation);
+
+                    if (null == validationDto) {
+                        validationDto = new FieldValidationDto();
+                    }
+
+                    validationDto.addCriterion(fieldValidation.toDto());
+                }
+            }
+        }
+
+        return validationDto;
+    }
+
+    private void assignValidationValue(FieldValidation validation, Annotation annotation) {
+        if (AnnotationsUtil.hasProperty(annotation, VALUE)) {
+            String value = AnnotationsUtil.getAnnotationValue(annotation, VALUE);
+            validation.setValue(value);
+        } else {
+            if (annotation instanceof Pattern) {
+                String regexp = AnnotationsUtil.getAnnotationValue(annotation, REGEXP);
+                validation.setValue(regexp);
+            } else if (annotation instanceof Size) {
+                switch (validation.getDetails().getDisplayName()) {
+                    case "mds.field.validation.minLength":
+                        String min = AnnotationsUtil.getAnnotationValue(annotation, MIN);
+                        validation.setValue(min);
+                        break;
+                    case "mds.field.validation.maxLength":
+                        String max = AnnotationsUtil.getAnnotationValue(annotation, MAX);
+                        validation.setValue(max);
+                        break;
+                    default:
+                        throw new IllegalArgumentException(
+                                "The @Size annotation can be used only on fields with String type."
+                        );
+                }
+            }
+        }
     }
 
 }

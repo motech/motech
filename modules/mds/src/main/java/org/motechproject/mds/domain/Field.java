@@ -102,7 +102,7 @@ public class Field {
         this.required = required;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
-        this.lookups = null !=  lookups
+        this.lookups = null != lookups
                 ? lookups
                 : new HashSet<Lookup>();
     }
@@ -138,7 +138,7 @@ public class Field {
             lookupDtos.add(lookup.toDto());
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto() , basic, metaDto, validationDto, settingsDto, lookupDtos);
+        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto(), basic, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     public String getDisplayName() {
@@ -435,12 +435,14 @@ public class Field {
     }
 
     private void updateValidation(FieldValidationDto validationDto) {
-        if (validationDto != null) {
+        if (null != validationDto) {
             for (ValidationCriterionDto criterionDto : validationDto.getCriteria()) {
                 FieldValidation validation = getValidationByName(criterionDto.getDisplayName());
 
-                validation.setEnabled(criterionDto.isEnabled());
-                validation.setValue(criterionDto.valueAsString());
+                if (null != validation) {
+                    validation.setEnabled(criterionDto.isEnabled());
+                    validation.setValue(criterionDto.valueAsString());
+                }
             }
         }
     }
