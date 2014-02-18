@@ -2,11 +2,12 @@ package org.motechproject.mds.javassist;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
-import org.motechproject.mds.builder.EnhancedClassData;
+import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.impl.DefaultMotechDataService;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public final class MotechClassPool {
 
     private static final ClassPool POOL;
 
-    private static Map<String, EnhancedClassData> enhancedData = new HashMap<>();
+    private static Map<String, ClassData> classData = new HashMap<>();
 
     static {
         POOL = ClassPool.getDefault();
@@ -33,16 +34,20 @@ public final class MotechClassPool {
         return POOL;
     }
 
-    public static EnhancedClassData getEnhancedData(String className) {
-        return enhancedData.get(className);
+    public static ClassData getEnhancedClassData(String className) {
+        return classData.get(className);
     }
 
-    public static void registerEnhancedData(EnhancedClassData enhancedClassData) {
-        enhancedData.put(enhancedClassData.getClassName(), enhancedClassData);
+    public static void registerEnhancedClassData(ClassData enhancedClassData) {
+        classData.put(enhancedClassData.getClassName(), enhancedClassData);
     }
 
     public static void unregisterEnhancedData(String className) {
-        enhancedData.remove(className);
+        classData.remove(className);
+    }
+
+    public static Collection<ClassData> getEnhancedClasses() {
+        return classData.values();
     }
 
     private MotechClassPool() {

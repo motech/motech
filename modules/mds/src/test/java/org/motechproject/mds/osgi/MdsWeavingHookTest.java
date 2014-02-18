@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.mds.builder.EnhancedClassData;
+import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
@@ -30,7 +30,7 @@ public class MdsWeavingHookTest {
 
     @Test
     public void shouldWeaveClassesForDdeAndAddImports() {
-        MotechClassPool.registerEnhancedData(new EnhancedClassData(TEST_CLASS, "testClassContent".getBytes(), null));
+        MotechClassPool.registerEnhancedClassData(new ClassData(TEST_CLASS, "testClassContent".getBytes()));
         List<String> dynamicImports = new ArrayList<>(asList("one.two.three"));
 
         when(wovenClass.getClassName()).thenReturn(TEST_CLASS);

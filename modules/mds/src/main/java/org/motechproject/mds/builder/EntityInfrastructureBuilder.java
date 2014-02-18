@@ -8,5 +8,5 @@ import java.util.List;
  */
 public interface EntityInfrastructureBuilder {
 
-    List<ClassData> buildInfrastructure(Class<?> entityClass);
+    List<ClassData> buildInfrastructure(String entityClassName);
 }

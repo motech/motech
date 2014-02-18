@@ -2,7 +2,6 @@ package org.motechproject.mds.util;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * The <code>ClassName</code> util provides several methods which should help for example with
@@ -29,16 +28,20 @@ public final class ClassName {
         return idx < 0 ? EMPTY : str.substring(0, idx);
     }
 
+    public static String getEntityName(String className) {
+        return String.format("%s.%s", Constants.PackagesGenerated.ENTITY, getSimpleName(className));
+    }
+
     public static String getRepositoryName(String className) {
-        return String.format("%s.All%ss", Packages.REPOSITORY, getSimpleName(className));
+        return String.format("%s.All%ss", Constants.PackagesGenerated.REPOSITORY, getSimpleName(className));
     }
 
     public static String getInterfaceName(String className) {
-        return String.format("%s.%sService", Packages.SERVICE, getSimpleName(className));
+        return String.format("%s.%sService", Constants.PackagesGenerated.SERVICE, getSimpleName(className));
     }
 
     public static String getServiceName(String className) {
-        return String.format("%s.%sServiceImpl", Packages.SERVICE_IMPL, getSimpleName(className));
+        return String.format("%s.%sServiceImpl", Constants.PackagesGenerated.SERVICE_IMPL, getSimpleName(className));
     }
 
 }

@@ -22,6 +22,9 @@ public class Records<T> {
             this.rows = list;
         }
     }
+    public Records(List<T> list) {
+        rows = list;
+    }
 
     public Integer getPage() {
         return page;

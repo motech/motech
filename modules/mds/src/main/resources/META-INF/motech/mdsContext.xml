@@ -2,28 +2,14 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:security="http://www.springframework.org/schema/security"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
-       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.mds"/>
-
-    <mvc:annotation-driven/>
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <aop:aspectj-autoproxy/>
-
-    <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
@@ -79,14 +65,6 @@
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
     </bean>
 
-    <bean id="sqlProperties" factory-bean="sqlDbManager" factory-method="getSqlProperties">
-        <constructor-arg>
-            <bean factory-bean="mdsSettings" factory-method="getProperties">
-                <constructor-arg value="datanucleus.properties" />
-            </bean>
-        </constructor-arg>
-    </bean>
-
     <bean id="flyway" class="com.googlecode.flyway.core.Flyway" init-method="migrate">
         <property name="dataSource">
             <bean class="org.datanucleus.store.rdbms.datasource.dbcp.BasicDataSource">
@@ -106,15 +84,14 @@
                     </bean>
                 </property>
                 <property name="password">
-                <bean factory-bean="sqlProperties" factory-method="getProperty">
-                    <constructor-arg value="javax.jdo.option.ConnectionPassword" />
-                </bean>
+                    <bean factory-bean="sqlProperties" factory-method="getProperty">
+                        <constructor-arg value="javax.jdo.option.ConnectionPassword" />
+                    </bean>
                 </property>
             </bean>
         </property>
         <property name="initOnMigrate" value="true"/>
     </bean>
-
 
     <bean id="persistenceManagerFactoryBean" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" depends-on="flyway">
         <property name="jdoPropertyMap" ref="sqlProperties"/>
@@ -128,7 +105,5 @@
     <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager" depends-on="flyway">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
-
-
 
 </beans>

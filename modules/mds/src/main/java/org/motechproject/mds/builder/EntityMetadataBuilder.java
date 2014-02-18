@@ -11,13 +11,11 @@ import javax.jdo.metadata.JDOMetadata;
 public interface EntityMetadataBuilder {
 
     /**
-     * Add to the empty {@link javax.jdo.metadata.JDOMetadata} information about package and
-     * class name.
-     *
-     * @param md     a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
+     * Adds  information about package and class name to a {@link javax.jdo.metadata.JDOMetadata} instance.
+     * @param jdoMetadata     a empty instance of {@link javax.jdo.metadata.JDOMetadata}.
      * @param entity a instance of {@link org.motechproject.mds.domain.Entity}
      * @return an instance of {@link javax.jdo.metadata.JDOMetadata} with information about package
      * and class name.
      */
-    JDOMetadata createBaseEntity(JDOMetadata md, Entity entity);
+    void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity);
 }

@@ -1,6 +1,6 @@
 package org.motechproject.mds.osgi;
 
-import org.motechproject.mds.builder.EnhancedClassData;
+import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
@@ -32,7 +32,7 @@ public class MdsWeavingHook implements WeavingHook {
 
         LOG.trace("Weaving called for: {}", className);
 
-        EnhancedClassData enhancedClassData = MotechClassPool.getEnhancedData(className);
+        ClassData enhancedClassData = MotechClassPool.getEnhancedClassData(className);
 
         if (enhancedClassData == null) {
             LOG.trace("{} does not have enhanced registered DDE metadata", className);

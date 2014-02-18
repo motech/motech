@@ -10,11 +10,10 @@
 </div>
 <div ng-include="'../mds/resources/partials/widgets/entityInstanceFields.html'"></div>
 <div  class="inside">
-    <button class="btn btn-primary btn-save" href="#">
+    <button class="btn btn-primary btn-save" ng-click="addEntityInstance()">
         {{msg('mds.btn.save')}}
     </button>
-    <button class="btn btn-default btn-cancel" ng-click="unselectAdd()">
-        {{msg('mds.btn.cancel')}}
+    <button class="btn btn-default btn-cancel" ng-click="unselectAdd()">        {{msg('mds.btn.cancel')}}
     </button>
 </div>
 </div>

@@ -37,25 +37,24 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
-    public List<ClassData> buildInfrastructure(Class<?> entityClass) {
+    public List<ClassData> buildInfrastructure(String entityClassName) {
         List<ClassData> list = new ArrayList<>();
-        String className = entityClass.getName();
 
-        String repositoryClassName = ClassName.getRepositoryName(className);
+        String repositoryClassName = ClassName.getRepositoryName(entityClassName);
         if (!existsInClassPath(repositoryClassName)) {
-            byte[] repositoryCode = getRepositoryCode(repositoryClassName, entityClass);
+            byte[] repositoryCode = getRepositoryCode(repositoryClassName, entityClassName);
             list.add(new ClassData(repositoryClassName, repositoryCode));
         }
 
-        String interfaceClassName = ClassName.getInterfaceName(className);
+        String interfaceClassName = ClassName.getInterfaceName(entityClassName);
         if (!existsInClassPath(interfaceClassName)) {
-            byte[] interfaceCode = getInterfaceCode(interfaceClassName, entityClass);
+            byte[] interfaceCode = getInterfaceCode(interfaceClassName, entityClassName);
             list.add(new ClassData(interfaceClassName, interfaceCode));
         }
 
-        String serviceClassName = ClassName.getServiceName(className);
+        String serviceClassName = ClassName.getServiceName(entityClassName);
         if (!existsInClassPath(serviceClassName)) {
-            byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entityClass);
+            byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entityClassName);
             list.add(new ClassData(serviceClassName, serviceCode));
         }
 
@@ -74,16 +73,16 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         return exists;
     }
 
-    private byte[] getRepositoryCode(String repositoryClassName, Class<?> type) {
+    private byte[] getRepositoryCode(String repositoryClassName, String typeName) {
         try {
             CtClass superClass = classPool.getCtClass(REPOSITORY_BASE_CLASS);
-            superClass.setGenericSignature(getGenericSignature(type));
+            superClass.setGenericSignature(getGenericSignature(typeName));
 
             CtClass subClass = classPool.makeClass(repositoryClassName, superClass);
 
             String repositoryName = ClassName.getSimpleName(repositoryClassName);
             String constructorAsString = String.format(
-                    "public %s(){super(%s.class);}", repositoryName, type.getName()
+                    "public %s(){super(%s.class);}", repositoryName, typeName
             );
             CtConstructor constructor = CtNewConstructor.make(constructorAsString, subClass);
 
@@ -94,10 +93,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         }
     }
 
-    private byte[] getInterfaceCode(String interfaceClassName, Class<?> type) {
+    private byte[] getInterfaceCode(String interfaceClassName, String typeName) {
         try {
             CtClass superInterface = classPool.getCtClass(SERVICE_BASE_CLASS);
-            superInterface.setGenericSignature(getGenericSignature(type));
+            superInterface.setGenericSignature(getGenericSignature(typeName));
 
             return classPool.makeInterface(interfaceClassName, superInterface).toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
@@ -106,10 +105,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     }
 
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
-                                  Class<?> type) {
+                                  String typeName) {
         try {
             CtClass superClass = classPool.getCtClass(SERVICE_IMPL_BASE_CLASS);
-            superClass.setGenericSignature(getGenericSignature(type));
+            superClass.setGenericSignature(getGenericSignature(typeName));
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);
 
@@ -123,8 +122,8 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         }
     }
 
-    private static String getGenericSignature(Class<?> type) {
-        ClassType classType = new ClassType(type.getName());
+    private static String getGenericSignature(String typeName) {
+        ClassType classType = new ClassType(typeName);
         TypeParameter parameter = new TypeParameter("T", classType, null);
         ClassSignature sig = new ClassSignature(new TypeParameter[]{parameter});
 

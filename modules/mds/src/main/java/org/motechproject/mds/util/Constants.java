@@ -118,6 +118,39 @@ public final class Constants {
         }
     }
 
+    public static final class PackagesGenerated {
+
+        /**
+         * Constant <code>ENTITY</code> presents a package for generated entity classes.
+         */
+        public static final String ENTITY = Packages.BASE + ".entity";
+
+        /**
+         * Constant <code>REPOSITORY</code> presents a package for generated repository classes.
+         *
+         * @see {@link #ENTITY}
+         */
+        public static final String REPOSITORY = ENTITY + ".repository";
+
+        /**
+         * Constant <code>SERVICE</code> presents a package for generated service interfaces.
+         *
+         * @see {@link #ENTITY}
+         */
+        public static final String SERVICE = ENTITY + ".service";
+
+        /**
+         * Constant <code>SERVICE_IMPL</code> presents a package for generated implementation of interfaces
+         * defined in {@link #SERVICE} package.
+         *
+         * @see {@link #SERVICE}
+         */
+        public static final String SERVICE_IMPL = SERVICE + ".impl";
+
+        private PackagesGenerated() {
+        }
+    }
+
     /**
      * The <code>Config</code> contains constant values related with properties inside files:
      * <ul>

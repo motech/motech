@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.motechproject.mds.builder.impl.EntityInfrastructureBuilderImpl;
+import org.motechproject.mds.util.Constants.PackagesGenerated;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -26,9 +27,9 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MDSClassLoader.class)
 public class EntityInfrastructureBuilderTest {
-    private static final String SAMPLE_REPOSITORY = "org.motechproject.mds.repository.AllSamples";
-    private static final String SAMPLE_INTERFACE = "org.motechproject.mds.service.SampleService";
-    private static final String SAMPLE_SERVICE = "org.motechproject.mds.service.impl.SampleServiceImpl";
+    private static final String SAMPLE_REPOSITORY = PackagesGenerated.REPOSITORY.concat(".AllSamples");
+    private static final String SAMPLE_INTERFACE = PackagesGenerated.SERVICE.concat(".SampleService");
+    private static final String SAMPLE_SERVICE = PackagesGenerated.SERVICE_IMPL.concat(".SampleServiceImpl");
 
     @Mock
     private MDSClassLoader classLoader;
@@ -45,7 +46,7 @@ public class EntityInfrastructureBuilderTest {
     public void shouldCreateCodeIfClassNotExistsInClassPath() throws Exception {
         doThrow(new ClassNotFoundException()).when(classLoader).loadClass(SAMPLE_SERVICE);
 
-        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(Sample.class);
+        List<ClassData> data = entityInfrastructureBuilder.buildInfrastructure(Sample.class.getName());
 
         assertNotNull(data);
         assertFalse(data.isEmpty());
@@ -58,6 +59,6 @@ public class EntityInfrastructureBuilderTest {
     public void shouldNotCreateCodeIfClassExistsInClassPath() throws Exception {
         doReturn(Sample.class).when(classLoader).loadClass(anyString());
 
-        assertTrue(entityInfrastructureBuilder.buildInfrastructure(Sample.class).isEmpty());
+        assertTrue(entityInfrastructureBuilder.buildInfrastructure(Sample.class.getName()).isEmpty());
     }
 }

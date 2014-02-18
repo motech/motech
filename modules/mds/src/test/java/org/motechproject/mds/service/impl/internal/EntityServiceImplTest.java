@@ -11,14 +11,14 @@ import org.motechproject.mds.enhancer.MdsJDOEnhancer;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllEntityDrafts;
+import org.motechproject.mds.util.Constants;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.motechproject.mds.util.Constants.Packages;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityServiceImplTest {
-    private static final String CLASS_NAME = String.format("%s.Sample", Packages.ENTITY);
+    private static final String CLASS_NAME = String.format("%s.Sample", Constants.PackagesGenerated.ENTITY);
 
     @Mock
     private AllEntities allEntities;

@@ -1,5 +1,6 @@
 package org.motechproject.mds.service;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,10 +24,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.mds.util.Constants.Manifest;
-import static org.motechproject.mds.util.Constants.Packages;
+import static org.motechproject.mds.util.Constants.PackagesGenerated;
 
 public class JarGeneratorServiceIT extends BaseIT {
     private static final String SAMPLE = "Sample";
@@ -33,10 +36,10 @@ public class JarGeneratorServiceIT extends BaseIT {
     private static final String FOO = "Foo";
     private static final String BAR = "Bar";
 
-    private static final String SAMPLE_CLASS = String.format("%s.%s", Packages.ENTITY, SAMPLE);
-    private static final String EXAMPLE_CLASS = String.format("%s.%s", Packages.ENTITY, EXAMPLE);
-    private static final String FOO_CLASS = String.format("%s.%s", Packages.ENTITY, FOO);
-    private static final String BAR_CLASS = String.format("%s.%s", Packages.ENTITY, BAR);
+    private static final String SAMPLE_CLASS = String.format("%s.%s", PackagesGenerated.ENTITY, SAMPLE);
+    private static final String EXAMPLE_CLASS = String.format("%s.%s", PackagesGenerated.ENTITY, EXAMPLE);
+    private static final String FOO_CLASS = String.format("%s.%s", PackagesGenerated.ENTITY, FOO);
+    private static final String BAR_CLASS = String.format("%s.%s", PackagesGenerated.ENTITY, BAR);
 
     @Autowired
     private JarGeneratorService generator;
@@ -81,6 +84,9 @@ public class JarGeneratorServiceIT extends BaseIT {
         expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
         expected.addAll(createClassPathEntries(FOO_CLASS));
         expected.addAll(createClassPathEntries(BAR_CLASS));
+        expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
+                JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
+                JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO));
 
         JarEntry entry = input.getNextJarEntry();
         List<String> actual = new ArrayList<>(8);
@@ -96,11 +102,11 @@ public class JarGeneratorServiceIT extends BaseIT {
         assertEquals(expected, actual);
     }
 
-    private void assertManifest(JarInputStream input) {
+    private void assertManifest(JarInputStream input) throws IOException {
         java.util.jar.Manifest manifest = input.getManifest();
         Attributes attributes = manifest.getMainAttributes();
 
-        String exports = createExportPackage(Packages.ENTITY, Packages.SERVICE);
+        String exports = createExportPackage(PackagesGenerated.ENTITY, PackagesGenerated.SERVICE);
 
         // standard attributes
         assertEquals(Manifest.MANIFEST_VERSION, attributes.getValue(Attributes.Name.MANIFEST_VERSION));
@@ -111,7 +117,7 @@ public class JarGeneratorServiceIT extends BaseIT {
         assertEquals(createSymbolicName(), attributes.getValue(Constants.BUNDLE_SYMBOLICNAME));
         assertEquals(bundleHeaders.getVersion(), attributes.getValue(Constants.BUNDLE_VERSION));
         assertEquals(exports, attributes.getValue(Constants.EXPORT_PACKAGE));
-        assertEquals("*", attributes.getValue(Constants.IMPORT_PACKAGE));
+        assertEquals(loadImports(), attributes.getValue(Constants.IMPORT_PACKAGE));
     }
 
     private String createName() {
@@ -155,5 +161,12 @@ public class JarGeneratorServiceIT extends BaseIT {
         classes.add(createClassPath(ClassName.getRepositoryName(className)));
 
         return classes;
+    }
+
+    private String loadImports() throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(JarGeneratorService.BUNDLE_IMPORTS)) {
+            // get rid of newlines
+            return IOUtils.toString(in).replaceAll("\\r|\\n", "");
+        }
     }
 }

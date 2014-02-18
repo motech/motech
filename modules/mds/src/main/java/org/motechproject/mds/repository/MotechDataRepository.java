@@ -3,6 +3,7 @@ package org.motechproject.mds.repository;
 import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -20,6 +21,7 @@ import java.util.List;
  *
  * @param <T> the type of class
  */
+@Repository
 public abstract class MotechDataRepository<T> {
     private PersistenceManagerFactory persistenceManagerFactory;
     private Class<T> classType;
@@ -59,6 +61,14 @@ public abstract class MotechDataRepository<T> {
     public List<T> retrieveAll(String[] properties, Object[] values) {
         Query query = createQuery(properties, values);
         Collection collection = (Collection) query.executeWithArray(values);
+
+        return cast(collection);
+    }
+
+    public List<T> retrieveAll(long fromIncl, long toExcl) {
+        Query query = getPersistenceManager().newQuery(classType);
+        query.setRange(fromIncl, toExcl);
+        Collection collection = (Collection) query.execute();
 
         return cast(collection);
     }

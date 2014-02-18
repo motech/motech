@@ -1,5 +1,7 @@
 package org.motechproject.mds.builder.impl;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.builder.EntityMetadataBuilder;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.util.ClassName;
@@ -21,16 +23,42 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     @Override
-    public JDOMetadata createBaseEntity(JDOMetadata md, Entity entity) {
-        PackageMetadata pmd = md.newPackageMetadata(ClassName.getPackage(entity.getClassName()));
-        ClassMetadata cmd = pmd.newClassMetadata(ClassName.getSimpleName(entity.getClassName()));
+    public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
+        String packageName = ClassName.getPackage(ClassName.getEntityName(entity.getClassName()));
+
+        PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
+        ClassMetadata cmd = getClassMetadata(pmd, ClassName.getSimpleName(ClassName.getEntityName(entity.getClassName())));
 
         cmd.setTable(getTableName(entity));
         cmd.setDetachable(true);
         cmd.setIdentityType(IdentityType.DATASTORE);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
+    }
 
-        return md;
+    private static ClassMetadata getClassMetadata(PackageMetadata pmd, String className) {
+        ClassMetadata[] classes = pmd.getClasses();
+        if (ArrayUtils.isNotEmpty(classes)) {
+            for (ClassMetadata cmd : classes) {
+                if (StringUtils.equals(className, cmd.getName())) {
+                    return cmd;
+                }
+            }
+        }
+        return pmd.newClassMetadata(className);
+    }
+
+    private static PackageMetadata getPackageMetadata(JDOMetadata jdoMetadata, String packageName) {
+        // first look for existing metadata
+        PackageMetadata[] packages = jdoMetadata.getPackages();
+        if (ArrayUtils.isNotEmpty(packages)) {
+            for (PackageMetadata pkgMetadata : packages) {
+                if (StringUtils.equals(pkgMetadata.getName(), packageName)) {
+                    return pkgMetadata;
+                }
+            }
+        }
+        // if not found, create new
+        return jdoMetadata.newPackageMetadata(packageName);
     }
 
     private static String getTableName(Entity entity) {
@@ -51,5 +79,4 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         return builder.toString().toUpperCase();
     }
-
 }

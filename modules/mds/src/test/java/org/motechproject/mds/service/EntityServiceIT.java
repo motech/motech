@@ -11,7 +11,9 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.testutil.DraftBuilder;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.web.DraftData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +38,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.mds.util.Constants.Packages;
 
 public class EntityServiceIT extends BaseIT {
     private static final String SIMPLE_NAME = "Test";
@@ -49,10 +50,14 @@ public class EntityServiceIT extends BaseIT {
     @Autowired
     private TypeService typeService;
 
+    @Autowired
+    private MetadataHolder metadataHolder;
+
     @Before
     public void setUp() throws Exception {
         clearDB();
         setUpSecurityContext();
+        metadataHolder.reloadMetadata();
     }
 
     @After
@@ -71,7 +76,7 @@ public class EntityServiceIT extends BaseIT {
 
         // then
         // 1. new entry in db should be added
-        String className = String.format("%s.%s", Packages.ENTITY, "Test");
+        String className = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, "Test");
         assertTrue(String.format("Not found %s in database", className), containsEntity(className));
 
         // 2. there should be ability to create a new instance of created entity
@@ -80,12 +85,22 @@ public class EntityServiceIT extends BaseIT {
 
         assertNotNull(instance);
 
-        getPersistenceManager().makePersistent(instance);
+        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            // We want to use the current factory for persisting so this hack is required
+            // Normally these classes live in a separate bundle
+            Thread.currentThread().setContextClassLoader(MDSClassLoader.getInstance());
+            getPersistenceManagerFactory().registerMetadata(metadataHolder.getJdoMetadata());
 
-        List<?> list = cast(clazz, (Collection) getPersistenceManager().newQuery(clazz).execute());
+            getPersistenceManager().makePersistent(instance);
 
-        assertNotNull(list);
-        assertFalse("The instance of entity should be saved in database", list.isEmpty());
+            List<?> list = cast(clazz, (Collection) getPersistenceManager().newQuery(clazz).execute());
+
+            assertNotNull(list);
+            assertFalse("The instance of entity should be saved in database", list.isEmpty());
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
+        }
     }
 
     @Test(expected = EntityNotFoundException.class)

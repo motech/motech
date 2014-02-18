@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>motech</artifactId>
+        <groupId>org.motechproject</groupId>
+        <version>0.23-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mds-bundle-it-helper</artifactId>
+    <version>0.23-SNAPSHOT</version>
+
+    <packaging>bundle</packaging>
+    <name>MOTECH Data Services Bundle IT Helper</name>
+
+    <description>
+        The entire point of this module is to make bundle ITs in MDS pass. The mds bundle uses
+        OSGi 4.3 features, while our BundleIT framework is tied to an older version - 3.2. Because of this it is
+        impossible to simply run an OSGi IT for MDS. This bundle however fixes that issues by exporting mocked classes from
+        OSGi 4.3 used by MDS. Thanks to this approach, testing OSGi 4.3 features is still impossible as of now,
+        however running an OSGi ITs is. This module should be removed once Bundle ITs start to match the framework used by
+        the platform server (4.3).
+    </description>
+
+    <properties>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.osgi.framework.hooks.weaving;version=1.2.0
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

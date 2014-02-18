@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint
+       http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+
+   <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
+   <import resource="classpath*:META-INF/motech/mdsEntitiesContext.xml"/>
+
+   <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
+
+   <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
+
+
+   #foreach( $service in $list )
+   <osgi:service id="$service.get('name')ServiceOsgi" ref="$service.get('name')Service"
+      interface="$service.get('interface')" auto-export="interfaces" />
+   #end
+</beans>

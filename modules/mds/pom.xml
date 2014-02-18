@@ -38,6 +38,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-web-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.collections</artifactId>
         </dependency>
@@ -225,10 +230,11 @@
                             org.motechproject.mds.domain;version=${project.version},
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
-                            org.motechproject.mds.entity;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
-                            org.motechproject.mds.service;version=${project.version}
+                            org.motechproject.mds.service;version=${project.version},
+                            org.motechproject.mds.service.impl;version=${project.version},
+                            org.motechproject.mds.util;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             com.googlecode.flyway.core,
@@ -428,6 +434,25 @@
     <profiles>
         <profile>
             <id>IT</id>
+            <!-- These dependency tricks are unfortunately necessary in order to get Bundle ITs running -->
+            <!-- Bundle ITs are tied to the old Felix version, so we have to use that, plus supply mocks of
+                the missing OSGi 4.3 classes from the mds-bundle-it-helper bundle -->
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.apache.felix.framework</artifactId>
+                        <version>3.2.0</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>mds-bundle-it-helper</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>

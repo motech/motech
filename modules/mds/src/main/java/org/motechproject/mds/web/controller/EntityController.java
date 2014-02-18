@@ -1,26 +1,15 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.SecuritySettingsDto;
-import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
 import org.motechproject.mds.web.comparator.EntityNameComparator;
-import org.motechproject.mds.web.comparator.EntityRecordComparator;
-import org.motechproject.mds.web.domain.EntityRecord;
-import org.motechproject.mds.web.domain.FieldRecord;
-import org.motechproject.mds.web.domain.GridSettings;
-import org.motechproject.mds.web.domain.Records;
 import org.motechproject.mds.web.matcher.EntityMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,18 +22,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.motechproject.mds.util.Constants.Roles;
 
 /**
@@ -146,7 +131,7 @@ public class EntityController extends MdsController {
     @RequestMapping(value = "/entities", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
     @ResponseBody
-    public EntityDto saveEntity(@RequestBody EntityDto entity) throws IOException {
+    public EntityDto saveEntity(@RequestBody EntityDto entity) throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         EntityDto created = entityService.createEntity(entity);
         return entityService.getEntityForEdit(created.getId());
     }
@@ -190,29 +175,6 @@ public class EntityController extends MdsController {
         return entityService.findFieldByName(entityId, name);
     }
 
-    @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
-    @ResponseBody
-    public Records<EntityRecord> getInstances(@PathVariable Long entityId, @RequestBody final String url, GridSettings settings) {
-        List<EntityRecord> entityList = entityService.getEntityRecords(entityId);
-        Map<String, Object> lookupMap = getLookupMap(url);
-
-        if (!lookupMap.isEmpty()) {
-            entityList = filterByLookup(entityList, lookupMap);
-        }
-
-        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
-
-        if (!settings.getSortColumn().isEmpty() && !entityList.isEmpty()) {
-            Collections.sort(
-                    entityList, new EntityRecordComparator(sortAscending, settings.getSortColumn())
-            );
-        }
-
-        return new Records<>(settings.getPage(), settings.getRows(), entityList);
-    }
-
-
     @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
@@ -225,97 +187,6 @@ public class EntityController extends MdsController {
     @ResponseBody
     public SecuritySettingsDto getSecurity(@PathVariable final Long entityId) {
         return entityService.getSecuritySettings(entityId);
-    }
-
-    @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
-    public void exportEntityInstances(@PathVariable Long entityId, HttpServletResponse response) throws IOException {
-        if (null == entityService.getEntity(entityId)) {
-            throw new EntityNotFoundException();
-        }
-
-        String fileName = "Entity_" + entityId + "_instances";
-        response.setContentType("text/csv");
-        response.setCharacterEncoding(UTF_8);
-        response.setHeader(
-                "Content-Disposition",
-                "attachment; filename=" + fileName + ".csv");
-
-        response.getWriter().write(CsvConverter.convertToCSV(prepareForCsvConversion(entityId,
-                entityService.getEntityRecords(entityId))));
-    }
-
-    @RequestMapping(value = "/entities/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_ACCESS)
-    @ResponseBody
-    public List<FieldRecord> getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
-        List<EntityRecord> entityList = entityService.getEntityRecords(entityId);
-        for (EntityRecord record : entityList) {
-            if (record.getId().equals(instanceId)) {
-                return record.getFields();
-            }
-        }
-        throw new EntityNotFoundException();
-    }
-
-    private List<EntityRecord> filterByLookup(List<EntityRecord> entityList, Map<String, Object> lookups) {
-        for (Map.Entry<String, Object> entry : lookups.entrySet()) {
-            Iterator<EntityRecord> it = entityList.iterator();
-            while (it.hasNext()) {
-                EntityRecord record = it.next();
-                for (FieldRecord field : record.getFields()) {
-                    if (entry.getKey().equals(field.getName()) &&
-                            !entry.getValue().toString().equalsIgnoreCase(field.getValue().toString())) {
-                        it.remove();
-                    }
-                }
-            }
-        }
-
-        return entityList;
-    }
-
-    private Map<String, Object> getLookupMap(String url) {
-        final String fields = "fields=";
-
-        int fieldsParam = url.indexOf(fields) + fields.length();
-        String jsonFields = url.substring(fieldsParam, url.indexOf('&', fieldsParam));
-
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(factory);
-        TypeReference<HashMap<String, Object>> typeRef
-                = new TypeReference<
-                HashMap<String, Object>
-                >() {
-        };
-        try {
-            jsonFields = URLDecoder.decode(jsonFields, "UTF-8");
-            return mapper.readValue(jsonFields, typeRef);
-        } catch (IOException e) {
-            Logger.getLogger(EntityController.class).error("Failed to retrieve and/or parse lookup object from JSON" + e);
-        }
-
-        return new HashMap<>();
-    }
-
-    private List<List<String>> prepareForCsvConversion(Long entityId, List<EntityRecord> entityList) {
-        List<List<String>> list = new ArrayList<>();
-
-        List<String> fieldNames = new ArrayList<>();
-        for (FieldDto field : entityService.getFields(entityId)) {
-            fieldNames.add(field.getBasic().getDisplayName());
-        }
-        list.add(fieldNames);
-
-        for (EntityRecord entityRecord : entityList) {
-            List<String> fieldValues = new ArrayList<>();
-            for (FieldRecord fieldRecord : entityRecord.getFields()) {
-                fieldValues.add(fieldRecord.getValue().toString());
-            }
-            list.add(fieldValues);
-        }
-
-        return list;
     }
 
     @Autowired

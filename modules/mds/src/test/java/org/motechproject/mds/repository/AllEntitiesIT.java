@@ -8,6 +8,7 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jdo.PersistenceManager;
@@ -20,17 +21,16 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.mds.util.Constants.Packages;
 
 public class AllEntitiesIT extends BaseIT {
-    private static final String SAMPLE_CLASS = String.format("%s.Sample", Packages.ENTITY);
-    private static final String EXAMPLE_CLASS = String.format("%s.Example", Packages.ENTITY);
-    private static final String FOO_CLASS = String.format("%s.Foo", Packages.ENTITY);
-    private static final String BAR_CLASS = String.format("%s.Bar", Packages.ENTITY);
+    private static final String SAMPLE_CLASS = String.format("%s.Sample", Constants.PackagesGenerated.ENTITY);
+    private static final String EXAMPLE_CLASS = String.format("%s.Example", Constants.PackagesGenerated.ENTITY);
+    private static final String FOO_CLASS = String.format("%s.Foo", Constants.PackagesGenerated.ENTITY);
+    private static final String BAR_CLASS = String.format("%s.Bar", Constants.PackagesGenerated.ENTITY);
 
     private static final String SAMPLE_LOOKUP = "SampleLookup";
 
-    private static final String EXAMPLE_CLASS_WITH_LOOKUPS = String.format("%s.ExampleWithLookups", Packages.ENTITY);
+    private static final String EXAMPLE_CLASS_WITH_LOOKUPS = String.format("%s.ExampleWithLookups", Constants.PackagesGenerated.ENTITY);
     private static final String EXAMPLE_LOOKUP_1 = "ExampleLookup1";
     private static final String EXAMPLE_LOOKUP_2 = "ExampleLookup2";
 

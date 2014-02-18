@@ -1,6 +1,6 @@
 package org.motechproject.mds;
 
-import org.motechproject.mds.service.MDSConstructor;
+import org.motechproject.mds.builder.MDSConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -16,7 +16,7 @@ import java.io.IOException;
 
 /**
  * The purpose of this class is to build classes for all entities that are in MDS database at startup.
- * It uses the {@link org.motechproject.mds.service.MDSConstructor} for generation. Since @PostConstruct does
+ * It uses the {@link org.motechproject.mds.builder.MDSConstructor} for generation. Since @PostConstruct does
  * not work with @Transactional, we use a {@link org.springframework.transaction.support.TransactionCallbackWithoutResult}
  * implementation.
  */
@@ -36,7 +36,7 @@ public class MDSInitializer {
 
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus status) {
-            constructor.generateAllEntities();
+            constructor.constructAllEntities();
         }
 
     }

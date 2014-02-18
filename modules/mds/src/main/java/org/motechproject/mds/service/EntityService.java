@@ -48,8 +48,6 @@ public interface EntityService {
 
     void commitChanges(Long entityId);
 
-    List<EntityRecord> getEntityRecords(Long entityId);
-
     // TODO: replace with entity.getAdvancedSettings
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 
@@ -58,7 +56,8 @@ public interface EntityService {
     // TODO: replace with entity.getSecuritySettings
     SecuritySettingsDto getSecuritySettings(Long entityId);
 
-    // TODO: move to InstanceService/HistoryService after we get rid of example data
+    List<EntityRecord> getEntityRecords(Long entityId);
+
     List<FieldInstanceDto> getInstanceFields(Long instanceId);
 
     List<HistoryRecord> getInstanceHistory(Long instanceId);
