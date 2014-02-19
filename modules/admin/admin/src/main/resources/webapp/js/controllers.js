@@ -507,27 +507,34 @@
 
     adminModule.controller('ServerLogOptionsCtrl', function($scope, LogService, $http) {
         $scope.availableLevels = ['off', 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'all'];
-        $scope.entry = {};
+        $scope.logs = [{name: "", level: "off"}];
 
         $scope.config = LogService.get();
 
         $scope.save = function () {
+            jQuery.each($scope.logs, function (index) {
+                if($scope.logs[index].name !== '' && $scope.logs[index].name !== undefined
+                    && $scope.logs[index].level !== '' && $scope.logs[index].level !== undefined
+                    && $scope.logs[index].name.toLowerCase() !== 'root') {
+                    $scope.config.loggers.push({
+                        logName:$scope.logs[index].name,
+                        logLevel:$scope.logs[index].level
+                    });
+                }
+            });
+            $scope.logs = [];
+            $scope.logs = [{name: "", level: "off"}];
             $scope.config.$save({}, alertHandlerWithCallback('admin.log.changedLevel', function () {
-                var loc = window.location.toString(), indexOf = loc.indexOf('#');
-                window.location = loc.substring(0, indexOf) + "#/log";
             }), function () {
                 motechAlert('admin.log.changedLevelError', 'admin.error');
             });
         };
 
         $scope.add = function () {
-            $scope.config.loggers.push({
-                logName:$scope.entry.name,
-                logLevel:$scope.entry.level
+            $scope.logs.push({
+                name:"",
+                level:"off"
             });
-
-            delete $scope.entry.name;
-            delete $scope.entry.level;
         };
 
         $scope.forAll = function (level) {
@@ -538,6 +545,10 @@
             }
 
             $scope.config.root.logLevel = level;
+
+            jQuery.each($scope.logs, function (index) {
+                $scope.logs[index].level = level;
+            });
         };
 
         $scope.change = function (logger, level) {
@@ -545,14 +556,14 @@
             logger.logLevel = level;
         };
 
+        $scope.changeNew = function (log, level) {
+            $('#changeForAll .active').removeClass('active');
+            log.level = level;
+        };
+
         $scope.changeRoot = function (level) {
             $('#changeForAll .active').removeClass('active');
             $scope.config.root.logLevel = level;
-        };
-
-        $scope.changeEntry = function (value) {
-            $('#changeForAll .active').removeClass('active');
-            $scope.entry.level = value;
         };
 
         $scope.remove = function (logger) {
@@ -565,20 +576,12 @@
             $scope.config.trash.push(logger);
         };
 
-        $scope.validate = function () {
-            if (!$scope.entry.name || $scope.entry.name.trim() === '' || $scope.entry.name === 'root') {
-                return false;
-            }
-
-            if (!$scope.entry.level || $scope.entry.level.trim() === '') {
-                return false;
-            }
-
-            return true;
+        $scope.removeNew = function (log) {
+            $scope.logs.removeObject(log);
         };
 
         $scope.levelsCss = function (level) {
-            var cssClass = '';
+            var cssClass = ' btn-default';
 
             if (level !== undefined) {
                 switch (level.toLowerCase()) {

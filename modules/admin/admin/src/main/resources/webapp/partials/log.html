@@ -1,13 +1,13 @@
 <div class="row">
-     <div class="">
+     <div>
         <div class="log-section">
-            <div class="col-sm-9 col-md-9 col-lg-8 inside log-change">
+            <div class="col-sm-6 col-md-6 col-lg-6 inside log-change">
                 <a class="btn btn-default" ng-click="refresh()">
                     <i class="icon-refresh"></i>&nbsp;{{msg('admin.refresh')}}
                 </a>
-                {{msg('admin.log.limitation')}} {{msg('admin.log.changeLogLevel')}} <a href="#/logOptions">{{ msg('admin.clickHere') | lowercase }}</a>.
+                {{msg('admin.log.limitation')}}
             </div>
-            <div class="col-sm-3 col-md-3 col-lg-4 inside log-download">
+            <div class="col-sm-6 col-md-6 col-lg-6 inside log-download">
                 <a href="../admin/api/log/raw" class="btn btn-primary"><i class="icon-download-alt icon-white"></i> {{msg('admin.log.downloadFull')}}</a>
             </div>
             <div class="clearfix"></div>

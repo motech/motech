@@ -433,7 +433,7 @@
 
         $scope.isActiveLink = function(link) {
             return link.moduleName === $scope.getCurrentModuleName() &&
-                (!link.url || link.url === '#' + $scope.getCurrentAnchor());
+                (!link.url || link.url === '#' + $scope.getCurrentAnchor() || !('#' + $scope.getCurrentAnchor()).indexOf(link.url));
         };
 
         if ($cookieStore.get("showDashboardLogo") !== undefined) {
