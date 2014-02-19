@@ -6,7 +6,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
-import org.motechproject.mds.dto.AvailableTypeDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -55,14 +54,14 @@ import static org.motechproject.mds.dto.TypeDto.TIME;
  *
  * @see EntityDto
  * @see FieldDto
- * @see AvailableTypeDto
+ * @see TypeDto
  */
 @SuppressWarnings("PMD")
 public class ExampleData {
     private List<FieldDto> fields = new ArrayList<>();
     private List<FieldDto> draftFields = new ArrayList<>();
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
-    private List<AvailableTypeDto> types = new ArrayList<>();
+    private List<TypeDto> types = new ArrayList<>();
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
     private List<SecuritySettingsDto> securitySettings = new ArrayList<>();
     private List<EntityRecord> entityRecords = new ArrayList<>();
@@ -79,20 +78,20 @@ public class ExampleData {
     private ObjectMapper mapper = new ObjectMapper();
 
     public ExampleData() {
-        addType(new AvailableTypeDto(1L, "int", INTEGER), FieldValidationDto.INTEGER, null);
-        addType(new AvailableTypeDto(2L, "str", STRING), FieldValidationDto.STRING, null);
-        addType(new AvailableTypeDto(3L, "bool", BOOLEAN), null);
-        addType(new AvailableTypeDto(4L, "date", DATE), null);
-        addType(new AvailableTypeDto(5L, "time", TIME), null);
-        addType(new AvailableTypeDto(6L, "datetime", DATETIME), null);
+        addType(INTEGER, FieldValidationDto.INTEGER);
+        addType(STRING, FieldValidationDto.STRING);
+        addType(BOOLEAN, null);
+        addType(DATE, null);
+        addType(TIME, null);
+        addType(DATETIME, null);
         addType(
-                new AvailableTypeDto(7L, "decimal", DOUBLE),
+                DOUBLE,
                 FieldValidationDto.DOUBLE,
                 new SettingDto("mds.form.label.precision", 9, INTEGER, REQUIRE, POSITIVE),
                 new SettingDto("mds.form.label.scale", 2, INTEGER, REQUIRE, POSITIVE)
         );
         addType(
-                new AvailableTypeDto(8L, "list", LIST),
+                LIST,
                 null,
                 new SettingDto("mds.form.label.values", new LinkedList<>(), LIST, REQUIRE),
                 new SettingDto("mds.form.label.allowUserSupplied", false, BOOLEAN),
@@ -293,7 +292,7 @@ public class ExampleData {
         }
     }
 
-    public List<AvailableTypeDto> getTypes() {
+    public List<TypeDto> getTypes() {
         return new ArrayList<>(types);
     }
 
@@ -371,11 +370,11 @@ public class ExampleData {
         return found;
     }
 
-    public AvailableTypeDto getAvailableType(String typeClass) {
-        AvailableTypeDto found = null;
+    public TypeDto getType(String typeClass) {
+        TypeDto found = null;
 
-        for (AvailableTypeDto item : types) {
-            if (equalsIgnoreCase(item.getType().getTypeClass(), typeClass)) {
+        for (TypeDto item : types) {
+            if (equalsIgnoreCase(item.getTypeClass(), typeClass)) {
                 found = item;
                 break;
             }
@@ -410,8 +409,7 @@ public class ExampleData {
         basic.setName(name);
         basic.setDisplayName(displayName);
 
-        AvailableTypeDto availableType = getAvailableType(typeClass);
-        TypeDto fieldType = availableType.getType();
+        TypeDto fieldType = getType(typeClass);
         List<SettingDto> fieldSettings = typeSettings.get(fieldType);
         FieldValidationDto fieldValidation = null;
         if (typeValidation.get(fieldType) != null) {
@@ -622,18 +620,18 @@ public class ExampleData {
         }
     }
 
-    private void addType(AvailableTypeDto type, FieldValidationDto validation,
+    private void addType(TypeDto type, FieldValidationDto validation,
                          SettingDto... settings) {
         types.add(type);
-        typeValidation.put(type.getType(), validation);
+        typeValidation.put(type, validation);
 
         if (ArrayUtils.isEmpty(settings)) {
-            typeSettings.put(type.getType(), null);
+            typeSettings.put(type, null);
         } else {
             List<SettingDto> list = new LinkedList<>();
             Collections.addAll(list, settings);
 
-            typeSettings.put(type.getType(), list);
+            typeSettings.put(type, list);
         }
     }
 

@@ -32,6 +32,9 @@ public class Type {
     private String description;
 
     @Persistent
+    private String defaultName;
+
+    @Persistent
     private Class<?> typeClass;
 
     @Persistent(table = "TYPE_TYPE_SETTING")
@@ -59,7 +62,7 @@ public class Type {
     }
 
     public TypeDto toDto() {
-        return new TypeDto(displayName, description, typeClass.getName());
+        return new TypeDto(id, displayName, description, defaultName, typeClass.getName());
     }
 
     @NotPersistent
@@ -125,5 +128,13 @@ public class Type {
 
     public void setValidations(List<TypeValidation> validations) {
         this.validations = validations;
+    }
+
+    public String getDefaultName() {
+        return defaultName;
+    }
+
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
     }
 }

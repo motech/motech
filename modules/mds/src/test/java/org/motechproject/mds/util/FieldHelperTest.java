@@ -59,7 +59,7 @@ public class FieldHelperTest {
     }
 
     private FieldDto fieldDto() {
-        TypeDto type = new TypeDto("typeDispName", "typeDesc", "typeClass");
+        TypeDto type = new TypeDto("typeDispName", "typeDesc", "typeDefaultName", "typeClass");
         FieldBasicDto basic = new FieldBasicDto("fieldDispName", "fieldName", true, "defVal", "tooltip");
         MetadataDto metadata = new MetadataDto("key", "val");
         ValidationCriterionDto criterion = new ValidationCriterionDto("criterionDispName", type);

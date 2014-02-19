@@ -1,41 +1,9 @@
--- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (x86_64)
---
--- Host: localhost    Database: motech_data_services
--- ------------------------------------------------------
--- Server version	5.5.35-0ubuntu0.12.10.2
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO,ANSI' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table "AvailableType"
---
-
-DROP TABLE IF EXISTS "AvailableType";
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE "AvailableType" (
-  "id" bigint(20) NOT NULL,
-  "defaultName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
-  "TYPE_ID" bigint(20) DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  KEY "AvailableType_N49" ("TYPE_ID"),
-  CONSTRAINT "AvailableType_FK1" FOREIGN KEY ("TYPE_ID") REFERENCES "Type" ("id")
-);
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table "AvailableType"
---
-
-LOCK TABLES "AvailableType" WRITE;
-/*!40000 ALTER TABLE "AvailableType" DISABLE KEYS */;
-INSERT INTO "AvailableType" VALUES (1,'int',1),(2,'str',2),(3,'bool',3),(4,'date',4),(5,'time',5),(6,'datetime',6),(7,'decimal',7),(8,'list',8);
-/*!40000 ALTER TABLE "AvailableType" ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table "Entity"
@@ -309,7 +277,7 @@ CREATE TABLE "SEQUENCE_TABLE" (
 
 LOCK TABLES "SEQUENCE_TABLE" WRITE;
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" DISABLE KEYS */;
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.AvailableType',11),('org.motechproject.mds.domain.Type',11),('org.motechproject.mds.domain.TypeSetting',11),('org.motechproject.mds.domain.TypeSettingOption',11),('org.motechproject.mds.domain.TypeValidation',21);
+INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.Type',11),('org.motechproject.mds.domain.TypeSetting',11),('org.motechproject.mds.domain.TypeSettingOption',11),('org.motechproject.mds.domain.TypeValidation',21);
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -440,6 +408,7 @@ CREATE TABLE "Type" (
   "id" bigint(20) NOT NULL,
   "description" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "displayName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
+  "defaultName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "typeClass" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   PRIMARY KEY ("id")
 );
@@ -451,7 +420,7 @@ CREATE TABLE "Type" (
 
 LOCK TABLES "Type" WRITE;
 /*!40000 ALTER TABLE "Type" DISABLE KEYS */;
-INSERT INTO "Type" VALUES (1,'mds.field.description.integer','mds.field.integer','java.lang.Integer'),(2,'mds.field.description.string','mds.field.string','java.lang.String'),(3,'mds.field.description.boolean','mds.field.boolean','java.lang.Boolean'),(4,'mds.field.description.date','mds.field.date','java.util.Date'),(5,'mds.field.description.time','mds.field.time','org.motechproject.commons.date.model.Time'),(6,'mds.field.description.datetime','mds.field.datetime','org.joda.time.DateTime'),(7,'mds.field.description.decimal','mds.field.decimal','java.lang.Double'),(8,'mds.field.description.combobox','mds.field.combobox','java.util.List');
+INSERT INTO "Type" VALUES (1,'mds.field.description.integer','mds.field.integer','int','java.lang.Integer'),(2,'mds.field.description.string','mds.field.string','str','java.lang.String'),(3,'mds.field.description.boolean','mds.field.boolean','bool','java.lang.Boolean'),(4,'mds.field.description.date','mds.field.date','date','java.util.Date'),(5,'mds.field.description.time','mds.field.time','time','org.motechproject.commons.date.model.Time'),(6,'mds.field.description.datetime','mds.field.datetime','datetime','org.joda.time.DateTime'),(7,'mds.field.description.decimal','mds.field.decimal','dec','java.lang.Double'),(8,'mds.field.description.combobox','mds.field.combobox','list','java.util.List');
 /*!40000 ALTER TABLE "Type" ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -567,5 +536,3 @@ UNLOCK TABLES;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2014-02-12  9:15:30

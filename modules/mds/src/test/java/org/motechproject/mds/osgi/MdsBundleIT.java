@@ -115,7 +115,7 @@ public class MdsBundleIT extends BaseOsgiIT {
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
-                new TypeDto("mds.field.integer", "mds.field.description.integer", Integer.class.getName()),
+                TypeDto.INTEGER,
                 new FieldBasicDto("someString", "someString"),
                 false, null));
 

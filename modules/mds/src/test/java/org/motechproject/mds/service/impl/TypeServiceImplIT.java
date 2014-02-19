@@ -32,12 +32,12 @@ public class TypeServiceImplIT extends BaseIT {
     }
 
     @Test
-    public void shouldRetrieveAvailableTypes() {
-        List<TypeDto> availableTypes = typeService.getAllTypes();
+    public void shouldRetrieveTypes() {
+        List<TypeDto> types = typeService.getAllTypes();
 
-        assertThat(availableTypes.size(), Is.is(START_NUMBER_OF_TYPES));
-        assertThat(availableTypes, Matchers.hasItem(TypeDto.INTEGER));
-        assertThat(availableTypes, Matchers.hasItem(TypeDto.BOOLEAN));
+        assertThat(types.size(), Is.is(START_NUMBER_OF_TYPES));
+        assertThat(types, Matchers.hasItem(TypeDto.INTEGER));
+        assertThat(types, Matchers.hasItem(TypeDto.BOOLEAN));
     }
 
 }

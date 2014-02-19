@@ -57,7 +57,7 @@ public final class FieldTestHelper {
     public static FieldDto fieldDto(String name, String className, String displayName,
                                     Object defValue) {
         FieldDto fieldDto = new FieldDto();
-        fieldDto.setType(new TypeDto(className, "", className));
+        fieldDto.setType(new TypeDto(className, "", "", className));
         fieldDto.setBasic(new FieldBasicDto(displayName, name));
         fieldDto.getBasic().setDefaultValue(defValue);
         return fieldDto;
@@ -65,7 +65,7 @@ public final class FieldTestHelper {
 
     public static FieldRecord fieldRecord(String name, String className, String displayName,
                                           Object value) {
-        TypeDto type = new TypeDto(className, "", className);
+        TypeDto type = new TypeDto(className, "", "", className);
         return new FieldRecord(name, displayName, value, type);
     }
 
