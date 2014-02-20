@@ -63,7 +63,7 @@ public class EntityProcessorTest {
 
     @Test
     public void shouldReturnCorrectAnnotation() throws Exception {
-        assertEquals(Entity.class, processor.getAnnotation());
+        assertEquals(Entity.class, processor.getAnnotationType());
     }
 
     @Test
@@ -77,13 +77,15 @@ public class EntityProcessorTest {
         List<AnnotatedElement> expected = new ArrayList<>();
         expected.add(Sample.class);
 
-        List<? extends AnnotatedElement> actual = processor.getElements();
+        List<? extends AnnotatedElement> actual = processor.getProcessElements();
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldProcessClassWithAnnotation() throws Exception {
+        doReturn(new EntityDto()).when(entityService).createEntity(any(EntityDto.class));
+
         processor.process(Sample.class);
 
         verify(entityService).createEntity(captor.capture());

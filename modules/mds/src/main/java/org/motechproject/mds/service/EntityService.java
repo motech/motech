@@ -13,6 +13,7 @@ import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public interface EntityService {
 
     EntityDto getEntityByClassName(String className);
 
-    void addLookupToEntity(Long entityId, LookupDto lookup);
+    void addLookups(Long entityId, Collection<LookupDto> lookups);
 
     // TODO: replace with entity.getFields
     List<FieldDto> getFields(Long entityId);
@@ -67,13 +68,13 @@ public interface EntityService {
 
     List<PreviousRecord> getPreviousRecords(Long instanceId);
 
-    void addFields(EntityDto entity, List<FieldDto> fields);
+    void addFields(EntityDto entity, Collection<FieldDto> fields);
 
-    void addFilterableFields(EntityDto entityDto, List<String> fieldNames);
+    void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames);
 
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
 
-    void generateDde(Long entityId);
+    void generateDDE(Long entityId);
 
     EntityDto updateDraft(Long entityId);
 }

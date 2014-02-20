@@ -39,7 +39,7 @@ public class UIDisplayableProcessorTest {
 
     @Test
     public void shouldReturnCorrectAnnotation() throws Exception {
-        assertEquals(UIDisplayable.class, processor.getAnnotation());
+        assertEquals(UIDisplayable.class, processor.getAnnotationType());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class UIDisplayableProcessorTest {
         AnnotatedElement money = getDeclaredField(Sample.class, FIELD_NAME, true);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElements());
+        actual.addAll(processor.getProcessElements());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(money)));
@@ -59,7 +59,7 @@ public class UIDisplayableProcessorTest {
 
         processor.process(world);
 
-        Map<String, Long> positions = processor.getPositions();
+        Map<String, Long> positions = processor.getElements();
 
         assertEquals(1, positions.size());
         assertTrue(positions.containsValue(0L));

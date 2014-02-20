@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.MemberUtil;
@@ -22,7 +23,6 @@ import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.util.Constants.AnnotationFields.DISPLAY_NAME;
@@ -48,28 +48,26 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.VALUE;
  * @see org.motechproject.mds.annotations.Field
  * @see org.motechproject.mds.annotations.Entity
  * @see org.motechproject.mds.annotations.Ignore
- * @see org.motechproject.mds.annotations.internal.EntityProcessor
  */
 @Component
-class FieldProcessor extends AbstractProcessor {
+class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldProcessor.class);
 
+    private EntityService entityService;
     private TypeService typeService;
 
     private EntityDto entity;
     private Class clazz;
 
-    private List<FieldDto> fields = new LinkedList<>();
-
     @Override
-    protected Class<? extends Annotation> getAnnotation() {
+    public Class<Field> getAnnotationType() {
         return Field.class;
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElements() {
-        return AnnotationsUtil.getMembers(
-                getAnnotation(), clazz, new MethodPredicate(), new FieldPredicate()
+    protected List<? extends AnnotatedElement> getProcessElements() {
+        return AnnotationsUtil.getAnnotatedMembers(
+                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
 
@@ -104,10 +102,20 @@ class FieldProcessor extends AbstractProcessor {
             field.setBasic(basic);
             field.setValidation(createValidation(ac, type));
 
-            fields.add(field);
+            add(field);
         } else {
             LOGGER.warn("Field type is unknown in: {}", ac);
         }
+    }
+
+    @Override
+    protected void afterExecution() {
+        entityService.addFields(entity, getElements());
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 
     @Autowired
@@ -121,10 +129,6 @@ class FieldProcessor extends AbstractProcessor {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
-    }
-
-    public List<FieldDto> getFields() {
-        return fields;
     }
 
     private FieldValidationDto createValidation(AccessibleObject ac, TypeDto type) {

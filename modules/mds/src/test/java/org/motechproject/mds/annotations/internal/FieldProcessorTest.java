@@ -21,6 +21,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 
 import javax.validation.constraints.DecimalMax;
@@ -32,6 +33,7 @@ import javax.validation.constraints.Size;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +58,9 @@ public class FieldProcessorTest {
     private MockBundle bundle = new MockBundle();
 
     @Mock
+    private EntityService entityService;
+
+    @Mock
     private TypeService typeService;
 
     @Captor
@@ -72,6 +77,7 @@ public class FieldProcessorTest {
     public void setUp() throws Exception {
         processor = new FieldProcessor();
         processor.setTypeService(typeService);
+        processor.setEntityService(entityService);
         processor.setEntity(entity);
         processor.setClazz(Sample.class);
         processor.setBundle(bundle);
@@ -79,7 +85,7 @@ public class FieldProcessorTest {
 
     @Test
     public void shouldReturnCorrectAnnotation() throws Exception {
-        assertEquals(Field.class, processor.getAnnotation());
+        assertEquals(Field.class, processor.getAnnotationType());
     }
 
     @Test
@@ -90,7 +96,7 @@ public class FieldProcessorTest {
         AnnotatedElement setLocalTime = getAccessibleMethod(Sample.class, "setLocalTime", Time.class);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElements());
+        actual.addAll(processor.getProcessElements());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
@@ -109,11 +115,11 @@ public class FieldProcessorTest {
 
         verify(typeService).findType(Boolean.class);
 
-        List<FieldDto> fields = processor.getFields();
+        Collection<FieldDto> fields = processor.getElements();
 
         assertEquals(1, fields.size());
 
-        FieldDto field = fields.get(0);
+        FieldDto field = fields.iterator().next();
 
         assertEquals(entity.getId(), field.getEntityId());
         assertEquals(world.getName(), field.getBasic().getDisplayName());
@@ -133,11 +139,11 @@ public class FieldProcessorTest {
 
         processor.process(ignored);
 
-        List<FieldDto> fields = processor.getFields();
+        Collection<FieldDto> fields = processor.getElements();
         assertEquals(1, fields.size());
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElements());
+        actual.addAll(processor.getProcessElements());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(ignored));
@@ -153,11 +159,11 @@ public class FieldProcessorTest {
 
         verify(typeService).findType(Time.class);
 
-        List<FieldDto> fields = processor.getFields();
+        Collection<FieldDto> fields = processor.getElements();
 
         assertEquals(1, fields.size());
 
-        FieldDto field = fields.get(0);
+        FieldDto field = fields.iterator().next();
 
         assertEquals("localTime", field.getBasic().getDisplayName());
         assertEquals("localTime", field.getBasic().getName());
@@ -179,11 +185,11 @@ public class FieldProcessorTest {
 
         verify(typeService).findType(Date.class);
 
-        List<FieldDto> fields = processor.getFields();
+        Collection<FieldDto> fields = processor.getElements();
 
         assertEquals(1, fields.size());
 
-        FieldDto field = fields.get(0);
+        FieldDto field = fields.iterator().next();
 
         assertEquals("Server Date", field.getBasic().getDisplayName());
         assertEquals("serverDate", field.getBasic().getName());
@@ -206,11 +212,11 @@ public class FieldProcessorTest {
         processor.process(getIgnoredField);
         verify(typeService, times(2)).findType(String.class);
 
-        List<FieldDto> setterFields = processor.getFields();
-        assertEquals(2, setterFields.size());
+        Collection<FieldDto> setterFields = processor.getElements();
+        assertEquals(1, setterFields.size());
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElements());
+        actual.addAll(processor.getProcessElements());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertFalse(actual.contains(getIgnoredField));
@@ -261,7 +267,7 @@ public class FieldProcessorTest {
         doReturn(asList(maxLength)).when(typeService).findValidations(TypeDto.STRING, DecimalMax.class);
 
         processor.execute();
-        List<FieldDto> fields = processor.getFields();
+        Collection<FieldDto> fields = processor.getElements();
 
         FieldDto pi = findFieldWithName(fields, "pi");
         assertCriterion(pi, "mds.field.validation.minValue", "3");
@@ -293,7 +299,7 @@ public class FieldProcessorTest {
         assertCriterion(article, "mds.field.validation.maxLength", "500");
     }
 
-    private FieldDto findFieldWithName(List<FieldDto> fields, String name) {
+    private FieldDto findFieldWithName(Collection<FieldDto> fields, String name) {
         return (FieldDto) CollectionUtils.find(
                 fields, new BeanPropertyValueEqualsPredicate("basic.name", name)
         );

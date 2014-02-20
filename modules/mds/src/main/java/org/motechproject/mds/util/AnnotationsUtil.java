@@ -12,10 +12,10 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,10 +26,6 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.springframework.util.ReflectionUtils.FieldCallback;
-import static org.springframework.util.ReflectionUtils.FieldFilter;
-import static org.springframework.util.ReflectionUtils.MethodCallback;
-import static org.springframework.util.ReflectionUtils.MethodFilter;
 
 public final class AnnotationsUtil extends AnnotationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationsUtil.class);
@@ -74,16 +70,42 @@ public final class AnnotationsUtil extends AnnotationUtils {
         return methods;
     }
 
-    public static List<AnnotatedElement> getMembers(Class<? extends Annotation> annotation,
-                                                    Class<?> clazz, Predicate methodPredicate,
-                                                    Predicate fieldPredicate) {
+    public static List<AnnotatedElement> getAnnotatedMembers(Class<? extends Annotation> aClass,
+                                                             Class<?> clazz, Predicate method,
+                                                             Predicate field) {
+        List<Member> members = MemberUtil.getMembers(clazz, method, field);
+        return getAnnotatedMembers(aClass, members);
+    }
+
+    public static List<AnnotatedElement> getAnnotatedMembers(Class<? extends Annotation> aClass,
+                                                             List<Member> members) {
         List<AnnotatedElement> list = new ArrayList<>();
 
-        Callback callback = new Callback(list, annotation);
-        Filter filter = new Filter(methodPredicate, fieldPredicate);
+        for (Member m : members) {
+            Iterator<AnnotatedElement> iterator = list.iterator();
+            boolean found = false;
 
-        ReflectionUtils.doWithFields(clazz, callback, filter);
-        ReflectionUtils.doWithMethods(clazz, callback, filter);
+            while (iterator.hasNext()) {
+                AnnotatedElement ae = iterator.next();
+                String candidateName = MemberUtil.getFieldName(m);
+                String elementName = MemberUtil.getFieldName((Member) ae);
+
+                if (equalsIgnoreCase(candidateName, elementName)) {
+                    Annotation candidateAnnotation = getAnnotation((AnnotatedElement) m, aClass);
+                    Annotation elementAnnotation = getAnnotation(ae, aClass);
+
+                    found = !(candidateAnnotation != null && elementAnnotation == null);
+
+                    if (!found) {
+                        iterator.remove();
+                    }
+                }
+            }
+
+            if (!found) {
+                list.add((AnnotatedElement) m);
+            }
+        }
 
         return list;
     }
@@ -152,84 +174,6 @@ public final class AnnotationsUtil extends AnnotationUtils {
         );
 
         return resolved;
-    }
-
-    private static final class Callback implements MethodCallback, FieldCallback {
-        private Class<? extends Annotation> annotation;
-        private List<AnnotatedElement> elements;
-
-        protected Callback(List<AnnotatedElement> elements,
-                           Class<? extends Annotation> annotation) {
-            this.annotation = annotation;
-            this.elements = elements;
-        }
-
-        @Override
-        public void doWith(Method method) {
-            add(method);
-        }
-
-        @Override
-        public void doWith(java.lang.reflect.Field field) {
-            add(field);
-        }
-
-        private void add(AnnotatedElement candidate) {
-            Iterator<AnnotatedElement> iterator = elements.iterator();
-            boolean found = false;
-
-            while (iterator.hasNext()) {
-                AnnotatedElement element = iterator.next();
-                String candidateName = MemberUtil.getFieldName(candidate);
-                String elementName = MemberUtil.getFieldName(element);
-
-                if (equalsIgnoreCase(candidateName, elementName)) {
-                    Annotation candidateAnnotation = getAnnotation(candidate, annotation);
-                    Annotation elementAnnotation = getAnnotation(element, annotation);
-
-                    found = !(candidateAnnotation != null && elementAnnotation == null);
-
-                    if (!found) {
-                        iterator.remove();
-                    }
-                }
-            }
-
-            if (!found) {
-                elements.add(candidate);
-            }
-        }
-
-    }
-
-    private static final class Filter implements MethodFilter, FieldFilter {
-        private Predicate methodPredicate;
-        private Predicate fieldPredicate;
-
-        private Filter(Predicate methodPredicate, Predicate fieldPredicate) {
-            this.methodPredicate = methodPredicate == null ? new TruePredicate() : methodPredicate;
-            this.fieldPredicate = fieldPredicate == null ? new TruePredicate() : fieldPredicate;
-        }
-
-        @Override
-        public boolean matches(Method method) {
-            return methodPredicate.evaluate(method);
-        }
-
-        @Override
-        public boolean matches(java.lang.reflect.Field field) {
-            return fieldPredicate.evaluate(field);
-        }
-
-    }
-
-    private static class TruePredicate implements Predicate {
-
-        @Override
-        public boolean evaluate(Object object) {
-            return true;
-        }
-
     }
 
 }

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The <code>LookupProcessor</code> class is responsible for processing public methods, acting like
@@ -31,20 +32,20 @@ import java.util.List;
  * @see org.motechproject.mds.annotations.LookupField
  */
 @Component
-class LookupProcessor extends AbstractProcessor {
+class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupProcessor.class);
 
     private Paranamer paranamer = new BytecodeReadingParanamer();
     private EntityService entityService;
 
     @Override
-    protected Class<? extends Annotation> getAnnotation() {
+    public Class<Lookup> getAnnotationType() {
         return Lookup.class;
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElements() {
-        return AnnotationsUtil.getMethods(getAnnotation(), getBundle());
+    protected List<? extends AnnotatedElement> getProcessElements() {
+        return AnnotationsUtil.getMethods(getAnnotationType(), getBundle());
     }
 
     @Override
@@ -71,8 +72,12 @@ class LookupProcessor extends AbstractProcessor {
             return;
         }
 
-        LOGGER.debug("Found entity class by the return type of lookup method: " + entity.getName());
+        LOGGER.debug(
+                "Found entity class by the return type of lookup method: {}",
+                entity.getName()
+        );
 
+        Long entityId = entity.getId();
         Lookup annotation = AnnotationsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
         List<String> lookupFields = findLookupFields(method);
@@ -82,13 +87,17 @@ class LookupProcessor extends AbstractProcessor {
         lookup.setLookupName(lookupName);
         lookup.setFieldList(lookupFields);
 
-        List<LookupDto> entityLookups = entityService
-                .getAdvancedSettings(entity.getId(), true)
-                .getIndexes();
+        if (!getElements().containsKey(entityId)) {
+            put(entityId, new ArrayList<LookupDto>());
+        }
 
-        if (!entityLookups.contains(lookup)) {
-            LOGGER.debug("Attempting to add lookup to the entity " + lookup.getLookupName());
-            entityService.addLookupToEntity(entity.getId(), lookup);
+        getElement(entityId).add(lookup);
+    }
+
+    @Override
+    protected void afterExecution() {
+        for (Map.Entry<Long, List<LookupDto>> entry : getElements().entrySet()) {
+            entityService.addLookups(entry.getKey(), entry.getValue());
         }
     }
 

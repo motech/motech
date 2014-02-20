@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
@@ -29,7 +28,7 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAMESPACE;
  * @see org.motechproject.mds.annotations.Entity
  */
 @Component
-class EntityProcessor extends AbstractProcessor {
+class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityProcessor.class);
 
     private EntityService entityService;
@@ -40,13 +39,13 @@ class EntityProcessor extends AbstractProcessor {
     private BundleHeaders bundleHeaders;
 
     @Override
-    protected Class<? extends Annotation> getAnnotation() {
+    public Class<Entity> getAnnotationType() {
         return Entity.class;
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElements() {
-        return AnnotationsUtil.getClasses(getAnnotation(), getBundle());
+    protected List<? extends AnnotatedElement> getProcessElements() {
+        return AnnotationsUtil.getClasses(getAnnotationType(), getBundle());
     }
 
     @Override
@@ -85,7 +84,7 @@ class EntityProcessor extends AbstractProcessor {
                 findFilterableFields(clazz, entity);
                 findDisplayedFields(clazz, entity);
 
-                entityService.generateDde(entity.getId());
+                add(entity);
             } catch (Exception e) {
                 LOGGER.error(
                         "Failed to create an entity for class {} from bundle {}",
@@ -98,26 +97,29 @@ class EntityProcessor extends AbstractProcessor {
         }
     }
 
+    @Override
+    protected void afterExecution() {
+        for (EntityDto entity : getElements()) {
+            entityService.generateDDE(entity.getId());
+        }
+    }
+
     private void findFields(Class clazz, EntityDto entity) {
         fieldProcessor.setClazz(clazz);
         fieldProcessor.setEntity(entity);
         fieldProcessor.execute();
-
-        entityService.addFields(entity, fieldProcessor.getFields());
     }
 
     private void findFilterableFields(Class clazz, EntityDto entity) {
         uiFilterableProcessor.setClazz(clazz);
+        uiFilterableProcessor.setEntity(entity);
         uiFilterableProcessor.execute();
-
-        entityService.addFilterableFields(entity, uiFilterableProcessor.getFields());
     }
 
     private void findDisplayedFields(Class clazz, EntityDto entity) {
         uiDisplayableProcessor.setClazz(clazz);
+        uiDisplayableProcessor.setEntity(entity);
         uiDisplayableProcessor.execute();
-
-        entityService.addDisplayedFields(entity, uiDisplayableProcessor.getPositions());
     }
 
     @Autowired

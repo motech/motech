@@ -1,36 +1,45 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.UIDisplayable;
+import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.MemberUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * The <code>UIDisplayableProcessor</code> provides a mechanism to finding fields or methods with
+ * the {@link org.motechproject.mds.annotations.UIDisplayable} annotation inside the class with the
+ * {@link org.motechproject.mds.annotations.Entity} annotation.
+ *
+ * @see org.motechproject.mds.annotations.UIDisplayable
+ * @see org.motechproject.mds.annotations.Entity
+ */
 @Component
-public class UIDisplayableProcessor extends AbstractProcessor {
+class UIDisplayableProcessor extends AbstractMapProcessor<UIDisplayable, String, Long> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIDisplayableProcessor.class);
     private static final Long DEFAULT_VALUE = -1L;
 
+    private EntityService entityService;
+
+    private EntityDto entity;
     private Class clazz;
 
-    private Map<String, Long> positions = new LinkedHashMap<>();
-
     @Override
-    protected Class<? extends Annotation> getAnnotation() {
+    public Class<UIDisplayable> getAnnotationType() {
         return UIDisplayable.class;
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElements() {
-        return AnnotationsUtil.getMembers(
-                getAnnotation(), clazz, new MethodPredicate(), new FieldPredicate()
+    protected List<? extends AnnotatedElement> getProcessElements() {
+        return AnnotationsUtil.getAnnotatedMembers(
+                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
 
@@ -46,13 +55,13 @@ public class UIDisplayableProcessor extends AbstractProcessor {
                 Long position = annotation.position();
 
                 if (DEFAULT_VALUE.equals(position)) {
-                    position = (long) positions.size();
+                    position = (long) getElements().size();
                 }
 
-                if (positions.containsValue(position)) {
+                if (getElements().containsValue(position)) {
                     LOGGER.error("The annotation has the position value which is already used");
                 } else {
-                    positions.put(fieldName, position);
+                    put(fieldName, position);
                 }
             }
         } else {
@@ -60,11 +69,21 @@ public class UIDisplayableProcessor extends AbstractProcessor {
         }
     }
 
+    @Override
+    protected void afterExecution() {
+        entityService.addDisplayedFields(entity, getElements());
+    }
+
     public void setClazz(Class clazz) {
         this.clazz = clazz;
     }
 
-    public Map<String, Long> getPositions() {
-        return positions;
+    public void setEntity(EntityDto entity) {
+        this.entity = entity;
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 }

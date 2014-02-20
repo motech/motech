@@ -15,6 +15,7 @@ import org.motechproject.mds.service.TypeService;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class UIFilterableProcessorTest {
 
     @Test
     public void shouldReturnCorrectAnnotation() throws Exception {
-        assertEquals(UIFilterable.class, processor.getAnnotation());
+        assertEquals(UIFilterable.class, processor.getAnnotationType());
     }
 
     @Test
@@ -61,7 +62,7 @@ public class UIFilterableProcessorTest {
         AnnotatedElement getServerDate = getAccessibleMethod(Sample.class, "getServerDate", new Class[0]);
 
         List<AnnotatedElement> actual = new ArrayList<>();
-        actual.addAll(processor.getElements());
+        actual.addAll(processor.getProcessElements());
 
         assertEquals(Sample.FIELD_COUNT, actual.size());
         assertThat(actual, hasItem(equalTo(world)));
@@ -78,11 +79,11 @@ public class UIFilterableProcessorTest {
 
         verify(typeService).findType(Boolean.class);
 
-        List<String> fields = processor.getFields();
+        Collection<String> fields = processor.getElements();
 
         assertEquals(1, fields.size());
 
-        String fieldName = fields.get(0);
+        String fieldName = fields.iterator().next();
 
         assertEquals("world", fieldName);
     }
@@ -97,11 +98,11 @@ public class UIFilterableProcessorTest {
 
         verify(typeService).findType(Date.class);
 
-        List<String> fields = processor.getFields();
+        Collection<String> fields = processor.getElements();
 
         assertEquals(1, fields.size());
 
-        String fieldName = fields.get(0);
+        String fieldName = fields.iterator().next();
 
         assertEquals("serverDate", fieldName);
     }

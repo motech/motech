@@ -25,14 +25,13 @@ public class MDSAnnotationProcessor {
 
         LOGGER.debug("Starting scanning bundle {} for MDS annotations.", symbolicName);
 
-        boolean annotationsFound = entityProcessor.execute(bundle);
-        annotationsFound |= lookupProcessor.execute(bundle);
+        entityProcessor.execute(bundle);
+        lookupProcessor.execute(bundle);
 
         LOGGER.debug("Finished scanning bundle {} for MDS annotations.", symbolicName);
 
-        return annotationsFound;
+        return entityProcessor.hasFound() || lookupProcessor.hasFound();
     }
-
 
 
     @Autowired

@@ -3,8 +3,10 @@ package org.motechproject.mds.annotations.internal;
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.annotations.Field;
 import org.motechproject.mds.annotations.UIFilterable;
+import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.ex.TypeNotFoundException;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.util.AnnotationsUtil;
 import org.motechproject.mds.util.MemberUtil;
@@ -13,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.motechproject.mds.dto.TypeDto.BOOLEAN;
@@ -30,28 +30,27 @@ import static org.motechproject.mds.util.Constants.AnnotationFields.NAME;
  *
  * @see org.motechproject.mds.annotations.UIFilterable
  * @see org.motechproject.mds.annotations.Entity
- * @see org.motechproject.mds.annotations.internal.EntityProcessor
  */
 @Component
-class UIFilterableProcessor extends AbstractProcessor {
+class UIFilterableProcessor extends AbstractListProcessor<UIFilterable, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UIFilterableProcessor.class);
     private static final TypeDto[] SUPPORT_TYPES = {BOOLEAN, DATE, LIST};
 
+    private EntityService entityService;
     private TypeService typeService;
 
+    private EntityDto entity;
     private Class clazz;
 
-    private List<String> fields = new LinkedList<>();
-
     @Override
-    protected Class<? extends Annotation> getAnnotation() {
+    public Class<UIFilterable> getAnnotationType() {
         return UIFilterable.class;
     }
 
     @Override
-    protected List<? extends AnnotatedElement> getElements() {
-        return AnnotationsUtil.getMembers(
-                getAnnotation(), clazz, new MethodPredicate(), new FieldPredicate()
+    protected List<? extends AnnotatedElement> getProcessElements() {
+        return AnnotationsUtil.getAnnotatedMembers(
+                getAnnotationType(), clazz, new MethodPredicate(), new FieldPredicate(this)
         );
     }
 
@@ -70,7 +69,7 @@ class UIFilterableProcessor extends AbstractProcessor {
                             fieldAnnotation, NAME, fieldName
                     );
 
-                    fields.add(field);
+                    add(field);
                 } else {
                     LOGGER.warn("The annotation can be added only on fields of type:" +
                             "Date, Boolean or List");
@@ -81,8 +80,14 @@ class UIFilterableProcessor extends AbstractProcessor {
         }
     }
 
-    public List<String> getFields() {
-        return fields;
+    @Override
+    protected void afterExecution() {
+        entityService.addFilterableFields(entity, getElements());
+    }
+
+    @Autowired
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
     }
 
     @Autowired
@@ -92,6 +97,10 @@ class UIFilterableProcessor extends AbstractProcessor {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
+    }
+
+    public void setEntity(EntityDto entity) {
+        this.entity = entity;
     }
 
     private boolean isCorrectType(Class<?> clazz) {

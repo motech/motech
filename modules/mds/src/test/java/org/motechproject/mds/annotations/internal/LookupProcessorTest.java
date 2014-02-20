@@ -17,9 +17,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -58,60 +59,85 @@ public class LookupProcessorTest {
     public void shouldProcessMethodWithLookupFields() throws NoSuchMethodException {
         when(paranamer.lookupParameterNames(getTestMethod(1))).thenReturn(argNames);
 
-        Method method =  getTestMethod(1);
+        Method method = getTestMethod(1);
+        LookupDto dto = new LookupDto("Test Method 1", true, false,
+                Arrays.asList("arg1", "Second argument"));
+
         lookupProcessor.process(method);
 
         verify(entityService).getEntityByClassName(String.class.getName());
-        verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 1", true, false,
-                Arrays.asList("arg1", "Second argument")));
+
+        Map<Long, List<LookupDto>> elements = lookupProcessor.getElements();
+        assertTrue(elements.containsKey(getTestEntity().getId()));
+
+        List<LookupDto> list = elements.get(getTestEntity().getId());
+        assertEquals(1, list.size());
+        assertEquals(dto, list.get(0));
     }
 
     @Test
     public void shouldProcessMethodWithNotAnnotatedParameters() throws NoSuchMethodException {
         when(paranamer.lookupParameterNames(getTestMethod(2))).thenReturn(argNames);
 
-        Method method =  getTestMethod(2);
+        Method method = getTestMethod(2);
+        LookupDto dto = new LookupDto("Test Method 2", false, false,
+                Arrays.asList(argNames));
+
         lookupProcessor.process(method);
 
         verify(entityService).getEntityByClassName(TestClass.class.getName());
-        verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("Test Method 2", false, false,
-                Arrays.asList(argNames)));
+
+        Map<Long, List<LookupDto>> elements = lookupProcessor.getElements();
+        assertTrue(elements.containsKey(getTestEntity().getId()));
+
+        List<LookupDto> list = elements.get(getTestEntity().getId());
+        assertEquals(1, list.size());
+        assertEquals(dto, list.get(0));
     }
 
     @Test
     public void shouldProcessMethodWithCustomLookupName() throws NoSuchMethodException {
         when(paranamer.lookupParameterNames(getTestMethod(3))).thenReturn(argNames);
 
-        Method method =  getTestMethod(3);
+        Method method = getTestMethod(3);
+        LookupDto dto = new LookupDto("My new custom lookup", false, false,
+                Arrays.asList(argNames));
+
         lookupProcessor.process(method);
 
         verify(entityService).getEntityByClassName(TestClass.class.getName());
-        verify(entityService).getAdvancedSettings(getTestEntity().getId(),true);
-        verify(entityService).addLookupToEntity(getTestEntity().getId(), new LookupDto("My new custom lookup", false, false,
-                Arrays.asList(argNames)));
+
+        Map<Long, List<LookupDto>> elements = lookupProcessor.getElements();
+        assertTrue(elements.containsKey(getTestEntity().getId()));
+
+        List<LookupDto> list = elements.get(getTestEntity().getId());
+        assertEquals(1, list.size());
+        assertEquals(dto, list.get(0));
     }
 
     @Test
     public void shouldBreakProcessingWhenEntityNotFound() throws NoSuchMethodException {
         when(paranamer.lookupParameterNames(getTestMethod(4))).thenReturn(argNames);
 
-        Method method =  getTestMethod(4);
+        Method method = getTestMethod(4);
+        LookupDto dto = new LookupDto("Test Method 1", true, false,
+                Arrays.asList("arg1", "Second argument"));
+
         lookupProcessor.process(method);
 
         verify(entityService).getEntityByClassName(Integer.class.getName());
         verify(entityService, never()).getAdvancedSettings(anyLong(), eq(true));
-        verify(entityService, never()).addLookupToEntity(anyLong(), any(LookupDto.class));
+
+        assertTrue(lookupProcessor.getElements().isEmpty());
     }
 
     @Test
     public void shouldReturnCorrectAnnotation() {
-        assertEquals(Lookup.class, lookupProcessor.getAnnotation());
+        assertEquals(Lookup.class, lookupProcessor.getAnnotationType());
     }
 
     private Method getTestMethod(int number) throws NoSuchMethodException {
-        return TestClass.class.getMethod("testMethod"+number, String.class, int.class, String.class);
+        return TestClass.class.getMethod("testMethod" + number, String.class, int.class, String.class);
     }
 
     private EntityDto getTestEntity() {

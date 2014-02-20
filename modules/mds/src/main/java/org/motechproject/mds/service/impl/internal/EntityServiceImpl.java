@@ -54,7 +54,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -266,9 +268,49 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void addLookupToEntity(Long entityId, LookupDto lookup) {
+    public void addLookups(Long entityId, Collection<LookupDto> lookups) {
         Entity entity = allEntities.retrieveById(entityId);
-        entity.addLookup(new Lookup(lookup, new HashSet<Field>()));
+        assertEntityExists(entity);
+
+        removeLookup(entity, lookups);
+        addOrUpdateLookup(entity, lookups);
+    }
+
+    private void removeLookup(Entity entity, Collection<LookupDto> lookups) {
+        Iterator<Lookup> iterator = entity.getLookups().iterator();
+
+        while (iterator.hasNext()) {
+            Lookup lookup = iterator.next();
+            boolean found = false;
+
+            for (LookupDto lookupDto : lookups) {
+                if (lookup.getLookupName().equalsIgnoreCase(lookupDto.getLookupName())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private void addOrUpdateLookup(Entity entity, Collection<LookupDto> lookups) {
+        for (LookupDto lookupDto : lookups) {
+            Lookup lookup = entity.getLookupById(lookupDto.getId());
+            Set<Field> lookupFields = new HashSet<>();
+            for (String fieldId : lookupDto.getFieldList()) {
+                lookupFields.add(entity.getField(Long.parseLong(fieldId)));
+            }
+
+            if (lookup == null) {
+                Lookup newLookup = new Lookup(lookupDto, lookupFields);
+                entity.addLookup(newLookup);
+            } else {
+                lookup.update(lookupDto, lookupFields);
+            }
+        }
     }
 
     @Override
@@ -428,68 +470,100 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
     @Override
     @Transactional
-    public void addFields(EntityDto entityDto, List<FieldDto> fields) {
+    public void addFields(EntityDto entityDto, Collection<FieldDto> fields) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
         assertEntityExists(entity);
 
+        removeFields(entity, fields);
+
         for (FieldDto fieldDto : fields) {
-            FieldBasicDto basic = fieldDto.getBasic();
-            String typeClass = fieldDto.getType().getTypeClass();
+            Field existing = entity.getField(fieldDto.getBasic().getName());
 
-            Type type = allTypes.retrieveByClassName(typeClass);
-            Field field = new Field(
-                    entity, basic.getDisplayName(), basic.getName(), basic.isRequired(),
-                    (String) basic.getDefaultValue(), basic.getTooltip(), null
-            );
-            field.setType(type);
-
-            if (type.hasSettings()) {
-                for (TypeSetting setting : type.getSettings()) {
-                    SettingDto settingDto = fieldDto.getSetting(setting.getName());
-                    FieldSetting fieldSetting = new FieldSetting(field, setting);
-
-                    if (null != settingDto) {
-                        fieldSetting.setValue(settingDto.getValueAsString());
-                    }
-
-                    field.addSetting(fieldSetting);
-                }
+            if (null != existing) {
+                existing.update(fieldDto);
+            } else {
+                addField(entity, fieldDto);
             }
-
-            if (type.hasValidation()) {
-                for (TypeValidation validation : type.getValidations()) {
-                    FieldValidation fieldValidation = new FieldValidation(field, validation);
-
-                    FieldValidationDto validationDto = fieldDto.getValidation();
-                    if (null != validationDto) {
-                        ValidationCriterionDto criterion = validationDto
-                                .getCriterion(validation.getDisplayName());
-
-                        if (null != criterion) {
-                            fieldValidation.setValue(criterion.valueAsString());
-                            fieldValidation.setEnabled(criterion.isEnabled());
-                        }
-                    }
-
-                    field.addValidation(fieldValidation);
-                }
-            }
-
-            entity.addField(field);
         }
+    }
+
+    private void removeFields(Entity entity, Collection<FieldDto> fields) {
+        Iterator<Field> iterator = entity.getFields().iterator();
+
+        while (iterator.hasNext()) {
+            Field field = iterator.next();
+            boolean found = false;
+
+            for (FieldDto fieldDto : fields) {
+                if (field.getName().equalsIgnoreCase(fieldDto.getBasic().getName())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private void addField(Entity entity, FieldDto fieldDto) {
+        FieldBasicDto basic = fieldDto.getBasic();
+        String typeClass = fieldDto.getType().getTypeClass();
+
+        Type type = allTypes.retrieveByClassName(typeClass);
+        Field field = new Field(
+                entity, basic.getDisplayName(), basic.getName(), basic.isRequired(),
+                (String) basic.getDefaultValue(), basic.getTooltip(), null
+        );
+        field.setType(type);
+
+        if (type.hasSettings()) {
+            for (TypeSetting setting : type.getSettings()) {
+                SettingDto settingDto = fieldDto.getSetting(setting.getName());
+                FieldSetting fieldSetting = new FieldSetting(field, setting);
+
+                if (null != settingDto) {
+                    fieldSetting.setValue(settingDto.getValueAsString());
+                }
+
+                field.addSetting(fieldSetting);
+            }
+        }
+
+        if (type.hasValidation()) {
+            for (TypeValidation validation : type.getValidations()) {
+                FieldValidation fieldValidation = new FieldValidation(field, validation);
+
+                FieldValidationDto validationDto = fieldDto.getValidation();
+                if (null != validationDto) {
+                    ValidationCriterionDto criterion = validationDto
+                            .getCriterion(validation.getDisplayName());
+
+                    if (null != criterion) {
+                        fieldValidation.setValue(criterion.valueAsString());
+                        fieldValidation.setEnabled(criterion.isEnabled());
+                    }
+                }
+
+                field.addValidation(fieldValidation);
+            }
+        }
+
+        entity.addField(field);
     }
 
     @Override
     @Transactional
-    public void addFilterableFields(EntityDto entityDto, List<String> fieldNames) {
+    public void addFilterableFields(EntityDto entityDto, Collection<String> fieldNames) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 
         assertEntityExists(entity);
 
-        for (String fieldName : fieldNames) {
-            Field field = entity.getField(fieldName);
-            field.setUIFilterable(true);
+        for (Field field : entity.getFields()) {
+            boolean isUIFilterable = fieldNames.contains(field.getName());
+            field.setUIFilterable(isUIFilterable);
         }
     }
 
@@ -527,14 +601,17 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             for (Field field : fields) {
                 String fieldName = field.getName();
 
-                field.setUIDisplayable(positions.containsKey(fieldName));
-                field.setUIDisplayPosition(positions.get(fieldName));
+                boolean isUIDisplayable = positions.containsKey(fieldName);
+                Long uiDisplayPosition = positions.get(fieldName);
+
+                field.setUIDisplayable(isUIDisplayable);
+                field.setUIDisplayPosition(uiDisplayPosition);
             }
         }
     }
 
     @Transactional
-    public void generateDde(Long entityId) {
+    public void generateDDE(Long entityId) {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity);
         constructor.constructEntity(entity);
