@@ -9,7 +9,6 @@
             <li ng-show="active('#/notificationRules')"><a role="menu" href="?moduleName=admin.module#/messages">{{msg('admin.messages')}}</a></li>
             <li ng-show="active('#/notificationRules')" ng-class="active('#/notificationRules')">{{msg('admin.messages.notifications.title')}}</li>
             <li ng-show="active('#/platform-settings')" ng-class="active('#/platform-settings')">{{msg('admin.settings')}}</li>
-            <li ng-show="active('#/logOptions')"><a role="menu" href="?moduleName=admin.module#/log">{{msg('admin.log')}}</a></li>
             <li ng-show="active('#/log')&&!active('#/logOptions')" ng-class="active('#/log')">{{msg('admin.log')}}</li>
             <li ng-show="active('#/logOptions')" ng-class="active('#/logOptions')">{{msg('admin.log.options')}}</li>
             <li ng-show="active('#/queues')&&!active('#/queues/browse')" ng-class="active('#/queues')">{{msg('admin.queues')}}</li>
@@ -24,7 +23,8 @@
             <li class="active" ng-show="active('#/notificationRules')"><a href="?moduleName=admin.module#/notificationRules">{{msg('admin.messages.notifications.title')}}</a></li>
             <li class="active" ng-show="active('#/platform-settings')"><a href="?moduleName=admin.module#/platform-settings">{{msg('admin.settings')}}</a></li>
             <li class="active" ng-show="active('#/log')&&!active('#/logOptions')"><a href="?moduleName=admin.module#/log">{{msg('admin.log')}}</a></li>
-            <li class="active" ng-show="active('#/logOptions')"><a href="?moduleName=admin.module#/logOptions">{{msg('admin.log.options')}}</a></li>
+            <li ng-class="" ng-show="active('#/logOptions')"><a href="?moduleName=admin.module#/log">{{msg('admin.log')}}</a></li>
+            <li ng-class="active('#/logOptions')" ng-show="active('#/logOptions')||active('#/log')"><a href="?moduleName=admin.module#/logOptions">{{msg('admin.log.options')}}</a></li>
             <li class="active" ng-show="active('#/queues')&&!active('#/queues/browse')"><a href="#/queues">{{msg('admin.queue.statistics')}}</a></li>
             <li class="active" ng-show="active('#/queues/browse')"><a href="?moduleName=admin.module#/queues/browse">{{msg('admin.queue.messages.pending')}}</a></li>
         </ul>
