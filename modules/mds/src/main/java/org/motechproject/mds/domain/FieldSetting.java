@@ -12,7 +12,9 @@ import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.List;
 
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+import static org.motechproject.mds.util.Constants.Util.TRUE;
+
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class FieldSetting {
 
     @PrimaryKey

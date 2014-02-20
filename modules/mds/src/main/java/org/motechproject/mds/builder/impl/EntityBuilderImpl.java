@@ -20,6 +20,8 @@ import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -34,10 +36,12 @@ import java.util.List;
 @Component
 public class EntityBuilderImpl implements EntityBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EntityBuilderImpl.class);
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
     public ClassData build(Entity entity) {
+        LOG.info("Building EUDE: " + entity.getName());
         try {
             String className = entity.getClassName();
 
@@ -49,7 +53,6 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             ctClass = classPool.makeClass(className);
-
             addFields(ctClass, entity.getFields());
 
             return new ClassData(className, ctClass.toBytecode());
@@ -61,6 +64,7 @@ public class EntityBuilderImpl implements EntityBuilder {
     @Override
     public ClassData buildDDE(Entity entity, Bundle bundle) {
         String className = entity.getClassName();
+        LOG.info("Building DDE: " + className);
 
         try {
             CtClass ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
@@ -79,6 +83,8 @@ public class EntityBuilderImpl implements EntityBuilder {
     private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
         for (Field field : fields) {
             String fieldName = field.getName();
+
+            LOG.debug("Adding fields to class: " + ctClass.getName());
 
             // do not recreate fields from the loaded class
             if (JavassistHelper.containsDelcaredField(ctClass, fieldName)) {

@@ -24,10 +24,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static org.motechproject.mds.util.Constants.Util.TRUE;
+
 /**
  * The <code>Field</code> class contains information about a single field.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Unique(name = "ENTITY_FIELDNAME_IDX", members = {"entity", "name"})
 public class Field {
 

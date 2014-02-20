@@ -9,11 +9,13 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import static org.motechproject.mds.util.Constants.Util.TRUE;
+
 /**
  * The <code>AvailableType</code> class contains a default name for a field with the given type. It
  * should be used only on MDS UI.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class AvailableType {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)

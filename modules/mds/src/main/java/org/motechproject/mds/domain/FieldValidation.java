@@ -9,11 +9,13 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import static org.motechproject.mds.util.Constants.Util.TRUE;
+
 /**
  * The <code>FieldValidation</code> class contains the value that is related with the correct
  * type validation and information about that whether the given validation is enabled or not.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 public class FieldValidation {
 
     @PrimaryKey

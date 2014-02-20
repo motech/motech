@@ -42,6 +42,8 @@ import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -68,6 +70,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllTypes allTypes;
     private AllEntityDrafts allEntityDrafts;
 
+    private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
+
     // TODO remove this once everything is in db
     private ExampleData exampleData = new ExampleData();
 
@@ -90,6 +94,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         Entity entity = allEntities.create(entityDto);
 
         if (fromUI) {
+            LOG.info("Entity from UI - constructing");
             constructor.constructEntity(entity);
         }
 

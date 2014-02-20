@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EntityProcessorTest {
@@ -41,6 +41,9 @@ public class EntityProcessorTest {
     @Mock
     private UIFilterableProcessor uiFilterableProcessor;
 
+    @Mock
+    private UIDisplayableProcessor uiDisplayableProcessor;
+
     @Captor
     private ArgumentCaptor<EntityDto> captor;
 
@@ -52,7 +55,10 @@ public class EntityProcessorTest {
         processor.setEntityService(entityService);
         processor.setFieldProcessor(fieldProcessor);
         processor.setUIFilterableProcessor(uiFilterableProcessor);
+        processor.setUIDisplayableProcessor(uiDisplayableProcessor);
         processor.setBundle(bundle);
+
+        when(entityService.createEntity(any(EntityDto.class))).thenReturn(new EntityDto(1L, "SomeEntity"));
     }
 
     @Test
@@ -88,6 +94,9 @@ public class EntityProcessorTest {
 
         verify(uiFilterableProcessor).setClazz(Sample.class);
         verify(uiFilterableProcessor).execute();
+
+        verify(uiDisplayableProcessor).setClazz(Sample.class);
+        verify(uiDisplayableProcessor).execute();
 
         EntityDto value = captor.getValue();
 
