@@ -29,7 +29,7 @@ public class EntityMetadataBuilderTest {
     private static final String NAMESPACE = "arrio";
 
     private static final String CLASS_NAME = String.format("%s.%s", PACKAGE, ENTITY_NAME);
-    private static final String TABLE_NAME_1 = ENTITY_NAME.toUpperCase();
+    private static final String TABLE_NAME_1 = String.format("MDS_%s", ENTITY_NAME).toUpperCase();
     private static final String TABLE_NAME_2 = String.format("%s_%s", MODULE, ENTITY_NAME).toUpperCase();
     private static final String TABLE_NAME_3 = String.format("%s_%s_%s", MODULE, NAMESPACE, ENTITY_NAME).toUpperCase();
 

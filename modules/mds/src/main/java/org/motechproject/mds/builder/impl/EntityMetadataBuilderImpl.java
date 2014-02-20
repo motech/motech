@@ -89,13 +89,11 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private static String getTableName(Entity entity) {
         String simpleName = ClassName.getSimpleName(entity.getClassName());
-        String module = entity.getModule();
+        String module = StringUtils.defaultIfBlank(entity.getModule(), "MDS");
         String namespace = entity.getNamespace();
 
         StringBuilder builder = new StringBuilder();
-        if (isNotBlank(module)) {
-            builder.append(module).append("_");
-        }
+        builder.append(module).append("_");
 
         if (isNotBlank(namespace)) {
             builder.append(namespace).append("_");
