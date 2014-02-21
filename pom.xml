@@ -182,7 +182,6 @@
         <module>modules/sms/sms-http</module>
         <module>modules/sms/sms-smpp</module>
         <module>modules/testing-utils/testing-utils</module>
-        <module>modules/web-security/web-security</module>
 
         <!-- OSGI modules -->
         <module>platform/platform-common-bundle</module>
@@ -211,7 +210,6 @@
         <module>modules/sms/sms-api-bundle</module>
         <module>modules/sms/sms-http-bundle</module>
         <module>modules/sms/sms-smpp-bundle</module>
-        <module>modules/web-security/web-security-bundle</module>
 
         <!-- Packaging modules -->
         <module>modules/deb/deb</module>
