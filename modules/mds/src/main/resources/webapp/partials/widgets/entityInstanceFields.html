@@ -1,7 +1,7 @@
 <form name="instanceForm" class="form-horizontal inside" ng-init="getHistory()">
     <div class="form-group" ng-repeat="field in fields">
         <label class="col-md-2 col-sm-3 control-label">
-            {{field.basic.displayName}}:
+            {{field.displayName}}:
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
             <div ng-include="loadEditValueForm(field)" ></div>

@@ -341,7 +341,20 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Override
     @Transactional
     public List<FieldDto> getFields(Long entityId) {
-        Entity entity = getEntityDraft(entityId);
+        return getFields(entityId, true);
+    }
+
+    @Override
+    @Transactional
+    public List<FieldDto> getEntityFields(Long entityId) {
+        return getFields(entityId, false);
+    }
+
+    private List<FieldDto> getFields(Long entityId, boolean forDraft) {
+        Entity entity = (forDraft) ? getEntityDraft(entityId) : allEntities.retrieveById(entityId);
+
+        assertEntityExists(entity);
+
         List<Field> fields = entity.getFields();
 
         List<FieldDto> fieldDtos = new ArrayList<>();

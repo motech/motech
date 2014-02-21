@@ -53,7 +53,6 @@ import static org.motechproject.mds.util.ClassName.getRepositoryName;
 import static org.motechproject.mds.util.ClassName.getServiceName;
 import static org.motechproject.mds.util.Constants.Manifest;
 
-
 /**
  * Default implementation of {@link org.motechproject.mds.service.JarGeneratorService} interface.
  */

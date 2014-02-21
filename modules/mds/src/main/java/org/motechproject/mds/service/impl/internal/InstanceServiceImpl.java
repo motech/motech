@@ -1,26 +1,44 @@
 package org.motechproject.mds.service.impl.internal;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
-import org.motechproject.mds.repository.AllEntities;
-import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.ObjectNotFoundException;
+import org.motechproject.mds.ex.ObjectReadException;
+import org.motechproject.mds.ex.ObjectUpdateException;
+import org.motechproject.mds.ex.ServiceNotFoundException;
 import org.motechproject.mds.service.BaseMdsService;
+import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
-import org.motechproject.mds.service.impl.DefaultMotechDataService;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,67 +46,119 @@ import java.util.List;
  */
 @Service
 public class InstanceServiceImpl extends BaseMdsService implements InstanceService {
-    private AllEntities allEntities;
 
-    // TODO remove this once everything is in db
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceServiceImpl.class);
+
+    private static final DateTimeFormatter DTF = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm Z");
+
     private ExampleData exampleData = new ExampleData();
-    private MDSClassLoader mdsClassLoader = MDSClassLoader.getInstance();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
+    private EntityService entityService;
+    private BundleContext bundleContext;
 
     @Override
     @Transactional
-    public Object createInstance(EntityDto entityDto, List<FieldRecord> fieldRecords) {
+    public Object saveInstance(EntityRecord entityRecord) {
+        EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
+
+        String className = entity.getClassName();
+
         try {
-            Class<?> entityClass = mdsClassLoader.loadClass(ClassName.getEntityName(entityDto.getClassName()));
-            Class<?> repositoryClass = mdsClassLoader.loadClass(ClassName.getRepositoryName(entityDto.getClassName()));
-            Class<?> serviceClass = mdsClassLoader.loadClass(ClassName.getServiceName(entityDto.getClassName()));
+            MotechDataService service = getServiceForEntity(entity);
 
-            MotechDataRepository repository = (MotechDataRepository) repositoryClass.newInstance();
-            DefaultMotechDataService service = (DefaultMotechDataService) serviceClass.newInstance();
+            Class<?> entityClass = MDSClassLoader.getInstance().loadClass(className);
 
-            service.setRepository(repository);
-            return service.create(entityClass.newInstance());
+            boolean newObject = entityRecord.getId() == null;
 
+            Object instance;
+            if (newObject) {
+                instance = entityClass.newInstance();
+            } else {
+                instance = service.retrieve("id", entityRecord.getId());
+                if (instance == null) {
+                    throw new ObjectNotFoundException();
+                }
+            }
+
+            updateFields(instance, entityRecord.getFields());
+
+            if (newObject) {
+                return service.create(instance);
+            } else {
+                return service.update(instance);
+            }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException  e) {
-            LOGGER.error(e.getMessage());
+            LOG.error("Unable to save object instance", e);
+            throw new ObjectUpdateException(e);
         }
-        return null;
     }
 
     @Override
     @Transactional
-    public List<?> getEntityRecordsPaged(Long entityId, Integer page, Integer rows) {
-        List<?> list = new ArrayList<>();
-        String className = ClassName.getSimpleName(allEntities.retrieveById(entityId).getClassName());
-        try {
-            Class<?> repositoryClass = mdsClassLoader.loadClass(ClassName.getRepositoryName(className));
-            Class<?> serviceClass = mdsClassLoader.loadClass(ClassName.getServiceName(className));
-
-            MotechDataRepository repository = (MotechDataRepository) repositoryClass.newInstance();
-
-            DefaultMotechDataService service = (DefaultMotechDataService) serviceClass.newInstance();
-            service.setRepository(repository);
-
-            list = service.retrieveAll(page, rows);
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        return list;
+    public List<EntityRecord> getEntityRecordsPaged(Long entityId, int page, int rows, Order order) {
+        return retrieveRecords(entityId, page, rows, order);
     }
 
     @Override
     @Transactional
     public List<EntityRecord> getEntityRecords(Long entityId) {
-        return exampleData.getEntityRecordsById(entityId);
+        return retrieveRecords(entityId, null, null, null);
+    }
+
+    private List<EntityRecord> retrieveRecords(Long entityId, Integer page, Integer rows, Order order) {
+        EntityDto entity = entityService.getEntity(entityId);
+
+        assertEntityExists(entity);
+
+        List<FieldDto> fields = entityService.getFields(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        List list;
+
+        if (page == null || rows == null) {
+            list = service.retrieveAll();
+        } else if (order == null) {
+            list = service.retrieveAll(page, rows);
+        } else {
+            list = service.retrieveAll(page, rows, order);
+        }
+
+        List<EntityRecord> records = new ArrayList<>();
+        for (Object instance : list) {
+            EntityRecord record = instanceToRecord(instance, entity, fields);
+            records.add(record);
+        }
+
+        return records;
     }
 
     @Override
     @Transactional
-    public List<FieldInstanceDto> getInstanceFields(Long instanceId) {
-        return exampleData.getInstanceFields(instanceId);
+    public long countRecords(Long entityId) {
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        return service.count();
+    }
+
+    @Override
+    @Transactional
+    public List<FieldInstanceDto> getInstanceFields(Long entityId, Long instanceId) {
+        EntityDto entity = entityService.getEntity(entityId);
+
+        assertEntityExists(entity);
+
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+
+        List<FieldInstanceDto> result = new ArrayList<>();
+        for (FieldDto field : fields) {
+            FieldInstanceDto fieldInstanceDto = new FieldInstanceDto(field.getId(), instanceId, field.getBasic());
+            result.add(fieldInstanceDto);
+        }
+
+        return result;
     }
 
     @Override
@@ -103,8 +173,115 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         return exampleData.getPreviousRecordsById(instanceId);
     }
 
+    @Override
+    public EntityRecord newInstance(Long entityId) {
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        List<FieldRecord> fieldRecords = new ArrayList<>();
+        for (FieldDto field : fields) {
+            FieldRecord fieldRecord = new FieldRecord(field);
+            fieldRecords.add(fieldRecord);
+        }
+
+        return new EntityRecord(null, entityId, fieldRecords);
+    }
+
+    @Override
+    public EntityRecord getEntityInstance(Long entityId, Long instanceId) {
+        EntityDto entity = getEntity(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        Object instance = service.retrieve("id", instanceId);
+
+        if (instance == null) {
+            throw new ObjectNotFoundException();
+        }
+
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+
+        return instanceToRecord(instance, entity, fields);
+    }
+
+    private EntityDto getEntity(Long entityId) {
+        EntityDto entityDto = entityService.getEntity(entityId);
+        assertEntityExists(entityDto);
+        return entityDto;
+    }
+
+    private MotechDataService getServiceForEntity(EntityDto entity) {
+        ServiceReference ref = bundleContext.getServiceReference(ClassName.getInterfaceName(entity.getClassName()));
+        if (ref == null) {
+            throw new ServiceNotFoundException();
+        }
+        return (MotechDataService) bundleContext.getService(ref);
+    }
+
+    private void updateFields(Object instance, List<FieldRecord> fieldRecords) {
+        try {
+            for (FieldRecord fieldRecord : fieldRecords) {
+                Object value = fieldRecord.getValue();
+
+                Object parsedValue = TypeHelper.parse(value, fieldRecord.getType().getTypeClass());
+
+                PropertyUtils.setProperty(instance, fieldRecord.getName(), parsedValue);
+            }
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            LOG.error("Error while updating fields", e);
+            throw new ObjectUpdateException(e);
+        }
+    }
+
+    private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields) {
+        try {
+            List<FieldRecord> fieldRecords = new ArrayList<>();
+
+            for (FieldDto field : fields) {
+                Object value = PropertyUtils.getProperty(instance, field.getBasic().getName());
+
+                // turn dates to string format
+                if (value instanceof DateTime) {
+                    value = DTF.print((DateTime) value);
+                } else if (value instanceof Date) {
+                    value = DTF.print(((Date) value).getTime());
+                } else if (value instanceof Time) {
+                    value = ((Time) value).timeStr();
+                // TODO: temporary solution for single value select combobox
+                } else if (value instanceof List) {
+                    List list = (List) value;
+                    if (!list.isEmpty()) {
+                        value = list.get(0);
+                    }
+                }
+
+                FieldRecord fieldRecord = new FieldRecord(field);
+                fieldRecord.setValue(value);
+
+                fieldRecords.add(fieldRecord);
+            }
+
+            Field idField = FieldUtils.getDeclaredField(instance.getClass(), "id", true);
+            Long id = (Long) idField.get(instance);
+
+            return new EntityRecord(id, entityDto.getId(), fieldRecords);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            LOG.error("Unable to read object", e);
+            throw new ObjectReadException(e);
+        }
+    }
+
+    private void assertEntityExists(EntityDto entity) {
+        if (entity == null) {
+            throw new EntityNotFoundException();
+        }
+    }
+
     @Autowired
-    public void setAllEntityMappings(AllEntities allEntities) {
-        this.allEntities = allEntities;
+    public void setEntityService(EntityService entityService) {
+        this.entityService = entityService;
+    }
+
+    @Autowired
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }

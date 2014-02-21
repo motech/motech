@@ -1,6 +1,9 @@
 package org.motechproject.mds;
 
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.service.JarGeneratorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jdo.JdoTransactionManager;
@@ -22,9 +25,12 @@ import java.io.IOException;
  */
 @Component
 public class MDSInitializer {
+    private static final Logger LOG = LoggerFactory.getLogger(MDSInitializer.class);
+
     private PersistenceManagerFactory persistenceManagerFactory;
     private JdoTransactionManager transactionManager;
     private MDSConstructor constructor;
+    private JarGeneratorService jarGeneratorService;
 
     @PostConstruct
     public void constructEntities() throws IOException {
@@ -37,8 +43,9 @@ public class MDSInitializer {
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus status) {
             constructor.constructAllEntities();
+            jarGeneratorService.regenerateMdsDataBundle();
+            LOG.info("Motech data services initialization complete");
         }
-
     }
 
     @Autowired
@@ -62,5 +69,10 @@ public class MDSInitializer {
     @Autowired
     public void setConstructor(MDSConstructor constructor) {
         this.constructor = constructor;
+    }
+
+    @Autowired
+    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
+        this.jarGeneratorService = jarGeneratorService;
     }
 }

@@ -906,8 +906,9 @@
 
                         for (i = 0; i < result.length; i += 1) {
                             colModel.push({
-                                name: result[i].basic.displayName,
-                                index: result[i].basic.displayName,
+                                label: result[i].basic.displayName,
+                                name: result[i].basic.name,
+                                index: result[i].basic.name,
                                 jsonmap: "fields." + i + ".value"
                             });
                         }

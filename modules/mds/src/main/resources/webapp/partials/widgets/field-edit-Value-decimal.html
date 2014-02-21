@@ -1,4 +1,4 @@
-<input class="form-control input-large-fluid" type="text" step="any" ng-model="getFieldValue(field.basic.displayName).value" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="previousInstance">
-<span class="help-inline" ng-class="{hide: checkDecimalValue(field.basic.defaultValue, field.settings)}">
+<input class="form-control input-large-fluid" type="text" step="any" ng-model="field.value" mds-field-id="{{field.id}}" ng-disabled="previousInstance">
+<span class="help-inline" ng-class="{hide: checkDecimalValue(field.value, field.settings)}">
     {{getInvalidDecimalMessage(field.settings)}}
 </span>

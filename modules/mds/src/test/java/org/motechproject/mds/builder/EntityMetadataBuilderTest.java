@@ -8,9 +8,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.Entity;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.metadata.ClassMetadata;
 import javax.jdo.metadata.ClassPersistenceModifier;
+import javax.jdo.metadata.FieldMetadata;
 import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 
@@ -45,9 +47,13 @@ public class EntityMetadataBuilderTest {
     @Mock
     private ClassMetadata classMetadata;
 
+    @Mock
+    private FieldMetadata idMetadata;
+
     @Before
     public void setUp() {
         when(entity.getClassName()).thenReturn(CLASS_NAME);
+        when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
     }
 
     @Test
@@ -99,7 +105,9 @@ public class EntityMetadataBuilderTest {
 
     private void verifyCommonClassMetadata() {
         verify(classMetadata).setDetachable(true);
-        verify(classMetadata).setIdentityType(IdentityType.DATASTORE);
+        verify(classMetadata).setIdentityType(IdentityType.APPLICATION);
         verify(classMetadata).setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
+        verify(idMetadata).setPrimaryKey(true);
+        verify(idMetadata).setValueStrategy(IdGeneratorStrategy.IDENTITY);
     }
 }

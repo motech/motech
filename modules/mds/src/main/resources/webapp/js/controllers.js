@@ -1936,6 +1936,8 @@
         */
         $scope.loadedFields = [];
 
+        $scope.currentRecord = undefined;
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -1956,8 +1958,10 @@
                 param:  module,
                 params: entityName},
                 function () {
-                    $scope.fields = Entities.getFields({id: $scope.addedEntity.id},function () {
-                    unblockUI();
+                    Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
+                        $scope.currentRecord = data;
+                        $scope.fields = data.fields;
+                        unblockUI();
                     });
                 });
         };
@@ -1967,13 +1971,16 @@
         */
         $scope.editInstance = function(id) {
             blockUI();
-            $scope.loadedFields = Entities.selectInstance({
+            $scope.loadedFields = Instances.selectInstance({
                 id: $scope.selectedEntity.id,
-                 param: id},
-                function () {
+                param: id
+                },
+                function (data) {
                     $scope.selectedInstance = id;
+                    $scope.currentRecord = data;
+                    $scope.fields = data.fields;
                     unblockUI();
-                });
+                }, angularHandler('mds.error', 'mds.error'));
         };
 
         /**
@@ -2007,9 +2014,11 @@
         *
         */
         $scope.addEntityInstance = function () {
-                Instances.save(function () {
-
-                });
+            blockUI();
+            $scope.currentRecord.$save(function() {
+                $scope.unselectAdd();
+                unblockUI();
+            }, angularHandler('mds.error', 'mds.error'));
         };
 
 
@@ -2033,7 +2042,7 @@
                 unblockUI();
                 $scope.previousInstance = undefined;
                 $scope.instanceId = id;
-            });
+            }, angularHandler('', ''));
         };
 
         $scope.backToInstance = function() {
@@ -2057,7 +2066,6 @@
             blockUI();
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
-                $scope.fields = Entities.getFields({id: $scope.selectedEntity.id});
                 unblockUI();
             });
 
@@ -2201,14 +2209,8 @@
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
-            if ($scope.getFieldValue(field.basic.displayName) || $scope.previousInstance) {
-              return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
-                              .format(value.substring(value.toLowerCase()));
-            }
-            else {
-              return '../mds/resources/partials/widgets/field-basic-defaultValue-{0}.html'
-                              .format(value.substring(value.toLowerCase()));
-            }
+            return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
+                          .format(value.substring(value.toLowerCase()));
         };
 
         /*

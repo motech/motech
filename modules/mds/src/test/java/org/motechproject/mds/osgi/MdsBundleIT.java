@@ -87,9 +87,9 @@ public class MdsBundleIT extends BaseOsgiIT {
         Object instance2 = loadedClass.newInstance();
 
         service.create(instance);
-        assertEquals(service.retrieveAll().size(), 1);
+        assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
-        assertEquals(service.retrieveAll().size(), 2);
+        assertEquals(2, service.retrieveAll().size());
 
         List<Class<?>> allInstances = service.retrieveAll();
     }

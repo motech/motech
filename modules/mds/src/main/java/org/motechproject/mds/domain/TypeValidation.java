@@ -15,7 +15,7 @@ import java.util.List;
  * The <code>TypeValidation</code> contains a single validation option for the given type. This
  * class is related with table in database with the same name.
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = "true")
 public class TypeValidation {
 
     @Persistent(valueStrategy = IdGeneratorStrategy.INCREMENT)

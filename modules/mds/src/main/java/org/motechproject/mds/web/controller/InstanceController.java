@@ -1,16 +1,12 @@
 package org.motechproject.mds.web.controller;
 
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
-import org.motechproject.mds.web.comparator.EntityRecordComparator;
+import org.motechproject.mds.util.Order;
 import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -19,6 +15,7 @@ import org.motechproject.mds.web.domain.HistoryRecord;
 import org.motechproject.mds.web.domain.PreviousRecord;
 import org.motechproject.mds.web.domain.Records;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,24 +23,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.motechproject.mds.util.Constants.Roles;
 
 /**
- * The <code>FieldController</code> is the Spring Framework Controller used by view layer for
- * executing certain actions on entity fields.
+ * The <code>InstanceController</code> is the Spring Framework Controller used by view layer for
+ * managing entity instances.
  *
  * @see org.motechproject.mds.dto.FieldDto
  * @see org.motechproject.mds.dto.EntityDto
@@ -57,20 +50,31 @@ public class InstanceController extends MdsController {
     private InstanceService instanceService;
 
     @RequestMapping(value = "/instances", method = RequestMethod.POST)
-    @PreAuthorize(Roles.HAS_SCHEMA_ACCESS)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
     public void saveInstance(@RequestBody EntityRecord record) {
-        instanceService.createInstance(entityService.getEntity(record.getEntitySchemaId()), record.getFields());
+        instanceService.saveInstance(record);
     }
 
-    @RequestMapping(value = "/instances/{instanceId}/fields", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{instanceId}", method = RequestMethod.POST)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateInstance(@RequestBody EntityRecord record) {
+        instanceService.saveInstance(record);
+    }
+
+    @RequestMapping(value = "/instances/{entityId}/new")
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldInstanceDto> getInstanceFields(@PathVariable Long instanceId) {
-        if (null == entityService.getEntity(instanceId)) {
-            throw new EntityNotFoundException();
-        }
+    public EntityRecord newInstance(@PathVariable Long entityId) {
+        return instanceService.newInstance(entityId);
+    }
 
-        return instanceService.getInstanceFields(instanceId);
+    @RequestMapping(value = "/instances/{entityId}/{instanceId}/fields", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_ACCESS)
+    @ResponseBody
+    public List<FieldInstanceDto> getInstanceFields(@PathVariable Long entityId, @PathVariable Long instanceId) {
+        return instanceService.getInstanceFields(entityId, instanceId);
     }
 
     @RequestMapping(value = "/instances/{instanceId}/history", method = RequestMethod.GET)
@@ -86,7 +90,7 @@ public class InstanceController extends MdsController {
             );
         }
 
-        return new Records<>(settings.getPage(), settings.getRows(), historyRecordsList);
+        return new Records<>(0, 1, historyRecordsList);
     }
 
     @RequestMapping(value = "/instances/{instanceId}/previousVersion/{historyId}", method = RequestMethod.GET)
@@ -102,17 +106,11 @@ public class InstanceController extends MdsController {
         throw new EntityNotFoundException();
     }
 
-    @RequestMapping(value = "/entities/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/instances/{entityId}/instance/{instanceId}", method = RequestMethod.GET)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public List<FieldRecord> getInstance(@PathVariable Long entityId, @PathVariable String instanceId) {
-        List<EntityRecord> entityList = instanceService.getEntityRecords(entityId);
-        for (EntityRecord record : entityList) {
-            if (record.getId().equals(instanceId)) {
-                return record.getFields();
-            }
-        }
-        throw new EntityNotFoundException();
+    public EntityRecord getInstance(@PathVariable Long entityId, @PathVariable Long instanceId) {
+        return instanceService.getEntityInstance(entityId, instanceId);
     }
 
     @RequestMapping(value = "/entities/{entityId}/exportInstances", method = RequestMethod.GET)
@@ -157,63 +155,19 @@ public class InstanceController extends MdsController {
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
     public Records<?> getInstances(@PathVariable Long entityId, @RequestBody final String url, GridSettings settings) {
-        List<?> entityRecords = instanceService.getEntityRecordsPaged(entityId, settings.getPage(), settings.getRows());
-        Map<String, Object> lookupMap = getLookupMap(url);
-
-        if (!lookupMap.isEmpty()) {
-            entityRecords = filterByLookup(entityRecords, lookupMap);
+        Order order = null;
+        if (!settings.getSortColumn().isEmpty()) {
+            order = new Order(settings.getSortColumn(), settings.getSortDirection());
         }
 
-        boolean sortAscending = settings.getSortDirection() == null || "asc".equals(settings.getSortDirection());
+        List<EntityRecord> entityRecords = instanceService.getEntityRecordsPaged(entityId,
+                settings.getPage(), settings.getRows(),
+                order);
 
-        //TODO: Sort records
-        if (!settings.getSortColumn().isEmpty() && !entityRecords.isEmpty()) {
-            Collections.sort(
-                    new ArrayList<EntityRecord>(), new EntityRecordComparator(sortAscending, settings.getSortColumn())
-            );
-        }
+        long recordCount = instanceService.countRecords(entityId);
+        int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
-        return new Records<>(entityRecords);
-    }
-
-    private List<?> filterByLookup(List<?> entityList, Map<String, Object> lookups) {
-        for (Map.Entry<String, Object> entry : lookups.entrySet()) {
-            Iterator<?> it = entityList.iterator();
-            while (it.hasNext()) {
-                Object record = it.next();
-                for (Field field : record.getClass().getFields()) {
-                    if (entry.getKey().equals(field.getName()) &&
-                            !entry.getValue().toString().equalsIgnoreCase(field.toString())) {
-                        it.remove();
-                    }
-                }
-            }
-        }
-
-        return entityList;
-    }
-
-    private Map<String, Object> getLookupMap(String url) {
-        final String fields = "fields=";
-
-        int fieldsParam = url.indexOf(fields) + fields.length();
-        String jsonFields = url.substring(fieldsParam, url.indexOf('&', fieldsParam));
-
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(factory);
-        TypeReference<HashMap<String, Object>> typeRef
-                = new TypeReference<
-                HashMap<String, Object>
-                >() {
-        };
-        try {
-            jsonFields = URLDecoder.decode(jsonFields, "UTF-8");
-            return mapper.readValue(jsonFields, typeRef);
-        } catch (IOException e) {
-            Logger.getLogger(EntityController.class).error("Failed to retrieve and/or parse lookup object from JSON" + e);
-        }
-
-        return new HashMap<>();
+        return new Records<>(settings.getPage(), rowCount, entityRecords);
     }
 
     @Autowired

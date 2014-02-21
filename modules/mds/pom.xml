@@ -231,6 +231,7 @@
                             org.motechproject.mds.dto;version=${project.version},
                             org.motechproject.mds.enhancer;version=${project.version},
                             org.motechproject.mds.ex;version=${project.version},
+                            org.motechproject.mds.jdo;version=${project.version},
                             org.motechproject.mds.repository;version=${project.version},
                             org.motechproject.mds.service;version=${project.version},
                             org.motechproject.mds.service.impl;version=${project.version},
@@ -239,6 +240,7 @@
                         <Import-Package>
                             com.googlecode.flyway.core,
                             javax.jdo.spi,
+                            javax.validation.constraints,
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
@@ -416,7 +418,7 @@
                             <disallowIncrAndDecr>true</disallowIncrAndDecr>
                             <requireUseStrict>true</requireUseStrict>
                             <predefinedVars>
-                                _, $, angular, isBlank, handleResponse, camelCase, blockUI,
+                                _, $, angular, angularHandler, isBlank, handleResponse, camelCase, blockUI,
                                 motechAlert, unblockUI, motechConfirm, cloneArray, find,
                                 arraysEqual, validateDecimal, cloneObj, alertHandler, window
                             </predefinedVars>

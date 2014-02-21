@@ -102,7 +102,7 @@
         <property name="allowCreate" value="false"/>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager" depends-on="flyway">
+    <bean id="transactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager" depends-on="flyway">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 

@@ -1,9 +1,13 @@
 package org.motechproject.mds.testutil;
 
 import org.motechproject.commons.date.model.Time;
-import org.motechproject.mds.domain.AvailableType;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.dto.FieldBasicDto;
+import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.mds.web.domain.FieldRecord;
 
 import java.util.List;
 
@@ -27,7 +31,7 @@ public final class FieldTestHelper {
         // we only need the name, type and default value
         field.setName(name);
         field.setType(type);
-        field.setDefaultValue(type.format(defaultVal));
+        field.setDefaultValue(TypeHelper.format(defaultVal));
 
         return field;
     }
@@ -48,6 +52,21 @@ public final class FieldTestHelper {
         } else {
             return clazz.newInstance();
         }
+    }
+
+    public static FieldDto fieldDto(String name, String className, String displayName,
+                                    Object defValue) {
+        FieldDto fieldDto = new FieldDto();
+        fieldDto.setType(new TypeDto(className, "", className));
+        fieldDto.setBasic(new FieldBasicDto(displayName, name));
+        fieldDto.getBasic().setDefaultValue(defValue);
+        return fieldDto;
+    }
+
+    public static FieldRecord fieldRecord(String name, String className, String displayName,
+                                          Object value) {
+        TypeDto type = new TypeDto(className, "", className);
+        return new FieldRecord(name, displayName, value, type);
     }
 
     private FieldTestHelper() {

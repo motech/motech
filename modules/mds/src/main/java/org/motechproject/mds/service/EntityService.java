@@ -40,6 +40,8 @@ public interface EntityService {
     // TODO: replace with entity.getFields
     List<FieldDto> getFields(Long entityId);
 
+    List<FieldDto> getEntityFields(Long entityId);
+
     // TODO: replace with entity.findField
     FieldDto findFieldByName(Long entityId, String name);
 

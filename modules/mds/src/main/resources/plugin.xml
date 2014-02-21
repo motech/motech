@@ -3,4 +3,10 @@
     <extension point="org.datanucleus.classloader_resolver">
         <class-loader-resolver name="datanucleus" class-name="org.datanucleus.ClassLoaderResolverImpl"/>
     </extension>
+    <extension point="org.datanucleus.type_converter">
+        <type-converter name="dn.time-string"
+                        member-type="org.motechproject.commons.date.model.Time"
+                        datastore-type="java.lang.String"
+                        converter-class="org.motechproject.mds.jdo.TimeTypeConverter"/>
+    </extension>
 </plugin>

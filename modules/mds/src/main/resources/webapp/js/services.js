@@ -17,7 +17,6 @@
                 getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },
                 getField: { method: 'GET', params: {action: 'fields'} },
                 getEntity: { method: 'GET', params: {action: 'getEntity'}  },
-                selectInstance: { method: 'GET', params: {action: 'instance'}, isArray: true  },
                 draft: { method: 'POST', params: {action: 'draft' } },
                 abandon: { method: 'POST', params: {action: 'abandon' } },
                 commit: { method: 'POST', params: {action: 'commit' } },
@@ -32,7 +31,9 @@
             { id: '@id' },
             {
                 getHistory: { method: 'GET', params: { action: 'history' } },
-                getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true }
+                getPreviousVersion: { method: 'GET', params: { action: 'previousVersion' }, isArray: true },
+                newInstance: { method: 'GET', params: { action: 'new' }},
+                selectInstance: { method: 'GET', params: {action: 'instance'}}
             }
         );
     });

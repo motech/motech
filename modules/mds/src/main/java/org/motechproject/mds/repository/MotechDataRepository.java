@@ -1,5 +1,6 @@
 package org.motechproject.mds.repository;
 
+import org.motechproject.mds.util.Order;
 import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,6 +74,15 @@ public abstract class MotechDataRepository<T> {
         return cast(collection);
     }
 
+    public List<T> retrieveAll(long fromIncl, long toExcl, Order order) {
+        Query query = getPersistenceManager().newQuery(classType);
+        query.setRange(fromIncl, toExcl);
+        query.setOrdering(order.toString());
+        Collection collection = (Collection) query.execute();
+
+        return cast(collection);
+    }
+
     public T retrieve(String property, Object value) {
         return retrieve(new String[]{property}, new Object[]{value});
     }
@@ -81,7 +91,7 @@ public abstract class MotechDataRepository<T> {
         Query query = createQuery(properties, values);
         query.setUnique(true);
 
-        return classType.cast(query.executeWithArray(values));
+        return (T) query.executeWithArray(values);
     }
 
     public boolean exists(String property, Object value) {
@@ -93,9 +103,7 @@ public abstract class MotechDataRepository<T> {
     }
 
     public T update(T object) {
-        throw new UnsupportedOperationException(
-                "This method should be overridden by inherited class"
-        );
+        return getPersistenceManager().makePersistent(object);
     }
 
     public void delete(T object) {
@@ -129,24 +137,20 @@ public abstract class MotechDataRepository<T> {
         getPersistenceManager().deletePersistentAll(collection);
     }
 
+    public long count() {
+        Query query = getPersistenceManager().newQuery(classType);
+        query.setResult("count(this)");
+        return (long) query.execute();
+    }
+
     /**
-     * Converts the no generic collection into generic list with the given type. In the final list
-     * there will be only elements that pass the <code>instanceOf</code> test, other elements
-     * are ignored.
+     * Converts the no generic collection into generic list with the given type.
      *
      * @param collection an instance of {@link java.util.Collection} that contains objects.
      * @return a instance of {@link java.util.List} that contains object that are the given type.
      */
     protected List<T> cast(Collection collection) {
-        List<T> list = new ArrayList<>(collection.size());
-
-        for (Object obj : collection) {
-            if (classType.isInstance(obj)) {
-                list.add(classType.cast(obj));
-            }
-        }
-
-        return list;
+        return new ArrayList<T>(collection);
     }
 
     private Query createQuery(String[] properties, Object[] values) {

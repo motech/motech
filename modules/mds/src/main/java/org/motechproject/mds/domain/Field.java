@@ -8,6 +8,7 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
+import org.motechproject.mds.util.TypeHelper;
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -429,9 +430,8 @@ public class Field {
             FieldSetting setting = getSettingByName(settingDto.getName());
 
             if (setting != null) {
-                Type valueType = setting.getDetails().getValueType();
                 Object value = settingDto.getValue();
-                setting.setValue(valueType.format(value));
+                setting.setValue(TypeHelper.format(value));
             }
         }
     }

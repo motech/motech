@@ -46,7 +46,7 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     public String timeStr() {
-        return hour + ":" + minute;
+        return String.format("%02d:%02d", hour, minute);
     }
 
     public Integer getHour() {

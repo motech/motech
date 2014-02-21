@@ -1,6 +1,5 @@
 package org.motechproject.mds.web.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,15 +11,11 @@ public class Records<T> {
     private Integer records;
     private List<T> rows;
 
-    public Records(Integer page, Integer rows, List<T> list) {
-        if (page != null && rows != null) {
-            this.page = page;
-            records = list.size();
-            this.total = (this.records <= rows) ? 1 : (this.records / rows) + 1;
-            this.rows = new ArrayList<>(list.subList((page - 1) * rows, (page * rows > this.records ? this.records : page * rows)));
-        } else {
-            this.rows = list;
-        }
+    public Records(int page, int rows, List<T> list) {
+        this.page = page;
+        this.records = list.size();
+        this.total = rows;
+        this.rows = list;
     }
     public Records(List<T> list) {
         rows = list;

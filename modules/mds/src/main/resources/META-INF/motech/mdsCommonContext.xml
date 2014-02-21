@@ -52,7 +52,7 @@
         <property name="allowCreate" value="false"/>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+    <bean id="transactionManager" class="org.motechproject.mds.jdo.MdsTransactionManager">
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 </beans>

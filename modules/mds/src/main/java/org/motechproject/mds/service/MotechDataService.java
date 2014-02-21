@@ -1,5 +1,7 @@
 package org.motechproject.mds.service;
 
+import org.motechproject.mds.util.Order;
+
 import java.util.List;
 
 /**
@@ -20,9 +22,13 @@ public interface MotechDataService<T> {
 
     List<T> retrieveAll(int page, int onPage);
 
+    List<T> retrieveAll(int page, int onPage, Order order);
+
     T update(T object);
 
     void delete(T object);
 
     void delete(String primaryKeyName, Object value);
+
+    long count();
 }
