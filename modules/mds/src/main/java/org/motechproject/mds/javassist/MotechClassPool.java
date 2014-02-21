@@ -50,6 +50,10 @@ public final class MotechClassPool {
         return classData.values();
     }
 
+    public static void clearEnhancedData() {
+        classData.clear();
+    }
+
     private MotechClassPool() {
     }
 }

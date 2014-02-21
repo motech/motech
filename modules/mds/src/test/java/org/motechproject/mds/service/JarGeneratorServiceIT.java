@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.dto.EntityDto;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.osgi.web.util.BundleHeaders;
 import org.osgi.framework.BundleContext;
@@ -54,6 +55,8 @@ public class JarGeneratorServiceIT extends BaseIT {
 
     @Before
     public void setUp() throws Exception {
+        MotechClassPool.clearEnhancedData();
+
         entityService.createEntity(new EntityDto(null, SAMPLE));
         entityService.createEntity(new EntityDto(null, EXAMPLE));
         entityService.createEntity(new EntityDto(null, FOO));
