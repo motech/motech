@@ -1874,8 +1874,10 @@
             var entity;
 
             entity = Entities.get({id: $scope.selectedEntity.id },  function () {
-                $scope.selectedEntity.modified = entity.modified;
-                $scope.selectedEntity.outdated = entity.outdated;
+                if ($scope.selectedEntity) {
+                    $scope.selectedEntity.modified = entity.modified;
+                    $scope.selectedEntity.outdated = entity.outdated;
+                }
             });
         }, 5 * 1000);
     });
@@ -1900,6 +1902,8 @@
         * This variable is set after user clicks "View" button next to chosen entity
         */
         $scope.selectedEntity = undefined;
+
+        $scope.selectedFields = [];
 
         /**
         * Fields that belong to a certain lookup
@@ -1937,6 +1941,8 @@
         $scope.loadedFields = [];
 
         $scope.currentRecord = undefined;
+
+        $scope.allEntityFields = [];
 
         /**
         * Initializes a map of all entities in MDS indexed by module name
