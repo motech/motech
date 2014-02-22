@@ -101,6 +101,7 @@ class FieldProcessor extends AbstractListProcessor<Field, FieldDto> {
             field.setType(type);
             field.setBasic(basic);
             field.setValidation(createValidation(ac, type));
+            field.setReadOnly(true);
 
             add(field);
         } else {

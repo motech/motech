@@ -42,7 +42,7 @@
     </div>
     <div class="row margin-before" ui-if="selectedEntity">
         <div ng-include="'../mds/resources/partials/widgets/fields.html'"></div>
-        <div class="inside" ui-if="!selectedEntity.readOnly">
+        <div class="inside">
             <button class="btn btn-danger" ng-disabled="!selectedEntity.modified" ng-click="abandonChanges()">
                 <i class="icon-trash icon-white"></i> {{msg('mds.btn.abandonChanges')}}
             </button>

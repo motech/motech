@@ -514,7 +514,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         Type type = allTypes.retrieveByClassName(typeClass);
         Field field = new Field(
-                entity, basic.getDisplayName(), basic.getName(), basic.isRequired(),
+                entity, basic.getDisplayName(), basic.getName(), basic.isRequired(), fieldDto.isReadOnly(),
                 (String) basic.getDefaultValue(), basic.getTooltip(), null
         );
         field.setType(type);
@@ -579,6 +579,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     }
 
     @Override
+    @Transactional
     public void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions) {
         Entity entity = allEntities.retrieveById(entityDto.getId());
 

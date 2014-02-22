@@ -1,13 +1,13 @@
 <form class="form-horizontal">
     <div class="form-group" ng-repeat="criterion in field.validation.criteria" ng-class="{'has-error': validateCriterion(criterion, field.validation.criteria)}">
         <label class="col-md-2 col-sm-3">
-            <input type="checkbox" ng-disabled="selectedEntity.readOnly" mds-auto-save-field-change="click" mds-path="validation.criteria.{{$index}}.enabled" mds-field-id="{{field.id}}" ng-model="criterion.enabled">
+            <input type="checkbox" ng-disabled="field.readOnly" mds-auto-save-field-change="click" mds-path="validation.criteria.{{$index}}.enabled" mds-field-id="{{field.id}}" ng-model="criterion.enabled">
             {{msg(criterion.displayName)}}:
         </label>
         <div class="col-md-10 col-sm-9 form-inline" ng-switch on="getTypeSingleClassName(criterion.type)">
-            <input class="form-control input-large-fluid" ng-switch-when="integer" type="number" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="selectedEntity.readOnly||!criterion.enabled" />
-            <input class="form-control input-large-fluid" ng-switch-when="decimal" type="number" step="any" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}"  ng-model="criterion.value" ng-disabled="selectedEntity.readOnly||!criterion.enabled" />
-            <input class="form-control input-large-fluid" ng-switch-default type="text" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="selectedEntity.readOnly||!criterion.enabled" />
+            <input class="form-control input-large-fluid" ng-switch-when="integer" type="number" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" />
+            <input class="form-control input-large-fluid" ng-switch-when="decimal" type="number" step="any" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}"  ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" />
+            <input class="form-control input-large-fluid" ng-switch-default type="text" mds-auto-save-field-change mds-path="validation.criteria.{{$index}}.value" mds-field-id="{{field.id}}" ng-model="criterion.value" ng-disabled="field.readOnly||!criterion.enabled" />
             <span class="help-inline" ng-class="{hide: !validateCriterion(criterion, field.validation.criteria)}">
                 {{msg(validateCriterion(criterion, field.validation.criteria))}}
             </span>

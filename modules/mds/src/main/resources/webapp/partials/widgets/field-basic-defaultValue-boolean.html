@@ -1,6 +1,6 @@
 <label class="radio">
-    <input type="radio" ng-model="field.basic.defaultValue"  ng-value="1" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly"/> {{msg('mds.form.label.true')}}
+    <input type="radio" ng-model="field.basic.defaultValue"  ng-value="1" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"/> {{msg('mds.form.label.true')}}
 </label>
 <label class="radio offset-3">
-    <input type="radio" ng-model="field.basic.defaultValue"  ng-value="0" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly"/> {{msg('mds.form.label.false')}}
+    <input type="radio" ng-model="field.basic.defaultValue"  ng-value="0" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly"/> {{msg('mds.form.label.false')}}
 </label>
