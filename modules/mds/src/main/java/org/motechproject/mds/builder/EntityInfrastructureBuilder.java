@@ -1,5 +1,7 @@
 package org.motechproject.mds.builder;
 
+import org.motechproject.mds.domain.Entity;
+
 import java.util.List;
 
 /**
@@ -8,5 +10,5 @@ import java.util.List;
  */
 public interface EntityInfrastructureBuilder {
 
-    List<ClassData> buildInfrastructure(String entityClassName);
+    List<ClassData> buildInfrastructure(Entity entity);
 }

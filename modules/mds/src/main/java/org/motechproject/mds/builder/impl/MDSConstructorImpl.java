@@ -82,7 +82,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         MDSClassLoader.getInstance().defineClass(enhancedClassData);
 
         // build infrastructure classes such as services and repositories
-        buildInfrastructure(className);
+        buildInfrastructure(entity);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             MDSClassLoader.getInstance().defineClass(enhancedData);
 
             LOG.debug("Building infrastructure for {}", className);
-            buildInfrastructure(className);
+            buildInfrastructure(entity);
         }
     }
 
@@ -156,8 +156,8 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void buildInfrastructure(String className) {
-        List<ClassData> infrastructure = infrastructureBuilder.buildInfrastructure(className);
+    private void buildInfrastructure(Entity entity) {
+        List<ClassData> infrastructure = infrastructureBuilder.buildInfrastructure(entity);
         for (ClassData classData : infrastructure) {
             MDSClassLoader.getInstance().defineClass(classData);
         }
