@@ -74,6 +74,9 @@ public class Field {
     @Persistent
     private boolean uiFilterable;
 
+    @Persistent
+    private boolean readOnly;
+
     @Persistent(mappedBy = "field")
     @Element(dependent = "true")
     private List<FieldMetadata> metadata = new ArrayList<>();
@@ -94,15 +97,16 @@ public class Field {
     }
 
     public Field(Entity entity, String displayName, String name, Set<Lookup> lookups) {
-        this(entity, displayName, name, false, null, null, lookups);
+        this(entity, displayName, name, false, false, null, null, lookups);
     }
 
     public Field(Entity entity, String displayName, String name, boolean required,
-                 String defaultValue, String tooltip, Set<Lookup> lookups) {
+                 boolean readOnly, String defaultValue, String tooltip, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
         this.name = name;
         this.required = required;
+        this.readOnly = readOnly;
         this.defaultValue = defaultValue;
         this.tooltip = tooltip;
         this.lookups = null != lookups
@@ -141,7 +145,7 @@ public class Field {
             lookupDtos.add(lookup.toDto());
         }
 
-        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto(), basic, metaDto, validationDto, settingsDto, lookupDtos);
+        return new FieldDto(id, entity == null ? null : entity.getId(), type == null ? null : type.toDto(), basic, readOnly, metaDto, validationDto, settingsDto, lookupDtos);
     }
 
     public String getDisplayName() {
@@ -206,6 +210,14 @@ public class Field {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public List<FieldValidation> getValidations() {
@@ -324,6 +336,7 @@ public class Field {
         copy.setRequired(required);
         copy.setTooltip(tooltip);
         copy.setType(type);
+        copy.setReadOnly(readOnly);
         copy.setTracked(tracked);
         copy.setExposedViaRest(exposedViaRest);
         copy.setUIDisplayable(uiDisplayable);

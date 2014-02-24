@@ -64,7 +64,7 @@ public class FieldHelperTest {
         MetadataDto metadata = new MetadataDto("key", "val");
         ValidationCriterionDto criterion = new ValidationCriterionDto("criterionDispName", type);
         FieldValidationDto validation = new FieldValidationDto(criterion);
-        return new FieldDto(1L, 100L, type, basic, new ArrayList<>(asList(metadata)), validation, null, null);
+        return new FieldDto(1L, 100L, type, basic, false, new ArrayList<>(asList(metadata)), validation, null, null);
     }
 
     private AdvancedSettingsDto advancedSettingsDto() {

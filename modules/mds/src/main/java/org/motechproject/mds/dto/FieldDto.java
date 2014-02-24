@@ -18,22 +18,24 @@ public class FieldDto {
     private Long entityId;
     private TypeDto type;
     private FieldBasicDto basic;
+    private boolean readOnly;
     private List<MetadataDto> metadata;
     private FieldValidationDto validation;
     private List<SettingDto> settings;
     private List<LookupDto> lookups;
 
     public FieldDto() {
-        this(null, null, null, null, null, null, null, null);
+        this(null, null, null, null, false, null, null, null, null);
     }
 
-    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic,
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly,
                     List<MetadataDto> metadata, FieldValidationDto validation,
                     List<SettingDto> settings, List<LookupDto> lookups) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
         this.basic = basic;
+        this.readOnly = readOnly;
         this.validation = validation;
         this.metadata = CollectionUtils.isEmpty(metadata)
                 ? new LinkedList<MetadataDto>()
@@ -46,12 +48,13 @@ public class FieldDto {
                 : lookups;
     }
 
-    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, FieldValidationDto validation) {
+    public FieldDto(Long id, Long entityId, TypeDto type, FieldBasicDto basic, boolean readOnly, FieldValidationDto validation) {
         this.id = id;
         this.entityId = entityId;
         this.type = type;
         this.basic = basic;
         this.validation = validation;
+        this.readOnly = readOnly;
     }
 
     public Long getId() {
@@ -84,6 +87,14 @@ public class FieldDto {
 
     public void setBasic(FieldBasicDto basic) {
         this.basic = basic;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public void addEmptyMetadata() {

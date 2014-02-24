@@ -1,4 +1,4 @@
-<input class="form-control input-large-fluid" type="number" step="any" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="selectedEntity.readOnly">
+<input class="form-control input-large-fluid" type="number" step="any" ng-model="field.basic.defaultValue" mds-auto-save-field-change mds-field-id="{{field.id}}" ng-disabled="field.readOnly">
 <span class="help-inline" ng-class="{hide: checkDecimalValue(field.basic.defaultValue, field.settings)}">
     {{getInvalidDecimalMessage(field.settings)}}
 </span>

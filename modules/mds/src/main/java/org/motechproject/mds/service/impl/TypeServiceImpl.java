@@ -49,6 +49,7 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     }
 
     @Override
+    @Transactional
     public List<TypeValidation> findValidations(TypeDto type, Class<? extends Annotation> aClass) {
         Type found = allTypes.retrieveByClassName(type.getTypeClass());
         List<TypeValidation> list = null;

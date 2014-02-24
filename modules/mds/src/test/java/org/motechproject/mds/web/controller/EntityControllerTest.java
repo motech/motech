@@ -262,7 +262,7 @@ public class EntityControllerTest {
                 new FieldDto(
                         1L, 9005L, STRING,
                         new FieldBasicDto("ID", "ID", false, "pass", null),
-                        exampleMetadata, FieldValidationDto.STRING, null, null
+                        false, exampleMetadata, FieldValidationDto.STRING, null, null
                 )
         );
 
@@ -286,7 +286,7 @@ public class EntityControllerTest {
         FieldDto expected = new FieldDto(
                 1L, 9005L, STRING,
                 new FieldBasicDto("ID", "ID", false, "pass", null),
-                exampleMetadata, FieldValidationDto.STRING, null, null
+                false, exampleMetadata, FieldValidationDto.STRING, null, null
         );
 
         assertEquals(expected, controller.getFieldByName(9005L, "ID"));

@@ -5,7 +5,7 @@
             <div class="col-sm-3">{{msg('mds.table.schema.head.displayName')}}</div>
             <div class="col-sm-3">{{msg('mds.table.schema.head.name')}}</div>
             <div class="col-sm-4">{{msg('mds.table.schema.head.type')}}</div>
-            <div class="col-sm-1" ui-if="!selectedEntity.readOnly"></div>
+            <div class="col-sm-1"></div>
         </div>
     </div>
 
@@ -18,21 +18,21 @@
                 <i class="icon-warning-sign text-danger" ng-show="!validateField(field)"></i>
             </div>
             <div class="col-sm-3">
-                <span ui-if="selectedEntity.readOnly">{{field.basic.displayName}}</span>
-                <div mds-editable ui-if="!selectedEntity.readOnly">
+                <span ui-if="field.readOnly">{{field.basic.displayName}}</span>
+                <div mds-editable ui-if="!field.readOnly">
                     <span>{{field.basic.displayName}}</span>
                     <input class="form-control" style="display: none" type="text" ng-model="field.basic.displayName" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
                 </div>
             </div>
             <div class="col-sm-3">
-                <span ui-if="selectedEntity.readOnly">{{field.basic.name}}</span>
-                <div mds-editable ui-if="!selectedEntity.readOnly">
+                <span ui-if="field.readOnly">{{field.basic.name}}</span>
+                <div mds-editable ui-if="!field.readOnly">
                     <span>{{field.basic.name}}</span>
                     <input class="form-control" style="display: none" type="text" ng-model="field.basic.name" mds-camel-case="{{$index}}" mds-auto-save-field-change mds-field-id="{{field.id}}">
                 </div>
             </div>
             <div class="col-sm-4">{{msg(field.type.displayName)}}</div>
-            <div class="col-sm-1" ui-if="!selectedEntity.readOnly">
+            <div class="col-sm-1" ui-if="!field.readOnly">
                 <a class="btn btn-sm btn-danger" ng-click="removeField(field)">
                     <i class="icon-trash icon-large"></i>
                 </a>
@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    <div class="panel panel-default new-field" ui-if="!selectedEntity.readOnly">
+    <div class="panel panel-default new-field">
         <div class="panel-heading clearfix">
             <div class="col-sm-1 row"></div>
             <div class="col-sm-3" id="new-field-displayName" ng-class="{'has-error': tryToCreate && !newField.displayName}">
@@ -101,7 +101,7 @@
                     {{msg('mds.error.duplicateNames')}}
                 </span>
             </div>
-            <div class="col-sm-4" id="new-field-type"  ng-class="{'has-error': tryToCreate && !newField.type}">
+            <div class="col-sm-4" id="new-field-type" ng-class="{'has-error': tryToCreate && !newField.type}">
                 <input class="form-inline input-medium-fluid" type="hidden" ui-select2="SELECT_FIELD_TYPE_CONFIG" ng-model="newField.type" id="newField" class="select-field-type"/>
                 <span class="help-block" ng-class="{hide: !tryToCreate || newField.type}">
                     {{msg('mds.error.fieldIsRequired')}}
