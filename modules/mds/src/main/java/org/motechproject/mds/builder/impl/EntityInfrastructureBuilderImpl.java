@@ -4,11 +4,16 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import javassist.CtMethod;
 import javassist.CtNewConstructor;
+import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.MDSClassLoader;
+import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
@@ -37,24 +43,24 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private final ClassPool classPool = MotechClassPool.getDefault();
 
     @Override
-    public List<ClassData> buildInfrastructure(String entityClassName) {
+    public List<ClassData> buildInfrastructure(Entity entity) {
         List<ClassData> list = new ArrayList<>();
 
-        String repositoryClassName = ClassName.getRepositoryName(entityClassName);
+        String repositoryClassName = ClassName.getRepositoryName(entity.getClassName());
         if (!existsInClassPath(repositoryClassName)) {
-            byte[] repositoryCode = getRepositoryCode(repositoryClassName, entityClassName);
+            byte[] repositoryCode = getRepositoryCode(repositoryClassName, entity.getClassName());
             list.add(new ClassData(repositoryClassName, repositoryCode));
         }
 
-        String interfaceClassName = ClassName.getInterfaceName(entityClassName);
+        String interfaceClassName = ClassName.getInterfaceName(entity.getClassName());
         if (!existsInClassPath(interfaceClassName)) {
-            byte[] interfaceCode = getInterfaceCode(interfaceClassName, entityClassName);
+            byte[] interfaceCode = getInterfaceCode(interfaceClassName, entity.getClassName(), entity);
             list.add(new ClassData(interfaceClassName, interfaceCode));
         }
 
-        String serviceClassName = ClassName.getServiceName(entityClassName);
+        String serviceClassName = ClassName.getServiceName(entity.getClassName());
         if (!existsInClassPath(serviceClassName)) {
-            byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entityClassName);
+            byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entity);
             list.add(new ClassData(serviceClassName, serviceCode));
         }
 
@@ -87,34 +93,48 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             CtConstructor constructor = CtNewConstructor.make(constructorAsString, subClass);
 
             subClass.addConstructor(constructor);
+
             return subClass.toBytecode();
         } catch (NotFoundException | CannotCompileException | IOException e) {
             throw new EntityInfrastructureException(e);
         }
     }
 
-    private byte[] getInterfaceCode(String interfaceClassName, String typeName) {
+    private byte[] getInterfaceCode(String interfaceClassName, String typeName, Entity entity) {
         try {
             CtClass superInterface = classPool.getCtClass(SERVICE_BASE_CLASS);
             superInterface.setGenericSignature(getGenericSignature(typeName));
 
-            return classPool.makeInterface(interfaceClassName, superInterface).toBytecode();
+            CtClass newInterface = classPool.makeInterface(interfaceClassName, superInterface);
+
+            for (Lookup lookup : entity.getLookups()) {
+                CtMethod lookupMethod = CtNewMethod.make(generateLookupInterface(lookup, entity.getClassName()), newInterface);
+                newInterface.addMethod(lookupMethod);
+            }
+
+            return newInterface.toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
             throw new EntityInfrastructureException(e);
         }
     }
 
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
-                                  String typeName) {
+                                  Entity entity) {
         try {
             CtClass superClass = classPool.getCtClass(SERVICE_IMPL_BASE_CLASS);
-            superClass.setGenericSignature(getGenericSignature(typeName));
+            superClass.setGenericSignature(getGenericSignature(entity.getClassName()));
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);
 
             CtClass subClass = classPool.makeClass(serviceClassName);
             subClass.setSuperclass(superClass);
+
             subClass.addInterface(serviceInterface);
+
+            for (Lookup lookup : entity.getLookups()) {
+                CtMethod lookupMethod = CtNewMethod.make(generateLookup(lookup, entity.getClassName()), subClass);
+                subClass.addMethod(lookupMethod);
+            }
 
             return subClass.toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
@@ -129,4 +149,73 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         return sig.encode();
     }
+
+    private String generateLookupInterface(Lookup lookup, String className) {
+        StringBuilder sb = new StringBuilder("");
+
+        if (lookup.isSingleObjectReturn()) {
+            sb.append(className);
+        } else {
+            sb.append("java.util.List");
+        }
+        sb.append(" ").append(lookup.getLookupName()).append("(");
+
+        Iterator it = lookup.getFields().iterator();
+        while (it.hasNext()) {
+            Field field = (Field) it.next();
+            sb.append(field.getType().getTypeClassName()).append(" ").append(field.getDisplayName());
+
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        sb.append(");");
+
+        return sb.toString();
+    }
+
+    private String generateLookup(Lookup lookup, String className) {
+        StringBuilder sb = new StringBuilder("public ");
+        StringBuilder paramsSb = new StringBuilder("new java.lang.String[] {");
+        StringBuilder valuesSb = new StringBuilder("new java.lang.Object[] {");
+
+        if (lookup.isSingleObjectReturn()) {
+            sb.append(className);
+        } else {
+            sb.append("java.util.List");
+        }
+        sb.append(" ").append(lookup.getLookupName()).append("(");
+
+        Iterator it = lookup.getFields().iterator();
+        while (it.hasNext()) {
+            Field field = (Field) it.next();
+
+            paramsSb.append("\"").append(field.getDisplayName()).append("\"");
+
+            valuesSb.append(field.getDisplayName());
+
+            sb.append(field.getType().getTypeClassName()).append(" ").append(field.getDisplayName());
+
+            if (it.hasNext()) {
+                sb.append(", ");
+                paramsSb.append(", ");
+                valuesSb.append(", ");
+            }
+        }
+        paramsSb.append("}");
+        valuesSb.append("}");
+        sb.append(") {return ");
+
+        if (lookup.isSingleObjectReturn()) {
+            sb.append("(").append(className).append(")");
+        }
+
+        sb.append("retrieveAll(").append(paramsSb.toString()).append(", ").append(valuesSb.toString()).append(")");
+        if (lookup.isSingleObjectReturn()) {
+            sb.append(".get(0)");
+        }
+        sb.append(";}");
+        return sb.toString();
+    }
+
 }

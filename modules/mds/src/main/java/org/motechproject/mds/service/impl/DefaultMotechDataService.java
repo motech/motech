@@ -39,6 +39,11 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.retrieveAll();
     }
 
+    @Transactional
+    protected List<T> retrieveAll(String[] parameters, Object[] values) {
+        return repository.retrieveAll(parameters, values);
+    }
+
     @Override
     @Transactional
     public List<T> retrieveAll(int page, int rows) {
