@@ -33,6 +33,9 @@ public class Lookup {
     @Persistent
     private Entity entity;
 
+    @Persistent
+    private boolean readOnly;
+
     @Persistent(table = "LookupFields")
     @Join
     private List<Field> fields;
@@ -42,10 +45,15 @@ public class Lookup {
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fields, false);
+    }
+
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fields = fields;
+        this.readOnly = readOnly;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -67,7 +75,7 @@ public class Lookup {
                 fieldNames.add(field.getName());
             }
         }
-        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest, fieldIds, fieldNames);
+        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest, fieldIds, fieldNames, readOnly);
     }
 
     public Long getId() {
@@ -118,6 +126,14 @@ public class Lookup {
         this.fields = fields;
     }
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
     public Lookup copy(List<Field> fields) {
         List<Field> lookupFields = new ArrayList<>();
         for (Field field : fields) {
@@ -127,7 +143,7 @@ public class Lookup {
                 }
             }
         }
-        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields);
+        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {

@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
+import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
@@ -275,9 +276,9 @@ public class InstanceServiceTest {
     }
 
     private void mockLookups() {
-        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true, asList(1L), asList("strField"));
+        LookupDto lookup = new LookupDto(TestDataService.LOOKUP_1_NAME, true, true, asList(1L), asList("strField"), false);
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_1_NAME)).thenReturn(lookup);
-        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true, asList(1L), asList("strField"));
+        lookup = new LookupDto(TestDataService.LOOKUP_2_NAME, false, true, asList(1L), asList("strField"), false);
         when(entityService.getLookupByName(ENTITY_ID, TestDataService.LOOKUP_2_NAME)).thenReturn(lookup);
     }
 

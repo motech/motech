@@ -7,7 +7,7 @@
             <div class="panel-body">
                 <form class="form-horizontal">
                     <label class="checkbox" ng-repeat="field in fields">
-                        <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
+                        <input type="checkbox" ng-checked="advancedSettings.tracking.fields.indexOf(field.id) > -1" ng-click="addFieldToLog(field)"> {{ field.basic.displayName }}
                     </label>
                 </form>
             </div>
@@ -21,7 +21,7 @@
             <div class="panel-body">
                 <form class="form-horizontal">
                     <label class="checkbox" ng-repeat="action in ['CREATE', 'READ', 'UPDATE', 'DELETE']">
-                        <input type="checkbox" ng-disabled="selectedEntity.readOnly" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
+                        <input type="checkbox" ng-checked="advancedSettings.tracking.actions.indexOf(action) > -1" ng-click="addActionToLog(action)"> {{msg('mds.logAction.' + action.toLowerCase())}}
                     </label>
                 </form>
             </div>

@@ -19,22 +19,23 @@ public class LookupDto {
     private boolean exposedViaRest;
     private List<Long> fieldList;
     private List<String> fieldNames;
+    private boolean readOnly;
 
     public LookupDto() {
         this(null, false, false);
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest) {
-        this(lookupName, singleObjectReturn, exposedViaRest, null);
+        this(lookupName, singleObjectReturn, exposedViaRest, null, false);
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<Long> fieldList) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null);
+                     List<Long> fieldList, boolean readOnly) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly);
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Long> fieldList,
-                     List<String> fieldNames) {
+                     List<String> fieldNames, boolean readOnly) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -44,11 +45,12 @@ public class LookupDto {
         this.fieldNames = CollectionUtils.isEmpty(fieldNames)
                 ? new LinkedList<String>()
                 : fieldNames;
+        this.readOnly = readOnly;
     }
 
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<Long> fieldList, List<String> fieldNames) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames);
+                     List<Long> fieldList, List<String> fieldNames, boolean readOnly) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames, readOnly);
         this.id = id;
     }
 
@@ -126,6 +128,14 @@ public class LookupDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     /**

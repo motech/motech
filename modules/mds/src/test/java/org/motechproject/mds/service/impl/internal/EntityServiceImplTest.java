@@ -92,7 +92,7 @@ public class EntityServiceImplTest {
     public void shouldAddNewLookup() {
         // given
         long entityId = 1L;
-        LookupDto lookupDto = new LookupDto("lookupName", true, false, null);
+        LookupDto lookupDto = new LookupDto("lookupName", true, false, null, false);
         lookupDto.getFieldNames().add("zero");
         lookupDto.getFieldNames().add("two");
 
@@ -143,7 +143,7 @@ public class EntityServiceImplTest {
     public void shouldUpdateExistingLookup() {
         // given
         long entityId = 1L;
-        LookupDto lookupDto = new LookupDto("lookupName", true, false, null);
+        LookupDto lookupDto = new LookupDto("lookupName", true, false, null, false);
         lookupDto.getFieldNames().add("zero");
         lookupDto.getFieldNames().add("two");
         Lookup lookup = new Lookup();

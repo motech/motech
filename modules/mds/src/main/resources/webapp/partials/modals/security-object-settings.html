@@ -11,29 +11,29 @@
                 <div class="security-content">
                     <div class="form-group">
                         <label class="radio-button">
-                            <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.securityMode" value="EVERYONE" mds-callback="accessChanged('EVERYONE')"/>
-                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('EVERYONE')">{{msg('mds.security.everyone')}}</span>
+                            <input type="radio" ng-model="securitySettings.securityMode" value="EVERYONE" mds-callback="accessChanged('EVERYONE')"/>
+                            <span ng-class="getClass('EVERYONE')">{{msg('mds.security.everyone')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
-                            <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.securityMode" value="OWNER" mds-callback="accessChanged('OWNER')"/>
-                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('OWNER')">{{msg('mds.security.owner')}}</span>
+                            <input type="radio" ng-model="securitySettings.securityMode" value="OWNER" mds-callback="accessChanged('OWNER')"/>
+                            <span ng-class="getClass('OWNER')">{{msg('mds.security.owner')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
-                            <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.securityMode" value="CREATOR" mds-callback="accessChanged('CREATOR')"/>
-                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('CREATOR')">{{msg('mds.security.creator')}}</span>
+                            <input type="radio" ng-model="securitySettings.securityMode" value="CREATOR" mds-callback="accessChanged('CREATOR')"/>
+                            <span ng-class="getClass('CREATOR')">{{msg('mds.security.creator')}}</span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label class="radio-button">
-                            <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.securityMode" value="USERS" mds-callback="accessChanged('USERS')"/>
-                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('USERS')">{{msg('mds.security.users')}}</span>
+                            <input type="radio" ng-model="securitySettings.securityMode" value="USERS" mds-callback="accessChanged('USERS')"/>
+                            <span ng-class="getClass('USERS')">{{msg('mds.security.users')}}</span>
                         </label>
 
                         <button class="btn btn-danger" ng-click="clearUsers()" ng-show="securitySettings.securityMode==='USERS'" ng-disabled="securitySettings.users.length === 0">{{msg('mds.security.clear')}}</button>
@@ -47,8 +47,8 @@
 
                     <div class="form-group">
                         <label class="radio-button">
-                            <input ng-disabled="selectedEntity.readOnly" type="radio" ng-model="securitySettings.securityMode" value="ROLES" mds-callback="accessChanged('ROLES')"/>
-                            <span ng-disabled="selectedEntity.readOnly" ng-class="getClass('ROLES')">{{msg('mds.security.roles')}}</span>
+                            <input type="radio" ng-model="securitySettings.securityMode" value="ROLES" mds-callback="accessChanged('ROLES')"/>
+                            <span ng-class="getClass('ROLES')">{{msg('mds.security.roles')}}</span>
                         </label>
 
                         <button class="btn btn-danger" ng-click="clearRoles()" ng-show="securitySettings.securityMode==='ROLES'" ng-disabled="securitySettings.roles.length === 0">{{msg('mds.security.clear')}}</button>
