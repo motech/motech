@@ -94,19 +94,17 @@ public class TasksBundleIT extends BaseOsgiIT {
         assertEquals(fromDB, fromFile);
     }
 
-    public void ignoredTestChannelRegistration() throws BundleException, InterruptedException {
+
+
+    public void testChannelRegistrationAndDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException, InterruptedException {
+        TaskService taskService = getService(TaskService.class);
+
         String moduleName = "motech-tasks-test-bundle";
 
         ChannelService channelService = getService(ChannelService.class);
 
         Channel channel = channelService.getChannel(moduleName);
         assertNotNull(channel);
-    }
-
-    public void testChannelDeregistrationAndTaskDeActivationWhenBundleStops() throws BundleException, InterruptedException {
-        TaskService taskService = getService(TaskService.class);
-
-        String moduleName = "motech-tasks-test-bundle";
 
         TaskEventInformation trigger = new TaskEventInformation("Test Task", "testChannel", moduleName, "0.1", "triggerEvent");
         Task task = new Task("testTask", trigger, asList(new TaskActionInformation("Test Action", "testChannel", moduleName, "0.1", "actionEvent")), null, true, true);
@@ -115,8 +113,8 @@ public class TasksBundleIT extends BaseOsgiIT {
         Bundle module = findBundleByName(moduleName);
         module.stop();
 
-        ChannelService channelService = getService(ChannelService.class);
-        Channel channel = channelService.getChannel(moduleName);
+        channelService = getService(ChannelService.class);
+        channel = channelService.getChannel(moduleName);
         assertNull(channel);
 
         for (int i = 0; i < TRIES_COUNT; i++) {
