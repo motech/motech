@@ -4,7 +4,6 @@ package org.motechproject.mds.web;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.motechproject.mds.dto.AccessOptions;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.BrowsingSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
@@ -14,7 +13,6 @@ import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
-import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.dto.TypeDto;
@@ -63,7 +61,6 @@ public class ExampleData {
     private List<FieldInstanceDto> instanceFields = new ArrayList<>();
     private List<TypeDto> types = new ArrayList<>();
     private List<AdvancedSettingsDto> advancedSettings = new ArrayList<>();
-    private List<SecuritySettingsDto> securitySettings = new ArrayList<>();
     private List<EntityRecord> entityRecords = new ArrayList<>();
     private List<HistoryRecord> entityHistory = new ArrayList<>();
     private List<PreviousRecord> entityRecordsHistory = new ArrayList<>();
@@ -72,7 +69,6 @@ public class ExampleData {
     private Map<TypeDto, FieldValidationDto> typeValidation = new HashMap<>();
 
     private Map<Long, AdvancedSettingsDto> advancedHistory = new HashMap<>();
-    private Map<Long, SecuritySettingsDto> securityHistory = new HashMap<>();
     private Map<Long, Map<Long, FieldDto>> fieldsHistory = new HashMap<>();
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -173,13 +169,6 @@ public class ExampleData {
         exampleAdvancedSetting.setEntityId(7L);
         exampleAdvancedSetting.setRestOptions(exampleRestOptions);
         advancedSettings.add(exampleAdvancedSetting);
-
-        SecuritySettingsDto exampleSecuritySettings = new SecuritySettingsDto();
-        exampleSecuritySettings.setId(securitySettings.size() + 1L);
-        exampleSecuritySettings.setEntityId(7L);
-        exampleSecuritySettings.setAccess(AccessOptions.ROLES);
-        exampleSecuritySettings.addRole("User Admin");
-        securitySettings.add(exampleSecuritySettings);
 
         instanceFields.add(new FieldInstanceDto(1L, 1L, new FieldBasicDto("Date", "date")));
         instanceFields.add(new FieldInstanceDto(2L, 1L, new FieldBasicDto("User", "user")));
@@ -334,42 +323,6 @@ public class ExampleData {
         return found;
     }
 
-    public SecuritySettingsDto getSecurity(Long entityId) {
-        SecuritySettingsDto found = clone(SecuritySettingsDto.class, getPurgeSecurity(entityId));
-
-        if (securityHistory.containsKey(entityId)) {
-            SecuritySettingsDto temporary = securityHistory.get(entityId);
-            found.setId(temporary.getId());
-            found.setEntityId(temporary.getEntityId());
-            found.setAccess(temporary.getAccess());
-            found.setUsers(temporary.getUsers());
-            found.setRoles(temporary.getRoles());
-        }
-
-        return found;
-    }
-
-    private SecuritySettingsDto getPurgeSecurity(Long entityId) {
-        SecuritySettingsDto found = null;
-        for (SecuritySettingsDto item : securitySettings) {
-            if (item.getEntityId().equals(entityId)) {
-                found = item;
-                break;
-            }
-        }
-
-        if (null == found) {
-            found = new SecuritySettingsDto();
-            found.setId(securitySettings.size() + 1L);
-            found.setEntityId(entityId);
-            found.setAccess(AccessOptions.EVERYONE);
-
-            securitySettings.add(found);
-        }
-
-        return found;
-    }
-
     public TypeDto getType(String typeClass) {
         TypeDto found = null;
 
@@ -443,13 +396,6 @@ public class ExampleData {
                 );
             }
             start = advancedHistory.get(entityId);
-        } else if (editSecurity) {
-            if (!securityHistory.containsKey(entityId)) {
-                securityHistory.put(
-                        entityId, clone(SecuritySettingsDto.class, getPurgeSecurity(entityId))
-                );
-            }
-            start = securityHistory.get(entityId);
         } else {
             if (!fieldsHistory.containsKey(entityId)) {
                 fieldsHistory.put(entityId, new HashMap<Long, FieldDto>());
@@ -511,14 +457,6 @@ public class ExampleData {
         if (advancedHistory.containsKey(entityId)) {
             AdvancedSettingsDto current = getPurgeAdvanced(entityId);
             AdvancedSettingsDto temporary = advancedHistory.get(entityId);
-
-            if (!temporary.equals(current)) {
-                return true;
-            }
-        }
-        if (securityHistory.containsKey(entityId)) {
-            SecuritySettingsDto current = getPurgeSecurity(entityId);
-            SecuritySettingsDto temporary = securityHistory.get(entityId);
 
             if (!temporary.equals(current)) {
                 return true;
@@ -590,24 +528,12 @@ public class ExampleData {
             current.setBrowsing(clone(BrowsingSettingsDto.class, temporary.getBrowsing()));
         }
 
-        if (securityHistory.containsKey(entityId)) {
-            SecuritySettingsDto current = getPurgeSecurity(entityId);
-            SecuritySettingsDto temporary = securityHistory.get(entityId);
-
-            current.setId(temporary.getId());
-            current.setEntityId(temporary.getEntityId());
-            current.setAccess(temporary.getAccess());
-            current.setUsers(temporary.getUsers());
-            current.setRoles(temporary.getRoles());
-        }
-
         abandonChanges(entityId);
     }
 
     public void abandonChanges(Long entityId) {
         fieldsHistory.remove(entityId);
         advancedHistory.remove(entityId);
-        securityHistory.remove(entityId);
     }
 
     private <T> T clone(Class<T> clazz, Object obj) {

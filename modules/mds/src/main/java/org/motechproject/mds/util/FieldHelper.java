@@ -21,8 +21,6 @@ public final class FieldHelper {
     }
 
     private static void setFieldOnTarget(Object target, String property, List value) {
-        Class clazz = target.getClass();
-
         try {
             if (property.startsWith("$")) {
                 String methodName = property.substring(1);
@@ -43,9 +41,6 @@ public final class FieldHelper {
                 if (descriptor == null) {
                     throw new IllegalStateException("Property [" + property + "] not available on class: "
                             + target.getClass().getName());
-                } else if (descriptor.getPropertyType().isEnum()) {
-                    Enum enumValue = Enum.valueOf(clazz, (String) value.get(0));
-                    PropertyUtils.setProperty(target, property, enumValue);
                 } else {
                     PropertyUtils.setProperty(target, property, value.get(0));
                 }

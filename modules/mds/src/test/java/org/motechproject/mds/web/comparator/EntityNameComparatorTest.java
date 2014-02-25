@@ -1,6 +1,7 @@
 package org.motechproject.mds.web.comparator;
 
 import org.junit.Test;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.EntityDto;
 
 import static org.junit.Assert.assertTrue;

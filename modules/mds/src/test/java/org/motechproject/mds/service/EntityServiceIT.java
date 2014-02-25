@@ -7,6 +7,7 @@ import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
@@ -138,8 +139,8 @@ public class EntityServiceIT extends BaseIT {
 
     @Test
     public void shouldRetrieveAllEntities() throws IOException {
-        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null));
-        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_2, null, null, SecurityMode.EVERYONE, null));
+        entityService.createEntity(new EntityDto(null, null, SIMPLE_NAME_3, null, null, SecurityMode.EVERYONE, null));
 
         List<EntityDto> result = entityService.listEntities();
 

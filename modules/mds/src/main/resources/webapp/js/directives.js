@@ -1251,47 +1251,6 @@
         };
     });
 
-    /*
-    * Add auto saving for security properties.
-    */
-    mds.directive('mdsAutoSaveSecurityChange', function (Entities) {
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: function (scope, element, attr, ngModel) {
-                var func = attr.mdsAutoSaveAdvancedChange || 'focusout',
-                    callback = attr.mdsCallback;
-
-                angular.element(element).on(func, function () {
-                    var viewScope = findCorrentScope(scope, 'draft'),
-                        securityPath = attr.mdsPath,
-                        entity,
-                        value;
-
-                    if (securityPath === undefined) {
-                        securityPath = attr.ngModel;
-                        securityPath = securityPath.substring(securityPath.indexOf('.') + 1);
-                    }
-
-                    value = _.isBoolean(ngModel.$modelValue)
-                        ? !ngModel.$modelValue
-                        : ngModel.$modelValue;
-
-                    viewScope.draft({
-                        edit: true,
-                        values: {
-                            path: securityPath,
-                            security: true,
-                            value: [value]
-                        }
-                    }, function () {
-                        scope.$eval(callback);
-                    });
-                });
-            }
-        };
-    });
-
     mds.directive('innerlayout', function() {
         return {
             restrict: 'EA',

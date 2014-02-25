@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.TestData;
-import org.motechproject.mds.dto.AccessOptions;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -16,7 +16,6 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.RestOptionsDto;
-import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
@@ -77,12 +76,6 @@ public class EntityControllerTest {
                 return exampleData.getFields((Long) invocation.getArguments()[0]);
             }
         });
-        when(entityService.getSecuritySettings(anyLong())).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return exampleData.getSecurity((Long) invocation.getArguments()[0]);
-            }
-        });
         when(entityService.findFieldByName(anyLong(), anyString())).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -101,14 +94,14 @@ public class EntityControllerTest {
     @Test
     public void shouldReturnRecordsSortedByName() throws Exception {
         List<EntityDto> expected = new ArrayList<>();
-        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API"));
-        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API"));
-        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign"));
-        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio"));
-        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra"));
-        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio"));
-        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra"));
-        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher"));
+        expected.add(new EntityDto(9005L, "org.motechproject.appointments.api.model.Appointment", "MOTECH Appointments API", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9006L, "org.motechproject.ivr.domain.CallDetailRecord", "MOTECH IVR API", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9008L, "org.motechproject.messagecampaign.domain.campaign.Campaign", "MOTECH Message Campaign", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9001L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9003L, "org.motechproject.openmrs.ws.resource.model.Patient", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9002L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "navio", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9004L, "org.motechproject.openmrs.ws.resource.model.Person", "MOTECH OpenMRS Web Services", "accra", SecurityMode.EVERYONE, null));
+        expected.add(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null));
 
         SelectResult<EntityDto> result = controller.getEntities(new SelectData(null, 1, 10));
 
@@ -118,7 +111,7 @@ public class EntityControllerTest {
 
     @Test
     public void shouldReturnEntityById() throws Exception {
-        assertEquals(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher"), controller.getEntity(9007L));
+        assertEquals(new EntityDto(9007L, "org.motechproject.mds.entity.Voucher", SecurityMode.EVERYONE, null), controller.getEntity(9007L));
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -151,8 +144,8 @@ public class EntityControllerTest {
 
     @Test
     public void shouldCreateNewEntity() throws Exception {
-        EntityDto given = new EntityDto(11L, "Test");
-        EntityDto expected = new EntityDto(9L, "Test");
+        EntityDto given = new EntityDto(11L, "Test", SecurityMode.EVERYONE, null);
+        EntityDto expected = new EntityDto(9L, "Test", SecurityMode.EVERYONE, null);
 
         doReturn(expected).when(entityService).createEntity(given);
         doReturn(expected).when(entityService).getEntityForEdit(9L);
@@ -165,7 +158,7 @@ public class EntityControllerTest {
     public void shouldThrowExceptionIfEntityWithGivenNameExists() throws Exception {
         doThrow(new EntityAlreadyExistException()).when(entityService).createEntity(any(EntityDto.class));
 
-        controller.saveEntity(new EntityDto(7L, "Voucher"));
+        controller.saveEntity(new EntityDto(7L, "Voucher", SecurityMode.EVERYONE, null));
     }
 
     @Ignore("Ignored until we get fields from database")
@@ -313,17 +306,6 @@ public class EntityControllerTest {
         expected.setRestOptions(restOptions);
 
         assertEquals(expected, controller.getAdvanced(7L));
-    }
-
-    @Test
-    public void shouldGetSecuritySettingsForEntity() throws Exception {
-        SecuritySettingsDto expected = new SecuritySettingsDto();
-        expected.setId(1L);
-        expected.setEntityId(7L);
-        expected.setAccess(AccessOptions.ROLES);
-        expected.addRole("User Admin");
-
-        assertEquals(expected, controller.getSecurity(7L));
     }
 
     private FieldDto findFieldById(List<FieldDto> fields, Long id) {

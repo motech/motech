@@ -5,7 +5,6 @@ import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.SelectData;
@@ -183,13 +182,6 @@ public class EntityController extends MdsController {
     @ResponseBody
     public AdvancedSettingsDto getAdvanced(@PathVariable final Long entityId) {
         return entityService.getAdvancedSettings(entityId);
-    }
-
-    @RequestMapping(value = "/entities/{entityId}/security", method = RequestMethod.GET)
-    @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
-    @ResponseBody
-    public SecuritySettingsDto getSecurity(@PathVariable final Long entityId) {
-        return entityService.getSecuritySettings(entityId);
     }
 
     @Autowired

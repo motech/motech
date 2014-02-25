@@ -44,6 +44,31 @@ LOCK TABLES "Entity" WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table "Entity_securityMembers"
+--
+
+DROP TABLE IF EXISTS "Entity_securityMembers";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "Entity_securityMembers" (
+  "Entity_OID" bigint(20) NOT NULL,
+  "SecurityMember" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  PRIMARY KEY ("Entity_OID","SecurityMember"),
+  KEY "Entity_securityMembers_N49" ("Entity_OID"),
+  CONSTRAINT "Entity_securityMembers_FK1" FOREIGN KEY ("Entity_OID") REFERENCES "Entity" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "Entity_securityMembers"
+--
+
+LOCK TABLES "Entity_securityMembers" WRITE;
+/*!40000 ALTER TABLE "Entity_securityMembers" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Entity_securityMembers" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table "Field"
 --
 
