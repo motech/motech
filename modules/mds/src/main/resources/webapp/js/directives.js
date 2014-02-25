@@ -970,7 +970,8 @@
                         scope.$watch("lookupRefresh", function () {
                             $('#' + attrs.id).jqGrid('setGridParam', {
                                 postData: {
-                                    fields: JSON.stringify(scope.lookupBy)
+                                    fields: JSON.stringify(scope.lookupBy),
+                                    lookup: (scope.selectedLookup) ? scope.selectedLookup.lookupName : ""
                                 }
                             }).trigger('reloadGrid');
                         });

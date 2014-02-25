@@ -2,6 +2,7 @@ package org.motechproject.mds.service.impl.internal;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -10,7 +11,11 @@ import org.motechproject.mds.builder.MDSClassLoader;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
+import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.ex.EntityNotFoundException;
+import org.motechproject.mds.ex.FieldNotFoundException;
+import org.motechproject.mds.ex.LookupExecutionException;
+import org.motechproject.mds.ex.LookupNotFoundException;
 import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.ex.ObjectReadException;
 import org.motechproject.mds.ex.ObjectUpdateException;
@@ -20,7 +25,8 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
-import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -38,8 +44,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Default implementation of the {@link org.motechproject.mds.service.InstanceService} interface.
@@ -95,42 +104,54 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
 
     @Override
     @Transactional
-    public List<EntityRecord> getEntityRecordsPaged(Long entityId, int page, int rows, Order order) {
-        return retrieveRecords(entityId, page, rows, order);
+    public List<EntityRecord> getEntityRecords(Long entityId) {
+        return getEntityRecords(entityId, null);
     }
 
     @Override
     @Transactional
-    public List<EntityRecord> getEntityRecords(Long entityId) {
-        return retrieveRecords(entityId, null, null, null);
-    }
-
-    private List<EntityRecord> retrieveRecords(Long entityId, Integer page, Integer rows, Order order) {
-        EntityDto entity = entityService.getEntity(entityId);
-
-        assertEntityExists(entity);
-
+    public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
         List<FieldDto> fields = entityService.getFields(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
 
-        List list;
+        List instances = service.retrieveAll(queryParams);
 
-        if (page == null || rows == null) {
-            list = service.retrieveAll();
-        } else if (order == null) {
-            list = service.retrieveAll(page, rows);
-        } else {
-            list = service.retrieveAll(page, rows, order);
+        return instancesToRecords(instances, entity, fields);
+    }
+
+    @Override
+    @Transactional
+    public List<EntityRecord> getEntityRecordsFromLookup(Long entityId, String lookupName, Map<String, String> lookupMap,
+                                                         QueryParams queryParams) {
+        EntityDto entity = getEntity(entityId);
+        LookupDto lookup = getLookupByName(entityId, lookupName);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        List<Object> args = getLookupArgs(lookup, fields, lookupMap);
+
+        // we pass on the query params last
+        args.add(queryParams);
+
+        try {
+            String methodName = LookupName.lookupMethod(lookupName);
+
+            Object result = MethodUtils.invokeMethod(service, methodName, args.toArray(new Object[args.size()]));
+
+            if (lookup.isSingleObjectReturn()) {
+                EntityRecord record = instanceToRecord(result, entity, fields);
+                return (record == null) ? new ArrayList<EntityRecord>() : Arrays.asList(record);
+            } else {
+                List instances = (List) result;
+                return instancesToRecords(instances, entity, fields);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            LOG.error("Error while executing lookup " + lookupName, e);
+            throw new LookupExecutionException(e);
         }
-
-        List<EntityRecord> records = new ArrayList<>();
-        for (Object instance : list) {
-            EntityRecord record = instanceToRecord(instance, entity, fields);
-            records.add(record);
-        }
-
-        return records;
     }
 
     @Override
@@ -141,6 +162,27 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         MotechDataService service = getServiceForEntity(entity);
 
         return service.count();
+    }
+
+
+    @Override
+    @Transactional
+    public long countRecordsByLookup(Long entityId, String lookupName, Map<String, String> lookupMap) {
+        EntityDto entity = getEntity(entityId);
+        LookupDto lookup = getLookupByName(entityId, lookupName);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
+        String methodName = LookupName.lookupCountMethod(lookupName);
+
+        List<Object> args = getLookupArgs(lookup, fields, lookupMap);
+
+        MotechDataService service = getServiceForEntity(entity);
+
+        try {
+            return (long) MethodUtils.invokeMethod(service, methodName, args.toArray());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            LOG.error("Unable to execute count lookup " + lookupName, e);
+            throw new LookupExecutionException(e);
+        }
     }
 
     @Override
@@ -174,6 +216,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     }
 
     @Override
+    @Transactional
     public EntityRecord newInstance(Long entityId) {
         List<FieldDto> fields = entityService.getEntityFields(entityId);
         List<FieldRecord> fieldRecords = new ArrayList<>();
@@ -186,6 +229,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     }
 
     @Override
+    @Transactional
     public EntityRecord getEntityInstance(Long entityId, Long instanceId) {
         EntityDto entity = getEntity(entityId);
 
@@ -200,6 +244,27 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         return instanceToRecord(instance, entity, fields);
+    }
+
+    private LookupDto getLookupByName(Long entityId, String lookupName) {
+        LookupDto lookup = entityService.getLookupByName(entityId, lookupName);
+        if (lookup == null) {
+            throw new LookupNotFoundException();
+        }
+        return lookup;
+    }
+
+    private List<Object> getLookupArgs(LookupDto lookup, List<FieldDto> fields, Map<String, String> lookupMap) {
+        List<Object> args = new ArrayList<>();
+        for (Long lookupFieldId : lookup.getFieldList()) {
+            FieldDto field = getFieldById(fields, lookupFieldId);
+
+            String val = lookupMap.get(field.getBasic().getName());
+
+            Object arg = TypeHelper.parse(val, field.getType().getTypeClass());
+            args.add(arg);
+        }
+        return args;
     }
 
     private EntityDto getEntity(Long entityId) {
@@ -231,7 +296,19 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         }
     }
 
+    private List<EntityRecord> instancesToRecords(Collection instances, EntityDto entity, List<FieldDto> fields) {
+        List<EntityRecord> records = new ArrayList<>();
+        for (Object instance : instances) {
+            EntityRecord record = instanceToRecord(instance, entity, fields);
+            records.add(record);
+        }
+        return records;
+    }
+
     private EntityRecord instanceToRecord(Object instance, EntityDto entityDto, List<FieldDto> fields) {
+        if (instance == null) {
+            return null;
+        }
         try {
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
@@ -273,6 +350,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         if (entity == null) {
             throw new EntityNotFoundException();
         }
+    }
+
+    private FieldDto getFieldById(List<FieldDto> fields, Long id) {
+        for (FieldDto field : fields) {
+            if (field.getId().equals(id)) {
+                return field;
+            }
+        }
+        throw new FieldNotFoundException();
     }
 
     @Autowired

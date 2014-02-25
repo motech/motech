@@ -2,7 +2,7 @@ package org.motechproject.mds.service.impl;
 
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,31 +44,20 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
         return repository.retrieveAll(parameters, values);
     }
 
-    @Override
     @Transactional
-    public List<T> retrieveAll(int page, int rows) {
-        return retrieveAllImpl(page, rows, null);
+    protected List<T> retrieveAll(String[] parameters, Object[] values, QueryParams queryParams) {
+        return repository.retrieveAll(parameters, values, queryParams);
+    }
+
+    @Transactional
+    protected long count(String[] parameters, Object[] values) {
+        return repository.count(parameters, values);
     }
 
     @Override
     @Transactional
-    public List<T> retrieveAll(int page, int rows, Order order) {
-        return retrieveAllImpl(page, rows, order);
-    }
-
-    private List<T> retrieveAllImpl(int page, int rows, Order order) {
-        long fromIncl = page * rows - rows;
-        long toExcl = page * rows + 1;
-
-        List<T> result;
-
-        if (order == null) {
-            result =  repository.retrieveAll(fromIncl, toExcl);
-        } else {
-            result = repository.retrieveAll(fromIncl, toExcl, order);
-        }
-
-        return result;
+    public List<T> retrieveAll(QueryParams queryParams) {
+        return repository.retrieveAll(queryParams);
     }
 
     @Override

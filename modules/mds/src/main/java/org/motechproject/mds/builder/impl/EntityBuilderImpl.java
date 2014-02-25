@@ -101,7 +101,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             ctField.setModifiers(Modifier.PRIVATE);
 
             if (List.class.getName().equals(typeClass)) {
-                ctField.setGenericSignature(JavassistHelper.genericFieldSignature(List.class, String.class));
+                ctField.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
             }
 
             if (StringUtils.isBlank(field.getDefaultValue())) {

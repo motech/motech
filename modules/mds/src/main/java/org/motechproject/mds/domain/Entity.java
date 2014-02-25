@@ -20,11 +20,9 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -243,10 +241,10 @@ public class Entity {
             getLookups().add(lookup);
         } else {
             LookupDto lookupDto = lookup.toDto();
-            Set<Field> lookupFields = new HashSet<>();
+            List<Field> lookupFields = new ArrayList<>();
 
-            for (String fieldId : lookupDto.getFieldList()) {
-                lookupFields.add(getField(Long.parseLong(fieldId)));
+            for (Long fieldId : lookupDto.getFieldList()) {
+                lookupFields.add(getField(fieldId));
             }
 
             existing.update(lookupDto, lookupFields);
@@ -267,7 +265,16 @@ public class Entity {
 
     public Lookup getLookupById(Long lookupId) {
         for (Lookup lookup : getLookups()) {
-            if (Objects.equals(lookupId, lookup.getId())) {
+            if (lookupId != null && Objects.equals(lookupId, lookup.getId())) {
+                return lookup;
+            }
+        }
+        return null;
+    }
+
+    public Lookup getLookupByName(String lookupName) {
+        for (Lookup lookup : getLookups()) {
+            if (StringUtils.equals(lookupName, lookup.getLookupName())) {
                 return lookup;
             }
         }
@@ -383,9 +390,9 @@ public class Entity {
 
         for (LookupDto lookupDto : advancedSettings.getIndexes()) {
             Lookup lookup = getLookupById(lookupDto.getId());
-            Set<Field> lookupFields = new HashSet<>();
-            for (String fieldId : lookupDto.getFieldList()) {
-                lookupFields.add(getField(Long.parseLong(fieldId)));
+            List<Field> lookupFields = new ArrayList<>();
+            for (Long fieldId : lookupDto.getFieldList()) {
+                lookupFields.add(getField(fieldId));
             }
 
             if (lookup == null) {

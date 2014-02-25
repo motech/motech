@@ -17,7 +17,8 @@ public class LookupDto {
     private String lookupName;
     private boolean singleObjectReturn;
     private boolean exposedViaRest;
-    private List<String> fieldList;
+    private List<Long> fieldList;
+    private List<String> fieldNames;
 
     public LookupDto() {
         this(null, false, false);
@@ -28,17 +29,26 @@ public class LookupDto {
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<String> fieldList) {
+                     List<Long> fieldList) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null);
+    }
+
+    public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Long> fieldList,
+                     List<String> fieldNames) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fieldList = CollectionUtils.isEmpty(fieldList)
-                ? new LinkedList<String>()
+                ? new LinkedList<Long>()
                 : fieldList;
+        this.fieldNames = CollectionUtils.isEmpty(fieldNames)
+                ? new LinkedList<String>()
+                : fieldNames;
     }
 
-    public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<String> fieldList) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList);
+    public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
+                     List<Long> fieldList, List<String> fieldNames) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames);
         this.id = id;
     }
 
@@ -66,30 +76,48 @@ public class LookupDto {
         this.exposedViaRest = isExposedViaRest;
     }
 
-    public void addField(Integer field) {
-        this.fieldList.add(field.toString());
+    public void addField(Long field) {
+        this.fieldList.add(field);
     }
 
-    public void insertField(Integer idx, Integer fieldId) {
+    public void addField(Integer field) {
+        this.fieldList.add(field.longValue());
+    }
+
+
+    public void insertField(Integer idx, Long fieldId) {
         if (idx != null && idx < fieldList.size()) {
             this.fieldList.remove(idx.intValue());
-            this.fieldList.add(idx, fieldId.toString());
+            this.fieldList.add(idx, fieldId);
         }
     }
 
-    public void removeField(Integer fieldId) {
-        this.fieldList.remove(fieldId.toString());
+    public void removeField(Long fieldId) {
+        this.fieldList.remove(fieldId);
     }
 
-    public List<String> getFieldList() {
+    public void removeField(Integer fieldId) {
+        this.fieldList.remove(fieldId.longValue());
+    }
+
+
+    public List<Long> getFieldList() {
         return fieldList;
     }
 
 
-    public void setFieldList(List<String> fieldList) {
+    public void setFieldList(List<Long> fieldList) {
         this.fieldList = CollectionUtils.isEmpty(fieldList)
-                ? new LinkedList<String>()
+                ? new LinkedList<Long>()
                 : fieldList;
+    }
+
+    public List<String> getFieldNames() {
+        return fieldNames;
+    }
+
+    public void setFieldNames(List<String> fieldNames) {
+        this.fieldNames = fieldNames;
     }
 
     public Long getId() {

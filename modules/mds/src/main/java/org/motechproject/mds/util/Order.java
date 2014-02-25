@@ -2,10 +2,14 @@ package org.motechproject.mds.util;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
+
 /**
- * Represents an order by in a query
+ * Represents an order in a query
  */
-public class Order {
+public class Order implements Serializable {
+
+    private static final long serialVersionUID = 8786361061292224134L;
 
     private final String field;
     private final Direction direction;

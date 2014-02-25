@@ -2,7 +2,6 @@ package org.motechproject.mds.domain;
 
 import org.motechproject.mds.dto.LookupDto;
 
-import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Join;
@@ -10,9 +9,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The <code>Lookup</code> class contains information about single lookup
@@ -37,38 +34,40 @@ public class Lookup {
     private Entity entity;
 
     @Persistent(table = "LookupFields")
-    @Join(column = "Lookup_OID")
-    @Element(column = "Field_OID")
-    private Set<Field> fields;
+    @Join
+    private List<Field> fields;
 
     public Lookup() {
         this(null, false, false, null);
     }
 
-    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, Set<Field> fields) {
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fields = fields;
     }
 
-    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, Set<Field> fields, Entity entity) {
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
         this(lookupName, singleObjectReturn, exposedViaRest, fields);
         this.entity = entity;
     }
 
-    public Lookup(LookupDto lookupDto, Set<Field> lookupFields) {
+    public Lookup(LookupDto lookupDto, List<Field> lookupFields) {
         update(lookupDto, lookupFields);
     }
 
     public LookupDto toDto() {
-        List<String> fieldIds = new ArrayList<>();
+        List<Long> fieldIds = new ArrayList<>();
+        List<String> fieldNames = new ArrayList<>();
+
         if (fields != null) {
             for (Field field : fields) {
-                fieldIds.add(field.getId().toString());
+                fieldIds.add(field.getId());
+                fieldNames.add(field.getName());
             }
         }
-        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest, fieldIds);
+        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest, fieldIds, fieldNames);
     }
 
     public Long getId() {
@@ -111,16 +110,16 @@ public class Lookup {
         this.entity = entity;
     }
 
-    public Set<Field> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 
-    public void setFields(Set<Field> fields) {
+    public void setFields(List<Field> fields) {
         this.fields = fields;
     }
 
     public Lookup copy(List<Field> fields) {
-        Set<Field> lookupFields = new HashSet<>();
+        List<Field> lookupFields = new ArrayList<>();
         for (Field field : fields) {
             for (Field lookupField : this.fields) {
                 if (lookupField.getName().equals(field.getName())) {
@@ -131,7 +130,7 @@ public class Lookup {
         return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields);
     }
 
-    public final void update(LookupDto lookupDto, Set<Field> lookupFields) {
+    public final void update(LookupDto lookupDto, List<Field> lookupFields) {
         singleObjectReturn = lookupDto.isSingleObjectReturn();
         exposedViaRest = lookupDto.isExposedViaRest();
         lookupName = lookupDto.getLookupName();

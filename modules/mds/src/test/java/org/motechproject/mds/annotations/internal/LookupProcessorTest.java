@@ -61,7 +61,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(1);
         LookupDto dto = new LookupDto("Test Method 1", true, false,
-                Arrays.asList("arg1", "Second argument"));
+                null, Arrays.asList("arg1", "Second argument"));
 
         lookupProcessor.process(method);
 
@@ -80,7 +80,7 @@ public class LookupProcessorTest {
         when(paranamer.lookupParameterNames(getTestMethod(2))).thenReturn(argNames);
 
         Method method = getTestMethod(2);
-        LookupDto dto = new LookupDto("Test Method 2", false, false,
+        LookupDto dto = new LookupDto("Test Method 2", false, false, null,
                 Arrays.asList(argNames));
 
         lookupProcessor.process(method);
@@ -101,7 +101,7 @@ public class LookupProcessorTest {
 
         Method method = getTestMethod(3);
         LookupDto dto = new LookupDto("My new custom lookup", false, false,
-                Arrays.asList(argNames));
+                null, Arrays.asList(argNames));
 
         lookupProcessor.process(method);
 
@@ -120,8 +120,6 @@ public class LookupProcessorTest {
         when(paranamer.lookupParameterNames(getTestMethod(4))).thenReturn(argNames);
 
         Method method = getTestMethod(4);
-        LookupDto dto = new LookupDto("Test Method 1", true, false,
-                Arrays.asList("arg1", "Second argument"));
 
         lookupProcessor.process(method);
 

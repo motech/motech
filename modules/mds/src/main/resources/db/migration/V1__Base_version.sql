@@ -175,7 +175,6 @@ UNLOCK TABLES;
 --
 -- Table structure for table "Lookup"
 --
-
 DROP TABLE IF EXISTS "Lookup";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -193,15 +192,6 @@ CREATE TABLE "Lookup" (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table "Lookup"
---
-
-LOCK TABLES "Lookup" WRITE;
-/*!40000 ALTER TABLE "Lookup" DISABLE KEYS */;
-/*!40000 ALTER TABLE "Lookup" ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table "LookupFields"
 --
 
@@ -209,24 +199,15 @@ DROP TABLE IF EXISTS "LookupFields";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE "LookupFields" (
-  "Lookup_OID" bigint(20) NOT NULL,
-  "Field_OID" bigint(20) NOT NULL,
-  PRIMARY KEY ("Lookup_OID","Field_OID"),
-  KEY "LookupFields_N49" ("Field_OID"),
-  KEY "LookupFields_N50" ("Lookup_OID"),
-  CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("Lookup_OID") REFERENCES "Lookup" ("id"),
-  CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("Field_OID") REFERENCES "Field" ("id")
+  "id_OID" bigint(20) NOT NULL,
+  "id_EID" bigint(20) NOT NULL,
+  "IDX" int(11) NOT NULL,
+  PRIMARY KEY ("id_OID","IDX"),
+  KEY "LookupFields_N49" ("id_OID"),
+  KEY "LookupFields_N50" ("id_EID"),
+  CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id"),
+  CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table "LookupFields"
---
-
-LOCK TABLES "LookupFields" WRITE;
-/*!40000 ALTER TABLE "LookupFields" DISABLE KEYS */;
-/*!40000 ALTER TABLE "LookupFields" ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table "RestOptions"

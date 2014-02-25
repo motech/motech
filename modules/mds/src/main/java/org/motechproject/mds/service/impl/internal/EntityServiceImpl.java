@@ -299,9 +299,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private void addOrUpdateLookup(Entity entity, Collection<LookupDto> lookups) {
         for (LookupDto lookupDto : lookups) {
             Lookup lookup = entity.getLookupById(lookupDto.getId());
-            Set<Field> lookupFields = new HashSet<>();
-            for (String fieldId : lookupDto.getFieldList()) {
-                lookupFields.add(entity.getField(Long.parseLong(fieldId)));
+            List<Field> lookupFields = new ArrayList<>();
+            for (String fieldName : lookupDto.getFieldNames()) {
+                lookupFields.add(entity.getField(fieldName));
             }
 
             if (lookup == null) {
@@ -576,6 +576,16 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         allEntityDrafts.setProperties(draft, entity);
 
         return draft.toDto();
+    }
+
+    @Override
+    @Transactional
+    public LookupDto getLookupByName(Long entityId, String lookupName) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        Lookup lookup = entity.getLookupByName(lookupName);
+        return (lookup == null) ? null : lookup.toDto();
     }
 
     @Override

@@ -85,7 +85,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         LookupDto lookup = new LookupDto();
         lookup.setSingleObjectReturn(singleObjectReturn);
         lookup.setLookupName(lookupName);
-        lookup.setFieldList(lookupFields);
+        lookup.setFieldNames(lookupFields);
 
         if (!getElements().containsKey(entityId)) {
             put(entityId, new ArrayList<LookupDto>());

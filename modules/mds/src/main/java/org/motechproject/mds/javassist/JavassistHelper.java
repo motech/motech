@@ -4,6 +4,7 @@ package org.motechproject.mds.javassist;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
@@ -12,14 +13,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * Helper class for javassist related tasks. Helps with generic signature generation,
+ * plus methods related with analyzing and loading javassist class representations.
+ */
 public final class JavassistHelper {
 
-    public static String genericFieldSignature(Class<?> typeClass, Class<?> genericParam) {
-        return genericFieldSignature(typeClass.getName(), genericParam.getName());
+    public static String genericSignature(Class<?> typeClass, Class<?> genericParam) {
+        return genericSignature(typeClass.getName(), genericParam.getName());
     }
 
-    public static String genericFieldSignature(String typeClass, String genericParam) {
-        return "L" + replaceDotsWithSlashes(typeClass) + "<L" + replaceDotsWithSlashes(genericParam) + ";>;";
+    public static String genericSignature(String typeClass, String genericParam) {
+        return "L" + replaceDotsWithSlashes(typeClass) + "<" + toGenericParam(genericParam) + ">;";
     }
 
     public static String toClassPath(Class<?> clazz) {
@@ -28,6 +33,14 @@ public final class JavassistHelper {
 
     public static String toClassPath(String clazz) {
         return replaceDotsWithSlashes(clazz) + ".class";
+    }
+
+    public static String toGenericParam(Class<?> clazz) {
+        return toGenericParam(clazz.getName());
+    }
+
+    public static String toGenericParam(String clazz) {
+        return String.format("L%s;", replaceDotsWithSlashes(clazz));
     }
 
     public static CtClass loadClass(Bundle bundle, String className, ClassPool classPool) throws IOException {
@@ -58,6 +71,18 @@ public final class JavassistHelper {
         }
 
         return found;
+    }
+
+    public static boolean hasInterface(CtClass ctClass, CtClass ctInterface) throws NotFoundException {
+        CtClass[] interfaces = ctClass.getInterfaces();
+        if (ArrayUtils.isNotEmpty(interfaces)) {
+            for (CtClass declaredInterface : interfaces) {
+                if (declaredInterface.equals(ctInterface)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static String replaceDotsWithSlashes(String str) {

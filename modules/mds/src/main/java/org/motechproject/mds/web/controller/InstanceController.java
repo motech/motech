@@ -1,5 +1,8 @@
 package org.motechproject.mds.web.controller;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.motechproject.commons.api.CsvConverter;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
@@ -7,6 +10,7 @@ import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.web.comparator.HistoryRecordComparator;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.FieldRecord;
@@ -29,7 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.CharEncoding.UTF_8;
 import static org.motechproject.mds.util.Constants.Roles;
@@ -48,6 +54,8 @@ public class InstanceController extends MdsController {
     private EntityService entityService;
     @Autowired
     private InstanceService instanceService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping(value = "/instances", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
@@ -154,20 +162,34 @@ public class InstanceController extends MdsController {
     @RequestMapping(value = "/entities/{entityId}/instances", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_ACCESS)
     @ResponseBody
-    public Records<?> getInstances(@PathVariable Long entityId, @RequestBody final String url, GridSettings settings) {
+    public Records<?> getInstances(@PathVariable Long entityId, @RequestBody final String url, GridSettings settings) throws IOException {
         Order order = null;
         if (!settings.getSortColumn().isEmpty()) {
             order = new Order(settings.getSortColumn(), settings.getSortDirection());
         }
 
-        List<EntityRecord> entityRecords = instanceService.getEntityRecordsPaged(entityId,
-                settings.getPage(), settings.getRows(),
-                order);
+        QueryParams queryParams = new QueryParams(settings.getPage(), settings.getRows(), order);
 
-        long recordCount = instanceService.countRecords(entityId);
+        String lookup = settings.getLookup();
+
+        List<EntityRecord> entityRecords;
+        long recordCount;
+
+        if (StringUtils.isNotBlank(lookup)) {
+            entityRecords = instanceService.getEntityRecordsFromLookup(entityId, lookup, getFields(settings), queryParams);
+            recordCount = instanceService.countRecordsByLookup(entityId, lookup, getFields(settings));
+        } else {
+            entityRecords = instanceService.getEntityRecords(entityId, queryParams);
+            recordCount = instanceService.countRecords(entityId);
+        }
+
         int rowCount = (int) Math.ceil(recordCount / (double) settings.getRows());
 
         return new Records<>(settings.getPage(), rowCount, entityRecords);
+    }
+
+    private Map<String, String> getFields(GridSettings gridSettings) throws IOException {
+        return objectMapper.readValue(gridSettings.getFields(), new TypeReference<HashMap<String, String>>() {});
     }
 
     @Autowired

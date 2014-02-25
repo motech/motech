@@ -8,6 +8,7 @@ import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.EntityInfrastructureBuilder;
 import org.motechproject.mds.builder.MDSClassLoader;
@@ -15,8 +16,13 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.EntityInfrastructureException;
+import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.QueryParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -36,6 +42,9 @@ import static org.motechproject.mds.util.Constants.Packages;
  */
 @Component
 public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EntityInfrastructureBuilderImpl.class);
+
     public static final String REPOSITORY_BASE_CLASS = Packages.REPOSITORY + ".MotechDataRepository";
     public static final String SERVICE_BASE_CLASS = Packages.SERVICE + ".MotechDataService";
     public static final String SERVICE_IMPL_BASE_CLASS = Packages.SERVICE_IMPL + ".DefaultMotechDataService";
@@ -46,18 +55,22 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     public List<ClassData> buildInfrastructure(Entity entity) {
         List<ClassData> list = new ArrayList<>();
 
+
+        // create a repository(dao) for the entity
         String repositoryClassName = ClassName.getRepositoryName(entity.getClassName());
         if (!existsInClassPath(repositoryClassName)) {
             byte[] repositoryCode = getRepositoryCode(repositoryClassName, entity.getClassName());
             list.add(new ClassData(repositoryClassName, repositoryCode));
         }
 
+        // create an interface for the service
         String interfaceClassName = ClassName.getInterfaceName(entity.getClassName());
         if (!existsInClassPath(interfaceClassName)) {
             byte[] interfaceCode = getInterfaceCode(interfaceClassName, entity.getClassName(), entity);
             list.add(new ClassData(interfaceClassName, interfaceCode));
         }
 
+        // create the implementation of the service
         String serviceClassName = ClassName.getServiceName(entity.getClassName());
         if (!existsInClassPath(serviceClassName)) {
             byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entity);
@@ -84,9 +97,11 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             CtClass superClass = classPool.getCtClass(REPOSITORY_BASE_CLASS);
             superClass.setGenericSignature(getGenericSignature(typeName));
 
-            CtClass subClass = classPool.makeClass(repositoryClassName, superClass);
+            CtClass subClass = createOrRetrieveClass(repositoryClassName, superClass);
 
             String repositoryName = ClassName.getSimpleName(repositoryClassName);
+
+            removeDefaultConstructor(subClass);
             String constructorAsString = String.format(
                     "public %s(){super(%s.class);}", repositoryName, typeName
             );
@@ -105,11 +120,18 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             CtClass superInterface = classPool.getCtClass(SERVICE_BASE_CLASS);
             superInterface.setGenericSignature(getGenericSignature(typeName));
 
-            CtClass newInterface = classPool.makeInterface(interfaceClassName, superInterface);
+            CtClass newInterface = createOrRetrieveInterface(interfaceClassName, superInterface);
 
+            // clear lookup methods before adding the new ones
+            removeExistingMethods(newInterface);
+
+            // for each lookup we generate three methods - normal lookup, lookup with query params and
+            // a count method for the lookup
             for (Lookup lookup : entity.getLookups()) {
-                CtMethod lookupMethod = CtNewMethod.make(generateLookupInterface(lookup, entity.getClassName()), newInterface);
-                newInterface.addMethod(lookupMethod);
+                for (LookupType lookupType : LookupType.values()) {
+                    CtMethod lookupMethod = generateLookupInterface(entity, lookup, newInterface, lookupType);
+                    newInterface.addMethod(lookupMethod);
+                }
             }
 
             return newInterface.toBytecode();
@@ -126,17 +148,26 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);
 
-            CtClass subClass = classPool.makeClass(serviceClassName);
-            subClass.setSuperclass(superClass);
+            CtClass serviceClass = createOrRetrieveClass(serviceClassName, superClass);
 
-            subClass.addInterface(serviceInterface);
-
-            for (Lookup lookup : entity.getLookups()) {
-                CtMethod lookupMethod = CtNewMethod.make(generateLookup(lookup, entity.getClassName()), subClass);
-                subClass.addMethod(lookupMethod);
+            // add the interface if its not already there
+            if (!JavassistHelper.hasInterface(serviceClass, serviceInterface)) {
+                serviceClass.addInterface(serviceInterface);
             }
 
-            return subClass.toBytecode();
+            // clear lookup methods before adding the new ones
+            removeExistingMethods(serviceClass);
+
+            // for each lookup we generate three methods - normal lookup, lookup with query params and
+            // a count method for the lookup
+            for (Lookup lookup : entity.getLookups()) {
+                for (LookupType lookupType : LookupType.values()) {
+                    CtMethod lookupMethod = generateLookup(entity, lookup, serviceClass, lookupType);
+                    serviceClass.addMethod(lookupMethod);
+                }
+            }
+
+            return serviceClass.toBytecode();
         } catch (NotFoundException | IOException | CannotCompileException e) {
             throw new EntityInfrastructureException(e);
         }
@@ -150,16 +181,20 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         return sig.encode();
     }
 
-    private String generateLookupInterface(Lookup lookup, String className) {
+    private CtMethod generateLookupInterface(Entity entity, Lookup lookup, CtClass interfaceClass, LookupType lookupType)
+            throws CannotCompileException {
+        final String className = entity.getClassName();
+        final String lookupName = (lookupType == LookupType.COUNT) ?
+                LookupName.lookupCountMethod(lookup.getLookupName()) :
+                LookupName.lookupMethod(lookup.getLookupName());
+
         StringBuilder sb = new StringBuilder("");
 
-        if (lookup.isSingleObjectReturn()) {
-            sb.append(className);
-        } else {
-            sb.append("java.util.List");
-        }
-        sb.append(" ").append(lookup.getLookupName()).append("(");
+        // appropriate return type
+        sb.append(returnType(className, lookup, lookupType));
+        sb.append(" ").append(lookupName).append("(");
 
+        // construct the method signature using fields
         Iterator it = lookup.getFields().iterator();
         while (it.hasNext()) {
             Field field = (Field) it.next();
@@ -169,28 +204,44 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                 sb.append(", ");
             }
         }
+
+        // query params at the end for ordering/paging
+        if (lookupType == LookupType.WITH_QUERY_PARAMS) {
+            sb.append(", ").append(QueryParams.class.getName()).append(" queryParams");
+        }
+
         sb.append(");");
 
-        return sb.toString();
+        CtMethod method = CtNewMethod.make(sb.toString(), interfaceClass);
+        method.setGenericSignature(buildGenericSignature(entity, lookup));
+
+        return method;
     }
 
-    private String generateLookup(Lookup lookup, String className) {
+    private CtMethod generateLookup(Entity entity, Lookup lookup, CtClass serviceClass, LookupType lookupType)
+            throws CannotCompileException {
+        final String className = entity.getClassName();
+        final String lookupName = (lookupType == LookupType.COUNT) ?
+                LookupName.lookupCountMethod(lookup.getLookupName()) :
+                LookupName.lookupMethod(lookup.getLookupName());
+
+        // main method builder
         StringBuilder sb = new StringBuilder("public ");
+        // param names array
         StringBuilder paramsSb = new StringBuilder("new java.lang.String[] {");
+        // param values array
         StringBuilder valuesSb = new StringBuilder("new java.lang.Object[] {");
 
-        if (lookup.isSingleObjectReturn()) {
-            sb.append(className);
-        } else {
-            sb.append("java.util.List");
-        }
-        sb.append(" ").append(lookup.getLookupName()).append("(");
+        // appropriate return type
+        sb.append(returnType(className, lookup, lookupType));
+        sb.append(" ").append(lookupName).append("(");
 
+        // fields are used to construct the method signature, param names and values
         Iterator it = lookup.getFields().iterator();
         while (it.hasNext()) {
             Field field = (Field) it.next();
 
-            paramsSb.append("\"").append(field.getDisplayName()).append("\"");
+            paramsSb.append("\"").append(field.getName()).append("\"");
 
             valuesSb.append(field.getDisplayName());
 
@@ -202,20 +253,150 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
                 valuesSb.append(", ");
             }
         }
+
+        // ordering and paging param comes last
+        if (lookupType == LookupType.WITH_QUERY_PARAMS) {
+            sb.append(", ").append(QueryParams.class.getName()).append(" queryParams");
+        }
+
         paramsSb.append("}");
         valuesSb.append("}");
-        sb.append(") {return ");
 
-        if (lookup.isSingleObjectReturn()) {
-            sb.append("(").append(className).append(")");
-        }
+        String callStr = paramsSb.toString() + ", " + valuesSb.toString();
 
-        sb.append("retrieveAll(").append(paramsSb.toString()).append(", ").append(valuesSb.toString()).append(")");
-        if (lookup.isSingleObjectReturn()) {
-            sb.append(".get(0)");
+        sb.append(") {");
+
+        // method body
+        if (lookupType == LookupType.COUNT) {
+            if (lookup.isSingleObjectReturn()) {
+                // single object returns always return only 1
+                sb.append("return 1L;");
+            } else {
+                // count from db
+                sb.append("return count(").append(callStr).append(");");
+            }
+        } else {
+            sb.append("java.util.List list = ");
+
+            sb.append("retrieveAll(").append(callStr);
+
+            if (lookupType == LookupType.WITH_QUERY_PARAMS) {
+                sb.append(", queryParams");
+            }
+
+            sb.append(");");
+
+            if (lookup.isSingleObjectReturn()) {
+                sb.append("return list.isEmpty() ? null : (").append(className).append(") list.get(0)");
+            } else {
+                sb.append("return list");
+            }
         }
         sb.append(";}");
+
+        CtMethod method = CtNewMethod.make(sb.toString(), serviceClass);
+
+        // count method doesn't need a generic signature
+        if (lookupType != LookupType.COUNT) {
+            method.setGenericSignature(buildGenericSignature(entity, lookup));
+        }
+
+        return method;
+    }
+
+    private String buildGenericSignature(Entity entity, Lookup lookup) {
+        // we must build generic signatures for lookup methods
+        // an example signature for the method signature
+        // List<org.motechproject.mds.Test> method(String p1, Integer p2)
+        // is
+        // cmt -- (Ljava/lang/String;Ljava/lang/Integer;)Ljava/util/List<Lorg/motechproject/mds/Test;>;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append('(');
+        for (Field field : lookup.getFields()) {
+            sb.append(JavassistHelper.toGenericParam(field.getType().getTypeClass()));
+        }
+        sb.append(')');
+
+        if (lookup.isSingleObjectReturn()) {
+            sb.append(JavassistHelper.toGenericParam(entity.getClassName()));
+        } else {
+            sb.append(JavassistHelper.genericSignature(List.class.getName(), entity.getClassName()));
+        }
+
         return sb.toString();
     }
 
+    private CtClass createOrRetrieveClass(String className, CtClass superClass) {
+        return createOrRetrieveClassOrInterface(className, superClass, false);
+    }
+
+    private CtClass createOrRetrieveInterface(String className, CtClass superClass) {
+        return createOrRetrieveClassOrInterface(className, superClass, true);
+    }
+
+    private CtClass createOrRetrieveClassOrInterface(String className, CtClass superClass, boolean isInterface) {
+        // if class is already declared we defrost
+        // otherwise we create a new one
+        CtClass existing = classPool.getOrNull(className);
+        if (existing != null) {
+            existing.defrost();
+            return existing;
+        } else {
+            if (isInterface) {
+                return classPool.makeInterface(className, superClass);
+            } else {
+                return classPool.makeClass(className, superClass);
+            }
+        }
+    }
+
+    private void removeExistingMethods(CtClass ctClass) {
+        // we remove methods declared in the given class(not inherited)
+        // that way we clear all lookups
+        CtMethod[] methods = ctClass.getMethods();
+        for (CtMethod method : methods) {
+            if (method.getDeclaringClass().equals(ctClass)) {
+                try {
+                    ctClass.removeMethod(method);
+                } catch (NotFoundException e) {
+                    LOG.error(String.format("Method %s in class %s not found", method.getName(), ctClass.getName()), e);
+                }
+            }
+        }
+    }
+
+    private void removeDefaultConstructor(CtClass ctClass) {
+        // remove the constructor with no args
+        CtConstructor[] constructors = ctClass.getConstructors();
+        for (CtConstructor constructor : constructors) {
+            try {
+                if (ArrayUtils.isEmpty(constructor.getParameterTypes())) {
+                    ctClass.removeConstructor(constructor);
+                }
+            } catch (NotFoundException e) {
+                LOG.error("Unable to remove constructor", e);
+            }
+        }
+    }
+
+    private String returnType(String className, Lookup lookup, LookupType lookupType) {
+        if (lookupType == LookupType.COUNT) {
+            return "long";
+        } else if (lookup.isSingleObjectReturn()) {
+            return className;
+        } else {
+            return List.class.getName();
+        }
+    }
+
+    /**
+     * Represents the three lookup methods generated
+     * 1) simple retrieving
+     * 2) paged/ordered retrieving
+     * 3) result count
+     */
+    private static enum LookupType {
+        SIMPLE, WITH_QUERY_PARAMS, COUNT
+    }
 }

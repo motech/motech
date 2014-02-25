@@ -24,10 +24,8 @@ import org.motechproject.mds.repository.AllTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -95,17 +93,22 @@ public class EntityServiceImplTest {
         // given
         long entityId = 1L;
         LookupDto lookupDto = new LookupDto("lookupName", true, false, null);
-        lookupDto.getFieldList().add("0");
-        lookupDto.getFieldList().add("2");
+        lookupDto.getFieldNames().add("zero");
+        lookupDto.getFieldNames().add("two");
 
         int fieldCount = 4;
-        Set<Field> fields = new HashSet<>();
+        List<Field> fields = new ArrayList<>();
+        String[] fieldNames = {"zero", "one", "two", "three"};
 
         for (long idx = 0; idx < fieldCount; ++idx) {
             Field field = mock(Field.class);
 
             doReturn(idx).when(field).getId();
             doReturn(field).when(entity).getField(idx);
+
+            String fieldName = fieldNames[(int) idx];
+            doReturn(field).when(entity).getField(fieldName);
+            doReturn(fieldName).when(field).getName();
 
             if (idx % 2 == 0) {
                 fields.add(field);
@@ -125,7 +128,7 @@ public class EntityServiceImplTest {
 
         for (long idx = 0; idx < fieldCount; ++idx) {
             int wantedNumberOfInvocations = (int) Math.abs(idx % 2 - 1);
-            verify(entity, times(wantedNumberOfInvocations)).getField(idx);
+            verify(entity, times(wantedNumberOfInvocations)).getField(fieldNames[(int) idx]);
         }
 
         Lookup lookup = lookupCaptor.getValue();
@@ -141,18 +144,23 @@ public class EntityServiceImplTest {
         // given
         long entityId = 1L;
         LookupDto lookupDto = new LookupDto("lookupName", true, false, null);
-        lookupDto.getFieldList().add("0");
-        lookupDto.getFieldList().add("2");
+        lookupDto.getFieldNames().add("zero");
+        lookupDto.getFieldNames().add("two");
         Lookup lookup = new Lookup();
 
         int fieldCount = 4;
-        Set<Field> fields = new HashSet<>();
+        List<Field> fields = new ArrayList<>();
+        String[] fieldNames = {"zero", "one", "two", "three"};
 
         for (long idx = 0; idx < fieldCount; ++idx) {
             Field field = mock(Field.class);
 
             doReturn(idx).when(field).getId();
             doReturn(field).when(entity).getField(idx);
+
+            String fieldName = fieldNames[(int) idx];
+            doReturn(field).when(entity).getField(fieldName);
+            doReturn(fieldName).when(field).getName();
 
             if (idx % 2 == 0) {
                 fields.add(field);

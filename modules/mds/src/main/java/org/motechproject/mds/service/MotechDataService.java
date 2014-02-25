@@ -1,6 +1,6 @@
 package org.motechproject.mds.service;
 
-import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 
 import java.util.List;
 
@@ -20,9 +20,7 @@ public interface MotechDataService<T> {
 
     List<T> retrieveAll();
 
-    List<T> retrieveAll(int page, int onPage);
-
-    List<T> retrieveAll(int page, int onPage, Order order);
+    List<T> retrieveAll(QueryParams queryParams);
 
     T update(T object);
 

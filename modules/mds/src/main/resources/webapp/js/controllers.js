@@ -1872,13 +1872,14 @@
         // check every 5 seconds if the entity is outdated
         setInterval(function () {
             var entity;
-
-            entity = Entities.get({id: $scope.selectedEntity.id },  function () {
-                if ($scope.selectedEntity) {
-                    $scope.selectedEntity.modified = entity.modified;
-                    $scope.selectedEntity.outdated = entity.outdated;
-                }
-            });
+            if ($scope.selectedEntity) {
+                entity = Entities.get({id: $scope.selectedEntity.id },  function () {
+                    if ($scope.selectedEntity) {
+                        $scope.selectedEntity.modified = entity.modified;
+                        $scope.selectedEntity.outdated = entity.outdated;
+                    }
+                });
+            }
         }, 5 * 1000);
     });
 

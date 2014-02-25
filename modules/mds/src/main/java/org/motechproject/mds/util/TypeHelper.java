@@ -19,7 +19,7 @@ import java.util.List;
  */
 public final class TypeHelper {
 
-    private final static DateTimeFormatter DTF;
+    private static final  DateTimeFormatter DTF;
 
     static {
         DateTimeParser[] parsers = {

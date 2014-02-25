@@ -1,6 +1,7 @@
 package org.motechproject.mds.repository;
 
 import org.motechproject.mds.util.Order;
+import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.QueryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,6 +67,15 @@ public abstract class MotechDataRepository<T> {
         return cast(collection);
     }
 
+    public List<T> retrieveAll(String[] properties, Object[] values, QueryParams queryParams) {
+        Query query = createQuery(properties, values);
+        QueryUtil.setQueryParams(query, queryParams);
+
+        Collection collection = (Collection) query.executeWithArray(values);
+
+        return cast(collection);
+    }
+
     public List<T> retrieveAll(long fromIncl, long toExcl) {
         Query query = getPersistenceManager().newQuery(classType);
         query.setRange(fromIncl, toExcl);
@@ -78,6 +88,14 @@ public abstract class MotechDataRepository<T> {
         Query query = getPersistenceManager().newQuery(classType);
         query.setRange(fromIncl, toExcl);
         query.setOrdering(order.toString());
+        Collection collection = (Collection) query.execute();
+
+        return cast(collection);
+    }
+
+    public List<T> retrieveAll(QueryParams queryParams) {
+        Query query = getPersistenceManager().newQuery(classType);
+        QueryUtil.setQueryParams(query, queryParams);
         Collection collection = (Collection) query.execute();
 
         return cast(collection);
@@ -141,6 +159,12 @@ public abstract class MotechDataRepository<T> {
         Query query = getPersistenceManager().newQuery(classType);
         query.setResult("count(this)");
         return (long) query.execute();
+    }
+
+    public long count(String[] properties, Object[] values) {
+        Query query = createQuery(properties, values);
+        query.setResult("count(this)");
+        return (long) query.executeWithArray(values);
     }
 
     /**

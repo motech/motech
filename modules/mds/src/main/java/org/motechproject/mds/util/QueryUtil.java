@@ -1,5 +1,7 @@
 package org.motechproject.mds.util;
 
+import javax.jdo.Query;
+
 /**
  * The <code>QueryUtil</code> util class provides methods that help developer to create a JDO
  * query.
@@ -90,5 +92,26 @@ public final class QueryUtil {
         }
 
         return parameters.toString();
+    }
+
+    public static void setQueryParams(Query query, QueryParams queryParams) {
+        if (query == null) {
+            throw new IllegalArgumentException("Cannot set parameters for a null query");
+        }
+
+        if (queryParams != null) {
+            if (queryParams.isPagingSet()) {
+                long page = queryParams.getPage();
+                long pageSize = queryParams.getPageSize();
+
+                long fromIncl = page * pageSize - pageSize;
+                long toExcl = page * pageSize + 1;
+
+                query.setRange(fromIncl, toExcl);
+            }
+            if (queryParams.isOrderSet()) {
+                query.setOrdering(queryParams.getOrder().toString());
+            }
+        }
     }
 }

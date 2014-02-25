@@ -34,9 +34,9 @@ public class JavassistHelperTest {
     @Test
     public void shouldCreateProperGenericSignatures() {
         assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
-                JavassistHelper.genericFieldSignature(List.class, Field.class));
+                JavassistHelper.genericSignature(List.class, Field.class));
         assertEquals("Ljava/util/List<Lorg/motechproject/mds/domain/Field;>;",
-                JavassistHelper.genericFieldSignature(List.class.getName(), Field.class.getName()));
+                JavassistHelper.genericSignature(List.class.getName(), Field.class.getName()));
     }
 
     @Test
@@ -49,5 +49,11 @@ public class JavassistHelperTest {
         when(ctField.getName()).thenReturn("name");
         when(ctClass.getDeclaredFields()).thenReturn(new CtField[]{ctField});
         assertTrue(JavassistHelper.containsDelcaredField(ctClass, "name"));
+    }
+
+    @Test
+    public void shouldCreateGenericParamSignatures() {
+        assertEquals("Ljava/lang/Integer;", JavassistHelper.toGenericParam(Integer.class));
+        assertEquals("Lorg/motechproject/mds/entity/Test;", JavassistHelper.toGenericParam("org.motechproject.mds.entity.Test"));
     }
 }

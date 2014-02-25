@@ -54,12 +54,13 @@ public final class FieldTestHelper {
         }
     }
 
-    public static FieldDto fieldDto(String name, String className, String displayName,
-                                    Object defValue) {
+    public static FieldDto fieldDto(Long id, String name, String className,
+                                    String displayName, Object defValue) {
         FieldDto fieldDto = new FieldDto();
         fieldDto.setType(new TypeDto(className, "", "", className));
         fieldDto.setBasic(new FieldBasicDto(displayName, name));
         fieldDto.getBasic().setDefaultValue(defValue);
+        fieldDto.setId(id);
         return fieldDto;
     }
 

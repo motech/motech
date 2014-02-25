@@ -8,6 +8,8 @@ public class GridSettings {
     private Integer page;
     private String sortColumn;
     private String sortDirection;
+    private String lookup;
+    private String fields;
 
     public Integer getRows() {
         return rows;
@@ -39,5 +41,21 @@ public class GridSettings {
 
     public void setSortDirection(String sortDirection) {
         this.sortDirection = sortDirection;
+    }
+
+    public String getLookup() {
+        return lookup;
+    }
+
+    public void setLookup(String lookup) {
+        this.lookup = lookup;
+    }
+
+    public String getFields() {
+        return fields;
+    }
+
+    public void setFields(String fields) {
+        this.fields = fields;
     }
 }
