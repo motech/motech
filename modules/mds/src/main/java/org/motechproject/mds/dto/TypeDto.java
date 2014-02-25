@@ -14,8 +14,10 @@ import java.util.List;
  * The <code>TypeDto</code> class contains information about an available field in an entity.
  */
 public class TypeDto {
+    private Long id;
     private String displayName;
     private String description;
+    private String defaultName;
     private String typeClass;
 
     /**
@@ -26,66 +28,81 @@ public class TypeDto {
      * Constant <code>INTEGER</code> presents a integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
-            "mds.field.integer", "mds.field.description.integer", Integer.class.getName()
+            "mds.field.integer", "mds.field.description.integer", "int", Integer.class.getName()
     );
 
     /**
      * Constant <code>STRING</code> presents a string type.
      */
     public static final TypeDto STRING = new TypeDto(
-            "mds.field.string", "mds.field.description.string", String.class.getName()
+            "mds.field.string", "mds.field.description.string", "str", String.class.getName()
     );
 
     /**
      * Constant <code>BOOLEAN</code> presents a boolean type.
      */
     public static final TypeDto BOOLEAN = new TypeDto(
-            "mds.field.boolean", "mds.field.description.boolean", Boolean.class.getName()
+            "mds.field.boolean", "mds.field.description.boolean", "bool", Boolean.class.getName()
     );
 
     /**
      * Constant <code>DATE</code> presents a date type.
      */
     public static final TypeDto DATE = new TypeDto(
-            "mds.field.date", "mds.field.description.date", Date.class.getName()
+            "mds.field.date", "mds.field.description.date", "date", Date.class.getName()
     );
 
     /**
      * Constant <code>TIME</code> presents a time type.
      */
     public static final TypeDto TIME = new TypeDto(
-            "mds.field.time", "mds.field.description.time", Time.class.getName()
+            "mds.field.time", "mds.field.description.time", "time", Time.class.getName()
     );
 
     /**
      * Constant <code>DATETIME</code> presents a datetime type.
      */
     public static final TypeDto DATETIME = new TypeDto(
-            "mds.field.datetime", "mds.field.description.datetime", DateTime.class.getName()
+            "mds.field.datetime", "mds.field.description.datetime", "datetime", DateTime.class.getName()
     );
 
     /**
      * Constant <code>DOUBLE</code> presents a double/decimal type.
      */
     public static final TypeDto DOUBLE = new TypeDto(
-            "mds.field.decimal", "mds.field.description.decimal", Double.class.getName()
+            "mds.field.decimal", "mds.field.description.decimal", "dec", Double.class.getName()
     );
 
     /**
      * Constant <code>LIST</code> presents a list/combobox type.
      */
     public static final TypeDto LIST = new TypeDto(
-            "mds.field.combobox", "mds.field.description.combobox", List.class.getName()
+            "mds.field.combobox", "mds.field.description.combobox", "list", List.class.getName()
     );
 
     public TypeDto() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public TypeDto(String displayName, String description, String typeClass) {
+    public TypeDto(String displayName, String description, String defaultName, String typeClass) {
+        this(null, displayName, description, defaultName, typeClass);
+    }
+
+    public TypeDto(Long id, String displayName, String description, String defaultName,
+                   String typeClass) {
+        this.id = id;
         this.displayName = displayName;
         this.description = description;
+        this.defaultName = defaultName;
         this.typeClass = typeClass;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getDisplayName() {
@@ -102,6 +119,14 @@ public class TypeDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDefaultName() {
+        return defaultName;
+    }
+
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
     }
 
     public String getTypeClass() {
@@ -125,7 +150,7 @@ public class TypeDto {
      */
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj, new String[]{"id"});
     }
 
     /**

@@ -377,8 +377,7 @@
 
                 return parent || $scope.msg('mds.error');
             },
-            containerCssClass: "form-control-select2"
-            ,
+            containerCssClass: "form-control-select2",
             escapeMarkup: function (markup) {
                 return markup;
             }
@@ -423,18 +422,18 @@
                 }
             },
             formatSelection: function (type) {
-                return $scope.msg((type && type.type && type.type.displayName) || 'mds.error');
+                return $scope.msg((type && type.displayName) || 'mds.error');
             },
             formatResult: function (type) {
-                var strong = type && type.type && type.type.displayName
-                        ? angular.element('<strong>').text($scope.msg(type.type.displayName))
+                var strong = type && type.displayName
+                        ? angular.element('<strong>').text($scope.msg(type.displayName))
                         : undefined,
                     name = strong
                         ? angular.element('<div>').append(strong)
                         : undefined,
-                    description = type && type.type && type.type.description
+                    description = type && type.description
                         ? angular.element('<span>')
-                            .text($scope.msg(type.type.description))
+                            .text($scope.msg(type.description))
                         : undefined,
                     info = description
                         ? angular.element('<div>').append(description)
@@ -445,6 +444,7 @@
 
                 return parent || $scope.msg('mds.error');
             },
+            containerCssClass: "form-control-select2",
             escapeMarkup: function (markup) {
                 return markup;
             }
@@ -623,7 +623,7 @@
                 $scope.draft({
                     create: true,
                     values: {
-                        typeClass: $scope.newField.type.type.typeClass,
+                        typeClass: $scope.newField.type.typeClass,
                         displayName: $scope.newField.displayName,
                         name: $scope.newField.name
                     }

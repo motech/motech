@@ -1,12 +1,12 @@
 package org.motechproject.mds.web.controller;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.motechproject.mds.dto.AvailableTypeDto;
-import org.motechproject.mds.service.AvailableTypeService;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
-import org.motechproject.mds.web.comparator.AvailableTypeDisplayNameComparator;
-import org.motechproject.mds.web.matcher.AvailableTypeMatcher;
+import org.motechproject.mds.web.comparator.TypeDisplayNameComparator;
+import org.motechproject.mds.web.matcher.TypeMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
@@ -28,20 +28,20 @@ import static org.motechproject.mds.util.Constants.Roles;
  * The <code>AvailableController</code> is the Spring Framework Controller, used by view layer for
  * retrieving available objects, for example field types.
  *
- * @see AvailableTypeDto
+ * @see org.motechproject.mds.dto.TypeDto
  */
 @Controller
 public class AvailableController extends MdsController {
     private MessageSource messageSource;
-    private AvailableTypeService availableTypeService;
+    private TypeService typeService;
 
     @RequestMapping(value = "/available/types", method = RequestMethod.GET)
     @ResponseBody
-    public SelectResult<AvailableTypeDto> getTypes(SelectData data) {
-        List<AvailableTypeDto> list = availableTypeService.getAll();
+    public SelectResult<TypeDto> getTypes(SelectData data) {
+        List<TypeDto> list = typeService.getAllTypes();
 
-        CollectionUtils.filter(list, new AvailableTypeMatcher(data.getTerm(), messageSource));
-        Collections.sort(list, new AvailableTypeDisplayNameComparator(messageSource));
+        CollectionUtils.filter(list, new TypeMatcher(data.getTerm(), messageSource));
+        Collections.sort(list, new TypeDisplayNameComparator(messageSource));
 
         return new SelectResult<>(data, list);
     }
@@ -68,9 +68,8 @@ public class AvailableController extends MdsController {
     }
 
     @Autowired
-    public AvailableController(MessageSource messageSource,
-                               AvailableTypeService availableTypeService) {
+    public AvailableController(MessageSource messageSource, TypeService typeService) {
         this.messageSource = messageSource;
-        this.availableTypeService = availableTypeService;
+        this.typeService = typeService;
     }
 }

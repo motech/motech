@@ -4,11 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mds.BaseIT;
-import org.motechproject.mds.dto.AvailableTypeDto;
-import org.motechproject.mds.service.AvailableTypeService;
+import org.motechproject.mds.dto.TypeDto;
+import org.motechproject.mds.service.TypeService;
 import org.motechproject.mds.web.SelectData;
 import org.motechproject.mds.web.SelectResult;
-import org.motechproject.mds.web.comparator.AvailableTypeDisplayNameComparator;
+import org.motechproject.mds.web.comparator.TypeDisplayNameComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
@@ -23,14 +23,14 @@ public class AvailableControllerIT extends BaseIT {
     private MessageSource messageSource;
 
     @Autowired
-    private AvailableTypeService availableTypeService;
+    private TypeService typeService;
 
     private AvailableController controller;
 
     @Before
     public void setUp() throws Exception {
         clearDB();
-        controller = new AvailableController(messageSource, availableTypeService);
+        controller = new AvailableController(messageSource, typeService);
     }
 
     @After
@@ -39,13 +39,13 @@ public class AvailableControllerIT extends BaseIT {
     }
 
     @Test
-    public void shouldReturnAllAvailableTypes() throws Exception {
-        List<AvailableTypeDto> expected = availableTypeService.getAll();
+    public void shouldReturnAllTypes() throws Exception {
+        List<TypeDto> expected = typeService.getAllTypes();
 
-        Collections.sort(expected, new AvailableTypeDisplayNameComparator(messageSource));
+        Collections.sort(expected, new TypeDisplayNameComparator(messageSource));
 
         SelectData data = new SelectData("", 1, expected.size());
-        SelectResult<AvailableTypeDto> result = controller.getTypes(data);
+        SelectResult<TypeDto> result = controller.getTypes(data);
         assertEquals(expected, result.getResults());
     }
 
