@@ -1,6 +1,7 @@
 package org.motechproject.mds.annotations.internal;
 
 import org.motechproject.mds.annotations.Entity;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.AnnotationsUtil;
@@ -74,7 +75,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
                 if (entity == null) {
                     LOGGER.debug("Creating DDE for {}", className);
 
-                    EntityDto entityDto = new EntityDto(className, name, module, namespace);
+                    EntityDto entityDto = new EntityDto(className, name, module, namespace, SecurityMode.EVERYONE, null);
                     entity = entityService.createEntity(entityDto);
                 } else {
                     LOGGER.debug("DDE for {} already exists, updating if necessary", className);

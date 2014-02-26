@@ -20,7 +20,6 @@ import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.ex.EntityAlreadyExistException;
@@ -37,6 +36,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.domain.EntityRecord;
@@ -125,6 +125,26 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             editAdvancedForDraft(draft, draftData);
         } else if (draftData.isForField()) {
             editFieldForDraft(draft, draftData);
+        } else if (draftData.isForSecurity()) {
+            editSecurityForDraft(draft, draftData);
+        }
+    }
+
+    private void editSecurityForDraft(EntityDraft draft, DraftData draftData) {
+        List value = (List) draftData.getValue(DraftData.VALUE);
+        if (value != null) {
+            String securityModeName = (String) value.get(0);
+            SecurityMode securityMode = SecurityMode.getEnumByName(securityModeName);
+
+
+            if (value.size() > 1) {
+                List<String> list = (List<String>) value.get(1);
+                draft.setSecurity(securityMode, list);
+            } else {
+                draft.setSecurityMode(securityMode);
+            }
+
+            allEntityDrafts.update(draft);
         }
     }
 
@@ -311,12 +331,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
                 lookup.update(lookupDto, lookupFields);
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public SecuritySettingsDto getSecuritySettings(Long entityId) {
-        return exampleData.getSecurity(entityId);
     }
 
     @Override

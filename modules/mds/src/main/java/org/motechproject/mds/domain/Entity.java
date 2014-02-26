@@ -8,21 +8,25 @@ import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.SecurityMode;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Join;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -54,6 +58,9 @@ public class Entity {
     @Persistent
     private String namespace;
 
+    @Persistent
+    private SecurityMode securityMode;
+
     @Persistent(mappedBy = ENTITY)
     @Element(dependent = TRUE)
     private List<Lookup> lookups;
@@ -75,27 +82,33 @@ public class Entity {
     @Persistent(mappedBy = ENTITY, dependent = TRUE)
     private RestOptions restOptions;
 
+    @Join(column = "Entity_OID")
+    @Element(column = "SecurityMember")
+    private Set<String> securityMembers;
+
     public Entity() {
         this(null);
     }
 
     public Entity(String className) {
-        this(className, null, null);
+        this(className, null, null, null);
     }
 
-    public Entity(String className, String module, String namespace) {
-        this(className, ClassName.getSimpleName(className), module, namespace);
+    public Entity(String className, String module, String namespace, SecurityMode securityMode) {
+        this(className, ClassName.getSimpleName(className), module, namespace, securityMode, null);
     }
 
-    public Entity(String className, String name, String module, String namespace) {
+    public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
         this.className = className;
         this.name = name;
         this.module = module;
         this.namespace = namespace;
+        this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
+        this.securityMembers = securityMembers;
     }
 
     public EntityDto toDto() {
-        return new EntityDto(id, className, getName(), module, namespace);
+        return new EntityDto(id, className, getName(), module, namespace, securityMode, securityMembers);
     }
 
     public Long getId() {
@@ -175,6 +188,22 @@ public class Entity {
 
     public void setEntityVersion(Long entityVersion) {
         this.entityVersion = entityVersion;
+    }
+
+    public SecurityMode getSecurityMode() {
+        return securityMode;
+    }
+
+    public void setSecurityMode(SecurityMode securityMode) {
+        this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
+    }
+
+    public Set<String> getSecurityMembers() {
+        return securityMembers;
+    }
+
+    public void setSecurityMembers(Set<String> securityMembers) {
+        this.securityMembers = securityMembers;
     }
 
     @NotPersistent
@@ -305,6 +334,11 @@ public class Entity {
         }
 
         entityVersion += 1;
+        securityMode = draft.getSecurityMode();
+
+        if (draft.getSecurityMembers() != null) {
+            securityMembers = new HashSet(draft.getSecurityMembers());
+        }
     }
 
     @NotPersistent
@@ -465,5 +499,15 @@ public class Entity {
 
     public void setTracking(Tracking tracking) {
         this.tracking = tracking;
+    }
+
+    public void setSecurity(SecurityMode securityMode, List<String> securityMembersList) {
+        setSecurityMode(securityMode);
+
+        if (securityMembersList == null) {
+            securityMembers = null;
+        } else {
+            securityMembers = new HashSet(securityMembersList);
+        }
     }
 }

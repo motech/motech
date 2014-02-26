@@ -4,7 +4,11 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.util.ClassName;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -21,37 +25,49 @@ public class EntityDto {
     private boolean readOnly;
     private boolean modified;
     private boolean outdated;
+    private SecurityMode securityMode;
+    private Set<String> securityMembers;
 
     public EntityDto() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 
     public EntityDto(String className) {
-        this(className, ClassName.getSimpleName(className), null, null);
+        this(className, SecurityMode.EVERYONE, null);
     }
 
     public EntityDto(Long id, String className) {
-        this(id, className, ClassName.getSimpleName(className), null, null);
+        this(id, className, SecurityMode.EVERYONE, null);
     }
 
-    public EntityDto(Long id, String className, String module) {
-        this(id, className, ClassName.getSimpleName(className), module, null);
+    public EntityDto(String className, SecurityMode securityMode, Set<String> securityMembers) {
+        this(className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers);
     }
 
-    public EntityDto(Long id, String className, String module, String namespace) {
-        this(id, className, ClassName.getSimpleName(className), module, namespace);
+    public EntityDto(Long id, String className, SecurityMode securityMode, Set<String> securityMembers) {
+        this(id, className, ClassName.getSimpleName(className), null, null, securityMode, securityMembers);
     }
 
-    public EntityDto(String className, String name, String module, String namespace) {
-        this(null, className, name, module, namespace);
+    public EntityDto(Long id, String className, String module, SecurityMode securityMode, Set<String> securityMembers) {
+        this(id, className, ClassName.getSimpleName(className), module, null, securityMode, securityMembers);
     }
 
-    public EntityDto(Long id, String className, String name, String module, String namespace) {
+    public EntityDto(Long id, String className, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+        this(id, className, ClassName.getSimpleName(className), module, namespace, securityMode, securityMembers);
+    }
+
+    public EntityDto(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
+        this(null, className, name, module, namespace, securityMode, securityMembers);
+    }
+
+    public EntityDto(Long id, String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
         this.id = id;
         this.className = className;
         this.name = name;
         this.module = module;
         this.namespace = namespace;
+        this.securityMode = securityMode;
+        this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
     }
 
@@ -117,6 +133,22 @@ public class EntityDto {
 
     public void setOutdated(boolean outdated) {
         this.outdated = outdated;
+    }
+
+    public SecurityMode getSecurityMode() {
+        return securityMode;
+    }
+
+    public void setSecurityMode(SecurityMode securityMode) {
+        this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
+    }
+
+    public Set<String> getSecurityMembers() {
+        return securityMembers;
+    }
+
+    public void setSecurityMembers(Set<String> securityMembers) {
+        this.securityMembers = securityMembers;
     }
 
     /**

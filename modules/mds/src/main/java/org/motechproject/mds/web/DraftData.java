@@ -69,6 +69,10 @@ public class DraftData {
         return getValue(ADVANCED) != null;
     }
 
+    public boolean isForSecurity() {
+        return getValue(SECURITY) != null;
+    }
+
     public String getPath() {
         Object path = getValue(PATH);
         return (path == null) ? null : path.toString();

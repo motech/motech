@@ -176,11 +176,24 @@
         * This function is used to set security settings by getting them from the server.
         */
         setSecuritySettings = function () {
-            $scope.securitySettings = Entities.getSecurity({id: $scope.selectedEntity.id},
-                function() {
-                    $('#usersSelect').select2('val', $scope.securitySettings.users);
-                    $('#rolesSelect').select2('val', $scope.securitySettings.roles);
-                });
+            $scope.securitySettings = {};
+            $scope.securitySettings.roles = [];
+            $scope.securitySettings.users = [];
+
+            if ($scope.selectedEntity === null) {
+                return;
+            }
+
+            $scope.securitySettings.securityMode =  $scope.selectedEntity.securityMode.valueOf();
+
+            if ($scope.securitySettings.securityMode === 'USERS'){
+                $scope.securitySettings.users = $scope.selectedEntity.securityMembers;
+            } else if ($scope.securitySettings.securityMode === 'ROLES'){
+                $scope.securitySettings.roles = $scope.selectedEntity.securityMembers;
+            }
+
+            $('#usersSelect').select2('val', $scope.securitySettings.users);
+            $('#rolesSelect').select2('val', $scope.securitySettings.roles);
         };
 
         /**
@@ -219,7 +232,10 @@
         * The $scope.securitySettings contains security settings of selected entity. By default
         * there are no security settings
         */
-        $scope.securitySettings = null;
+        $scope.securitySettings = {};
+        $scope.securitySettings.roles = [];
+        $scope.securitySettings.users = [];
+        $scope.securitySettings.securityMode = undefined;
 
         /**
         * The $scope.fields contains entity fields. By default there are no fields.
@@ -844,7 +860,6 @@
                 successCallback = function (data) {
                     var pre = {id: $scope.selectedEntity.id},
                         successCallback = function () {
-                            setSecuritySettings();
                             setAdvancedSettings();
                             unblockUI();
                         };
@@ -1746,7 +1761,7 @@
         * Gets a class for 'Security' view toggle button based on entity access option
         */
         $scope.getClass = function(access) {
-            if ($scope.securitySettings === null || $scope.securitySettings.access !== access) {
+            if ($scope.securitySettings === null || $scope.securitySettings.securityMode !== access) {
                 return 'btn btn-default';
             } else {
                 return 'btn btn-success';
@@ -1760,113 +1775,93 @@
             if (access !== 'USERS') {
                 $scope.clearUsers();
             }
+
             if (access !== 'ROLES') {
                 $scope.clearRoles();
             }
-        };
 
-        /**
-        * Clears user list in 'Security' view
-        */
-        $scope.clearUsers = function() {
             $scope.draft({
                 edit: true,
                 values: {
-                    path: '$removeAllUsers',
-                    security: true
+                    path: "$accessChanged",
+                    value: [access]
                 }
             }, function () {
-                $scope.safeApply(function () {
-                   $scope.securitySettings.users.length = 0;
-                   $('#usersSelect').select2('val', $scope.securitySettings.users);
-                });
+                $scope.securitySettings.securityMode = access;
             });
         };
 
         /**
         * Clears roles list in 'Security' view
         */
-        $scope.clearRoles = function() {
+        $scope.commitSecurity = function() {
+            $scope.securityList = [];
+
+            if ($scope.securitySettings.securityMode === 'USERS') {
+                $scope.clearRoles();
+                $scope.securityList = $scope.securitySettings.users;
+            } else if ($scope.securitySettings.securityMode === 'ROLES') {
+                $scope.clearUsers();
+                $scope.securityList = $scope.securitySettings.roles;
+            } else {
+                $scope.clearUsers();
+                $scope.clearRoles();
+            }
+
             $scope.draft({
                 edit: true,
                 values: {
-                    path: '$removeAllRoles',
-                    security: true
+                    path: "$securitySave",
+                    security: true,
+                    value: [$scope.securitySettings.securityMode, $scope.securityList]
                 }
-            }, function () {
-                $scope.safeApply(function () {
-                   $scope.securitySettings.roles.length = 0;
-                   $('#rolesSelect').select2('val', $scope.securitySettings.roles);
-                });
             });
+        };
+
+        /**
+        * Clears user list in 'Security' view
+        */
+        $scope.clearUsers = function() {
+            $scope.securitySettings.users = [];
+            $('#usersSelect').select2('val', $scope.securitySettings.users);
+        };
+
+        /**
+        * Clears roles list in 'Security' view
+        */
+        $scope.clearRoles = function() {
+            $scope.securitySettings.roles = [];
+            $('#rolesSelect').select2('val', $scope.securitySettings.roles);
         };
 
         /**
         * Callback function called when users list under 'Security' view changes
         */
         $scope.usersChanged = function(change) {
-            var value, path;
+            var value;
 
             if (change.added) {
-                path = '$addUser';
                 value = change.added.text;
+                $scope.securitySettings.users.push(value);
             } else if (change.removed) {
-                path = '$removeUser';
                 value = change.removed.text;
-            } else {
-                return;
+                $scope.securitySettings.users.removeObject(value);
             }
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: path,
-                    security: true,
-                    value: [value]
-                }
-            }, function () {
-                $scope.safeApply(function () {
-                    if (change.added) {
-                        $scope.securitySettings.users.push(value);
-                    } else if (change.removed) {
-                        $scope.securitySettings.users.removeObject(value);
-                    }
-                });
-            });
         };
 
         /**
         * Callback function called when roles list under 'Security' view changes
         */
         $scope.rolesChanged = function(change) {
-            var value, path;
+            var value;
 
             if (change.added) {
-                path = '$addRole';
                 value = change.added.text;
+                $scope.securitySettings.roles.push(value);
             } else if (change.removed) {
-                path = '$removeRole';
                 value = change.removed.text;
-            } else {
-                return;
+                $scope.securitySettings.roles.removeObject(value);
             }
-
-            $scope.draft({
-                edit: true,
-                values: {
-                    path: path,
-                    security: true,
-                    value: [value]
-                }
-            }, function () {
-                $scope.safeApply(function () {
-                    if (change.added) {
-                        $scope.securitySettings.roles.push(value);
-                    } else if (change.removed) {
-                        $scope.securitySettings.roles.removeObject(value);
-                    }
-                });
-            });
         };
 
         // check every 5 seconds if the entity is outdated

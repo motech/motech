@@ -6,7 +6,6 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldDto;
 import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.LookupDto;
-import org.motechproject.mds.dto.SecuritySettingsDto;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.domain.EntityRecord;
 import org.motechproject.mds.web.domain.HistoryRecord;
@@ -56,9 +55,6 @@ public interface EntityService {
     AdvancedSettingsDto getAdvancedSettings(Long entityId);
 
     AdvancedSettingsDto getAdvancedSettings(Long entityId, boolean committed);
-
-    // TODO: replace with entity.getSecuritySettings
-    SecuritySettingsDto getSecuritySettings(Long entityId);
 
     List<EntityRecord> getEntityRecords(Long entityId);
 
