@@ -29,6 +29,7 @@ import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.ex.FieldNotFoundException;
 import org.motechproject.mds.ex.NoSuchTypeException;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.AllEntityAudits;
 import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.BaseMdsService;
@@ -71,6 +72,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private MDSConstructor constructor;
     private AllTypes allTypes;
     private AllEntityDrafts allEntityDrafts;
+    private AllEntityAudits allEntityAudits;
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
 
@@ -82,6 +84,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public EntityDto createEntity(EntityDto entityDto) throws IOException {
         String packageName = ClassName.getPackage(entityDto.getClassName());
         boolean fromUI = StringUtils.isEmpty(packageName);
+        String username = getUsername();
 
         if (fromUI) {
             // in this situation entity.getName() returns a simple name of class
@@ -98,6 +101,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         if (fromUI) {
             LOG.info("Entity from UI - constructing");
             constructor.constructEntity(entity);
+        }
+
+        if (username != null) {
+            allEntityAudits.createAudit(entity, username);
         }
 
         return entity.toDto();
@@ -236,13 +243,18 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Transactional
     public void commitChanges(Long entityId) {
         EntityDraft draft = getEntityDraft(entityId);
-
         if (draft.isOutdated()) {
             throw new EntityChangedException();
         }
 
         Entity parent = draft.getParentEntity();
+        String username = draft.getDraftOwnerUsername();
         parent.updateFromDraft(draft);
+
+        if (username != null) {
+            allEntityAudits.createAudit(parent, username);
+        }
+
         allEntityDrafts.delete(draft);
     }
 
@@ -674,5 +686,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllEntityDrafts(AllEntityDrafts allEntityDrafts) {
         this.allEntityDrafts = allEntityDrafts;
+    }
+
+    @Autowired
+    public void setAllEntityAudits(AllEntityAudits allEntityAudits) {
+        this.allEntityAudits = allEntityAudits;
     }
 }

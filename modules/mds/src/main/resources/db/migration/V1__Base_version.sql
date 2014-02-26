@@ -44,6 +44,32 @@ LOCK TABLES "Entity" WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table "EntityAudit"
+--
+
+DROP TABLE IF EXISTS "EntityAudit";
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "EntityAudit" (
+  "id" bigint(20) NOT NULL,
+  "modificationDate" datetime DEFAULT NULL,
+  "ownerUsername" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  "version" bigint(20) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "EntityAudit_FK1" FOREIGN KEY ("id") REFERENCES "Entity" ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "EntityAudit"
+--
+
+LOCK TABLES "EntityAudit" WRITE;
+/*!40000 ALTER TABLE "EntityAudit" DISABLE KEYS */;
+/*!40000 ALTER TABLE "EntityAudit" ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table "Entity_securityMembers"
 --
 
@@ -90,6 +116,7 @@ CREATE TABLE "Field" (
   "uiDisplayable" bit(1) NOT NULL,
   "uiFilterable" bit(1) NOT NULL,
   "uiDisplayPosition" bigint(20) DEFAULT NULL,
+  "readOnly" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE KEY "ENTITY_FIELDNAME_IDX" ("entity_id_OID","name"),
   KEY "Field_N50" ("entity_id_OID"),
@@ -200,6 +227,7 @@ UNLOCK TABLES;
 --
 -- Table structure for table "Lookup"
 --
+
 DROP TABLE IF EXISTS "Lookup";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -210,11 +238,21 @@ CREATE TABLE "Lookup" (
   "lookupName" varchar(255) CHARACTER SET latin1 COLLATE latin1_bin DEFAULT NULL,
   "singleObjectReturn" bit(1) NOT NULL,
   "lookups_INTEGER_IDX" int(11) DEFAULT NULL,
+  "readOnly" bit(1) NOT NULL,
   PRIMARY KEY ("id"),
   KEY "Lookup_N49" ("entity_id_OID"),
   CONSTRAINT "Lookup_FK1" FOREIGN KEY ("entity_id_OID") REFERENCES "Entity" ("id")
 );
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "Lookup"
+--
+
+LOCK TABLES "Lookup" WRITE;
+/*!40000 ALTER TABLE "Lookup" DISABLE KEYS */;
+/*!40000 ALTER TABLE "Lookup" ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table "LookupFields"
@@ -233,6 +271,16 @@ CREATE TABLE "LookupFields" (
   CONSTRAINT "LookupFields_FK1" FOREIGN KEY ("id_OID") REFERENCES "Lookup" ("id"),
   CONSTRAINT "LookupFields_FK2" FOREIGN KEY ("id_EID") REFERENCES "Field" ("id")
 );
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table "LookupFields"
+--
+
+LOCK TABLES "LookupFields" WRITE;
+/*!40000 ALTER TABLE "LookupFields" DISABLE KEYS */;
+/*!40000 ALTER TABLE "LookupFields" ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table "RestOptions"
@@ -535,7 +583,6 @@ LOCK TABLES "TypeValidation_annotations" WRITE;
 INSERT INTO "TypeValidation_annotations" VALUES (1,'javax.validation.constraints.DecimalMin',0),(1,'javax.validation.constraints.Min',1),(2,'javax.validation.constraints.DecimalMax',0),(2,'javax.validation.constraints.Max',1),(3,'org.motechproject.mds.annotations.InSet',0),(4,'org.motechproject.mds.annotations.NotInSet',0),(5,'javax.validation.constraints.Pattern',0),(6,'javax.validation.constraints.DecimalMin',0),(6,'javax.validation.constraints.Size',1),(7,'javax.validation.constraints.DecimalMax',0),(7,'javax.validation.constraints.Size',1),(8,'javax.validation.constraints.DecimalMin',0),(8,'javax.validation.constraints.Min',1),(9,'javax.validation.constraints.DecimalMax',0),(9,'javax.validation.constraints.Max',1),(10,'org.motechproject.mds.annotations.InSet',0),(11,'org.motechproject.mds.annotations.NotInSet',0);
 /*!40000 ALTER TABLE "TypeValidation_annotations" ENABLE KEYS */;
 UNLOCK TABLES;
-
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
