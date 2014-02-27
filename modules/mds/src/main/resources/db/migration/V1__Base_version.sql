@@ -331,7 +331,7 @@ CREATE TABLE "SEQUENCE_TABLE" (
 
 LOCK TABLES "SEQUENCE_TABLE" WRITE;
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" DISABLE KEYS */;
-INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.Type',11),('org.motechproject.mds.domain.TypeSetting',11),('org.motechproject.mds.domain.TypeSettingOption',11),('org.motechproject.mds.domain.TypeValidation',21);
+INSERT INTO "SEQUENCE_TABLE" VALUES ('org.motechproject.mds.domain.Type',12),('org.motechproject.mds.domain.TypeSetting',11),('org.motechproject.mds.domain.TypeSettingOption',11),('org.motechproject.mds.domain.TypeValidation',21);
 /*!40000 ALTER TABLE "SEQUENCE_TABLE" ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -474,7 +474,7 @@ CREATE TABLE "Type" (
 
 LOCK TABLES "Type" WRITE;
 /*!40000 ALTER TABLE "Type" DISABLE KEYS */;
-INSERT INTO "Type" VALUES (1,'mds.field.description.integer','mds.field.integer','int','java.lang.Integer'),(2,'mds.field.description.string','mds.field.string','str','java.lang.String'),(3,'mds.field.description.boolean','mds.field.boolean','bool','java.lang.Boolean'),(4,'mds.field.description.date','mds.field.date','date','java.util.Date'),(5,'mds.field.description.time','mds.field.time','time','org.motechproject.commons.date.model.Time'),(6,'mds.field.description.datetime','mds.field.datetime','datetime','org.joda.time.DateTime'),(7,'mds.field.description.decimal','mds.field.decimal','dec','java.lang.Double'),(8,'mds.field.description.combobox','mds.field.combobox','list','java.util.List');
+INSERT INTO "Type" VALUES (1,'mds.field.description.integer','mds.field.integer','int','java.lang.Integer'),(2,'mds.field.description.string','mds.field.string','str','java.lang.String'),(3,'mds.field.description.boolean','mds.field.boolean','bool','java.lang.Boolean'),(4,'mds.field.description.date','mds.field.date','date','java.util.Date'),(5,'mds.field.description.time','mds.field.time','time','org.motechproject.commons.date.model.Time'),(6,'mds.field.description.datetime','mds.field.datetime','datetime','org.joda.time.DateTime'),(7,'mds.field.description.decimal','mds.field.decimal','dec','java.lang.Double'),(8,'mds.field.description.combobox','mds.field.combobox','list','java.util.List'),(9,'mds.field.description.long','mds.field.long','longName','java.lang.Long');
 /*!40000 ALTER TABLE "Type" ENABLE KEYS */;
 UNLOCK TABLES;
 
