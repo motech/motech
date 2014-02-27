@@ -18,6 +18,9 @@ import org.motechproject.mds.domain.Lookup;
 import org.motechproject.mds.ex.EntityInfrastructureException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.service.impl.DefaultMotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
@@ -33,7 +36,6 @@ import java.util.List;
 import static javassist.bytecode.SignatureAttribute.ClassSignature;
 import static javassist.bytecode.SignatureAttribute.ClassType;
 import static javassist.bytecode.SignatureAttribute.TypeParameter;
-import static org.motechproject.mds.util.Constants.Packages;
 
 /**
  * The <code>EntityInfrastructureBuilder</code> class is responsible for building infrastructure for a given entity:
@@ -42,12 +44,7 @@ import static org.motechproject.mds.util.Constants.Packages;
  */
 @Component
 public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuilder {
-
     private static final Logger LOG = LoggerFactory.getLogger(EntityInfrastructureBuilderImpl.class);
-
-    public static final String REPOSITORY_BASE_CLASS = Packages.REPOSITORY + ".MotechDataRepository";
-    public static final String SERVICE_BASE_CLASS = Packages.SERVICE + ".MotechDataService";
-    public static final String SERVICE_IMPL_BASE_CLASS = Packages.SERVICE_IMPL + ".DefaultMotechDataService";
 
     private final ClassPool classPool = MotechClassPool.getDefault();
 
@@ -94,7 +91,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
     private byte[] getRepositoryCode(String repositoryClassName, String typeName) {
         try {
-            CtClass superClass = classPool.getCtClass(REPOSITORY_BASE_CLASS);
+            CtClass superClass = classPool.getCtClass(MotechDataRepository.class.getName());
             superClass.setGenericSignature(getGenericSignature(typeName));
 
             CtClass subClass = createOrRetrieveClass(repositoryClassName, superClass);
@@ -117,7 +114,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
     private byte[] getInterfaceCode(String interfaceClassName, String typeName, Entity entity) {
         try {
-            CtClass superInterface = classPool.getCtClass(SERVICE_BASE_CLASS);
+            CtClass superInterface = classPool.getCtClass(MotechDataService.class.getName());
             superInterface.setGenericSignature(getGenericSignature(typeName));
 
             CtClass newInterface = createOrRetrieveInterface(interfaceClassName, superInterface);
@@ -143,7 +140,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
                                   Entity entity) {
         try {
-            CtClass superClass = classPool.getCtClass(SERVICE_IMPL_BASE_CLASS);
+            CtClass superClass = classPool.getCtClass(DefaultMotechDataService.class.getName());
             superClass.setGenericSignature(getGenericSignature(entity.getClassName()));
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);

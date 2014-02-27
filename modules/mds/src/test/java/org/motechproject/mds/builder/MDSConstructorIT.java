@@ -9,9 +9,12 @@ import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.BaseIT;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.repository.AllEntities;
+import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.repository.MotechDataRepository;
 import org.motechproject.mds.service.impl.DefaultMotechDataService;
@@ -43,6 +46,9 @@ public class MDSConstructorIT extends BaseIT {
     private AllEntities allEntities;
 
     @Autowired
+    private AllTypes allTypes;
+
+    @Autowired
     private MetadataHolder metadataHolder;
 
     @Before
@@ -60,8 +66,12 @@ public class MDSConstructorIT extends BaseIT {
 
     @Test
     public void testConstructEntity() throws Exception {
+        Type longType = allTypes.retrieveByClassName(Long.class.getName());
+
         Entity temp = new Entity();
         temp.setClassName(CLASS_NAME);
+
+        temp.addField(new Field(temp, "id", longType, true, true));
 
         constructor.constructEntity(temp);
 
@@ -103,10 +113,11 @@ public class MDSConstructorIT extends BaseIT {
     @Test
     public void shouldConstructEntityWithFields() throws Exception {
         Entity entity = new Entity(ENTITY_WITH_FIELDS);
-        entity.setFields(asList(field("fieldInt", Integer.class), field("fieldStr", String.class),
-                field("fieldDouble", Double.class), field("fieldBool", Boolean.class),
-                field("fieldDate", Date.class), field("fieldDateTime", DateTime.class),
-                field("fieldTime", Time.class), field("fieldList", List.class)));
+        entity.setFields(asList(field("id", Long.class), field("fieldInt", Integer.class),
+                field("fieldStr", String.class), field("fieldDouble", Double.class),
+                field("fieldBool", Boolean.class), field("fieldDate", Date.class),
+                field("fieldDateTime", DateTime.class), field("fieldTime", Time.class),
+                field("fieldList", List.class)));
 
         constructor.constructEntity(entity);
 

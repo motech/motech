@@ -1,6 +1,7 @@
 package org.motechproject.mds.web.domain;
 
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 
@@ -15,6 +16,7 @@ public class FieldRecord {
     private String tooltip;
     private Object value;
     private TypeDto type;
+    private List<MetadataDto> metadata;
     private List<SettingDto> settings;
     private Long id;
 
@@ -35,6 +37,7 @@ public class FieldRecord {
         this.value = fieldDto.getBasic().getDefaultValue();
         this.type = fieldDto.getType();
         this.id = fieldDto.getId();
+        this.metadata = fieldDto.getMetadata();
         this.settings = fieldDto.getSettings();
         this.tooltip = fieldDto.getBasic().getTooltip();
     }
@@ -77,6 +80,14 @@ public class FieldRecord {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<MetadataDto> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<MetadataDto> metadata) {
+        this.metadata = metadata;
     }
 
     public List<SettingDto> getSettings() {

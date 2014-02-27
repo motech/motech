@@ -33,8 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.selectFirst;
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -191,7 +194,7 @@ public class EntityServiceIT extends BaseIT {
 
         List<FieldDto> fields = entityService.getFields(entityId);
         assertNotNull(fields);
-        assertEquals(asList("f1name"),
+        assertEquals(asList("id", "f1name"),
                 extract(fields, on(FieldDto.class).getBasic().getName()));
 
         // check if abandoning works
@@ -199,7 +202,8 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertTrue(fields.isEmpty());
+        assertEquals(asList("id"),
+                extract(fields, on(FieldDto.class).getBasic().getName()));
 
         // check add-edit-commit
         entityService.saveDraftEntityChanges(entityId,
@@ -208,8 +212,8 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(1, fields.size());
-        FieldDto field = fields.get(0);
+        assertEquals(2, fields.size());
+        FieldDto field = selectFirst(fields, having(on(FieldDto.class).getBasic().getName(), equalTo("f1name")));
 
         entityService.saveDraftEntityChanges(entityDto.getId(),
                 DraftBuilder.forFieldEdit(field.getId(), "basic.displayName", "newDisp"));
@@ -217,14 +221,14 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(asList("newDisp"),
+        assertEquals(asList("id", "newDisp"),
                 extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
 
         entityService.commitChanges(entityId);
 
         // check if changes were persisted in db
         Entity entityFromDb = getEntities().get(0);
-        assertEquals(1, entityFromDb.getFields().size());
+        assertEquals(2, entityFromDb.getFields().size());
 
         Field fieldFromDb = entityFromDb.getField("f1name");
         assertNotNull(fieldFromDb);

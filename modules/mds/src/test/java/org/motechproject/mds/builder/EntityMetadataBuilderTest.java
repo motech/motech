@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Field;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -39,6 +40,9 @@ public class EntityMetadataBuilderTest {
     private Entity entity;
 
     @Mock
+    private Field idField;
+
+    @Mock
     private JDOMetadata jdoMetadata;
 
     @Mock
@@ -54,6 +58,7 @@ public class EntityMetadataBuilderTest {
     public void setUp() {
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
+        when(entity.getField("id")).thenReturn(idField);
     }
 
     @Test

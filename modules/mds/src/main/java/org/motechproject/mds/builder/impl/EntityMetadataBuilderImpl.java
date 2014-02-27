@@ -19,6 +19,7 @@ import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -40,9 +41,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
         cmd.setIdentityType(IdentityType.APPLICATION);
         cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
-        FieldMetadata idFieldMd = cmd.newFieldMetadata("id");
-        idFieldMd.setValueStrategy(IdGeneratorStrategy.IDENTITY);
-        idFieldMd.setPrimaryKey(true);
+        addIdField(cmd, entity);
 
         for (Field field : entity.getFields()) {
             // we want to fetch lists and Time in the default group so they are attached
@@ -89,7 +88,7 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     private static String getTableName(Entity entity) {
         String simpleName = ClassName.getSimpleName(entity.getClassName());
-        String module = StringUtils.defaultIfBlank(entity.getModule(), "MDS");
+        String module = defaultIfBlank(entity.getModule(), "MDS");
         String namespace = entity.getNamespace();
 
         StringBuilder builder = new StringBuilder();
@@ -103,4 +102,15 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
         return builder.toString().replace(' ', '_').toUpperCase();
     }
+
+    private void addIdField(ClassMetadata cmd, Entity entity) {
+        if (null != entity.getField("id")) {
+            FieldMetadata metadata = cmd.newFieldMetadata("id");
+            metadata.setValueStrategy(IdGeneratorStrategy.IDENTITY);
+            metadata.setPrimaryKey(true);
+            metadata.setIndexed(true);
+            metadata.setUnique(true);
+        }
+    }
+
 }

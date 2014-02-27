@@ -69,12 +69,10 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Transactional
     public Object saveInstance(EntityRecord entityRecord) {
         EntityDto entity = getEntity(entityRecord.getEntitySchemaId());
-
         String className = entity.getClassName();
 
         try {
             MotechDataService service = getServiceForEntity(entity);
-
             Class<?> entityClass = MDSClassLoader.getInstance().loadClass(className);
 
             boolean newObject = entityRecord.getId() == null;
@@ -96,7 +94,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             } else {
                 return service.update(instance);
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException  e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             LOG.error("Unable to save object instance", e);
             throw new ObjectUpdateException(e);
         }
@@ -285,7 +283,6 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
                 Object value = fieldRecord.getValue();
-
                 Object parsedValue = TypeHelper.parse(value, fieldRecord.getType().getTypeClass());
 
                 PropertyUtils.setProperty(instance, fieldRecord.getName(), parsedValue);
@@ -322,7 +319,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                     value = DTF.print(((Date) value).getTime());
                 } else if (value instanceof Time) {
                     value = ((Time) value).timeStr();
-                // TODO: temporary solution for single value select combobox
+                    // TODO: temporary solution for single value select combobox
                 } else if (value instanceof List) {
                     List list = (List) value;
                     if (!list.isEmpty()) {
@@ -337,9 +334,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             }
 
             Field idField = FieldUtils.getDeclaredField(instance.getClass(), "id", true);
-            Long id = (Long) idField.get(instance);
+            Number id = (Number) idField.get(instance);
 
-            return new EntityRecord(id, entityDto.getId(), fieldRecords);
+            return new EntityRecord(id.longValue(), entityDto.getId(), fieldRecords);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOG.error("Unable to read object", e);
             throw new ObjectReadException(e);
