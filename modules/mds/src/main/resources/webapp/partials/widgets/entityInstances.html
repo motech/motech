@@ -7,7 +7,7 @@
         <i class="icon-caret-down icon-large"></i>
         {{msg('mds.btn.lookup')}}
     </button>
-    <select class="multiselect" ng-model="selectedFields" ng-options="field.basic.displayName as field.basic.name for field in allEntityFields"
+    <select class="multiselect" ng-model="selectedFields" ng-options="field as field.basic.displayName for field in allEntityFields"
             multiple="multiple" multiselect-dropdown>
     </select>
     <button ng-click="exportEntityInstances()" type="button" class="btn btn-default">

@@ -23,7 +23,7 @@ public class AllTypeValidations extends MotechDataRepository<TypeValidation> {
     }
 
     public List<TypeValidation> retrieveAll(Type type, Class<? extends Annotation> annotation) {
-        String filter = QueryUtil.createFilter(new String[]{"type"});
+        String filter = QueryUtil.createFilter(new String[]{"valueType"});
         filter += "&& annotations.contains(param1)";
 
         Query query = getPersistenceManager().newQuery(TypeValidation.class);

@@ -1,6 +1,6 @@
 package org.motechproject.mds.service.impl.internal;
 
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -282,12 +283,9 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     private void updateFields(Object instance, List<FieldRecord> fieldRecords) {
         try {
             for (FieldRecord fieldRecord : fieldRecords) {
-                Object value = fieldRecord.getValue();
-                Object parsedValue = TypeHelper.parse(value, fieldRecord.getType().getTypeClass());
-
-                PropertyUtils.setProperty(instance, fieldRecord.getName(), parsedValue);
+                setProperty(instance, fieldRecord);
             }
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (Exception e) {
             LOG.error("Error while updating fields", e);
             throw new ObjectUpdateException(e);
         }
@@ -310,7 +308,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             List<FieldRecord> fieldRecords = new ArrayList<>();
 
             for (FieldDto field : fields) {
-                Object value = PropertyUtils.getProperty(instance, field.getBasic().getName());
+                Object value = getProperty(instance, field);
 
                 // turn dates to string format
                 if (value instanceof DateTime) {
@@ -356,6 +354,41 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             }
         }
         throw new FieldNotFoundException();
+    }
+
+    private void setProperty(Object instance, FieldRecord fieldRecord)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+        Object value = fieldRecord.getValue();
+
+        Object parsedValue = TypeHelper.parse(value, fieldRecord.getType().getTypeClass());
+        String methodName = "set" + StringUtils.capitalize(fieldRecord.getName());
+        Class<?> propertyClass = MDSClassLoader.getInstance().loadClass(fieldRecord.getType().getTypeClass());
+
+        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, propertyClass);
+        if (method == null) {
+            throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldRecord.getName()));
+        }
+
+        method.invoke(instance, parsedValue);
+    }
+
+    private Object getProperty(Object instance, FieldDto field)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        String fieldName = field.getBasic().getName();
+        String methodName = "get" + StringUtils.capitalize(fieldName);
+
+        Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, new Class[]{});
+        // for booleans try the 'is' getter
+        if (method == null && field.getType().getTypeClass().equals(Boolean.class.getName())) {
+            methodName = "is" + StringUtils.capitalize(fieldName);
+            method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, new Class[]{});
+        }
+
+        if (method == null) {
+            throw new NoSuchMethodException(String.format("No getter %s for field %s", methodName, fieldName));
+        }
+
+        return method.invoke(instance);
     }
 
     @Autowired

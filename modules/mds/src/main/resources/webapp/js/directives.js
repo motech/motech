@@ -899,7 +899,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "../mds/entities/" + scope.selectedEntity.id + "/fields",
+                    url: "../mds/entities/" + scope.selectedEntity.id + "/entityFields",
                     dataType: "json",
                     success: function (result) {
                         var colModel = [], i;
@@ -957,12 +957,15 @@
                                 $('.ui-jqgrid-pager').width('100%');
                                 $(".jqgfirstrow").addClass("ng-hide");
                                 angular.forEach($("select.multiselect")[0], function(field) {
-                                    if (field.selected){
-                                        $("th[id='resourceTable_" + field.label + "']").show();
-                                        $("td[aria-describedby='resourceTable_" + field.label + "']").show();
-                                    } else {
-                                        $("th[id='resourceTable_" + field.label + "']").hide();
-                                        $("td[aria-describedby='resourceTable_" + field.label + "']").hide();
+                                    var name = scope.getFieldName(field.label);
+                                    if (name) {
+                                        if (field.selected){
+                                            $("th[id='resourceTable_" + name + "']").show();
+                                            $("td[aria-describedby='resourceTable_" + name + "']").show();
+                                        } else {
+                                            $("th[id='resourceTable_" + name + "']").hide();
+                                            $("td[aria-describedby='resourceTable_" + name + "']").hide();
+                                        }
                                     }
                                 });
                             }
@@ -1007,12 +1010,15 @@
 
                             $(".jqgfirstrow").addClass("ng-hide");
                             angular.forEach(element[0], function(field) {
-                                if (field.selected){
-                                    $("th[id='resourceTable_" + field.label + "']").show("fast");
-                                    $("td[aria-describedby='resourceTable_" + field.label + "']").show("fast");
-                                } else {
-                                    $("th[id='resourceTable_" + field.label + "']").hide("fast");
-                                    $("td[aria-describedby='resourceTable_" + field.label + "']").hide("fast");
+                                var name = scope.getFieldName(field.label);
+                                if (name) {
+                                    if (field.selected){
+                                        $("th[id='resourceTable_" + name + "']").show("fast");
+                                        $("td[aria-describedby='resourceTable_" + name + "']").show("fast");
+                                    } else {
+                                        $("th[id='resourceTable_" + name + "']").hide("fast");
+                                        $("td[aria-describedby='resourceTable_" + name + "']").hide("fast");
+                                    }
                                 }
                             });
                         }

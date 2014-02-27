@@ -57,6 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -319,6 +321,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         while (iterator.hasNext()) {
             Lookup lookup = iterator.next();
+
+            // don't remove user defined lookups
+            if (!lookup.isReadOnly()) {
+                continue;
+            }
+
             boolean found = false;
 
             for (LookupDto lookupDto : lookups) {
@@ -429,7 +437,27 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         assertEntityExists(entity);
 
-        List<Field> fields = entity.getFields();
+        // the returned collection is unmodifiable
+        List<Field> fields = new ArrayList<>(entity.getFields());
+
+        // for data browser purposes, we sort the fields by their ui display order
+        if (!forDraft) {
+            Collections.sort(fields, new Comparator<Field>() {
+                @Override
+                public int compare(Field o1, Field o2) {
+                    Long position1 = o1.getUIDisplayPosition();
+                    Long position2 = o2.getUIDisplayPosition();
+
+                    if (position1 == null) {
+                        return -1;
+                    } else if (position2 == null) {
+                        return 1;
+                    } else {
+                        return (position1 > position2) ? 1 : -1;
+                    }
+                }
+            });
+        }
 
         List<FieldDto> fieldDtos = new ArrayList<>();
         for (Field field : fields) {
@@ -525,6 +553,12 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         while (iterator.hasNext()) {
             Field field = iterator.next();
+
+            // don't remove user defined fields
+            if (!field.isReadOnly()) {
+                continue;
+            }
+
             boolean found = false;
 
             for (FieldDto fieldDto : fields) {
@@ -618,6 +652,22 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
 
         Lookup lookup = entity.getLookupByName(lookupName);
         return (lookup == null) ? null : lookup.toDto();
+    }
+
+    @Override
+    @Transactional
+    public List<FieldDto> getDisplayFields(Long entityId) {
+        Entity entity = allEntities.retrieveById(entityId);
+        assertEntityExists(entity);
+
+        List<FieldDto> displayFields = new ArrayList<>();
+        for (Field field : entity.getFields()) {
+            if (field.isUIDisplayable()) {
+                displayFields.add(field.toDto());
+            }
+        }
+
+        return displayFields;
     }
 
     @Override

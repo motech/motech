@@ -1881,7 +1881,7 @@
     /**
     * The DataBrowserCtrl controller is used on the 'Data Browser' view.
     */
-    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities, Instances) {
+    mds.controller('DataBrowserCtrl', function ($scope, $http, Entities, Instances, $timeout) {
         workInProgress.setActualEntity(Entities, undefined);
 
         /**
@@ -2066,18 +2066,19 @@
         */
         $scope.selectEntity = function (module, entityName) {
             blockUI();
+
+            // get entity, fields, display fields
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
+                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
+                    $scope.allEntityFields = data;
+                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
+                        $scope.selectedFields = data;
+                        $scope.updateInstanceGridFields();
+                    });
+                });
                 unblockUI();
             });
-
-            setTimeout(function() {
-                $scope.entityAdvanced = Entities.getAdvanced({id: $scope.selectedEntity.id});
-                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/fields').success(function (data) {
-                    $scope.allEntityFields = data;
-                });
-                $(".multiselect-all input").click();
-            }, 1000);
         };
 
         /**
@@ -2323,6 +2324,39 @@
                     $scope.showLookupDialog();
             }
         });
+
+        $scope.getFieldName = function(displayName) {
+            var result;
+            angular.forEach($scope.allEntityFields, function(field) {
+                if (field.basic.displayName === displayName) {
+                    result = field.basic.name;
+                }
+            });
+            return result;
+        };
+
+        $scope.updateInstanceGridFields = function() {
+            angular.forEach($("select.multiselect")[0], function(field) {
+                var name = $scope.getFieldName(field.label), selected = false;
+                if (name) {
+                    angular.forEach($scope.selectedFields, function(selectedField) {
+                        if (selectedField.basic.name === name) {
+                            selected = true;
+                        }
+                    });
+
+                    if (selected) {
+                        $timeout(function() {
+                            $($(".multiselect-container").find(":checkbox")).each(function() {
+                                if (field.label === $.trim($(this).parent().text())) {
+                                    $(this).click();
+                                }
+                            });
+                        });
+                    }
+                }
+            });
+        };
     });
 
     /**

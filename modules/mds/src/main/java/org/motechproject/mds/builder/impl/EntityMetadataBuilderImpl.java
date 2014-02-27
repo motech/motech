@@ -31,7 +31,8 @@ public class EntityMetadataBuilderImpl implements EntityMetadataBuilder {
 
     @Override
     public void addEntityMetadata(JDOMetadata jdoMetadata, Entity entity) {
-        String packageName = ClassName.getPackage(ClassName.getEntityName(entity.getClassName()));
+        String className = (entity.isDDE()) ? entity.getClassName() : ClassName.getEntityName(entity.getClassName());
+        String packageName = ClassName.getPackage(className);
 
         PackageMetadata pmd = getPackageMetadata(jdoMetadata, packageName);
         ClassMetadata cmd = getClassMetadata(pmd, ClassName.getSimpleName(ClassName.getEntityName(entity.getClassName())));

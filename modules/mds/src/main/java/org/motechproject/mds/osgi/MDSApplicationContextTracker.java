@@ -2,6 +2,7 @@ package org.motechproject.mds.osgi;
 
 import org.motechproject.bundle.extender.MotechOsgiConfigurableApplicationContext;
 import org.motechproject.mds.annotations.internal.MDSAnnotationProcessor;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.osgi.web.ApplicationContextTracker;
 import org.motechproject.osgi.web.MotechOsgiWebApplicationContext;
 import org.osgi.framework.Bundle;
@@ -34,6 +35,7 @@ public class MDSApplicationContextTracker {
 
     private MDSAnnotationProcessor processor;
     private PackageAdmin packageAdmin;
+    private JarGeneratorService jarGeneratorService;
 
     @PostConstruct
     public void startTracker() {
@@ -60,6 +62,11 @@ public class MDSApplicationContextTracker {
     @Autowired
     public void setPackageAdmin(PackageAdmin packageAdmin) {
         this.packageAdmin = packageAdmin;
+    }
+
+    @Autowired
+    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
+        this.jarGeneratorService = jarGeneratorService;
     }
 
     private class MDSServiceTracker extends ApplicationContextTracker {
@@ -114,6 +121,7 @@ public class MDSApplicationContextTracker {
                 // We use a deprecated method from the package admin in order to avoid compile time issues
                 // since we have osgi.core 4.2.0 on the classpath. We cannot simply switch to 4.3.0 because
                 // of issues with OSGi ITs. Until they are resolved, we have to rely on the PackageAdmin.
+                jarGeneratorService.regenerateMdsDataBundle();
                 packageAdmin.refreshPackages(new Bundle[]{bundle});
             }
         }

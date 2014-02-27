@@ -75,4 +75,6 @@ public interface EntityService {
     EntityDto updateDraft(Long entityId);
 
     LookupDto getLookupByName(Long entityId, String lookupName);
+
+    List<FieldDto> getDisplayFields(Long entityId);
 }

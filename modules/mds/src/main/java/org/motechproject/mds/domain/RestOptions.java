@@ -116,7 +116,10 @@ public class RestOptions {
     }
 
     public List<Lookup> getLookups() {
-        List<Lookup> lookups = new ArrayList<>(getEntity().getLookups());
+        List<Lookup> lookups = new ArrayList<>();
+        if (getEntity() != null) {
+            lookups.addAll(getEntity().getLookups());
+        }
         CollectionUtils.filter(lookups, new RestPredicate());
 
         return lookups;

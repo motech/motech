@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.annotations.Transactional;
 import javax.jdo.metadata.JDOMetadata;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     private PersistenceManagerFactory persistenceManagerFactory;
 
     @Override
+    @Transactional
     public void constructEntity(Entity entity) {
         LOG.info("Constructing {}", entity.getClassName());
         // we need an jdo enhancer and a temporary classloader
@@ -60,7 +62,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         metadataBuilder.addEntityMetadata(jdoMetadata, entity);
         metadataBuilder.addEntityMetadata(tmpMetadata, entity);
 
-        ClassData classData = entityBuilder.build(entity);
+        ClassData classData = buildClass(entity);
 
         tmpClassLoader.defineClass(classData);
         enhancer.addClass(classData);

@@ -401,6 +401,7 @@ public class Field {
         setName(field.getBasic().getName());
         setRequired(field.getBasic().isRequired());
         setTooltip(field.getBasic().getTooltip());
+        setReadOnly(field.isReadOnly());
 
         if (field.getBasic().getDefaultValue() != null) {
             this.setDefaultValue(field.getBasic().getDefaultValue().toString());
