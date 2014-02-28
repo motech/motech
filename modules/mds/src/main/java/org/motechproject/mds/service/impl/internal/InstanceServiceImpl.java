@@ -25,6 +25,7 @@ import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.TypeHelper;
@@ -38,6 +39,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -223,6 +225,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             FieldRecord fieldRecord = new FieldRecord(field);
             fieldRecords.add(fieldRecord);
         }
+        populateDefaultFields(fieldRecords);
+
 
         return new EntityRecord(null, entityId, fieldRecords);
     }
@@ -243,6 +247,15 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         return instanceToRecord(instance, entity, fields);
+    }
+
+    private void populateDefaultFields(List<FieldRecord> fieldRecords) {
+        for (FieldRecord record : fieldRecords) {
+            if (Constants.Util.CREATOR_FIELD_NAME.equals(record.getName()) ||
+                    Constants.Util.OWNER_FIELD_NAME.equals(record.getName())) {
+                record.setValue(SecurityContextHolder.getContext().getAuthentication().getName());
+            }
+        }
     }
 
     private LookupDto getLookupByName(Long entityId, String lookupName) {

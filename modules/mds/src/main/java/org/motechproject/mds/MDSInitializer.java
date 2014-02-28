@@ -42,7 +42,8 @@ public class MDSInitializer {
 
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus status) {
-            constructor.constructAllEntities();
+            // don't build DDEs, they will be loaded when their module contexts become available
+            constructor.constructAllEntities(false);
             jarGeneratorService.regenerateMdsDataBundle();
             LOG.info("Motech data services initialization complete");
         }

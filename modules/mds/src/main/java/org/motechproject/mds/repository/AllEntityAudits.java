@@ -18,7 +18,7 @@ public class AllEntityAudits extends MotechDataRepository<EntityAudit> {
         super(EntityAudit.class);
     }
 
-    public EntityAudit createAudit(Entity entity, String username)  {
+    public EntityAudit createAudit(Entity entity, String username) {
 
         EntityAudit audit = new EntityAudit();
 

@@ -1,5 +1,8 @@
 package org.motechproject.mds.util;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import javax.jdo.Query;
 
 /**
@@ -38,6 +41,10 @@ public final class QueryUtil {
      * @see #createFilter(String[])
      */
     public static String createFilter(String[] properties) {
+        return createFilter(properties, null);
+    }
+
+    public static String createFilter(String[] properties, InstanceSecurityRestriction restriction) {
         StringBuilder filter = new StringBuilder();
 
         for (int i = 0; i < properties.length; ++i) {
@@ -51,6 +58,23 @@ public final class QueryUtil {
             filter.append(EQUALS_SIGN);
             filter.append(PARAM_PREFIX);
             filter.append(i);
+        }
+
+        // append a restriction either by user or by creator
+        if (restriction != null && !restriction.isEmpty()) {
+            if (properties.length > 0) {
+                filter.append(FILTER_AND);
+            }
+
+            if (restriction.isByCreator()) {
+                filter.append("creator");
+            } else if (restriction.isByOwner()) {
+                filter.append("owner");
+            }
+
+            filter.append(EQUALS_SIGN);
+            filter.append(PARAM_PREFIX);
+            filter.append(properties.length);
         }
 
         return filter.toString();
@@ -76,6 +100,10 @@ public final class QueryUtil {
      * @see #createFilter(String[])
      */
     public static String createDeclareParameters(Object[] values) {
+        return createDeclareParameters(values, null);
+    }
+
+    public static String createDeclareParameters(Object[] values, InstanceSecurityRestriction restriction) {
         StringBuilder parameters = new StringBuilder();
 
         for (int i = 0; i < values.length; ++i) {
@@ -89,6 +117,19 @@ public final class QueryUtil {
             parameters.append(SPACE);
             parameters.append(PARAM_PREFIX);
             parameters.append(i);
+        }
+
+        // append a restriction either by user or by creator
+        if (restriction != null && !restriction.isEmpty()) {
+            if (values.length > 0) {
+                parameters.append(DECLARE_PARAMETERS_COMMA);
+            }
+
+            parameters.append(String.class.getName());
+            parameters.append(SPACE);
+
+            parameters.append(PARAM_PREFIX);
+            parameters.append(values.length);
         }
 
         return parameters.toString();
@@ -113,5 +154,32 @@ public final class QueryUtil {
                 query.setOrdering(queryParams.getOrder().toString());
             }
         }
+    }
+
+    public static Object execute(Query query, InstanceSecurityRestriction restriction) {
+        if (restriction != null && !restriction.isEmpty()) {
+            return query.execute(getUsername());
+        } else {
+            return query.execute();
+        }
+    }
+
+    public static Object executeWithArray(Query query, Object[] values, InstanceSecurityRestriction restriction) {
+        if (restriction != null && !restriction.isEmpty()) {
+            return query.executeWithArray(values, getUsername());
+        } else {
+            return query.executeWithArray(values);
+        }
+    }
+
+    private static String getUsername() {
+        String username = null;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            username = authentication.getName();
+        }
+
+        return username;
     }
 }

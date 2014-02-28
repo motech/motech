@@ -354,6 +354,9 @@ public final class Constants {
          */
         public static final String ENTITY = "entity";
 
+        public static final String CREATOR_FIELD_NAME = "creator";
+        public static final String OWNER_FIELD_NAME = "owner";
+
         private Util() {
         }
     }

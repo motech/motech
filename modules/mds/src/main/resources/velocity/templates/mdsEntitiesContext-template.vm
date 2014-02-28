@@ -13,6 +13,8 @@
 
     <mvc:annotation-driven/>
 
+    <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
+
   #foreach ( $entry in $list )
   <bean id="$entry.get('name')Repository" class="$entry.get('repository')" />
 

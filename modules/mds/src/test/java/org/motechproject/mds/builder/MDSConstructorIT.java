@@ -67,11 +67,14 @@ public class MDSConstructorIT extends BaseIT {
     @Test
     public void testConstructEntity() throws Exception {
         Type longType = allTypes.retrieveByClassName(Long.class.getName());
+        Type stringType = allTypes.retrieveByClassName(String.class.getName());
 
         Entity temp = new Entity();
         temp.setClassName(CLASS_NAME);
 
         temp.addField(new Field(temp, "id", longType, true, true));
+        temp.addField(new Field(temp, "creator", stringType, true, true));
+        temp.addField(new Field(temp, "owner", stringType, true, true));
 
         constructor.constructEntity(temp);
 
@@ -96,6 +99,9 @@ public class MDSConstructorIT extends BaseIT {
 
             MotechDataRepository repository = (MotechDataRepository) repositoryClass.newInstance();
             DefaultMotechDataService service = (DefaultMotechDataService) serviceClass.newInstance();
+
+            // normally this is injected by the context of the generated bundle
+            PropertyUtils.setProperty(service, "allEntities", allEntities);
 
             repository.setPersistenceManagerFactory(getPersistenceManagerFactory());
             service.setRepository(repository);

@@ -194,7 +194,7 @@ public class EntityServiceIT extends BaseIT {
 
         List<FieldDto> fields = entityService.getFields(entityId);
         assertNotNull(fields);
-        assertEquals(asList("id", "f1name"),
+        assertEquals(asList("id", "creator", "owner", "f1name"),
                 extract(fields, on(FieldDto.class).getBasic().getName()));
 
         // check if abandoning works
@@ -202,7 +202,7 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(asList("id"),
+        assertEquals(asList("id", "creator", "owner"),
                 extract(fields, on(FieldDto.class).getBasic().getName()));
 
         // check add-edit-commit
@@ -212,7 +212,7 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(2, fields.size());
+        assertEquals(4, fields.size());
         FieldDto field = selectFirst(fields, having(on(FieldDto.class).getBasic().getName(), equalTo("f1name")));
 
         entityService.saveDraftEntityChanges(entityDto.getId(),
@@ -221,14 +221,14 @@ public class EntityServiceIT extends BaseIT {
         fields = entityService.getFields(entityId);
 
         assertNotNull(fields);
-        assertEquals(asList("id", "newDisp"),
+        assertEquals(asList("id", "creator", "owner", "newDisp"),
                 extract(fields, on(FieldDto.class).getBasic().getDisplayName()));
 
         entityService.commitChanges(entityId);
 
         // check if changes were persisted in db
         Entity entityFromDb = getEntities().get(0);
-        assertEquals(2, entityFromDb.getFields().size());
+        assertEquals(4, entityFromDb.getFields().size());
 
         Field fieldFromDb = entityFromDb.getField("f1name");
         assertNotNull(fieldFromDb);
@@ -256,8 +256,8 @@ public class EntityServiceIT extends BaseIT {
         List<FieldDto> fieldsFromDb = entityService.getFields(entityDto.getId());
 
         assertNotNull(fieldsFromDb);
-        assertEquals(1, fieldsFromDb.size());
-        assertEquals(asList("dispName2"), extract(fieldsFromDb, on(FieldDto.class).getBasic().getDisplayName()));
+        assertEquals(4, fieldsFromDb.size());
+        assertEquals(asList("id", "creator", "owner", "dispName2"), extract(fieldsFromDb, on(FieldDto.class).getBasic().getDisplayName()));
     }
 
     private void setUpSecurityContext() {

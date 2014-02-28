@@ -55,7 +55,7 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.clearEnhancedData();
         MDSClassLoader.reloadClassLoader();
 
-        constructAllEntities();
+        constructAllEntities(true);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     @Override
-    public void constructAllEntities() {
+    public void constructAllEntities(boolean buildDDE) {
         LOG.info("Building all entities");
         // we need an jdo enhancer and a temporary classloader
         // to define classes in before enhancement
@@ -109,7 +109,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
         // process only entities that are not drafts
         List<Entity> entities = allEntities.retrieveAll();
-        filterEntities(entities);
+        filterEntities(entities, buildDDE);
 
         // generate jdo metadata from scratch for our entities
         JDOMetadata jdoMetadata = metadataHolder.reloadMetadata();
@@ -177,12 +177,11 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
-    private void filterEntities(List<Entity> entities) {
+    private void filterEntities(List<Entity> entities, boolean buildDDE) {
         Iterator<Entity> it = entities.iterator();
         while (it.hasNext()) {
             Entity entity = it .next();
-            // DDEs are generated when their declaring bundles context is loaded
-            if (entity.isDraft() || entity.isDDE()) {
+            if (entity.isDraft() || (!buildDDE && entity.isDDE())) {
                 it.remove();
             }
         }

@@ -26,4 +26,8 @@ public enum SecurityMode {
                 return null;
         }
     }
+
+    public boolean isIntanceRestriction() {
+        return this == CREATOR || this == OWNER;
+    }
 }

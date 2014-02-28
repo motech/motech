@@ -7,6 +7,7 @@ import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class AllEntityDrafts extends MotechDataRepository<EntityDraft> {
         draft.setNamespace(entity.getNamespace());
         draft.setModule(entity.getModule());
         draft.setSecurityMode(entity.getSecurityMode());
-        draft.setSecurityMembers(entity.getSecurityMembers());
+        draft.setSecurityMembers(new HashSet<>(entity.getSecurityMembers()));
 
         for (Field field : entity.getFields()) {
             draft.addField(field.copy());
