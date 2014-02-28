@@ -44,6 +44,8 @@ public final class TypeHelper {
             return parseString((String) val, toClass);
         } else if (val instanceof Integer && Boolean.class.getName().equals(toClass)) {
             return parseIntToBool((Integer) val);
+        } else if (bothNumbers(val, toClass)) {
+            return parseNumber(val, toClass);
         } else {
             throw new IllegalArgumentException("Unable to parse " + val + " to " + toClass);
         }
@@ -95,6 +97,35 @@ public final class TypeHelper {
             return new DateTime(((Date) obj).getTime()).toString();
         } else {
             return (obj == null) ? "" : obj.toString();
+        }
+    }
+
+    public static Number parseNumber(Object val, String toClass) {
+        Number number = (Number) val;
+        switch (toClass) {
+            case "java.lang.Integer":
+                return number.intValue();
+            case "java.lang.Long":
+                return number.longValue();
+            case "java.lang.Short":
+                return number.shortValue();
+            case "java.lang.Double":
+                return number.doubleValue();
+            case "java.lang.Float":
+                return number.floatValue();
+            case "java.lang.Byte":
+                return number.byteValue();
+            default:
+                return number;
+        }
+    }
+
+    private static boolean bothNumbers(Object val, String toClass) {
+        try {
+            return val instanceof Number
+                    && Number.class.isAssignableFrom(TypeHelper.class.getClassLoader().loadClass(toClass));
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

@@ -3,6 +3,7 @@ package org.motechproject.mds.service.impl.internal;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -84,6 +85,10 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             } else {
                 dataBundle.update(in);
             }
+
+            File dest = new File(bundleLocation());
+            FileUtils.deleteQuietly(dest);
+            FileUtils.moveFile(tmpBundleFile, dest);
 
             dataBundle.start();
         } catch (IOException e) {
@@ -227,7 +232,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     }
 
     private String bundleLocation() {
-        Path path = FileSystems.getDefault().getPath(System.getenv("user.home"), "bundles", "mds-entities.jar");
+        Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".motech/bundles", "mds-entities.jar");
         return path.toAbsolutePath().toString();
     }
 

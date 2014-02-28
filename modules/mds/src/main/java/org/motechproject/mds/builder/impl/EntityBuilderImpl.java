@@ -93,7 +93,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             String typeClass = field.getType().getTypeClassName();
 
-            CtClass type = MotechClassPool.getDefault().get(typeClass);
+            CtClass type = classPool.get(typeClass);
 
             CtField ctField = new CtField(type, fieldName, ctClass);
             ctField.setModifiers(Modifier.PRIVATE);

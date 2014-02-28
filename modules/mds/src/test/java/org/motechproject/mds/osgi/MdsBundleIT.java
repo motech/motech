@@ -2,15 +2,16 @@ package org.motechproject.mds.osgi;
 
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
+import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gemini.blueprint.test.platform.OsgiPlatform;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
+import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.EntityService;
-import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
@@ -20,12 +21,20 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -45,16 +54,15 @@ public class MdsBundleIT extends BaseOsgiIT {
     private static final String FOO_CLASS = String.format("%s.%s", Constants.PackagesGenerated.ENTITY, FOO);
 
     private EntityService entityService;
-    private JarGeneratorService jarGeneratorService;
 
     @Override
     public void onSetUp() throws Exception {
         WebApplicationContext context = getContext(MDS_BUNDLE_SYMBOLIC_NAME);
 
         entityService = (EntityService) context.getBean("entityServiceImpl");
-        jarGeneratorService = (JarGeneratorService) context.getBean("jarGeneratorServiceImpl");
 
         clearEntities();
+        setUpSecurityContext();
     }
 
     @Override
@@ -66,9 +74,6 @@ public class MdsBundleIT extends BaseOsgiIT {
         final String serviceName = ClassName.getInterfaceName(FOO_CLASS);
 
         prepareTestEntities();
-
-        logger.info("Now regenerating MDS Entities bundle");
-        jarGeneratorService.regenerateMdsDataBundle();
 
         Bundle entitiesBundle = OsgiBundleUtils.findBundleBySymbolicName(bundleContext, MDS_BUNDLE_ENTITIES_SYMBOLIC_NAME);
         assertNotNull(entitiesBundle);
@@ -86,16 +91,37 @@ public class MdsBundleIT extends BaseOsgiIT {
         Object instance = loadedClass.newInstance();
         Object instance2 = loadedClass.newInstance();
 
+        MethodUtils.invokeMethod(instance, "setSomeString", "testString1");
+        MethodUtils.invokeMethod(instance, "setSomeBoolean", true);
+        MethodUtils.invokeMethod(instance, "setSomeList", Arrays.asList(1, 2, 3));
+
         service.create(instance);
+        Object retrieved = service.retrieveAll().get(0);
         assertEquals(1, service.retrieveAll().size());
         service.create(instance2);
         assertEquals(2, service.retrieveAll().size());
 
-        List<Class<?>> allInstances = service.retrieveAll();
+        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeString", null), "testString1");
+        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeBoolean", null), true);
+        assertEquals(MethodUtils.invokeMethod(retrieved, "getSomeList", null), Arrays.asList(1, 2, 3));
     }
 
-    private void verifyInstanceUpdating(MotechDataService service) {
-        //TODO: test updating
+    private void verifyInstanceUpdating(MotechDataService service) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        List<Object> allObjects = service.retrieveAll();
+        assertEquals(allObjects.size(), 2);
+
+        Object retrieved = allObjects.get(0);
+
+        MethodUtils.invokeMethod(retrieved, "setSomeString", "anotherString");
+        MethodUtils.invokeMethod(retrieved, "setSomeBoolean", false);
+        MethodUtils.invokeMethod(retrieved, "setSomeList", Arrays.asList(4, 5));
+
+        service.update(retrieved);
+        Object updated = service.retrieveAll().get(0);
+
+        assertEquals(MethodUtils.invokeMethod(updated, "getSomeString", null), "anotherString");
+        assertEquals(MethodUtils.invokeMethod(updated, "getSomeBoolean", null), false);
+        assertEquals(MethodUtils.invokeMethod(updated, "getSomeList", null), Arrays.asList(4, 5));
     }
 
     private void verifyInstanceDeleting(MotechDataService service) throws IllegalAccessException, InstantiationException {
@@ -115,11 +141,40 @@ public class MdsBundleIT extends BaseOsgiIT {
 
         List<FieldDto> fields = new ArrayList<>();
         fields.add(new FieldDto(null, entityDto.getId(),
-                TypeDto.INTEGER,
+                TypeDto.BOOLEAN,
+                new FieldBasicDto("someBoolean", "someBoolean"),
+                false, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.STRING,
                 new FieldBasicDto("someString", "someString"),
                 false, null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.LIST,
+                new FieldBasicDto("someList", "someList"),
+                false, null, null, Arrays.asList(new SettingDto("test", "test", TypeDto.INTEGER, null)), null));
+        fields.add(new FieldDto(null, entityDto.getId(),
+                TypeDto.LONG,
+                new FieldBasicDto("id", "id"),
+                false, null));
 
-        //TODO: Add fields and verify everything is working with updating instances
+
+        entityService.addFields(entityDto, fields);
+        entityService.commitChanges(entityDto.getId());
+    }
+
+    private void setUpSecurityContext() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("mdsSchemaAccess");
+        List<SimpleGrantedAuthority> authorities = asList(authority);
+
+        User principal = new User("motech", "motech", authorities);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null);
+        authentication.setAuthenticated(false);
+
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Override
@@ -160,6 +215,7 @@ public class MdsBundleIT extends BaseOsgiIT {
         for (EntityDto entity : entityService.listEntities()) {
             entityService.deleteEntity(entity.getId());
         }
+
     }
 
     private WebApplicationContext getContext(String bundleName) throws InvalidSyntaxException, InterruptedException {

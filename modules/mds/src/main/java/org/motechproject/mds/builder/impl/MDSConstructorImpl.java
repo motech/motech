@@ -38,13 +38,25 @@ public class MDSConstructorImpl implements MDSConstructor {
     private static final Logger LOG = LoggerFactory.getLogger(MDSConstructorImpl.class);
 
     private SettingsFacade settingsFacade;
-    private BundleContext bundleContext;
     private AllEntities allEntities;
     private EntityBuilder entityBuilder;
     private EntityInfrastructureBuilder infrastructureBuilder;
     private EntityMetadataBuilder metadataBuilder;
     private MetadataHolder metadataHolder;
     private PersistenceManagerFactory persistenceManagerFactory;
+    private BundleContext bundleContext;
+
+    @Override
+    public void updateEntities() {
+        LOG.info("Regenerating all entities");
+
+        // To be able to register updated class, we need to reload class loader
+        // and therefore add all the classes again
+        MotechClassPool.clearEnhancedData();
+        MDSClassLoader.reloadClassLoader();
+
+        constructAllEntities();
+    }
 
     @Override
     @Transactional

@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -98,16 +99,19 @@ public class FieldDto {
     }
 
     public void addEmptyMetadata() {
-        metadata.add(new MetadataDto());
+        getMetadata().add(new MetadataDto());
     }
 
     public void removeMetadata(Integer idx) {
-        if (null != idx && idx < metadata.size()) {
-            metadata.remove(idx.intValue());
+        if (null != idx && idx < getMetadata().size()) {
+            getMetadata().remove(idx.intValue());
         }
     }
 
     public List<MetadataDto> getMetadata() {
+        if (metadata == null) {
+            metadata = new ArrayList<>();
+        }
         return metadata;
     }
 

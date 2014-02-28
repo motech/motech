@@ -1,7 +1,5 @@
 package org.motechproject.mds.builder;
 
-import java.net.URL;
-
 /**
  * The <code>MDSClassLoader</code> class is a mds wrapper for {@link ClassLoader}.
  */
@@ -14,6 +12,9 @@ public class MDSClassLoader extends ClassLoader {
 
     public static void reloadClassLoader() {
         instance = new MDSClassLoader();
+        if (Thread.currentThread().getContextClassLoader() instanceof MDSClassLoader) {
+            Thread.currentThread().setContextClassLoader(instance);
+        }
     }
 
     public MDSClassLoader() {
@@ -30,10 +31,5 @@ public class MDSClassLoader extends ClassLoader {
 
     public Class<?> defineClass(ClassData classData) {
         return defineClass(classData.getClassName(), classData.getBytecode());
-    }
-
-    @Override
-    public URL getResource(String name) {
-        return super.getResource(name);
     }
 }

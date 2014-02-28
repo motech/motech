@@ -204,7 +204,7 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         // query params at the end for ordering/paging
         if (lookupType == LookupType.WITH_QUERY_PARAMS) {
-            sb.append(", ").append(QueryParams.class.getName()).append(" queryParams");
+            sb.append(queryParamsParam(lookup));
         }
 
         sb.append(");");
@@ -253,17 +253,35 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
         // ordering and paging param comes last
         if (lookupType == LookupType.WITH_QUERY_PARAMS) {
-            sb.append(", ").append(QueryParams.class.getName()).append(" queryParams");
+            sb.append(queryParamsParam(lookup));
         }
 
         paramsSb.append("}");
         valuesSb.append("}");
 
-        String callStr = paramsSb.toString() + ", " + valuesSb.toString();
+        // we call retrieveAll() if there are no params
+        String callStr = (lookup.getFields().isEmpty()) ? "" : paramsSb.toString() + ", " + valuesSb.toString();
 
         sb.append(") {");
 
         // method body
+        sb.append(buildMethodBody(entity, lookup, lookupType, callStr));
+
+        sb.append(";}");
+
+        CtMethod method = CtNewMethod.make(sb.toString(), serviceClass);
+
+        // count method doesn't need a generic signature
+        if (lookupType != LookupType.COUNT) {
+            method.setGenericSignature(buildGenericSignature(entity, lookup));
+        }
+
+        return method;
+    }
+
+    private String buildMethodBody(Entity entity, Lookup lookup, LookupType lookupType, String callStr) {
+        StringBuilder sb = new StringBuilder();
+
         if (lookupType == LookupType.COUNT) {
             if (lookup.isSingleObjectReturn()) {
                 // single object returns always return only 1
@@ -278,27 +296,23 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
             sb.append("retrieveAll(").append(callStr);
 
             if (lookupType == LookupType.WITH_QUERY_PARAMS) {
-                sb.append(", queryParams");
+                // append comma only if there were any params to start with
+                if (!lookup.getFields().isEmpty()) {
+                    sb.append(", ");
+                }
+                sb.append("queryParams");
             }
 
             sb.append(");");
 
             if (lookup.isSingleObjectReturn()) {
-                sb.append("return list.isEmpty() ? null : (").append(className).append(") list.get(0)");
+                sb.append("return list.isEmpty() ? null : (").append(entity.getClassName()).append(") list.get(0)");
             } else {
                 sb.append("return list");
             }
         }
-        sb.append(";}");
 
-        CtMethod method = CtNewMethod.make(sb.toString(), serviceClass);
-
-        // count method doesn't need a generic signature
-        if (lookupType != LookupType.COUNT) {
-            method.setGenericSignature(buildGenericSignature(entity, lookup));
-        }
-
-        return method;
+        return sb.toString();
     }
 
     private String buildGenericSignature(Entity entity, Lookup lookup) {
@@ -385,6 +399,15 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         } else {
             return List.class.getName();
         }
+    }
+
+    private String queryParamsParam(Lookup lookup) {
+        StringBuilder sb = new StringBuilder();
+        if (!lookup.getFields().isEmpty()) {
+            sb.append(", ");
+        }
+        sb.append(QueryParams.class.getName()).append(" queryParams");
+        return sb.toString();
     }
 
     /**

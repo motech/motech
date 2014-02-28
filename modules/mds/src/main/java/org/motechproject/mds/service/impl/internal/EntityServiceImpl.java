@@ -18,7 +18,6 @@ import org.motechproject.mds.dto.DraftResult;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
 import org.motechproject.mds.dto.FieldDto;
-import org.motechproject.mds.dto.FieldInstanceDto;
 import org.motechproject.mds.dto.FieldValidationDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.SettingDto;
@@ -35,15 +34,12 @@ import org.motechproject.mds.repository.AllEntityDrafts;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.service.JarGeneratorService;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
-import org.motechproject.mds.web.ExampleData;
-import org.motechproject.mds.web.domain.EntityRecord;
-import org.motechproject.mds.web.domain.HistoryRecord;
-import org.motechproject.mds.web.domain.PreviousRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,11 +74,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllTypes allTypes;
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
+    private JarGeneratorService jarGeneratorService;
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
-
-    // TODO remove this once everything is in db
-    private ExampleData exampleData = new ExampleData();
 
     @Override
     @Transactional
@@ -114,6 +108,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         if (username != null) {
             allEntityAudits.createAudit(entity, username);
         }
+
+        jarGeneratorService.regenerateMdsDataBundle();
 
         return entity.toDto();
     }
@@ -264,6 +260,9 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
 
         allEntityDrafts.delete(draft);
+
+        constructor.updateEntities();
+        jarGeneratorService.regenerateMdsDataBundle();
     }
 
     @Override
@@ -280,12 +279,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         }
 
         return entityDtoList;
-    }
-
-    @Override
-    @Transactional
-    public List<EntityRecord> getEntityRecords(Long entityId) {
-        return exampleData.getEntityRecordsById(entityId);
     }
 
     @Override
@@ -357,24 +350,6 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
                 lookup.update(lookupDto, lookupFields);
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public List<FieldInstanceDto> getInstanceFields(Long instanceId) {
-        return exampleData.getInstanceFields(instanceId);
-    }
-
-    @Override
-    @Transactional
-    public List<HistoryRecord> getInstanceHistory(Long instanceId) {
-        return exampleData.getInstanceHistoryRecordsById(instanceId);
-    }
-
-    @Override
-    @Transactional
-    public List<PreviousRecord> getPreviousRecords(Long instanceId) {
-        return exampleData.getPreviousRecordsById(instanceId);
     }
 
     @Override
@@ -708,6 +683,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
         Entity entity = allEntities.retrieveById(entityId);
         assertEntityExists(entity);
         constructor.constructEntity(entity);
+        jarGeneratorService.regenerateMdsDataBundle();
     }
 
     private void assertEntityExists(Entity entity) {
@@ -755,5 +731,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setAllEntityAudits(AllEntityAudits allEntityAudits) {
         this.allEntityAudits = allEntityAudits;
+    }
+
+    @Autowired
+    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
+        this.jarGeneratorService = jarGeneratorService;
     }
 }
