@@ -118,7 +118,7 @@ public class StartupController {
                 configurationService.loadBootstrapConfig().getConfigSource() : ConfigSource.UI;
 
         StartupFormValidator startupFormValidator = startupFormValidatorFactory.getStartupFormValidator(startupSettings, userService);
-        List<String> errors = startupFormValidator.validate(startupSettings);
+        List<String> errors = startupFormValidator.validate(startupSettings, configurationService.getConfigSource());
 
         if (!errors.isEmpty()) {
             return errors;

@@ -1,5 +1,6 @@
 package org.motechproject.server.web.validator;
 
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.List;
@@ -22,9 +23,11 @@ public class RequiredFieldValidator implements AbstractValidator {
     }
 
     @Override
-    public void validate(StartupForm target, List<String> errors) {
+    public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
         if (isNullOrEmpty(fieldValue)) {
-            errors.add(String.format(ERROR_REQUIRED, fieldName));
+            if (!configSource.isFile()) {
+                errors.add(String.format(ERROR_REQUIRED, fieldName));
+            }
         }
     }
 

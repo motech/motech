@@ -1,6 +1,7 @@
 package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.UrlValidator;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.List;
@@ -24,10 +25,12 @@ public class OpenIdUserValidator implements AbstractValidator {
     }
 
     @Override
-    public void validate(StartupForm target, List<String> errors) {
+    public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
 
         if (isNullOrEmpty(target.getProviderName())) {
-            errors.add(String.format(ERROR_REQUIRED, PROVIDER_NAME));
+            if (!configSource.isFile()) {
+                errors.add(String.format(ERROR_REQUIRED, PROVIDER_NAME));
+            }
         }
 
         if (isNullOrEmpty(target.getProviderUrl())) {

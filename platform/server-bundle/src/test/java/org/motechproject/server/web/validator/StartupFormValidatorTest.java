@@ -3,6 +3,7 @@ package org.motechproject.server.web.validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
 
@@ -41,7 +42,7 @@ public class StartupFormValidatorTest {
         startupForm.setAdminEmail(EMAIL);
 
         startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
-        List<String> errors = startupFormValidator.validate(startupForm);
+        List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.UI);
 
         assertTrue(errors.contains(String.format("server.error.required.%s", LOGIN_MODE)));
         assertTrue(errors.contains(String.format("server.error.required.%s", LANGUAGE)));
@@ -57,7 +58,7 @@ public class StartupFormValidatorTest {
         startupForm.setQueueUrl(LOCALHOST_QUEUE_URL);
 
         startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
-        List<String> errors = startupFormValidator.validate(startupForm);
+        List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.FILE);
 
         assertTrue(errors.contains(String.format("server.error.required.%s", ADMIN_LOGIN)));
         assertTrue(errors.contains(String.format("server.error.required.%s", ADMIN_PASSWORD)));
@@ -72,9 +73,23 @@ public class StartupFormValidatorTest {
         startupForm.setQueueUrl(QUEUE_URL);
 
         startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
-        List<String> errors = startupFormValidator.validate(startupForm);
+        List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.UI);
 
         assertTrue(errors.contains(String.format("server.error.required.%s", PROVIDER_NAME)));
         assertTrue(errors.contains(String.format("server.error.required.%s", PROVIDER_URL)));
+    }
+
+    @Test
+    public void shouldAcceptEmptyQueueURLAndLoginModeWhenConfigSourceIsFile() {
+        StartupForm startupForm = new StartupForm();
+        startupForm.setAdminLogin(ADMIN_LOGIN);
+        startupForm.setAdminPassword(ADMIN_PASSWORD);
+        startupForm.setAdminConfirmPassword(ADMIN_CONFIRM_PASSWORD);
+        startupForm.setAdminEmail(EMAIL);
+
+        startupFormValidator = new StartupFormValidatorFactory().getStartupFormValidator(startupForm, userService);
+        List<String> errors = startupFormValidator.validate(startupForm, ConfigSource.FILE);
+
+        assertTrue(errors.isEmpty());
     }
 }

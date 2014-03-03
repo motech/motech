@@ -1,6 +1,7 @@
 package org.motechproject.server.web.validator;
 
 import org.junit.Test;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.ArrayList;
@@ -20,10 +21,10 @@ public class UserRegistrationValidatorTest {
         target.setLoginMode("openId");
 
         UserRegistrationValidator userRegistrationValidator = new UserRegistrationValidator(persistedUserValidator, openIdUserValidator);
-        userRegistrationValidator.validate(target, new ArrayList<String>());
+        userRegistrationValidator.validate(target, new ArrayList<String>(), ConfigSource.FILE);
 
-        verify(openIdUserValidator).validate(target, new ArrayList<String>());
-        verify(persistedUserValidator, never()).validate(target, new ArrayList<String>());
+        verify(openIdUserValidator).validate(target, new ArrayList<String>(), ConfigSource.FILE);
+        verify(persistedUserValidator, never()).validate(target, new ArrayList<String>(), ConfigSource.FILE);
     }
 
     @Test
@@ -35,10 +36,10 @@ public class UserRegistrationValidatorTest {
         target.setLoginMode("repository");
 
         UserRegistrationValidator userRegistrationValidator = new UserRegistrationValidator(persistedUserValidator, openIdUserValidator);
-        userRegistrationValidator.validate(target, new ArrayList<String>());
+        userRegistrationValidator.validate(target, new ArrayList<String>(), ConfigSource.FILE);
 
-        verify(persistedUserValidator).validate(target, new ArrayList<String>());
-        verify(openIdUserValidator, never()).validate(target, new ArrayList<String>());
+        verify(persistedUserValidator).validate(target, new ArrayList<String>(), ConfigSource.FILE);
+        verify(openIdUserValidator, never()).validate(target, new ArrayList<String>(), ConfigSource.FILE);
     }
 
     @Test
@@ -50,9 +51,9 @@ public class UserRegistrationValidatorTest {
         target.setLoginMode(null);
 
         UserRegistrationValidator userRegistrationValidator = new UserRegistrationValidator(persistedUserValidator, openIdUserValidator);
-        userRegistrationValidator.validate(target, new ArrayList<String>());
+        userRegistrationValidator.validate(target, new ArrayList<String>(), ConfigSource.FILE);
 
-        verify(persistedUserValidator, never()).validate(target, new ArrayList<String>());
-        verify(openIdUserValidator, never()).validate(target, new ArrayList<String>());
+        verify(persistedUserValidator, never()).validate(target, new ArrayList<String>(), ConfigSource.FILE);
+        verify(openIdUserValidator, never()).validate(target, new ArrayList<String>(), ConfigSource.FILE);
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.server.web.validator;
 
 import org.junit.Test;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class RequiredFieldValidatorTest {
         RequiredFieldValidator fieldValidator = new RequiredFieldValidator("name", null);
 
         List<String> errors = new ArrayList<>();
-        fieldValidator.validate(new StartupForm(), errors);
+        fieldValidator.validate(new StartupForm(), errors, ConfigSource.UI);
 
         assertTrue(errors.contains(String.format(RequiredFieldValidator.ERROR_REQUIRED, "name")));
     }

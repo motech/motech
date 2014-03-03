@@ -175,6 +175,7 @@ public class StartupControllerTest {
     @Test
     public void shouldAddErrorsWhenValidationFails() throws IOException {
         when(userService.hasActiveAdminUser()).thenReturn(true);
+        when(configurationService.getConfigSource()).thenReturn(ConfigSource.FILE);
 
         List<String> errors = startupController.submitForm(startupForm());
         assertFalse(errors.isEmpty());

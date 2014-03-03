@@ -2,6 +2,7 @@ package org.motechproject.server.web.validator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class QueueURLValidatorTest {
     @Test
     public void shouldRejectQueueUrl() {
         List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(new StartupForm(), errors);
+        queueURLValidator.validate(new StartupForm(), errors, ConfigSource.UI);
 
         assertTrue(errors.contains(String.format(ERROR_REQUIRED, QUEUE_URL)));
     }
@@ -52,7 +53,7 @@ public class QueueURLValidatorTest {
         startupForm.setQueueUrl("some.krap.url");
 
         List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(startupForm, errors);
+        queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
 
         assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
     }
@@ -63,7 +64,7 @@ public class QueueURLValidatorTest {
         startupForm.setQueueUrl("tcp://localhost:61616");
 
         List<String> errors = new ArrayList<>();
-        queueURLValidator.validate(startupForm, errors);
+        queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
 
         assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
     }
@@ -74,7 +75,7 @@ public class QueueURLValidatorTest {
         for (String validCompositeUrl : VALID_COMPOSITE_URLS) {
             startupForm.setQueueUrl(validCompositeUrl);
             List<String> errors = new ArrayList<>();
-            queueURLValidator.validate(startupForm, errors);
+            queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
             assertFalse(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
         }
     }
@@ -85,7 +86,7 @@ public class QueueURLValidatorTest {
         for (String invalidCompositeUrl : INVALID_COMPOSITE_URLS) {
             startupForm.setQueueUrl(invalidCompositeUrl);
             List<String> errors = new ArrayList<>();
-            queueURLValidator.validate(startupForm, errors);
+            queueURLValidator.validate(startupForm, errors, ConfigSource.UI);
             assertTrue(errors.contains(String.format(ERROR_INVALID, QUEUE_URL)));
         }
     }

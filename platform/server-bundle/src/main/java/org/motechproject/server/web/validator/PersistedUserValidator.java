@@ -1,6 +1,7 @@
 package org.motechproject.server.web.validator;
 
 import org.apache.commons.validator.EmailValidator;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
@@ -28,7 +29,7 @@ public class PersistedUserValidator implements AbstractValidator {
     }
 
     @Override
-    public void validate(StartupForm target, List<String> errors) {
+    public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
         // only validate without active admin user
         if (userService.hasActiveAdminUser()) {
             return;

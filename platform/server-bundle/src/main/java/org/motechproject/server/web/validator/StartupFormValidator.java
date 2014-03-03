@@ -1,5 +1,6 @@
 package org.motechproject.server.web.validator;
 
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,11 @@ public class StartupFormValidator {
     public StartupFormValidator() {
     }
 
-    public List<String> validate(StartupForm target) {
+    public List<String> validate(StartupForm target, ConfigSource configSource) {
         List<String> errors = new ArrayList<>();
 
         for (AbstractValidator validator : validators) {
-            validator.validate(target, errors);
+            validator.validate(target, errors, configSource);
         }
 
         return errors;

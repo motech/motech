@@ -1,5 +1,6 @@
 package org.motechproject.server.web.validator;
 
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.config.domain.LoginMode;
 import org.motechproject.server.web.form.StartupForm;
 
@@ -20,16 +21,16 @@ public class UserRegistrationValidator implements AbstractValidator {
     }
 
     @Override
-    public void validate(StartupForm target, List<String> errors) {
+    public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
         LoginMode loginMode = LoginMode.valueOf(target.getLoginMode());
         if (loginMode == null) {
             return;
         }
 
         if (loginMode.isOpenId()) {
-            openIdUserValidator.validate(target, errors);
+            openIdUserValidator.validate(target, errors, configSource);
         } else {
-            persistedUserValidator.validate(target, errors);
+            persistedUserValidator.validate(target, errors, configSource);
         }
     }
 }

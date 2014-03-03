@@ -2,6 +2,7 @@ package org.motechproject.server.web.validator;
 
 import org.apache.activemq.util.URISupport;
 import org.apache.commons.validator.UrlValidator;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.server.web.form.StartupForm;
 
 import java.net.URI;
@@ -32,9 +33,11 @@ public class QueueURLValidator implements AbstractValidator {
     }
 
     @Override
-    public void validate(StartupForm target, List<String> errors) {
+    public void validate(StartupForm target, List<String> errors, ConfigSource configSource) {
         if (isNullOrEmpty(target.getQueueUrl())) {
-            errors.add(String.format(ERROR_REQUIRED, QUEUE_URL));
+            if (!configSource.isFile()) {
+                errors.add(String.format(ERROR_REQUIRED, QUEUE_URL));
+            }
             return;
         }
 

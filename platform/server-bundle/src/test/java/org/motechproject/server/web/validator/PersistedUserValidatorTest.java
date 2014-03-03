@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.security.model.UserDto;
 import org.motechproject.security.service.MotechUserService;
 import org.motechproject.server.web.form.StartupForm;
@@ -32,7 +33,7 @@ public class PersistedUserValidatorTest {
         PersistedUserValidator persistedUserValidator = new PersistedUserValidator(userService);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(new StartupForm(), errors);
+        persistedUserValidator.validate(new StartupForm(), errors, ConfigSource.FILE);
 
         assertTrue(errors.contains("server.error.required.adminLogin"));
         assertTrue(errors.contains("server.error.required.adminPassword"));
@@ -50,7 +51,7 @@ public class PersistedUserValidatorTest {
         when(userService.hasUser("admin")).thenReturn(false);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(startupForm, errors);
+        persistedUserValidator.validate(startupForm, errors, ConfigSource.FILE);
 
         assertTrue(errors.contains("server.error.invalid.email"));
     }
@@ -65,7 +66,7 @@ public class PersistedUserValidatorTest {
         when(userService.hasUser("admin")).thenReturn(false);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(startupForm, errors);
+        persistedUserValidator.validate(startupForm, errors, ConfigSource.FILE);
 
         //If password is empty do not check against confirmPassword as empty password error is already added
         assertTrue(errors.contains("server.error.invalid.password"));
@@ -78,7 +79,7 @@ public class PersistedUserValidatorTest {
         when(userService.hasUser("admin")).thenReturn(true);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(getExampleStartupForm(), errors);
+        persistedUserValidator.validate(getExampleStartupForm(), errors, ConfigSource.FILE);
 
         assertTrue(errors.contains("server.error.user.exist"));
     }
@@ -93,7 +94,7 @@ public class PersistedUserValidatorTest {
         when(userService.getUserByEmail("admin@motech.org")).thenReturn(user);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(getExampleStartupForm(), errors);
+        persistedUserValidator.validate(getExampleStartupForm(), errors, ConfigSource.FILE);
 
         assertTrue(errors.contains("server.error.email.exist"));
     }
@@ -109,7 +110,7 @@ public class PersistedUserValidatorTest {
         when(userService.getUserByEmail("admin@motech.org")).thenReturn(userDto);
 
         List<String> errors = new ArrayList<>();
-        persistedUserValidator.validate(getExampleStartupForm(), errors);
+        persistedUserValidator.validate(getExampleStartupForm(), errors, ConfigSource.FILE);
 
         assertTrue(errors.contains("server.error.user.exist"));
         assertFalse(errors.contains("server.error.email.exist"));
