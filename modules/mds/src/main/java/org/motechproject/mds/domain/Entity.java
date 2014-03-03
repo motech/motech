@@ -39,7 +39,7 @@ import static org.motechproject.mds.util.Constants.Util.TRUE;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE, detachable = TRUE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-@Unique(name = "DRAFT_USER_IDX", members = {"parentEntity", "draftOwnerUsername"})
+@Unique(name = "DRAFT_USER_IDX", members = { "parentEntity", "draftOwnerUsername" })
 public class Entity {
 
     @PrimaryKey

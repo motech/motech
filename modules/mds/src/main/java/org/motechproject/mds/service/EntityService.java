@@ -55,8 +55,6 @@ public interface EntityService {
 
     void addDisplayedFields(EntityDto entityDto, Map<String, Long> positions);
 
-    void generateDDE(Long entityId);
-
     EntityDto updateDraft(Long entityId);
 
     LookupDto getLookupByName(Long entityId, String lookupName);

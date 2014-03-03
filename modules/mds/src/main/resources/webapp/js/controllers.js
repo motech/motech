@@ -2070,6 +2070,9 @@
             // get entity, fields, display fields
             $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
                 $scope.selectedEntity = data;
+
+                $scope.entityAdvanced = Entities.getAdvancedCommited({id: $scope.selectedEntity.id});
+
                 $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
                     $scope.allEntityFields = data;
                     Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {

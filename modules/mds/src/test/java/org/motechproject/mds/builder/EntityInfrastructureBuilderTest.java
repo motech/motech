@@ -1,5 +1,6 @@
 package org.motechproject.mds.builder;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,9 @@ import org.motechproject.mds.util.QueryParams;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +30,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -65,14 +66,7 @@ public class EntityInfrastructureBuilderTest {
         assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_REPOSITORY))));
         assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_INTERFACE))));
         assertThat(data, hasItem(Matchers.<ClassData>hasProperty("className", equalTo(SAMPLE_SERVICE))));
-    }
-
-    @Test
-    public void shouldNotCreateCodeIfClassExistsInClassPath() throws Exception {
-        Entity entity = new Entity(Sample.class.getName());
-        doReturn(Sample.class).when(classLoader).loadClass(anyString());
-
-        assertTrue(entityInfrastructureBuilder.buildInfrastructure(entity).isEmpty());
+        assertThat(data, hasItem(Matchers.<ClassData>hasProperty("interfaceClass", equalTo(true))));
     }
 
     @Test
@@ -83,6 +77,7 @@ public class EntityInfrastructureBuilderTest {
 
         Lookup lookup = new Lookup();
         lookup.setLookupName("testLookup");
+        lookup.setLookupName("testLookupMethod");
         Type type = new Type();
         type.setTypeClass(java.lang.String.class);
         type.setDisplayName("mds.field.string");
@@ -134,6 +129,10 @@ public class EntityInfrastructureBuilderTest {
         assertEquals(SampleWithLookups.class, method.getReturnType());
         method = getLookupWithParams(serviceClass);
         assertEquals(SampleWithLookups.class, method.getReturnType());
+
+        if (!serviceClass.isInterface()) {
+            verifyTransactionalPresent(method);
+        }
     }
 
     private void verifyMultiReturnLookup(Class<?> serviceClass) throws NoSuchMethodException {
@@ -147,12 +146,20 @@ public class EntityInfrastructureBuilderTest {
         // test generic signature
         assertEquals("java.util.List<org.motechproject.mds.builder.SampleWithLookups>",
                 method.getGenericReturnType().toString());
+
+        if (!serviceClass.isInterface()) {
+            verifyTransactionalPresent(method);
+        }
     }
 
     private void verifyCountLookup(Class<?> serviceClass) throws NoSuchMethodException {
-        Method method = serviceClass.getMethod("countTestLookup", String.class, String.class);
+        Method method = serviceClass.getMethod("countTestLookupMethod", String.class, String.class);
         assertNotNull(method);
         assertEquals(long.class, method.getReturnType());
+
+        if (!serviceClass.isInterface()) {
+            verifyTransactionalPresent(method);
+        }
     }
 
     private Method getLookupWithoutParams(Class<?> serviceClass) throws NoSuchMethodException {
@@ -164,8 +171,15 @@ public class EntityInfrastructureBuilderTest {
     }
 
     private Method getLookup(Class<?> serviceClass, Class<?>... params) throws NoSuchMethodException {
-        Method method = serviceClass.getMethod("testLookup", params);
+        Method method = serviceClass.getMethod("testLookupMethod", params);
         assertNotNull(method);
         return method;
+    }
+
+    private void verifyTransactionalPresent(Method method) {
+        Annotation[] annotations = method.getAnnotations();
+        assertTrue(ArrayUtils.isNotEmpty(annotations));
+        assertEquals(1, annotations.length);
+        assertEquals(Transactional.class, annotations[0].annotationType());
     }
 }

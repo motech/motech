@@ -8,6 +8,9 @@ import org.apache.commons.lang.StringUtils;
 public final class LookupName {
 
     public static String lookupMethod(String lookupName) {
+        if (StringUtils.isBlank(lookupName)) {
+            return lookupName;
+        }
         // first split by space
         String[] words = StringUtils.split(lookupName, ' ');
         // then create camel case
@@ -21,8 +24,8 @@ public final class LookupName {
         return sb.toString();
     }
 
-    public static String lookupCountMethod(String lookupName) {
-        return "count" + StringUtils.capitalize(lookupMethod(lookupName));
+    public static String lookupCountMethod(String lookupNameOrMethodName) {
+        return "count" + StringUtils.capitalize(lookupMethod(lookupNameOrMethodName));
     }
 
     private LookupName() {

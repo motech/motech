@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  *
  * @see org.motechproject.mds.annotations.internal.FieldProcessor
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Ignore {

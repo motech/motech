@@ -44,6 +44,13 @@ public final class JavassistHelper {
     }
 
     public static CtClass loadClass(Bundle bundle, String className, ClassPool classPool) throws IOException {
+        // return if already loaded
+        CtClass existing = classPool.getOrNull(className);
+        if (existing != null) {
+            return existing;
+        }
+
+        // load from the bundle
         CtClass clazz = null;
 
         URL classUrl = bundle.getResource(toClassPath(className));
@@ -56,7 +63,7 @@ public final class JavassistHelper {
         return clazz;
     }
 
-    public static boolean containsDelcaredField(CtClass ctClass, String fieldName) {
+    public static boolean containsDeclaredField(CtClass ctClass, String fieldName) {
         boolean found = false;
 
         CtField[] declaredFields = ctClass.getDeclaredFields();

@@ -1,6 +1,7 @@
 package org.motechproject.mds.util;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.osgi.framework.Bundle;
@@ -8,6 +9,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +32,10 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 public final class AnnotationsUtil extends AnnotationUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationsUtil.class);
+
+    // we hold on to the default classloaders, and always add a bundle classlaoder
+    private static final ClassLoader[] DEFAULT_REFLECTION_CLASS_LOADERS =
+            Arrays.copyOf(ClasspathHelper.defaultClassLoaders, ClasspathHelper.defaultClassLoaders.length);
 
     private AnnotationsUtil() {
     }
@@ -150,6 +157,12 @@ public final class AnnotationsUtil extends AnnotationUtils {
         configuration.addUrls(resolveLocation(bundle));
         configuration.setScanners(scanners);
 
+        // we add the ability to load classes from the bundle
+        // we are synchronized so this is fairly ok, moving to a new version of reflections
+        // would be better though
+        ClasspathHelper.defaultClassLoaders = (ClassLoader[]) ArrayUtils.add(DEFAULT_REFLECTION_CLASS_LOADERS,
+                new BundleClassLoaderWrapper(bundle));
+
         LOGGER.debug("Initialized Reflections for resolved file location.");
         return new Reflections(configuration);
     }
@@ -176,4 +189,20 @@ public final class AnnotationsUtil extends AnnotationUtils {
         return resolved;
     }
 
+    /**
+     * A hack classLoader for loading classes from the processed bundle.
+     */
+    private static class BundleClassLoaderWrapper extends ClassLoader {
+
+        private Bundle bundle;
+
+        public BundleClassLoaderWrapper(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            return bundle.loadClass(name);
+        }
+    }
 }

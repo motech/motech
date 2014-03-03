@@ -18,7 +18,7 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
  *
  * @see org.motechproject.mds.annotations.internal.FieldProcessor
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Field {

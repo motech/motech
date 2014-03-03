@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <li><code>int</code>, <code>double</code></li>
  * </ul>
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface InSet {

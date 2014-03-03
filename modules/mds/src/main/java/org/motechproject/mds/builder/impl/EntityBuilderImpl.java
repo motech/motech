@@ -67,9 +67,14 @@ public class EntityBuilderImpl implements EntityBuilder {
         LOG.info("Building DDE: " + className);
 
         try {
-            CtClass ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
-
-            ddeClass.defrost();
+            CtClass ddeClass = classPool.getOrNull(className);
+            if (ddeClass != null) {
+                // already defined, defrost
+                ddeClass.defrost();
+            } else {
+                // load from the bundle
+                ddeClass = JavassistHelper.loadClass(bundle, className, classPool);
+            }
 
             addFields(ddeClass, entity.getFields());
 
@@ -87,7 +92,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             LOG.debug("Adding fields to class: " + ctClass.getName());
 
             // do not recreate fields from the loaded class
-            if (JavassistHelper.containsDelcaredField(ctClass, fieldName)) {
+            if (JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
                 continue;
             }
 

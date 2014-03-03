@@ -20,11 +20,11 @@ import org.motechproject.mds.ex.ObjectNotFoundException;
 import org.motechproject.mds.ex.ObjectReadException;
 import org.motechproject.mds.ex.ObjectUpdateException;
 import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.service.InstanceService;
 import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.LookupName;
 import org.motechproject.mds.util.QueryParams;
@@ -138,7 +138,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         args.add(queryParams);
 
         try {
-            String methodName = LookupName.lookupMethod(lookupName);
+            String methodName = lookup.getMethodName();
 
             Object result = MethodUtils.invokeMethod(service, methodName, args.toArray(new Object[args.size()]));
 
@@ -172,7 +172,8 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         EntityDto entity = getEntity(entityId);
         LookupDto lookup = getLookupByName(entityId, lookupName);
         List<FieldDto> fields = entityService.getEntityFields(entityId);
-        String methodName = LookupName.lookupCountMethod(lookupName);
+
+        String methodName = LookupName.lookupCountMethod(lookup.getMethodName());
 
         List<Object> args = getLookupArgs(lookup, fields, lookupMap);
 
@@ -286,7 +287,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     }
 
     private MotechDataService getServiceForEntity(EntityDto entity) {
-        ServiceReference ref = bundleContext.getServiceReference(ClassName.getInterfaceName(entity.getClassName()));
+        ServiceReference ref = bundleContext.getServiceReference(MotechClassPool.getInterfaceName(entity.getClassName()));
         if (ref == null) {
             throw new ServiceNotFoundException();
         }

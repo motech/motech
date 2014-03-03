@@ -123,7 +123,7 @@ public class EntityServiceImplTest {
 
         // then
         verify(allEntities).retrieveById(entityId);
-        verify(entity).getLookupById(anyLong());
+        verify(entity).getLookupByName("lookupName");
         verify(entity).addLookup(lookupCaptor.capture());
 
         for (long idx = 0; idx < fieldCount; ++idx) {
@@ -169,13 +169,13 @@ public class EntityServiceImplTest {
 
         // when
         doReturn(entity).when(allEntities).retrieveById(entityId);
-        doReturn(lookup).when(entity).getLookupById(anyLong());
+        doReturn(lookup).when(entity).getLookupByName("lookupName");
 
         entityService.addLookups(entityId, asList(lookupDto));
 
         // then
         verify(allEntities).retrieveById(entityId);
-        verify(entity).getLookupById(anyLong());
+        verify(entity).getLookupByName("lookupName");
         verify(entity, never()).addLookup(any(Lookup.class));
 
         assertEquals(lookupDto.getLookupName(), lookup.getLookupName());

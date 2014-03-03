@@ -41,14 +41,14 @@ public class JavassistHelperTest {
 
     @Test
     public void shouldFindFieldByName() {
-        assertFalse(JavassistHelper.containsDelcaredField(ctClass, "name"));
+        assertFalse(JavassistHelper.containsDeclaredField(ctClass, "name"));
 
         when(ctClass.getDeclaredFields()).thenReturn(new CtField[0]);
-        assertFalse(JavassistHelper.containsDelcaredField(ctClass, "name"));
+        assertFalse(JavassistHelper.containsDeclaredField(ctClass, "name"));
 
         when(ctField.getName()).thenReturn("name");
         when(ctClass.getDeclaredFields()).thenReturn(new CtField[]{ctField});
-        assertTrue(JavassistHelper.containsDelcaredField(ctClass, "name"));
+        assertTrue(JavassistHelper.containsDeclaredField(ctClass, "name"));
     }
 
     @Test

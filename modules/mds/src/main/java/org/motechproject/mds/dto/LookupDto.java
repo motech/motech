@@ -1,9 +1,11 @@
 package org.motechproject.mds.dto;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.motechproject.mds.util.LookupName;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class LookupDto {
     private List<Long> fieldList;
     private List<String> fieldNames;
     private boolean readOnly;
+    private String methodName;
 
     public LookupDto() {
         this(null, false, false);
@@ -31,11 +34,11 @@ public class LookupDto {
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<Long> fieldList, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly);
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly, LookupName.lookupMethod(lookupName));
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Long> fieldList,
-                     List<String> fieldNames, boolean readOnly) {
+                     List<String> fieldNames, boolean readOnly, String methodName) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
@@ -46,11 +49,13 @@ public class LookupDto {
                 ? new LinkedList<String>()
                 : fieldNames;
         this.readOnly = readOnly;
+        this.methodName = methodName;
     }
 
     public LookupDto(Long id, String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
-                     List<Long> fieldList, List<String> fieldNames, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames, readOnly);
+                     List<Long> fieldList, List<String> fieldNames, boolean readOnly, String methodName) {
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, fieldNames, readOnly,
+                methodName);
         this.id = id;
     }
 
@@ -138,6 +143,14 @@ public class LookupDto {
         this.readOnly = readOnly;
     }
 
+    public String getMethodName() {
+        return (StringUtils.isBlank(methodName)) ? LookupName.lookupMethod(lookupName) : methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -162,7 +175,8 @@ public class LookupDto {
         LookupDto other = (LookupDto) o;
 
         return singleObjectReturn == other.singleObjectReturn && Objects.equals(fieldList, other.fieldList) &&
-                Objects.equals(lookupName, other.lookupName) && exposedViaRest == other.exposedViaRest;
+                Objects.equals(lookupName, other.lookupName) && exposedViaRest == other.exposedViaRest &&
+                Objects.equals(methodName, other.methodName);
     }
 
     /**

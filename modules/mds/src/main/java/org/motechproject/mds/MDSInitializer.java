@@ -1,6 +1,6 @@
 package org.motechproject.mds;
 
-import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.osgi.MDSApplicationContextTracker;
 import org.motechproject.mds.service.JarGeneratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import java.io.IOException;
 
 /**
@@ -27,15 +25,19 @@ import java.io.IOException;
 public class MDSInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(MDSInitializer.class);
 
-    private PersistenceManagerFactory persistenceManagerFactory;
     private JdoTransactionManager transactionManager;
-    private MDSConstructor constructor;
     private JarGeneratorService jarGeneratorService;
+    private MDSApplicationContextTracker mdsApplicationContextTracker;
 
     @PostConstruct
     public void constructEntities() throws IOException {
         TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.execute(new TransactionEntityConstructor());
+
+        mdsApplicationContextTracker.startTracker();
+        LOG.info("Annotation scanner started");
+
+        LOG.info("Motech data services initialization complete");
     }
 
     private class TransactionEntityConstructor extends TransactionCallbackWithoutResult {
@@ -43,22 +45,9 @@ public class MDSInitializer {
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus status) {
             // don't build DDEs, they will be loaded when their module contexts become available
-            constructor.constructAllEntities(false);
-            jarGeneratorService.regenerateMdsDataBundle();
-            LOG.info("Motech data services initialization complete");
+            jarGeneratorService.regenerateMdsDataBundle(false);
+            LOG.info("Initial entities bundle generated");
         }
-    }
-
-    @Autowired
-    @Qualifier("persistenceManagerFactory")
-    public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
-        this.persistenceManagerFactory = persistenceManagerFactory;
-    }
-
-    public PersistenceManager getPersistenceManager() {
-        return null != persistenceManagerFactory
-                ? persistenceManagerFactory.getPersistenceManager()
-                : null;
     }
 
     @Autowired
@@ -68,12 +57,12 @@ public class MDSInitializer {
     }
 
     @Autowired
-    public void setConstructor(MDSConstructor constructor) {
-        this.constructor = constructor;
+    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
+        this.jarGeneratorService = jarGeneratorService;
     }
 
     @Autowired
-    public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
-        this.jarGeneratorService = jarGeneratorService;
+    public void setMdsApplicationContextTracker(MDSApplicationContextTracker mdsApplicationContextTracker) {
+        this.mdsApplicationContextTracker = mdsApplicationContextTracker;
     }
 }
