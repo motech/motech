@@ -8,7 +8,6 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.ClassData;
@@ -19,15 +18,18 @@ import org.motechproject.mds.domain.Type;
 import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
+import org.motechproject.mds.util.ClassName;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * The <code>EntityBuilderImpl</code> is used build classes for a given entity.
@@ -55,7 +57,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             ctClass = classPool.makeClass(className);
             addFields(ctClass, entity.getFields());
 
-            return new ClassData(className, ctClass.toBytecode());
+            return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
             throw new EntityCreationException(e);
         }
@@ -78,12 +80,77 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             addFields(ddeClass, entity.getFields());
 
-            return new ClassData(className, ddeClass.toBytecode());
-        } catch (IOException | CannotCompileException | NotFoundException e) {
+            return new ClassData(entity, ddeClass.toBytecode());
+        } catch (Exception e) {
             throw new EntityCreationException(e);
         }
     }
 
+    @Override
+    public ClassData buildHistory(Entity entity) {
+        try {
+            String className = entity.getClassName();
+            LOG.info("Building history class for: {}", className);
+
+            String historyClassName = ClassName.getHistoryClassName(className);
+            CtClass historyClass = classPool.getOrNull(historyClassName);
+
+            // we can edit classes
+            if (historyClass != null) {
+                historyClass.defrost();
+            }
+
+            historyClass = classPool.makeClass(historyClassName);
+            String simpleName = historyClass.getSimpleName();
+
+            // creates the same fields like in entity definition
+            addFields(historyClass, entity.getFields());
+
+            Type idType = entity.getField("id").getType();
+
+            // add 3 extra fields to history class definition
+
+            // this field is related with id field in entity
+            addField(historyClass, simpleName + "CurrentVersion", idType.getTypeClassName());
+
+            // this field has information about previous historical data. It can be assumed that
+            // if this field is empty, the history instance will represent the first changes.
+            addField(historyClass, simpleName + "Previous", historyClassName);
+
+            // this field has information about next (new) historical data. It can be assumed
+            // that if this field is empty, the history instance will represent the newest changes.
+            addField(historyClass, simpleName + "Next", historyClassName);
+
+            return new ClassData(
+                    historyClassName, entity.getModule(), entity.getNamespace(),
+                    historyClass.toBytecode()
+            );
+        } catch (Exception e) {
+            throw new EntityCreationException(e);
+        }
+    }
+
+    private void addField(CtClass ctClass, String fieldName, String typeClassName) throws NotFoundException, CannotCompileException {
+        LOG.debug("Adding fields to class: " + ctClass.getName());
+
+        if (!JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
+            CtClass type = MotechClassPool.getDefault().get(typeClassName);
+
+            CtField ctField = new CtField(type, fieldName, ctClass);
+            ctField.setModifiers(Modifier.PRIVATE);
+
+            if (List.class.getName().equals(typeClassName)) {
+                ctField.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
+            }
+
+            CtMethod getter = CtNewMethod.getter("get" + capitalize(fieldName), ctField);
+            CtMethod setter = CtNewMethod.setter("set" + capitalize(fieldName), ctField);
+
+            ctClass.addField(ctField);
+            ctClass.addMethod(getter);
+            ctClass.addMethod(setter);
+        }
+    }
 
     private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
         for (Field field : fields) {
@@ -107,14 +174,14 @@ public class EntityBuilderImpl implements EntityBuilder {
                 ctField.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
             }
 
-            if (StringUtils.isBlank(field.getDefaultValue())) {
+            if (isBlank(field.getDefaultValue())) {
                 ctClass.addField(ctField);
             } else {
                 ctClass.addField(ctField, initializerForField(field));
             }
 
-            CtMethod getter = CtNewMethod.getter("get" + StringUtils.capitalize(fieldName), ctField);
-            CtMethod setter = CtNewMethod.setter("set" + StringUtils.capitalize(fieldName), ctField);
+            CtMethod getter = CtNewMethod.getter("get" + capitalize(fieldName), ctField);
+            CtMethod setter = CtNewMethod.setter("set" + capitalize(fieldName), ctField);
 
             ctClass.addMethod(getter);
             ctClass.addMethod(setter);

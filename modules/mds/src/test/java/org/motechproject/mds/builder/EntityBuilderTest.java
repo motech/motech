@@ -117,6 +117,36 @@ public class EntityBuilderTest {
         }
     }
 
+    @Test
+    public void shouldBuildHistoryClass() throws Exception {
+        when(entity.getFields()).thenReturn(asList(field("id", Long.class),
+                field("count", Integer.class), field("time", Time.class),
+                field("str", String.class), field("dec", Double.class),
+                field("bool", Boolean.class), field("date", Date.class),
+                field("dt", DateTime.class), field("list", List.class)));
+
+        when(entity.getField("id")).thenReturn(field("id", Long.class));
+
+        ClassData classData = entityBuilder.buildHistory(entity);
+        assertEquals(ENTITY_NAME + "__", classData.getClassName());
+
+        Class<?> clazz = mdsClassLoader.defineClass(classData.getClassName(), classData.getBytecode());
+
+        assertNotNull(clazz);
+        assertField(clazz, clazz.getSimpleName() + "CurrentVersion", Long.class);
+        assertField(clazz, clazz.getSimpleName() + "Previous", clazz);
+        assertField(clazz, clazz.getSimpleName() + "Next", clazz);
+        assertField(clazz, "id", Long.class);
+        assertField(clazz, "count", Integer.class);
+        assertField(clazz, "time", Time.class);
+        assertField(clazz, "str", String.class);
+        assertField(clazz, "dec", Double.class);
+        assertField(clazz, "bool", Boolean.class);
+        assertField(clazz, "date", Date.class);
+        assertField(clazz, "dt", DateTime.class);
+        assertField(clazz, "list", List.class);
+    }
+
     private Class<?> buildClass() {
         ClassData classData = entityBuilder.build(entity);
 

@@ -59,21 +59,32 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
     @Override
     public List<ClassData> buildInfrastructure(Entity entity) {
+        return build(entity.getClassName(), entity);
+    }
+
+    @Override
+    public List<ClassData> buildHistoryInfrastructure(String className) {
+        return build(className, null);
+    }
+
+    private List<ClassData> build(String className, Entity entity) {
         List<ClassData> list = new ArrayList<>();
 
         // create a repository(dao) for the entity
-        String repositoryClassName = MotechClassPool.getRepositoryName(entity.getClassName());
-        byte[] repositoryCode = getRepositoryCode(repositoryClassName, entity.getClassName());
+        String repositoryClassName = MotechClassPool.getRepositoryName(className);
+        byte[] repositoryCode = getRepositoryCode(repositoryClassName, className);
         list.add(new ClassData(repositoryClassName, repositoryCode));
 
         // create an interface for the service
-        String interfaceClassName = MotechClassPool.getInterfaceName(entity.getClassName());
-        byte[] interfaceCode = getInterfaceCode(interfaceClassName, entity);
+        String interfaceClassName = MotechClassPool.getInterfaceName(className);
+        byte[] interfaceCode = getInterfaceCode(interfaceClassName, className, entity);
         list.add(new ClassData(interfaceClassName, interfaceCode, true));
 
         // create the implementation of the service
-        String serviceClassName = MotechClassPool.getServiceImplName(entity.getClassName());
-        byte[] serviceCode = getServiceCode(serviceClassName, interfaceClassName, entity);
+        String serviceClassName = MotechClassPool.getServiceImplName(className);
+        byte[] serviceCode = getServiceCode(
+                serviceClassName, interfaceClassName, className, entity
+        );
         list.add(new ClassData(serviceClassName, serviceCode));
 
         return list;
@@ -102,14 +113,13 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
         }
     }
 
-    private byte[] getInterfaceCode(String interfaceClassName, Entity entity) {
+    private byte[] getInterfaceCode(String interfaceClassName, String className, Entity entity) {
         try {
-            String className = entity.getClassName();
             // the interface can come from the developer for DDE, but it doesn't have to
             // in which case it will be generated from scratch
             CtClass superInterface = null;
 
-            if (MotechClassPool.isServiceInterfaceRegistered(className)) {
+            if (null != entity && MotechClassPool.isServiceInterfaceRegistered(className)) {
                 String ddeInterfaceName = MotechClassPool.getServiceInterface(className);
                 Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
                 if (declaringBundle == null) {
@@ -132,10 +142,14 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             // for each lookup we generate three methods - normal lookup, lookup with query params and
             // a count method for the lookup
-            for (Lookup lookup : entity.getLookups()) {
-                for (LookupType lookupType : LookupType.values()) {
-                    CtMethod lookupMethod = generateLookupInterface(entity, lookup, interfaceClass, lookupType);
-                    interfaceClass.addMethod(lookupMethod);
+            if (null != entity) {
+                for (Lookup lookup : entity.getLookups()) {
+                    for (LookupType lookupType : LookupType.values()) {
+                        CtMethod lookupMethod = generateLookupInterface(
+                                entity, lookup, interfaceClass, lookupType
+                        );
+                        interfaceClass.addMethod(lookupMethod);
+                    }
                 }
             }
 
@@ -146,10 +160,10 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
     }
 
     private byte[] getServiceCode(String serviceClassName, String interfaceClassName,
-                                  Entity entity) {
+                                  String className, Entity entity) {
         try {
             CtClass superClass = classPool.getCtClass(DefaultMotechDataService.class.getName());
-            superClass.setGenericSignature(getGenericSignature(entity.getClassName()));
+            superClass.setGenericSignature(getGenericSignature(className));
 
             CtClass serviceInterface = classPool.getCtClass(interfaceClassName);
 
@@ -165,11 +179,32 @@ public class EntityInfrastructureBuilderImpl implements EntityInfrastructureBuil
 
             // for each lookup we generate three methods - normal lookup, lookup with query params and
             // a count method for the lookup
-            for (Lookup lookup : entity.getLookups()) {
-                for (LookupType lookupType : LookupType.values()) {
-                    CtMethod lookupMethod = generateLookup(entity, lookup, serviceClass, lookupType);
-                    serviceClass.addMethod(lookupMethod);
+            if (null != entity) {
+                for (Lookup lookup : entity.getLookups()) {
+                    for (LookupType lookupType : LookupType.values()) {
+                        CtMethod lookupMethod = generateLookup(
+                                entity, lookup, serviceClass, lookupType
+                        );
+                        serviceClass.addMethod(lookupMethod);
+                    }
                 }
+            }
+
+            String serviceName = ClassName.getSimpleName(serviceClassName);
+            String historyClassName = ClassName.getHistoryClassName(className);
+
+            // to avoid exception we check if history class exists in class pool
+            if (null != classPool.getOrNull(historyClassName)) {
+                // construct service constructor with history class as an argument
+                String constructorAsString = String.format(
+                        "public %s(){super(%s.class);}", serviceName, historyClassName
+                );
+                CtConstructor constructor = CtNewConstructor.make(
+                        constructorAsString, serviceClass
+                );
+
+                removeDefaultConstructor(serviceClass);
+                serviceClass.addConstructor(constructor);
             }
 
             return serviceClass.toBytecode();

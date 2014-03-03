@@ -15,15 +15,19 @@
 
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
-  #foreach ( $entry in $list )
-  <bean id="$entry.get('name')Repository" class="$entry.get('repository')" />
+    #foreach ( $entry in $list )
+    #if ( $entry.containsKey('repository') )
+    <bean id="$entry.get('name')Repository" class="$entry.get('repository')" />
+    #end
 
-  <bean id="$entry.get('name')Service" class="$entry.get('service')">
-    <property name="repository">
-        <bean class="$entry.get('repository')" />
-    </property>
-  </bean>
-  #end
+    #if( $entry.containsKey('service') )
+    <bean id="$entry.get('name')Service" class="$entry.get('service')">
+        #if ( $entry.containsKey('repository') )
+        <property name="repository" ref="$entry.get('name')Repository"/>
+        #end
+    </bean>
+    #end
+    #end
 
   <!-- We override the allowCreate from mds, we must create persistence managers for OSGi callers -->
   <bean id="persistenceManagerFactory" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">

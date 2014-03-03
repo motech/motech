@@ -39,6 +39,8 @@ public final class FieldTestHelper {
     public static Object newVal(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         if (Integer.class.equals(clazz)) {
             return 5;
+        } else if (Long.class.equals(clazz)) {
+            return 5L;
         } else if (Double.class.equals(clazz)) {
             return 2.1;
         } else if (String.class.equals(clazz)) {

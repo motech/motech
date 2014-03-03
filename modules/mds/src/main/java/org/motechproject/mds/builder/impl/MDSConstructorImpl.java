@@ -86,6 +86,9 @@ public class MDSConstructorImpl implements MDSConstructor {
             // define in the MDS classloader, so that the persistence manager sees this class
             MDSClassLoader.getInstance().defineClass(enhancedClassData);
 
+            // create appropriate class that will hold the history of changes on entity
+            buildHistory(tmpClassLoader, enhancer, entity);
+
             // build infrastructure classes such as services and repositories
             buildInfrastructure(entity);
         }
@@ -136,7 +139,7 @@ public class MDSConstructorImpl implements MDSConstructor {
             // then, we commence with enhancement
             enhancer.enhance();
 
-            // lastly, we register the enhanced class bytes
+            // we register the enhanced class bytes
             // and build the infrastructure classes
             for (Entity entity : entities) {
                 String className = entity.getClassName();
@@ -152,6 +155,9 @@ public class MDSConstructorImpl implements MDSConstructor {
                 // register with the classloader so that we avoid issues with the persistence manager
                 MDSClassLoader.getInstance().defineClass(enhancedData);
 
+                LOG.debug("Building history for {}", className);
+                buildHistory(tmpClassLoader, enhancer, entity);
+
                 LOG.debug("Building infrastructure for {}", className);
                 buildInfrastructure(entity);
             }
@@ -159,18 +165,57 @@ public class MDSConstructorImpl implements MDSConstructor {
     }
 
     private ClassData buildClass(Entity entity) {
+        ClassData classData;
+
         if (entity.isDDE()) {
             // for DDE we load the class coming from the bundle
             Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
 
             if (declaringBundle == null) {
                 throw new EntityCreationException("Declaring bundle unavailable for entity " + entity.getClassName());
-            } else {
-                return entityBuilder.buildDDE(entity, declaringBundle);
             }
+
+            classData = entityBuilder.buildDDE(entity, declaringBundle);
         } else {
-            return entityBuilder.build(entity);
+            classData = entityBuilder.build(entity);
         }
+
+        return classData;
+    }
+
+    private void buildHistory(MDSClassLoader tmpClassLoader, MdsJDOEnhancer enhancer,
+                              Entity entity) {
+        LOG.info("Constructing histroy class for: {}", entity.getClassName());
+        ClassData classData = entityBuilder.buildHistory(entity);
+
+        // modify the existing metadata
+        JDOMetadata jdoMetadata = metadataHolder.getJdoMetadata();
+        JDOMetadata tmpMetadata = persistenceManagerFactory.newMetadata();
+
+        metadataBuilder.addBaseMetadata(jdoMetadata, classData);
+        metadataBuilder.addBaseMetadata(tmpMetadata, classData);
+
+        tmpClassLoader.defineClass(classData);
+        enhancer.addClass(classData);
+
+        enhancer.registerMetadata(tmpMetadata);
+
+        // then, we commence with enhancement
+        enhancer.enhance();
+
+        // register
+        String className = classData.getClassName();
+        byte[] enhancedBytes = enhancer.getEnhancedBytes(className);
+
+        ClassData enhancedClassData = new ClassData(className, enhancedBytes);
+
+        // register as enhanced class data
+        MotechClassPool.registerEnhancedClassData(enhancedClassData);
+        // define in the MDS classloader, so that the persistence manager sees this class
+        MDSClassLoader.getInstance().defineClass(enhancedClassData);
+
+        // build infrastructure classes
+        buildInfrastructure(className);
     }
 
     private void buildInfrastructure(Entity entity) {
@@ -188,10 +233,19 @@ public class MDSConstructorImpl implements MDSConstructor {
         }
     }
 
+    private void buildInfrastructure(String className) {
+        List<ClassData> infrastructure = infrastructureBuilder.buildHistoryInfrastructure(className);
+        for (ClassData classData : infrastructure) {
+            MDSClassLoader.getInstance().defineClass(classData);
+        }
+    }
+
     private void filterEntities(List<Entity> entities, boolean buildDDE) {
         Iterator<Entity> it = entities.iterator();
         while (it.hasNext()) {
-            Entity entity = it .next();
+            Entity entity = it.next();
+
+            // DDEs are generated when their declaring bundles context is loaded
             if (entity.isDraft() || (!buildDDE && entity.isDDE())) {
                 it.remove();
             }

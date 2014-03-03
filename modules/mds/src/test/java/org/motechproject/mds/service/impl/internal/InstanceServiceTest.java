@@ -263,8 +263,8 @@ public class InstanceServiceTest {
 
     private void mockSampleFields() {
         when(entityService.getEntityFields(ENTITY_ID)).thenReturn(asList(
-            fieldDto(1L, "strField", String.class.getName(), "String field", "Default"),
-            fieldDto(2L, "intField", Integer.class.getName(), "Integer field", 7),
+                fieldDto(1L, "strField", String.class.getName(), "String field", "Default"),
+                fieldDto(2L, "intField", Integer.class.getName(), "Integer field", 7),
                 fieldDto(3L, "dtField", DateTime.class.getName(), "DateTime field", null),
                 fieldDto(4L, "timeField", Time.class.getName(), "Time field", null)
         ));

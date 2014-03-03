@@ -16,4 +16,6 @@
 
     <!-- Weaves the classes for Developer Defined Entities, has to be registered as a service -->
     <osgi:service ref="mdsWeavingHook" interface="org.osgi.framework.hooks.weaving.WeavingHook"/>
+
+    <osgi:service ref="historyServiceImpl" interface="org.motechproject.mds.service.HistoryService"/>
 </beans>

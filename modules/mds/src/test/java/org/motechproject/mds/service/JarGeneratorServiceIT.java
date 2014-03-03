@@ -87,6 +87,10 @@ public class JarGeneratorServiceIT extends BaseIT {
         expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
         expected.addAll(createClassPathEntries(FOO_CLASS));
         expected.addAll(createClassPathEntries(BAR_CLASS));
+        expected.addAll(createClassPathEntries(SAMPLE_CLASS + "__"));
+        expected.addAll(createClassPathEntries(EXAMPLE_CLASS + "__"));
+        expected.addAll(createClassPathEntries(FOO_CLASS + "__"));
+        expected.addAll(createClassPathEntries(BAR_CLASS + "__"));
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO));

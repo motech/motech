@@ -7,7 +7,9 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.ex.SecurityException;
 import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.service.HistoryService;
 import org.motechproject.mds.service.MotechDataService;
+import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.InstanceSecurityRestriction;
 import org.motechproject.mds.util.QueryParams;
 import org.motechproject.mds.util.SecurityMode;
@@ -36,19 +38,31 @@ import java.util.Set;
  */
 @Service
 public abstract class DefaultMotechDataService<T> implements MotechDataService<T> {
-    private MotechDataRepository<T> repository;
-    private AllEntities allEntities;
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String ID = "id";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private MotechDataRepository<T> repository;
+    private Class<? extends T> historyClass;
+    private HistoryService historyService;
+    private AllEntities allEntities;
+
+    protected DefaultMotechDataService() {
+        this(null);
+    }
+
+    protected DefaultMotechDataService(Class<? extends T> historyClass) {
+        this.historyClass = historyClass;
+    }
 
     @Override
     @Transactional
     public T create(T object) {
         validateCredentials();
         setOwnerCreator(object);
-        return repository.create(object);
+        T created = repository.create(object);
+        historyService.record(historyClass, created);
+
+        return created;
     }
 
     @Override
@@ -95,7 +109,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Transactional
     public T update(T object) {
         validateCredentials(object);
-        return repository.update(object);
+        T updated = repository.update(object);
+        historyService.record(historyClass, updated);
+
+        return updated;
     }
 
     @Override
@@ -133,7 +150,8 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
 
     private InstanceSecurityRestriction checkNonInstanceAccess() {
         Class clazz = repository.getClassType();
-        Entity entity = allEntities.retrieveByClassName(clazz.getName());
+        String name = ClassName.getClassName(clazz.getName());
+        Entity entity = allEntities.retrieveByClassName(name);
         SecurityMode mode = entity.getSecurityMode();
 
         boolean authorized = false;
@@ -248,5 +266,10 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     @Autowired
     public void setAllEntities(AllEntities allEntities) {
         this.allEntities = allEntities;
+    }
+
+    @Autowired
+    public void setHistoryService(HistoryService historyService) {
+        this.historyService = historyService;
     }
 }

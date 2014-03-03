@@ -59,7 +59,7 @@ public class MdsBundleIT extends BaseOsgiIT {
     public void onSetUp() throws Exception {
         WebApplicationContext context = getContext(MDS_BUNDLE_SYMBOLIC_NAME);
 
-        entityService = (EntityService) context.getBean("entityServiceImpl");
+        entityService = context.getBean(EntityService.class);
 
         clearEntities();
         setUpSecurityContext();
@@ -268,7 +268,7 @@ public class MdsBundleIT extends BaseOsgiIT {
     @Override
     protected List<String> getImports() {
         return asList(
-               "org.motechproject.mds.domain", "org.motechproject.mds.repository", "org.motechproject.mds.service", "org.motechproject.mds.util"
+                "org.motechproject.mds.domain", "org.motechproject.mds.repository", "org.motechproject.mds.service", "org.motechproject.mds.util"
         );
     }
 }

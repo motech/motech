@@ -1,13 +1,19 @@
 package org.motechproject.mds.builder;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.mds.builder.impl.EntityMetadataBuilderImpl;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.Field;
+import org.motechproject.mds.javassist.MotechClassPool;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -18,11 +24,14 @@ import javax.jdo.metadata.JDOMetadata;
 import javax.jdo.metadata.PackageMetadata;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(MotechClassPool.class)
 public class EntityMetadataBuilderTest {
     private static final String PACKAGE = "org.motechproject.mds.entity";
     private static final String ENTITY_NAME = "Sample";
@@ -56,6 +65,8 @@ public class EntityMetadataBuilderTest {
 
     @Before
     public void setUp() {
+        initMocks(this);
+
         when(entity.getClassName()).thenReturn(CLASS_NAME);
         when(classMetadata.newFieldMetadata("id")).thenReturn(idMetadata);
         when(entity.getField("id")).thenReturn(idField);
@@ -106,6 +117,32 @@ public class EntityMetadataBuilderTest {
         when(entity.getNamespace()).thenReturn(NAMESPACE);
         entityMetadataBuilder.addEntityMetadata(jdoMetadata, entity);
         verify(classMetadata).setTable(TABLE_NAME_3);
+    }
+
+    @Test
+    public void shouldAddBaseEntityMetadata() throws Exception {
+        CtField ctField = mock(CtField.class);
+        CtClass ctClass = mock(CtClass.class);
+        ClassData classData = mock(ClassData.class);
+        ClassPool pool = mock(ClassPool.class);
+
+        PowerMockito.mockStatic(MotechClassPool.class);
+        PowerMockito.when(MotechClassPool.getDefault()).thenReturn(pool);
+
+        when(classData.getClassName()).thenReturn(CLASS_NAME);
+        when(classData.getModule()).thenReturn(MODULE);
+        when(classData.getNamespace()).thenReturn(NAMESPACE);
+        when(pool.getOrNull(CLASS_NAME)).thenReturn(ctClass);
+        when(ctClass.getDeclaredField("id")).thenReturn(ctField);
+        when(jdoMetadata.newPackageMetadata(PACKAGE)).thenReturn(packageMetadata);
+        when(packageMetadata.newClassMetadata(ENTITY_NAME)).thenReturn(classMetadata);
+
+        entityMetadataBuilder.addBaseMetadata(jdoMetadata, classData);
+
+        verify(jdoMetadata).newPackageMetadata(PACKAGE);
+        verify(packageMetadata).newClassMetadata(ENTITY_NAME);
+        verify(classMetadata).setTable(TABLE_NAME_3);
+        verifyCommonClassMetadata();
     }
 
     private void verifyCommonClassMetadata() {

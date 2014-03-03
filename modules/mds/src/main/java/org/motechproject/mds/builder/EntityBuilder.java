@@ -1,7 +1,7 @@
 package org.motechproject.mds.builder;
 
-import org.osgi.framework.Bundle;
 import org.motechproject.mds.domain.Entity;
+import org.osgi.framework.Bundle;
 
 /**
  * An entity builder is responsible for building the entity class from an Entity schema.
@@ -16,4 +16,6 @@ public interface EntityBuilder {
     ClassData build(Entity entity);
 
     ClassData buildDDE(Entity entity, Bundle bundle);
+
+    ClassData buildHistory(Entity entity);
 }

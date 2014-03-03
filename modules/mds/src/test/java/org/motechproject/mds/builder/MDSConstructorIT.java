@@ -3,6 +3,7 @@ package org.motechproject.mds.builder;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -19,8 +20,12 @@ import org.motechproject.mds.repository.AllEntities;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.repository.MetadataHolder;
 import org.motechproject.mds.repository.MotechDataRepository;
+import org.motechproject.mds.service.HistoryService;
+import org.motechproject.mds.service.MotechDataService;
 import org.motechproject.mds.service.impl.DefaultMotechDataService;
+import org.motechproject.mds.service.impl.internal.HistoryServiceImpl;
 import org.motechproject.mds.util.Constants;
+import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jdo.Query;
@@ -32,6 +37,10 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.motechproject.mds.testutil.FieldTestHelper.field;
 
 public class MDSConstructorIT extends BaseIT {
@@ -54,10 +63,18 @@ public class MDSConstructorIT extends BaseIT {
     @Autowired
     private MetadataHolder metadataHolder;
 
+    @Autowired
+    private HistoryService historyService;
+
+    @Autowired
+    private MockBundleContext mockBundleContext;
+
     @Before
     public void setUp() throws Exception {
         allEntities.create(new EntityDto(CLASS_NAME));
         metadataHolder.reloadMetadata();
+
+        mockBundleContext = spy(mockBundleContext);
     }
 
     @After
@@ -69,6 +86,13 @@ public class MDSConstructorIT extends BaseIT {
 
     @Test
     public void testConstructEntity() throws Exception {
+        MotechDataService mockHistoryService = mock(MotechDataService.class);
+        doReturn(mockHistoryService).when(mockBundleContext).getService(any(ServiceReference.class));
+
+        if (historyService instanceof HistoryServiceImpl) {
+            ((HistoryServiceImpl) historyService).setBundleContext(mockBundleContext);
+        }
+
         Type longType = allTypes.retrieveByClassName(Long.class.getName());
         Type stringType = allTypes.retrieveByClassName(String.class.getName());
 
@@ -109,6 +133,7 @@ public class MDSConstructorIT extends BaseIT {
 
             repository.setPersistenceManagerFactory(getPersistenceManagerFactory());
             service.setRepository(repository);
+            service.setHistoryService(historyService);
 
             Object Voucher = service.create(entityClass.newInstance());
             assertEquals(1, service.retrieveAll().size());

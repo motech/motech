@@ -14,9 +14,12 @@
 
    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
 
+   <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService"/>
 
-   #foreach( $service in $list )
-   <osgi:service id="$service.get('name')ServiceOsgi" ref="$service.get('name')Service"
-      interface="$service.get('interface')" auto-export="interfaces" />
-   #end
+    #foreach ( $service in $list )
+    #if ( $service.containsKey('interface') )
+    <osgi:service id="$service.get('name')ServiceOsgi" ref="$service.get('name')Service"
+        interface="$service.get('interface')" auto-export="interfaces" />
+    #end
+    #end
 </beans>
