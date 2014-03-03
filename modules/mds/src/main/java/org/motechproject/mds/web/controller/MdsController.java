@@ -21,6 +21,9 @@ public abstract class MdsController {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public String handleMdsException(final MdsException exception) throws IOException {
-        return String.format("key:%s", exception.getMessageKey());
+        if (exception.getParams() == null) {
+            return String.format("key:%s", exception.getMessageKey());
+        }
+        return String.format("key:%s\nparams:%s", exception.getMessageKey(), exception.getParams());
     }
 }

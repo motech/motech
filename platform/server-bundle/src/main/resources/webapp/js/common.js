@@ -1,8 +1,8 @@
     /* Common functions */
 
-function motechAlert(msg, title, callback) {
+function motechAlert(msg, title, params, callback) {
     'use strict';
-    jAlert(jQuery.i18n.prop(msg), jQuery.i18n.prop(title), callback);
+    jAlert(jQuery.i18n.prop.apply(null, [msg].concat(params)), jQuery.i18n.prop(title), callback);
 }
 
 function motechConfirm(msg, title, callback) {
@@ -35,16 +35,22 @@ var jFormErrorHandler = function(response) {
     handleResponse = function(title, defaultMsg, response) {
         'use strict';
         var msg = "server.error",
+            params = [], i,
             responseData = (typeof(response) === 'string') ? response : response.data;
 
         unblockUI();
 
         if ((typeof(responseData) === 'string') && responseData.startsWith('key:') && !responseData.endsWith('key')) {
-            msg = responseData.split(':')[1];
+             if (responseData.indexOf('params:') !== -1) {
+                msg = responseData.split('\n')[0].split(':')[1];
+                params = responseData.split('\n')[1].split(':')[1].split(',');
+             } else {
+                msg = responseData.split(':')[1];
+             }
         } else if (defaultMsg) {
             msg = defaultMsg;
         }
-        motechAlert(msg, title);
+        motechAlert(msg, title, params);
     },
 
     angularHandler = function(title, defaultMsg) {
