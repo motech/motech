@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  *
  * @see org.motechproject.mds.annotations.internal.UIFilterableProcessor
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface UIFilterable {

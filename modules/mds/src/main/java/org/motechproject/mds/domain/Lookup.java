@@ -1,6 +1,8 @@
 package org.motechproject.mds.domain;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.util.LookupName;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -36,6 +38,9 @@ public class Lookup {
     @Persistent
     private boolean readOnly;
 
+    @Persistent
+    private String methodName;
+
     @Persistent(table = "LookupFields")
     @Join
     private List<Field> fields;
@@ -45,15 +50,17 @@ public class Lookup {
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fields, false);
+        this(lookupName, singleObjectReturn, exposedViaRest, fields, false, LookupName.lookupMethod(lookupName));
     }
 
-    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly) {
+    public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
+                  String methodName) {
         this.lookupName = lookupName;
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fields = fields;
         this.readOnly = readOnly;
+        this.methodName = methodName;
     }
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, Entity entity) {
@@ -75,7 +82,8 @@ public class Lookup {
                 fieldNames.add(field.getName());
             }
         }
-        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest, fieldIds, fieldNames, readOnly);
+        return new LookupDto(id, lookupName, singleObjectReturn, exposedViaRest,
+                fieldIds, fieldNames, readOnly, methodName);
     }
 
     public Long getId() {
@@ -134,6 +142,14 @@ public class Lookup {
         this.readOnly = readOnly;
     }
 
+    public String getMethodName() {
+        return (StringUtils.isBlank(methodName)) ? LookupName.lookupMethod(lookupName) : methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
     public Lookup copy(List<Field> fields) {
         List<Field> lookupFields = new ArrayList<>();
         for (Field field : fields) {
@@ -143,7 +159,7 @@ public class Lookup {
                 }
             }
         }
-        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly);
+        return new Lookup(lookupName, singleObjectReturn, exposedViaRest, lookupFields, readOnly, methodName);
     }
 
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
@@ -151,5 +167,7 @@ public class Lookup {
         exposedViaRest = lookupDto.isExposedViaRest();
         lookupName = lookupDto.getLookupName();
         fields = lookupFields;
+        methodName = lookupDto.getMethodName();
+        readOnly = lookupDto.isReadOnly();
     }
 }

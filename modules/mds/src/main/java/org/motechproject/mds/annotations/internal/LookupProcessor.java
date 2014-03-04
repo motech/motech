@@ -7,6 +7,7 @@ import org.motechproject.mds.annotations.Lookup;
 import org.motechproject.mds.annotations.LookupField;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
+import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.service.EntityService;
 import org.motechproject.mds.util.AnnotationsUtil;
 import org.slf4j.Logger;
@@ -77,6 +78,8 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
                 entity.getName()
         );
 
+        MotechClassPool.registerServiceInterface(entity.getClassName(), method.getDeclaringClass().getName());
+
         Long entityId = entity.getId();
         Lookup annotation = AnnotationsUtil.findAnnotation(method, Lookup.class);
         String lookupName = generateLookupName(annotation.name(), method.getName());
@@ -87,6 +90,7 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         lookup.setLookupName(lookupName);
         lookup.setFieldNames(lookupFields);
         lookup.setReadOnly(true);
+        lookup.setMethodName(method.getName());
 
         if (!getElements().containsKey(entityId)) {
             put(entityId, new ArrayList<LookupDto>());
@@ -132,7 +136,12 @@ class LookupProcessor extends AbstractMapProcessor<Lookup, Long, List<LookupDto>
         List<String> lookupFields = new ArrayList<>();
         List<String> methodParameterNames = new ArrayList<>();
 
-        methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
+        try {
+            methodParameterNames.addAll(Arrays.asList(paranamer.lookupParameterNames(method)));
+        } catch (Exception e) {
+            LOGGER.warn("Unable to read method {} names using paranamer", method.toString());
+            LOGGER.debug("Paranamer stacktrace", e);
+        }
 
         for (int i = 0; i < paramAnnotations.length; i++) {
             for (Annotation annotation : paramAnnotations[i]) {

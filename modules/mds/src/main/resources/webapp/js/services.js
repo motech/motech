@@ -12,6 +12,7 @@
             { id: '@id' },
             {
                 getAdvanced: { method: 'GET', params: { action: 'advanced' } },
+                getAdvancedCommited: { method: 'GET', params: { action: 'advancedCommited' } },
                 getSecurity: { method: 'GET', params: { action: 'security' } },
                 getWorkInProggress: { method: 'GET', params: { action: 'wip' }, isArray: true },
                 getFields: { method: 'GET', params: {action: 'fields' }, isArray: true },

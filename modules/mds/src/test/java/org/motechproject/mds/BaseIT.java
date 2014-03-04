@@ -5,7 +5,6 @@ import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
 import org.motechproject.mds.domain.Lookup;
-import org.motechproject.mds.domain.RestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -88,7 +87,7 @@ public abstract class BaseIT {
     }
 
     protected <T> List<T> cast(Class<T> clazz, Collection collection) {
-        List<T> list = new ArrayList<T>(collection.size());
+        List<T> list = new ArrayList<>(collection.size());
 
         for (Object obj : collection) {
             if (clazz.isInstance(obj)) {

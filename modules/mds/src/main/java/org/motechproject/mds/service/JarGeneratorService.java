@@ -23,5 +23,5 @@ public interface JarGeneratorService {
 
     File generate() throws IOException, NotFoundException, CannotCompileException;
 
-    void regenerateMdsDataBundle();
+    void regenerateMdsDataBundle(boolean buildDDE);
 }

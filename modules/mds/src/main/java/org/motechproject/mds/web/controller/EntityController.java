@@ -198,6 +198,13 @@ public class EntityController extends MdsController {
         return entityService.getAdvancedSettings(entityId);
     }
 
+    @RequestMapping(value = "/entities/{entityId}/advancedCommited", method = RequestMethod.GET)
+    @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
+    @ResponseBody
+    public AdvancedSettingsDto getCommitedAdvanced(@PathVariable final Long entityId) {
+        return entityService.getAdvancedSettings(entityId, true);
+    }
+
     @Autowired
     public void setEntityService(EntityService entityService) {
         this.entityService = entityService;

@@ -12,6 +12,4 @@ public interface MDSConstructor {
     void constructEntity(Entity entity);
 
     void constructAllEntities(boolean buildDDE);
-
-    void updateEntities();
 }

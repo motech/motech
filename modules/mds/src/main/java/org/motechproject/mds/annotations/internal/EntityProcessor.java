@@ -100,9 +100,7 @@ class EntityProcessor extends AbstractListProcessor<Entity, EntityDto> {
 
     @Override
     protected void afterExecution() {
-        for (EntityDto entity : getElements()) {
-            entityService.generateDDE(entity.getId());
-        }
+        LOGGER.debug("Execution complete for bundle {}", getBundle().getSymbolicName());
     }
 
     private void findFields(Class clazz, EntityDto entity) {

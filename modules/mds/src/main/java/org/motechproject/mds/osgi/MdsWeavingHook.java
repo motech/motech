@@ -37,7 +37,7 @@ public class MdsWeavingHook implements WeavingHook {
         if (enhancedClassData == null) {
             LOG.trace("{} does not have enhanced registered DDE metadata", className);
         } else {
-            LOG.debug("Weaving {}", className);
+            LOG.info("Weaving {}", className);
             // these imports will be required by the provider
             addCommonJdoImports(wovenClass);
             // change the bytecode
@@ -47,8 +47,11 @@ public class MdsWeavingHook implements WeavingHook {
 
     private void addCommonJdoImports(WovenClass wovenClass) {
         List<String> dynamicImports = wovenClass.getDynamicImports();
-
+        // jdo imports
         dynamicImports.add("javax.jdo");
+        dynamicImports.add("javax.jdo.identity");
         dynamicImports.add("javax.jdo.spi");
+        // mds imports
+        dynamicImports.add("org.motechproject.mds.util");
     }
 }

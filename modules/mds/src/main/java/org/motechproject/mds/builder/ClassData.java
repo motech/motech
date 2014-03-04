@@ -11,9 +11,15 @@ public class ClassData {
 
     private final String className;
     private final byte[] bytecode;
+    private final boolean interfaceClass;
 
     public ClassData(String className, byte[] bytecode) {
+        this(className, bytecode, false);
+    }
+
+    public ClassData(String className, byte[] bytecode, boolean interfaceClass) {
         this.className = className;
+        this.interfaceClass = interfaceClass;
         this.bytecode = ArrayUtils.isNotEmpty(bytecode)
                 ? Arrays.copyOf(bytecode, bytecode.length)
                 : new byte[0];
@@ -29,5 +35,9 @@ public class ClassData {
 
     public int getLength() {
         return bytecode.length;
+    }
+
+    public boolean isInterfaceClass() {
+        return interfaceClass;
     }
 }
