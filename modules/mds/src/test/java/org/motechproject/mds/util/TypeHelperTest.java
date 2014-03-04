@@ -11,6 +11,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TypeHelperTest {
 
@@ -48,5 +50,43 @@ public class TypeHelperTest {
         assertEquals(false, TypeHelper.parse(0, Boolean.class));
         assertEquals(false, TypeHelper.parse(-1, Boolean.class));
         assertEquals(null, TypeHelper.parse(null, Boolean.class));
+    }
+
+    @Test
+    public void shouldIdentifyTypesWithPrimitives() {
+        assertTrue(TypeHelper.hasPrimitive(Boolean.class));
+        assertTrue(TypeHelper.hasPrimitive(Integer.class));
+        assertTrue(TypeHelper.hasPrimitive(Long.class));
+        assertTrue(TypeHelper.hasPrimitive(Short.class));
+        assertTrue(TypeHelper.hasPrimitive(Byte.class));
+        assertTrue(TypeHelper.hasPrimitive(Double.class));
+        assertTrue(TypeHelper.hasPrimitive(Float.class));
+        assertTrue(TypeHelper.hasPrimitive(Character.class));
+
+        assertFalse(TypeHelper.hasPrimitive(String.class));
+        assertFalse(TypeHelper.hasPrimitive(Date.class));
+        assertFalse(TypeHelper.hasPrimitive(Time.class));
+    }
+
+
+    @Test
+    public void shouldReturnCorrectWrappersAndPrimitives() {
+        assertEquals(Boolean.class, TypeHelper.getWrapperForPrimitive(boolean.class));
+        assertEquals(Character.class, TypeHelper.getWrapperForPrimitive(char.class));
+        assertEquals(Byte.class, TypeHelper.getWrapperForPrimitive(byte.class));
+        assertEquals(Integer.class, TypeHelper.getWrapperForPrimitive(int.class));
+        assertEquals(Long.class, TypeHelper.getWrapperForPrimitive(long.class));
+        assertEquals(Short.class, TypeHelper.getWrapperForPrimitive(short.class));
+        assertEquals(Double.class, TypeHelper.getWrapperForPrimitive(double.class));
+        assertEquals(Float.class, TypeHelper.getWrapperForPrimitive(float.class));
+
+        assertEquals(boolean.class, TypeHelper.getPrimitive(Boolean.class));
+        assertEquals(char.class, TypeHelper.getPrimitive(Character.class));
+        assertEquals(byte.class, TypeHelper.getPrimitive(Byte.class));
+        assertEquals(int.class, TypeHelper.getPrimitive(Integer.class));
+        assertEquals(long.class, TypeHelper.getPrimitive(Long.class));
+        assertEquals(short.class, TypeHelper.getPrimitive(Short.class));
+        assertEquals(double.class, TypeHelper.getPrimitive(Double.class));
+        assertEquals(float.class, TypeHelper.getPrimitive(Float.class));
     }
 }

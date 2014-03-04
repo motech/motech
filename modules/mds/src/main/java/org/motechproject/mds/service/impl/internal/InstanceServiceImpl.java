@@ -379,6 +379,16 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         Class<?> propertyClass = MDSClassLoader.getInstance().loadClass(fieldRecord.getType().getTypeClass());
 
         Method method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, propertyClass);
+
+        // try the primitive setter
+        if (method == null && TypeHelper.hasPrimitive(propertyClass)) {
+            method = MethodUtils.getAccessibleMethod(instance.getClass(), methodName, TypeHelper.getPrimitive(propertyClass));
+            // if the setter is for a primitive, but we have a null, we leave the default
+            if (method != null && parsedValue == null) {
+                return;
+            }
+        }
+
         if (method == null) {
             throw new NoSuchMethodException(String.format("No setter %s for field %s", methodName, fieldRecord.getName()));
         }

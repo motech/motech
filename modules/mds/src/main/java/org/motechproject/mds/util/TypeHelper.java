@@ -1,5 +1,8 @@
 package org.motechproject.mds.util;
 
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.collections.bidimap.UnmodifiableBidiMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.joda.time.DateTime;
@@ -19,7 +22,8 @@ import java.util.List;
  */
 public final class TypeHelper {
 
-    private static final  DateTimeFormatter DTF;
+    private static final DateTimeFormatter DTF;
+    private static final BidiMap PRIMITIVE_TYPE_MAP;
 
     static {
         DateTimeParser[] parsers = {
@@ -31,6 +35,18 @@ public final class TypeHelper {
                 DateTimeFormat.shortDate().getParser()
         };
         DTF = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
+
+        BidiMap bidiMap = new DualHashBidiMap();
+        bidiMap.put(Integer.class, int.class);
+        bidiMap.put(Long.class, long.class);
+        bidiMap.put(Short.class, short.class);
+        bidiMap.put(Byte.class, byte.class);
+        bidiMap.put(Double.class, double.class);
+        bidiMap.put(Float.class, float.class);
+        bidiMap.put(Character.class, char.class);
+        bidiMap.put(Boolean.class, boolean.class);
+
+        PRIMITIVE_TYPE_MAP = UnmodifiableBidiMap.decorate(bidiMap);
     }
 
     public static Object parse(Object val, Class<?> toClass) {
@@ -118,6 +134,18 @@ public final class TypeHelper {
             default:
                 return number;
         }
+    }
+
+    public static boolean hasPrimitive(Class<?> clazz) {
+        return PRIMITIVE_TYPE_MAP.containsKey(clazz);
+    }
+
+    public static Class<?> getPrimitive(Class<?> clazz) {
+        return (Class<?>) PRIMITIVE_TYPE_MAP.get(clazz);
+    }
+
+    public static Class<?> getWrapperForPrimitive(Class<?> clazz) {
+        return (Class<?>) PRIMITIVE_TYPE_MAP.getKey(clazz);
     }
 
     private static boolean bothNumbers(Object val, String toClass) {

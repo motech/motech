@@ -8,6 +8,7 @@ import org.motechproject.mds.repository.AllTypeValidations;
 import org.motechproject.mds.repository.AllTypes;
 import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.TypeService;
+import org.motechproject.mds.util.TypeHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,9 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
     @Override
     @Transactional
     public TypeDto findType(Class<?> clazz) {
-        Type type = allTypes.retrieveByClassName(clazz.getName());
+        String className = getClassNameForType(clazz);
+
+        Type type = allTypes.retrieveByClassName(className);
 
         if (null != type) {
             return type.toDto();
@@ -59,6 +62,17 @@ public class TypeServiceImpl extends BaseMdsService implements TypeService {
         }
 
         return list;
+    }
+
+    private String getClassNameForType(Class<?> clazz) {
+        Class<?> chosenClass = clazz;
+
+        // box primitives
+        if (clazz.isPrimitive()) {
+            chosenClass = TypeHelper.getWrapperForPrimitive(clazz);
+        }
+
+        return chosenClass.getName();
     }
 
     @Autowired
