@@ -7,6 +7,10 @@
         <h4>{{msg('mds.error')}}</h4>
         <p>{{msg(currentErrorCode)}}</p>
     </div>
+    <div class="alert alert-warning margin-before row" ui-if="blockLookups">
+        <h4>{{msg('mds.warning')}}</h4>
+        <p>{{msg('mds.warning.lookupName.repeat')}}</p>
+    </div>
     <div class="row">
         <div class="form-inline inside margin-before">
             <div class="form-group">

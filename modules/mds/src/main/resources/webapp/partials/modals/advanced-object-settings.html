@@ -3,7 +3,7 @@
     <div class="modal-dialog">
         <div class="modal-content large">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" ng-disabled="blockLookups" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="advancedObjectSettingsModalLabel">{{msg('mds.advanced.title')}}</h4>
             </div>
             <div class="modal-body clearfix">
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">
+                <button class="btn btn-primary" ng-disabled="blockLookups" data-dismiss="modal" aria-hidden="true">
                     {{msg('mds.btn.close')}}
                 </button>
             </div>

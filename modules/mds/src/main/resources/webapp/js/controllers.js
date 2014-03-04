@@ -157,6 +157,7 @@
         setAdvancedSettings = function () {
             $scope.advancedSettings = Entities.getAdvanced({id: $scope.selectedEntity.id},
                 function () {
+                    $scope.blockLookups = false;
                     if (!_.isNull($scope.advancedSettings)
                             && !_.isUndefined($scope.advancedSettings)
                             && $scope.advancedSettings.indexes.length > 0) {
@@ -168,6 +169,18 @@
                     setRest();
                     setBrowsing();
                     setIndexesLookupsTab();
+
+                    angular.forEach($scope.advancedSettings.indexes, function(index) {
+                        var result = $.grep($scope.advancedSettings.indexes, function(lookup) {
+                            return lookup.lookupName === index.lookupName;
+                        });
+
+                        if (result.length > 1) {
+                            $scope.setActiveIndex($scope.advancedSettings.indexes.indexOf(index));
+                            $scope.blockLookups = true;
+                            return;
+                        }
+                    });
                     unblockUI();
                 });
         };
@@ -841,9 +854,9 @@
                 });
             });
 
-            if ($scope.advancedSettings.indexes) {
+            if ($scope.advancedSettings && $scope.advancedSettings.indexes) {
                 angular.forEach($scope.advancedSettings.indexes, function (index) {
-                    expression = expression && index.lookupName !== undefined && index.lookupName.length !== 0;
+                    expression = expression && index.lookupName !== undefined && index.lookupName.length !== 0 && !$scope.blockLookups;
                 });
             }
 
@@ -937,12 +950,31 @@
             }
         };
 
+        $scope.checkLookupName = function (count) {
+            return $.grep($scope.advancedSettings.indexes, function(lookup) {
+                return lookup.lookupName === "Lookup " + count;
+            });
+        };
+
+        $scope.getLookupNameForNewLookup = function () {
+            var count = 1, result;
+
+            while (true) {
+                result = $scope.checkLookupName(count);
+
+                if (result.length === 0) {
+                    return "Lookup " + count;
+                }
+                count += 1;
+            }
+        };
+
         /**
         * Adds a new index and sets it as the active one
         */
         $scope.addNewIndex = function () {
             var newLookup = {
-                lookupName: "New lookup name",
+                lookupName: $scope.getLookupNameForNewLookup(),
                 singleObjectReturn: true,
                 fieldList: []
             };
@@ -958,6 +990,25 @@
                 $scope.setActiveIndex($scope.advancedSettings.indexes.length-1);
             });
         };
+        $scope.blockLookups = false;
+        $scope.$watch('lookup.lookupName', function () {
+            var result;
+
+            blockUI();
+
+            result = $.grep($scope.advancedSettings.indexes, function(lookup) {
+                return $scope.lookup.lookupName === lookup.lookupName;
+            });
+
+            if (result.length > 1) {
+                $(".lookupExists").show();
+                $scope.blockLookups = true;
+            } else {
+                $(".lookupExists").hide();
+                $scope.blockLookups = false;
+            }
+            unblockUI();
+        });
 
         /**
         * Specifies, whether a certain index is a currently active one
@@ -975,13 +1026,15 @@
         * @param index  An index in array of index object to set active
         */
         $scope.setActiveIndex = function (index) {
-            $scope.activeIndex = index;
-            if ($scope.activeIndex > -1) {
-                $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
-                $scope.setAvailableFields();
-                $scope.setLookupFocus();
-            } else {
-                $scope.lookup = undefined;
+            if (!$scope.blockLookups) {
+                $scope.activeIndex = index;
+                if ($scope.activeIndex > -1) {
+                    $scope.lookup = $scope.advancedSettings.indexes[$scope.activeIndex];
+                    $scope.setAvailableFields();
+                    $scope.setLookupFocus();
+                } else {
+                    $scope.lookup = undefined;
+                }
             }
         };
 
@@ -991,10 +1044,12 @@
         * down arrow - increments active index
         */
         $scope.changeActiveIndex = function($event) {
-            if ($event.keyCode === 38 && $scope.activeIndex > 0) { // up arrow
-                $scope.setActiveIndex($scope.activeIndex - 1);
-            } else if ($event.keyCode === 40 && $scope.activeIndex < $scope.advancedSettings.indexes.length - 1) { // down arrow
-                $scope.setActiveIndex($scope.activeIndex + 1);
+            if (!$scope.blockLookups) {
+                if ($event.keyCode === 38 && $scope.activeIndex > 0) { // up arrow
+                    $scope.setActiveIndex($scope.activeIndex - 1);
+                } else if ($event.keyCode === 40 && $scope.activeIndex < $scope.advancedSettings.indexes.length - 1) { // down arrow
+                    $scope.setActiveIndex($scope.activeIndex + 1);
+                }
             }
         };
 
