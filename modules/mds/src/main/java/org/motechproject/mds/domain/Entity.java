@@ -7,6 +7,7 @@ import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.dto.RestOptionsDto;
 import org.motechproject.mds.dto.TrackingDto;
+import org.motechproject.mds.ex.LookupNameIsRepeatedException;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
 
@@ -265,6 +266,9 @@ public class Entity {
 
     public void addLookup(Lookup lookup) {
         Lookup existing = getLookupById(lookup.getId());
+        if (getLookupByName(lookup.getLookupName()) != null) {
+            throw new LookupNameIsRepeatedException();
+        }
 
         if (existing == null) {
             getLookups().add(lookup);
