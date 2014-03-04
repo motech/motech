@@ -6,11 +6,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.commons.date.util.DateUtil;
 import org.motechproject.mds.builder.impl.EntityBuilderImpl;
 import org.motechproject.mds.domain.Entity;
+import org.motechproject.mds.domain.Type;
+import org.motechproject.mds.repository.AllTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,9 +24,11 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang.WordUtils.uncapitalize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.motechproject.mds.testutil.FieldTestHelper.field;
 import static org.motechproject.mds.testutil.FieldTestHelper.newVal;
@@ -63,6 +69,7 @@ public class EntityBuilderTest {
         assertField(clazz, "date", Date.class);
         assertField(clazz, "dt", DateTime.class);
         assertField(clazz, "list", List.class);
+        assertField(clazz, "__IN_TRASH", Boolean.class, false);
     }
 
     @Test
@@ -87,6 +94,7 @@ public class EntityBuilderTest {
         assertField(clazz, "date", Date.class, date);
         assertField(clazz, "dt", DateTime.class, dateTime);
         assertField(clazz, "list", List.class, asList("1", "2", "3"));
+        assertField(clazz, "__IN_TRASH", Boolean.class, false);
 
         java.lang.reflect.Field listField = clazz.getDeclaredField("list");
         // no exception = proper signature
@@ -161,23 +169,24 @@ public class EntityBuilderTest {
 
     private void assertField(Class<?> clazz, String name, Class<?> fieldType, Object expectedDefaultVal)
             throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        java.lang.reflect.Field field = clazz.getDeclaredField(name);
+        String uncapitalizeName =  uncapitalize(name);
+        java.lang.reflect.Field field = clazz.getDeclaredField(uncapitalizeName);
 
         assertNotNull(field);
         assertEquals(Modifier.PRIVATE, field.getModifiers());
         assertEquals(fieldType, field.getType());
 
         Object instance = clazz.newInstance();
-        Object val = ReflectionTestUtils.getField(instance, name);
+        Object val = ReflectionTestUtils.getField(instance, uncapitalizeName);
         assertEquals(expectedDefaultVal, val);
 
         // assert getters and setters
 
-        Method getter = clazz.getMethod("get" + StringUtils.capitalize(name));
+        Method getter = clazz.getMethod("get" + StringUtils.capitalize(uncapitalizeName));
         assertEquals(fieldType, getter.getReturnType());
         assertEquals(Modifier.PUBLIC, getter.getModifiers());
 
-        Method setter = clazz.getMethod("set" + StringUtils.capitalize(name), fieldType);
+        Method setter = clazz.getMethod("set" + StringUtils.capitalize(uncapitalizeName), fieldType);
         assertEquals(Void.TYPE, setter.getReturnType());
         assertEquals(Modifier.PUBLIC, setter.getModifiers());
 

@@ -16,6 +16,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.apache.commons.beanutils.PropertyUtils.getProperty;
+import static org.apache.commons.beanutils.PropertyUtils.isReadable;
+import static org.apache.commons.beanutils.PropertyUtils.isWriteable;
 import static org.apache.commons.beanutils.PropertyUtils.setProperty;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
@@ -35,7 +37,7 @@ public class HistoryServiceImpl implements HistoryService {
 
             Long objId = getInstanceId(instance);
             Object previous = historyService.retrieve(
-                    currentVersion(history, false),
+                    currentVersion(history),
                     objId
             );
 
@@ -88,7 +90,7 @@ public class HistoryServiceImpl implements HistoryService {
 
         // creates connection between instance object and history object
         Long id = getInstanceId(instance);
-        safeSetProperty(current, currentVersion(historyClass, true), id);
+        safeSetProperty(current, currentVersion(historyClass), id);
 
         return current;
     }
@@ -124,7 +126,9 @@ public class HistoryServiceImpl implements HistoryService {
 
     private void safeSetProperty(Object bean, String name, Object value) {
         try {
-            setProperty(bean, name, value);
+            if (isWriteable(bean, name)) {
+                setProperty(bean, name, value);
+            }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with set value {} for property {} in bean: {}",
@@ -138,7 +142,9 @@ public class HistoryServiceImpl implements HistoryService {
         Object value = null;
 
         try {
-            value = getProperty(bean, name);
+            if (isReadable(bean, name)) {
+                value = getProperty(bean, name);
+            }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error(
                     "There was a problem with get value of property {} in bean: {}", name, bean
@@ -149,10 +155,9 @@ public class HistoryServiceImpl implements HistoryService {
         return value;
     }
 
-    private String currentVersion(Class<?> historyClass, boolean uncapitalized) {
+    private String currentVersion(Class<?> historyClass) {
         String name = historyClass.getSimpleName() + "CurrentVersion";
-
-        return uncapitalized ? uncapitalize(name) : name;
+        return uncapitalize(name);
     }
 
     private String previous(Class<?> historyClass) {

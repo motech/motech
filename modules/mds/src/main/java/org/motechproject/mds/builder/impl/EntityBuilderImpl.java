@@ -7,7 +7,6 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
-import javassist.NotFoundException;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.ClassData;
@@ -19,6 +18,7 @@ import org.motechproject.mds.ex.EntityCreationException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
 import org.motechproject.mds.util.ClassName;
+import org.motechproject.mds.util.TypeHelper;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
  * The <code>EntityBuilderImpl</code> is used build classes for a given entity.
@@ -37,7 +38,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 @Component
 public class EntityBuilderImpl implements EntityBuilder {
-
     private static final Logger LOG = LoggerFactory.getLogger(EntityBuilderImpl.class);
     private final ClassPool classPool = MotechClassPool.getDefault();
 
@@ -56,6 +56,7 @@ public class EntityBuilderImpl implements EntityBuilder {
 
             ctClass = classPool.makeClass(className);
             addFields(ctClass, entity.getFields());
+            addHiddenFields(ctClass);
 
             return new ClassData(entity, ctClass.toBytecode());
         } catch (Exception e) {
@@ -79,6 +80,7 @@ public class EntityBuilderImpl implements EntityBuilder {
             }
 
             addFields(ddeClass, entity.getFields());
+            addHiddenFields(ddeClass);
 
             return new ClassData(entity, ddeClass.toBytecode());
         } catch (Exception e) {
@@ -111,15 +113,15 @@ public class EntityBuilderImpl implements EntityBuilder {
             // add 3 extra fields to history class definition
 
             // this field is related with id field in entity
-            addField(historyClass, simpleName + "CurrentVersion", idType.getTypeClassName());
+            addProperty(historyClass, idType.getTypeClassName(), simpleName + "CurrentVersion");
 
             // this field has information about previous historical data. It can be assumed that
             // if this field is empty, the history instance will represent the first changes.
-            addField(historyClass, simpleName + "Previous", historyClassName);
+            addProperty(historyClass, historyClassName, simpleName + "Previous");
 
             // this field has information about next (new) historical data. It can be assumed
             // that if this field is empty, the history instance will represent the newest changes.
-            addField(historyClass, simpleName + "Next", historyClassName);
+            addProperty(historyClass, historyClassName, simpleName + "Next");
 
             return new ClassData(
                     historyClassName, entity.getModule(), entity.getNamespace(),
@@ -130,94 +132,97 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addField(CtClass ctClass, String fieldName, String typeClassName) throws NotFoundException, CannotCompileException {
+    private void addFields(CtClass ctClass, List<Field> fields) throws CannotCompileException {
         LOG.debug("Adding fields to class: " + ctClass.getName());
 
-        if (!JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
-            CtClass type = MotechClassPool.getDefault().get(typeClassName);
-
-            CtField ctField = new CtField(type, fieldName, ctClass);
-            ctField.setModifiers(Modifier.PRIVATE);
-
-            if (List.class.getName().equals(typeClassName)) {
-                ctField.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
-            }
-
-            CtMethod getter = CtNewMethod.getter("get" + capitalize(fieldName), ctField);
-            CtMethod setter = CtNewMethod.setter("set" + capitalize(fieldName), ctField);
-
-            ctClass.addField(ctField);
-            ctClass.addMethod(getter);
-            ctClass.addMethod(setter);
-        }
-    }
-
-    private void addFields(CtClass ctClass, List<Field> fields) throws NotFoundException, CannotCompileException {
         for (Field field : fields) {
             String fieldName = field.getName();
 
-            LOG.debug("Adding fields to class: " + ctClass.getName());
+            if (!JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
+                String typeClassName = field.getType().getTypeClassName();
+                String defaultValue = field.getDefaultValue();
 
-            // do not recreate fields from the loaded class
-            if (JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
-                continue;
+                addProperty(ctClass, typeClassName, fieldName, defaultValue);
             }
-
-            String typeClass = field.getType().getTypeClassName();
-
-            CtClass type = classPool.get(typeClass);
-
-            CtField ctField = new CtField(type, fieldName, ctClass);
-            ctField.setModifiers(Modifier.PRIVATE);
-
-            if (List.class.getName().equals(typeClass)) {
-                ctField.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
-            }
-
-            if (isBlank(field.getDefaultValue())) {
-                ctClass.addField(ctField);
-            } else {
-                ctClass.addField(ctField, initializerForField(field));
-            }
-
-            CtMethod getter = CtNewMethod.getter("get" + capitalize(fieldName), ctField);
-            CtMethod setter = CtNewMethod.setter("set" + capitalize(fieldName), ctField);
-
-            ctClass.addMethod(getter);
-            ctClass.addMethod(setter);
         }
     }
 
-    private CtField.Initializer initializerForField(Field field) throws NotFoundException {
-        Type fieldType = field.getType();
-        String typeClass = fieldType.getTypeClassName();
+    private void addHiddenFields(CtClass ctClass) throws CannotCompileException {
+        // hidden field that informs MDS that the given instance is in the mds trash or not
+        addProperty(ctClass, Boolean.class.getName(), "__IN_TRASH", "false");
+    }
 
-        Object defaultValue = fieldType.parse(field.getDefaultValue());
+    private void addProperty(CtClass declaring, String typeClassName, String propertyName)
+            throws CannotCompileException {
+        addProperty(declaring, typeClassName, propertyName, null);
+    }
+
+    private void addProperty(CtClass declaring, String typeClassName, String propertyName,
+                             String defaultValue) throws CannotCompileException {
+        CtField field = createField(typeClassName, propertyName, declaring);
+        CtMethod getter = createGetter(propertyName, field);
+        CtMethod setter = createSetter(propertyName, field);
+
+        if (isBlank(defaultValue)) {
+            declaring.addField(field);
+        } else {
+            declaring.addField(field, createInitializer(typeClassName, defaultValue));
+        }
+
+        declaring.addMethod(getter);
+        declaring.addMethod(setter);
+    }
+
+    private CtField createField(String typeClassName, String fieldName, CtClass declaring) throws CannotCompileException {
+
+        CtClass type = classPool.getOrNull(typeClassName);
+        String name = uncapitalize(fieldName);
+
+        CtField field = new CtField(type, name, declaring);
+        field.setModifiers(Modifier.PRIVATE);
+
+        if (List.class.getName().equals(typeClassName)) {
+            field.setGenericSignature(JavassistHelper.genericSignature(List.class, String.class));
+        }
+
+        return field;
+    }
+
+    private CtMethod createGetter(String fieldName, CtField field) throws CannotCompileException {
+        return CtNewMethod.getter("get" + capitalize(fieldName), field);
+    }
+
+    private CtMethod createSetter(String fieldName, CtField field) throws CannotCompileException {
+        return CtNewMethod.setter("set" + capitalize(fieldName), field);
+    }
+
+    private CtField.Initializer createInitializer(String typeClass, String defaultValueAsString) {
+        Object defaultValue = TypeHelper.parse(defaultValueAsString, typeClass);
 
         switch (typeClass) {
             case "java.util.List":
-                return listInitializer(defaultValue);
+                return createListInitializer(defaultValue);
             case "java.lang.Integer":
             case "java.lang.Double":
             case "java.lang.Boolean":
-                return newInitializer(typeClass, defaultValue);
+                return createSimpleInitializer(typeClass, defaultValue);
             case "java.lang.String":
                 return CtField.Initializer.constant((String) defaultValue);
             case "org.motechproject.commons.date.model.Time":
                 Time time = (Time) defaultValue;
-                return newInitializer(typeClass, '"' + time.timeStr() + '"');
+                return createSimpleInitializer(typeClass, '"' + time.timeStr() + '"');
             case "org.joda.time.DateTime":
                 DateTime dateTime = (DateTime) defaultValue;
-                return newInitializer(typeClass, dateTime.getMillis() + "l"); // explicit long
+                return createSimpleInitializer(typeClass, dateTime.getMillis() + "l"); // explicit long
             case "java.util.Date":
                 Date date = (Date) defaultValue;
-                return newInitializer(typeClass, date.getTime() + "l"); // explicit long
+                return createSimpleInitializer(typeClass, date.getTime() + "l"); // explicit long
             default:
                 return null;
         }
     }
 
-    private CtField.Initializer listInitializer(Object defaultValue) {
+    private CtField.Initializer createListInitializer(Object defaultValue) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("new java.util.ArrayList(");
@@ -240,7 +245,7 @@ public class EntityBuilderImpl implements EntityBuilder {
         return CtField.Initializer.byExpr(sb.toString());
     }
 
-    private CtField.Initializer newInitializer(String type, Object defaultValue) {
+    private CtField.Initializer createSimpleInitializer(String type, Object defaultValue) {
         return CtField.Initializer.byExpr("new " + type + '(' + defaultValue.toString() + ')');
     }
 }
