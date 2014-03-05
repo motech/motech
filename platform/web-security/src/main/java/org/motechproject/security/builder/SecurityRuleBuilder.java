@@ -8,6 +8,7 @@ import org.motechproject.security.authentication.MotechRestBasicAuthenticationEn
 import org.motechproject.security.constants.SecurityConfigConstants;
 import org.motechproject.security.domain.MotechURLSecurityRule;
 import org.motechproject.security.ex.SecurityConfigException;
+import org.motechproject.security.chain.MotechSecurityFilterChain;
 import org.motechproject.server.config.SettingsFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.channel.ChannelDecisionManager;
@@ -126,7 +126,7 @@ public class SecurityRuleBuilder {
 
         LOGGER.info("Builded security chain for rule: {} and method: {}", securityRule.getPattern(), method);
 
-        return new DefaultSecurityFilterChain(matcher, filters);
+        return new MotechSecurityFilterChain(securityRule, matcher, filters);
     }
 
     private void validateRule(MotechURLSecurityRule securityRule) {
