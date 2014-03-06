@@ -2,6 +2,7 @@ package org.motechproject.mds.service.impl;
 
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,10 +11,12 @@ import org.motechproject.mds.dto.TypeDto;
 import org.motechproject.mds.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class TypeServiceImplIT extends BaseIT {
     private static final int START_NUMBER_OF_TYPES = 9;
@@ -40,4 +43,25 @@ public class TypeServiceImplIT extends BaseIT {
         assertThat(types, Matchers.hasItem(TypeDto.BOOLEAN));
     }
 
+    @Test
+    public void shouldRetrieveCorrectTypes() {
+        testFindType(Boolean.class, Boolean.class);
+        testFindType(Integer.class, Integer.class);
+        testFindType(Double.class, Double.class);
+        testFindType(List.class, List.class);
+        testFindType(Date.class, Date.class);
+        testFindType(DateTime.class, DateTime.class);
+        testFindType(Long.class, Long.class);
+        testFindType(String.class, String.class);
+        //test primitives
+        testFindType(boolean.class, Boolean.class);
+        testFindType(int.class, Integer.class);
+        testFindType(double.class, Double.class);
+    }
+
+    private void testFindType(Class<?> request, Class<?> expected) {
+        TypeDto type = typeService.findType(request);
+        assertNotNull(type);
+        assertEquals(expected.getName(), type.getTypeClass());
+    }
 }
