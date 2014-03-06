@@ -105,7 +105,7 @@ public class Entity {
         this.module = module;
         this.namespace = namespace;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
-        this.securityMembers = securityMembers;
+        this.securityMembers = securityMembers != null ? securityMembers : new HashSet<String>();
         setName(name);
     }
 

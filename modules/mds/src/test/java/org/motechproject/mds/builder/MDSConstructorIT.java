@@ -134,6 +134,7 @@ public class MDSConstructorIT extends BaseIT {
             repository.setPersistenceManagerFactory(getPersistenceManagerFactory());
             service.setRepository(repository);
             service.setHistoryService(historyService);
+            service.initializeSecurityState();
 
             Object Voucher = service.create(entityClass.newInstance());
             assertEquals(1, service.retrieveAll().size());

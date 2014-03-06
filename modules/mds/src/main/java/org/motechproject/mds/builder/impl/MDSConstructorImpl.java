@@ -185,7 +185,7 @@ public class MDSConstructorImpl implements MDSConstructor {
 
     private void buildHistory(MDSClassLoader tmpClassLoader, MdsJDOEnhancer enhancer,
                               Entity entity) {
-        LOG.info("Constructing histroy class for: {}", entity.getClassName());
+        LOG.info("Constructing history class for: {}", entity.getClassName());
         ClassData classData = entityBuilder.buildHistory(entity);
 
         // modify the existing metadata
