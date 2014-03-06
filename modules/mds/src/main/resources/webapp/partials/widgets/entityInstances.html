@@ -1,6 +1,6 @@
 <div class="clearfix inside">
     <button ng-click="unselectEntity()" type="button" class="btn btn-primary">
-        <i class="icon-large icon-caret-left"></i>
+        <i class="icon-large icon-level-up"></i>
         {{msg('mds.btn.backToList')}}
     </button>
     <button id="lookupDialogButton" ng-click="showLookupDialog()" type="button" class="btn btn-default">
@@ -16,44 +16,37 @@
     </button>
 </div>
 
-<div class="">
-    <div id="lookup-dialog" class="popover bottom inside" ng-style="lookupDialogStyle()">
-        <div class="arrow" style="left:110px"></div>
-        <div class="popover-content form-horizontal">
-            <div class="form-group">
-                <label class="col-sm-3 control-label">{{msg('mds.form.label.lookup')}}</label>
-                <div class="col-sm-9">
-                    <button class="btn btn-default dropdown-toggle lookup-field" data-toggle="dropdown" href="#">
-                        {{selectedLookup.lookupName || msg('mds.form.selectField')}}
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu lookup-field-list">
-                        <li class="lookup-field-list" ng-repeat="lookup in entityAdvanced.indexes">
-                            <a ng-click="selectLookup(lookup)">{{lookup.lookupName}}</a>
-                        </li>
-                    </ul>
-                </div>
+<div id="lookup-dialog" class="popover bottom inside lookup-dialog" ng-style="lookupDialogStyle()">
+    <div class="arrow" style="left:110px"></div>
+    <div class="popover-content form-horizontal margin-after2">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{msg('mds.form.label.lookup')}}</label>
+            <div class="col-sm-9">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{selectedLookup.lookupName || msg('mds.form.selectField')}}
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="lookup in entityAdvanced.indexes">
+                        <a ng-click="selectLookup(lookup)">{{lookup.lookupName}}</a>
+                    </li>
+                </ul>
             </div>
+        </div>
 
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-12 single-field-selection" ng-repeat="field in lookupFields">
-                    <label>
-                        <div class="lookup-label">{{field.basic.displayName}}</div>
-                        <div class="lookup-input" ng-include="loadInputForLookupField(field)">
-                        </div>
-                    </label>
-                </div>
-            </div>
+        <div class="form-group" ng-repeat="field in lookupFields">
+            <label class="col-sm-3 control-label">{{field.basic.displayName}}</label>
+            <div class="col-sm-9" ng-include="loadInputForLookupField(field)"></div>
+        </div>
 
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <buton type="button" class="btn btn-danger" ng-click="removeLookup()">
-                        {{msg('mds.btn.removeLookup')}}
-                    </buton>
-                    <button type="button" class="btn btn-primary" ng-click="filterInstancesByLookup()">
-                        {{msg('mds.btn.go')}}
-                    </button>
-                </div>
+        <div class="form-group margin-before3">
+            <div class="col-sm-offset-3 col-sm-9">
+                <buton type="button" class="btn btn-danger" ng-click="removeLookup()">
+                    {{msg('mds.btn.removeLookup')}}
+                </buton>
+                <button type="button" class="btn btn-primary" ng-click="filterInstancesByLookup()">
+                    {{msg('mds.btn.go')}}
+                </button>
             </div>
         </div>
     </div>

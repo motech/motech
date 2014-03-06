@@ -97,7 +97,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             } else {
                 return service.update(instance);
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             LOG.error("Unable to save object instance", e);
             throw new ObjectUpdateException(e);
         }
@@ -113,7 +113,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
     @Transactional
     public List<EntityRecord> getEntityRecords(Long entityId, QueryParams queryParams) {
         EntityDto entity = getEntity(entityId);
-        List<FieldDto> fields = entityService.getFields(entityId);
+        List<FieldDto> fields = entityService.getEntityFields(entityId);
 
         MotechDataService service = getServiceForEntity(entity);
 
@@ -149,7 +149,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
                 List instances = (List) result;
                 return instancesToRecords(instances, entity, fields);
             }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (Exception e) {
             LOG.error("Error while executing lookup " + lookupName, e);
             throw new LookupExecutionException(e);
         }
@@ -324,20 +324,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             for (FieldDto field : fields) {
                 Object value = getProperty(instance, field);
 
-                // turn dates to string format
-                if (value instanceof DateTime) {
-                    value = DTF.print((DateTime) value);
-                } else if (value instanceof Date) {
-                    value = DTF.print(((Date) value).getTime());
-                } else if (value instanceof Time) {
-                    value = ((Time) value).timeStr();
-                    // TODO: temporary solution for single value select combobox
-                } else if (value instanceof List) {
-                    List list = (List) value;
-                    if (!list.isEmpty()) {
-                        value = list.get(0);
-                    }
-                }
+                value = parseValueForDisplay(value, field);
 
                 FieldRecord fieldRecord = new FieldRecord(field);
                 fieldRecord.setValue(value);
@@ -349,7 +336,7 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
             Number id = (Number) idField.get(instance);
 
             return new EntityRecord(id.longValue(), entityDto.getId(), fieldRecords);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (Exception e) {
             LOG.error("Unable to read object", e);
             throw new ObjectReadException(e);
         }
@@ -413,6 +400,29 @@ public class InstanceServiceImpl extends BaseMdsService implements InstanceServi
         }
 
         return method.invoke(instance);
+    }
+
+    private Object parseValueForDisplay(Object value, FieldDto field) {
+        Object parsedValue = value;
+
+        if (parsedValue instanceof DateTime) {
+            parsedValue = DTF.print((DateTime) parsedValue);
+        } else if (parsedValue instanceof Date) {
+            parsedValue = DTF.print(((Date) parsedValue).getTime());
+        } else if (parsedValue instanceof Time) {
+            parsedValue = ((Time) parsedValue).timeStr();
+        } else if (parsedValue instanceof List) {
+            Boolean multiSelect = (Boolean) field.getSetting("mds.form.label.allowMultipleSelections").getValue();
+            // for single select combobox
+            if (multiSelect == null || !multiSelect) {
+                List list = (List) parsedValue;
+                if (!list.isEmpty()) {
+                    parsedValue = list.get(0);
+                }
+            }
+        }
+
+        return parsedValue;
     }
 
     @Autowired

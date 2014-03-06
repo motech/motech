@@ -54,7 +54,14 @@ public final class TypeHelper {
     }
 
     public static Object parse(Object val, String toClass) {
-        if (val == null || val.getClass().getName().equals(toClass)) {
+        Class<?> toClassDefiniton;
+        try {
+            toClassDefiniton = TypeHelper.class.getClassLoader().loadClass(toClass);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Unable to load class " + toClass, e);
+        }
+
+        if (val == null || toClassDefiniton.isAssignableFrom(val.getClass())) {
             return val;
         } else if (val instanceof String) {
             return parseString((String) val, toClass);

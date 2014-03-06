@@ -1,12 +1,24 @@
-<form name="instanceForm" class="form-horizontal inside" ng-init="getHistory()">
-    <div class="form-group" ng-repeat="field in fields">
+<form name="instanceFieldsForm" class="form-horizontal inside" ng-init="getHistory()">
+    <div class="form-group" ng-repeat="field in fields" ng-class="{ 'has-error' : {{field.name}}.$invalid }">
         <label class="col-md-2 col-sm-3 control-label">
-            {{field.displayName}}:
+            {{field.displayName}}
+            <span ng-show="field.tooltip.length &gt; 0" bs-popover="{{field.tooltip}}" data-placement="right" data-trigger="hover"
+                class="glyphicon glyphicon-info-sign">
+            </span>
         </label>
         <div class="col-md-8 col-sm-7 form-inline">
-            <div ng-include="loadEditValueForm(field)" ></div>
+            <ng-form name="{{field.name}}" ng-init="validatePattern=getPattern(field)">
+                <div ng-include="loadEditValueForm(field)"></div>
+                <span class="form-hint form-hint-bottom" ng-show="{{field.name}}.$error.required && !{{field.name}}.$pristine">{{msg('mds.error.requiredField')}}</span>
+            </ng-form>
+            <div class="margin-before" ng-if="getTypeSingleClassName(field.type) === 'combobox' && field.settings[1].value">
+               <a class="btn btn-default" ng-click="showAddOptionInput()"><span class="icon icon-plus"></span>&nbsp;{{msg('mds.form.label.addOption')}}</a>
+               <span id="showAddOptionInput" class="hidden">
+                    <input id="entityOptionNewValue" ng-change="change(newOptionValue)" class="form-control input-auto" ng-model="newOptionValue" />
+                    <a ng-disabled="!optionValueStatus" class="btn btn-default" ng-click="addOptionCombobox($index, field, newOptionValue)">{{msg('mds.btn.save')}}</a>
+                </span>
+            </div>
         </div>
-        <br />
     </div>
     <div ng-if="historyFields">
         <div class="form-group" >

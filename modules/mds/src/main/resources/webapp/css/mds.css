@@ -247,8 +247,8 @@
     float: left;
 }
 
-.lookup-field {
-    width: 250px;
+.lookup-dialog {
+    width: 450px;
 }
 
 .form-field .btn-group {
@@ -332,24 +332,29 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D9EDF7', endColorstr='#B9DEF0',GradientType=0 );
 }
 
-.module-header a, .module-header a:hover, .module-header  a:link, .module-header a:active,
-.entity-entry a, .entity-entry a:hover, .entity-entry  a:link, .entity-entry a:active {
+.module-header a, .module-header a:hover, .module-header  a:link, .module-header a:active {
     text-decoration: none;
     color: #224477;
 }
 
-.entity-entry {
-    padding: 1px 7px 1px 33px;
+#data-browser-entity .entity-entry {
+    padding: 1px 7px 1px 18px;
     height: 37px;
     line-height: 32px;
-    color: #224477;
-    background-color: #F6FBFF;
+    color: #005580;
+    background-color: #E4F1F9;
     border: 1px solid #D1E6F9;
     border-top: none;
 }
 
-.entity-entry:hover {
+#data-browser-entity .entity-entry:hover, #data-browser-entity > div.entity-entry:nth-child(2n+1):hover {
     background-color: #e9e9e9;
+    background: #EDF5F9;
+    color: #224477;
+}
+
+#data-browser-entity > div.entity-entry:nth-child(2n+1) {
+    background: #F3FBFE;
 }
 
 .entity-buttons {
@@ -603,6 +608,15 @@
     margin-top: 20px;
 }
 
+
 .lookupExists {
     display: none;
+}
+
+.mds .popover {
+    min-width: 200px;
+}
+
+.mds .popover .popover-content {
+    color: #333;
 }

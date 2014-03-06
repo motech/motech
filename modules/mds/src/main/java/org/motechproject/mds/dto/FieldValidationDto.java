@@ -14,7 +14,7 @@ import java.util.List;
  * for field.
  */
 public class FieldValidationDto {
-    private List<ValidationCriterionDto> criteria;
+    private List<ValidationCriterionDto> criteria = new LinkedList<>();
 
     /**
      * Constant <code>INTEGER</code> contains validation criteria for integer type.
@@ -45,9 +45,10 @@ public class FieldValidationDto {
             new ValidationCriterionDto("mds.field.validation.maxLength", TypeDto.INTEGER)
     );
 
-    public FieldValidationDto(ValidationCriterionDto... criteria) {
-        this.criteria = new LinkedList<>();
+    public FieldValidationDto() {
+    }
 
+    public FieldValidationDto(ValidationCriterionDto... criteria) {
         if (criteria != null) {
             for (ValidationCriterionDto criterion : criteria) {
                 this.criteria.add(new ValidationCriterionDto(criterion.getDisplayName(), criterion.getType(),

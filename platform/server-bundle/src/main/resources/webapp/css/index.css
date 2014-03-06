@@ -1091,6 +1091,19 @@ select {
     margin-left: -22px;
 }
 
+.form-hint.form-hint-bottom {
+     margin-left: 0;
+     margin-top: 7px;
+     position: relative;
+}
+
+.form-hint.form-hint-bottom:before {
+    content: "\25b2";
+    position: absolute;
+    left: 9px;
+    top: -11px;
+}
+
 .wrap-paragraph {
     border: none;
     word-break: break-all;

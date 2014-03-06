@@ -40,7 +40,7 @@ public class TypeHelperTest {
         assertEquals(dt, TypeHelper.parse(dt, DateTime.class));
         assertEquals(dt.toDate(), TypeHelper.parse(dt.toDate(), Date.class));
         assertEquals(11, TypeHelper.parse(11, Integer.class));
-        assertEquals(asList(1, 2), asList(1, 2));
+        assertEquals(asList(1, 2), TypeHelper.parse(asList(1, 2), List.class));
     }
 
     @Test

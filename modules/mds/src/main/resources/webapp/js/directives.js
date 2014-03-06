@@ -937,20 +937,24 @@
                             autowidth: true,
                             rownumbers: true,
                             loadonce: false,
-                            rowNum: 2,
-                            rowList: [2, 5, 10, 20, 50],
+                            rowNum: 10,
+                            rowList: [10, 20, 50],
                             colModel: colModel,
                             pager: '#' + attrs.entityInstancesGrid,
                             width: '100%',
                             height: 'auto',
                             viewrecords: true,
                             gridComplete: function () {
+                                $('#entityInstancesTable').children('div').each(function() {
+                                    $(this).find('table').width('100%');
+                                });
                                 $('#entityInstancesTable').children('div').width('100%');
                                 $('.ui-jqgrid-htable').addClass('table-lightblue');
                                 $('.ui-jqgrid-btable').addClass("table-lightblue");
                                 $('.ui-jqgrid-htable').width('100%');
                                 $('.ui-jqgrid-bdiv').width('100%');
                                 $('.ui-jqgrid-hdiv').width('100%');
+                                $('div.ui-jqgrid-hbox').css({'padding-right':'0'});
                                 $('.ui-jqgrid-hbox').width('100%');
                                 $('.ui-jqgrid-view').width('100%');
                                 $('#t_resourceTable').width('auto');
@@ -1102,8 +1106,8 @@
                             shrinkToFit: true,
                             autowidth: true,
                             rownumbers: true,
-                            rowNum: 2,
-                            rowList: [2, 5, 10, 20, 50],
+                            rowNum: 10,
+                            rowList: [10, 20, 50],
                             colModel: colModel,
                             pager: '#' + attrs.instanceHistoryGrid,
                             width: '100%',
@@ -1313,6 +1317,41 @@
             link: function (scope, element, attrs) {
                 var elem = angular.element(element), callback = elem.attr('select2-ng-change');
                 elem.on('change', scope[callback]);
+            }
+        };
+    });
+
+    mds.directive('multiselectList', function () {
+        return {
+            restrict: 'A',
+            require : 'ngModel',
+            link: function (scope, element, attrs) {
+                element.multiselect({
+                    buttonClass : 'btn btn-default',
+                    buttonWidth : 'auto',
+                    buttonContainer : '<div class="btn-group" />',
+                    maxHeight : false,
+                    buttonText : function() {
+                            return scope.msg('mds.btn.fields');
+                    },
+                    onChange: function (optionElement, checked) {
+                        optionElement.removeAttr('selected');
+                        if (checked) {
+                            optionElement.attr('selected', 'selected');
+                        }
+                        element.change();
+                    }
+                });
+
+                scope.$watch(function () {
+                    return element[0].length;
+                }, function () {
+                    element.multiselect('rebuild');
+                });
+
+                scope.$watch(attrs.ngModel, function () {
+                    element.multiselect('refresh');
+                });
             }
         };
     });

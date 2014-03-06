@@ -1995,6 +1995,12 @@
 
         $scope.allEntityFields = [];
 
+        $scope.validatePattern = '';
+
+        $scope.optionValueStatus = false;
+
+        $scope.optionValue='';
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2007,10 +2013,19 @@
         };
 
         /**
+        * Sets module and entity name
+        */
+        $scope.setModuleEntity = function (module, entityName) {
+            $scope.tmpModuleName = module;
+            $scope.tmpEntityName = entityName;
+        };
+
+        /**
         * Sets selected entity by module and entity name
         */
         $scope.addInstance = function(module, entityName) {
             blockUI();
+            $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
                 param:  module,
                 params: entityName},
@@ -2073,6 +2088,7 @@
         $scope.addEntityInstance = function () {
             blockUI();
             $scope.currentRecord.$save(function() {
+                $scope.selectEntity($scope.tmpModuleName, $scope.tmpEntityName);
                 $scope.unselectAdd();
                 unblockUI();
             }, angularHandler('mds.error', 'mds.error'));
@@ -2264,12 +2280,45 @@
                 return answer;
         };
 
+        /*
+        * Gets information about type of pattern.
+        */
+        $scope.getPattern = function (field) {
+            var value = $scope.getTypeSingleClassName(field.type),
+            validationPattern = '';
+
+            if (value === 'decimal') {
+                validationPattern = '/^(([0-9]{1,})|([0-9]{1,}(\\.([0-9]{1,}))))+$/';
+            }
+            else if (value === 'string' && field.validation !== null && field.validation.criteria[0].value.length > 0) {
+                validationPattern = field.validation.criteria[0].value;
+            }
+            return validationPattern;
+        };
+
+        /*
+        * Gets validation criteria values.
+        */
+        $scope.getValidationCriteria = function (field, id) {
+            var validationCriteria = '';
+
+            if (field.validation !== null && field.validation.criteria[id].enabled) {
+               validationCriteria = field.validation.criteria[id].value;
+            }
+            return validationCriteria;
+        };
+
         /**
         * Construct appropriate url according with a field type for form used to set correct
         * value of edit value property.
         */
         $scope.loadEditValueForm = function (field) {
             var value = $scope.getTypeSingleClassName(field.type);
+            if (value === 'combobox' && field.settings[2].value) {
+                if (find(field.settings, [{field: 'name', value: 'mds.form.label.allowMultipleSelections'}], true).value) {
+                    value = 'combobox-multi';
+                }
+            }
             return '../mds/resources/partials/widgets/field-edit-Value-{0}.html'
                           .format(value.substring(value.toLowerCase()));
         };
@@ -2289,6 +2338,27 @@
         */
         $scope.getComboboxValues = function (settings) {
             return find(settings, [{field: 'name', value: 'mds.form.label.values'}], true).value;
+        };
+
+        /**
+        * Add new option to combobox.
+        */
+        $scope.change = function (newOptionValue) {
+            if ($scope.optionValue !== newOptionValue) {
+                $scope.optionValueStatus = true;
+            }
+        };
+        $scope.showAddOptionInput = function () {
+           $('#showAddOptionInput').removeClass('hidden');
+        };
+        $scope.addOptionCombobox = function (id, field, newOptionValue) {
+            //$scope.fields[id].settings[0].value.push(newOptionValue);
+            $scope.currentRecord.fields[id].settings[0].value.push(newOptionValue);
+            $('#entityOptionNewValue').val('');
+            $('#showAddOptionInput').addClass('hidden');
+            $scope.newOptionValue = '';
+            $scope.optionValueStatus = false;
+            $scope.optionValue = newOptionValue;
         };
 
         /**

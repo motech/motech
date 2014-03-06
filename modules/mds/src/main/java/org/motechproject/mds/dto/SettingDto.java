@@ -18,7 +18,7 @@ import java.util.List;
 public class SettingDto {
     private String name;
     private Object value;
-    private List<SettingOptions> options;
+    private List<SettingOptions> options = new LinkedList<>();
     private TypeDto type;
 
     public SettingDto() {
@@ -30,7 +30,6 @@ public class SettingDto {
         this.name = name;
         this.value = value;
         this.type = type;
-        this.options = new LinkedList<>();
 
         if (!ArrayUtils.isEmpty(options)) {
             Collections.addAll(this.options, options);
@@ -74,6 +73,10 @@ public class SettingDto {
 
     public void setType(TypeDto type) {
         this.type = type;
+    }
+
+    public SettingDto copy() {
+        return new SettingDto(name, value, type, options.toArray(new SettingOptions[options.size()]));
     }
 
     /**
