@@ -71,15 +71,21 @@ public class StartupManager {
 
         dbSettings = configurationService.getPlatformSettings();
 
+        if (bootstrapConfig.getConfigSource() == ConfigSource.FILE) {
+            settingsRecord = configurationService.loadConfig();
+            syncSettingsWithDb();
+        }
+
         if (!dbSettings.isPlatformInitialized()) {
-            if (ConfigSource.FILE.equals(bootstrapConfig.getConfigSource())) {
-                LOGGER.info("Config source is FILE, and no settings in DB. We require input on the first user.");
-                settingsRecord = configurationService.loadConfig();
+            if (bootstrapConfig.getConfigSource() == ConfigSource.FILE) {
+                LOGGER.info("Config source is FILE, and no settings in DB.");
 
-                syncSettingsWithDb();
-
-                if (settingsRecord.getLoginMode().isRepository()) {
+                // only require input on the first user if we don't have an admin in db in repository mode
+                if ((settingsRecord.getLoginMode().isRepository() && !userService.hasActiveAdminUser())) {
+                    LOGGER.info("We require input on the active admin user");
                     markPlatformStateAs(NEED_CONFIG);
+                } else {
+                    markPlatformStateAs(NORMAL_RUN);
                 }
             } else {
                 LOGGER.info("Config source is UI, and no settings in DB. Entering startup.");

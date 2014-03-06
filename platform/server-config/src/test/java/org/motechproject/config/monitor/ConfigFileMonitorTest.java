@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.config.core.MotechConfigurationException;
+import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.service.CoreConfigurationService;
@@ -47,6 +48,8 @@ public class ConfigFileMonitorTest {
     private ConfigLoader configLoader;
     @Mock
     private CoreConfigurationService coreConfigurationService;
+    @Mock
+    private BootstrapConfig bootstrapConfig;
 
     @InjectMocks
     private ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
@@ -54,6 +57,7 @@ public class ConfigFileMonitorTest {
     @Before
     public void setUp() {
         configFileMonitor.setFileMonitor(fileMonitor);
+        when(configurationService.loadBootstrapConfig()).thenReturn(bootstrapConfig);
     }
 
     @Test
@@ -61,7 +65,7 @@ public class ConfigFileMonitorTest {
         final Path tempDirectory = Files.createTempDirectory("motech-config-");
         String configLocation = tempDirectory.toString();
         when(coreConfigurationService.getConfigLocation()).thenReturn(new ConfigLocation(configLocation));
-        when(configurationService.getConfigSource()).thenReturn(ConfigSource.FILE);
+        when(bootstrapConfig.getConfigSource()).thenReturn(ConfigSource.FILE);
 
         configFileMonitor.init();
 
