@@ -2,6 +2,7 @@ package org.motechproject.mds.javassist;
 
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.NotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -12,7 +13,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,15 +43,22 @@ public class JavassistHelperTest {
     }
 
     @Test
-    public void shouldFindFieldByName() {
+    public void shouldFindAndRemoveFieldByName() throws NotFoundException {
         assertFalse(JavassistHelper.containsDeclaredField(ctClass, "name"));
+        assertNull(JavassistHelper.findDeclaredField(ctClass, "name"));
 
         when(ctClass.getDeclaredFields()).thenReturn(new CtField[0]);
         assertFalse(JavassistHelper.containsDeclaredField(ctClass, "name"));
+        assertNull(JavassistHelper.findDeclaredField(ctClass, "name"));
 
         when(ctField.getName()).thenReturn("name");
         when(ctClass.getDeclaredFields()).thenReturn(new CtField[]{ctField});
+
+        assertEquals(ctField, JavassistHelper.findDeclaredField(ctClass, "name"));
         assertTrue(JavassistHelper.containsDeclaredField(ctClass, "name"));
+
+        JavassistHelper.removeDeclaredFieldIfExists(ctClass, "name");
+        verify(ctClass).removeField(ctField);
     }
 
     @Test

@@ -1,6 +1,8 @@
 package org.motechproject.mds.web.controller;
 
 import org.motechproject.mds.ex.MdsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,10 +19,14 @@ import java.io.IOException;
  */
 public abstract class MdsController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MdsController.class);
+
     @ExceptionHandler(MdsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public String handleMdsException(final MdsException exception) throws IOException {
+        LOG.error("Error: " + exception.getMessage(), exception);
+
         if (exception.getParams() == null) {
             return String.format("key:%s", exception.getMessageKey());
         }

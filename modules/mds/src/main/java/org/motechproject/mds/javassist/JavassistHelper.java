@@ -4,6 +4,7 @@ package org.motechproject.mds.javassist;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtMethod;
 import javassist.NotFoundException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -63,21 +64,62 @@ public final class JavassistHelper {
         return clazz;
     }
 
-    public static boolean containsDeclaredField(CtClass ctClass, String fieldName) {
-        boolean found = false;
-
+    public static CtField findDeclaredField(CtClass ctClass, String fieldName) {
         CtField[] declaredFields = ctClass.getDeclaredFields();
 
         if (ArrayUtils.isNotEmpty(declaredFields)) {
             for (CtField field : declaredFields) {
                 if (StringUtils.equals(fieldName, field.getName())) {
-                    found = true;
-                    break;
+                    return field;
                 }
             }
         }
 
-        return found;
+        return null;
+    }
+
+    public static boolean containsDeclaredField(CtClass ctClass, String fieldName) {
+        return findDeclaredField(ctClass, fieldName) != null;
+    }
+
+    public static void removeDeclaredFieldIfExists(CtClass ctClass, String fieldName) {
+        CtField field = findDeclaredField(ctClass, fieldName);
+        if (field != null) {
+            try {
+                ctClass.removeField(field);
+            } catch (NotFoundException e) {
+                throw new IllegalStateException("Field was removed from class before we could do it - possible concurrency issue");
+            }
+        }
+    }
+
+    public static CtMethod findDeclaredMethod(CtClass ctClass, String methodName) {
+        CtMethod[] declaredMethods = ctClass.getDeclaredMethods();
+
+        if (ArrayUtils.isNotEmpty(declaredMethods)) {
+            for (CtMethod method : declaredMethods) {
+                if (StringUtils.equals(method.getName(), methodName)) {
+                    return method;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean containsDeclaredMethod(CtClass ctClass, String methodName) {
+        return findDeclaredMethod(ctClass, methodName) != null;
+    }
+
+    public static void removeDeclaredMethodIfExists(CtClass ctClass, String methodName) {
+        CtMethod method = findDeclaredMethod(ctClass, methodName);
+        if (method != null) {
+            try {
+                ctClass.removeMethod(method);
+            } catch (NotFoundException e) {
+                throw new IllegalStateException("Method was removed from class before we could do it - possible concurrency issue");
+            }
+        }
     }
 
     public static boolean hasInterface(CtClass ctClass, CtClass ctInterface) throws NotFoundException {

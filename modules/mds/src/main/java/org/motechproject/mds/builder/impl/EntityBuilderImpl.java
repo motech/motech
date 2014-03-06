@@ -7,6 +7,7 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
+import javassist.NotFoundException;
 import org.joda.time.DateTime;
 import org.motechproject.commons.date.model.Time;
 import org.motechproject.mds.builder.ClassData;
@@ -132,33 +133,33 @@ public class EntityBuilderImpl implements EntityBuilder {
         }
     }
 
-    private void addFields(CtClass ctClass, List<Field> fields) throws CannotCompileException {
+    private void addFields(CtClass ctClass, List<Field> fields) throws CannotCompileException, NotFoundException {
         LOG.debug("Adding fields to class: " + ctClass.getName());
 
         for (Field field : fields) {
             String fieldName = field.getName();
 
-            if (!JavassistHelper.containsDeclaredField(ctClass, fieldName)) {
-                String typeClassName = field.getType().getTypeClassName();
-                String defaultValue = field.getDefaultValue();
+            String typeClassName = field.getType().getTypeClassName();
+            String defaultValue = field.getDefaultValue();
 
-                addProperty(ctClass, typeClassName, fieldName, defaultValue);
-            }
+            addProperty(ctClass, typeClassName, fieldName, defaultValue);
         }
     }
 
-    private void addHiddenFields(CtClass ctClass) throws CannotCompileException {
+    private void addHiddenFields(CtClass ctClass) throws CannotCompileException, NotFoundException {
         // hidden field that informs MDS that the given instance is in the mds trash or not
         addProperty(ctClass, Boolean.class.getName(), "__IN_TRASH", "false");
     }
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName)
-            throws CannotCompileException {
+            throws CannotCompileException, NotFoundException {
         addProperty(declaring, typeClassName, propertyName, null);
     }
 
     private void addProperty(CtClass declaring, String typeClassName, String propertyName,
-                             String defaultValue) throws CannotCompileException {
+                             String defaultValue) throws CannotCompileException, NotFoundException {
+        JavassistHelper.removeDeclaredFieldIfExists(declaring, propertyName);
+
         CtField field = createField(typeClassName, propertyName, declaring);
         CtMethod getter = createGetter(propertyName, field);
         CtMethod setter = createSetter(propertyName, field);
@@ -168,6 +169,9 @@ public class EntityBuilderImpl implements EntityBuilder {
         } else {
             declaring.addField(field, createInitializer(typeClassName, defaultValue));
         }
+
+        JavassistHelper.removeDeclaredMethodIfExists(declaring, getter.getName());
+        JavassistHelper.removeDeclaredMethodIfExists(declaring, setter.getName());
 
         declaring.addMethod(getter);
         declaring.addMethod(setter);

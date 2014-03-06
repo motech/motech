@@ -34,7 +34,7 @@ public class LookupDto {
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest,
                      List<Long> fieldList, boolean readOnly) {
-        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly, LookupName.lookupMethod(lookupName));
+        this(lookupName, singleObjectReturn, exposedViaRest, fieldList, null, readOnly, null);
     }
 
     public LookupDto(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Long> fieldList,
@@ -91,6 +91,9 @@ public class LookupDto {
         this.fieldList.add(field.longValue());
     }
 
+    public void insertField(Integer idx, Integer fieldId) {
+        insertField(idx, fieldId.longValue());
+    }
 
     public void insertField(Integer idx, Long fieldId) {
         if (idx != null && idx < fieldList.size()) {
