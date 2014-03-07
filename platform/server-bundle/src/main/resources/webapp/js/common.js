@@ -32,7 +32,7 @@ var jFormErrorHandler = function(response) {
         jAlert(response.status + ": " + response.statusText);
     },
 
-    handleResponse = function(title, defaultMsg, response) {
+    handleResponse = function(title, defaultMsg, response, callback) {
         'use strict';
         var msg = "server.error",
             params = [], i,
@@ -50,13 +50,18 @@ var jFormErrorHandler = function(response) {
         } else if (defaultMsg) {
             msg = defaultMsg;
         }
-        motechAlert(msg, title, params);
+
+        if (callback) {
+            callback(title, msg, params);
+        } else {
+            motechAlert(msg, title, params);
+        }
     },
 
-    angularHandler = function(title, defaultMsg) {
+    angularHandler = function(title, defaultMsg, callback) {
         'use strict';
         return function(response) {
-            handleResponse(title, defaultMsg, response);
+            handleResponse(title, defaultMsg, response, callback);
         };
     },
 

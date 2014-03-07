@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.MetadataDto;
 import org.motechproject.mds.dto.SettingDto;
 import org.motechproject.mds.dto.ValidationCriterionDto;
 import org.motechproject.mds.util.TypeHelper;
+import org.motechproject.mds.util.ValidationUtil;
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -110,7 +111,7 @@ public class Field {
                  boolean readOnly, String defaultValue, String tooltip, Set<Lookup> lookups) {
         this.entity = entity;
         this.displayName = displayName;
-        this.name = name;
+        setName(name);
         this.required = required;
         this.readOnly = readOnly;
         this.defaultValue = defaultValue;
@@ -167,7 +168,8 @@ public class Field {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
+        ValidationUtil.validateNoJavaKeyword(name);
         this.name = name;
     }
 

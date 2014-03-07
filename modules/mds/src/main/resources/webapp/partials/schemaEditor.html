@@ -3,9 +3,9 @@
         <h4>{{msg('mds.warning')}}</h4>
         <p>{{msg('mds.error.draftOutdated')}}&nbsp;<a class="alert-link" ng-click="updateDraft()">{{msg('mds.btn.updateDraft')}}</a></p>
     </div>
-    <div class="alert alert-danger margin-before row" ui-if="currentErrorCode">
+    <div class="alert alert-danger margin-before row" ui-if="currentError">
         <h4>{{msg('mds.error')}}</h4>
-        <p>{{msg(currentErrorCode)}}</p>
+        <p>{{currentError}}</p>
     </div>
     <div class="alert alert-warning margin-before row" ui-if="blockLookups">
         <h4>{{msg('mds.warning')}}</h4>

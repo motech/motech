@@ -35,7 +35,7 @@ public class TypeDto {
      * Constant <code>INTEGER</code> presents a integer type.
      */
     public static final TypeDto INTEGER = new TypeDto(
-            "mds.field.integer", "mds.field.description.integer", "int", Integer.class.getName()
+            "mds.field.integer", "mds.field.description.integer", "integer", Integer.class.getName()
     );
 
     /**

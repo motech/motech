@@ -10,6 +10,7 @@ import org.motechproject.mds.dto.TrackingDto;
 import org.motechproject.mds.ex.LookupNameIsRepeatedException;
 import org.motechproject.mds.util.ClassName;
 import org.motechproject.mds.util.SecurityMode;
+import org.motechproject.mds.util.ValidationUtil;
 
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
@@ -101,11 +102,11 @@ public class Entity {
 
     public Entity(String className, String name, String module, String namespace, SecurityMode securityMode, Set<String> securityMembers) {
         this.className = className;
-        this.name = name;
         this.module = module;
         this.namespace = namespace;
         this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers;
+        setName(name);
     }
 
     public EntityDto toDto() {
@@ -132,7 +133,8 @@ public class Entity {
         return defaultIfBlank(name, ClassName.getSimpleName(className));
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
+        ValidationUtil.validateNoJavaKeyword(name);
         this.name = defaultIfBlank(name, ClassName.getSimpleName(className));
     }
 

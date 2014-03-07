@@ -298,9 +298,9 @@
         $scope.availableUsers = Users.query();
         $scope.availableRoles = Roles.query();
 
-        $scope.currentErrorCode = undefined;
+        $scope.currentError = undefined;
 
-        $scope.setError = function(error) {
+        $scope.setError = function(error, params) {
             var errorCode;
 
             if (error) {
@@ -315,11 +315,11 @@
                 }
             }
 
-            $scope.currentErrorCode = errorCode;
+            $scope.currentError = $scope.msg(errorCode, params);
         };
 
         $scope.unsetError = function() {
-            $scope.currentErrorCode = undefined;
+            $scope.currentError = undefined;
         };
 
         $scope.draft = function (data, callback) {
@@ -331,9 +331,12 @@
                 if (_.isFunction(callback)) {
                     callback();
                 }
+            },
+            errorHandler = function(title, msg, params) {
+                $scope.setError(msg, params);
             };
 
-            Entities.draft(pre, data, func);
+            Entities.draft(pre, data, func, angularHandler('mds.error', 'mds.error', errorHandler));
         };
 
         /**

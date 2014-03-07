@@ -3,6 +3,7 @@ package org.motechproject.mds.domain;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mds.dto.LookupDto;
 import org.motechproject.mds.util.LookupName;
+import org.motechproject.mds.util.ValidationUtil;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -55,7 +56,7 @@ public class Lookup {
 
     public Lookup(String lookupName, boolean singleObjectReturn, boolean exposedViaRest, List<Field> fields, boolean readOnly,
                   String methodName) {
-        this.lookupName = lookupName;
+        setLookupName(lookupName);
         this.singleObjectReturn = singleObjectReturn;
         this.exposedViaRest = exposedViaRest;
         this.fields = fields;
@@ -98,7 +99,8 @@ public class Lookup {
         return lookupName;
     }
 
-    public void setLookupName(String lookupName) {
+    public final void setLookupName(String lookupName) {
+        ValidationUtil.validateNoJavaKeyword(lookupName);
         this.lookupName = lookupName;
     }
 
@@ -165,7 +167,7 @@ public class Lookup {
     public final void update(LookupDto lookupDto, List<Field> lookupFields) {
         singleObjectReturn = lookupDto.isSingleObjectReturn();
         exposedViaRest = lookupDto.isExposedViaRest();
-        lookupName = lookupDto.getLookupName();
+        setLookupName(lookupDto.getLookupName());
         fields = lookupFields;
         methodName = lookupDto.getMethodName();
         readOnly = lookupDto.isReadOnly();
