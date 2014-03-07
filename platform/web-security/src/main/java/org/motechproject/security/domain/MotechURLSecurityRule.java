@@ -138,4 +138,21 @@ public class MotechURLSecurityRule implements Serializable {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    @Override
+    public String toString() {
+        return "MotechURLSecurityRule{" +
+                "pattern='" + pattern + '\'' +
+                ", supportedSchemes=" + supportedSchemes +
+                ", protocol='" + protocol + '\'' +
+                ", permissionAccess=" + permissionAccess +
+                ", userAccess=" + userAccess +
+                ", priority=" + priority +
+                ", rest=" + rest +
+                ", origin='" + origin + '\'' +
+                ", version='" + version + '\'' +
+                ", methodsRequired=" + methodsRequired +
+                ", active=" + active +
+                '}';
+    }
 }
