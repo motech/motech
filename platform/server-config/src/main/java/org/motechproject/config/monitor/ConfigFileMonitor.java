@@ -8,6 +8,7 @@ import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.motechproject.config.core.MotechConfigurationException;
 import org.motechproject.config.core.constants.ConfigurationConstants;
+import org.motechproject.config.core.domain.BootstrapConfig;
 import org.motechproject.config.core.domain.ConfigLocation;
 import org.motechproject.config.core.domain.ConfigSource;
 import org.motechproject.config.core.filters.ConfigFileFilter;
@@ -61,7 +62,8 @@ public class ConfigFileMonitor implements FileListener {
 
     @PostConstruct
     public void init() throws IOException {
-        if (configurationService.getConfigSource() == ConfigSource.FILE) {
+        BootstrapConfig bootstrapConfig = configurationService.loadBootstrapConfig();
+        if (bootstrapConfig != null && bootstrapConfig.getConfigSource() == ConfigSource.FILE) {
             // allow custom monitors to be injected
             if (fileMonitor == null) {
                 fileMonitor = new DefaultFileMonitor(this);

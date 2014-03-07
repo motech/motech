@@ -10,6 +10,7 @@ import org.motechproject.security.repository.AllMotechRoles;
 import org.motechproject.security.repository.AllMotechUsers;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Initialize {
     @Autowired
     private AllMotechUsers allMotechUsers;
 
-    @Autowired
+    @PostConstruct
     public void initialize() throws IOException {
 
         //change role name only if it doesn't exist yet, to prevent multiple roles of the same name
