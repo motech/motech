@@ -16,14 +16,14 @@
     <bean id="allEntities" class="org.motechproject.mds.repository.AllEntities" />
 
     #foreach ( $entry in $list )
-    #if ( $entry.containsKey('repository') )
-    <bean id="$entry.get('name')Repository" class="$entry.get('repository')" />
+    #if ( $StringUtils.isNotBlank( $entry.repository ) )
+    <bean id="${entry.name}Repository" class="$entry.repository" />
     #end
 
-    #if( $entry.containsKey('service') )
-    <bean id="$entry.get('name')Service" class="$entry.get('service')">
-        #if ( $entry.containsKey('repository') )
-        <property name="repository" ref="$entry.get('name')Repository"/>
+    #if ( $StringUtils.isNotBlank( $entry.serviceName ) )
+    <bean id="${entry.name}Service" class="$entry.serviceName">
+        #if ( $StringUtils.isNotBlank( $entry.repository ) )
+        <property name="repository" ref="${entry.name}Repository"/>
         #end
     </bean>
     #end

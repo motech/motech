@@ -12,13 +12,17 @@ import javax.jdo.Query;
  * @see javax.jdo.Query
  */
 public final class QueryUtil {
-    private static final String PARAM_PREFIX = "param";
-    private static final String FILTER_AND = " && ";
-    private static final String DECLARE_PARAMETERS_COMMA = ", ";
-    private static final String EQUALS_SIGN = "==";
-    private static final String SPACE = " ";
+    public static final String PARAM_PREFIX = "param";
+    public static final String FILTER_AND = " && ";
+    public static final String DECLARE_PARAMETERS_COMMA = ", ";
+    public static final String EQUALS_SIGN = "==";
+    public static final String SPACE = " ";
 
     private QueryUtil() {
+    }
+
+    public static String createFilter(String property) {
+        return createFilter(new String[]{property}, null);
     }
 
     /**
@@ -78,6 +82,10 @@ public final class QueryUtil {
         }
 
         return filter.toString();
+    }
+
+    public static String createDeclareParameters(Object value) {
+        return createDeclareParameters(new Object[]{value}, null);
     }
 
     /**

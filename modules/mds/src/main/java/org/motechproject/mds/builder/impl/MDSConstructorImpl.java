@@ -213,9 +213,6 @@ public class MDSConstructorImpl implements MDSConstructor {
         MotechClassPool.registerEnhancedClassData(enhancedClassData);
         // define in the MDS classloader, so that the persistence manager sees this class
         MDSClassLoader.getInstance().defineClass(enhancedClassData);
-
-        // build infrastructure classes
-        buildInfrastructure(className);
     }
 
     private void buildInfrastructure(Entity entity) {
@@ -230,13 +227,6 @@ public class MDSConstructorImpl implements MDSConstructor {
             if (classData.isInterfaceClass() && MotechClassPool.isServiceInterfaceRegistered(className)) {
                 MotechClassPool.registerEnhancedClassData(classData);
             }
-        }
-    }
-
-    private void buildInfrastructure(String className) {
-        List<ClassData> infrastructure = infrastructureBuilder.buildHistoryInfrastructure(className);
-        for (ClassData classData : infrastructure) {
-            MDSClassLoader.getInstance().defineClass(classData);
         }
     }
 

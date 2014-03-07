@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-   xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.eclipse.org/gemini/blueprint/schema/blueprint
-       http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.eclipse.org/gemini/blueprint/schema/blueprint
+        http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
-   <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
-   <import resource="classpath*:META-INF/motech/mdsEntitiesContext.xml"/>
+    <import resource="classpath*:META-INF/motech/mdsCommonContext.xml"/>
+    <import resource="classpath*:META-INF/motech/mdsEntitiesContext.xml"/>
 
-   <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
+    <osgi:reference id="configurationServiceOsgi" interface="org.motechproject.config.service.ConfigurationService"/>
 
-   <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
+    <osgi:reference id="sqlDbManager" interface="org.motechproject.commons.sql.service.SqlDBManager" bean-name="sqlDbManager"/>
 
-   <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService"/>
+    <osgi:reference id="historyServiceOSGi" interface="org.motechproject.mds.service.HistoryService"/>
 
     #foreach ( $service in $list )
-    #if ( $service.containsKey('interface') )
-    <osgi:service id="$service.get('name')ServiceOsgi" ref="$service.get('name')Service"
-        interface="$service.get('interface')" auto-export="interfaces" />
+    #if ( $StringUtils.isNotBlank( $service.interfaceName ) )
+    <osgi:service id="${service.name}ServiceOsgi" ref="${service.name}Service" interface="$service.interfaceName" auto-export="interfaces"/>
     #end
     #end
 </beans>

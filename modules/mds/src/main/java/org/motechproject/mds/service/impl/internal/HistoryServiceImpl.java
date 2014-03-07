@@ -1,17 +1,16 @@
 package org.motechproject.mds.service.impl.internal;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.motechproject.mds.ex.ServiceNotFoundException;
+import org.motechproject.mds.service.BaseMdsService;
 import org.motechproject.mds.service.HistoryService;
-import org.motechproject.mds.service.MotechDataService;
-import org.motechproject.mds.util.ClassName;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.motechproject.mds.util.QueryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -20,56 +19,50 @@ import static org.apache.commons.beanutils.PropertyUtils.isReadable;
 import static org.apache.commons.beanutils.PropertyUtils.isWriteable;
 import static org.apache.commons.beanutils.PropertyUtils.setProperty;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
+import static org.motechproject.mds.util.QueryUtil.createDeclareParameters;
+import static org.motechproject.mds.util.QueryUtil.createFilter;
 
 /**
  * Default implementation of {@link org.motechproject.mds.service.HistoryService} interface.
  */
 @Service
-public class HistoryServiceImpl implements HistoryService {
+public class HistoryServiceImpl extends BaseMdsService implements HistoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HistoryServiceImpl.class);
-    private BundleContext bundleContext;
 
     @Override
+    @Transactional
     public void record(Class<?> history, Object instance) {
         if (null != history) {
             LOGGER.debug("Recording history for: {}", instance.getClass().getName());
-            MotechDataService historyService = getHistoryService(history);
 
+            PersistenceManager manager = getPersistenceManagerFactory().getPersistenceManager();
             Long objId = getInstanceId(instance);
-            Object previous = historyService.retrieve(
-                    currentVersion(history),
-                    objId
-            );
 
+            Query query = manager.newQuery(history);
+            query.setFilter(previousFilter(history));
+            query.declareParameters(createDeclareParameters(objId));
+            query.setUnique(true);
+
+            Object previous = query.execute(objId);
             Object current = createCurrentHistory(history, instance);
 
             if (null == previous) {
                 LOGGER.debug("Not found previous entry. Create a new history entry.");
-                historyService.create(current);
+                manager.makePersistent(current);
             } else {
                 LOGGER.debug("Found previous entry.");
                 safeSetProperty(previous, next(history), current);
                 safeSetProperty(current, previous(history), previous);
 
                 LOGGER.debug("Create a new history entry.");
-                historyService.create(current);
+                manager.makePersistent(current);
 
                 LOGGER.debug("Update the previous history entry.");
-                historyService.update(previous);
+                manager.makePersistent(previous);
             }
 
             LOGGER.debug("Recorded history for: {}", instance.getClass().getName());
         }
-    }
-
-    private MotechDataService getHistoryService(Class<?> historyClass) {
-        String serviceName = ClassName.getInterfaceName(historyClass.getName());
-
-        ServiceReference ref = bundleContext.getServiceReference(serviceName);
-        if (ref == null) {
-            throw new ServiceNotFoundException();
-        }
-        return (MotechDataService) bundleContext.getService(ref);
     }
 
     private Object createCurrentHistory(Class<?> historyClass, Object instance) {
@@ -168,8 +161,11 @@ public class HistoryServiceImpl implements HistoryService {
         return uncapitalize(historyClass.getSimpleName() + "Next");
     }
 
-    @Autowired
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    private String previousFilter(Class<?> historyClass) {
+        String filter = createFilter(currentVersion(historyClass));
+        filter += QueryUtil.FILTER_AND + previous(historyClass) + " == null";
+
+        return filter;
     }
+
 }

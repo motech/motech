@@ -83,14 +83,14 @@ public class JarGeneratorServiceIT extends BaseIT {
     private void assertJarEntries(JarInputStream input) throws IOException {
         List<String> expected = new ArrayList<>();
 
+        expected.add(createClassPath(SAMPLE_CLASS + "__"));
+        expected.add(createClassPath(EXAMPLE_CLASS + "__"));
+        expected.add(createClassPath(FOO_CLASS + "__"));
+        expected.add(createClassPath(BAR_CLASS + "__"));
         expected.addAll(createClassPathEntries(SAMPLE_CLASS));
         expected.addAll(createClassPathEntries(EXAMPLE_CLASS));
         expected.addAll(createClassPathEntries(FOO_CLASS));
         expected.addAll(createClassPathEntries(BAR_CLASS));
-        expected.addAll(createClassPathEntries(SAMPLE_CLASS + "__"));
-        expected.addAll(createClassPathEntries(EXAMPLE_CLASS + "__"));
-        expected.addAll(createClassPathEntries(FOO_CLASS + "__"));
-        expected.addAll(createClassPathEntries(BAR_CLASS + "__"));
         expected.addAll(asList(JarGeneratorService.BLUEPRINT_XML, JarGeneratorService.DATANUCLEUS_PROPERTIES,
                 JarGeneratorService.MDS_COMMON_CONTEXT, JarGeneratorService.MDS_ENTITIES_CONTEXT,
                 JarGeneratorService.MOTECH_MDS_PROPERTIES, JarGeneratorService.PACKAGE_JDO));

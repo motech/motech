@@ -5,11 +5,12 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.MDSConstructor;
+import org.motechproject.mds.domain.EntityInfo;
 import org.motechproject.mds.ex.MdsException;
 import org.motechproject.mds.javassist.JavassistHelper;
 import org.motechproject.mds.javassist.MotechClassPool;
@@ -112,93 +113,99 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
         FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
 
         try (JarOutputStream output = new JarOutputStream(fileOutput, manifest)) {
-            List<String> classNames = new ArrayList<>();
+            List<EntityInfo> information = new ArrayList<>();
 
             for (ClassData classData : MotechClassPool.getEnhancedClasses(false)) {
                 String className = classData.getClassName();
-                classNames.add(className);
+                EntityInfo info = new EntityInfo();
+                info.setClassName(className);
 
                 // insert entity class
-                JarEntry entityEntry = new JarEntry(JavassistHelper.toClassPath(className));
-                output.putNextEntry(entityEntry);
-                output.write(classData.getBytecode());
+                addEntry(output, JavassistHelper.toClassPath(className), classData.getBytecode());
 
-                // insert infrastructure
-                String[] classes = new String[]{
-                        MotechClassPool.getServiceImplName(className),
-                        MotechClassPool.getRepositoryName(className)
-                };
+                // insert repository
+                String repositoryName = MotechClassPool.getRepositoryName(className);
+                if (addInfrastructure(output, repositoryName)) {
+                    info.setRepository(repositoryName);
+                }
 
-                // in case an interface with lookups is registered, we don't include it in the bundle
-                // we will only imports it package. The weaving hook takes care of adding user defined lookups
-                // to the interface.
+                // insert service implementation
+                String serviceName = MotechClassPool.getServiceImplName(className);
+                if (addInfrastructure(output, serviceName)) {
+                    info.setServiceName(serviceName);
+                }
+
+                // in case an interface with lookups is registered, we don't include it in the
+                // bundle we will only imports it package. The weaving hook takes care of adding
+                // user defined lookups to the interface.
+                String interfaceName = MotechClassPool.getInterfaceName(className);
                 if (!MotechClassPool.isServiceInterfaceRegistered(className)) {
-                    classes = (String[]) ArrayUtils.add(classes, MotechClassPool.getInterfaceName(className));
+                    if (addInfrastructure(output, interfaceName)) {
+                        info.setInterfaceName(interfaceName);
+                    }
+                } else if (StringUtils.isNotBlank(info.getServiceName())) {
+                    // we should set interface name if the service name is given to avoid
+                    // ServiceNotFoundException when adding entity instance
+                    info.setInterfaceName(interfaceName);
                 }
 
-                for (String c : classes) {
-                    CtClass clazz = MotechClassPool.getDefault().get(c);
-
-                    JarEntry entry = new JarEntry(JavassistHelper.toClassPath(c));
-                    output.putNextEntry(entry);
-                    output.write(clazz.toBytecode());
-                    output.closeEntry();
-                }
+                information.add(info);
             }
 
-            JarEntry jdoEntry = new JarEntry(PACKAGE_JDO);
-            output.putNextEntry(jdoEntry);
-            output.write(metadataHolder.getJdoMetadata().toString().getBytes());
-            output.closeEntry();
+            String blueprint = mergeTemplate(information, BLUEPRINT_TEMPLATE);
+            String context = mergeTemplate(information, MDS_ENTITIES_CONTEXT_TEMPLATE);
 
-            String blueprint = mergeTemplate(classNames, BLUEPRINT_TEMPLATE);
-            String context = mergeTemplate(classNames, MDS_ENTITIES_CONTEXT_TEMPLATE);
-
-            JarEntry blueprintEntry = new JarEntry(BLUEPRINT_XML);
-            output.putNextEntry(blueprintEntry);
-            output.write(blueprint.getBytes());
-            output.closeEntry();
-
-            JarEntry contextEntry = new JarEntry(MDS_ENTITIES_CONTEXT);
-            output.putNextEntry(contextEntry);
-            output.write(context.getBytes());
-            output.closeEntry();
-
-            JarEntry commonContextEntry = new JarEntry(MDS_COMMON_CONTEXT);
-            output.putNextEntry(commonContextEntry);
-            writeResourceToStream(MDS_COMMON_CONTEXT, output);
-
-            JarEntry dnProperties = new JarEntry(DATANUCLEUS_PROPERTIES);
-            output.putNextEntry(dnProperties);
-            writeResourceToStream(DATANUCLEUS_PROPERTIES, output);
-
-            JarEntry mdsProperties = new JarEntry(MOTECH_MDS_PROPERTIES);
-            output.putNextEntry(mdsProperties);
-            writeResourceToStream(MOTECH_MDS_PROPERTIES, output);
-
-            output.closeEntry();
+            addEntry(output, PACKAGE_JDO, metadataHolder.getJdoMetadata().toString().getBytes());
+            addEntry(output, BLUEPRINT_XML, blueprint.getBytes());
+            addEntry(output, MDS_ENTITIES_CONTEXT, context.getBytes());
+            addEntry(output, MDS_COMMON_CONTEXT);
+            addEntry(output, DATANUCLEUS_PROPERTIES);
+            addEntry(output, MOTECH_MDS_PROPERTIES);
 
             return tempFile.toFile();
         }
     }
 
-    private String mergeTemplate(List<String> classNames, String templatePath) {
-        List<Map<String, Object>> allClassesList = new ArrayList<>();
+    private boolean addInfrastructure(JarOutputStream output, String name) {
+        CtClass clazz = MotechClassPool.getDefault().getOrNull(name);
+        boolean added = false;
 
-        for (String className : classNames) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", className.substring(className.lastIndexOf(".") + 1));
-            map.put("className", className);
-            map.put("interface", MotechClassPool.getInterfaceName(className));
-            map.put("service", MotechClassPool.getServiceImplName(className));
-            map.put("repository", MotechClassPool.getRepositoryName(className));
-            allClassesList.add(map);
+        if (null != clazz) {
+            try {
+                addEntry(output, JavassistHelper.toClassPath(name), clazz.toBytecode());
+                added = true;
+            } catch (IOException | CannotCompileException e) {
+                LOGGER.error("There were problems with adding entry: ", e);
+                added = false;
+            }
         }
 
-        Map<String, Object> model = new HashMap<>();
-        model.put("list", allClassesList);
+        return added;
+    }
 
+    private void addEntry(JarOutputStream output, String name) throws IOException {
+        addEntry(output, name, null);
+    }
+
+    private void addEntry(JarOutputStream output, String name, byte[] bytes) throws IOException {
+        JarEntry entry = new JarEntry(name);
+
+        output.putNextEntry(entry);
+
+        if (null != bytes) {
+            output.write(bytes);
+        } else {
+            writeResourceToStream(name, output);
+        }
+
+        output.closeEntry();
+    }
+
+    private String mergeTemplate(List<EntityInfo> information, String templatePath) {
         StringWriter writer = new StringWriter();
+        Map<String, Object> model = new HashMap<>();
+        model.put("StringUtils", StringUtils.class);
+        model.put("list", information);
 
         try {
             VelocityEngineUtils.mergeTemplate(velocityEngine, templatePath, model, writer);
