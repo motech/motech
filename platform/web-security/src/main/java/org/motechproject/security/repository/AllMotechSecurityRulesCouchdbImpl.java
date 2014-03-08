@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,8 +61,20 @@ public class AllMotechSecurityRulesCouchdbImpl extends MotechBaseRepository<Mote
     @Override
     public List<MotechURLSecurityRule> getRules() {
         List<MotechSecurityConfiguration> config = this.getAll();
+        if (config.size() == 0) {
+            return Collections.<MotechURLSecurityRule>emptyList();
+        }
 
-        return config.size() == 0 ? Collections.<MotechURLSecurityRule>emptyList() : config.get(0).getSecurityRules();
+        List<MotechURLSecurityRule> allRules = config.get(0).getSecurityRules();
+        Iterator it = allRules.iterator();
+        while (it.hasNext()) {
+            MotechURLSecurityRule rule = (MotechURLSecurityRule) it.next();
+            if (rule.isDeleted()) {
+                it.remove();
+            }
+        }
+
+        return allRules;
     }
 
     @Override

@@ -139,7 +139,10 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
 
         MotechProxyManager manager = getProxyManager();
         //Receives one chain from config built in test, and two from OSGi IT bundle being scanned for two rules
-        assertEquals(3, manager.getFilterChainProxy().getFilterChains().size());
+        //Additionaly, several default rules are merged with the config
+
+        int defaultSize = manager.getDefaultSecurityConfiguration().getSecurityRules().size();
+        assertEquals(3 + defaultSize, manager.getFilterChainProxy().getFilterChains().size());
 
         MotechSecurityConfiguration updatedConfig = SecurityTestConfigBuilder.buildConfig("addPermissionAccess", "anyPermission", null);
         updateSecurity(updatedConfig);
@@ -147,7 +150,7 @@ public class WebSecurityBundleIT extends BaseOsgiIT {
         restartSecurityBundle();
 
         manager = getProxyManager();
-        assertEquals(4, manager.getFilterChainProxy().getFilterChains().size());
+        assertEquals(4 + defaultSize, manager.getFilterChainProxy().getFilterChains().size());
     }
 
     private void updateSecurity(String fileName) throws IOException, InterruptedException {

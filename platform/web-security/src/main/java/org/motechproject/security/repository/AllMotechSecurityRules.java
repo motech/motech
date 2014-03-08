@@ -1,9 +1,9 @@
 package org.motechproject.security.repository;
 
-import java.util.List;
-
 import org.motechproject.security.domain.MotechSecurityConfiguration;
 import org.motechproject.security.domain.MotechURLSecurityRule;
+
+import java.util.List;
 
 /**
  * Repository for crud operations related to Motech security config.
@@ -19,7 +19,7 @@ public interface AllMotechSecurityRules {
     /**
      * Convenience method for retrieving all of
      * the individual security rules from the security
-     * configuration.
+     * configuration, that haven't been marked as deleted.
      * @return A list of all URL pattern security rules from the database
      */
     List<MotechURLSecurityRule> getRules();

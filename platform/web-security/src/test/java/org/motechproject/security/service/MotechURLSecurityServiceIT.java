@@ -1,13 +1,5 @@
 package org.motechproject.security.service;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +25,15 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations ={ "classpath*:/META-INF/motech/*.xml", "classpath*:/META-INF/security/*.xml"})
@@ -104,6 +105,7 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
 
         securityService.updateSecurityConfiguration(new MotechSecurityConfiguration(rules));
 
+        //Shouldn't return rule marked as deleted.
         assertEquals(3, securityService.findAllSecurityRules().size());
     }
 
@@ -111,27 +113,35 @@ public class MotechURLSecurityServiceIT extends SpringIntegrationTest {
         MotechURLSecurityRule rule1 = new MotechURLSecurityRule();
         MotechURLSecurityRule rule2 = new MotechURLSecurityRule();
         MotechURLSecurityRule rule3 = new MotechURLSecurityRule();
+        MotechURLSecurityRule rule4 = new MotechURLSecurityRule();
 
         List<String> methodsRequired = Arrays.asList("ANY");
         rule1.setPattern("/**");
         rule2.setPattern("/web-api/**");
         rule3.setPattern("/anything");
+        rule4.setPattern("/unimportant/**");
 
         rule1.setProtocol("HTTPS");
         rule2.setProtocol("HTTPS");
         rule3.setProtocol("HTTP");
+        rule4.setProtocol("HTTP");
 
         rule1.setMethodsRequired(new HashSet<String>(methodsRequired));
         rule2.setMethodsRequired(new HashSet<String>(methodsRequired));
         rule3.setMethodsRequired(new HashSet<String>(Arrays.asList("GET", "POST")));
+        rule4.setMethodsRequired(new HashSet<String>(methodsRequired));
 
         rule1.setSupportedSchemes(Arrays.asList("BASIC"));
         rule2.setSupportedSchemes(Arrays.asList("OATH"));
         rule3.setSupportedSchemes(Arrays.asList("NO_SECURITY"));
+        rule4.setSupportedSchemes(Arrays.asList("NO_SECURITY"));
+
+        rule4.setDeleted(true);
 
         securityRules.add(rule1);
         securityRules.add(rule2);
         securityRules.add(rule3);
+        securityRules.add(rule4);
 
     }
     @After

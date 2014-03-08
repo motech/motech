@@ -66,18 +66,39 @@ public class MotechProxyManager {
      */
     public void initializeProxyChain() {
         LOGGER.info("Initializing proxy chain");
-        List<MotechURLSecurityRule> securityRules = securityRulesDAO.getRules();
 
-        MotechSecurityConfiguration securityConfig = securityRulesDAO.getMotechSecurityConfiguration();
-        //Security rules have not been configured in the DB, load from default security config
-        if (securityConfig == null) {
-            securityConfig = loadSecurityConfigFile();
-            securityRulesDAO.addOrUpdate(securityConfig);
-            securityRules = securityConfig.getSecurityRules();
+        MotechSecurityConfiguration securityConfiguration = securityRulesDAO.getMotechSecurityConfiguration();
+        if (securityConfiguration == null) {
+            securityConfiguration = new MotechSecurityConfiguration();
         }
+
+        List<MotechURLSecurityRule> securityRules = securityConfiguration.getSecurityRules();
+
+        for (MotechURLSecurityRule rule : getDefaultSecurityConfiguration().getSecurityRules()) {
+            if (!securityRules.contains(rule)) {
+                LOGGER.debug("Found new rule, not present in database. Adding.");
+                securityConfiguration.getSecurityRules().add(rule);
+            }
+        }
+
+        securityRulesDAO.addOrUpdate(securityConfiguration);
 
         updateSecurityChain(securityRules);
         LOGGER.info("Initialized proxy chain");
+    }
+
+    /**
+     * This method reads default security configuration from the file containing security rules and
+     * returns it.
+     * @return MotechSecurityConfiguration default security rules
+     */
+    public MotechSecurityConfiguration getDefaultSecurityConfiguration() {
+        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_SECURITY_CONFIG_FILE)) {
+            LOGGER.debug("Load default security rules from: {}", DEFAULT_SECURITY_CONFIG_FILE);
+            return (MotechSecurityConfiguration) motechJsonReader.readFromStream(in, MotechSecurityConfiguration.class);
+        } catch (IOException e) {
+            throw new MotechException("Error while loading json file", e);
+        }
     }
 
     public FilterChainProxy getFilterChainProxy() {
@@ -107,7 +128,7 @@ public class MotechProxyManager {
         List<SecurityFilterChain> newFilterChains = new ArrayList<>();
 
         for (MotechURLSecurityRule securityRule : sortedRules) {
-            if (securityRule.getActive()) {
+            if (securityRule.isActive() && !securityRule.isDeleted()) {
                 LOGGER.debug("Creating SecurityFilterChain for: {}", securityRule.getPattern());
                 for (String method : securityRule.getMethodsRequired()) {
                     newFilterChains.add(securityRuleBuilder.buildSecurityChain(securityRule, method));
@@ -121,12 +142,4 @@ public class MotechProxyManager {
         proxy = new FilterChainProxy(newFilterChains);
     }
 
-    private MotechSecurityConfiguration loadSecurityConfigFile() {
-        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_SECURITY_CONFIG_FILE)) {
-            LOGGER.debug("Load default security rules from: {}", DEFAULT_SECURITY_CONFIG_FILE);
-            return (MotechSecurityConfiguration) motechJsonReader.readFromStream(in, MotechSecurityConfiguration.class);
-        } catch (IOException e) {
-            throw new MotechException("Error while loading json file", e);
-        }
-    }
 }
