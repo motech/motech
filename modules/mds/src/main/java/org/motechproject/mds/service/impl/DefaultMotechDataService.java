@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,6 +46,19 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     private Class<? extends T> historyClass;
     private HistoryService historyService;
     private AllEntities allEntities;
+
+    private SecurityMode securityMode;
+    private Set<String> securityMembers;
+
+    @PostConstruct
+    public void initializeSecurityState() {
+        Class clazz = repository.getClassType();
+        String name = ClassName.getClassName(clazz.getName());
+        Entity entity = allEntities.retrieveByClassName(name);
+
+        securityMode = entity.getSecurityMode();
+        securityMembers = entity.getSecurityMembers();
+    }
 
     protected DefaultMotechDataService() {
         this(null);
@@ -149,42 +163,33 @@ public abstract class DefaultMotechDataService<T> implements MotechDataService<T
     }
 
     private InstanceSecurityRestriction checkNonInstanceAccess() {
-        Class clazz = repository.getClassType();
-        String name = ClassName.getClassName(clazz.getName());
-        Entity entity = allEntities.retrieveByClassName(name);
-        SecurityMode mode = entity.getSecurityMode();
-
         boolean authorized = false;
-
         String username = getUsername();
 
-        if (mode.equals(SecurityMode.EVERYONE)) {
+        if (securityMode == SecurityMode.EVERYONE) {
             authorized = true;
-        } else if (mode.equals(SecurityMode.USERS)) {
-            Set<String> users = entity.getSecurityMembers();
-            if (users.contains(username)) {
+        } else if (securityMode == SecurityMode.USERS) {
+            if (securityMembers.contains(username)) {
                 authorized = true;
             }
-        } else if (mode.equals(SecurityMode.ROLES)) {
-            Set<String> roles = entity.getSecurityMembers();
+        } else if (securityMode == SecurityMode.ROLES) {
             for (String role : getUserRoles()) {
-                if (roles.contains(role)) {
+                if (securityMembers.contains(role)) {
                     authorized = true;
                 }
             }
         }
 
-        if (!authorized && !mode.isIntanceRestriction()) {
+        if (!authorized && !securityMode.isIntanceRestriction()) {
             throw new SecurityException();
         }
 
         InstanceSecurityRestriction restriction = new InstanceSecurityRestriction();
-        restriction.setByOwner(mode == SecurityMode.OWNER);
-        restriction.setByOwner(mode == SecurityMode.CREATOR);
+        restriction.setByOwner(securityMode == SecurityMode.OWNER);
+        restriction.setByCreator(securityMode == SecurityMode.CREATOR);
 
         return restriction;
     }
-
 
     private InstanceSecurityRestriction checkInstanceAccess(T instance, InstanceSecurityRestriction restriction) {
         String creator = null;

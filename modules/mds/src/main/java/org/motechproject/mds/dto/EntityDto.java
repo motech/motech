@@ -66,7 +66,7 @@ public class EntityDto {
         this.name = name;
         this.module = module;
         this.namespace = namespace;
-        this.securityMode = securityMode;
+        this.securityMode = securityMode != null ? securityMode : SecurityMode.EVERYONE;
         this.securityMembers = securityMembers != null ? new HashSet<>(securityMembers) : new HashSet<String>();
         this.readOnly = isNotBlank(module) || isNotBlank(namespace);
     }
