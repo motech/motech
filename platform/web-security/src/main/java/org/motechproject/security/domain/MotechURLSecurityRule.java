@@ -50,6 +50,7 @@ public class MotechURLSecurityRule implements Serializable {
     private String version;
     private Set<String> methodsRequired;
     private boolean active;
+    private boolean deleted;
 
     public String getPattern() {
         return pattern;
@@ -131,12 +132,60 @@ public class MotechURLSecurityRule implements Serializable {
         this.methodsRequired = methodsRequired;
     }
 
-    public boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MotechURLSecurityRule that = (MotechURLSecurityRule) o;
+
+        if (rest != that.rest) {
+            return false;
+        }
+        if (!methodsRequired.equals(that.methodsRequired)) {
+            return false;
+        }
+        if (!pattern.equals(that.pattern)) {
+            return false;
+        }
+        if (!protocol.equals(that.protocol)) {
+            return false;
+        }
+        if (!supportedSchemes.equals(that.supportedSchemes)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pattern != null ? pattern.hashCode() : 0;
+        result = 31 * result + (supportedSchemes != null ? supportedSchemes.hashCode() : 0);
+        result = 31 * result + (protocol != null ? protocol.hashCode() : 0);
+        result = 31 * result + (rest ? 1 : 0);
+        result = 31 * result + (methodsRequired != null ? methodsRequired.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -153,6 +202,7 @@ public class MotechURLSecurityRule implements Serializable {
                 ", version='" + version + '\'' +
                 ", methodsRequired=" + methodsRequired +
                 ", active=" + active +
+                ", deleted=" + deleted +
                 '}';
     }
 }

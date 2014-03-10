@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.commons.couchdb.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class MotechSecurityConfiguration extends MotechBaseDataObject {
     private List<MotechURLSecurityRule> securityRules;
 
     public MotechSecurityConfiguration() {
-
+        securityRules = new ArrayList<>();
     }
 
     public MotechSecurityConfiguration(List<MotechURLSecurityRule> securityRules) {
