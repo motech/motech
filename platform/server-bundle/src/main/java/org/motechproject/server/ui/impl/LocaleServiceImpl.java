@@ -99,13 +99,16 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
                                 .replace(path, "");
 
                         int underscore = file.indexOf('_');
-                        int dot = file.lastIndexOf('.');
+                        int dot = file.indexOf('.', underscore);
+                        int lastDot = file.lastIndexOf('.');
 
                         if (underscore != -1 && dot != -1) {
+                            String langLong = file.substring(underscore + 1, lastDot);
                             String langShort = file.substring(underscore + 1, dot);
                             Locale locale = LocaleUtils.toLocale(langShort);
                             String langFull = WordUtils.capitalize(locale.getDisplayLanguage(locale));
-                            languages.put(langShort, langFull);
+
+                            languages.put(langLong, langFull);
                         }
                     }
                 }
@@ -122,7 +125,6 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
     @Override
     public Map<String, String> getMessages(HttpServletRequest request) {
         Map<String, Collection<ModuleRegistrationData>> modules = uiFrameworkService.getRegisteredModules();
-
         Map<String, String> result = new HashMap<>();
 
         for (Map.Entry<String, Collection<ModuleRegistrationData>> entry : modules.entrySet()) {
@@ -138,7 +140,7 @@ public class LocaleServiceImpl implements LocaleService, BundleContextAware {
                             result.putAll((Map) props);
                         }
 
-                        String fileName = String.format("messages_%s.properties", getUserLocale(request));
+                        String fileName = String.format("messages_%s*.properties", getUserLocale(request));
                         Enumeration<URL> msgResources = bundle.findEntries(path, fileName, true);
 
                         if (msgResources != null) {

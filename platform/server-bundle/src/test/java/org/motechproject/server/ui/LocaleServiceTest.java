@@ -40,6 +40,9 @@ public class LocaleServiceTest {
     private Bundle bundlePolish;
 
     @Mock
+    private Bundle bundleTraditionalChinese;
+
+    @Mock
     private Bundle bundleFrench;
 
     @Mock
@@ -65,12 +68,13 @@ public class LocaleServiceTest {
     @Test
     public void testGetAvailableLanguages() {
         when(bundleContext.getBundles()).thenReturn(new Bundle[]{
-                bundleEnglish, bundleFrench, bundlePolish, bundleWithout
+                bundleEnglish, bundleFrench, bundlePolish, bundleTraditionalChinese, bundleWithout
         });
 
         when(bundleEnglish.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages.properties", I18N_RESOURCES_PATH))));
         when(bundlePolish.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_pl.properties", I18N_RESOURCES_PATH))));
         when(bundleFrench.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_fr.properties", I18N_RESOURCES_PATH))));
+        when(bundleTraditionalChinese.getEntryPaths(I18N_RESOURCES_PATH)).thenReturn(enumeration(asList(format("%smessages_zh_TW.Big5.properties", I18N_RESOURCES_PATH))));
 
         NavigableMap<String, String> map = localeService.getAvailableLanguages();
 
@@ -78,9 +82,10 @@ public class LocaleServiceTest {
         verify(bundleEnglish).getEntryPaths(I18N_RESOURCES_PATH);
         verify(bundlePolish).getEntryPaths(I18N_RESOURCES_PATH);
         verify(bundleFrench).getEntryPaths(I18N_RESOURCES_PATH);
+        verify(bundleTraditionalChinese).getEntryPaths(I18N_RESOURCES_PATH);
         verify(bundleWithout).getEntryPaths(I18N_RESOURCES_PATH);
 
-        assertEquals(3, map.size());
+        assertEquals(4, map.size());
 
         assertTrue(map.containsKey("en"));
         assertEquals("English", map.get("en"));
@@ -90,6 +95,9 @@ public class LocaleServiceTest {
 
         assertTrue(map.containsKey("fr"));
         assertEquals("Français", map.get("fr"));
+
+        assertTrue(map.containsKey("zh_TW.Big5"));
+        assertEquals("中文", map.get("zh_TW.Big5"));
     }
 
     @Test

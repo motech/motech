@@ -99,7 +99,10 @@
                         $scope.loadI18n($scope.i18n);
                     });
 
-                    $scope.startupViewData.startupSettings.language = lang;
+                    if ($scope.startupViewData && $scope.startupViewData.startupSettings) {
+                        $scope.startupViewData.startupSettings.language = lang;
+                    }
+
                     moment.lang(lang);
                     motechAlert('server.success.changed.language', 'server.changed.language',function(){
                         if (refresh ) {

@@ -78,7 +78,9 @@ function arraysEqual(a, b) {
 
 function toLocale(lang) {
     'use strict';
-    var locale = lang.replace("-", "_").split("_");
+    var dot = lang.lastIndexOf('.'),
+        locale = lang.replace("-", "_").substring(0, dot < 0 ? lang.length : dot).split("_");
+
     return {
         language : locale[0],
         country : locale[1],
