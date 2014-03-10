@@ -88,17 +88,18 @@ public class EntityController extends MdsController {
         return new SelectResult<>(data, list);
     }
 
-    @RequestMapping(value = "/entities/getEntity/{module}/{entityName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/entities/getEntity", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
-    public EntityDto getEntityByModuleAndEntityName(@PathVariable String module, @PathVariable String entityName) {
+    public EntityDto getEntityByModuleAndEntityName(@RequestBody Map<String, String> params) {
         List<EntityDto> entities = getAllEntities();
-        String moduleName = module.equals(NO_MODULE) ? null : module;
+        String moduleName = NO_MODULE.equals(params.get("module")) ? null : params.get("module");
 
         for (EntityDto entity : entities) {
-            if (entity.getModule() == null && moduleName == null && entity.getName().equals(entityName)) {
+            if (entity.getModule() == null && moduleName == null && entity.getName().equals(params.get("entityName"))) {
                 return entity;
-            } else if (entity.getModule() != null && entity.getModule().equals(moduleName) && entity.getName().equals(entityName)) {
+            } else if (entity.getModule() != null && entity.getModule().equals(moduleName) &&
+                    entity.getName().equals(params.get("entityName"))) {
                 return entity;
             }
         }
@@ -184,11 +185,11 @@ public class EntityController extends MdsController {
         return entityService.getDisplayFields(entityId);
     }
 
-    @RequestMapping(value = "entities/{entityId}/fields/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "entities/{entityId}/fields", method = RequestMethod.POST)
     @PreAuthorize(Roles.HAS_DATA_OR_SCHEMA_ACCESS)
     @ResponseBody
-    public FieldDto getFieldByName(@PathVariable Long entityId, @PathVariable String name) {
-        return entityService.findFieldByName(entityId, name);
+    public FieldDto getFieldByName(@PathVariable Long entityId, @RequestBody Map<String, String> params) {
+        return entityService.findFieldByName(entityId, params.get("fieldName"));
     }
 
     @RequestMapping(value = "/entities/{entityId}/advanced", method = RequestMethod.GET)

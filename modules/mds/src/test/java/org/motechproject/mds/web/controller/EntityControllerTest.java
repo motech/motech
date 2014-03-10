@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mds.TestData;
-import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.dto.AdvancedSettingsDto;
 import org.motechproject.mds.dto.EntityDto;
 import org.motechproject.mds.dto.FieldBasicDto;
@@ -20,6 +19,7 @@ import org.motechproject.mds.ex.EntityAlreadyExistException;
 import org.motechproject.mds.ex.EntityNotFoundException;
 import org.motechproject.mds.ex.EntityReadOnlyException;
 import org.motechproject.mds.service.EntityService;
+import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
 import org.motechproject.mds.web.ExampleData;
 import org.motechproject.mds.web.SelectData;
@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -281,15 +282,20 @@ public class EntityControllerTest {
                 new FieldBasicDto("ID", "ID", false, "pass", null),
                 false, exampleMetadata, FieldValidationDto.STRING, null, null
         );
+        Map paramMap = new HashMap<String, String>();
+        paramMap.put("fieldName", "ID");
 
-        assertEquals(expected, controller.getFieldByName(9005L, "ID"));
+        assertEquals(expected, controller.getFieldByName(9005L, paramMap));
 
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotFindFieldByNameIfEntityNotExists() throws Exception {
         doThrow(new EntityNotFoundException()).when(entityService).findFieldByName(500L, "ID");
-        controller.getFieldByName(500L, "ID");
+        Map paramMap = new HashMap<String, String>();
+        paramMap.put("fieldName", "ID");
+
+        controller.getFieldByName(500L, paramMap);
     }
 
     @Test

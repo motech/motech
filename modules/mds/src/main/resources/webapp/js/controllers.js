@@ -664,7 +664,7 @@
 
                     field = Entities.getField({
                         id: $scope.selectedEntity.id,
-                        param: $scope.newField.name
+                        fieldName: $scope.newField.name
                     }, function () {
                         $scope.fields.push(field);
                         setBrowsing();
@@ -2030,8 +2030,8 @@
             blockUI();
             $scope.setModuleEntity(module, entityName);
             $scope.addedEntity = Entities.getEntity({
-                param:  module,
-                params: entityName},
+                module:  module,
+                entityName: entityName},
                 function () {
                     Instances.newInstance({id: $scope.addedEntity.id}, function(data) {
                         $scope.currentRecord = data;
@@ -2142,20 +2142,22 @@
             blockUI();
 
             // get entity, fields, display fields
-            $http.get('../mds/entities/getEntity/' + module + '/' + entityName).success(function (data) {
-                $scope.selectedEntity = data;
+            $scope.selectedEntity = Entities.getEntity({
+                module:  module,
+                entityName: entityName},
+                function () {
+                    $scope.entityAdvanced = Entities.getAdvancedCommited({id: $scope.selectedEntity.id});
 
-                $scope.entityAdvanced = Entities.getAdvancedCommited({id: $scope.selectedEntity.id});
-
-                $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
-                    $scope.allEntityFields = data;
-                    Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
-                        $scope.selectedFields = data;
-                        $scope.updateInstanceGridFields();
+                    $http.get('../mds/entities/'+$scope.selectedEntity.id+'/entityFields').success(function (data) {
+                        $scope.allEntityFields = data;
+                        Entities.getDisplayFields({id: $scope.selectedEntity.id}, function(data) {
+                            $scope.selectedFields = data;
+                            $scope.updateInstanceGridFields();
+                        });
                     });
-                });
-                unblockUI();
-            });
+                    unblockUI();
+                }
+            );
         };
 
         /**
