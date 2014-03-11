@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -32,6 +33,7 @@ import java.util.TreeSet;
 public class MotechProxyManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(MotechProxyManager.class);
     private static final String DEFAULT_SECURITY_CONFIG_FILE = "defaultSecurityConfig.json";
+    private static final String SYSTEM_ORIGIN = "SYSTEM_PLATFORM";
 
     @Autowired
     private FilterChainProxy proxy;
@@ -73,11 +75,21 @@ public class MotechProxyManager {
         }
 
         List<MotechURLSecurityRule> securityRules = securityConfiguration.getSecurityRules();
+        List<MotechURLSecurityRule> systemRules = getDefaultSecurityConfiguration().getSecurityRules();
 
-        for (MotechURLSecurityRule rule : getDefaultSecurityConfiguration().getSecurityRules()) {
+        for (MotechURLSecurityRule rule : systemRules) {
             if (!securityRules.contains(rule)) {
                 LOGGER.debug("Found new rule, not present in database. Adding.");
-                securityConfiguration.getSecurityRules().add(rule);
+                securityRules.add(rule);
+            }
+        }
+
+        // remove rules that have origin set to SYSTEM_PLATFORM and are no longer in the default configuration
+        Iterator<MotechURLSecurityRule> it = securityRules.iterator();
+        while(it.hasNext()) {
+            MotechURLSecurityRule ruleFromDb = it.next();
+            if (SYSTEM_ORIGIN.equals(ruleFromDb.getOrigin()) && !systemRules.contains(ruleFromDb)) {
+                it.remove();
             }
         }
 
