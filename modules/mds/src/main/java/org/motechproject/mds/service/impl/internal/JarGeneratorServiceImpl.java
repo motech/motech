@@ -6,11 +6,7 @@ import javassist.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.motechproject.mds.builder.ClassData;
 import org.motechproject.mds.builder.MDSConstructor;
@@ -31,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,6 +66,7 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     private BundleContext bundleContext;
     private MetadataHolder metadataHolder;
     private MDSConstructor mdsConstructor;
+    private VelocityEngine velocityEngine;
 
     @Override
     @Transactional
@@ -197,18 +195,13 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
             allClassesList.add(map);
         }
 
-        VelocityEngine velocityEngine = new VelocityEngine();
-        VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("list", allClassesList);
-        Template template;
+        Map<String, Object> model = new HashMap<>();
+        model.put("list", allClassesList);
+
         StringWriter writer = new StringWriter();
 
         try {
-            velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-            velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-
-            template = velocityEngine.getTemplate(templatePath);
-            template.merge(velocityContext, writer);
+            VelocityEngineUtils.mergeTemplate(velocityEngine, templatePath, model, writer);
         } catch (Exception e) {
             LOGGER.error("An exception occurred, while trying to load" + templatePath + " template and merge it with data", e);
         }
@@ -308,5 +301,10 @@ public class JarGeneratorServiceImpl extends BaseMdsService implements JarGenera
     @Autowired
     public void setMdsConstructor(MDSConstructor mdsConstructor) {
         this.mdsConstructor = mdsConstructor;
+    }
+
+    @Autowired
+    public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
     }
 }

@@ -106,4 +106,13 @@
         <property name="persistenceManagerFactory" ref="persistenceManagerFactoryBean"/>
     </bean>
 
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=classpath
+                classpath.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+
 </beans>
