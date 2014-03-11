@@ -2004,6 +2004,8 @@
 
         $scope.optionValue='';
 
+        $scope.fieldValue = [];
+
         /**
         * Initializes a map of all entities in MDS indexed by module name
         */
@@ -2351,17 +2353,31 @@
                 $scope.optionValueStatus = true;
             }
         };
-        $scope.showAddOptionInput = function () {
-           $('#showAddOptionInput').removeClass('hidden');
+        $scope.showAddOptionInput = function (id) {
+           $('#showAddOptionInput' + id).removeClass('hidden');
         };
-        $scope.addOptionCombobox = function (id, field, newOptionValue) {
-            //$scope.fields[id].settings[0].value.push(newOptionValue);
-            $scope.currentRecord.fields[id].settings[0].value.push(newOptionValue);
-            $('#entityOptionNewValue').val('');
-            $('#showAddOptionInput').addClass('hidden');
+        $scope.addOptionCombobox = function (field, newOptionValue) {
+            if (field !== null && field.settings[2].value) {
+                if (field !== null && field.value !== null) {
+                    $scope.fieldValue = field.value;
+                } else {
+                    $scope.fieldValue = [];
+                }
+                $scope.fieldValue.push(newOptionValue);
+                field.value = $scope.fieldValue;
+            } else {
+                field.value = newOptionValue;
+            }
+            field.settings[0].value.push(newOptionValue);
+
+            $('#showAddOptionInput' + field.id).addClass('hidden');
             $scope.newOptionValue = '';
             $scope.optionValueStatus = false;
             $scope.optionValue = newOptionValue;
+        };
+
+        $scope.changeOptionValue = function (field, value) {
+            field.value = value;
         };
 
         /**

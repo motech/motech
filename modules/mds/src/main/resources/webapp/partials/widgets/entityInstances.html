@@ -36,7 +36,7 @@
 
         <div class="form-group" ng-repeat="field in lookupFields">
             <label class="col-sm-3 control-label">{{field.basic.displayName}}</label>
-            <div class="col-sm-9" ng-include="loadInputForLookupField(field)"></div>
+            <div class="col-sm-9 form-inline" ng-include="loadInputForLookupField(field)"></div>
         </div>
 
         <div class="form-group margin-before3">

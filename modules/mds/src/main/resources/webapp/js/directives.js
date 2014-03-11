@@ -1331,8 +1331,24 @@
                     buttonWidth : 'auto',
                     buttonContainer : '<div class="btn-group" />',
                     maxHeight : false,
-                    buttonText : function() {
-                            return scope.msg('mds.btn.fields');
+                    numberDisplayed: 3,
+                    buttonText : function(options) {
+                        if (options.length === 0) {
+                            return scope.msg('mds.form.label.select') + ' <b class="caret"></b>';
+                        }
+                        else {
+                            if (options.length > this.numberDisplayed) {
+                                return options.length + ' ' + scope.msg('mds.form.label.selected') + ' <b class="caret"></b>';
+                            }
+                            else {
+                                var selected = '';
+                                options.each(function() {
+                                    var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).html();
+                                    selected += label + ', ';
+                                });
+                                return selected.substr(0, selected.length - 2) + ' <b class="caret"></b>';
+                            }
+                        }
                     },
                     onChange: function (optionElement, checked) {
                         optionElement.removeAttr('selected');
@@ -1341,6 +1357,10 @@
                         }
                         element.change();
                     }
+                });
+
+                $("#saveoption" + scope.field.id).on("click", function () {
+                    element.multiselect('rebuild');
                 });
 
                 scope.$watch(function () {
