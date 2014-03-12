@@ -52,6 +52,10 @@ public abstract class AbstractDataProvider extends MotechObject implements DataP
         return body;
     }
 
+    protected void setBody(String body) {
+        this.body = body;
+    }
+
     protected void setBody(final Resource resource) {
         if (resource == null) {
             throw new IllegalArgumentException("Resource cant be null");

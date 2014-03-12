@@ -80,6 +80,6 @@ class TaskInitializer {
             lookupFields.put(lookup.getField(), keyEvaluator.evaluateTemplateString(lookup.getValue()));
         }
 
-        return provider.lookup(dataSource.getType(), lookupFields);
+        return provider.lookup(dataSource.getType(), dataSource.getName(), lookupFields);
     }
 }

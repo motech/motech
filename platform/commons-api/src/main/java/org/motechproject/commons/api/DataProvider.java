@@ -8,7 +8,7 @@ public interface DataProvider {
 
     String toJSON();
 
-    Object lookup(String type, Map<String, String> lookupFields);
+    Object lookup(String type, String lookupName, Map<String, String> lookupFields);
 
     boolean supports(String type);
 
