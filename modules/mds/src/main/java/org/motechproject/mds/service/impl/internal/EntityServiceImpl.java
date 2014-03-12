@@ -2,6 +2,8 @@ package org.motechproject.mds.service.impl.internal;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+
+import org.motechproject.mds.MDSDataProvider;
 import org.motechproject.mds.domain.Entity;
 import org.motechproject.mds.domain.EntityDraft;
 import org.motechproject.mds.domain.Field;
@@ -39,6 +41,7 @@ import org.motechproject.mds.util.Constants;
 import org.motechproject.mds.util.FieldHelper;
 import org.motechproject.mds.util.SecurityMode;
 import org.motechproject.mds.web.DraftData;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +80,7 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     private AllEntityDrafts allEntityDrafts;
     private AllEntityAudits allEntityAudits;
     private JarGeneratorService jarGeneratorService;
+    private MDSDataProvider mdsDataProvider;
 
     private static final Logger LOG = LoggerFactory.getLogger(EntityServiceImpl.class);
 
@@ -258,6 +263,8 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
             allEntityAudits.createAudit(parent, username);
         }
 
+        mdsDataProvider.updateDataProvider();
+
         allEntityDrafts.delete(draft);
 
         jarGeneratorService.regenerateMdsDataBundle(true);
@@ -397,6 +404,37 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     public EntityDto getEntityByClassName(String className) {
         Entity entity = allEntities.retrieveByClassName(className);
         return (entity == null) ? null : entity.toDto();
+    }
+
+    @Override
+    @Transactional
+    public List<EntityDto> getEntitiesWithLookups() {
+        List<EntityDto> entities = new LinkedList<>();
+        for (EntityDto entityDto : listEntities()) {
+            if (!getEntityLookups(entityDto.getId()).isEmpty()) {
+                entities.add(entityDto);
+            }
+        }
+        return entities;
+    }
+
+    @Override
+    @Transactional
+    public List<LookupDto> getEntityLookups(Long entityId) {
+        return getLookups(entityId, false);
+    }
+
+    private List<LookupDto> getLookups(Long entityId, boolean forDraft) {
+        Entity entity = (forDraft) ? getEntityDraft(entityId) : allEntities.retrieveById(entityId);
+
+        assertEntityExists(entity);
+
+        List<LookupDto> lookupDtos = new ArrayList<>();
+        for (Lookup lookup : entity.getLookups()) {
+            lookupDtos.add(lookup.toDto());
+        }
+
+        return lookupDtos;
     }
 
     @Override
@@ -747,5 +785,10 @@ public class EntityServiceImpl extends BaseMdsService implements EntityService {
     @Autowired
     public void setJarGeneratorService(JarGeneratorService jarGeneratorService) {
         this.jarGeneratorService = jarGeneratorService;
+    }
+
+    @Autowired
+    public void setMdsDataProvider(MDSDataProvider mdsDataProvider) {
+        this.mdsDataProvider = mdsDataProvider;
     }
 }

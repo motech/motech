@@ -38,7 +38,7 @@ public class AbstractDataProviderLookupTest {
         }
 
         @Override
-        public Object lookup(String clazz, Map<String, String> lookupFields) {
+        public Object lookup(String clazz, String lookupName, Map<String, String> lookupFields) {
             return null;
         }
     }
@@ -55,7 +55,8 @@ public class AbstractDataProviderLookupTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotSetBodyWhenResourceIsNull() {
-        testDataProvider.setBody(null);
+        Resource body = null;
+        testDataProvider.setBody(body);
     }
 
     @Test(expected = IllegalArgumentException.class)

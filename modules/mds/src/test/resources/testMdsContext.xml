@@ -14,7 +14,7 @@
                 <constructor-arg value="org.motechproject.motech-dataservices"/>
                 <constructor-arg>
                     <util:map map-class="java.util.Properties">
-                        <entry key="Bundle-Version" value="0.22.0.SNAPSHOT"/>
+                        <entry key="Bundle-Version" value="0.23.0.SNAPSHOT"/>
                         <entry key="Bundle-SymbolicName" value="org.motechproject.motech-dataservices"/>
                         <entry key="Bundle-Name" value="MOTECH Data Services"/>
                     </util:map>
@@ -27,6 +27,8 @@
     </bean>
 
     <bean id="packageAdmin" class="org.motechproject.mds.testutil.MockPackageAdmin"/>
+
+    <bean id="taskDataProviderService" class="org.motechproject.mds.testutil.MockTaskDataProviderService"/>
 
     <util:properties id="sqlProperties" location="classpath:/datanucleus.properties" />
 </beans>

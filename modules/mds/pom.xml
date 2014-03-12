@@ -43,6 +43,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-tasks</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.collections</artifactId>
         </dependency>
@@ -257,6 +262,8 @@
                             org.motechproject.security.service,
                             org.motechproject.server.config,
                             org.motechproject.commons.sql.service,
+                            org.motechproject.tasks.service,
+                            org.motechproject.tasks.service.impl,
                             org.springframework.aop,
                             org.springframework.aop.aspectj.annotation,
                             org.springframework.aop.framework,

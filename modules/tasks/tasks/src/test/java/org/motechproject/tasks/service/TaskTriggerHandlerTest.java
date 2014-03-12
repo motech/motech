@@ -564,7 +564,7 @@ public class TaskTriggerHandlerTest {
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
-        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        when(provider.lookup("Patient", "", lookup)).thenReturn(null);
         providers.put("providerId", provider);
         handler.setDataProviders(providers);
 
@@ -618,7 +618,7 @@ public class TaskTriggerHandlerTest {
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
-        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        when(provider.lookup("Patient", null, lookup)).thenReturn(null);
         providers.put("providerId", provider);
         handler.setDataProviders(providers);
 
@@ -669,7 +669,7 @@ public class TaskTriggerHandlerTest {
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
-        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        when(provider.lookup("Patient", null, lookup)).thenReturn(null);
         providers.put("providerId", provider);
         handler.setDataProviders(providers);
 
@@ -715,7 +715,7 @@ public class TaskTriggerHandlerTest {
         DataProvider provider = mock(DataProvider.class);
         Map<String, String> lookup = new HashMap<>();
         lookup.put("patientId", "123");
-        when(provider.lookup("Patient", lookup)).thenReturn(null);
+        when(provider.lookup("Patient", null, lookup)).thenReturn(null);
         providers.put("providerId", provider);
         handler.setDataProviders(providers);
 
@@ -774,7 +774,7 @@ public class TaskTriggerHandlerTest {
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(dataProvider, never()).supports(anyString());
-        verify(dataProvider, never()).lookup(anyString(), anyMap());
+        verify(dataProvider, never()).lookup(anyString(), anyString(), anyMap());
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
@@ -810,7 +810,7 @@ public class TaskTriggerHandlerTest {
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         verify(dataProvider, never()).supports(anyString());
-        verify(dataProvider, never()).lookup(anyString(), anyMap());
+        verify(dataProvider, never()).lookup(anyString(), anyString(), anyMap());
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay, times(2)).sendEventMessage(captorEvent.capture());
         verify(taskActivityService, never()).addSuccess(task);
@@ -841,7 +841,7 @@ public class TaskTriggerHandlerTest {
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
-        when(dataProvider.lookup("TestObjectField", lookupFields)).thenReturn(null);
+        when(dataProvider.lookup("TestObjectField", "id", lookupFields)).thenReturn(null);
 
         assertTrue(task.isEnabled());
 
@@ -850,7 +850,7 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(dataProvider).lookup("TestObjectField", lookupFields);
+        verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
@@ -883,7 +883,7 @@ public class TaskTriggerHandlerTest {
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
-        when(dataProvider.lookup("TestObjectField", lookupFields)).thenReturn(new Object());
+        when(dataProvider.lookup("TestObjectField", "id", lookupFields)).thenReturn(new Object());
 
         assertTrue(task.isEnabled());
 
@@ -892,7 +892,7 @@ public class TaskTriggerHandlerTest {
 
         verify(taskService).findTrigger(TRIGGER_SUBJECT);
         verify(taskService).findTasksForTrigger(triggerEvent);
-        verify(dataProvider).lookup("TestObjectField", lookupFields);
+        verify(dataProvider).lookup("TestObjectField", "id", lookupFields);
         verify(taskActivityService).addError(eq(task), captor.capture());
 
         ArgumentCaptor<MotechEvent> captorEvent = ArgumentCaptor.forClass(MotechEvent.class);
@@ -1066,10 +1066,10 @@ public class TaskTriggerHandlerTest {
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", testObjectLookup)).thenReturn(testObject);
+        when(dataProvider.lookup("TestObject", "id", testObjectLookup)).thenReturn(testObject);
 
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
-        when(dataProvider.lookup("TestObjectField", testObjectFieldLookup)).thenReturn(testObjectField);
+        when(dataProvider.lookup("TestObjectField", "id", testObjectFieldLookup)).thenReturn(testObjectField);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
 
@@ -1418,10 +1418,10 @@ public class TaskTriggerHandlerTest {
 
         when(dataProvider.getName()).thenReturn("TEST");
         when(dataProvider.supports("TestObject")).thenReturn(true);
-        when(dataProvider.lookup("TestObject", testObjectLookup)).thenReturn(testObject);
+        when(dataProvider.lookup("TestObject", "id", testObjectLookup)).thenReturn(testObject);
 
         when(dataProvider.supports("TestObjectField")).thenReturn(true);
-        when(dataProvider.lookup("TestObjectField", testObjectFieldLookup)).thenReturn(testObjectField);
+        when(dataProvider.lookup("TestObjectField", "id", testObjectFieldLookup)).thenReturn(testObjectField);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
 

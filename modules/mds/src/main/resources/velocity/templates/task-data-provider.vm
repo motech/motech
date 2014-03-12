@@ -1,0 +1,26 @@
+#if ( ! $service.getEntitiesWithLookups().isEmpty() )
+{
+    "name": "data-services",
+    "objects": [ #foreach ( $entity in $service.getEntitiesWithLookups() )
+        {
+            "displayName": "$entity.getName()",
+            "type": "$entity.getName()",
+            "lookupFields": [ #foreach ( $lookup in $service.getEntityLookups($entity.getId()) )
+                {
+                    "displayName": "$lookup.getLookupName()",
+                    "fields": [
+                        #foreach ( $field in $lookup.getFieldNames() ) "$field" #if( $velocityHasNext ) , #end #end
+                    ]
+                } #if( $velocityHasNext ) , #end #end
+            ],
+            "fields": [
+                #foreach ( $field in $service.getEntityFields($entity.getId()) )
+                {
+                    "displayName": "$field.getBasic().getDisplayName()",
+                    "fieldKey": "$field.getBasic().getName()"
+                } #if( $velocityHasNext ) , #end #end
+            ]
+        } #if( $velocityHasNext ), #end #end
+    ]
+}
+#end
