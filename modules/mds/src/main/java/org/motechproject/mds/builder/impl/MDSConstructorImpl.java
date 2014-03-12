@@ -248,6 +248,21 @@ public class MDSConstructorImpl implements MDSConstructor {
             // DDEs are generated when their declaring bundles context is loaded
             if (entity.isDraft() || (!buildDDE && entity.isDDE())) {
                 it.remove();
+            } else if (entity.isDDE()) {
+                Bundle declaringBundle = WebBundleUtil.findBundleByName(bundleContext, entity.getModule());
+
+                if (declaringBundle == null) {
+                    LOG.warn("Declaring bundle unavailable for entity {]", entity.getClassName());
+                    it.remove();
+                } else {
+                    try {
+                        declaringBundle.loadClass(entity.getClassName());
+                    } catch (ClassNotFoundException e) {
+                        LOG.warn("Class declaration for {} not present in bundle {}",
+                                entity.getClassName(), declaringBundle.getSymbolicName());
+                        it.remove();
+                    }
+                }
             }
         }
     }
